@@ -7,6 +7,8 @@
 */
 
 // Define the language packs used
+$flyspray_prefs = $fs->getGlobalPrefs();
+$lang = $flyspray_prefs['lang_code'];
 $fs->get_language_pack($lang, 'notify.inc');
 $fs->get_language_pack($lang, 'details');
 

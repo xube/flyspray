@@ -111,7 +111,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 
   <?php
    // open the themes directory
-   if ($handle = opendir('themes/'))
+/*   if ($handle = opendir('themes/'))
    {
       $theme_array = array();
       while (false !== ($file = readdir($handle)))
@@ -130,7 +130,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    while (list($key, $val) = each($theme_array))
    {
       echo "<link href=\"themes/$val/theme.css\" title=\"$val\" rel=\"alternate stylesheet\" type=\"text/css\" />\n";
-   }
+   }*/
     ?>
 </head>
 <body>
@@ -189,7 +189,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    echo '<em>' . $language['loggedinas'] . ' - ' . $current_user['user_name'] . '</em>';
 
    // Display Add New Task link
-   if ($permissions['open_new_tasks'] == '1')
+   if (($permissions['view_tasks'] == '1' OR $project_prefs['others_view'] == '1') && $permissions['open_new_tasks'] == '1')
    {
       echo '<small> | </small>';
       echo '<a id="newtasklink" href="?do=newtask&amp;project=' . $project_id . '" accesskey="a">' . $language['addnewtask'] . "</a>\n";
@@ -214,7 +214,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
       echo '<a id="lastsearchlink" href="' . $_SESSION['lastindexfilter'] . '" accesskey="m">' . $language['lastsearch'] . "</a>\n";
    } else
    {
-      echo '<a id="lastsearchlink">' . $language['lastsearch'] . "</a>\n";
+      echo '<a id="lastsearchlink" href="">' . $language['lastsearch'] . "</a>\n";
    }
 
    // Administrator's Toolbox link
@@ -306,6 +306,7 @@ if (isset($_SESSION['SUCCESS']))
 
 <div id="content">
 
+<div id="projectselector">
 <form action="index.php" method="get">
       <p>
       <select name="tasks">
@@ -325,22 +326,59 @@ if (isset($_SESSION['SUCCESS']))
       <select name="project">
       <option value="0"<?php if (isset($_GET['project']) && $_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
       <?php
-      $get_projects = $db->Query("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
+      // If the user has permission to view all projects
+      if ($permissions['global_view'] == '1')
+      {
+         $get_projects = $db->Query("SELECT * FROM flyspray_projects
+                                     WHERE project_is_active = '1'
+                                     ORDER BY project_title");
+
+      // or, if the user is logged in
+      } elseif (isset($_COOKIE['flyspray_userid']))
+      {
+         // This query needs fixing.  It returns double results if a project has the 'others view' option turned on
+         // This means I had to make it strip duplicate results when cycling through projects a bit further down...
+         $get_projects = $db->Query("SELECT p.*
+                                       FROM flyspray_projects p
+                                       LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
+                                       LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
+                                       WHERE uig.user_id = ?
+                                       AND g.view_tasks = '1'
+                                       OR p.others_view = '1'
+                                       AND p.project_is_active = '1'",
+                                       array($current_user['user_id'])
+                                     );
+      } else
+      {
+         // Anonymous users
+         $get_projects = $db->Query("SELECT * FROM flyspray_projects
+                                     WHERE project_is_active = '1'
+                                     AND others_view = '1'
+                                     ORDER BY project_title");
+      }
+
+      // Cycle through the results from whichever query above
+      // The query above is dodgy, and returns duplicate results... so I add each result to an array and filter dupes - FIXME
+      $project_list = array();
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'] && $project_id != '0')
+         if ($project_id == $row['project_id'] && $_GET['project'] != '0' && !in_array($row['project_id'], $project_list))
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
-         } else
+            $project_list[] = $row['project_id'];
+         } elseif (!in_array($row['project_id'], $project_list))
          {
             echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
+            $project_list[] = $row['project_id'];
          }
+
       }
       ?>
       </select>
       <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>" />
       </p>
 </form>
+</div>
 
 <form action="index.php" method="get">
     <p id="showtask">
@@ -357,11 +395,11 @@ if (isset($_SESSION['SUCCESS']))
 if ($project_prefs['project_is_active'] == '1'
     && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
     && $project_prefs['intro_message'] != ''
-    && ($do == 'details' OR $do == 'index')
+    && ($do == 'details' OR $do == 'index' OR $do == 'newtask' OR $do == 'reports')
     OR (isset($_GET['project']) && $_GET['project'] == '0'))
 {
    $intro_message = Markdown(stripslashes($project_prefs['intro_message']));
-   echo "<p class=\"intromessage\">$intro_message</p>";
+   echo '<div id="intromessage">' . $intro_message . '</div>';
 }
 
 // If we have allowed anonymous logging of new tasks
@@ -395,7 +433,7 @@ if (isset($_COOKIE['flyspray_userid']))
 {
    echo '<div id="permslink">';
    echo $language['permissions'];
-   echo '<a href="#" onclick="showstuff(\'permissions\');">' . $language['show'] . '</a>&nbsp;|&nbsp;';
+   echo '<a href="#" onclick="showstuff(\'permissions\');">' . $language['show'] . '</a>&nbsp;/&nbsp;';
    echo '<a href="#" onclick="hidestuff(\'permissions\');">' . $language['hide'] . '</a>&nbsp;';
    echo '</div>';
 

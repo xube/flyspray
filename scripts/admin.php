@@ -400,24 +400,29 @@ if ($permissions['is_admin'] == '1')
          echo '<fieldset class="admin">';
          echo '<legend>' . $admin_text['usergroups'] . '</legend>';
 
-         echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | \n";
-         echo "<a href=\"index.php?do=newgroup&amp;project=0\">{$admin_text['newgroup']}</a></p>\n\n";
+         echo '<p><a href="index.php?do=newuser">' . $admin_text['newuser'] . '</a> | ';
+         echo '<a href="index.php?do=newgroup&amp;project=0">' . $admin_text['newgroup'] . '</a></p>';
 
          // We have to make sure that a user isn't displayed in the user list at the bottom of the page
          // if they're in a group from another project... so we set up an array...
          $user_checklist = array();
 
          // Cycle through the groups that belong to this project
-         $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+         $get_groups = $db->Query("SELECT * FROM flyspray_groups
+                                   WHERE belongs_to_project = ?
+                                   ORDER BY group_id ASC",
+                                   array($project)
+                                 );
+
          while ($group = $db->FetchArray($get_groups))
          {
-            echo '<h4><a href="?do=admin&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
+            echo '<a id="grouptitle" href="?do=admin&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
             echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
             // Now, start a form to allow use to move multiple users between groups
             echo '<form action="index.php" method="post">' . "\n";
 
-            echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
+            echo '<table class="userlist"><tr><th></th><th>' . $admin_text['username'] . '</th><th>' . $admin_text['realname'] . '</th><th>' . $admin_text['accountenabled'] . '</th></tr>';
 
             $get_user_list = $db->Query("SELECT * FROM flyspray_users_in_groups uig
                                           LEFT JOIN flyspray_users u on uig.user_id = u.user_id
@@ -448,7 +453,7 @@ if ($permissions['is_admin'] == '1')
                   echo "<td>{$admin_text['no']}</td>";
                }
                   echo "</tr>\n";
-            };
+            }
 
             echo '<tr><td colspan="4">';
             echo '<input type="hidden" name="num_users" value="' . $userincrement . "\" />\n";
@@ -469,7 +474,7 @@ if ($permissions['is_admin'] == '1')
             echo '</td></tr>';
             echo "</table>\n\n";
             echo '</form>';
-         };
+         }
 
    /////////////////////////////
    // Start of editing groups //
@@ -543,6 +548,10 @@ if ($permissions['is_admin'] == '1')
     <tr>
       <td><label for="deletecomments"><?php echo $admin_text['deletecomments'];?></label></td>
       <td><input id="deletecomments" type="checkbox" name="delete_comments" value="1" <?php if ($group_details['delete_comments'] == "1") { echo "checked=\"checked\"";};?> /></td>
+    </tr>
+    <tr>
+      <td><label for="viewattachments"><?php echo $admin_text['viewattachments'];?></label></td>
+      <td><input id="viewattachments" type="checkbox" name="view_attachments" value="1" <?php if ($group_details['view_attachments'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="createattachments"><?php echo $admin_text['createattachments'];?></label></td>
@@ -791,9 +800,21 @@ if ($permissions['is_admin'] == '1')
   <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
   <table class="list">
     <?php
-    $get_categories = $db->Query("SELECT * FROM flyspray_list_category WHERE project_id = '0' AND parent_id < '1' ORDER BY list_position");
+    $get_categories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+                                  FROM flyspray_list_category c
+                                  LEFT JOIN flyspray_tasks t ON (t.product_category = c.category_id)
+                                  WHERE project_id = '0' AND parent_id < '1'
+                                  GROUP BY c.category_id
+                                  ORDER BY list_position");
     $countlines = 0;
     while ($row = $db->FetchArray($get_categories)) {
+       $get_subcategories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+                                        FROM flyspray_list_category c
+                                        LEFT JOIN flyspray_tasks t ON (t.product_category = c.category_id)
+                                        WHERE project_id = '0' AND parent_id = ?
+                                        GROUP BY c.category_id
+                                        ORDER BY list_position",
+                                        array($row['category_id']));
     ?>
      <tr>
       <td>
@@ -818,17 +839,18 @@ if ($permissions['is_admin'] == '1')
         ?>
       </select>
       </td>
+      <?php if ($row['used_in_tasks'] == 0 and $get_subcategories->RowCount() < 1): ?>
+      <td title="<?php echo $admin_text['listdeletetip'];?>">
+        <label for="delete<?php echo $row['category_id']?>"><?php echo $admin_text['delete'];?></label>
+        <input id="delete<?php echo $row['category_id']?>" type="checkbox" name="delete[<?php echo $row['category_id']?>]" value="1" />
+       <?php else: ?>
+       <td>&nbsp;
+       <?php endif; ?>
+       </td>
      </tr>
     <?php
       $countlines++;
       // Now we have to cycle through the subcategories
-    $get_subcategories = $db->Query("SELECT * FROM flyspray_list_category
-                                     WHERE project_id = '0'
-                                     AND parent_id = ?
-                                     ORDER BY list_position",
-                                     array($row['category_id'])
-                                   );
-
     while ($subrow = $db->FetchArray($get_subcategories))
     {
     ?>
@@ -855,6 +877,14 @@ if ($permissions['is_admin'] == '1')
          $fs->listUsers($novar, 0);
         ?>
       </select>
+      </td>
+      <?php if ($subrow['used_in_tasks'] == 0): ?>
+      <td title="<?php echo $admin_text['listdeletetip'];?>">
+        <label for="delete<?php echo $subrow['category_id']?>"><?php echo $admin_text['delete'];?></label>
+        <input id="delete<?php echo $subrow['category_id']?>" type="checkbox" name="delete[<?php echo $subrow['category_id']?>]" value="1" />
+      <?php else: ?>
+      <td>&nbsp;
+      <?php endif; ?>
       </td>
      </tr>
     <?php

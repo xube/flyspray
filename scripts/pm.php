@@ -211,7 +211,7 @@ if ($permissions['manage_project'] == '1')
       echo '<fieldset class="admin">';
       echo '<legend>' . $admin_text['usergroups'] . '</legend>';
 
-      echo "<a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>\n\n";
+      echo "<p><a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>\n\n";
 
       // We have to make sure that a user isn't displayed in the user list at the bottom of the page
       // if they're already in a project group... so we set up an array...
@@ -221,7 +221,7 @@ if ($permissions['manage_project'] == '1')
       $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
       while ($group = $db->FetchArray($get_groups)) {
 
-         echo '<h4><a href="?do=pm&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
+         echo '<a id="grouptitle" href="?do=pm&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
          echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
          // Now, create a form used for moving multiple users between groups
@@ -397,6 +397,10 @@ if ($permissions['manage_project'] == '1')
             <td><input id="deletecomments" type="checkbox" name="delete_comments" value="1" <?php if ($group_details['delete_comments'] == "1") { echo "checked=\"checked\"";};?> /></td>
          </tr>
          <tr>
+            <td><label for="viewattachments"><?php echo $admin_text['viewattachments'];?></label></td>
+            <td><input id="viewattachments" type="checkbox" name="view_attachments" value="1" <?php if ($group_details['view_attachments'] == "1") { echo "checked=\"checked\"";};?> /></td>
+         </tr>
+         <tr>
             <td><label for="createattachments"><?php echo $admin_text['createattachments'];?></label></td>
             <td><input id="createattachments" type="checkbox" name="create_attachments" value="1" <?php if ($group_details['create_attachments'] == "1") { echo "checked=\"checked\"";};?> /></td>
          </tr>
@@ -474,9 +478,20 @@ if ($permissions['manage_project'] == '1')
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
       <table class="list">
          <?php
-         $get_categories = $db->Query("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($project_id, '1'));
+         $get_categories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+                                       FROM flyspray_list_category c
+                                       LEFT JOIN flyspray_tasks t ON (t.product_category = c.category_id)
+                                       WHERE project_id = ? AND parent_id < ?
+                                       GROUP BY c.category_id
+                                       ORDER BY list_position", array($project_id, '1'));
          $countlines = 0;
          while ($row = $db->FetchArray($get_categories)) {
+           $get_subcategories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+                                            FROM flyspray_list_category c
+                                            LEFT JOIN flyspray_tasks t ON (t.product_category = c.category_id)
+                                            WHERE project_id = ? AND parent_id = ?
+                                            GROUP BY c.category_id
+                                            ORDER BY list_position", array($project_id, $row['category_id']));
          ?>
             <tr>
                <td>
@@ -501,11 +516,18 @@ if ($permissions['manage_project'] == '1')
                ?>
                </select>
                </td>
+               <?php if ($row['used_in_tasks'] == 0 and $get_subcategories->RowCount() < 1): ?>
+               <td title="<?php echo $admin_text['listdeletetip'];?>">
+               <label for="delete<?php echo $row['category_id']?>"><?php echo $admin_text['delete'];?></label>
+               <input id="delete<?php echo $row['category_id']?>" type="checkbox" name="delete[<?php echo $row['category_id']?>]" value="1" />
+               <?php else: ?>
+               <td>&nbsp;
+               <?php endif; ?>
+               </td>
             </tr>
             <?php
             $countlines++;
             // Now we have to cycle through the subcategories
-            $get_subcategories = $db->Query("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id = ? ORDER BY list_position", array($project_id, $row['category_id']));
             while ($subrow = $db->FetchArray($get_subcategories)) {
             ?>
             <tr>
@@ -531,6 +553,14 @@ if ($permissions['manage_project'] == '1')
                $fs->listUsers($subrow['category_owner'], $project_id);
                ?>
                </select>
+               </td>
+               <?php if ($subrow['used_in_tasks'] == 0): ?>
+               <td title="<?php echo $admin_text['listdeletetip'];?>">
+               <label for="delete<?php echo $subrow['category_id']?>"><?php echo $admin_text['delete'];?></label>
+               <input id="delete<?php echo $subrow['category_id']?>" type="checkbox" name="delete[<?php echo $subrow['category_id']?>]" value="1" />
+               <?php else: ?>
+               <td>&nbsp;
+               <?php endif; ?>
                </td>
             </tr>
             <?php

@@ -32,21 +32,21 @@ $fs->get_language_pack($lang, 'loginbox');
   <tr>
     <td colspan="4" style="text-align: center;">
     <?php
-    // If we want to use confirmation codes in the signup form
-    if (!$_COOKIE['flyspray_userid']
-        && $flyspray_prefs['spam_proof'] == '1'
-        && $flyspray_prefs['anon_reg'] == '1' ) {
-
-      echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
-
-    // ...and if we don't care about them
-    } elseif (!$_COOKIE['flyspray_userid']
-              && $flyspray_prefs['spam_proof'] != '1'
-              && $flyspray_prefs['anon_reg'] == '1') {
-
-      echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
-
-    };
+      if (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['anon_reg'] == '1' )
+      {
+         // If we want to use confirmation codes in the signup form
+         if ($flyspray_prefs['spam_proof'] != '1')
+         {
+            echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
+         // ...and if we don't care about them
+         } else
+         {
+            echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
+         }
+      } else
+      {
+         echo "<p class=\"unregistered\">";
+      }
 
 
     echo '<a href="?do=lostpw">' . $loginbox_text['lostpassword'] . '</a></p>';

@@ -117,27 +117,36 @@ p#menu small {
 }
 
 p#menu a {
-  display             : block;
+   display              : block;
+   width                : 100%;
+}
+
+p#menu a:hover {
+   display              : block;
+   width                : 100%;
+   color                : #779977;
+   background-color     : #eeffee;
+   text-decoration      : none;
 }
 
 p#menu span#mainmenu {
-  display             : block;
-  margin-bottom       : 1ex;
+   display              : block;
+   margin-bottom        : 1ex;
 }
 
 p#menu span#adminmenu {
-  display             : block;
-  background-color    : #EFE;
+   display              : block;
+   background-color     : #EFE;
 }
 
 table.userlist td, table.userlist th {
-  border              : 1px solid #CCC;
+   border               : 1px solid #CCC;
 }
 
 table.login {
-  width               : 80%;
-  margin-left         : auto;
-  margin-right        : auto;
+   width                : 80%;
+   margin-left          : auto;
+   margin-right         : auto;
 }
 
 /* table.head is the table containing the task-list-link and the
@@ -157,12 +166,25 @@ em {
   font-weight         : bold;
 }
 
-a {
-  text-decoration     : none;
+a:link {
+   color                      : #779977;
+   background-color           : transparent;
+   font-weight                : bold;
+   text-decoration            : none;
+}
+
+a:visited {
+   color                      : #779977;
+   background-color           : transparent;
+   font-weight                : bold;
+   text-decoration            : none;
 }
 
 a:hover {
-  text-decoration     : underline;
+   color                      : #8ec68e;
+   background-color           : transparent;
+   font-weight                : bold;
+   text-decoration            : underline;
 }
 
 /* The paragraph containing the search form */
@@ -410,26 +432,115 @@ div#taskdetailsfull {
 }
 
 div#deps {
-  padding: 8px;
-  width: 98%;
-  border-bottom: 1px solid #cccccc;
-  min-height: 50px;
+   padding                 : 8px;
+   width                   : 98%;
+   border-bottom           : 1px solid #cccccc;
+   min-height              : 50px;
 }
 
 div#taskdeps {
-  width: 45%;
-  margin-bottom: 8px;
+   width                   : 45%;
+   margin-bottom           : 8px;
 }
 
 div#taskblocks {
-  width: 50%;
+   width                   : 50%;
 }
 
 div#actionbuttons {
-   margin-top           : 25px;
-   margin-left          : 5px;
-   clear                : bottom;
+   margin-top              : 25px;
+   margin-left             : 5px;
+   clear                   : bottom;
 }
+
+div#actionbuttons a {
+   padding                 : 5px;
+   border                  : 1px solid #779977;
+}
+
+div#actionbuttons a:hover {
+   padding                 : 5px;
+   border                  : 1px solid #779977;
+   color                   : #ffffff;
+   background-color        : #779977;
+   text-decoration         : none;
+}
+
+div#closeform {
+   visibility              : hidden;
+   position                : absolute;
+   background-color        : #ffffff;
+   color                   : #000000;
+   border                  : 2px ridge #cccccc;
+   padding                 : 5px 30px 5px 5px;
+   margin-top              : 5px;
+}
+
+div#actionbuttons a#hideclosetask {
+   position                : absolute;
+   top                     : 3px;
+   right                   : 3px;
+   width                   : 16px;
+   height                  : 16px;
+   color                   : #000000;
+   background-color        : transparent;
+   border                  : 1px solid #cccccc;
+   content                 : 'X';
+}
+
+div#permslink {
+   position                : absolute;
+   top                     : 5px;
+   right                   : 5px;
+   color                   : #ffffff;
+   background-color        : transparent;
+}
+
+div#permslink a {
+   color                   : #ffffff;
+   background-color        : transparent;
+   font-weight             : normal;
+}
+
+div#permissions {
+   visibility              : hidden;
+   position                : absolute;
+   top                     : 25px;
+   right                   : 5px;
+   background-color        : #ffffff;
+   color                   : #000000;
+   margin-top              : none;
+   width                   : auto;
+   height                  : 550px;
+   overflow                : auto;
+   z-index                 : 5;
+}
+
+div#toolboxmenu small {
+   margin                  : 5px;
+}
+
+/* The new tabs stuff */
+/* colors */
+#submenu a, div.tab                 { color: #000000; background-color: #ffffff; }
+#submenu a.active, #submenu a:hover { color: #2a432a; }
+#submenu a                          { color: #779977; }
+#submenu a.active                   { border-bottom-color: #ccc; }
+#submenu a                          { text-decoration: none; }
+
+/* margins */
+#submenu, #submenu *                { margin: 0; padding: 0; }
+#submenu a, div.tab                 { border: solid 1px #ccc; }
+#submenu a                          { margin: auto auto -1px 1ex; padding: 2px 1ex; }
+* html #submenu                     { margin-bottom: -19px; }
+div.tab                             { margin: 0; padding: 1ex; padding-bottom: 1cm; margin-right: 1ex; margin-bottom: 10px;}
+
+/* flow */
+#submenu li                         { display: inline; width: 0; height: 0; }
+#submenu a                          { display: block; float: left; }
+div.tab h2                          { display: none; }
+div.tab                             { clear: left; }
+* html .tab div.clear               { clear: none; height: 14em; }
 
 /* .fineprint is merely used for the details about when a task has
    been created and changed (in the details pages) */

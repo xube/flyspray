@@ -71,11 +71,15 @@ th {
 }
 
 input, textarea, select, button {
-  background-color    : #eef7ff;
-  color               : #03008f;
-  border              : 1px ridge #000000;
-  margin              : 2px;
-  font-size           : 100%;
+   background-color     : #eef7ff;
+   color                : #03008f;
+   border               : 1px ridge #000000;
+   margin               : 2px;
+   font-size            : 100%;
+}
+
+textarea {
+   width                : 95%;
 }
 
 /* labels are used nearly in every form */
@@ -97,12 +101,13 @@ label.inline {
 /* table.login is the framework for the login form at the bottom of a page */
 /* table.userlist is found in the user&groups section */
 div.admin, p.admin, table.admin, table.login, table.userlist {
-  border              : 1px solid #ccc;
-  margin              : 1em 0px;
-  padding             : 0px;
-  background-color    : #e6eef6;
-  color               : black;
-  font-family         : Helvetica, Verdana, sans-serif;
+   border                     : 1px solid #ccc;
+   margin                     : 1em 0px;
+   padding                    : 0px;
+   margin-bottom              : 30px;
+   background-color           : #e6eef6;
+   color                      : #000000;
+   font-family                : Helvetica, Verdana, sans-serif;
 }
 
 /* The paragraph containing the main menu */
@@ -118,11 +123,6 @@ p#menu a:hover {
   color                 : #6395c8;
   background-color      : #d7e9ff;
   text-decoration       : none;
-}
-
-p#menu span#adminmenu {
-  display               : block;
-  height                : 20px;
 }
 
 p#menu span#mainmenu {
@@ -206,84 +206,84 @@ a#listslink {
 
 /* For pending admin requests */
 a#attention {
-  color           : #ff0000;
-  background-color     : #fff000;
+   color                : #ff0000;
+   background-color     : #fff000;
 }
 
 table.userlist td, table.userlist th {
-  border              : 1px solid #CCC;
+  border                : 1px solid #ccc;
 }
 
 table.login {
-  width               : 80%;
-  margin-left         : auto;
-  margin-right        : auto;
+   width                : 80%;
+   margin-left          : auto;
+   margin-right         : auto;
 }
 
 /* table.head is the table containing the task-list-link and the
    search-bug-number form */
 table.head {
-  width               : 100%;
+   width                : 100%;
 }
 
 
 /* p#showtask contains the form to search for a specific task number */
 p#showtask {
-  text-align          : right;
-  width               : 40%;
-  margin-left         : auto;
-  position            : relative;
-  top                 : -2em;
+   text-align           : right;
+   width                : 40%;
+   margin-left          : auto;
+   position             : relative;
+   top                  : -2em;
 }
 
 img {
-  border              : none;
+   border               : none;
 }
 
 a {
-  text-decoration     : none;
+   text-decoration      : none;
 }
 
 a:link {
-  color               : #47617b;
-  background-color    : transparent;
-  font-weight         : bold;
+   color                : #47617b;
+   background-color     : transparent;
+   font-weight          : bold;
 }
 
 a:visited {
-  color               : #47617b;
-  background-color    : transparent;
-  font-weight         : bold;
+   color                : #47617b;
+   background-color     : transparent;
+   font-weight          : bold;
 }
 
 a:hover {
-  color               : #6395c8;
-  background-color    : transparent;
-  text-decoration     : none;
+   color                : #6395c8;
+   background-color     : transparent;
+   text-decoration      : none;
 }
 
 /* offsite is only used for the link to the Flyspray homepage */
 a.offsite:after {
-  content             : "\2197";
+   content              : "\2197";
 }
 /* The paragraph containing the search form */
 p#search {
-  margin-bottom       : 1em;
-  border              : 1px solid #000000;
-  background-color    : #e6eef6;
+   margin-bottom        : 1em;
+   border               : 1px solid #000000;
+   background-color     : #e6eef6;
 }
 
 p#search select {
-  background-color    : #eef7ff;
-  color               : #03008f;
-  border              : 1px rigde black;
+   background-color     : #eef7ff;
+   color                : #03008f;
+   border               : 1px rigde black;
 }
 
 p#search label {
-  float               : left;
-  display             : block;
-  padding             : 0.5ex;
-  height              : 2.5em;
+   float                : left;
+   display              : block;
+   padding              : 0.5ex;
+   height               : 2.5em;
 }
 
 div#tasklist {
@@ -373,12 +373,12 @@ div#taskdetails table th {
 /* div#content is a generic container for anything but the title and
    the footer paragraph */
 div#content {
-   border               : 2px solid #948d94;
-   margin               : 10px;
-   padding              : 10px;
-   color                : #000000;
+/*   border               : 2px solid #948d94;*/
+   margin               : 5px;
+   padding              : 5px;
+/*   color                : #000000;
    background-color     : #ffffff;
-   z-index              : -1;
+   z-index              : -1;*/
 }
 
 /* Powered by Flyspray */
@@ -526,58 +526,58 @@ p.unregistered {
 /* Some generic classes; severity classes are used for colour
    indication of severities */
 .severity1 {
-  background-color     : #fff5dd;
-  color                : #000000;
+   background-color     : #fff5dd;
+   color                : #000000;
 }
 
 .severity1:hover {
-  background-color     : #ffe9b4;
-  color                : #000000;
-  cursor               : pointer;
+   background-color     : #ffe9b4;
+   color                : #000000;
+   cursor               : pointer;
 }
 
 .severity2 {
-  background-color     : #ecdbb7;
-  color                : #000000;
+   background-color     : #ecdbb7;
+   color                : #000000;
 }
 
 .severity2:hover {
-  background-color     : #efca80;
-  color                : #000000;
-  cursor               : pointer;
+   background-color     : #efca80;
+   color                : #000000;
+   cursor               : pointer;
 }
 
 .severity3 {
-  background-color     : #ecd0b7;
-  color                : #000000;
+   background-color     : #ecd0b7;
+   color                : #000000;
 }
 
 .severity3:hover {
-  background-color     : #edb98a;
-  color                : #000000;
-  cursor               : pointer;
+   background-color     : #edb98a;
+   color                : #000000;
+   cursor               : pointer;
 }
 
 .severity4 {
-  background-color     : #ffd5d1;
-  color                : #000000;
+   background-color     : #ffd5d1;
+   color                : #000000;
 }
 
 .severity4:hover {
-  background-color     : #ffb2ac;
-  color                : #000000;
-  cursor               : pointer;
+   background-color     : #ffb2ac;
+   color                : #000000;
+   cursor               : pointer;
 }
 
 .severity5 {
-  background-color     : #f3a29b;
-  color                : #000000;
+   background-color     : #f3a29b;
+   color                : #000000;
 }
 
 .severity5:hover {
-  background-color     : #f3867e;
-  color                : #000000;
-  cursor               : pointer;
+   background-color     : #f3867e;
+   color                : #000000;
+   cursor               : pointer;
 }
 
 /* .fineprint is merely used for the details about when a task has
@@ -585,7 +585,7 @@ p.unregistered {
 div#fineprint {
   font-size            : smaller;
   border-bottom        : 1px solid #cccccc;
-  margin-bottom        : 10px;
+  margin               : 0px 0px 10px 5px;
   padding-bottom       : 10px;
 }
 
@@ -610,8 +610,10 @@ table#history td.taskid {
   padding              : 2px 1ex;
 }
 
-.intromessage {
-  margin               : -1em 0px 1em 0px;
+div#intromessage {
+   margin               : 1px;
+   margin-top           : -20px;
+   margin-bottom        : 10px;
 }
 
 map#formselecttasks {
@@ -644,22 +646,25 @@ div#taskfields2 table td {
 }
 
 div#taskdetailsfull {
-  clear: both;
-  width: 100%;
-  margin-top: 15px;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  border-top: 1px solid #cccccc;
-  border-bottom: 1px solid #cccccc;
-  text-align: left;
+   clear                : both;
+   width                : 100%;
+   margin-top           : 15px;
+   padding              : 15px 0px 15px 8px;
+   border-top           : 1px solid #cccccc;
+   border-bottom        : 1px solid #cccccc;
+   text-align           : left;
+}
+
+div#taskdetailsfull label {
+   text-align           : left;
 }
 
 div#deps {
-   padding                 : 8px;
-   width                   : 98%;
-   border-bottom           : 1px solid #cccccc;
-   min-height              : 50px;
-   float                   : left;
+   padding              : 8px;
+   width                : 98%;
+   border-bottom        : 1px solid #cccccc;
+   min-height           : 50px;
+   float                : left;
 }
 
 div#taskdeps {
@@ -800,12 +805,25 @@ div#toolbox {
    min-height              : 350px;
 }
 
+a#grouptitle {
+   font-size               : 16px;
+}
+
 /* The new tabs stuff */
 /* colors */
 #submenu a, div.tab                 { color: #000000; background-color: #e6eef6; }
-#submenu a.active, #submenu a:hover { color: #000; }
+
+#submenu a.active {
+   color                   : #000000;
+   border-bottom-color     : #cdc;
+}
+
+#submenu a:hover {
+   color                   : #000000;
+}
+
 #submenu a                          { color: #999; }
-#submenu a.active                   { border-bottom-color: #cdc; }
+#submenu a.active                   {  z-index:5;}
 #submenu a                          { text-decoration: none; }
 
 /* margins */
@@ -840,17 +858,20 @@ div#permissions {
    position                : absolute;
    top                     : 25px;
    right                   : 5px;
-   background-color        : #e6eef6;
-   color                   : #000000;
-   border                  : 3px ridge #000000;
    padding                 : 5px;
    margin-top              : none;
    width                   : auto;
-   height                  : 200px;
+   height                  : 550px;
    overflow                : auto;
    z-index                 : 5;
 }
 
+div#permissions table {
+   color                   : #000000;
+   background-color        : #ffffff;
+   border                  : 2px solid #000000;
+
+}
 
 /* End of the @screen section */
 }

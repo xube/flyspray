@@ -92,6 +92,7 @@ if ($_POST['action'] == 'newtask'
                                       $current_user['user_id'])
                           );
 
+      // Log to the history that we added the user to the notification list
       $fs->logEvent($get_task_info['task_id'], 9, $current_user['user_id']);
    }
 
@@ -109,37 +110,43 @@ if ($_POST['action'] == 'newtask'
 
    } elseif (!empty($cat_details['parent_id']))
    {
-      // If not, see if we can get the parent category owner
-      $parent_cat_details = $db->FetchArray($db->Query('SELECT category_owner
-                                                      FROM flyspray_list_category
-                                                      WHERE category_id = ?',
-                                                      array($cat_details['parent_id'])));
+      $parent_cat_details = $db->FetchArray($db->Query("SELECT category_owner
+                                                         FROM flyspray_list_category
+                                                         WHERE category_id = ?",
+                                                         array($cat_details['parent_id'])
+                                                      )
+                                            );
 
       // If there's a parent category owner, send to them
       if (!empty($parent_cat_details['category_owner']))
          $owner = $parent_cat_details['category_owner'];
-   };
+   }
 
    // Otherwise send it to the default category owner
    if (empty($owner))
       $owner = $project_prefs['default_cat_owner'];
 
-   // Category owners now get auto-added to the notification list for new tasks
-   $insert = $db->Query("INSERT INTO flyspray_notifications
-                        (task_id, user_id)
-                        VALUES(?, ?)",
-                        array($get_task_info['task_id'], $owner)
-                       );
+   if (!empty($owner))
+   {
+      // Category owners now get auto-added to the notification list for new tasks
+      $insert = $db->Query("INSERT INTO flyspray_notifications
+                           (task_id, user_id)
+                           VALUES(?, ?)",
+                           array($task_details['task_id'], $owner)
+                          );
 
-   $fs->logEvent($get_task_info['task_id'], 9, $owner);
+      $fs->logEvent($task_details['task_id'], 9, $owner);
 
-   // Create the Notification
-   $to = $notify->Address($task_details['task_id']);
-   $msg = $notify->Create('1', $task_details['task_id']);
-   $mail = $notify->SendEmail($to, $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to, $msg[0], $msg[1]);
+      // Create the Notification
+      $to = $notify->Address($task_details['task_id']);
+      $msg = $notify->Create('1', $task_details['task_id']);
+      $mail = $notify->SendEmail($to, $msg[0], $msg[1]);
+      $jabb = $notify->SendJabber($to, $msg[0], $msg[1]);
 
-   $fs->logEvent($get_task_info['task_id'], 1);
+   // End of checking if there's a category owner set, and notifying them.
+   }
+      // Log that the task was opened
+      $fs->logEvent($task_details['task_id'], 1);
 
 ?>
       <div class="redirectmessage">
@@ -327,28 +334,38 @@ if ($_POST['action'] == 'newtask'
 // Start of closing a task //
 /////////////////////////////
 
-} elseif($_POST['action'] == "close"
+} elseif(isset($_POST['action']) && $_POST['action'] == "close"
          && ($permissions['close_other_tasks'] == '1'
          OR ($permissions['close_own_tasks'] == '1'
              && $old_details['assigned_to'] == $current_user['user_id']))
          ) {
 
-   if (!empty($_POST['resolution_reason'])) {
+   if (!empty($_POST['resolution_reason']))
+   {
+      $db->Query("UPDATE flyspray_tasks SET
+                  date_closed = ?,
+                  closed_by = ?,
+                  closure_comment = ?,
+                  is_closed = '1',
+                  resolution_reason = ?
+                  WHERE task_id = ?",
+                  array($now,
+                        $_COOKIE['flyspray_userid'],
+                        $db->emptyToZero($_POST['closure_comment']),
+                        $_POST['resolution_reason'],
+                        $_POST['task_id'])
+               );
 
-      $close_item = $db->Query("UPDATE flyspray_tasks SET
-                                date_closed = ?,
-                                closed_by = ?,
-                                closure_comment = ?,
-                                is_closed = '1',
-                                resolution_reason = ?
-                                WHERE task_id = ?
-                                ", array($now,
-                                         $_COOKIE['flyspray_userid'],
-                                         $db->emptyToZero($_POST['closure_comment']),
-                                         $_POST['resolution_reason'],
-                                         $_POST['task_id']
-                                        )
-                             );
+      if (isset($_POST['mark100']) && $_POST['mark100'] == '1')
+      {
+         $db->Query("UPDATE flyspray_tasks SET
+                     percent_complete = '100'
+                     WHERE task_id = ?",
+                     array($_POST['task_id'])
+                   );
+
+         $fs->logEvent($_POST['task_id'], '0', '100', $old_details['percent_complete']);
+      }
 
       // Get the resolution name for the notifications
       $get_res = $db->FetchArray($db->Query("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason'])));
@@ -664,7 +681,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == "newuser"
            && ($permissions['is_admin'] == '1'
                 OR ($flyspray_prefs['anon_reg'] == '1'
-                    && $flyspray_prefs['spam_proof'] == '1'))) {
+                    && $flyspray_prefs['spam_proof'] != '1'))) {
 
   // If they filled in all the required fields
   if (!empty($_POST['user_name'])
@@ -825,24 +842,31 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 ///////////////////////////////////////////////
 
 } elseif ($_POST['action'] == "globaloptions"
-          && $permissions['is_admin'] == '1') {
+          && $permissions['is_admin'] == '1')
+{
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_server'", array($_POST['jabber_server']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_port'", array($_POST['jabber_port']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_username'", array($_POST['jabber_username']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_password'", array($_POST['jabber_password']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_group'", array($_POST['anon_group']));
 
-//  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_open'", array($_POST['anon_open']));
-//  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = '{$_POST['theme_style']}' WHERE pref_name = 'theme_style'");
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_server'", array($_POST['jabber_server']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_port'", array($_POST['jabber_port']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_username'", array($_POST['jabber_username']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_password'", array($_POST['jabber_password']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_group'", array($_POST['anon_group']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'base_url'", array($_POST['base_url']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'user_notify'", array($_POST['user_notify']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'admin_email'", array($_POST['admin_email']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'lang_code'", array($_POST['lang_code']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'spam_proof'", array($_POST['spam_proof']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_project'", array($_POST['default_project']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_reg'", array($_POST['anon_reg']));
+   $base_url = $_POST['base_url'];
+
+   if (substr($base_url,-1,1) != '/')
+   {
+      $base_url .= '/';
+   }
+
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'base_url'", array($base_url));
+
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'user_notify'", array($_POST['user_notify']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'admin_email'", array($_POST['admin_email']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'lang_code'", array($_POST['lang_code']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'spam_proof'", array($_POST['spam_proof']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_project'", array($_POST['default_project']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_reg'", array($_POST['anon_reg']));
 
   // This is an overly complex way to ensure that we always get the right amount of posted
   // results from the assigned_groups preference
@@ -1210,6 +1234,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                              add_comments = ?,
                              edit_comments = ?,
                              delete_comments = ?,
+                             view_attachments = ?,
                              create_attachments = ?,
                              delete_attachments = ?,
                              view_history = ?,
@@ -1230,6 +1255,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                    $db->emptyToZero($_POST['add_comments']),
                                    $db->emptyToZero($_POST['edit_comments']),
                                    $db->emptyToZero($_POST['delete_comments']),
+                                   $db->emptyToZero($_POST['view_attachments']),
                                    $db->emptyToZero($_POST['create_attachments']),
                                    $db->emptyToZero($_POST['delete_attachments']),
                                    $db->emptyToZero($_POST['view_history']),
@@ -1440,6 +1466,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   $listshow = $_POST['show_in_list'];
   $listid = $_POST['id'];
   $listowner = $_POST['category_owner'];
+  $listdelete = $_POST['delete'];
 
   $redirectmessage = $modify_text['listupdated'];
 
@@ -1463,6 +1490,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
       };
   };
+
+  if (is_array($listdelete)) {
+      $deleteids = "$list_id = " . join(" OR $list_id =", array_keys($listdelete));
+      $db->Query("DELETE FROM flyspray_list_category WHERE $deleteids");
+  }
 
   $_SESSION['SUCCESS'] = $redirectmessage;
   header("Location: " . $_POST['prev_page']);
@@ -1503,9 +1535,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of adding a related task entry //
 //////////////////////////////////////////
 
-} elseif ($_POST['action'] == "add_related"
-          && ($permissions['modify_all_jobs'] == '1'
-               OR ($permissions['modify_own_tasks'] == '1' && $_POST['task_id'] == $current_user['user_id']))) {
+} elseif ($_POST['action'] == 'add_related'
+          && ($permissions['modify_all_tasks'] == '1'
+               OR ($permissions['modify_own_tasks'] == '1' && $old_details['assigned_to'] == $current_user['user_id']))) {
 
   if (is_numeric($_POST['related_task'])) {
     $check = $db->Query("SELECT * FROM flyspray_related
@@ -1595,29 +1627,27 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of adding a user to the notification list //
 /////////////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "add_notification"
-          && $_COOKIE['flyspray_userid']) {
+} elseif (isset($_GET['action']) && $_GET['action'] == "add_notification"
+  && ($current_user['user_id'] == $_GET['user_id'] OR $permissions['manage_project'] == '1'))
+{
+   $check = $db->Query("SELECT * FROM flyspray_notifications
+                        WHERE task_id = ?  AND user_id = ?",
+                        array($_GET['task_id'], $_GET['user_id']));
 
-  $check = $db->Query("SELECT * FROM flyspray_notifications
-    WHERE task_id = ?  AND user_id = ?",
-    array($_POST['task_id'], $_POST['user_id']));
-  if (!$db->CountRows($check)) {
+   if (!$db->CountRows($check))
+   {
+      $insert = $db->Query("INSERT INTO flyspray_notifications (task_id, user_id) VALUES(?,?)",
+      array($_GET['task_id'], $_GET['user_id']));
 
-    $insert = $db->Query("INSERT INTO flyspray_notifications (task_id, user_id) VALUES(?,?)",
-    array($_POST['task_id'], $_POST['user_id']));
+      $fs->logEvent($_GET['task_id'], 9, $_GET['user_id']);
 
-    $fs->logEvent($_POST['task_id'], 9, $_POST['user_id']);
-
-    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
-    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyadded']}</em></p></div>";
-    $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
-    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#notify");
-  } else {
-    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
-    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyerror']}</em></p></div>";
-    $_SESSION['ERROR'] = $modify_text['notifyerror'];
-    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#notify");
-  };
+      $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
+      header("Location: index.php?do=details&id=" . $_GET['task_id'] . "#notify");
+   } else
+   {
+      $_SESSION['ERROR'] = $modify_text['notifyerror'];
+      header("Location: index.php?do=details&id=" . $_GET['task_id'] . "#notify");
+   }
 
 // End of adding a user to the notification list
 
@@ -1625,18 +1655,18 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of removing a notification entry //
 ////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "remove_notification"
-          && $_COOKIE['flyspray_userid']) {
+} elseif (isset($_GET['action']) && $_GET['action'] == "remove_notification"
+  && ($current_user['user_id'] == $_GET['user_id'] OR $permissions['manage_project'] == '1'))
+{
+   $remove = $db->Query("DELETE FROM flyspray_notifications
+                         WHERE task_id = ?
+                         AND user_id = ?",
+                         array($_GET['task_id'], $_GET['user_id']));
 
-  $remove = $db->Query("DELETE FROM flyspray_notifications WHERE task_id = ? AND user_id = ?",
-    array($_POST['task_id'], $_POST['user_id']));
+   $fs->logEvent($_GET['task_id'], 10, $_GET['user_id']);
 
-  $fs->logEvent($_POST['task_id'], 10, $_POST['user_id']);
-
-  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
-  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyremoved']}</em></p></div>";
-  $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
-  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#notify");
+   $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
+   header("Location: index.php?do=details&id=" . $_GET['task_id'] . "#notify");
 
 // End of removing a notification entry
 

@@ -17,6 +17,7 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
 
 ?>
 
+<fieldset class="admin">
    <form action="index.php" method="post">
       <table class="admin">
          <tr>
@@ -75,5 +76,6 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
          <tr>
             <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>" /></td>
          </tr>
-      <table>
+      </table>
    </form>
+</fieldset>

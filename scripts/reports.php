@@ -273,10 +273,8 @@ function events_report()
    global $flyspray_prefs;
    global $reports_text;
    global $details_text;
+   global $project_id;
 
-   echo "<div class=\"tabentries\">";
-   echo "<p><em>{$reports_text['eventsrep']}</em></p>";
-   echo "<div class=\"tabentry\">";
 
 switch ($_REQUEST['sort']) {
     case "asc":
@@ -363,7 +361,7 @@ switch ($_REQUEST['sort']) {
     }
 ?>
 
-    <div class="admin">
+    <div id="events" class="tab">
         <form action="?do=reports&report=events" method="post" name="events_form">
         <!-- <input type="hidden" name="do" value="reports">
         <input type="hidden" name="report" value="events"> -->
@@ -440,29 +438,32 @@ switch ($_REQUEST['sort']) {
                        }
                      );
                   </script>
-                  </td>
-                <tr>
-                    <td><label class="inline"><input type="radio" name="date" value="duein" <?php if($date == 'duein') echo 'checked';?> />
-                    <?php echo $reports_text['duein'];?></label></td>
-                    <td colspan="6">
-                        <select name="duein">
-                            <?php
-                            $ver_list = $db->Query("SELECT version_id, version_name
-                                                    FROM flyspray_list_version
-                                                    WHERE project_id = ?
-                                                    AND show_in_list = '1'
-                                                    AND version_tense = '3'
-                                                    ORDER BY list_position",
-                                                    array($project_id)
-                                                  );
+                     </td>
+                  <tr>
+                     <td><label class="inline"><input type="radio" name="date" value="duein" <?php if($date == 'duein') echo 'checked';?> />
+                     <?php echo $reports_text['duein'];?></label></td>
+                     <td colspan="6">
+                           <select name="duein">
+                              <?php
+                              $ver_list = $db->Query("SELECT version_id, version_name
+                                                      FROM flyspray_list_version
+                                                      WHERE project_id = ?
+                                                      AND show_in_list = '1'
+                                                      AND version_tense = '3'
+                                                      ORDER BY list_position",
+                                                      array($project_id)
+                                                    );
 
-                            while ($row = $db->FetchArray($ver_list)) {
-                                if ($_REQUEST['duein'] == $row['version_id']) {
-                                echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
-                                } else {
-                                echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>";
-                                };
-                            };
+                              while ($row = $db->FetchArray($ver_list))
+                              {
+                                 if ($_REQUEST['duein'] == $row['version_id'])
+                                 {
+                                    echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
+                                 } else
+                                 {
+                                    echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>";
+                                 }
+                              }
                             ?>
                         </select>
                     </td>
@@ -473,7 +474,6 @@ switch ($_REQUEST['sort']) {
         <tr><td><input type="submit" class="mainbutton" name="submit" value="<?php echo $reports_text['show'];?>" /></td></tr>
         </table>
         </form>
-    </div>
 
      <?php
         $query_history = $db->Query("SELECT h.*, u.user_name, u.real_name, t.item_summary, t.task_severity
@@ -503,14 +503,14 @@ switch ($_REQUEST['sort']) {
             while ($history = $db->FetchRow($query_history))
             {
                 ?>
-                <tr class="severity<?php echo $history['task_severity'];?>">
+                <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('?do=details&amp;id=<?php echo $history['task_id'];?>')">
                 <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
                 <td><?php if ($history['user_id'] == 0) {
                             echo $details_text['anonymous'];
                         } else {
                             echo "<a href=\"?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
                         }?></td>
-                <?php echo "<td><a href=\"?do=details&id={$history['task_id']}\">{$history['task_id']}</a></td>";?>
+                <?php echo "<td><a href=\"?do=details&id={$history['task_id']}\">FS#{$history['task_id']}</a></td>";?>
                 <?php echo "<td><a href=\"?do=details&id={$history['task_id']}&area=history#tabs\">" . htmlspecialchars(stripslashes($history['item_summary'])) . "</a></td>";?>
                 <td><?php echo EventDescription($history);?></td>
                 </tr>
@@ -520,8 +520,8 @@ switch ($_REQUEST['sort']) {
 
         echo "</table>\n";
 
-        echo "</div>\n";
-        echo "</div>\n";
+        echo '</div>';
+
 }
 
 
@@ -716,13 +716,18 @@ function EventDescription($history)
 /* Main page logic to determine report to display */
 if(!isset($_REQUEST['report']))
 {
-        $report = "events";
-} else {
-        $report = $_REQUEST['report'];
+   $report = "events";
+} else
+{
+   $report = $_REQUEST['report'];
 }
 ?>
 
-<p id="tabs">
+
+<ul id="submenu">
+   <li><a href="#events"><?php echo $reports_text['events'];?></a></li>
+</ul>
+
     <?php
     //if ($report == 'summary') {
     //  echo "<a class=\"tabactive\" href=\"?do=reports&report=summary\">Summary</a><small> | </small>";
@@ -736,11 +741,11 @@ if(!isset($_REQUEST['report']))
 //       echo "<a class=\"tabnotactive\" href=\"?do=reports&report=changelog\">{$reports_text['changelog']}</a><small> | </small>";
 //     };
 
-    if ($report == 'events') {
-      echo "<a class=\"tabactive\" href=\"?do=reports&report=events\">{$reports_text['events']}</a><small> | </small>";
-    } else {
-      echo "<a class=\"tabnotactive\" href=\"?do=reports&report=events\">{$reports_text['events']}</a><small> | </small>";
-    };
+//    if ($report == 'events') {
+//      echo "<a class=\"tabactive\" href=\"?do=reports&report=events\">{$reports_text['events']}</a><small> | </small>";
+//    } else {
+//      echo "<a class=\"tabnotactive\" href=\"?do=reports&report=events\">{$reports_text['events']}</a><small> | </small>";
+//    };
 
     //if ($report == 'severity') {
     //  echo "<a class=\"tabactive\" href=\"?do=reports&report=severity\">Severity</a><small> | </small>";
@@ -777,9 +782,10 @@ switch ($report)
 }
 
 // If no view_reports permission, deny access
-} else {
+} else
+{
    echo $admin_text['nopermission'];
 
 // End of checking permissions
-};
+}
 ?>

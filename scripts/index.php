@@ -20,42 +20,44 @@ if (isset($_GET['order2']) && !empty($_GET['order2'])) {
   $orderby[] = $_GET['order2'];
 } else {
   $orderby[] = 'pri';
-};
+}
 
-foreach ( $orderby as $key => $val ) {
-  switch ($orderby[$key]) {
-    case "id": $orderby[$key] = 'task_id';
-    break;
-    case "proj": $orderby[$key] = 'project_title';
-    break;
-    case "type": $orderby[$key] = 'tasktype_name';
-    break;
-    case "date": $orderby[$key] = 'date_opened';
-    break;
-    case "sev": $orderby[$key] = 'task_severity';
-    break;
-    case "cat": $orderby[$key] = 'lc.category_name';
-    break;
-    case "status": $orderby[$key] = 'item_status';
-    break;
-    case "due": $orderby[$key] = 'lvc.list_position';
-    break;
-    case "prog": $orderby[$key] = 'percent_complete';
-    break;
-    case "lastedit": $orderby[$key] = 'last_edited_time';
-    break;
-    case "pri": $orderby[$key] = 'task_priority';
-    break;
-    case "openedby": $orderby[$key] = 'uo.real_name';
-    break;
-    case "reportedin": $orderby[$key] = 't.product_version';
-    break;
-    case "assignedto": $orderby[$key] = 'u.real_name';
-    break;
-    default: $orderby[$key] = 'task_severity';
-    break;
-  };
-};
+foreach ( $orderby as $key => $val )
+{
+   switch ($orderby[$key])
+   {
+      case "id": $orderby[$key] = 'task_id';
+      break;
+      case "proj": $orderby[$key] = 'project_title';
+      break;
+      case "type": $orderby[$key] = 'tasktype_name';
+      break;
+      case "date": $orderby[$key] = 'date_opened';
+      break;
+      case "sev": $orderby[$key] = 'task_severity';
+      break;
+      case "cat": $orderby[$key] = 'lc.category_name';
+      break;
+      case "status": $orderby[$key] = 'item_status';
+      break;
+      case "due": $orderby[$key] = 'lvc.list_position';
+      break;
+      case "prog": $orderby[$key] = 'percent_complete';
+      break;
+      case "lastedit": $orderby[$key] = 'last_edited_time';
+      break;
+      case "pri": $orderby[$key] = 'task_priority';
+      break;
+      case "openedby": $orderby[$key] = 'uo.real_name';
+      break;
+      case "reportedin": $orderby[$key] = 't.product_version';
+      break;
+      case "assignedto": $orderby[$key] = 'u.real_name';
+      break;
+      default: $orderby[$key] = 'task_severity';
+      break;
+   }
+}
 
 $sort = array($_GET['sort'], $_GET['sort2']);
 foreach ( $sort as $key => $val ) {
@@ -66,8 +68,8 @@ foreach ( $sort as $key => $val ) {
     break;
     default: $sort[$key] = "DESC";
     break;
-  };
-};
+  }
+}
 
 $sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, t.task_id ASC";
 
@@ -78,13 +80,13 @@ if (is_numeric($_GET['pagenum'])) {
   $pagenum = $_GET['pagenum'];
 } else {
   $pagenum = "1";
-};
+}
 // number of results per page
 if (is_numeric($_GET['perpage'])) {
   $perpage = $_GET['perpage'];
 } else {
   $perpage = "20";
-};
+}
 
 // the mysql query offset is a combination of the num results per page and the page num
 $offset = $perpage * ($pagenum - 1);
@@ -107,13 +109,18 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
                                     );
 
    // Those who aren't super users get this more restrictive query
-   } elseif (isset($_COOKIE['flyspray_userid']) && $permission['global_view'] != '1')
+   } elseif (isset($_COOKIE['flyspray_userid']))
    {
+      // This query is slightly dodgy - it returns duplicate results.
+      // However, the right tasks are retrieved for display... so I guess that it's ok.
       $check_projects = $db->Query("SELECT p.project_id
                                        FROM flyspray_projects p
                                        LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
                                        LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
-                                       WHERE uig.user_id = ? AND g.view_tasks = '1'",
+                                       WHERE ((uig.user_id = ?
+                                       AND g.view_tasks = '1')
+                                       OR p.others_view = '1')
+                                       AND p.project_is_active = '1'",
                                        array($current_user['user_id'])
                                      );
 
@@ -123,11 +130,12 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    {
       $check_projects = $db->Query("SELECT p.project_id
                                        FROM flyspray_projects p
-                                       WHERE p.others_view = '1'"
+                                       WHERE p.others_view = '1'
+                                       AND p.project_is_active = '1'"
                                     );
 
    // End of checking Admin status for the query
-   };
+   }
 
    $temp_where = "(attached_to_project = ?";
    $sql_params[] = '0';
@@ -137,7 +145,7 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
       $temp_where = $temp_where . " OR attached_to_project = ?";
       $sql_params[] = $this_project['project_id'];
       //echo $temp_where . ' - ' . $this_project['project_id'] . '<br />';
-   };
+   }
    $where[] = $temp_where . ")";
 
 
@@ -146,7 +154,7 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
 {
    $where[]       = "attached_to_project = ?";
    $sql_params[]  = $project_id;
-};
+}
 
 // Check for special tasks to display
 $dev = $_GET['dev'];
@@ -156,7 +164,7 @@ if ($_GET['tasks'] == 'assigned') {
 } elseif ($_GET['tasks'] == 'reported') {
     $where[] = 'opened_by = ?';
     $sql_params[] = $current_user['user_id'];
-};
+}
 
 
 // developer whose bugs to show
@@ -165,20 +173,20 @@ if (isset($dev) && is_numeric($dev)) {
   $sql_params[] = $dev;
 } elseif ($dev == "notassigned") {
   $where[] = "assigned_to = '0'";
-};
+}
 
 
 // The default task type
 if (isset($_GET['type']) && is_numeric($_GET['type'])) {
   $where[] = "task_type = ?";
   $sql_params[] = $_GET['type'];
-};
+}
 
 // The default severity
 if (isset($_GET['sev']) && is_numeric($_GET['sev'])) {
   $where[] = "task_severity = ?";
   $sql_params[] = $_GET['sev'];
-};
+}
 
 // The default category
 if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
@@ -193,9 +201,9 @@ if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
   while ($row = $db->FetchArray($get_subs)) {
     $temp_where = $temp_where . " OR product_category =?";
     $sql_params[] = $row['category_id'];
-  };
+  }
   $where[] = $temp_where . ")";
-};
+}
 
 // The default status
 if (isset($_GET['status']) && $_GET['status'] == "all") {
@@ -208,12 +216,12 @@ if (isset($_GET['status']) && $_GET['status'] == "all") {
 } else {
   $where[] = "is_closed != ?";
   $sql_params[] = '1';
-};
+}
 // The default due in version
 if (isset($_GET['due']) && is_numeric($_GET['due'])) {
   $where[] = "closedby_version = ?";
   $sql_params[] = $_GET['due'];
-};
+}
 // The default search string
 if (isset($_GET['string']) && $_GET['string']) {
   $string = $_GET['string'];
@@ -225,7 +233,7 @@ if (isset($_GET['string']) && $_GET['string']) {
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
-};
+}
 
 // Do this to hide private tasks from the list
 if ($permissions['manage_project'] == '1') {
@@ -236,13 +244,13 @@ if ($permissions['manage_project'] == '1') {
   $sql_params[] = $current_user['user_id'];
 } elseif (!isset($_COOKIE['user_id'])) {
   $where[] = "t.mark_private <> '1'";
-};
+}
 
 if (isset($_GET['project']) && $_GET['project'] == '0') {
     $get = "&amp;project=0";
 } else {
     $get = "&amp;project={$project_id}";
-};
+}
 // for page numbering
 $extraurl = $get . "&amp;tasks={$_GET['tasks']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$dev}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;due={$_GET['due']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
 // for 'sort by this column' links
@@ -284,8 +292,8 @@ if ($project_prefs['project_is_active'] == '1'
           echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>\n";
         } else {
           echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>\n";
-        };
-      };
+        }
+      }
       ?>
     </select>
 
@@ -298,12 +306,12 @@ if ($project_prefs['project_is_active'] == '1'
           echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
         } else {
           echo "<option value=\"$key\">$val</option>\n";
-        };
-      };
+        }
+      }
       ?>
     </select>
 
-    <select name="due" <?php if(isset($_GET['project']) && $_GET['project'] == '0') { echo 'DISABLED';};?>>
+    <select name="due" <?php if(isset($_GET['project']) && $_GET['project'] == '0') { echo 'DISABLED';}?>>
       <option value=""><?php echo $index_text['dueanyversion'];?></option>
       <?php
       $ver_list = $db->Query("SELECT version_id, version_name
@@ -315,16 +323,14 @@ if ($project_prefs['project_is_active'] == '1'
           echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
         } else {
           echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>";
-        };
-      };
+        }
+      }
       ?>
     </select>
 
-    <br />
-
     <select name="dev">
       <option value=""><?php echo $index_text['alldevelopers'];?></option>
-      <option value="notassigned" <?php if ($dev == "notassigned") { echo "SELECTED";};?>><?php echo $index_text['notyetassigned'];?></option>
+      <option value="notassigned" <?php if ($dev == "notassigned") { echo "SELECTED";}?>><?php echo $index_text['notyetassigned'];?></option>
       <?php
       $fs->ListUsers($dev, $project_id);
       ?>
@@ -343,7 +349,7 @@ if ($project_prefs['project_is_active'] == '1'
           echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
         } else {
           echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
-        };
+        }
 
         $subcat_list = $db->Query('SELECT category_id, category_name
                                   FROM flyspray_list_category
@@ -355,15 +361,15 @@ if ($project_prefs['project_is_active'] == '1'
             echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
           } else {
             echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-          };
-        };
-      };
+          }
+        }
+      }
       ?>
     </select>
 
     <select name="status">
-      <option value="all" <?php if (isset($_GET['status']) && $_GET['status'] == "all") echo 'selected="selected"';?>><?php echo $index_text['allstatuses'];?></option>
-      <option value="" <?php if ((isset($_GET['status']) && !empty($_GET['status'])) OR !isset($_GET['status'])) { echo "selected=\"selected\"";};?>><?php echo $index_text['allopentasks'];?></option>
+      <option value="all" <?php if (isset($_GET['status']) && $_GET['status'] == 'all') echo 'selected="selected"';?>><?php echo $index_text['allstatuses'];?></option>
+      <option value="" <?php if ((isset($_GET['status']) && empty($_GET['status'])) OR !isset($_GET['status'])) { echo "selected=\"selected\"";}?>><?php echo $index_text['allopentasks'];?></option>
       <?php
       require("lang/$lang/status.php");
       foreach($status_list as $key => $val) {
@@ -371,20 +377,20 @@ if ($project_prefs['project_is_active'] == '1'
           echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
         } else {
           echo "<option value=\"$key\">$val</option>\n";
-        };
-      };
+        }
+      }
       ?>
-      <option value="closed" <?php if(isset($_GET['status']) && $_GET['status'] == "closed") { echo "SELECTED";};?>><?php echo $index_text['closed'];?></option>
+      <option value="closed" <?php if(isset($_GET['status']) && $_GET['status'] == "closed") { echo "SELECTED";}?>><?php echo $index_text['closed'];?></option>
     </select>
 
     <select name="perpage">
-      <option value="10" <?php if ($perpage == "10") { echo "selected=\"selected\"";};?>>10</option>
-      <option value="20" <?php if ($perpage == "20") { echo "selected=\"selected\"";};?>>20</option>
-      <option value="30" <?php if ($perpage == "30") { echo "selected=\"selected\"";};?>>30</option>
-      <option value="40" <?php if ($perpage == "40") { echo "selected=\"selected\"";};?>>40</option>
-      <option value="50" <?php if ($perpage == "50") { echo "selected=\"selected\"";};?>>50</option>
-      <option value="75" <?php if ($perpage == "75") { echo "selected=\"selected\"";};?>>75</option>
-      <option value="100" <?php if ($perpage == "100") { echo "selected=\"selected\"";};?>>100</option>
+      <option value="10" <?php if ($perpage == "10") { echo "selected=\"selected\"";}?>>10</option>
+      <option value="20" <?php if ($perpage == "20") { echo "selected=\"selected\"";}?>>20</option>
+      <option value="30" <?php if ($perpage == "30") { echo "selected=\"selected\"";}?>>30</option>
+      <option value="40" <?php if ($perpage == "40") { echo "selected=\"selected\"";}?>>40</option>
+      <option value="50" <?php if ($perpage == "50") { echo "selected=\"selected\"";}?>>50</option>
+      <option value="75" <?php if ($perpage == "75") { echo "selected=\"selected\"";}?>>75</option>
+      <option value="100" <?php if ($perpage == "100") { echo "selected=\"selected\"";}?>>100</option>
     </select>
 
     <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />
@@ -447,7 +453,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
       // Sort indicator arrows
       if(isset($_GET['order']) && $_GET['order'] == $orderkey) {
         echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png" />';
-      };
+      }
 
       echo "</a></th>\n";
     }
@@ -488,7 +494,7 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
       $cellvalue = str_replace(" ", "&nbsp;", $cellvalue);
     }
 
-    echo "<td class=\"project_$colname\">";
+    echo "<td class=\"task_$colname\">";
     if($url)
     {
       echo "<a href=\"$url\">$cellvalue</a>";
@@ -543,7 +549,7 @@ if (isset($_GET['tasks']) && $_GET['tasks'] == 'watched') {
     $from .= ' RIGHT JOIN flyspray_notifications fsn ON t.task_id = fsn.task_id';
     $where[] = 'fsn.user_id = ?';
     $sql_params[] = $current_user['user_id'];
-};
+}
 
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/
 $from .= '
@@ -569,7 +575,7 @@ $total = $db->CountRows($get_total);
 
 <!--<tbody>-->
 <?php
-// Parts of his SQL courtesy of Lance Conry http://www.rhinosw.com/
+// Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
 $get_details = $db->Query("
 SELECT
         t.*,
@@ -620,7 +626,7 @@ ORDER BY
       } else
       {
          $assigned_to = $task_details['assigned_to'];
-      };
+      }
 
       // Convert the date_opened to a human-readable format
       $date_opened = $fs->formatDate($task_details['date_opened'], false);
@@ -632,7 +638,7 @@ ORDER BY
       } else
       {
          $last_edited_time = '';
-      };
+      }
 
       // get the number of comments and attachments
       $getcomments = $db->Query("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
@@ -661,11 +667,11 @@ ORDER BY
       list_cell("dueversion",$task_details['closedby_version'],1);
       list_cell("comments",$comments);
       list_cell("attachments",$attachments);
-      list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\" />\n");
+      list_cell("progress",$fs->ShowImg("themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png", $task_details['percent_complete'] . '% ' . $index_text['complete']));
 
       // The end of this row
       echo "</tr>\n";
-   };
+   }
    ?>
    <!--</tbody>-->
    </table>
@@ -680,7 +686,7 @@ ORDER BY
       } else
       {
          echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";
-      };
+      }
       ?>
       </tr>
    </table>
@@ -690,5 +696,5 @@ ORDER BY
 <?php
 // End of checking if the reqeusted project is active,
 // and that the user has permission to view it
-};
+}
 ?>

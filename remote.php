@@ -27,7 +27,9 @@ function getTime($args)
    return date('H:i:s');
 }
 
-// Function to return a task's details.
+//////////////////////////////////////////////////
+// Start of function to return a task's details //
+//////////////////////////////////////////////////
 function getTask($args)
 {
    global $fs;
@@ -101,7 +103,9 @@ function getTask($args)
 // End of getTask function
 }
 
-// Close a task
+///////////////////////////////////////
+// Start of function to close a task //
+///////////////////////////////////////
 function closeTask($args)
 {
    global $fs;
@@ -167,7 +171,7 @@ function closeTask($args)
       return new IXR_Error(-2, 'You do not have permission to perform this function.');
    }
 
-   //Do it.  Do it.
+   //Do it.  Do it.  Close the task, now!
    $db->Query("UPDATE flyspray_tasks
                SET is_closed = '1',
                resolution_reason = ?,
@@ -197,7 +201,7 @@ function closeTask($args)
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
-   return '1';
+   return true;
    
 // End of close task function
 }
