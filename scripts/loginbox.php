@@ -18,8 +18,7 @@
     
     <?php
     // This generates an URL to take us back to the previous page
-    // It doesn't seem to work under WAMP, tho.  Odd...
-    $page = sprintf("%s%s%s","http://",$HTTP_HOST,$REQUEST_URI);
+    $page = sprintf("%s",$_SERVER["REQUEST_URI"]);
     echo '<input type="hidden" name="prev_page" value="' . $page . '" />';
     ?>
     

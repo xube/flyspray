@@ -343,7 +343,7 @@ if ($effective_permissions['can_edit'] == '1'
       </tr>
       <tr>
         <td class="buttons" colspan="4">
-        <input class="adminbutton" type="submit"  name="buSubmit" value="<?php echo $details_text['savedetails'];?>" onclick="Disable1()" />
+        <input class="adminbutton" type="submit" accesskey="s" name="buSubmit" value="<?php echo $details_text['savedetails'];?>" onclick="Disable1()" />
         <input class="adminbutton" type="reset" name="buReset" />
         </td>
       </tr>
@@ -725,7 +725,7 @@ echo '<div id="actionbuttons">';
     && $task_details['is_closed'] != '1') {
     ?>
     <form action="?do=details&id=<?php echo $_GET['id'];?>&edit=yep" method="post">
-      <input class="adminbutton" type="submit" value="<?php echo $details_text['edittask'];?>" />
+      <input class="adminbutton" type="submit" accesskey="e" value="<?php echo $details_text['edittask'];?>" />
     </form>
 
    <?php
