@@ -13,12 +13,14 @@ $language = array (
 
 'filenotexist'	=>	'Plik nie istnieje. Skontaktuj się z administratorem projektu.',
 'showtask'	=>	'Pokaż zgłoszenie',
+'now'			=>	'Teraz',
 'go'		=>	'Idź!',
 'opentaskanon'	=>	'Utwórz anonimowo nowe zgłoszenie',
 'register'	=>	'Zarejestruj nowe konto',
 'loggedinas'	=>	'Zalogowany jako',
-'mytasks'	=>	'Przydzielone mi zgłoszenia',
+//'mytasks'	=>	'Przydzielone mi zgłoszenia',
 'addnewtask'	=>	'Dodaj nowe zgłoszenie',
+'reports'		=>	'Raporty',
 'editmydetails'	=>	'Edytuj moje dane',
 'changepassword'=>	'Zmień hasło',
 'logout'	=>	'Wylogowanie',
@@ -35,7 +37,7 @@ $language = array (
 
 // Added in version 0.9.5
 
-'selectproject'	=>	'Lista zgłoszeń projektu:',
+//'selectproject'	=>	'Lista zgłoszeń projektu:',
 'show'		=>	'Pokaż',
 'projects'	=>	'Projekty',
 'adminmenu'	=>	'Menu Administratora',
