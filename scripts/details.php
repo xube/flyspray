@@ -7,10 +7,10 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
 // Only load this page if a valid task was actually requested
  if ($fs->dbCountRows($task_exists) && $task_details['project_is_active'] == '1') {
 
-$item_summary = htmlentities($task_details['item_summary']);
+$item_summary = htmlspecialchars($task_details['item_summary']);
 $item_summary = stripslashes($item_summary);
 
-$detailed_desc = htmlentities($task_details['detailed_desc']);
+$detailed_desc = htmlspecialchars($task_details['detailed_desc']);
 $detailed_desc = stripslashes($detailed_desc);
 
 // Check if the user has rights to modify tasks
@@ -580,22 +580,22 @@ if ($area == 'comments') { ?>
   <div class="tabentries">
     <?php
     // if there are comments, show them
-    $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
+    $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY ?", array($task_details['task_id'], 'comment_id'));
     while ($row = $fs->dbFetchArray($getcomments)) {
       $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
       list($user_name) = $fs->dbFetchArray($getusername);
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
 
-      $comment_text = htmlentities($row['comment_text']);
-      $comment_text = str_replace("\n", "<br>", "$comment_text");
+      $comment_text = htmlspecialchars($row['comment_text']);
+      $comment_text = nl2br($comment_text);
       $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $comment_text);
       $comment_text = preg_replace("/ (FS#)(\d+) /", "<a href=\"?do=details&amp;id=$2\">$0</a>", $comment_text);
       $comment_text = stripslashes($comment_text);
 
     ?>
      <div class="tabentry"><a name="<?php echo $row['comment_id'];?>"></a>
-      <em><?php echo "{$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
+      <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">#{$row['comment_id']}</a> - {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
       <?php
         // If the user is an admin, show the edit button
         if ($_SESSION['admin'] == '1') { ?>

@@ -397,14 +397,17 @@ if ($getproject['project_is_active'] == 1) {
   list_heading('summary','');
   list_heading('dateopened','date');
   list_heading('status','status');
+  list_heading('openedby','openedby');
+  list_heading('assignedto','assignedto');
   list_heading('lastedit', 'lastedit');
+  list_heading('reportedin','reportedin');
   list_heading('dueversion','due');
   list_heading('progress','prog');
   ?>
 
   </tr>
 </thead>
-<tr><td colspan="8">
+<tfoot><tr><td colspan="20">
 <?php
  
 // SQL JOIN condition
@@ -428,19 +431,19 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
 
 ?>
-</td></tr>
+</td></tr></tfoot>
 
 
 
 <!--<tbody>-->
   <?php
 
-  $getsummary = $fs->dbQuery("SELECT * FROM $from
+  $getdetails = $fs->dbQuery("SELECT * FROM $from
           WHERE $where
           ORDER BY $orderby $sort", $sql_params, $perpage, $offset);
 
 
-  while ($task_details = $fs->dbFetchArray($getsummary)) {
+  while ($task_details = $fs->dbFetchArray($getdetails)) {
 
     // Get the full project title
     $get_project_title = $fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id=?", array($task_details['project']));
@@ -464,6 +467,10 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     require("lang/$lang/severity.php");
     $severity = $severity_list[$severity_id];
 
+    // Get the full reported in version name
+    $get_reported_name = $fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id=?", array($task_details['product_version']));
+    list($reported_in) = $fs->dbFetchArray($get_reported_name);
+    
     // Get the full due-in version name
     $get_due_name = $fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id=?", array($task_details['closedby_version']));
     list($due) = $fs->dbFetchArray($get_due_name);
@@ -471,13 +478,28 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     // Convert the date_opened to a human-readable format
     $date_opened = $fs->formatDate($task_details['date_opened'], false);
 
+    // see if it's been assigned
+    if (!$task_details['assigned_to']) {
+      $assigned_to = $details_text['noone'];
+    } else {
+      // find out the username
+      $getusername = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
+      list ($user_name, $real_name) = $fs->dbFetchArray($getusername);
+      $assigned_to = "$real_name ($user_name)";
+    };
+    
+    // find out the username
+    $getusername = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
+    list ($user_name, $real_name) = $fs->dbFetchArray($getusername);
+    $opened_by = "$real_name ($user_name)";
+    
     // Convert the last_edited_time to a human-readable format
     if ($task_details['last_edited_time'] != '0') {
       $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
     } else {
       $last_edited_time = $date_opened;
     };
-    
+        
     // Set the status text to 'closed' if this task is closed
     if ($task_details['is_closed'] == "1")
     {
@@ -498,9 +520,12 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     list_cell("category",$category,1);
     list_cell("severity",$severity,1);
     list_cell("summary",$task_details['item_summary'],0,"?do=details&amp;id={$task_details['task_id']}");
-    list_cell("opened",$date_opened);
+    list_cell("dateopened",$date_opened);
     list_cell("status",$status,1);
+    list_cell("openedby",$opened_by,0);
+    list_cell("assigned",$assigned_to,0);
     list_cell("lastedit",$last_edited_time);
+    list_cell("reportedin",$reported_in);
     list_cell("dueversion",$due,1);
     list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\">\n");
     

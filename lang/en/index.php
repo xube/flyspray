@@ -33,6 +33,10 @@ $index_text = array (
 'project'		=>	'Project',
 'category'		=>	'Category',
 'lastedit'		=>	'Last Edited',
+'assignedto'		=>	'Assigned To',
+'os'			=>	'Operating System',
+'reportedin'		=>	'Reported In',
+'openedby'		=>	'Opened By',
 
 );
 ?>

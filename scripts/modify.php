@@ -182,8 +182,8 @@ if ($_POST['edit_start_time'] < $old_details['last_edited_time']) {
     <input type="hidden" name="task_type" value="<?php echo $_POST['task_type'];?>">
 
 <!-- A bit dodgy, part 1 -->
-    <input type="text" style="display:none;" name="item_summary" value="<?php echo htmlentities($_POST['item_summary']);?>">
-    <textarea style="display:none" name="detailed_desc"><?php echo htmlentities($_POST['detailed_desc']);?></textarea>
+    <input type="text" style="display:none;" name="item_summary" value="<?php echo htmlspecialchars($_POST['item_summary']);?>">
+    <textarea style="display:none" name="detailed_desc"><?php echo htmlspecialchars($_POST['detailed_desc']);?></textarea>
 
     <input type="hidden" name="item_status" value="<?php echo $_POST['item_status'];?>">
     <input type="hidden" name="assigned_to" value="<?php echo $_POST['assigned_to'];?>">
@@ -913,7 +913,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   };
 
   // Process the list of visible columns
-  $columnnames = array('id','project','category','tasktype','severity','summary','dateopened','status', 'lastedit','dueversion','progress');
+  $columnnames = array('id','project','category','tasktype','severity','summary','dateopened','status','openedby','assignedto','lastedit','reportedin','dueversion','progress');
   foreach ($columnnames AS $column)
   {
     $colname = "visible_columns".$column;
