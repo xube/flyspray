@@ -20,7 +20,7 @@ $detailed_desc = stripslashes($detailed_desc);
 
 // Check if the user has rights to modify tasks
 if ($_SESSION['can_modify_jobs'] == '1'
-  && $task_details['item_status'] != '8'
+  && $task_details['is_closed'] != '1'
   && $_GET['edit'] == 'yep') {
 
 ///////////////////////////////////
@@ -286,7 +286,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
 <?php
 //
 } elseif (($_SESSION['can_modify_jobs'] != '1'
-             OR $task_details['item_status'] == '8'
+             OR $task_details['is_closed'] == '1'
              OR !$GET['edit'])
              ) {
 //////////////////////////////////////
@@ -297,7 +297,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
 ?>
 
 <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
-    <?php if ($_SESSION['can_modify_jobs'] != '1' OR $task_details['item_status'] == '8') { ?>
+    <?php if ($_SESSION['can_modify_jobs'] != '1' OR $task_details['is_closed'] == '1') { ?>
     <h2 class="severity<?php echo $task_details['task_severity'];?>">
     <?php } else { ?>
     <h2 class="severity<?php echo $task_details['task_severity'];?>">
@@ -305,7 +305,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
     <?php echo "{$details_text['task']} #{$_GET['id']} &mdash; $item_summary";?>
     </h2>
     <?php
-    if ($_SESSION['can_modify_jobs'] == '1' && $task_details['item_status'] != '8') {
+    if ($_SESSION['can_modify_jobs'] == '1' && $task_details['is_closed'] != '1') {
     ?>
     <form action="index.php" method="get" id="formedittask">
     <p>
@@ -366,7 +366,15 @@ if ($_SESSION['can_modify_jobs'] == '1'
       </tr>
       <tr>
         <th><?php echo $details_text['status'];?></th>
-        <td><?php echo $task_details['status_name'];?></td>
+        <td>
+		<?php
+		if($task_details['is_closed'] == '1') {
+			echo $details_text['closed'];
+		} else {
+			echo $task_details['status_name'];
+		};
+		?>
+		</td>
         <th><?php echo $details_text['dueinversion'];?></th>
         <td>
         <?php
@@ -418,7 +426,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
     </table>
 
   <?php
-  if ($task_details['item_status'] == '8') {
+  if ($task_details['is_closed'] == '1') {
   ?>
   <p>
       <?php
@@ -434,7 +442,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
     </p>
     <?php
     };
-    if ($_SESSION['can_modify_jobs'] == '1' && $task_details['item_status'] == '8') { ?>
+    if ($_SESSION['can_modify_jobs'] == '1' && $task_details['is_closed'] == '1') { ?>
   <form name="form2" action="index.php" method="post" id="formreopentask">
   <p>
       <input type="hidden" name="do" value="modify">
@@ -444,7 +452,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
   </p>
   </form>
     <?php
-    } elseif ($_SESSION['can_modify_jobs'] == '1' && $task_details['item_status'] != '8') {
+    } elseif ($_SESSION['can_modify_jobs'] == '1' && $task_details['is_closed'] != '1') {
     ?>
     <form name="form2" action="index.php" method="post" id="formclosetask">
     <p>
@@ -599,7 +607,7 @@ if ($area == 'comments') { ?>
 
 // Now, show a form to add a comment (but only if the user has the rights!)
 
-if ($_SESSION['can_add_comments'] == "1" && $task_details['item_status'] != '8') {
+if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
 ?>
 
 <form action="index.php" method="post">
@@ -689,7 +697,7 @@ echo "</div>";
 //};
 // Now, show a form to attach a file (but only if the user has the rights!)
 
-if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8') {
+if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
 ?>
 
 <form enctype="multipart/form-data" action="index.php" method="post" id="formupload">
@@ -740,7 +748,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
       <div class="tabentry">
        <?php
         // If the user can modify jobs, then show them a form to remove related tasks
-        if ($_SESSION['can_modify_jobs'] == '1' && $task_details['item_status'] != '8') {
+        if ($_SESSION['can_modify_jobs'] == '1' && $task_details['is_closed'] != '1') {
           ?>
          <div class="modifycomment">
           <form action="index.php" method="post">
@@ -760,7 +768,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
     };
    };
 
-    if ($_SESSION['can_modify_jobs'] == "1" && $task_details['item_status'] != '8') {
+    if ($_SESSION['can_modify_jobs'] == "1" && $task_details['is_closed'] != '1') {
     ?>
 
   <form action="index.php" method="post" id="formaddrelatedtask">
@@ -808,7 +816,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
       <div class="tabentry">
       <?php
         // If the user can modify jobs, then show them a form to remove a notified user
-        if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
+        if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
           ?>
           <div class="modifycomment">
           <form action="index.php" method="post">
@@ -829,7 +837,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
       echo "</div>";
       };
     };
-    if ($task_details['item_status'] != '8') {
+    if ($task_details['is_closed'] != '1') {
     ?>
 
 </div>
@@ -903,7 +911,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
       while ($subrow = $fs->dbFetchArray($get_username)) {
 
 // If the user can modify jobs, then show them a form to remove a notified user
-        if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
+        if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
         ?>
           <div class="modifycomment">
           <form action="index.php" method="post">
@@ -946,7 +954,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
 
 </div>
 <?php
-if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
+if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
 ?>
 <div class="tabentries">
 
@@ -1016,7 +1024,7 @@ if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
       <div class="tabentry">
       <?php
         // If the user can modify jobs, then show them a form to remove a notified user
-        if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
+        if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
           ?>
           <div class="modifycomment">
           <form action="index.php" method="post">

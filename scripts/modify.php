@@ -280,7 +280,7 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
 
     date_closed = ?,
     closed_by = ?,
-    item_status = '8',
+    is_closed = '1',
     resolution_reason = ?
 
     WHERE task_id = ?
@@ -330,7 +330,8 @@ $current_realname ($current_username) {$modify_text['hasclosed']} {$modify_text[
     $add_item = $fs->dbQuery("UPDATE flyspray_tasks SET
 
     item_status = '7',
-    resolution_reason = '1'
+    resolution_reason = '1',
+	is_closed = '0'
 
     WHERE task_id = ?
 

@@ -91,11 +91,14 @@ if (is_numeric($_GET['cat'])) {
 
 // The default status
 if ($_GET['status'] == "all") {
+} elseif ($_GET['status'] == "closed") {
+  $where[] = "is_closed = ?";
+  $sql_params[] = "1";
 } elseif (is_numeric($_GET['status'])) {
   $where[]	= "item_status = ?";
   $sql_params[] = $_GET['status'];
 } else {
-  $where[] = "item_status != '8'";
+  $where[] = "is_closed != '1'";
 };
 
 // The default search string
@@ -190,6 +193,7 @@ if ($_GET['string']) {
         };
       };
       ?>
+	  <option value="closed" <?php if($_GET['status'] == "closed") { echo "SELECTED";};?>><?php echo $index_text['closed'];?></option>
     </select>
 
     <select name="perpage">
@@ -230,10 +234,6 @@ if ($getproject['project_is_active'] == 1) {
   <th>
   <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=date<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "date") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['dateopened'];?></a>
   </th>
-  <!--<th>
-  <a title="Sort by this column"  href="?order=cat<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "cat") { echo "asc"; } else { echo "desc";};?>">Category</a>
-  </th>
-  -->
   <th>
   <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=status<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "status") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['status'];?></a>
   </th>
@@ -323,8 +323,11 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
     $status = str_replace(" ", "&nbsp;", $status);
     echo "<td class=\"status\">\n";
-    echo "$status\n</td>\n";
-
+    if ($task_details['is_closed'] == "1") {
+		echo $index_text['closed'];
+	} else {
+		echo "$status\n</td>\n";
+	};
     echo "<td class=\"progress\">\n";
     echo "<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\">\n</td>\n";
 

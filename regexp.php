@@ -92,6 +92,27 @@ if ($_GET['action'] || $_POST['action']) {
     };
 };
 
+
+if ($_GET['do'] || $_POST['do']) {
+
+    // Store input
+    if ($_POST['do']) {
+        $tmp_action = $_POST['do'];
+    } else {
+        $tmp_action = $_GET['do'];
+    };
+
+    // Yes. Now check its' regex format for safety -- Limited range
+    if (preg_match ("/^(admin|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report)$/", $tmp_action)) {
+
+       // continue;
+
+    } else {
+
+        print "$tmp_action - Action request is invalid."; exit;
+    };
+};
+
 if ($_GET['id']) {
 
     // Yes. Now check its' regex format for safety -- Numbers only
@@ -243,7 +264,7 @@ if ($_GET['cat']) {
 if ($_GET['status']) {
 
     // Yes. Now check its' regex format for safety -- Numbers only
-    if (preg_match ("/^(\d+|all)$/", $_GET['status'])) {
+    if (preg_match ("/^(\d+|all|closed)$/", $_GET['status'])) {
 
        // continue;
     } else {

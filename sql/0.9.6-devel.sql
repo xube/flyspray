@@ -9,3 +9,8 @@ CREATE TABLE `flyspray_reminders` (
   `reminder_message` longtext NOT NULL,
   PRIMARY KEY  (`reminder_id`)
 ) TYPE=MyISAM COMMENT='Scheduled reminders about tasks' AUTO_INCREMENT=19 ;
+
+
+ALTER TABLE `flyspray_tasks` ADD `is_closed` MEDIUMINT( 1 ) NOT NULL AFTER `opened_by` ;
+
+update flyspray_tasks set is_closed = '1' where item_status = '8';
