@@ -6,10 +6,8 @@
 // Tomek 'TomasH' Zielinski
 // tomash@fidonet.org.pl, tomash@4net.pl
 //
-// Uzupełnienie dla wersji 0.9.5:
+// Uzupełnienie od wersji 0.9.5:
 // Konrad Roziewski <konrad#suwalki-com-pl>
-//
-// last update: 26.11.2003
 
 $newtask_text = array (
 
@@ -32,6 +30,7 @@ $newtask_text = array (
 // Added in version 0.9.5
 
 'notifyme'	=>	'Powiadom mnie, gdy zgłoszenie zostanie zmienione',
+'priority'	=>	'Priorytet',
 
 );
 // vim:fenc=utf-8:enc=utf-8

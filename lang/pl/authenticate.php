@@ -5,8 +5,6 @@
 //
 // Tomek 'TomasH' Zielinski
 // tomash@fidonet.org.pl, tomash@4net.pl
-//
-// last update: 22.08.2003
 
 $authenticate_text = array (
 

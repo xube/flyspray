@@ -82,6 +82,7 @@ $details_text = array (
 'date'				=>   'Data:',
 'filesize'			=>   'Rozmiar pliku:',
 'closurecomment'	=>   'Dodatkowe uwagi dotyczące zamknięcia:',
+
 'history'           =>   'Historia',
 'nohistory'         =>   'To zgłoszenie nie ma historii.',
 'eventdate'         =>   'Data',
@@ -109,6 +110,7 @@ $details_text = array (
 'deletedasrelated'  =>   'Usunięcie powiązania ze zgłoszeniem',
 'reminderadded'     =>   'Przypomnienie dodane',
 'reminderdeleted'   =>   'Przypomnienie usunięte',
+'priority'          =>   'Priorytet',
 
 );
 // vim:fenc=utf-8:enc=utf-8

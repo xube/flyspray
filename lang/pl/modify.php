@@ -6,10 +6,8 @@
 // Tomek 'TomasH' Zielinski
 // tomash@fidonet.org.pl, tomash@4net.pl
 //
-// Uzupełnienie dla wersji 0.9.5:
+// Uzupełnienie od wersji 0.9.5:
 // Konrad Roziewski <konrad#suwalki-com-pl>
-//
-// last update: 26.11.2003
 
 $modify_text = array (
 
@@ -134,6 +132,7 @@ $modify_text = array (
 'attachmentdeleted' =>	'Załącznik został usunięty',
 
 // Added in 0.9.6
+
 'reminderadded'     =>   'Przypomnienie zostało dodane.',
 'reminderdeleted'   =>   'Przypomnienie zostało usunięte.',
 'flyspraytask'	    =>   'Zgłoszenie',
@@ -144,6 +143,7 @@ $modify_text = array (
 'cancel'            =>   'Rezygnuj',
 'alreadyedited'     =>   'Zgłoszenie zostało w międzyczasie zmienione przez inną osobę w czasie.',
 'saveanyway'        =>   'Mimo tego zapisz moje zmiany.',
+'priority'          =>   'Priorytet',
 
 );
 // vim:fenc=utf-8:enc=utf-8:nowrap

@@ -46,6 +46,8 @@ $index_text = array (
 'openedby'		=>	'Zgłoszone przez',
 'comments'          	=>	'Komentarze',
 'attachments'		=>	'Załączniki',
+'priority'		=>	'Priorytet',
+
 
 );
 // vim:fenc=utf-8:enc=utf-8

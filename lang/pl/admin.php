@@ -6,10 +6,8 @@
 // Tomek 'TomasH' Zielinski
 // tomash@fidonet.org.pl, tomash@4net.pl
 // 
-// Uzupełnienie dla wersji 0.9.5:
+// Uzupełnienie od wersji 0.9.5:
 // Konrad Roziewski <konrad#suwalki-com-pl>
-//
-// last update: 26.11.2003
 
 $admin_text = array (
 
@@ -119,6 +117,8 @@ $admin_text = array (
 'past'			=>  'Przeszłe',
 'present'		=>  'Obecne',
 'future'		=>  'Przyszłe',
+'adminchangepass'	=>  'Zmień hasło',
+'adminconfirmpass'	=>  'Potwierdź hasło',
 
 );
 // vim:fenc=utf-8:enc=utf-8
