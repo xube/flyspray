@@ -23,7 +23,8 @@ foreach ( $orderby as $key => $val ) {
   switch ($orderby[$key]) {
     case "id": $orderby[$key] = 'task_id';
     break;
-    case "proj": $orderby[$key] = 'attached_to_project';
+    //case "proj": $orderby[$key] = 'attached_to_project';
+    case "proj": $orderby[$key] = 'project_title';
     break;
     case "type": $orderby[$key] = 'tasktype_name';
     break;
@@ -31,7 +32,8 @@ foreach ( $orderby as $key => $val ) {
     break;
     case "sev": $orderby[$key] = 'task_severity';
     break;
-    case "cat": $orderby[$key] = 'product_category';
+    //case "cat": $orderby[$key] = 'product_category';
+    case "cat": $orderby[$key] = 'lc.category_name';
     break;
     case "status": $orderby[$key] = 'item_status';
     break;
@@ -43,11 +45,13 @@ foreach ( $orderby as $key => $val ) {
     break;
     case "pri": $orderby[$key] = 'task_priority';
     break;
-    case "openedby": $orderby[$key] = 't.opened_by';
+    //case "openedby": $orderby[$key] = 't.opened_by';
+    case "openedby": $orderby[$key] = 'uo.real_name';
     break;
     case "reportedin": $orderby[$key] = 't.product_version';
     break;
-    case "assignedto": $orderby[$key] = 't.assigned_to';
+    //case "assignedto": $orderby[$key] = 't.assigned_to';
+    case "assignedto": $orderby[$key] = 'u.real_name';
     break;
     default: $orderby[$key] = 'task_severity';
     break;
@@ -376,9 +380,11 @@ if ($getproject['project_is_active'] == 1
  *
  * @param string $colname	The name of the column
  * @param string $orderkey	The actual key to use when ordering the list
+ * @param string $defaultsort The default sort order
  * @param string $image    An image to display instead of the column name
  */
-function list_heading($colname, $orderkey, $image = '')
+//function list_heading($colname, $orderkey, $image = '')
+function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 {
   global $project_prefs;
   global $index_text;
@@ -406,6 +412,7 @@ function list_heading($colname, $orderkey, $image = '')
       }
       else
       {
+        $sort1 = $defaultsort;
         $order2 = $_GET['order'];
         $sort2 = $_GET['sort'];
       }
@@ -485,21 +492,28 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 
   <?php
   list_heading('id','id');
-  list_heading('project','proj');
-  list_heading('tasktype','type');  
-  list_heading('category','cat');
+  //list_heading('project','proj');
+  //list_heading('tasktype','type');  
+  //list_heading('category','cat');
+  list_heading('project','proj','asc');
+  list_heading('tasktype','type','asc');
+  list_heading('category','cat','asc');
   list_heading('severity','sev');
   list_heading('priority','pri');
   list_heading('summary','');
   list_heading('dateopened','date');
   list_heading('status','status');
-  list_heading('openedby','openedby');
-  list_heading('assignedto','assignedto');
+  //list_heading('openedby','openedby');
+  //list_heading('assignedto','assignedto');
+  list_heading('openedby','openedby','asc');
+  list_heading('assignedto','assignedto','asc');
   list_heading('lastedit', 'lastedit');
   list_heading('reportedin','reportedin');
   list_heading('dueversion','due');
-  list_heading('comments','', "themes/{$project_prefs['theme_style']}/comment.png");
-  list_heading('attachments','', "themes/{$project_prefs['theme_style']}/attachment.png");
+  //list_heading('comments','', "themes/{$project_prefs['theme_style']}/comment.png");
+  //list_heading('attachments','', "themes/{$project_prefs['theme_style']}/attachment.png");
+  list_heading('comments','','', "themes/{$project_prefs['theme_style']}/comment.png");
+  list_heading('attachments','','', "themes/{$project_prefs['theme_style']}/attachment.png");
   list_heading('progress','prog');
   ?>
 

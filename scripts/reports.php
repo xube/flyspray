@@ -6,8 +6,15 @@
    Thanks, Jon!
 */
 
+
 get_language_pack($lang, 'reports');
 get_language_pack($lang, 'details');
+get_language_pack($lang, 'admin');
+
+// Only allow those with permission to view this page
+if ($permissions['view_reports'] == '1')
+{
+ 
 
 function summary_report()
 {
@@ -757,4 +764,11 @@ switch ($report)
 		events_report();
 		break;
 }
+
+// If no view_reports permission, deny access
+} else {
+   echo $admin_text['nopermission'];
+
+// End of checking permissions
+};
 ?>
