@@ -2,12 +2,6 @@
 
 class Flyspray {
 
-   var $dbhost;
-   var $dbuser;
-   var $dbpass;
-   var $dbname;
-   var $dbtype;
-
    function getGlobalPrefs() {
       $get_prefs = $this->dbQuery("SELECT pref_name, pref_value FROM flyspray_prefs");
 
@@ -20,43 +14,84 @@ class Flyspray {
 
       return $global_prefs;
    }
-   
-   function dbOpen($dbhost = '', $dbuser = '', $dbpass = '', $dbname = '', $dbtype = '') {
-   
-      $this->dbhost = $dbhost;
-      $this->dbuser = $dbuser;
-      $this->dbpass = $dbpass;
-      $this->dbname = $dbname;
-      $this->dbtype = $dbtype;
-   
-      $dblink = mysql_connect($dbhost, $dbuser, $dbpass);
-      mysql_select_db($dbname);
 
-      return $dblink;
+   function getProjectPrefs($project_id) {
+      $get_prefs = $this->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id));
+
+      $project_prefs = $this->dbFetchArray($get_prefs);
+
+      return $project_prefs;
+   }
+
+   function dbOpen($dbhost = '', $dbuser = '', $dbpass = '', $dbname = '', $dbtype = '') {
+
+      $this->dbtype = $dbtype;
+
+      $this->dblink = NewADOConnection($dbtype);
+      $this->dblink->Connect($dbhost, $dbuser, $dbpass, $dbname);
+      $this->dblink->SetFetchMode(ADODB_FETCH_BOTH);
+
+      return true;
+
    }
 
    function dbClose() {
-      mysql_close ();
+      $this->dblink->Close();
    }
 
-   function dbQuery($sql) {
-	   $result =  mysql_query($sql) or die (mysql_error());
-   	return $result;
+   /* Replace undef values (treated as NULL in SQL database) with empty
+   strings.
+   @param arr	input array or false
+   @return	SQL safe array (without undefined values)
+   */
+   function dbUndefToEmpty($arr) {
+       if (is_array($arr)) {
+	   $c = count($arr);
+
+	   for($i=0; $i<$c; $i++)
+	       if (!isset($arr[$i])) 
+		   $arr[$i] = '';
+       }
+       return $arr;
+   }
+
+   function dbExec($sql, $inputarr=false, $numrows=-1, $offset=-1) {
+      // replace undef values (treated as NULL in SQL database) with empty
+      // strings
+      $inputarr = $this->dbUndefToEmpty($inputarr);
+       
+      $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+      if (($numrows>=0) or ($offset>=0)) {
+	  $result =  $this->dblink->SelectLimit($sql, $numrows, $offset, $inputarr);
+      } else {
+	  $result =  $this->dblink->Execute($sql, $inputarr);
+      }
+      if (!$result)
+	  die (sprintf("Query {%s} with params {%s} Failed! (%s)", 
+		    $sql, implode(', ', $inputarr), 
+		    $this->dblink->ErrorMsg()));
+      return $result;
    }
 
    function dbCountRows($result) {
-	   $num_rows = mysql_num_rows($result);
+      $num_rows = $result->RecordCount();
    	return $num_rows;
    }
 
-   function dbFetchRow($result) {
-	   $row = mysql_fetch_row($result);
+   function dbFetchRow(&$result) {
+      $row = $result->FetchRow();
    	return $row;
    }
 
-   function dbFetchArray($result) {
-	   $db_array = mysql_fetch_array($result);
-   	return $db_array;
+/* compatibility functions */
+   function dbQuery($sql, $inputarr=false, $numrows=-1, $offset=-1) {
+      $result = $this->dbExec($sql, $inputarr, $numrows, $offset);
+      return $result;
+   }
+
+   function dbFetchArray(&$result) {
+      $row = $this->dbFetchRow($result);
+      return $row;
    }
 
  // Thanks to Mr Lance Conry for this query that saved me a lot of effort.
@@ -70,6 +105,7 @@ function GetTaskDetails($task_id) {
 						vr.version_name as reported_version_name,
 						vd.version_name as due_in_version_name
 						FROM flyspray_tasks t
+						LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
 						LEFT JOIN flyspray_list_category c ON t.product_category = c.category_id
 						LEFT JOIN flyspray_list_os o ON t.operating_system = o.os_id
 						LEFT JOIN flyspray_list_resolution r ON t.resolution_reason = r.resolution_id
@@ -77,9 +113,11 @@ function GetTaskDetails($task_id) {
 						LEFT JOIN flyspray_list_version vr ON t.product_version = vr.version_id
 						LEFT JOIN flyspray_list_version vd ON t.closedby_version = vd.version_id
    
-						WHERE t.task_id = '$task_id'
-						");
+						WHERE t.task_id = ?
+						", array($task_id));
 	$get_details = $this->dbFetchArray($get_details);
+    if (empty($get_details))
+           $get_details = array();
 
 	$status_id = $get_details['item_status'];
     require("lang/$lang/status.php");
@@ -96,30 +134,36 @@ function GetTaskDetails($task_id) {
 
 
 // Thank you to Mr Lance Conry for this awesome, FAST Jabber message function
-// Check him out at http://www.rhinosw.com/
+// Check out his company at http://www.rhinosw.com/
 function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject, $sBody, $sClient='Flyspray' ) {
    
-   $flyspray_prefs = $this->GetGlobalPrefs();
+   /*$flyspray_prefs = $this->GetGlobalPrefs();
 
-   // We can only sent jabber messages if the jabber setup is done
+   // We can only send jabber messages if the jabber setup is done
    if ($flyspray_prefs['jabber_server'] != ''
      && $flyspray_prefs['jabber_port'] != ''
      && $flyspray_prefs['jabber_username'] != ''
      && $flyspray_prefs['jabber_password'] != ''
-	 && ($flyspray_prefs['user_notify'] == '1'
-	 OR $flyspray_prefs['user_notify'] == '3')
-   ) {
-   
+     && ($flyspray_prefs['user_notify'] == '1'
+         OR $flyspray_prefs['user_notify'] == '3')
+   ) {*/
+
+   if ($sHost != ''
+       && $sPort != ''
+       && $sUsername != ''
+       && $sPassword != ''
+      ) {
+
    $socket = fsockopen ( $sHost, $sPort, $errno, $errstr, 30 );
    if ( !$socket ) {
       return '$errstr (' . $errno . ')';
    } else {
 
    fputs($socket, '<?xml version="1.0" encoding="UTF-8"?><stream:stream to="' . $sHost . '" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams">' );
-   echo fgets( $socket, 1 );
+   fgets( $socket, 1 );
 
    fputs( $socket, '<iq type="set" id="AUTH_01"><query xmlns="jabber:iq:auth"><username>' . $sUsername . '</username><password>' . $sPassword . '</password><resource>' . $sClient . '</resource></query></iq>' );
-   echo fgets( $socket, 1 );
+   fgets( $socket, 1 );
 
    if ( is_array( $vTo )) {
        foreach ($vTo as $sTo) {
@@ -130,14 +174,14 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
     else {
        fputs ( $socket, '<message to="' . $vTo . '" ><body>' . $sBody . '</body><subject>' . $sSubject . '</subject></message>' );
     }
-   
+
    fclose ( $socket );
    }
-   
+
    // End of checking that jabber is set up
    }
    
-   return TRUE;
+   //return TRUE;
 }
 
    function SendEmail($to, $message) {
@@ -151,8 +195,10 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 
      foreach($to as $address) {
 
-	   $subject = "{$functions_text['notifyfrom']} \"{$flyspray_prefs['project_title']}\"";
-	   $headers = "From: {$flyspray_prefs['project_title']} <{$flyspray_prefs['admin_email']}>\r\n";
+       $subject = "{$functions_text['notifyfrom']} \"{$flyspray_prefs['project_title']}\"";
+       $contenttype = "Content-Type: text/plain; charset=UTF-8";
+       $from = "From: {$flyspray_prefs['project_title']} <{$flyspray_prefs['admin_email']}>";
+       $useragent = "User-Agent: Mutt";
 
 	   $message = str_replace('&amp;', '&', $message);
 	   $message = "
@@ -161,25 +207,38 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 ========================================================
 \n\n" . $message;
 
-	   mail ($address, $subject, $message, $headers);
+       $message = wordwrap($message, 72);
+
+       mail ("$address", "$subject", $message,
+              "$contenttype\r\n"
+              ."$from\r\n"
+              ."$useragent");
 	 };
 
    } else {
 
-	$subject = "{$functions_text['notifyfrom']} \"{$flyspray_prefs['project_title']}\"";
-	$headers = "From: {$flyspray_prefs['project_title']} <{$flyspray_prefs['admin_email']}>\r\n";
+       //$address = $to;
+       $subject = "{$functions_text['notifyfrom']} \"{$flyspray_prefs['project_title']}\"";
+       $contenttype = "Content-Type: text/plain; charset=UTF-8";
+       $from = "From: {$flyspray_prefs['project_title']} <{$flyspray_prefs['admin_email']}>";
+       $useragent = "User-Agent: Mutt";
 
-	$message = str_replace('&amp;', '&', $message);
-	$message = "
+	   $message = str_replace('&amp;', '&', $message);
+	   $message = "
 ========================================================
 {$functions_text['autogenerated']}
 ========================================================
 \n\n" . $message;
 
-	mail ($to, $subject, $message, $headers);
+       $message = wordwrap($message, 72);
+
+       mail ("$to", "$subject", $message,
+              "$contenttype\r\n"
+              ."$from\r\n"
+              ."$useragent");
 
 	};
-	return "<br />";
+	//return TRUE;
    // End of mass mail function
    }
 
@@ -191,7 +250,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
        $lang = $flyspray_prefs['lang_code'];
        require("lang/$lang/functions.inc.php");
 
-	   $get_user_details = $this->dbQuery("SELECT real_name, jabber_id, email_address, notify_type FROM flyspray_users WHERE user_id = '$to'");
+	   $get_user_details = $this->dbQuery("SELECT real_name, jabber_id, email_address, notify_type FROM flyspray_users WHERE user_id = ?", array($to));
 	   list($real_name, $jabber_id, $email_address, $notify_type) = $this->dbFetchArray($get_user_details);
 
 	   // if app preferences say to use jabber, or if the user can (and has) selected jabber
@@ -217,26 +276,13 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 						$message,
 						"Flyspray"
 						);
-		return "<br>";
+		//return TRUE;
 
 	    // if app preferences say to use email, or if the user can (and has) selected email
 		} elseif (($flyspray_prefs['user_notify'] == '2') OR ($flyspray_prefs['user_notify'] == '1' && $notify_type == '1')) {
 
 			$to = "$real_name <$email_address>";
 			$this->SendEmail($to, $message);
-
-			/*$subject = "Notification from \"{$flyspray_prefs['project_title']}\"";
-			$headers = "From: {$flyspray_prefs['project_title']} <{$flyspray_prefs['admin_email']}>";
-
-			$message = str_replace('&amp;', '&', $message);
-			$message = "
-========================================================
-THIS IS AN AUTOMATICALLY GENERATED MESSAGE, DO NOT REPLY
-========================================================
-\n\n" . $message;
-
-			mail ($to, $subject, $message, $headers);
-			//return "Sent email notifications.<br>";*/
 		};
 	// End of basic notification function
    }
@@ -254,14 +300,14 @@ THIS IS AN AUTOMATICALLY GENERATED MESSAGE, DO NOT REPLY
    $jabber_users = array();
    $email_users = array();
 
-   $get_users = $this->dbQuery("SELECT user_id FROM flyspray_notifications WHERE task_id = '$task_id'");
+   $get_users = $this->dbQuery("SELECT user_id FROM flyspray_notifications WHERE task_id = ?", array($task_id));
 
    while ($row = $this->dbFetchArray($get_users)) {
 
       $get_details = $this->dbQuery("SELECT notify_type, jabber_id, email_address
 	  								FROM flyspray_users
-									WHERE user_id = '{$row['user_id']}'
-									");
+									WHERE user_id = ?",
+									array($row['user_id']));
       while ($subrow = $this->dbFetchArray($get_details)) {
 
 		if (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
@@ -292,29 +338,37 @@ THIS IS AN AUTOMATICALLY GENERATED MESSAGE, DO NOT REPLY
 			// Pass the recipients and message onto the mass email function
 			$this->SendEmail($email_users, $message);
 
-    return "<br>";
+    //return TRUE;
    // End of detailed notification function
    }
 
 
 
    // This function generates a query of users for the "Assigned To" list
-   function listUserQuery() {
+   function listUsers($current) {
      $flyspray_prefs = $this->getGlobalPrefs();
 
-     $query = "SELECT * FROM flyspray_users WHERE account_enabled = '1'";
+      $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
+      while (list($key, $val) = each($these_groups)) {
+	if (empty($val)) 
+	  continue;
+	$group_details = $this->dbFetchArray($this->dbQuery("SELECT group_name FROM flyspray_groups WHERE group_id = ?", array($val)));
 
-	 $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
-	 while (list($key, $val) = each($these_groups)) {
-	 	if (!isset($first_done)) {
-	 		$query = $query . " AND group_in = '$val'";
-			$first_done = 'yes';
-		} else {
-			$query = $query . " OR group_in = '$val'";
-		};
-	};
-	$user_query = $query . " ORDER BY group_in ASC";
-	return $user_query;
+        echo "<optgroup label=\"{$group_details['group_name']}\">\n";
+
+        $user_query = $this->dbQuery("SELECT * FROM flyspray_users WHERE account_enabled = ? AND group_in = ?", array('1', $val));
+
+        while ($row = $this->dbFetchArray($user_query)) {
+          if ($current == $row['user_id']) {
+            echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
+          } else {
+            echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
+          };
+        };
+
+        echo "</optgroup>\n";
+      };
+
   }
 
 
@@ -325,6 +379,9 @@ THIS IS AN AUTOMATICALLY GENERATED MESSAGE, DO NOT REPLY
 $flyspray_prefs = $this->GetGlobalPrefs();
 $lang = $flyspray_prefs['lang_code'];
 require("lang/$lang/functions.inc.php");
+
+if (!($totalcount / $perpage <= 1)) {
+
     if ($pagenum - 1000 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 1000) . $extraurl . "\">{$functions_text['back']} 1,000</a> - ";
     if ($pagenum - 100 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 100) . $extraurl . "\">{$functions_text['back']} 100</a> - ";
     if ($pagenum - 10 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 10) . $extraurl . "\">{$functions_text['back']} 10</a> - ";
@@ -348,7 +405,7 @@ require("lang/$lang/functions.inc.php");
     if ($pagenum + 1000 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1000) . $extraurl . "\">{$functions_text['forward']} 1,000</a> ";
     return $output;
 }
-
+}
 // End of Flyspray class
 }
 

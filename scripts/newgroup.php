@@ -1,85 +1,79 @@
 <?php
-include('../header.php');
+require("lang/$lang/newgroup.php");
 
-// Get the application preferences into an array
-$flyspray_prefs = $fs->getGlobalPrefs();
-
-$lang = $flyspray_prefs['lang_code'];
-require("../lang/$lang/newgroup.php");
-header('Content-type: text/html; charset=utf-8');
 // Make sure that only admins are using this page
 if ($_SESSION['admin'] == '1') {
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
   <title>Flyspray:: <?php echo $newgroup_text['createnewgroup'];?></title>
-  <link href="../themes/<?php echo $flyspray_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
-  <script language="javascript" type="text/javascript">
+  <link href="../themes/<?php echo $flyspray_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript"> <!--
     function Disable()
     {
     document.form1.buSubmit.disabled = true;
     document.form1.submit();
     }
-  </script>
+//--> </script>
 </head>
 
 <body>
 
-<div align="center">
+<form action="index.php" method="post" id="newgroup">
+<h1><?php echo $newgroup_text['createnewgroup'];?></h1>
+<p><em><?php echo $newgroup_text['requiredfields'];?></em> <strong>*</strong></p>
 
-<h3><?php echo $newgroup_text['createnewgroup'];?></h3>
-<i class="admintext"><?php echo $newgroup_text['requiredfields'];?></i> <font color="red">*</font>
-
-    <form action="modify.php" method="post">
   <table class="admin">
     <tr>
-      <td class="adminlabel">
-      <input type="hidden" name="action" value="newgroup" />
-      <?php echo $newgroup_text['groupname'];?></td>
-      <td align="left"><input class="admintext" type="text" name="group_name" size="20" maxlength="20" /> <font color="red">*</font></td>
+      <td>
+      <input type="hidden" name="do" value="modify">
+      <input type="hidden" name="action" value="newgroup">
+      <label for="groupname">
+      <?php echo $newgroup_text['groupname'];?></label></td>
+      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20"> <strong>*</strong></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $newgroup_text['description'];?></td>
-      <td align="left"><input class="admintext" type="text" name="group_desc" size="50" maxlength="100" /> <font color="red">*</font></td>
+      <td><label for="groupdesc"><?php echo $newgroup_text['description'];?></label></td>
+      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100"> <strong>*</strong></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $newgroup_text['admin'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="is_admin" value="1" /></td>
+      <td><label for="isadmin"><?php echo $newgroup_text['admin'];?></label></td>
+      <td><input id="isadmin" type="checkbox" name="is_admin" value="1"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $newgroup_text['opennewtasks'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_open_jobs" value="1" /></td>
+      <td><label for="canopenjobs"><?php echo $newgroup_text['opennewtasks'];?></label></td>
+      <td><input id="canopenjobs" type="checkbox" name="can_open_jobs" value="1"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $newgroup_text['modifytasks'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_modify_jobs" value="1" /></td>
+      <td><label for="canmodifyjobs"><?php echo $newgroup_text['modifytasks'];?></label></td>
+      <td><input id="canmodifyjobs" type="checkbox" name="can_modify_jobs" value="1"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $newgroup_text['addcomments'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_add_comments" value="1" /></td>
+      <td><label for="canaddcomments"><?php echo $newgroup_text['addcomments'];?></label></td>
+      <td><input id="canaddcomments" type="checkbox" name="can_add_comments" value="1"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $newgroup_text['attachfiles'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_attach_files" value="1" /></td>
+      <td><label for="canattachfiles"><?php echo $newgroup_text['attachfiles'];?></label></td>
+      <td><input id="canattachfiles" type="checkbox" name="can_attach_files" value="1"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $newgroup_text['vote'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_vote" value="1" /></td>
+      <td><label for="canvote"><?php echo $newgroup_text['vote'];?></label></td>
+      <td><input id="canvote" type="checkbox" name="can_vote" value="1"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $newgroup_text['groupenabled'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="group_open" value="1" /></td>
+      <td><label for="groupopen"><?php echo $newgroup_text['groupenabled'];?></label></td>
+      <td><input id="groupopen" type="checkbox" name="group_open" value="1"></td>
     </tr>
     <tr>
-      <td colspan="2" align="center"><input class="adminbutton" type="submit" value="<?php echo $newgroup_text['addthisgroup'];?>" /></td>
+      <td colspan="2" class="buttons">
+        <input class="adminbutton" type="submit" value="<?php echo $newgroup_text['addthisgroup'];?>">
+      </td>
     </tr>
   </table>
     </form>
 
-</div>
 </body>
 </html>
 

@@ -68,7 +68,7 @@ $modify_text = array (
 'usernametaken'		=>	'That username is already taken.',
 'newusercreated'	=>	'New User Account has been created.',
 'accountcreated'	=>	'Your account has been created.',
-'newuserwarning'	=>	'Note that the application settings might require your account to be approved by an admin.  If you cannot login, this is probably why.',
+'newuserwarning'	=>	'Note that the global preferences might require your account to be approved by an admin.  If you cannot login, this is probably why.',
 'nomatchpass'		=>	'Passwords didn\'t match.',
 'confirmwrong'		=>	'Confirmation code is incorrect!',
 'formnotcomplete'	=>	'Form was not completely filled in.',
@@ -93,7 +93,7 @@ $modify_text = array (
 'groupupdated'		=>	'Group definition updated.',
 'groupanddesc'		=>	'You didn\'t fill in the Group name and description fields.',
 
-'fillallfields'	=>	'Please fill in all fields.',
+'fillallfields'		=>	'Please fill in all fields.',
 'listupdated'		=>	'List has been updated.',
 'listitemadded'		=>	'New list item added.',
 
@@ -110,7 +110,16 @@ $modify_text = array (
 'editcommentsaved'	=>	'Updated comment saved.',
 'commentdeleted'	=>	'Comment has been deleted.',
 
+// Added in version 0.9.5
 
+'project'			=>	'Project:',
+'gotonewtask'		=>	'Go to the new task you just created',
+'addanother'		=>	'Add another task to this Project',
+'projectcreated'	=>	'Your new Project has been created.  Follow the link below to set up your category, operating system and version lists',
+'customiseproject'	=>	'Customise this project',
+'projectupdated'	=>	'Project preferences updated',
+'emptytitle'		=>	'You left the Project Title field blank.  Go back and fix it.',
+'loginbelow'		=>	'You may now attempt to login using the form below.',
 
 );
 ?>

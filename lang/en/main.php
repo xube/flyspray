@@ -24,5 +24,12 @@ $language = array (
 'disabledaccount'	=>	'Your account has been disabled!<br>Immediately logging you out...',
 'poweredby'			=>	'Powered by Flyspray 0.9.4',
 
+// Added in version 0.9.5
+
+'selectproject'		=>	'Task list for Project:',
+'show'				=>	'Show',
+'projects'			=>	'Projects',
+'adminmenu'			=>	'Admin Menu',
+
 );
 ?>

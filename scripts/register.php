@@ -1,84 +1,57 @@
 <?php
-include('../header.php');
-
-// Get the application preferences into an array
-$flyspray_prefs = $fs->getGlobalPrefs();
-
-$lang = $flyspray_prefs['lang_code'];
-require("../lang/$lang/register.php");
-header('Content-type: text/html; charset=utf-8');
+require("lang/$lang/register.php");
 
 // The application preferences allow anonymous signups
 if ($flyspray_prefs['anon_open'] != "0" && !$_SESSION['userid']) {
-?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<head>
-  <title>Flyspray: <?php echo $register_text['registernewuser'];?></title>
-  <link href="../themes/<?php echo $flyspray_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
-  <script language="javascript" type="text/javascript">
-    function Disable()
-    {
-    document.form1.buSubmit.disabled = true;
-    document.form1.submit();
-    }
-  </script>
-</head>
-
-<body>
-
-<div align="center">
-<?php
 // The first page of signup.
 if (!$_GET['page']) {
 ?>
+<form name="form1" action="index.php" method="get" id="registernewuser">
 
-<b class="subheading"><?php echo $register_text['registernewuser'];?></b>
-<br>
-<i class="admintext"><?php echo $register_text['requiredfields'];?></i> <font color="red">*</font>
+<h1><?php echo $register_text['registernewuser'];?></h1>
 
-    <form name="form1" action="register.php" method="get">
+<p><em><?php echo $register_text['requiredfields'];?></em> <strong>*</strong></p>
+
   <table class="admin">
     <tr>
-      <input type="hidden" name="page" value="2">
-      <td class="adminlabel">
-      <?php echo $register_text['username'];?></td>
-      <td align="left"><input class="admintext" name="user_name" type="text" size="20" maxlength="20"><font color="red">*</font></td>
+      <td>
+        <input type="hidden" name="do" value="register">
+        <input type="hidden" name="page" value="2">
+        <label for="username"><?php echo $register_text['username'];?></label></td>
+      <td><input id="username" name="user_name" type="text" size="20" maxlength="20"><strong>*</strong></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $register_text['realname'];?></td>
-      <td align="left"><input class="admintext" name="real_name" type="text" size="20" maxlength="100"><font color="red">*</font></td>
+      <td><label for="realname"><?php echo $register_text['realname'];?></label></td>
+      <td><input id="realname" name="real_name" type="text" size="20" maxlength="100"><strong>*</strong></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $register_text['emailaddress'];?></td>
-      <td align="left"><input class="admintext" name="email_address" type="text" size="20" maxlength="100"></td>
+      <td><label for="emailaddress"><?php echo $register_text['emailaddress'];?></label></td>
+      <td><input id="emailaddress" name="email_address" type="text" size="20" maxlength="100"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $register_text['jabberid'];?></td>
-      <td align="left"><input class="admintext" name="jabber_id" type="text" size="20" maxlength="100"></td>
+      <td><label for="jabberid"><?php echo $register_text['jabberid'];?></label></td>
+      <td><input id="jabberid" name="jabber_id" type="text" size="20" maxlength="100"></td>
     </tr>
     <tr>
-      <td class="adminlabel" valign="top"><?php echo $register_text['notifications'];?></td>
-      <td class="admintext" align="left">
-      <input class="admintext" type="radio" name="notify_type" value="1"><?php echo $register_text['email'];?> <br>
-      <input class="admintext" type="radio" name="notify_type" value="2"><?php echo $register_text['jabber'];?> <br>
+      <td><label><?php echo $register_text['notifications'];?></label></td>
+      <td>
+      <input type="radio" name="notify_type" value="1"><?php echo $register_text['email'];?> <br>
+      <input type="radio" name="notify_type" value="2"><?php echo $register_text['jabber'];?>
       </td>
     </tr>
     <tr>
-      <td class="admintext" align="left" colspan="2">
-      <br>
+      <td colspan="2">
       <?php echo $register_text['note'];?>
-      <br>
       </td>
     </tr>
     <tr>
-      <td colspan="2" align="center">
-      <br>
-      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $register_text['sendcode'];?>" onclick="Disable()">
+      <td colspan="2" class="buttons">
+      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $register_text['sendcode'];?>" onclick="Disable1()">
       </td>
     </tr>
   </table>
-    </form>
+</form>
 
 <?php
 } elseif ($_GET['page'] == '2') {
@@ -89,10 +62,11 @@ if (!$_GET['page']) {
   ) {
 
     // Check to see if the username is available
-    $check_username = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_name = '{$_GET['user_name']}'");
+    $check_username = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_name = ?",
+			    array($_GET['user_name']));
     if ($fs->dbCountRows($check_username)) {
-      echo "<table class=\"admin\"><tr><td class=\"admintext\" align=\"left\">{$register_text['usernametaken']}<br><br>";
-      echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></td></tr></table>";
+      echo "<p class=\"admin\">{$register_text['usernametaken']}<br>";
+      echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></p>";
     } else {
 
     // Check that a confirmation code has been generated
@@ -101,7 +75,8 @@ if (!$_GET['page']) {
       // Delete registration codes older than 24 hours
       $now = date(U);
       $yesterday = $now - '86400';
-      $remove = $fs->dbQuery("DELETE FROM flyspray_registrations WHERE reg_time < '$yesterday'");
+      $remove = $fs->dbQuery("DELETE FROM flyspray_registrations WHERE reg_time < ?",
+				array($yesterday));
 
       // Generate a random bunch of numbers
       // This function came from ZenTrack http://zentrack.phpzen.net/
@@ -118,13 +93,15 @@ if (!$_GET['page']) {
       // Store the registration reference in the session
       $_SESSION['reg_ref'] = $now;
       // Insert everything into the database
-      $save_code = $fs->dbQuery("INSERT INTO flyspray_registrations VALUES ('', '$now', '$code')");
+      $save_code = $fs->dbQuery("INSERT INTO flyspray_registrations VALUES (?,?,?)",
+				array('', $now, $code));
 
     // End of generating a confirmation code and storing it etc
     };
 
     // Since we're not guaranteed of having the code passed from the above statement...
-    $get_code = $fs->dbQuery("SELECT * FROM flyspray_registrations WHERE reg_time = '{$_SESSION['reg_ref']}'");
+    $get_code = $fs->dbQuery("SELECT * FROM flyspray_registrations WHERE reg_time = ?",
+				array($_SESSION['reg_ref']));
 	$code_details = $fs->dbFetchArray($get_code);
 
 $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
@@ -155,10 +132,13 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
 ?>
-<b class="subheading"><?php echo $register_text['registernewuser'];?></b>
-   <form action="modify.php" name="form1" method="post">
+
+<h1><?php echo $register_text['registernewuser'];?></h1>
+<form action="index.php" name="form2" method="post" id="registernewuser">
   <table class="admin">
     <tr>
+      <td colspan="2">
+      <input type="hidden" name="do" value="modify">
       <input type="hidden" name="action" value="registeruser">
 
       <input type="hidden" name="user_name" value="<?php echo $_GET['user_name']; ?>">
@@ -166,29 +146,24 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       <input type="hidden" name="email_address" value="<?php echo $_GET['email_address']; ?>">
       <input type="hidden" name="jabber_id" value="<?php echo $_GET['jabber_id']; ?>">
       <input type="hidden" name="notify_type" value="<?php echo $_GET['notify_type']; ?>">
-
-      <td class="admintext" align="left" colspan="2">
-      <br>
       <?php echo $register_text['entercode']; ?>
-      <br><br>
       </td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $register_text['confirmationcode']; ?></td>
-      <td align="left"><input class="admintext" name="confirmation_code" type="text" size="20" maxlength="20"><font color="red">*</font></td>
+      <td><label for="confirmationcode"><?php echo $register_text['confirmationcode']; ?></label></td>
+      <td><input id="confirmationcode" name="confirmation_code" type="text" size="20" maxlength="20"><strong>*</strong></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $register_text['password'];?></td>
-      <td align="left"><input class="admintext" name="user_pass" type="password" size="20" maxlength="100"><font color="red">*</font></td>
+      <td><label for="userpass"><?php echo $register_text['password'];?></label></td>
+      <td><input id="userpass" name="user_pass" type="password" size="20" maxlength="100"><strong>*</strong></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $register_text['confirmpass'];?></td>
-      <td align="left"><input class="admintext" name="user_pass2" type="password" size="20" maxlength="100"><font color="red">*</font></td>
+      <td><label for="userpass2"><?php echo $register_text['confirmpass'];?></label></td>
+      <td><input id="userpass2" name="user_pass2" type="password" size="20" maxlength="100"><strong>*</strong></td>
     </tr>
     <tr>
-      <td colspan="2">
-      <br>
-      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $register_text['registeraccount'];?>" onclick="Disable()">
+      <td colspan="2" class="buttons">
+      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $register_text['registeraccount'];?>">
       </td>
     </tr>
   </table>
@@ -204,15 +179,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } else {
 ?>
 
-<table class="admin">
-  <tr>
-    <td class="admintext" align="left">
-    <?php echo $register_text['registererror']; ?>
-    <br><br>
-    <a href="javascript:history.back();"><?php echo $register_text['goback']; ?></a>
-    </td>
-  </tr>
-</table>
+<p class="admin">
+ <?php echo $register_text['registererror']; ?>
+ <br>
+ <a href="javascript:history.back();"><?php echo $register_text['goback']; ?></a>
+</p>
 
 <?php
 // End of checking that the user has filled in the form correctly
@@ -222,7 +193,6 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 };
 ?>
 
-</div>
 </body>
 </html>
 

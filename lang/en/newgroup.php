@@ -11,9 +11,13 @@ $newgroup_text = array (
 'modifytasks'		=>	'Modify existing tasks',
 'addcomments'		=>	'Add comments',
 'attachfiles'		=>	'Attach files',
-'vote'				=>	'Members can login',
+'vote'				=>	'Vote',
 'addthisgroup'		=>	'Add this group',
 'nopermission'		=>	'You don\'t have permission to use this page',
+
+//  Added in version 0.9.5
+
+'groupenabled'		=>	'Members can login',
 
 );
 ?>

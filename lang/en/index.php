@@ -22,5 +22,8 @@ $index_text = array (
 'previous'			=>	'Previous',
 'next'				=>	'Next',
 
+// Added in version 0.9.5
+'searchthisproject'	=>	'Search this project',
+
 );
 ?>

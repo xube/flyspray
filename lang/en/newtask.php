@@ -18,5 +18,9 @@ $newtask_text = array (
 'addthistask'		=>	'Add this task',
 'nopermission'		=>	'You don\'t have permission to use this page',
 
+// Added in version 0.9.5
+
+'notifyme'			=>	'Notify me whenever this task changes',
+
 );
 ?>

@@ -4,43 +4,47 @@
 $lang = $flyspray_prefs['lang_code'];
 require("lang/$lang/admin.php");
 
+// fill missing variables
+
 // Editing Users
 if (($_SESSION['admin'] == "1" OR $_SESSION['userid'] == $_GET['id']) && ($_GET['area'] == "users")) {
 
 // if we want a specific user
 if ($_GET['id']) {
 
-$get_user_details = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = '{$_GET['id']}'");
+$get_user_details = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_GET['id']));
 $user_details = $fs->dbFetchArray($get_user_details);
 
-echo "<h3 class=\"subheading\">{$admin_text['edituser']} - {$user_details['real_name']} ({$user_details['user_name']})</h3>";
+echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_details['user_name']})</h3>";
 ?>
+<form action="index.php" method="post">
   <table class="admin">
-    <form action="index.php" method="post">
     <tr>
+      <td>
       <input type="hidden" name="do" value="modify">
       <input type="hidden" name="action" value="edituser">
       <input type="hidden" name="user_id" value="<?php echo $user_details['user_id'];?>">
       
-      <td class="adminlabel"><?php echo $admin_text['realname'];?></td>
-      <td><input class="admintext" type="text" name="real_name" size="50" maxlength="100" value="<?php echo $user_details['real_name'];?>"></td>
+      <label for="realname"><?php echo $admin_text['realname'];?></label>
+      </td>
+      <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo $user_details['real_name'];?>"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['emailaddress'];?></td>
-      <td><input class="admintext" type="text" name="email_address" size="50" maxlength="100" value="<?php echo $user_details['email_address'];?>"></td>
+      <td><label for="emailaddress"><?php echo $admin_text['emailaddress'];?></label></td>
+      <td><input id="emailaddress" type="text" name="email_address" size="50" maxlength="100" value="<?php echo $user_details['email_address'];?>"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['jabberid'];?></td>
-      <td><input class="admintext" type="text" name="jabber_id" size="50" maxlength="100" value="<?php echo $user_details['jabber_id'];?>"></td>
+      <td><label for="jabberid"><?php echo $admin_text['jabberid'];?></label></td>
+      <td><input id="jabberid" type="text" name="jabber_id" size="50" maxlength="100" value="<?php echo $user_details['jabber_id'];?>"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['notifytype'];?></td>
-      <td align="left" class="admintext">
+      <td><label for="notifytype"><?php echo $admin_text['notifytype'];?></label></td>
+      <td>
       <?php if ($flyspray_prefs['user_notify'] == '1') { ?>
-      <select class="adminlist" name="notify_type">
-        <option value="0" <?php if ($user_details['notify_type'] == "0") {echo "SELECTED";};?>>None</option>
-        <option value="1" <?php if ($user_details['notify_type'] == "1") {echo "SELECTED";};?>>Email</option>
-        <option value="2" <?php if ($user_details['notify_type'] == "2") {echo "SELECTED";};?>>Jabber</option>
+      <select id="notifytype" name="notify_type">
+        <option value="0" <?php if ($user_details['notify_type'] == "0") {echo "selected=\"selected\"";};?>>None</option>
+        <option value="1" <?php if ($user_details['notify_type'] == "1") {echo "selected=\"selected\"";};?>>Email</option>
+        <option value="2" <?php if ($user_details['notify_type'] == "2") {echo "selected=\"selected\"";};?>>Jabber</option>
       </select>
       <?php
       } else {
@@ -52,15 +56,15 @@ echo "<h3 class=\"subheading\">{$admin_text['edituser']} - {$user_details['real_
     if ($_SESSION['admin'] == '1') {
     ?>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['group'];?></td>
-      <td align="left">
-      <select class="adminlist" name="group_in">
+      <td><label for="groupin"><?php echo $admin_text['group'];?></label></td>
+      <td>
+      <select id="groupin" name="group_in">
       <?php
       // Get the groups list
       $get_groups = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
       while ($row = $fs->dbFetchArray($get_groups)) {
         if ($row['group_id'] == $user_details['group_in']) {
-          echo "<option value=\"{$row['group_id']}\" SELECTED>{$row['group_name']}</option>";
+          echo "<option value=\"{$row['group_id']}\" selected=\"selected\">{$row['group_name']}</option>";
         } else {
           echo "<option value=\"{$row['group_id']}\">{$row['group_name']}</option>";
         };
@@ -70,107 +74,105 @@ echo "<h3 class=\"subheading\">{$admin_text['edituser']} - {$user_details['real_
       </td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['accountenabled'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "CHECKED";};?>></td>
+      <td><label for="accountenabled"><?php echo $admin_text['accountenabled'];?></label></td>
+      <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?>></td>
     </tr>
     <?php
     };
     ?>
     <tr>
-      <td colspan="2" align="center"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
+      <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
     </tr>
-    </form>
   </table>
+</form>
 
 <?php
 // Show users list
-} else {
+} elseif ($_SESSION['admin'] == "1") {
 
-echo "<h3 class=\"subheading\">{$admin_text['usergroupmanage']}</h3>";
-echo "<a class=\"admintext\" href=\"javascript:void(0)\" onClick=\"window.open('scripts/newuser.php','Register', 'width=350,height=380,toobar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1'); return false\">{$admin_text['newuser']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
-echo "<a class=\"admintext\" href=\"javascript:void(0)\" onClick=\"window.open('scripts/newgroup.php','NewGroup', 'width=550,height=350,toobar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1'); return false\">{$admin_text['newgroup']}</a><br><br>";
+echo "<h3>{$admin_text['usergroupmanage']}</h3>";
+echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | ";
+echo "<a href=\"index.php?do=newgroup\">{$admin_text['newgroup']}</a></p>";
 
 $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups ORDER BY group_id ASC");
 while ($group = $fs->dbFetchArray($get_groups)) {
-  echo "<table class=\"admin\"><tr><td align=\center\">";
-  echo "<a class=\"adminlabel\" href=\"?do=admin&amp;area=groups&id={$group['group_id']}\">{$group['group_name']}</a><br>";
-  echo "<i class=\"admintext\">{$group['group_desc']}</i><br>";
-  echo "<table class=\"admin\" border=\"1\" cellpadding=\"2\"><tr><td class=\"adminlabel\">{$admin_text['username']}</td><td class=\"adminlabel\">{$admin_text['realname']}</td><td class=\"adminlabel\">{$admin_text['accountenabled']}</td></tr>";
+  echo "<h4><a href=\"?do=admin&amp;area=groups&amp;id={$group['group_id']}\">{$group['group_name']}</a></h4>";
+  echo "<p>{$group['group_desc']}</p>";
+  echo "<table class=\"userlist\"><tr><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>";
 
-  $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users WHERE group_in = '{$group['group_id']}' ORDER BY user_name ASC");
+  $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users WHERE group_in = ? ORDER BY user_name ASC", array($group['group_id']));
   while ($row = $fs->dbFetchArray($get_user_list)) {
     echo "<tr>";
-    echo "<td class=\"adminlabel\"><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>";
-    echo "<td class=\"admintext\">{$row['real_name']}</td>";
+    echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>";
+    echo "<td>{$row['real_name']}</td>";
     if ($row['account_enabled'] == "1") {
-      echo "<td class=\"admintext\">{$admin_text['yes']}</td>";
+      echo "<td>{$admin_text['yes']}</td>";
     } else {
-      echo "<td class=\"admintext\">{$admin_text['no']}</td>";
+      echo "<td>{$admin_text['no']}</td>";
     };
     echo "</tr>";
   };
 
   echo "</table>";
-  echo "</td></tr></table><br /";
 };
 
 // End of users
 };
 
-
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "groups") {
 
-$get_group_details = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = '{$_GET['id']}'");
+$get_group_details = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_GET['id']));
 $group_details = $fs->dbFetchArray($get_group_details);
 ?>
-  <h3 class="subheading"><?php echo $admin_text['editgroup'];?></h3>
+  <h3><?php echo $admin_text['editgroup'];?></h3>
+  <form action="index.php" method="post">
   <table class="admin">
-    <form action="index.php" method="post">
     <tr>
+      <td>
       <input type="hidden" name="do" value="modify">
       <input type="hidden" name="action" value="editgroup">
       <input type="hidden" name="group_id" value="<?php echo $group_details['group_id'];?>">
 
-      <td class="adminlabel"><?php echo $admin_text['groupname'];?></td>
-      <td align="left"><input class="admintext" type="text" name="group_name" size="20" maxlength="20" value="<?php echo $group_details['group_name'];?>"></td>
+      <label for="groupname"><?php echo $admin_text['groupname'];?></label></td>
+      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo $group_details['group_name'];?>"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['description'];?></td>
-      <td align="left"><input class="admintext" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo $group_details['group_desc'];?>"></td>
+      <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
+      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo $group_details['group_desc'];?>"></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['admin'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="is_admin" value="1" <?php if ($group_details['is_admin'] == "1") { echo "CHECKED";};?>></td>
+      <td><label for="isadmin"><?php echo $admin_text['admin'];?></label></td>
+      <td><input id="isadmin" type="checkbox" name="is_admin" value="1" <?php if ($group_details['is_admin'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['opennewtasks'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_open_jobs" value="1" <?php if ($group_details['can_open_jobs'] == "1") { echo "CHECKED";};?>></td>
+      <td><label for="canopenjobs"><?php echo $admin_text['opennewtasks'];?></label></td>
+      <td><input id="canopenjobs" type="checkbox" name="can_open_jobs" value="1" <?php if ($group_details['can_open_jobs'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['modifytasks'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_modify_jobs" value="1" <?php if ($group_details['can_modify_jobs'] == "1") { echo "CHECKED";};?>></td>
+      <td><label for="canmodifyjobs"><?php echo $admin_text['modifytasks'];?></label></td>
+      <td><input id="canmodifyjobs" type="checkbox" name="can_modify_jobs" value="1" <?php if ($group_details['can_modify_jobs'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['addcomments'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_add_comments" value="1" <?php if ($group_details['can_add_comments'] == "1") { echo "CHECKED";};?>></td>
+      <td><label for="canaddcomments"><?php echo $admin_text['addcomments'];?></label></td>
+      <td><input id="canaddcomments" type="checkbox" name="can_add_comments" value="1" <?php if ($group_details['can_add_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['attachfiles'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_attach_files" value="1" <?php if ($group_details['can_attach_files'] == "1") { echo "CHECKED";};?>></td>
+      <td><label for="canattachfiles"><?php echo $admin_text['attachfiles'];?></label></td>
+      <td><input id="canattachfiles" type="checkbox" name="can_attach_files" value="1" <?php if ($group_details['can_attach_files'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['vote'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="can_vote" value="1" <?php if ($group_details['can_vote'] == "1") { echo "CHECKED";};?>></td>
+      <td><label for="canvote"><?php echo $admin_text['vote'];?></label></td>
+      <td><input id="canvote" type="checkbox" name="can_vote" value="1" <?php if ($group_details['can_vote'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td class="adminlabel"><?php echo $admin_text['groupenabled'];?></td>
-      <td align="left"><input class="admintext" type="checkbox" name="group_open" value="1" <?php if ($group_details['group_open'] == "1") { echo "CHECKED";};?>></td>
+      <td><label for="groupopen"><?php echo $admin_text['groupenabled'];?></label></td>
+      <td><input id="groupopen" type="checkbox" name="group_open" value="1" <?php if ($group_details['group_open'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td colspan="2" align="center"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
+      <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
     </tr>
-    </form>
   </table>
+  </form>
 
 <?php
 // End of groups
@@ -178,49 +180,59 @@ $group_details = $fs->dbFetchArray($get_group_details);
 // Start of task types
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "tasktype") {
 ?>
-  <h3 class="subheading"><?php echo $admin_text['tasktypelist'];?></h3>
-  <i class="admintext"><?php echo $admin_text['listnote'];?></i>
-  <table class="admin">
-    <tr>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['name'];?></td>
-      <td class="adminlabel"><?php echo $admin_text['order'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['show'];?></td>
-    </tr>
+  <h3><?php echo $admin_text['tasktypelist'];?></h3>
+  <p><?php echo $admin_text['listnote'];?></p>
+  <div class="admin">
     <?php
     $get_tasktypes = $fs->dbQuery("SELECT * FROM flyspray_list_tasktype ORDER BY list_position");
+    $countlines = 0;
     while ($row = $fs->dbFetchArray($get_tasktypes)) {
     ?>
-    <tr>
     <form action="index.php" method="post">
+    <table class="list">
+    <tr>
+      <td>
       <input type="hidden" name="do" value="modify">
       <input type="hidden" name="action" value="update_list">
       <input type="hidden" name="list_type" value="tasktype">
       <input type="hidden" name="id" value="<?php echo $row['tasktype_id'];?>">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['tasktype_name'];?>"></td>
-      <td title="The order these items will appear in the TaskType list"><input class="admintext" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>"></td>
-      <td title="Show this item in the TaskType list" align="center"><input class="admintext" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "CHECKED";};?>>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
-    </form>
+      <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
+      <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['tasktype_name'];?>"></td>
+      <td title="The order these items will appear in the TaskType list">
+        <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
+        <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+      </td>
+      <td title="Show this item in the TaskType list">
+        <label for="showinlist<?php echo $countlines?>"><?php echo $admin_text['show'];?></label>
+        <input id="showinlist<?php echo $countlines?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+      </td>
+      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
     </tr>
+    </table>
+    </form>
     <?php
+      $countlines++;
     };
     ?>
-    <tr>
-      <td height="15" colspan="4"><hr></td>
-    </tr>
-    <tr>
+    <hr>
     <form action="index.php" method="post">
+    <table class="list">
+     <tr>
+      <td>
       <input type="hidden" name="do" value="modify">
       <input type="hidden" name="action" value="add_to_list">
       <input type="hidden" name="list_type" value="tasktype">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name"></td>
-      <td><input class="admintext" type="text" size="3" maxlength="3" name="list_position"></td>
-      <td><input class="admintext" type="checkbox" name="show_in_list" CHECKED DISABLED/></td>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
-    </form>
+      <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+      <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name"></td>
+      <td><label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position"></td>
+      <td><label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled"></td>
+      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
     </tr>
   </table>
-
+    </form>
+  </div>
 
 <?
 // End of task types
@@ -228,74 +240,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
 // Start of categories
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "category") {
 ?>
-  <h3 class="subheading"><?php echo $admin_text['categorylist'];?></h3>
-  <i class="admintext"><?php echo $admin_text['listnote'];?></i>
-  <table class="admin">
-    <tr>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['name'];?></td>
-      <td class="adminlabel"><?php echo $admin_text['order'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['show'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['owner'];?></td>
-    </tr>
-    <?php
-    $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category ORDER BY list_position");
-    while ($row = $fs->dbFetchArray($get_categories)) {
-    ?>
-    <tr>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="update_category">
-      <input type="hidden" name="list_type" value="category">
-      <input type="hidden" name="id" value="<?php echo $row['category_id'];?>">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['category_name'];?>"></td>
-      <td title="The order these items will appear in the Category list"><input class="admintext" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>"></td>
-      <td title="Show this item in the Category list" align="center"><input class="admintext" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "CHECKED";};?>>
-      <td title="This person will receive notifications when a task in this category is opened" align="center">
-      <select class="adminlist" name="category_owner">
-        <option value=""><?php echo $admin_text['selectowner'];?></option>
-        <?php
-        $dev_list = $fs->dbQuery($fs->listUserQuery());
-        while ($subrow = $fs->dbFetchArray($dev_list)) {
-          if ($row['category_owner'] == $subrow['user_id']) {
-            echo "<option value=\"{$subrow['user_id']}\" SELECTED>{$subrow['real_name']} ({$subrow['user_name']})</option>\n";
-          } else {
-            echo "<option value=\"{$subrow['user_id']}\">{$subrow['real_name']} ({$subrow['user_name']})</option>\n";
-          };
-        };
-        ?>
-      </select>
-      </td>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
-    </form>
-    </tr>
-    <?php
-    };
-    ?>
-    <tr>
-      <td height="15" colspan="4"><hr></td>
-    </tr>
-    <tr>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="add_category">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name"></td>
-      <td><input class="admintext" type="text" size="3" maxlength="3" name="list_position"></td>
-      <td><input class="admintext" type="checkbox" name="show_in_list" CHECKED DISABLED/></td>
-      <td title="This person will receive notifications when a task in this category is opened" align="center">
-      <select class="adminlist" name="category_owner">
-        <option value=""><?php echo $admin_text['selectowner'];?></option>
-        <?php
-        $dev_list = $fs->dbQuery($fs->listUserQuery());
-        while ($subrow = $fs->dbFetchArray($dev_list)) {
-            echo "<option value=\"{$subrow['user_id']}\">{$subrow['real_name']} ({$subrow['user_name']})</option>\n";
-        };
-        ?>
-      </select>
-      </td>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
-    </form>
-    </tr>
-  </table>
+
 
 
 <?
@@ -305,101 +250,71 @@ $group_details = $fs->dbFetchArray($get_group_details);
 // Start of operating systems list
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "os") {
 ?>
-  <h3 class="subheading"><?php echo $admin_text['oslist'];?></h3>
-  <i class="admintext"><?php echo $admin_text['listnote'];?></i>
-  <table class="admin">
-    <tr>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['name'];?></td>
-      <td class="adminlabel"><?php echo $admin_text['order'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['show'];?></td>
-    </tr>
-    <?php
-    $get_os = $fs->dbQuery("SELECT * FROM flyspray_list_os ORDER BY list_position");
-    while ($row = $fs->dbFetchArray($get_os)) {
-    ?>
-    <tr>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="update_list">
-      <input type="hidden" name="list_type" value="os">
-      <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['os_name'];?>"></td>
-      <td title="The order these items will appear in the Operating System list"><input class="admintext" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>"></td>
-      <td title="Show this item in the Operating System list" align="center"><input class="admintext" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "CHECKED";};?>>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
-    </form>
-    </tr>
-    <?php
-    };
-    ?>
-    <tr>
-      <td height="15" colspan="4"><hr></td>
-    </tr>
-    <tr>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="add_to_list">
-      <input type="hidden" name="list_type" value="os">
-      <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name"></td>
-      <td><input class="admintext" type="text" size="3" maxlength="3" name="list_position"></td>
-      <td><input class="admintext" type="checkbox" name="show_in_list" CHECKED DISABLED/></td>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
-    </form>
-    </tr>
-  </table>
-
-
 <?
 // End of operating systems
 
 // Start of Resolutions
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "resolution") {
 ?>
-  <h3 class="subheading"><?php echo $admin_text['resolutionlist'];?></h3>
-  <i class="admintext"><?php echo $admin_text['listnote'];?></i>
-  
-  <table class="admin">
-    <tr>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['name'];?></td>
-      <td class="adminlabel"><?php echo $admin_text['order'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['show'];?></td>
-    </tr>
+  <h3><?php echo $admin_text['resolutionlist'];?></h3>
+  <p><?php echo $admin_text['listnote'];?></p>
+  <div class="admin">
     <?php
     $get_resolution = $fs->dbQuery("SELECT * FROM flyspray_list_resolution ORDER BY list_position");
+    $countlines=0;
     while ($row = $fs->dbFetchArray($get_resolution)) {
     ?>
-    <tr>
     <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="update_list">
-      <input type="hidden" name="list_type" value="resolution">
-      <input type="hidden" name="id" value="<?php echo $row['resolution_id'];?>">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['resolution_name'];?>"></td>
-      <td title="The order these items will be shown in the Resolution list"><input class="admintext" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>"></td>
-      <td title="Show this item in the Resolution list" align="center"><input class="admintext" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "CHECKED";};?>>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+    <table class="list">
+      <tr>
+        <td>
+          <input type="hidden" name="do" value="modify">
+          <input type="hidden" name="action" value="update_list">
+          <input type="hidden" name="list_type" value="resolution">
+          <input type="hidden" name="id" value="<?php echo $row['resolution_id'];?>">
+          <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['resolution_name'];?>">
+        </td>
+        <td title="The order these items will be shown in the Resolution list">
+          <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+        </td>
+        <td title="Show this item in the Resolution list">
+          <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        </td>
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+      </tr>
+    </table>
     </form>
-    </tr>
     <?php
+      $countlines++;
     };
     ?>
-    <tr>
-      <td height="15" colspan="4"><hr></td>
-    </tr>
-    <tr>
+    <hr>
     <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="add_to_list">
-      <input type="hidden" name="list_type" value="resolution">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name"></td>
-      <td><input class="admintext" type="text" size="3" maxlength="3" name="list_position"></td>
-      <td><input class="admintext" type="checkbox" name="show_in_list" CHECKED DISABLED/></td>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+    <table class="list">
+      <tr>
+        <td>
+          <input type="hidden" name="do" value="modify">
+          <input type="hidden" name="action" value="add_to_list">
+          <input type="hidden" name="list_type" value="resolution">
+          <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+          <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
+        </td>
+        <td>
+          <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
+        </td>
+        <td>
+          <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
+        </td>
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+      </tr>
+    </table>
     </form>
-    </tr>
-  </table>
-
+</div>
 
 <?
 // End of Resolutions
@@ -407,138 +322,61 @@ $group_details = $fs->dbFetchArray($get_group_details);
 // Start of versions
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "version") {
 ?>
-  <h3 class="subheading"><?php echo $admin_text['versionlist'];?></h3>
-  <i class="admintext"><?php echo $admin_text['listnote'];?></i>
-  <table class="admin">
-    <tr>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['name'];?></td>
-      <td class="adminlabel"><?php echo $admin_text['order'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['show'];?></td>
-    </tr>
-    <?php
-    $get_version = $fs->dbQuery("SELECT * FROM flyspray_list_version ORDER BY list_position");
-    while ($row = $fs->dbFetchArray($get_version)) {
-    ?>
-    <tr>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="update_list">
-      <input type="hidden" name="list_type" value="version">
-      <input type="hidden" name="id" value="<?php echo $row['version_id'];?>">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['version_name'];?>"></td>
-      <td title="The order the items are shown in the Version list"><input class="admintext" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>"></td>
-      <td align="center" title="Show this item in the Version list"><input class="admintext" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "CHECKED";};?>>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
-    </form>
-    </tr>
-    <?php
-    };
-    ?>
-    <tr>
-      <td height="15" colspan="4"><hr></td>
-    </tr>
-    <tr>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="add_to_list">
-      <input type="hidden" name="list_type" value="version">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="list_name"></td>
-      <td><input class="admintext" type="text" size="3" maxlength="3" name="list_position"></td>
-      <td><input class="admintext" type="checkbox" name="show_in_list" CHECKED DISABLED/></td>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
-    </form>
-    </tr>
-  </table>
 
 
 <?
 // End of Versions
 
-// Start of Severities
-/*
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "severity") {
-?>
-  <h3 class="subheading"><?php echo $admin_text['severitylist'];?></h3>
-  <i class="admintext"><?php echo $admin_text['listnote'];?></i>
-  <table class="admin">
-    <tr>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['name'];?></td>
-      <td class="adminlabel"><?php echo $admin_text['order'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['back'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['text'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['highlight'];?></td>
-      <td class="adminlabel" style="text-align:center;"><?php echo $admin_text['show'];?></td>
-    </tr>
-    <?php
-    $get_severity = $fs->dbQuery("SELECT * FROM flyspray_list_severity ORDER BY list_position");
-    while ($row = $fs->dbFetchArray($get_severity)) {
-    ?>
-    <tr>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="update_severity">
-      <input type="hidden" name="id" value="<?php echo $row['severity_id'];?>">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="severity_name" value="<?php echo $row['severity_name'];?>"></td>
-      <td title="The order the items will be shown in the Severity List"><input class="admintext" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>"></td>
-      <td title="The background colour for tasks of this severity"><input name="back_colour" type="text" size="6" maxlength="6" style="background-color: #<?php echo $row['back_colour'];?>; color:#<?php echo $row['fore_colour'];?>" value="<?php echo $row['back_colour'];?>"></td>
-      <td title="The text colour for tasks of this severity"><input name="fore_colour" type="text" size="6" maxlength="6" style="background-color: #<?php echo $row['back_colour'];?>; color:#<?php echo $row['fore_colour'];?>" value="<?php echo $row['fore_colour'];?>"></td>
-      <td title="The highlight colour for tasks of this severity"><input name="highlight_colour" type="text" size="6" maxlength="6" style="background-color: #<?php echo $row['highlight_colour'];?>; color:#<?php echo $row['fore_colour'];?>" value="<?php echo $row['highlight_colour'];?>"></td>
-      <td title="Show this item in the Severity list" align="center"><input class="admintext" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "CHECKED";};?>>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
-    </form>
-    </tr>
-    <?php
-    };
-    ?>
-    <tr>
-      <td height="15" colspan="7"><hr></td>
-    </tr>
-    <tr>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="add_severity">
-      <td><input class="admintext" type="text" size="15" maxlength="20" name="severity_name"></td>
-      <td><input class="admintext" type="text" size="3" maxlength="3" name="list_position"></td>
-      <td><input class="admintext" type="text" size="6" maxlength="6" name="back_colour"></td>
-      <td><input class="admintext" type="text" size="6" maxlength="6" name="highlight_colour"></td>
-      <td><input class="admintext" type="text" size="6" maxlength="6" name="fore_colour"></td>
-      <td><input class="admintext" type="checkbox" name="show_in_list" CHECKED DISABLED/></td>
-      <td><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
-    </form>
-    </tr>
-  </table>
-
-
-<?
-*/
-// End of Severities
-
-
 // Start of application preferences
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "options") {
 ?>
-<h3 class="subheading"><?php echo $admin_text['flysprayprefs'];?></h3>
-  <form action="index.php" method="post">
+<h3><?php echo $admin_text['flysprayprefs'];?></h3>
+<form action="index.php" method="post">
 <table class="admin">
+
   <tr>
-    <td class="adminlabel">
-    <input type="hidden" name="do" value="modify">
-    <input type="hidden" name="action" value="globaloptions">
-    <?php echo $admin_text['projecttitle'];?></td>
-    <td class="admintext"><input class="admintext" name="project_title" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['project_title'];?>"></td>
+    <td>
+      <input type="hidden" name="do" value="modify">
+      <input type="hidden" name="action" value="globaloptions">
+      <label for="baseurl"><?php echo $admin_text['baseurl'];?></label>
+    </td>
+    <td>
+      <input id="baseurl" name="base_url" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['base_url'];?>">
+    </td>
   </tr>
   <tr>
-    <td class="adminlabel"><?php echo $admin_text['baseurl'];?></td>
-    <td class="admintext"><input class="admintext" name="base_url" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['base_url'];?>"></td>
+    <td>
+      <label for="adminemail"><?php echo $admin_text['replyaddress'];?></label>
+    </td>
+    <td>
+      <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['admin_email'];?>">
+    </td>
   </tr>
   <tr>
-    <td class="adminlabel"><?php echo $admin_text['replyaddress'];?></td>
-    <td class="admintext"><input class="admintext" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['admin_email'];?>"></td>
+    <td>
+    <label for="defaultproject"><?php echo $admin_text['defaultproject'];?></label>
+    </td>
+    <td>
+    <select name="default_project">
+    <?php
+    $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
+    while ($row = $fs->dbFetchArray($get_projects)) {
+      if ($flyspray_prefs['default_project'] == $row['project_id']) {
+        echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";
+      } else {
+        echo "<option value=\"{$row['project_id']}\">{$row['project_title']}</option>";
+      };
+    };
+    ?>
+    </select>
+    </td>
   </tr>
   <tr>
-    <td class="adminlabel"><?php echo $admin_text['language'];?></td>
-    <td class="admintext">
-    <select class="adminlist" name="lang_code">
+    <td>
+      <label for="langcode"><?php echo $admin_text['language'];?></label>
+    </td>
+    <td>
+      <select id="langcode" name="lang_code">
     <?php
     // Let's get a list of the available languages by reading the ./lang/ directory.
      if ($handle = opendir('lang/')) {
@@ -557,20 +395,206 @@ $group_details = $fs->dbFetchArray($get_group_details);
     while (list($key, $val) = each($lang_array)) {
       // If the theme is currently being used, pre-select it in the list
       if ($val == $flyspray_prefs['lang_code']) {
-        echo "<option class=\"adminlist\" SELECTED>$val</option>\n";
+        echo "<option class=\"adminlist\" selected=\"selected\">$val</option>\n";
         // If it's not, don't pre-select it
       } else {
       echo "<option class=\"adminlist\">$val</option>\n";
       };
     };
-    echo "</select></td>";
     ?>
     </select>
     </td>
   </tr>
+
   <tr>
-    <td class="adminlabel"><?php echo $admin_text['themestyle'];?></td>
-    <td  align="left" class="admintext"><select class="adminlist" name="theme_style">
+    <td>
+      <label for="anonview"><?php echo $admin_text['anonview']; ?></label>
+    </td>
+    <td>
+      <input id="anonview" type="checkbox" name="anon_view" value="1" <?php if ($flyspray_prefs['anon_view'] == '1') { echo "checked=\"checked\"";};?>>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="anonopen"><?php echo $admin_text['allowanon'];?></label>
+    </td>
+    <td>
+    <select id="anonopen" name="anon_open">
+      <option value="0" <?php if ($flyspray_prefs['anon_open'] == "0") { echo "selected=\"selected\"";};?>><?php echo $admin_text['never'];?></option>
+      <option value="1" <?php if ($flyspray_prefs['anon_open'] == "1") { echo "selected=\"selected\"";};?>><?php echo $admin_text['anonymously'];?></option>
+      <option value="2" <?php if ($flyspray_prefs['anon_open'] == "2") { echo "selected=\"selected\"";};?>><?php echo $admin_text['afterregister'];?></option>
+    </select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="spamproof"><?php echo $admin_text['spamproof']; ?></label>
+    </td>
+    <td>
+      <input id="spamproof" type="checkbox" name="spam_proof" value="1" <?php if ($flyspray_prefs['spam_proof'] == '1') { echo "checked=\"checked\"";};?>>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="anongroup"><?php echo $admin_text['anongroup'];?></label>
+    </td>
+    <td>
+      <select id="anongroup" name="anon_group">
+      <?php // Get the group names
+      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
+      while ($row = $fs->dbFetchArray($get_group_details)) {
+        if ($flyspray_prefs['anon_group'] == $row['group_id']) {
+          echo "<option value=\"{$row['group_id']}\" selected=\"selected\">{$row['group_name']}</option>";
+        } else {
+          echo "<option value=\"{$row['group_id']}\">{$row['group_name']}</option>";
+        };
+      };
+      ?>
+    </select>
+    </td>
+  </tr>
+  <tr>
+    <td><label><?php echo $admin_text['groupassigned'];?></label></td>
+    <td class="admintext">
+    <?php // Get the group names
+      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
+      while ($row = $fs->dbFetchArray($get_group_details)) {
+        if (ereg($row['group_id'], $flyspray_prefs['assigned_groups']) ) {
+          echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" checked=\"checked\">{$row['group_name']}<br>\n";
+        } else {
+          echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\">{$row['group_name']}<br>\n";
+        };
+      };
+      ?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="usernotify"><?php echo $admin_text['forcenotify'];?></label>
+    </td>
+    <td>
+    <select id="usernotify" name="user_notify">
+      <option value="0" <?php if ($flyspray_prefs['user_notify'] == "0") { echo "selected=\"selected\"";};?>><?php echo $admin_text['none'];?></option>
+      <option value="1" <?php if ($flyspray_prefs['user_notify'] == "1") { echo "selected=\"selected\"";};?>><?php echo $admin_text['userchoose'];?></option>
+      <option value="2" <?php if ($flyspray_prefs['user_notify'] == "2") { echo "selected=\"selected\"";};?>><?php echo $admin_text['email'];?></option>
+      <option value="3" <?php if ($flyspray_prefs['user_notify'] == "3") { echo "selected=\"\"";};?>><?php echo $admin_text['jabber'];?></option>
+    </select>
+    </td>
+  </tr>
+
+  <tr>
+    <th colspan="2"><hr>
+    <?php echo $admin_text['jabbernotify'];?>
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <label for="jabberserver"><?php echo $admin_text['jabberserver'];?></label>
+    </td>
+    <td>
+      <input id="jabberserver" name="jabber_server" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_server'];?>">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="jabberport"><?php echo $admin_text['jabberport'];?></label>
+    </td>
+    <td>
+      <input id="jabberport" name="jabber_port" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_port'];?>">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="jabberusername"><?php echo $admin_text['jabberuser'];?></label>
+    </td>
+    <td>
+      <input id="jabberusername" name="jabber_username" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_username'];?>">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="jabberpassword"><?php echo $admin_text['jabberpass'];?></label>
+    </td>
+    <td>
+      <input id="jabberpassword" name="jabber_password" type="password" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_password'];?>">
+    </td>
+  </tr>
+  <tr>
+    <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>"></td>
+  </tr>
+
+</table>
+  </form>
+
+
+<?php
+// End of application preferences
+
+// Start of project preferences
+} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "projects") {
+?>
+<form action="index.php" method="get">
+  <input type="hidden" name="do" value="admin">
+  <input type="hidden" name="area" value="projects">
+  <input type="hidden" name="show" value="prefs">
+    <p id="changeproject">
+      <h4><?php echo $admin_text['projectprefs'];?> -
+      <select name="id">
+      <?php
+      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
+      while ($row = $fs->dbFetchArray($get_projects)) {
+        if ($_GET['id'] == $row['project_id']) {
+          echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";
+        } else {
+          echo "<option value=\"{$row['project_id']}\">{$row['project_title']}</option>";
+        };
+      };
+      ?>
+      </select>
+      <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>">
+      </h4>
+    </p>
+</form>
+
+<p id="newprojectlink">
+<a href="<?php echo $flyspray_prefs['base_url'];?>?do=newproject"><?php echo $admin_text['createproject'];?></a>
+</p>
+
+<?php if ($_GET['id']) {
+
+  $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($_GET['id'])));
+
+?>
+    <span id="projectmenu">
+     <em><?php echo $admin_text['projectlists'];?></em>
+     <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=category"><?php echo $language['categories'];?></a>
+     <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=os"><?php echo $language['operatingsystems'];?></a>
+     <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=version"><?php echo $language['versions'];?></a>
+    </span>
+
+<?php if ($_GET['show'] == 'prefs') { ?>
+
+<form action="index.php" method="post">
+  <input type="hidden" name="do" value="modify">
+  <input type="hidden" name="action" value="updateproject">
+  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+<table class="admin">
+  <tr>
+    <td>
+
+      <label for="projecttitle"><?php echo $admin_text['projecttitle'];?></label>
+    </td>
+    <td>
+      <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo $project_details['project_title'];?>">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <label for="themestyle"><?php echo $admin_text['themestyle'];?></label>
+    </td>
+    <td>
+      <select id="themestyle" name="theme_style">
     <?php
     // Let's get a list of the theme names by reading the ./themes/ directory
     if ($handle = opendir('themes/')) {
@@ -588,141 +612,292 @@ $group_details = $fs->dbFetchArray($get_group_details);
     // Then display them
     while (list($key, $val) = each($theme_array)) {
       // If the theme is currently being used, pre-select it in the list
-      if ($val == $flyspray_prefs['theme_style']) {
-        echo "<option class=\"adminlist\" SELECTED>$val</option>\n";
+      if ($val == $project_details['theme_style']) {
+        echo "<option class=\"adminlist\" selected=\"selected\">$val</option>\n";
         // If it's not, don't pre-select it
       } else {
       echo "<option class=\"adminlist\">$val</option>\n";
       };
     };
-    echo "</select></td>";
     ?>
-  </tr>
-  <tr>
-    <td class="adminlabel"><?php echo $admin_text['anonview']; ?></td>
-    <td align="left" class="admintext"><input type="checkbox" name="anon_view" value="1" <?php if ($flyspray_prefs['anon_view'] == '1') { echo "CHECKED";};?>>
-    </td>
-  </tr>
-  <tr>
-    <td class="adminlabel"><?php echo $admin_text['allowanon'];?></td>
-    <td align="left" class="admintext">
-    <select class="adminlist" name="anon_open">
-      <option value="0" <?php if ($flyspray_prefs['anon_open'] == "0") { echo "SELECTED";};?>><?php echo $admin_text['never'];?></option>
-      <option value="1" <?php if ($flyspray_prefs['anon_open'] == "1") { echo "SELECTED";};?>><?php echo $admin_text['anonymously'];?></option>
-      <option value="2" <?php if ($flyspray_prefs['anon_open'] == "2") { echo "SELECTED";};?>><?php echo $admin_text['afterregister'];?></option>
     </select>
     </td>
   </tr>
   <tr>
-    <td class="adminlabel"><?php echo $admin_text['spamproof']; ?></td>
-    <td align="left" class="admintext"><input type="checkbox" name="spam_proof" value="1" <?php if ($flyspray_prefs['spam_proof'] == '1') { echo "CHECKED";};?>>
+    <td>
+    <label for="showlogo"><?php echo $admin_text['showlogo'];?></label>
+    </td>
+    <td>
+    <input type="checkbox" name="show_logo" value="1" <?php if ($project_details['show_logo'] == '1') { echo "CHECKED"; }; ?>>
     </td>
   </tr>
   <tr>
-    <td class="adminlabel"><?php echo $admin_text['anongroup'];?></td>
-    <td align="left" class="admintext">
-    <select class="adminlist" name="anon_group">
-      <?php // Get the group names
-      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
-      while ($row = $fs->dbFetchArray($get_group_details)) {
-        if ($flyspray_prefs['anon_group'] == $row['group_id']) {
-          echo "<option value=\"{$row['group_id']}\" SELECTED>{$row['group_name']}</option>";
-        } else {
-          echo "<option value=\"{$row['group_id']}\">{$row['group_name']}</option>";
-        };
-      };
-      ?>
-    </select>
+    <td>
+      <label for="defaultcatowner"><?php echo $admin_text['defaultcatowner'];?></label>
     </td>
-  </tr>
-  <tr>
-    <td class="adminlabel" valign="top"><?php echo $admin_text['groupassigned'];?></td>
-    <td class="admintext">
-    <?php // Get the group names
-      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
-      while ($row = $fs->dbFetchArray($get_group_details)) {
-        if (ereg($row['group_id'], $flyspray_prefs['assigned_groups']) ) {
-          echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" CHECKED>{$row['group_name']}<br>\n";
-        } else {
-          echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\">{$row['group_name']}<br>\n";
-        };
-      };
-      ?>
-    </td>
-  </tr>
-  <tr>
-    <td class="adminlabel"><?php echo $admin_text['forcenotify'];?></td>
-    <td align="left" class="admintext">
-    <select class="adminlist" name="user_notify">
-      <option value="0" <?php if ($flyspray_prefs['user_notify'] == "0") { echo "SELECTED";};?>><?php echo $admin_text['none'];?></option>
-      <option value="1" <?php if ($flyspray_prefs['user_notify'] == "1") { echo "SELECTED";};?>><?php echo $admin_text['userchoose'];?></option>
-      <option value="2" <?php if ($flyspray_prefs['user_notify'] == "2") { echo "SELECTED";};?>><?php echo $admin_text['email'];?></option>
-      <option value="3" <?php if ($flyspray_prefs['user_notify'] == "3") { echo "SELECTED";};?>><?php echo $admin_text['jabber'];?></option>
-    </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="adminlabel"><?php echo $admin_text['defaultcatowner'];?>:</td>
-    <td align="left" class="admintext">
-    <select class="adminlist" name="default_cat_owner">
+    <td>
+      <select id="defaultcatowner" name="default_cat_owner">
       <option value=""><?php echo $admin_text['noone'];?></option>
       <?php
-      //$dev_list = $fs->dbQuery("SELECT user_id, user_name, real_name FROM flyspray_users WHERE group_in = '1' OR group_in = '2'");
-      $dev_list = $fs->dbQuery($fs->listUserQuery());
-      while ($row = $fs->dbFetchArray($dev_list)) {
-        if ($flyspray_prefs['default_cat_owner'] == $row['user_id']) {
-          echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>";
-        } else {
-          echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>";
-        };
-      };
+      // Get list of developers
+      $fs->listUsers($project_details['default_cat_owner']);
       ?>
     </select>
     </td>
   </tr>
   <tr>
-    <td colspan="2"><hr></td>
+    <td>
+    <label for="intromessage"><?php echo $admin_text['intromessage'];?></label>
+    </td>
+    <td>
+    <textarea name="intro_message" rows="10" cols="50"><?php echo stripslashes($project_details['intro_message']);?></textarea>
+    </td>
   </tr>
   <tr>
-    <td class="adminlabel" colspan="2" style="text-align: center;"><?php echo $admin_text['jabbernotify'];?></td>
+    <td>
+    <label for="isactive"><?php echo $admin_text['isactive'];?></label>
+    </td>
+    <td>
+    <input type="checkbox" name="project_is_active" value="1" <?php if ($project_details['project_is_active'] == '1') { echo "CHECKED";};?>>
+    </td>
   </tr>
   <tr>
-    <td class="adminlabel"><?php echo $admin_text['jabberserver'];?></td>
-    <td class="admintext"><input class="admintext" name="jabber_server" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_server'];?>"></td>
-  </tr>
-  <tr>
-    <td class="adminlabel"><?php echo $admin_text['jabberport'];?></td>
-    <td class="admintext"><input class="admintext" name="jabber_port" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_port'];?>"></td>
-  </tr>
-  <tr>
-    <td class="adminlabel"><?php echo $admin_text['jabberuser'];?></td>
-    <td class="admintext"><input class="admintext" name="jabber_username" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_username'];?>"></td>
-  </tr>
-  <tr>
-    <td class="adminlabel"><?php echo $admin_text['jabberpass'];?></td>
-    <td class="admintext"><input class="admintext" name="jabber_password" type="password" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_password'];?>"></td>
-  </tr>
-  <tr>
-    <td colspan="2"><hr></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>"></td>
+    <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>"></td>
   </tr>
 
 </table>
   </form>
 
+<?php } elseif ($_GET['show'] == 'category') { ?>
+
+<br><br>
+
+  <h3><?php echo $admin_text['categorylist'];?></h3>
+  <p><?php echo $admin_text['listnote'];?></p>
+  <div class="admin">
+    <?php
+    $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? ORDER BY list_position", array($_GET['id']));
+    $countlines = 0;
+    while ($row = $fs->dbFetchArray($get_categories)) {
+    ?>
+    <form action="index.php" method="post">
+    <table class="list">
+     <tr>
+      <td>
+        <input type="hidden" name="do" value="modify">
+        <input type="hidden" name="action" value="update_category">
+        <input type="hidden" name="list_type" value="category">
+        <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+        <input type="hidden" name="id" value="<?php echo $row['category_id'];?>">
+        <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['category_name'];?>">
+      </td>
+      <td title="The order these items will appear in the Category list">
+        <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
+        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+      </td>
+      <td title="Show this item in the Category list">
+        <label for="showinlist<?php echo $countlines; ?>"><?php echo $admin_text['show'];?></label>
+        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+      </td>
+      <td title="This person will receive notifications when a task in this category is opened">
+        <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
+        <select id="categoryowner<?php echo $countlines; ?>" name="category_owner">
+        <option value=""><?php echo $admin_text['selectowner'];?></option>
+        <?php
+        $fs->listUsers($row['category_owner']);
+        ?>
+      </select>
+      </td>
+      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+     </tr>
+    </table>
+    </form>
+    <?php
+      $countlines++;
+    };
+    ?>
+    <hr>
+    <form action="index.php" method="post">
+    <table class="list">
+     <tr>
+      <td>
+        <input type="hidden" name="do" value="modify">
+        <input type="hidden" name="action" value="add_category">
+        <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+        <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+        <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
+      </td>
+      <td>
+        <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
+      </td>
+      <td>
+        <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
+      </td>
+      <td title="This person will receive notifications when a task in this category is opened">
+        <label for="categoryownernew" ><?php echo $admin_text['owner'];?></label>
+      <select id="categoryownernew" name="category_owner">
+        <option value=""><?php echo $admin_text['selectowner'];?></option>
+        <?php
+        $fs->listUsers();
+        ?>
+      </select>
+      </td>
+      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+    </tr>
+  </table>
+    </form>
+  </div>
+
+<?php } elseif ($_GET['show'] == 'os') { ?>
+
+<br><br>
+
+  <h3><?php echo $admin_text['oslist'];?></h3>
+  <p><?php echo $admin_text['listnote'];?></p>
+  <div class="admin">
+    <?php
+    $get_os = $fs->dbQuery("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($_GET['id']));
+    $countlines = 0;
+    while ($row = $fs->dbFetchArray($get_os)) {
+    ?>
+    <form action="index.php" method="post">
+    <table class="list">
+      <tr>
+        <td>
+          <input type="hidden" name="do" value="modify">
+          <input type="hidden" name="action" value="update_list">
+          <input type="hidden" name="list_type" value="os">
+          <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
+          <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+          <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['os_name'];?>">
+        </td>
+        <td title="The order these items will appear in the Operating System list">
+          <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+        </td>
+        <td title="Show this item in the Operating System list">
+          <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        </td>
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+      </tr>
+    </table>
+    </form>
+    <?php
+      $countlines++;
+    };
+    ?>
+    <hr>
+    <form action="index.php" method="post">
+    <table class="list">
+    <tr>
+      <td>
+        <input type="hidden" name="do" value="modify">
+        <input type="hidden" name="action" value="add_to_list">
+        <input type="hidden" name="list_type" value="os">
+        <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+        <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
+        <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+        <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
+      </td>
+      <td>
+        <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
+      </td>
+      <td>
+        <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
+      </td>
+      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+      </tr>
+    </table>
+   </form>
+</div>
+
+<?php } elseif ($_GET['show'] == 'version') { ?>
+
+<br><br>
+
+  <h3><?php echo $admin_text['versionlist'];?></h3>
+  <p><?php echo $admin_text['listnote'];?></p>
+  <div class="admin">
+
+    <?php
+    $get_version = $fs->dbQuery("SELECT * FROM flyspray_list_version WHERE project_id = ? ORDER BY list_position", array($_GET['id']));
+    $countlines = 0;
+    while ($row = $fs->dbFetchArray($get_version)) {
+    ?>
+    <form action="index.php" method="post">
+    <table class="list">
+      <tr>
+        <td>
+          <input type="hidden" name="do" value="modify">
+          <input type="hidden" name="action" value="update_list">
+          <input type="hidden" name="list_type" value="version">
+          <input type="hidden" name="id" value="<?php echo $row['version_id'];?>">
+          <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+          <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['version_name'];?>">
+        </td>
+        <td title="The order the items are shown in the Version list">
+          <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+        </td>
+        <td title="Show this item in the Version list">
+          <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        </td>
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+      </tr>
+    </table>
+    </form>
+    <?php
+      $countlines++;
+    };
+    ?>
+    <hr>
+    <form action="index.php" method="post">
+    <table class="list">
+      <tr>
+        <td>
+          <input type="hidden" name="do" value="modify">
+          <input type="hidden" name="action" value="add_to_list">
+          <input type="hidden" name="list_type" value="version">
+          <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+          <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+          <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
+        </td>
+        <td>
+          <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
+        </td>
+        <td>
+          <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
+        </td>
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+      </tr>
+    </table>
+    </form>
+  </div>
+
 
 <?php
-// End of application preferences
+};
+};
+// End of project preferences
 
 // Start of editing a comment
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "editcomment") {
 
 // Get the comment details
-    $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE comment_id = '{$_GET['id']}'");
+    $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE comment_id = ?", array($_GET['id']));
     while ($row = $fs->dbFetchArray($getcomments)) {
-      $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = '{$row['user_id']}'");
+      $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
       list($user_name) = $fs->dbFetchArray($getusername);
 
       $formatted_date = date("l, j M Y, g:ia", $row['date_added']);
@@ -733,25 +908,19 @@ $group_details = $fs->dbFetchArray($get_group_details);
 ?>
 <h3><?php echo $admin_text['editcomment'];?></h3>
 <form action="index.php" method="post">
-<table class="admin">
-  <tr>
-    <td class="adminlabel"><?php echo "{$admin_text['commentby']} $user_name - $formatted_date";?></td>
-  </tr>
-  <tr>
-    <td class="admintext">
-    <textarea class="admintext" cols="50" rows="10" name="comment_text"><?php echo $comment_text;?></textarea>
-    </td>
-  </tr>
-  <tr>
-    <td class="admintext" align="center">
+<div class="admin">
+  <p><?php echo "{$admin_text['commentby']} $user_name - $formatted_date";?></p>
+  <p>
+    <textarea cols="72" rows="10" name="comment_text"><?php echo $comment_text;?></textarea>
+  </p>
+  <p class="buttons">
     <input type="hidden" name="do" value="modify">
     <input type="hidden" name="action" value="editcomment">
     <input type="hidden" name="task_id" value="<?php echo $_GET['task_id'];?>">
     <input type="hidden" name="comment_id" value="<?php echo $_GET['id'];?>">
     <input class="adminbutton" type="submit" value="<?php echo $admin_text['saveeditedcomment'];?>">
-    </td>
-  </tr>
-</table>
+  </p>
+</div>
 </form>
 
 <?php

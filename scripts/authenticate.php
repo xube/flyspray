@@ -20,10 +20,10 @@ if ($_GET['action'] == "logout") {
   $username = $_POST['username'];
   $password = $_POST['password'];
   // Get the user's account details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_name = '$username'");
+  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_name = ?", array($username));
   $auth_details = $fs->dbFetchArray($result);
   // Get the user's group details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = '{$auth_details['group_in']}'");
+  $result = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($auth_details['group_in']));
   $group_details = $fs->dbFetchArray($result);
 
   // Encrypt the password, and compare it to the one in the database
@@ -55,44 +55,36 @@ header('Content-type: text/html; charset=utf-8');
 
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-  <head>
-    <link href="../themes/<?php echo $flyspray_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
+<head>
+  <link href="../themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
     <?php if ($_POST['task']) { ?>
-      <META HTTP-EQUIV="refresh" CONTENT="2; URL=../?do=details&id=<?php echo $_POST['task'];?>">
+  <meta http-equiv="refresh" content="2; URL=../?do=details&id=<?php echo $_POST['task'];?>">
     <?php } else { ?>
-      <META HTTP-EQUIV="refresh" CONTENT="2; URL=../">
+  <meta http-equiv="refresh" content="2; URL=../">
     <?php };?>
-    <title>Are we logged in yet?</title>
-  </head>
-  <body>
-    <!-- Center the background canvas on the page -->
-    <div align="center">
-      <br>
-      <!-- Message box -->
-      <table class="admin" style="position: absolute; left: 40%; top:50%;">
-        <tr>
-          <td align="center" class="admintext">
-          <?php echo "$message";?>
-          <br>
-          <?php if ($_POST['task']) {
-            echo $authenticate_text['waitwhiletransfer'];
-            ?>
-            <br><br>
-            <a href="../?do=details&id=<?php echo $_POST['task'];?>"><?php echo $authenticate_text['clicknowait'];?></a>
-          <?php } else {
-            echo $authenticate_text['waitwhiletransfer'];
-            ?>
-            <br><br>
-            <a href="../"><?php echo $authenticate_text['clicknowait'];?></a>
-          <?php };?>
-          </td>
-        </tr>
-      </table>
-      <br>
-
-    <!-- End of the table that everything else goes into -->
-    </div>
-  </body>
+  <title>Are we logged in yet?</title>
+</head>
+<body>
+<div id="loginmessage">
+<h1>
+  <?php echo "$message";?>
+</h1>
+<p>
+  <?php if ($_POST['task']) {
+  echo $authenticate_text['waitwhiletransfer'];
+  ?>
+</p>
+<p>
+  <a href="../?do=details&id=<?php echo $_POST['task'];?>"><?php echo $authenticate_text['clicknowait'];?></a>
+  <?php } else {
+  echo $authenticate_text['waitwhiletransfer'];
+  ?>
+  <br>
+  <a href="../"><?php echo $authenticate_text['clicknowait'];?></a>
+  <?php };?>
+</p>
+</div>
+</body>
 </html>

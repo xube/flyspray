@@ -80,5 +80,16 @@ $admin_text = array (
 'commentby'			=>	'Comment by',
 'saveeditedcomment'	=>	'Save edited comment',
 
+// Added in version 0.9.5
+
+'projectprefs'		=>	'Project Preferences',
+'defaultproject'	=>	'Default Project',
+'projectlists'		=>	'Project lists',
+'addnewproject'		=>	'Add New Project',
+'showlogo'			=>	'Show title logo image',
+'intromessage'		=>	'Introductory message',
+'isactive'			=>	'Project is active',
+'createproject'		=>	'Create a new Project',
+
 );
 ?>

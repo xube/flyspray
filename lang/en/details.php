@@ -51,5 +51,9 @@ $details_text = array (
 'invalidtaskid'		=>	'There is no task with that id!',
 'theseusersnotify'	=>	'These users will receive detailed notifications whenever this task changes.',
 
+// Added in version 0.9.5
+
+'attachedtoproject'	=>	'Attached to Project',
+
 );
 ?>
