@@ -4,7 +4,13 @@
 
 get_language_pack($lang, 'index');
 
-$orderby = array($_GET['order'], $_GET['order2']);
+$orderby = array($_GET['order']);
+
+if ($_GET['order2'] != '') {
+  $orderby[] = $_GET['order2'];
+} else {
+  $orderby[] = 'pri';
+};
 
 foreach ( $orderby as $key => $val ) {
   switch ($orderby[$key]) {
@@ -53,7 +59,7 @@ foreach ( $sort as $key => $val ) {
   };
 };
 
-$sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}"; 
+$sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, task_id ASC"; 
 
 // Check that what was submitted is a numerical value; most of them should be
 

@@ -611,6 +611,17 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 		$flyspray_prefs['anon_group'], $_POST['jabber_id'],
 		$_POST['email_address'], $_POST['notify_type'], '1',
 		$flyspray_prefs['dateformat'], $flyspray_prefs['dateformat_extended']));
+		
+        // Get this user's id for the record
+        $user_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_users WHERE user_name = ?", array($_POST['user_name'])));
+		
+        // Now, create a new record in the users_in_groups table
+        $set_global_group = $fs->dbQuery("INSERT INTO flyspray_users_in_groups
+                                          (user_id,
+                                          group_id)
+                                          VALUES(?, ?)",
+                                          array($user_details['user_id'], $flyspray_prefs['anon_group']));
+          
           echo "<div class=\"redirectmessage\"><p><em>{$modify_text['accountcreated']}</em></p>";
           echo "<p>{$modify_text['loginbelow']}</p>";
           echo "<p>{$modify_text['newuserwarning']}</p></div>";

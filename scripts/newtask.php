@@ -89,7 +89,7 @@ if ($permissions['open_new_tasks'] == "1" OR $flyspray_prefs['anon_open'] == "1"
      </td>
      <td><label for="task_priority"><?php echo $newtask_text['priority'];?></label></td>
      <td>
-        <select id="taskpriority" name="task_priority" <?php if ($_SESSION['can_modify_jobs'] != "1") { echo " disabled=\"disabled\"";};?>>
+        <select id="taskpriority" name="task_priority" <?php if ($permissions['modify_all_tasks'] != "1") { echo " disabled=\"disabled\"";};?>>
         <?php
         // Get list of statuses
         require("lang/$lang/priority.php");
@@ -107,7 +107,7 @@ if ($permissions['open_new_tasks'] == "1" OR $flyspray_prefs['anon_open'] == "1"
    <tr>
      <td><label for="itemstatus"><?php echo $newtask_text['status'];?></label></td>
      <td>
-        <select id="itemstatus" name="item_status" <?php if ($_SESSION['can_modify_jobs'] != "1") { echo " disabled=\"disabled\"";};?>>
+        <select id="itemstatus" name="item_status" <?php if ($permissions['modify_all_tasks'] != "1") { echo " disabled=\"disabled\"";};?>>
         <?php
         // Get list of statuses
         require("lang/$lang/status.php");
@@ -146,7 +146,7 @@ if ($permissions['open_new_tasks'] == "1" OR $flyspray_prefs['anon_open'] == "1"
       ?>
         <label for="assignedto"><?php echo $newtask_text['assignedto'];?></label></td>
      <td>
-        <select id="assignedto" name="assigned_to" <?php if ($_SESSION['can_modify_jobs'] != "1") { echo " disabled=\"disabled\"";};?>>
+        <select id="assignedto" name="assigned_to" <?php if ($permissions['modify_all_tasks'] != "1") { echo " disabled=\"disabled\"";};?>>
         <?php
         // Get list of users
         echo "<option value=\"0\">{$newtask_text['noone']}</option>\n";
@@ -156,7 +156,7 @@ if ($permissions['open_new_tasks'] == "1" OR $flyspray_prefs['anon_open'] == "1"
         </select>
      </td>
      <td><label for="closedbyversion"><?php echo $newtask_text['dueinversion'];?></label></td>
-     <td><select id="closedbyversion" name="closedby_version" <?php if ($_SESSION['can_modify_jobs'] != "1") { echo " disabled=\"disabled\"";};?>>
+     <td><select id="closedbyversion" name="closedby_version" <?php if ($permissions['modify_all_tasks'] != "1") { echo " disabled=\"disabled\"";};?>>
         <?php
         echo "<option value=\"\">{$newtask_text['undecided']}</option>\n";
 

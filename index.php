@@ -326,36 +326,37 @@ if ($project_prefs['intro_message'] != ''  && $do != 'admin' && $do != 'modify')
 
 // If we have allowed anonymous logging of new tasks
 // Show the link to the Add Task form
-if ($flyspray_prefs['anon_open'] == '1' && $flyspray_prefs['anon_view'] == '1' && !$_COOKIE['flyspray_userid']) {
+if ($flyspray_prefs['anon_open'] == '1' && !$_COOKIE['flyspray_userid']) {
   echo "<p class=\"unregistered\"><a href=\"?do=newtask&amp;project=$project_id\">{$language['opentaskanon']}</a></p>";
 };
 
 // If we want to use confirmation codes in the signup form
-if (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '1') {
+if (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '1' && $flyspray_prefs['anon_open'] > '0' ) {
   echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a></p>";
 // ...and if we don't care about it
-} elseif (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '0') {
+} elseif (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] != '1' && $flyspray_prefs['anon_open'] > '0') {
   echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a></p>";
 };
 
-    if (requestDuplicated()) {
-      printf('<meta http-equiv="refresh" content="2; URL=?id=%s">', $project_id);
-      printf('<div class="redirectmessage"><p><em>%s</em></p></div>', $language['duplicated']);
-      echo '</body></html>';
-      exit;
-    }
+// Check that this page isn't being submitted twice
+if (requestDuplicated()) {
+  printf('<meta http-equiv="refresh" content="2; URL=?id=%s">', $project_id);
+  printf('<div class="redirectmessage"><p><em>%s</em></p></div>', $language['duplicated']);
+  echo '</body></html>';
+  exit;
+};
 
-      // This is to only allow people to request valid pages, instead of things like config.inc.php or /etc/passwd 
-//      if (preg_match ("/^(admin|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register)$/", $do)
-      if ($flyspray_prefs['anon_view'] == '1' OR $_COOKIE['flyspray_userid']) {
-         require("scripts/$do.php");
-      };
+// Make sure that the user is allowed to view tasks from this project
+if ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1') {
+  require("scripts/$do.php");
+};
 
-      // if no-one's logged in, show the login box
-      if(!$_COOKIE['flyspray_userid']) {
-        require('scripts/loginbox.php');
-      };
-      ?>
+// if no-one's logged in, show the login box
+if(!$_COOKIE['flyspray_userid']) {
+  require('scripts/loginbox.php');
+};
+?>
+
 </div>      
 <p id="footer">
 <!-- Please don't remove this line - it helps promote Flyspray -->
@@ -372,6 +373,7 @@ if(file_exists("$footerfile")) {
 
 </body>
 </html>
+
 <?php
 // End of file delivery / showing the page
 };

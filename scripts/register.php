@@ -3,7 +3,7 @@ get_language_pack($lang, 'register');
 
 // If the application preferences require the use of
 // confirmation codes, use this script
-if ($flyspray_prefs['spam_proof'] == '1' && !$_SESSION['userid']) {
+if ($flyspray_prefs['spam_proof'] == '1' && !$COOKIE['flyspray_userid'] && $flyspray_prefs['anon_open'] > '0') {
 
 // The first page of signup.
 if (!$_GET['page']) {
