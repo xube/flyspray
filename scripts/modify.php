@@ -1345,10 +1345,12 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
               $_POST['user_id']));
       };
       
+      /* UNUSED?
       $update = $fs->dbQuery("UPDATE flyspray_users_in_groups SET
                               group_id = ?
                               WHERE record_id = ?",
                               array($_POST['group_in'], $_POST['record_id']));
+      */
 
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
       //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
@@ -2337,7 +2339,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                           array($_GET['id'])
                          );
 
-   $fs->logEvent($_POST['task_id'], 26);
+   $fs->logEvent($_GET['id'], 26);
 
    $_SESSION['SUCCESS'] = $modify_text['taskmadeprivate'];
    header("Location: index.php?do=details&id=" . $_GET['id']);
@@ -2358,7 +2360,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                           array($_GET['id'])
                          );
                          
-   $fs->logEvent($_POST['task_id'], 27);
+   $fs->logEvent($_GET['id'], 27);
    
    $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];
    header("Location: index.php?do=details&id=" . $_GET['id']);

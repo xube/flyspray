@@ -29,7 +29,7 @@ $register_text = array (
 'usernametaken'	=>	'Ta nazwa jest już zajęta. Wybierz inną.',
 'goback'	=>	'Wróć i zrób to.',
 'noticefrom'	=>	'Powiadomienie od',
-'addressused'	=>	'Ten adres został użyty do utworzenia konta we Flyspray. Jeśli się go nie spodziewałeś, zignoruj go. Twój kod potwierdzający to:',
+'addressused'	=>	'Twój adres został użyty do utworzenia konta we Flyspray. Jeśli nie spodziewałeś(-aś) się tej wiadomości, zignoruj ją. Twój kod potwierdzający to:',
 
 // Added in version 0.9.7
 'badmagic'      =>      'Błędny kod! Wprowadź klucz przesłany w wiadomości.',

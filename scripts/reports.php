@@ -624,8 +624,9 @@ function EventDescription($history)
             $description = "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=comments#{$newvalue}\">{$details_text['commentadded']}</a>";
 
         } elseif ($history['event_type'] == 5) {      //Comment edited
-            $description = "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=comments#{$newvalue}\">{$details_text['commentedited']}</a>";
-            $comment = $fs->dbQuery("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($newvalue));
+	    $commentid = $history['field_changed'];
+            $description = "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=comments#{$commentid}\">{$details_text['commentedited']}</a>";
+            $comment = $fs->dbQuery("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($commentid));
             if ($fs->dbCountRows($comment) != 0) {
                 $comment = $fs->dbFetchRow($comment);
                 $description .= " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";

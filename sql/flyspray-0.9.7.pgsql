@@ -91,7 +91,7 @@ CREATE TABLE  flyspray_history (
 	PRIMARY KEY  (history_id)
 );
 
-INSERT INTO flyspray_history VALUES (13, 1, 1, '1103430560', 1, '', '', '');
+INSERT INTO flyspray_history VALUES (1, 1, 1, '1103430560', 1, '', '', '');
 
 CREATE SEQUENCE "flyspray_list_category_category_id_seq" START WITH 3;
 CREATE TABLE  flyspray_list_category (
