@@ -209,23 +209,23 @@ INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, s
 INSERT INTO flyspray_tasks (task_id, attached_to_project, task_type, date_opened, opened_by, date_closed, closed_by, item_summary, detailed_desc, item_status, assigned_to, resolution_reason, product_category, product_version, closedby_version, operating_system, task_severity, last_edited_by, last_edited_time, percent_complete) VALUES (1, 1, 1, '1030802400', 1, '1060837949', 1, 'Test bug report', 'This isn''t a real task.  You should close it and report some real ones.', 2, 1, 1, 2, 1, NULL, 1, 5, 1, '1061298567', 40);
 INSERT INTO flyspray_tasks (task_id, attached_to_project, task_type, date_opened, opened_by, date_closed, closed_by, item_summary, detailed_desc, item_status, assigned_to, resolution_reason, product_category, product_version, closedby_version, operating_system, task_severity, last_edited_by, last_edited_time, percent_complete) VALUES (2, 2, 1, '1030802400', 1, '1060837949', 1, 'Another bug report', 'First task for the fake project', 2, 1, 1, 2, 1, NULL, 1, 5, 1, '1061298567', 40);
 
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (2, 'theme_style', 'Minimalistic2', 'Theme / Style');
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (7, 'project_title', 'Flyspray - The bug killer!', 'Project title');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (1, 'anon_open', '2', 'Allow anonymous users to open new tasks');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (2, 'theme_style', 'Minimalistic2', 'Theme / Style');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (3, 'jabber_server', '', 'Jabber server');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (4, 'jabber_port', '5222', 'Jabber server port');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (5, 'jabber_username', '', 'Jabber username');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (6, 'jabber_password', '', 'Jabber password');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (7, 'project_title', 'Flyspray - The bug killer!', 'Project title');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (8, 'anon_group', '4', 'Group for anonymous registrations');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (9, 'base_url', 'http://ghostwheel/flyspray/', 'Base URL for this installation');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (10, 'user_notify', '1', 'Force task notifications as');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (11, 'admin_email', 'flyspray@yourdomain', 'Reply email address for notifications');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (12, 'assigned_groups', '1 2 3  ', 'Members of these groups can be assigned tasks');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (13, 'default_cat_owner', '0', 'Default category owner');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (14, 'lang_code', 'pl', 'Language');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (15, 'spam_proof', '1', 'Use confirmation codes for user registrations');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (16, 'anon_view', '1', 'Allow anonymous users to view this BTS');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (17, 'default_project', '1', 'Default project to show tasks from');
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (12, 'assigned_groups', '1 2 3  ', 'Members of these groups can be assigned tasks');
 
 ALTER TABLE ONLY flyspray_groups
     ADD CONSTRAINT flyspray_groups_pkey PRIMARY KEY (group_id);
@@ -270,7 +270,7 @@ SELECT pg_catalog.setval ('flyspray_tasks_task_id_seq', 2, true);
 SELECT pg_catalog.setval ('flyspray_attachments_attachment_id_seq', 1, false);
 SELECT pg_catalog.setval ('flyspray_comments_comment_id_seq', 1, false);
 SELECT pg_catalog.setval ('flyspray_notifications_notify_id_seq', 1, false);
-SELECT pg_catalog.setval ('flyspray_prefs_pref_id_seq', 16, true);
+SELECT pg_catalog.setval ('flyspray_prefs_pref_id_seq', 17, true);
 SELECT pg_catalog.setval ('flyspray_registrations_reg_id_seq', 1, false);
 SELECT pg_catalog.setval ('flyspray_related_related_id_seq', 1, false);
 

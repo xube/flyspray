@@ -74,9 +74,11 @@ class Flyspray {
 	  $result =  $this->dblink->Execute($sql, $inputarr);
       }
       if (!$result) {
-	  echo "<pre>";
-	  var_dump(debug_backtrace());
-	  echo "<pre>";
+	  if (function_exists("debug_backtrace")) {
+	      echo "<pre>";
+	      var_dump(debug_backtrace());
+	      echo "<pre>";
+	  }
 	  
 	  die (sprintf("Query {%s} with params {%s} Failed! (%s)", 
 		    $sql, implode(', ', $inputarr), 
