@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $newuser_text;
 $register_text = array (

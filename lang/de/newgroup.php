@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $newgroup_text;
 $newgroup_text = array (

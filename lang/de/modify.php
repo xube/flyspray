@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $modify_text;
 $modify_text = array (

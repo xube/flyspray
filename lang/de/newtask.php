@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $newtask_text;
 $newtask_text = array (

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $reports_text;
 $reports_text = array (

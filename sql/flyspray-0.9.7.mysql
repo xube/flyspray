@@ -85,7 +85,7 @@ CREATE TABLE `flyspray_history` (
   PRIMARY KEY  (`history_id`)
 ) TYPE=MyISAM AUTO_INCREMENT=2 ;
 
-INSERT INTO `flyspray_history` VALUES (13, 1, 1, '1103430560', 1, '', '', '');
+INSERT INTO `flyspray_history` VALUES (1, 1, 1, '1103430560', 1, '', '', '');
 
 CREATE TABLE `flyspray_list_category` (
   `category_id` mediumint(3) NOT NULL auto_increment,

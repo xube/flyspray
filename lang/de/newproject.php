@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $newproject_text;
 $newproject_text = array (

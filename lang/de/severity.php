@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $severity_list;
 $severity_list = array (

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $authenticate_text;
 $authenticate_text = array (

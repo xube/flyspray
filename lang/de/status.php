@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $status_list;
 $status_list = array (

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $priority_list;
 $priority_list = array (

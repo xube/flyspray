@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $admin_text;
 $admin_text = array (

@@ -285,13 +285,13 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
 // ERROR status bar
 if (isset($_SESSION['ERROR'])) {
-   echo '<div id="errorbar">' . $_SESSION['ERROR'] . '</div>';
+   echo '<div id="errorbar" onClick="document.getElementById(\'errorbar\').style.display = \'none\'">' . $_SESSION['ERROR'] . '</div>';
    unset($_SESSION['ERROR']);
 };
 
 // SUCCESS status bar
 if (isset($_SESSION['SUCCESS'])) {
-   echo '<div id="successbar">' . $_SESSION['SUCCESS'] . '</div>';
+   echo '<div id="successbar" onClick="document.getElementById(\'successbar\').style.display = \'none\'">' . $_SESSION['SUCCESS'] . '</div>';
    unset($_SESSION['SUCCESS']);
 };
 
