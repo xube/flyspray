@@ -1,4 +1,4 @@
-0.9.7 - 
+0.9.7 - 22 January 2005
 
 NEW: Easy setup script
 NEW: User groups are now global AND project-level

@@ -32,7 +32,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 $conf_file = $path . $slash . "flyspray.conf.php";
 
 // Load the config file
-$conf_array = parse_ini_file($conf_file, true);
+$conf_array = @parse_ini_file($conf_file, true);
 
 
 // Set values from the config file. Once these settings are loaded a connection
@@ -83,23 +83,36 @@ if (!$res) {
 $flyspray_prefs = $fs->getGlobalPrefs();
 
 // If we've gone directly to a task, we want to override the project_id set in the function below
-if (($_GET['do'] == 'details') && ($_GET['id'])) {
-  list($project_id) = $fs->dbFetchArray($fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
+if (($_GET['do'] == 'details') && (isset($_GET['id'])))
+{
+   list($project_id) = $fs->dbFetchArray($fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
+   //setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
 };
 
 // Determine which project we want to see
-if (!$project_id) {
-  if ($_GET['project']) {
-    $project_id = $_GET['project'];
-    setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
-  } elseif ($_COOKIE['flyspray_project']) {
-    $project_id = $_COOKIE['flyspray_project'];
-  } else {
-    $project_id = $flyspray_prefs['default_project'];
-    setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
+if (!isset($project_id))
+{
+   if (isset($_GET['project']) && $_GET['project'] != '0')
+   {
+      $project_id = $_GET['project'];
+      //setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
+
+  } elseif (isset($_COOKIE['flyspray_project']))
+  {
+      $project_id = $_COOKIE['flyspray_project'];
+
+  } else
+  {
+      $project_id = $flyspray_prefs['default_project'];
+      //setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
   };
 };
-
+/*
+if (isset($_GET['project']) && $_GET['project'] != '0')
+{
+   $project_id = $_GET['project'];
+}
+*/
 // Get the preferences for the currently selected project
 $project_prefs = $fs->getProjectPrefs($project_id);
 

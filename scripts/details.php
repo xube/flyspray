@@ -371,8 +371,8 @@ if ($effective_permissions['can_edit'] == '1'
 ?>
 
 <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
-    <?php 
-    if ($effective_permissions['can_edit'] == '0' 
+    <?php
+    if ($effective_permissions['can_edit'] == '0'
         OR $task_details['is_closed'] == '1') { ?>
     <h2 class="severity<?php echo $task_details['task_severity'];?>">
     <?php } else { ?>
@@ -437,14 +437,14 @@ if ($effective_permissions['can_edit'] == '1'
       <tr>
         <td><label for="status"><?php echo $details_text['status'];?></label></td>
         <td id="status">
-		<?php
-		if($task_details['is_closed'] == '1') {
-			echo $details_text['closed'];
-		} else {
-			echo $task_details['status_name'];
-		};
-		?>
-	</td>
+                <?php
+                if($task_details['is_closed'] == '1') {
+                        echo $details_text['closed'];
+                } else {
+                        echo $task_details['status_name'];
+                };
+                ?>
+        </td>
       </tr>
       <tr>
         <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
@@ -481,7 +481,7 @@ if ($effective_permissions['can_edit'] == '1'
        <tr>
          <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
          <td id="priority">
-	 <?php echo $task_details['priority_name'];?>
+         <?php echo $task_details['priority_name'];?>
          </td>
        </tr>
        <tr>
@@ -515,12 +515,13 @@ if ($effective_permissions['can_edit'] == '1'
       <tr>
         <td><label for="details"><?php echo $details_text['details'];?></label></td>
         <td id="details" class="details">
-        <?php 
+        <?php
         // Change URLs to hyperlinks
-        //$detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $detailed_desc);
+        $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $detailed_desc);
         // Change FS#123 into hyperlinks to tasks
         $detailed_desc = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $detailed_desc);
-        echo Markdown($detailed_desc); ?>
+        echo nl2br($detailed_desc);
+        ?>
         </td>
       </tr>
     </table>
@@ -534,13 +535,13 @@ if ($effective_permissions['can_edit'] == '1'
                                 LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
                                 WHERE d.task_id = ?",
                                 array($_GET['id']));
-    
+
     // Check for tasks that this task blocks
     $check_blocks = $fs->dbQuery("SELECT * FROM flyspray_dependencies d
                                 LEFT JOIN flyspray_tasks t on d.task_id = t.task_id
                                 WHERE d.dep_task_id = ?",
                                 array($_GET['id']));
-                                  
+
     echo '<div id="deps">';
     // Show tasks that this task depends upon
     echo '<div id="taskdeps">';
@@ -580,7 +581,7 @@ if ($effective_permissions['can_edit'] == '1'
     while ($block = $fs->dbFetchArray($check_blocks)) {
       echo '<a href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
     };
-    
+
     echo '</div>';
     echo '</div>';
 
@@ -589,7 +590,7 @@ echo '<div id="actionbuttons">';
 
   // If the task is closed, show the closure reason
   if ($task_details['is_closed'] == '1') {
-      
+
     $get_closedby_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['closed_by']));
     list($closedby_username, $closedby_realname) = $fs->dbFetchArray($get_closedby_name);
     $date_closed = $task_details['date_closed'];
@@ -600,13 +601,13 @@ echo '<div id="actionbuttons">';
     echo $details_text['reasonforclosing'] . '&nbsp;&nbsp;';
     echo $task_details['resolution_name'];
     echo '<br />';
-      
+
     if ($task_details['closure_comment'] != '') {
      echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
      $closure_comment = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $task_details['closure_comment']);
      echo nl2br(stripslashes($closure_comment));
     };
-    
+
     // End of showing task closure reason
     };
 
@@ -624,7 +625,7 @@ echo '<div id="actionbuttons">';
 
     <?php
     // If they can't re-open this, show a button to request a PM re-open it
-    } elseif ($effective_permissions['can_close'] != '1' 
+    } elseif ($effective_permissions['can_close'] != '1'
               && $task_details['is_closed'] == '1'
               && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
               && isset($current_user['user_id']))  { ?>
@@ -641,7 +642,7 @@ echo '<div id="actionbuttons">';
     <?php
     // End of the "re-open task" form
     };
-    
+
     // Get info on the dependencies again
     $check_deps = $fs->dbQuery("SELECT * FROM flyspray_dependencies d
                                 LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
@@ -653,7 +654,7 @@ echo '<div id="actionbuttons">';
         $deps_open = 'yes';
       };
     };
-    
+
     // Check permissions and task status, then show the "close task" form
     if ($effective_permissions['can_close'] == '1'
         && $task_details['is_closed'] != '1'
@@ -704,7 +705,7 @@ echo '<div id="actionbuttons">';
     <?php
     // End of "close task" forms
     };
-    
+
     // Check permissions and task status, then show the "take ownership" button
     if ($effective_permissions['can_take_ownership'] == '1' && $task_details['is_closed'] != '1') { ?>
 
@@ -731,27 +732,27 @@ echo '<div id="actionbuttons">';
    <?php
    // End of showing the "edit task" button
    };
-   
+
    // Start of marking private/public
    if ($permissions['manage_project'] == '1'
         && $task_details['is_closed'] != '1'
         && $task_details['mark_private'] != '1') {
-   
+
     echo '<form action="?do=modify&action=makeprivate&id=' . $_GET['id'] . '" method="post">';
     echo '<input class="adminbutton" type="submit" value="' . $details_text['makeprivate'] . '" />';
     echo '</form>';
-   
+
    } elseif ($permissions['manage_project'] == '1'
         && $task_details['is_closed'] != '1'
-        && $task_details['mark_private'] == '1') {   
-   
+        && $task_details['mark_private'] == '1') {
+
    echo '<form action="?do=modify&action=makepublic&id=' . $_GET['id'] . '" method="post">';
    echo '<input class="adminbutton" type="submit" value="' . $details_text['makepublic'] . '" />';
-   echo '</form>'; 
-    
+   echo '</form>';
+
    // End of marking private/public
    };
-   
+
    echo '</div>';
    echo '</div>';
 
@@ -801,16 +802,16 @@ if ($area == 'comments') { ?>
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
 
-      //$comment_text = htmlspecialchars($row['comment_text']);
+      $comment_text = htmlspecialchars($row['comment_text']);
       $comment_text = $row['comment_text'];
-      //$comment_text = nl2br($comment_text);
+      $comment_text = nl2br($comment_text);
       // Change URLs into hyperlinks
-      //$comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $comment_text);
-      
+      $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $comment_text);
+
       // Change FS#123 into hyperlinks to tasks
       $comment_text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $comment_text);
-      $comment_text = Markdown($comment_text);
-      
+      $comment_text = nl2br($comment_text);
+
       if (!get_magic_quotes_gpc()) {
         $comment_text = str_replace("\\", "&#92", $comment_text);
       };
@@ -929,8 +930,8 @@ if ($permissions['add_comments'] == "1" && $task_details['is_closed'] != '1') {
       // Divide the attachments area into two columns for display
       echo "<table><tr><td><p>";
 
-	  // Detect if the attachment is an image
-	  $pos = strpos($row['file_type'], "image/");
+          // Detect if the attachment is an image
+          $pos = strpos($row['file_type'], "image/");
       if($pos===0 && $project_prefs['inline_images'] == '1') {
 
          // Find out the size of the image
@@ -941,26 +942,26 @@ if ($permissions['add_comments'] == "1" && $task_details['is_closed'] != '1') {
             $v_fraction = 200/$width;
             $new_height = round(($height*$v_fraction),0);
 
-			// Display the resized image, with a link to the fullsized one
+                        // Display the resized image, with a link to the fullsized one
             echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\" /></a>";
          } else {
-			 // If the image is already small, just display it.
+                         // If the image is already small, just display it.
              echo "<br /><img src=\"?getfile={$row['attachment_id']}\" />";
          };
 
       // If the attachment isn't an image, or the inline images is OFF,
-	  // show a mimetype icon instead of a thumbnail
+          // show a mimetype icon instead of a thumbnail
       } else {
 
          // Let's strip the mimetype to get the image name
-		 list($main, $specific) = split('[/]', $row['file_type']);
-		 if(file_exists("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png")) {
+                 list($main, $specific) = split('[/]', $row['file_type']);
+                 if(file_exists("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png")) {
             list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png");
-	        echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png\" width=\"$width\" height=\"$height\" /></a>";
+                echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png\" width=\"$width\" height=\"$height\" /></a>";
          } elseif (file_exists("themes/{$project_prefs['theme_style']}/mime/$main.png")) {
             list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/$main.png");
-	        echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/$main.png\" width=\"$width\" height=\"$height\" /></a>";
-		 };
+                echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/$main.png\" width=\"$width\" height=\"$height\" /></a>";
+                 };
       };
 
       // The second column, for the descriptions
@@ -1060,7 +1061,7 @@ if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '
         <?php
         };
         echo "<p><a href=\"?do=details&amp;id={$row['related_task']}\">FS#{$row['related_task']} &mdash; $summary</a></p>";
-	echo '</div>';
+        echo '</div>';
     };
    };
 
@@ -1220,29 +1221,29 @@ if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '
               </p>
           </form>
           </div>
-		  
+
 
         <?php
         }
-		echo "<div class=\"tabentry\">";
+                echo "<div class=\"tabentry\">";
         echo "<em>{$details_text['remindthisuser']}:</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['to_user_id']}\">{$subrow['real_name']} ( {$subrow['user_name']})</a><br />";
-		
-		// Work out the unit of time to display
-		if ($row['how_often'] < 86400) {
-			$how_often = $row['how_often'] / 3600 . " " . $details_text['hours'];
-		} elseif ($row['how_often'] < 604800) {
-			$how_often = $row['how_often'] / 86400 . " " . $details_text['days'];
-		} else {
-			$how_often = $row['how_often'] / 604800 . " " . $details_text['weeks'];
-		};
-		
-		echo "<em>{$details_text['thisoften']}:</em> $how_often";
-		
-		echo "<br />";
-		
-		echo '<em>' . $details_text['message'] . ':</em>' . nl2br($row['reminder_message']);
 
-		echo "<br /><br /></div>";
+                // Work out the unit of time to display
+                if ($row['how_often'] < 86400) {
+                        $how_often = $row['how_often'] / 3600 . " " . $details_text['hours'];
+                } elseif ($row['how_often'] < 604800) {
+                        $how_often = $row['how_often'] / 86400 . " " . $details_text['days'];
+                } else {
+                        $how_often = $row['how_often'] / 604800 . " " . $details_text['weeks'];
+                };
+
+                echo "<em>{$details_text['thisoften']}:</em> $how_often";
+
+                echo "<br />";
+
+                echo '<em>' . $details_text['message'] . ':</em>' . nl2br($row['reminder_message']);
+
+                echo "<br /><br /></div>";
       };
     };
   ?>
@@ -1271,7 +1272,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
 
    <em><?php echo $details_text['thisoften'];?></em>
    <input type="admintext" name="timeamount1" size="3" maxlength="3" />
-   
+
    <select class="adminlist" name="timetype1">
      <option value="3600"><?php echo $details_text['hours'];?></option>
      <option value="86400"><?php echo $details_text['days'];?></option>
@@ -1282,19 +1283,19 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
 
   <em><?php echo $details_text['startafter'];?></em>
   <input type="admintext" name="timeamount2" size="3" maxlength="3" />
-  
+
   <select class="adminlist" name="timetype2">
      <option value="3600"><?php echo $details_text['hours'];?></option>
      <option value="86400"><?php echo $details_text['days'];?></option>
      <option value="604800"><?php echo $details_text['weeks'];?></option>
   </select>
-  
+
   <br />
-  
+
   <textarea class="admintext" name="reminder_message" rows="10" cols="72"><?php echo "{$details_text['defaultreminder']}\n\n{$flyspray_prefs['base_url']}?do=details&amp;id={$_GET['id']}";?></textarea>
-  
+
   <br />
-  
+
   <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>" />
   </div>
   </form>
@@ -1322,7 +1323,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
         } else {
             $details = '';
         };
-        
+
         $query_history = $fs->dbQuery("SELECT h.*, u.user_name, u.real_name
                                          FROM flyspray_history h
                                          LEFT JOIN flyspray_users u ON h.user_id = u.user_id
@@ -1350,7 +1351,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
             <td><?php
             $newvalue = $history['new_value'];
             $oldvalue = $history['old_value'];
-            
+
             //Create an event description
             if ($history['event_type'] == 0) {            //Field changed
 
@@ -1415,16 +1416,16 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     if ($oldvalue == '0') {
                         $oldvalue = $details_text['undecided'];
                     } else {
-                        list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name 
-			FROM flyspray_list_version
-			WHERE version_id = ?", array($fs->emptyToZero($oldvalue))));
+                        list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name
+                        FROM flyspray_list_version
+                        WHERE version_id = ?", array($fs->emptyToZero($oldvalue))));
                     };
                     if ($newvalue == '0') {
                         $newvalue = $details_text['undecided'];
                     } else {
                         list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name
-			FROM flyspray_list_version 
-			WHERE version_id = ?", array($fs->emptyToZero($newvalue))));
+                        FROM flyspray_list_version
+                        WHERE version_id = ?", array($fs->emptyToZero($newvalue))));
                     };
                     break;
                 case 'percent_complete':
@@ -1493,7 +1494,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
             } elseif ($history['event_type'] == '6') {      //Comment deleted
                 echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['commentdeleted']}</a>";
                 if ($newvalue != '' && $history['field_changed'] != '') {
-                    echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($history['field_changed'], true) . ")";    
+                    echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($history['field_changed'], true) . ")";
                 };
                 if ($details != '') {
                     $details_previous = htmlspecialchars($oldvalue);
@@ -1521,12 +1522,12 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
             } elseif ($history['event_type'] == '9') {      //Notification added
                 echo "{$details_text['notificationadded']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == '10') {      //Notification deleted 
+            } elseif ($history['event_type'] == '10') {      //Notification deleted
                 echo "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
 
             } elseif ($history['event_type'] == '11') {      //Related task added
                 list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";      
+                echo "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '12') {      //Related task deleted
                 list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
@@ -1564,12 +1565,12 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                 echo $details_text['closerequestmade'];
 
             } elseif ($history['event_type'] == '21') {      //User requested task re-open
-                echo $details_text['reopenrequestmade']; 
+                echo $details_text['reopenrequestmade'];
 
             } elseif ($history['event_type'] == '22') {      // Dependency added
                 list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['depadded']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
-                            
+
             } elseif ($history['event_type'] == '23') {      // Dependency added to other task
                 list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['depaddedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
@@ -1584,12 +1585,12 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
 
             } elseif ($history['event_type'] == '26') {      // Task marked private
                 echo $details_text['taskmadeprivate'];
-                
+
             } elseif ($history['event_type'] == '27') {      // Task privacy removed - task made public
                 echo $details_text['taskmadepublic'];
 
             };
-            
+
             ?></td>
         </tr>
             <?php
@@ -1605,11 +1606,11 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
             <tr>
                 <td><?php echo $details_previous;?></td>
                 <td><?php echo $details_new;?></td>
-            </tr>            
+            </tr>
         <?php
     };
     ?>
-    </table> 
+    </table>
 </div>
 
 <?php

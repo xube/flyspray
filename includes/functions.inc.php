@@ -345,8 +345,8 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
     function SendDetailedNotification($task_id, $subject, $message) {
 
         $flyspray_prefs = $this->GetGlobalPrefs();
-		$this_task = $this->GetTaskDetails($task_id);
-		
+        $this_task = $this->GetTaskDetails($task_id);
+
         $lang = $flyspray_prefs['lang_code'];
         require("lang/$lang/functions.inc.php");
 

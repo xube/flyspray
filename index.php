@@ -149,7 +149,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
    $current_user = $fs->getUserDetails($_COOKIE['flyspray_userid']);
    
    // Fetch the permissions array for the current user
-   $permissions = $fs->checkPermissions($current_user['user_id'], $_COOKIE['flyspray_project']);
+   $permissions = $fs->checkPermissions($current_user['user_id'], $project_id);
 
 
   // Check that the user hasn't spoofed the cookie contents somehow
@@ -177,7 +177,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     };
     
    // Display Reports link
-   if ($permissions['view_reports'] == '1') {
+   if ($permissions['view_reports'] == '1' && $project_id != '0') {
       echo '<small> | </small>';
       echo '<a id="reportslink" href="index.php?do=reports" accesskey="r">' . $language['reports'] . "</a>\n";
     };
@@ -310,7 +310,7 @@ if (isset($_SESSION['SUCCESS'])) {
       <p>
       <select name="tasks">
         <option value="all"><?php echo $language['tasksall'];?></option>
-      <?php if ($_COOKIE['flyspray_userid']) { ?>
+      <?php if (isset($_COOKIE['flyspray_userid'])) { ?>
         <option value="assigned" <?php if($_GET['tasks'] == 'assigned') echo 'selected="selected"'; ?>><?php echo $language['tasksassigned']; ?></option>
         <option value="reported" <?php if($_GET['tasks'] == 'reported') echo 'selected="selected"'; ?>><?php echo $language['tasksreported']; ?></option>
         <option value="watched" <?php if($_GET['tasks'] == 'watched') echo 'selected="selected"'; ?>><?php echo $language['taskswatched']; ?></option>
@@ -346,9 +346,14 @@ if (isset($_SESSION['SUCCESS'])) {
 <?php
 
 // Show the project blurb if the project manager defined one
-if ($project_prefs['intro_message'] != ''  && $do != 'admin' && $do != 'modify') {
-  $intro_message = Markdown(stripslashes($project_prefs['intro_message'])); 
-  echo "<p class=\"intromessage\">$intro_message</p>";
+if ($project_prefs['project_is_active'] == '1'
+    && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
+    && $project_prefs['intro_message'] != ''
+    && $do != 'admin'
+    OR $_GET['project'] == '0'
+) {
+   $intro_message = Markdown(stripslashes($project_prefs['intro_message']));
+   echo "<p class=\"intromessage\">$intro_message</p>";
 };
 
 // If we have allowed anonymous logging of new tasks

@@ -1,9 +1,6 @@
 <?php
 // This script authenticates the user, and sets up a session.
-//include('../header.php');
-//$flyspray_prefs = $fs->GetGlobalPrefs();
 
-//$lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'authenticate');
 
 // If logout was requested, log the user out.
