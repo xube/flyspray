@@ -312,7 +312,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
     <?php echo "{$details_text['task']} #{$_GET['id']} &mdash; $item_summary";?>
     </h2>
     <?php
-    if ($_SESSION['can_modify_jobs'] == '1' && $task_details['is_closed'] != '1') {
+    if (($_SESSION['can_modify_jobs'] == '1'
+    OR $_SESSION['userid'] == $task_details['assigned_to'])
+    && $task_details['is_closed'] != '1') {
     ?>
     <form action="index.php" method="get" id="formedittask">
     <p>

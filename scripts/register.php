@@ -114,6 +114,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
       $fs->SendEmail(
                       $_GET['email_address'],
+                      "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}",
                       $message
                       );
 

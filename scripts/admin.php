@@ -53,6 +53,14 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       }; ?>
       </td>
     </tr>
+    <tr>
+        <td><label for="dateformat"><?php echo $admin_text['dateformat'];?></label></td>
+        <td><input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat'];?>"></td>
+    </tr>
+    <tr>
+        <td><label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label></td>
+        <td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat_extended'];?>"></td>
+    </tr>
     <?php
     if ($_SESSION['admin'] == '1') {
     ?>
@@ -74,14 +82,6 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       </select>
       </td>
     </tr>
-    <tr>
-		<td><label for="dateformat"><?php echo $admin_text['dateformat'];?></label></td>
-		<td><input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat'];?>">	</td>
-	</tr>	
-	<tr>
-		<td><label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label></td>
-		<td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat_extended'];?>"></td>
-	</tr>	
     <tr>
       <td><label for="accountenabled"><?php echo $admin_text['accountenabled'];?></label></td>
       <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?>></td>
