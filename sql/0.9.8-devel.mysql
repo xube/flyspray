@@ -17,21 +17,22 @@ ALTER TABLE `flyspray_list_tasktype` ADD `project_id` MEDIUMINT( 3 ) NOT NULL ;
 ALTER TABLE `flyspray_list_resolution` ADD `project_id` MEDIUMINT( 3 ) NOT NULL ;
 ALTER TABLE `flyspray_admin_requests` ADD `reason_given` LONGTEXT NOT NULL AFTER `request_type` ;
 
-# added 20050320 by Jamin W. Collins
+# added 20050320 by Jamin W. Collins - CHANGED on 29 March 05
+
 CREATE TABLE IF NOT EXISTS `flyspray_notification_messages` (
-    `id`        mediumint(10)   NOT NULL    auto_increment,
-    `subject`   varchar(50)     NOT NULL,
-    `body`      longtext        NOT NULL,
-    `created`   datetime,
-    PRIMARY KEY (`id`)
+    `message_id`        mediumint(10)   NOT NULL    auto_increment,
+    `message_subject`   varchar(50)     NOT NULL,
+    `message_body`      longtext        NOT NULL,
+    `time_created`   varchar(20),
+    PRIMARY KEY (`message_id`)
 ) TYPE=MyISAM COMMENT='Notification body and subject' AUTO_INCREMENT=2 ;
 
 CREATE TABLE IF NOT EXISTS `flyspray_notification_recipients` (
-    `id`                mediumint(10)   NOT NULL    auto_increment,
-    `notification_id`   mediumint(10)   NOT NULL,
-    `method`            varchar(1)      NOT NULL,
-    `address`           varchar(100)    NOT NULL,
-    PRIMARY KEY (`id`)
+    `recipient_id`                mediumint(10)   NOT NULL    auto_increment,
+    `message_id`   mediumint(10)   NOT NULL,
+    `notify_method`            varchar(1)      NOT NULL,
+    `notify_address`           varchar(100)    NOT NULL,
+    PRIMARY KEY (`recipient_id`)
 ) TYPE=MyISAM COMMENT='Notification recipient list' AUTO_INCREMENT=2 ;
 
 # Added 27 March 05

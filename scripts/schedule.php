@@ -3,14 +3,14 @@
 // and sends them at the right time.
 include_once('../header.php');
 include_once('../includes/notify.inc.php');
+$notify = new Notifications;
 
 $now = date(U);
-
-$notify = new Notifications;
 
 $get_reminders = $db->Query("SELECT * FROM flyspray_reminders r
                              LEFT JOIN flyspray_tasks t ON r.task_id = t.task_id
                              LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
+                             WHERE t.is_closed = '0'
                              ORDER BY r.reminder_id");
 
 // Cycle through all reminders in the database table

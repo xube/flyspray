@@ -604,9 +604,10 @@ if ($db->CountRows($task_exists)
                   } else
                   {
                      // find out the username
-                     $getusername = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
-                     list ($user_name, $real_name) = $db->FetchArray($getusername);
-                     echo "$real_name ($user_name)";
+//                      $getusername = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
+//                      list ($user_name, $real_name) = $db->FetchArray($getusername);
+//                      echo "$real_name ($user_name)";
+                     echo stripslashes($task_details['assigned_to_name']);
                   }
                   ?>
                   </td>
@@ -730,7 +731,15 @@ if ($db->CountRows($task_exists)
          echo '<b>' . $details_text['taskblocks'] . '</b><br />';
          while ($block = $db->FetchArray($check_blocks))
          {
-            echo '<a href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
+            if ($block['is_closed'] == '1')
+            {
+               // Put a line through the blocking task if it's closed
+               echo '<a class="closedtasklink" href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
+            } else
+            {
+               echo '<a href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
+            }
+
          }
 
          echo '</div>';
@@ -791,7 +800,6 @@ if ($db->CountRows($task_exists)
                <?php echo $details_text['reopenrequest']; ?>
                </a>
                <div id="closeform">
-<!--                   <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a> -->
                   <form name="form3" action="index.php" method="post" id="formclosetask">
                      <input type="hidden" name="do" value="modify" />
                      <input type="hidden" name="action" value="requestreopen" />
@@ -828,7 +836,6 @@ if ($db->CountRows($task_exists)
       echo $details_text['closetask'];
       ?></a>
       <div id="closeform">
-<!--          <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a> -->
          <form name="form2" action="index.php" method="post" id="formclosetask">
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="close" />
@@ -842,6 +849,7 @@ if ($db->CountRows($task_exists)
                                              FROM flyspray_list_resolution
                                              WHERE (project_id = '0'
                                              OR project_id = ?)
+                                             AND show_in_list = '1'
                                              ORDER BY list_position",
                                              array($project_id)
                                            );
@@ -1010,7 +1018,7 @@ while ($row = $db->FetchArray($getcomments))
    {
       echo '<a name="' . $row['comment_id'] . '"></a>';
       echo "<em><a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">\n" .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$user_info['real_name']} ({$user_info['user_name']})</a> - $formatted_date</em>\n";
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . '</a>' . $details_text['commentby'] . ' <a href="?do=admin&amp;area=users&amp;id=' . $row['user_id'] . '">' . stripslashes($user_info['real_name']) . ' (' . $user_info['user_name'] . ')</a> - ' . $formatted_date . "</em>\n";
 
       // If the user has permission, show the edit button
       if (@$permissions['edit_comments'] == '1')

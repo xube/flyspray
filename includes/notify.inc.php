@@ -6,11 +6,23 @@
    ---------------------------------------------------
 */
 
+// flag to indicate if we should be noisy or not
+$debug = true;
+
 // Define the language packs used
 $flyspray_prefs = $fs->getGlobalPrefs();
 $lang = $flyspray_prefs['lang_code'];
 $fs->get_language_pack($lang, 'notify.inc');
 $fs->get_language_pack($lang, 'details');
+
+function debug_print($message){
+   global $debug;
+   if ( $debug )
+   {
+      echo "$message<br/>\n";
+      flush();
+   }
+}
 
 // Start of the Notifications class
 class Notifications {
@@ -36,32 +48,33 @@ class Notifications {
             return false;
 
       $body = str_replace('&amp;', '&', $body);
+      $date = date('U');
 
       // store notification in table
       $db->Query("INSERT INTO flyspray_notification_messages
-                  (subject, body, created)
+                  (message_subject, message_body, time_created)
                   VALUES (?, ?, ?)",
-                  array($subject, $body, date(U))
+                  array($subject, $body, $date)
                 );
 
       // grab notification id
-      $result = $db->Query("SELECT id FROM flyspray_notification_messages
-                            WHERE subject= ?
-                            AND body= ?
-                            AND created= ?",
-                            array($subject, $body, date(U))
+      $result = $db->Query("SELECT message_id FROM flyspray_notification_messages
+                            WHERE message_subject = ?
+                            AND message_body = ?
+                            AND time_created = ?",
+                            array($subject, $body, $date)
                           );
 
       $row = $db->FetchRow($result);
-      $notify_id = $row['id'];
+      $message_id = $row['message_id'];
 
       foreach ($to as $jid)
       {
          // store each recipient in table
          $db->Query("INSERT INTO flyspray_notification_recipients
-                     (method, notification_id, address)
+                     (notify_method, message_id, notify_address)
                      VALUES (?, ?, ?)",
-                     array('j', $notify_id, $jid)
+                     array('j', $message_id, $jid)
                     );
 
       }
@@ -79,11 +92,15 @@ class Notifications {
       global $flyspray_prefs;
       global $current_user;
 
+      debug_print("Checking Flyspray Jabber configuration...");
+
       if (empty($flyspray_prefs['jabber_server'])
           OR empty($flyspray_prefs['jabber_port'])
           OR empty($flyspray_prefs['jabber_username'])
           OR empty($flyspray_prefs['jabber_password']))
             return false;
+
+      debug_print("We are configured to use Jabber...");
 
       require_once('class.jabber.php');
       $JABBER = new Jabber;
@@ -95,49 +112,68 @@ class Notifications {
       $JABBER->resource    = 'Flyspray';
 
       // get listing of all pending jabber notifications
-      $result = $db->Query("SELECT DISTINCT notification_id
+      $result = $db->Query("SELECT DISTINCT message_id
                             FROM flyspray_notification_recipients
-                            WHERE method='j'");
+                            WHERE notify_method='j'");
 
-      if ( $db->CountRows($result) > 0 )
+      if ( !$db->CountRows($result) )
       {
-         // we have notifications to process - connect
-         $JABBER->Connect() or die("AAAHHHH can't connect!!!!");
-         $JABBER->SendAuth() or die("GAHHHH bad auth!!!!");
-         sleep(3);
-         $JABBER->SendPresence("online", null, null,null,5);
-         sleep(3);
+         debug_print("No notifications to send");
+         return false;
+      }
 
-         while ( $row = $db->FetchRow($result) )
-         {
-            $ids[] = $row['notification_id'];
-         }
-         $desired = join(",", $ids);
+      // we have notifications to process - connect
+      debug_print("We have notifications to process...");
+      debug_print("Starting Jabber session:");
 
-         $notifications = $db->Query("SELECT * FROM flyspray_notification_messages
-                                      WHERE id in (?)
-                                      ORDER BY created ASC",
-                                      array($desired)
-                                    );
+      $JABBER->Connect() or die("AAAHHHH can't connect!!!!");
+      debug_print("- Connected");
 
-         // loop through notifications
-         while ( $notification = $db->FetchRow($notifications) )
-         {
-            // check notification age?
-            $subject = $notification['subject'];
-            $body = $notification['body'];
-            $notification_id = $notification['id'];
+      $JABBER->SendAuth() or die("GAHHHH bad auth!!!!");
+      debug_print("- Auth'd");
+      sleep(3);
+
+      $JABBER->SendPresence("online", null, null,null,5);
+      debug_print("- Presence");
+      sleep(3);
+
+      while ( $row = $db->FetchRow($result) )
+      {
+         $ids[] = $row['message_id'];
+      }
+
+      $desired = join(",", $ids);
+      debug_print("message ids to send = {" . $desired . "}");
+
+      // removed array usage as it's messing up the select
+      // I suspect this is due to the variable being comma separated
+      // Jamin W. Collins 20050328
+      $notifications = $db->Query("SELECT * FROM flyspray_notification_messages
+                                   WHERE message_id in ($desired)
+                                   ORDER BY time_created ASC"
+                                 );
+
+      debug_print("number of notifications {" . $db->CountRows($notifications) . "}");
+
+      // loop through notifications
+      while ( $notification = $db->FetchRow($notifications) )
+      {
+         $subject = stripslashes($notification['message_subject']);
+         $body = stripslashes($notification['message_body']);
+
+         debug_print("Processing notification {" . $notification['message_id'] . "}");
 
             $recipients = $db->Query("SELECT * FROM flyspray_notification_recipients
-                                      WHERE notification_id = ?
-                                      AND method = 'j'",
-                                      array($notification_id)
+                                      WHERE message_id = ?
+                                      AND notify_method = 'j'",
+                                      array($notification['message_id'])
                                     );
 
             // loop through recipients
             while ( $recipient = $db->FetchRow($recipients) )
             {
-               $jid = $recipient['address'];
+               $jid = $recipient['notify_address'];
+               debug_print("- attempting send to {" . $jid . "}");
 
                // send notification
                if ( $JABBER->connected ) {
@@ -148,33 +184,39 @@ class Notifications {
                      ));
                   // delete entry from notification_recipients
                   $result = $db->Query("DELETE FROM flyspray_notification_recipients
-                                        WHERE notification_id=?
-                                        AND method='j'
-                                        AND address= ?",
-                                        array($notification_id, $jid)
+                                        WHERE message_id = ?
+                                        AND notify_method = 'j'
+                                        AND notify_address = ?",
+                                        array($notification['message_id'], $jid)
                                       );
+                  debug_print("- notification sent");
+               } else {
+                  debug_print("- not connected");
                }
             }
 
             // check to see if there are still recipients for this notification
             $result = $db->Query("SELECT * FROM flyspray_notification_recipients
-                                  WHERE notification_id = ?",
-                                  array($notification_id)
+                                  WHERE message_id = ?",
+                                  array($notification['message_id'])
                                 );
 
             if ( $db->CountRows($result) == 0 )
             {
+               debug_print("No further recipients for message id {" . $notification['message_id'] . "}");
                // remove notification no more recipients
                $result = $db->Query("DELETE FROM flyspray_notification_messages
-                                     WHERE id = ?",
-                                     array($notification_id)
+                                     WHERE message_id = ?",
+                                     array($notification['message_id'])
                                    );
+               debug_print("- Notification deleted");
             }
          }
 
          // disconnect from server
          $JABBER->Disconnect();
-      }
+         debug_print("Disconnected from Jabber server");
+
       return TRUE;
    // End of SendJabber() function
    }
@@ -417,6 +459,16 @@ class Notifications {
       ///////////////////
       if ($type == '7')
       {
+         // Get the comment text
+         $comment = $db->FetchArray($db->Query("SELECT comment_text
+                                                FROM flyspray_comments
+                                                WHERE user_id = ?
+                                                AND task_id = ?
+                                                ORDER BY comment_id DESC",
+                                                array($current_user['user_id'], $task_id), '1'
+                                              )
+                                   );
+
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
 
@@ -424,6 +476,9 @@ class Notifications {
          $body .= $notify_text['commentadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= "----------\n";
+         $body .= $comment['comment_text'] . "\n";
+         $body .= "----------\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -653,19 +708,19 @@ class Notifications {
       $task_details = $fs->getTaskDetails($task_id);
       if ($task_details['mark_private'] != '1')
       {
-         $proj_emails = explode(" ", $project_prefs['notify_email']);
-         $proj_jids = explode(" ", $project_prefs['notify_jabber']);
+         $proj_emails = explode(",", $project_prefs['notify_email']);
+         $proj_jids = explode(",", $project_prefs['notify_jabber']);
 
          foreach ($proj_emails AS $key => $val)
          {
             if (!in_array($val, $email_users))
-               array_push($val, $email_users);
+               array_push($email_users, $val);
          }
 
          foreach ($proj_jids AS $key => $val)
          {
             if (!in_array($val, $jabber_users))
-               array_push($val, $jabber_users);
+               array_push($jabber_users, $val);
          }
 
       // End of checking if a task is private
