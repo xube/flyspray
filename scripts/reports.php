@@ -33,9 +33,10 @@ function summary_report()
  */
 function changelog_report()
 {
-        global $fs;
-        global $flyspray_prefs;
-        global $reports_text;
+   global $db;
+   global $fs;
+   global $flyspray_prefs;
+   global $reports_text;
 
         echo "<div class=\"tabentries\">";
         echo "<p><em>$reports_text[changeloggen]</em></p>";
@@ -149,9 +150,10 @@ function changelog_report()
  */
 function severity_report()
 {
-        global $fs;
-        global $severity_list;
-        global $reports_text;
+   global $db;
+   global $fs;
+   global $severity_list;
+   global $reports_text;
 
         $severity_colours = array('','ffe9b4','efca80','edb98a','ffb2ac','f3a29b');
 
@@ -212,9 +214,10 @@ function severity_report()
  */
 function age_report()
 {
-        global $fs;
-        global $flyspray_prefs;
-        global $reports_text;
+   global $db;
+   global $fs;
+   global $flyspray_prefs;
+   global $reports_text;
 
         echo "<div class=\"tabentries\">\n";
         echo "<p><em>Age Report</em></p>\n";
@@ -265,14 +268,15 @@ function age_report()
  */
 function events_report()
 {
-        global $fs;
-        global $flyspray_prefs;
-        global $reports_text;
-        global $details_text;
+   global $db;
+   global $fs;
+   global $flyspray_prefs;
+   global $reports_text;
+   global $details_text;
 
-        echo "<div class=\"tabentries\">";
-        echo "<p><em>{$reports_text['eventsrep']}</em></p>";
-        echo "<div class=\"tabentry\">";
+   echo "<div class=\"tabentries\">";
+   echo "<p><em>{$reports_text['eventsrep']}</em></p>";
+   echo "<div class=\"tabentry\">";
 
 switch ($_REQUEST['sort']) {
     case "asc":
@@ -425,7 +429,7 @@ switch ($_REQUEST['sort']) {
                      );
                    </script>
                    &mdash;
-                   <input id="todate" type="text" name="todate" size="10" value="<?php echo $todate?>" />
+                   <input id="todate" type="text" name="todate" size="10" value="<?php echo $todate;?>" />
                    <button id="triggertodate">...</button>
                    <script type="text/javascript">
                      Calendar.setup(
@@ -444,9 +448,14 @@ switch ($_REQUEST['sort']) {
                         <select name="duein">
                             <?php
                             $ver_list = $db->Query("SELECT version_id, version_name
-                                                        FROM flyspray_list_version
-                                                        WHERE project_id=? AND show_in_list=?
-                                                        ORDER BY list_position", array($project_id, '1'));
+                                                    FROM flyspray_list_version
+                                                    WHERE project_id = ?
+                                                    AND show_in_list = '1'
+                                                    AND version_tense = '3'
+                                                    ORDER BY list_position",
+                                                    array($project_id)
+                                                  );
+
                             while ($row = $db->FetchArray($ver_list)) {
                                 if ($_REQUEST['duein'] == $row['version_id']) {
                                 echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
@@ -461,7 +470,7 @@ switch ($_REQUEST['sort']) {
                 </table>
             </td>
         </tr>
-        <tr><td><input type="submit" class="mainbutton" name="submit" value="<?=$reports_text['show']?>" /></td></tr>
+        <tr><td><input type="submit" class="mainbutton" name="submit" value="<?php echo $reports_text['show'];?>" /></td></tr>
         </table>
         </form>
     </div>
@@ -524,8 +533,9 @@ switch ($_REQUEST['sort']) {
 
 function EventDescription($history)
 {
-            global $fs;
-            global $details_text;
+   global $db;
+   global $fs;
+   global $details_text;
 
             $description = '';
             $newvalue = $history['new_value'];

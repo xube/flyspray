@@ -8,19 +8,21 @@ if ($flyspray_prefs['spam_proof'] == '1'
     && !$COOKIE['flyspray_userid']) {
 
 // If the user came here from their notification link
-if ($_GET['magic']) {
+if (isset($_GET['magic']))
+{
+   // Check that the magic url is valid
+   $check_magic = $db->Query("SELECT * FROM flyspray_registrations
+                              WHERE magic_url = ?",
+                              array($_GET['magic'])
+                            );
 
-    // Check that the magic url is valid
-    $check_magic = $db->Query("SELECT * FROM flyspray_registrations
-                                 WHERE magic_url = ?",
-                                 array($_GET['magic'])
-                               );
-
-    if (!$db->CountRows($check_magic)) {
+   if (!$db->CountRows($check_magic))
+   {
       echo "<div class=\"redirectmessage\"><p><em>{$register_text['badmagic']}</em></p></div>";
       echo '<meta http-equiv="refresh" content="2; URL=index.php">';
 
-    } else {
+   } else
+   {
     ?>
 
 <h1><?php echo $register_text['registernewuser'];?></h1>
@@ -61,7 +63,8 @@ if ($_GET['magic']) {
   };
 
 // If there was no magic url specified
-} else {
+} else
+{
 ?>
 
 <form name="form1" action="index.php" method="post" id="registernewuser">

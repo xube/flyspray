@@ -68,36 +68,75 @@ if ($_POST['action'] == 'newtask'
 
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
-    $get_task_info = $db->FetchArray($db->Query("SELECT task_id, item_summary FROM flyspray_tasks
+    $task_details = $db->FetchArray($db->Query("SELECT task_id, item_summary, product_category
+                                                FROM flyspray_tasks
                                                 WHERE item_summary = ?
                                                 AND detailed_desc = ?
                                                 ORDER BY task_id DESC",
                                                 array($item_summary, $detailed_desc), 1));
-    //$task_id = $get_task_info['task_id'];
 
-    // If the reporter wanted to be added to the notification list
-    if ($_POST['notifyme'] == '1') {
+   // If the reporter wanted to be added to the notification list
+   if ($_POST['notifyme'] == '1')
+   {
       $insert = $db->Query("INSERT INTO flyspray_notifications
                               (task_id, user_id)
                                VALUES('{$get_task_info['task_id']}',
                                       '{$current_user['user_id']}')");
       $fs->logEvent($get_task_info['task_id'], 9, $current_user['user_id']);
-    };
+   }
 
-      // Notifications
-      $to  = $notify->Address($get_task_info['task_id']);
-      $msg = $notify->Create('1', $get_task_info['task_id']);
-      $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-      $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
-      $fs->logEvent($get_task_info['task_id'], 1);
+   $cat_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_list_category
+                                              WHERE category_id = ?",
+                                              array($_POST['product_category'])
+                                            )
+                                 );
+
+   // We need to figure out who is the category owner for this task
+   if (!empty($cat_details['category_owner']))
+   {
+      $owner = $cat_details['category_owner'];
+
+   } elseif (!empty($cat_details['parent_id']))
+   {
+      // If not, see if we can get the parent category owner
+      $parent_cat_details = $db->FetchArray($db->Query('SELECT category_owner
+                                                      FROM flyspray_list_category
+                                                      WHERE category_id = ?',
+                                                      array($cat_details['parent_id'])));
+
+      // If there's a parent category owner, send to them
+      if (!empty($parent_cat_details['category_owner']))
+         $owner = $parent_cat_details['category_owner'];
+   };
+
+   // Otherwise send it to the default category owner
+   if (empty($owner))
+      $owner = $project_prefs['default_cat_owner'];
+
+   // Category owners now get auto-added to the notification list for new tasks
+   $insert = $db->Query("INSERT INTO flyspray_notifications
+                        (task_id, user_id)
+                        VALUES(?, ?)",
+                        array($get_task_info['task_id'], $owner)
+                       );
+
+   $fs->logEvent($get_task_info['task_id'], 9, $owner);
+
+   // Create the Notification
+   $to = $notify->Address($task_details['task_id']);
+   $msg = $notify->Create('1', $task_details['task_id']);
+   $mail = $notify->SendEmail($to, $msg[0], $msg[1]);
+   $jabb = $notify->SendJabber($to, $msg[0], $msg[1]);
+
+   $fs->logEvent($get_task_info['task_id'], 1);
 
 ?>
       <div class="redirectmessage">
         <p>
           <em><?php echo $modify_text['newtaskadded'];?></em>
         </p>
-        <p><?php echo "<a href=\"?do=details&id={$get_task_info['task_id']}\">{$modify_text['gotonewtask']}</a>";?></p>
+        <p><?php echo "<a href=\"?do=details&id={$task_details['task_id']}\">{$modify_text['gotonewtask']}</a>";?></p>
         <p><?php echo "<a href=\"?do=newtask\">{$modify_text['addanother']}</a>";?></p>
         <p><?php echo "<a href=\"?\">{$modify_text['backtoindex']}</a>";?></p>
       </div>
@@ -481,23 +520,22 @@ if ($_POST['action'] == 'newtask'
                                       )
                               );
 
+$subject = $register_text['noticefrom'] . ' ' . $flyspray_prefs['project_title'];
+
 $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 {$modify_text['addressused']}\n
-{$flyspray_prefs['base_url']}index.php?do=register&amp;magic=$magic_url \n
+{$flyspray_prefs['base_url']}index.php?do=register&magic=$magic_url \n
 {$modify_text['confirmcodeis']}\n
 {$confirm_code}";
 
       // Check how they want to receive their code
-      if ($_POST['notify_type'] == '1') {
+      if ($_POST['notify_type'] == '1')
+      {
+         $notify->SendEmail($_POST['email_address'], $subject, $message);
 
-      $notify->SendEmail(
-                      $_POST['email_address'],
-                      "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}",
-                      $message
-                      );
-
-      } elseif ($_POST['notify_type'] == '2') {
-         $notify->SendJabber($_POST['jabber_id'], "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}", $message);
+      } elseif ($_POST['notify_type'] == '2')
+      {
+         $notify->SendJabber($_POST['jabber_id'], $subject, $message);
 
       };
 
@@ -525,31 +563,34 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of new user self-registration with a confirmation code //
 //////////////////////////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "registeruser" && $flyspray_prefs['anon_reg'] == '1') {
+} elseif ($_POST['action'] == "registeruser" && $flyspray_prefs['anon_reg'] == '1')
+{
 
-  // If they filled in all the required fields
-  if ($_POST['user_pass'] != ''
-    && $_POST['user_pass2'] != ''
-    ) {
+   // If they filled in all the required fields
+   if ($_POST['user_pass'] != ''
+      && $_POST['user_pass2'] != ''
+    )
+   {
 
       // If the passwords matched
       if (($_POST['user_pass'] == $_POST['user_pass2'])
            && $_POST['user_pass'] != ''
-           && $_POST['confirmation_code'] != '') {
+           && $_POST['confirmation_code'] != '')
+      {
 
 
-        // Check that the user entered the right confirmation code
-        $code_check = $db->Query("SELECT * FROM flyspray_registrations WHERE magic_url = ?", array($_POST['magic_url']));
-        $reg_details = $db->FetchArray($code_check);
+         // Check that the user entered the right confirmation code
+         $code_check = $db->Query("SELECT * FROM flyspray_registrations WHERE magic_url = ?", array($_POST['magic_url']));
+         $reg_details = $db->FetchArray($code_check);
 
-        // If the code is correct
-        if ($reg_details['confirm_code'] == $_POST['confirmation_code']) {
+         // If the code is correct
+         if ($reg_details['confirm_code'] == $_POST['confirmation_code'])
+         {
+            // Encrypt their password
+            $pass_hash = crypt("{$_POST['user_pass']}", '4t6dcHiefIkeYcn48B');
 
-          // Encrypt their password
-          $pass_hash = crypt("{$_POST['user_pass']}", '4t6dcHiefIkeYcn48B');
-
-          // Add the user to the database
-          $add_user = $db->Query("INSERT INTO flyspray_users
+            // Add the user to the database
+            $add_user = $db->Query("INSERT INTO flyspray_users
                                       (user_name,
                                        user_pass,
                                        real_name,
@@ -568,37 +609,40 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                    );
 
 
-        // Get this user's id for the record
-        $user_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_users WHERE user_name = ?", array($reg_details['user_name'])));
+            // Get this user's id for the record
+            $user_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_users WHERE user_name = ?", array($reg_details['user_name'])));
 
-        // Now, create a new record in the users_in_groups table
-        $set_global_group = $db->Query("INSERT INTO flyspray_users_in_groups
+            // Now, create a new record in the users_in_groups table
+            $set_global_group = $db->Query("INSERT INTO flyspray_users_in_groups
                                           (user_id,
                                           group_id)
                                           VALUES(?, ?)",
                                           array($user_details['user_id'], $flyspray_prefs['anon_group']));
 
-          // Let the user know what just happened
-          echo "<div class=\"redirectmessage\"><p><em>{$modify_text['accountcreated']}</em></p>";
-          echo "<p>{$modify_text['loginbelow']}</p>";
-          echo "<p>{$modify_text['newuserwarning']}</p></div>";
+            // Let the user know what just happened
+            echo "<div class=\"redirectmessage\"><p><em>{$modify_text['accountcreated']}</em></p>";
+            echo "<p>{$modify_text['loginbelow']}</p>";
+            echo "<p>{$modify_text['newuserwarning']}</p></div>";
 
 
-        // If they didn't enter the right confirmation code
-        } else {
-          echo "<div class=\"redirectmessage\"><p><em>{$modify_text['confirmwrong']}</em></p>";
-          echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-        };
+         // If they didn't enter the right confirmation code
+         } else
+         {
+            echo "<div class=\"redirectmessage\"><p><em>{$modify_text['confirmwrong']}</em></p>";
+            echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+         };
 
 
       // If passwords didn't match
-      } else {
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['nomatchpass']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+      } else
+      {
+         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['nomatchpass']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
       };
-  // If they didn't fill in all the fields
-  } else {
-    echo "<div class=\"redirectessage\"><p><em>{$modify_text['formnotcomplete']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-  };
+
+   // If they didn't fill in all the fields
+   } else {
+      echo "<div class=\"redirectessage\"><p><em>{$modify_text['formnotcomplete']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+   };
 
 // End of registering a new user
 

@@ -183,12 +183,19 @@ if ($permissions['open_new_tasks'] == "1"
        <select class="adminlist" name="product_version" id="productversion">
         <?php
         // Get list of versions
-        $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
-                                    array($project_id, '1', '2'));
-        while ($row = $db->FetchArray($get_version)) {
-          echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
-        };
-        ?>
+        $get_version = $db->Query("SELECT version_id, version_name
+                                    FROM flyspray_list_version
+                                    WHERE project_id = ?
+                                    AND show_in_list = '1'
+                                    AND version_tense = '2'
+                                    ORDER BY list_position",
+                                    array($project_id));
+
+         while ($row = $db->FetchArray($get_version))
+         {
+            echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
+         };
+         ?>
        </select>
      </td>
    </tr>
@@ -198,12 +205,19 @@ if ($permissions['open_new_tasks'] == "1"
         <?php
         echo "<option value=\"\">{$newtask_text['undecided']}</option>\n";
 
-        $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
-                                    array($project_id, '1', '3'));
-        while ($row = $db->FetchArray($get_version)) {
-          echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
-        };
-        ?>
+        $get_version = $db->Query("SELECT version_id, version_name
+                                    FROM flyspray_list_version
+                                    WHERE project_id = ?
+                                    AND show_in_list = '1'
+                                    AND version_tense = '3'
+                                    ORDER BY list_position",
+                                    array($project_id));
+
+         while ($row = $db->FetchArray($get_version))
+         {
+            echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
+         };
+         ?>
         </select>
      </td>
    </tr>

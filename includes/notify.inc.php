@@ -23,6 +23,7 @@ class Notifications {
       global $flyspray_prefs;
       global $current_user;
 
+      $subject = htmlspecialchars($subject);
       $body = htmlspecialchars($body);
 
       if (empty($flyspray_prefs['jabber_server'])
@@ -108,7 +109,7 @@ class Notifications {
    }
 
 
-   function SendEmail($to, $subject, $message) {
+   function SendEmail($to, $subject, $body) {
 
       global $db;
       global $fs;
@@ -120,6 +121,9 @@ class Notifications {
 
       $flyspray_prefs = $fs->GetGlobalPrefs();
       $project_prefs = $fs->GetProjectPrefs($_COOKIE['flyspray_project']);
+
+      $subject = htmlspecialchars($subject);
+      $body = htmlspecialchars($body);
 
       if (empty($to) OR $to == $_COOKIE['flyspray_userid'])
          return;
@@ -151,8 +155,8 @@ class Notifications {
       //$mail->IsHTML(true);                                  // set email format to HTML
 
       $mail->Subject = $subject;            // CHANGE ME WHEN WE MAKE NOTIFICATION SUBJECTS CUSTOMISABLE
-      $mail->Body = $message;
-      $mail->Body = $message;
+      $mail->Body = $body;
+      //$mail->AltBody = $body;
 
       if(!$mail->Send())
       {
@@ -190,8 +194,8 @@ class Notifications {
          | 7. Comment added            |
          | 8. Attachment added         |
          | 9. Related task added       |
-         |10. Assigned to you          |
-         |11. Taken ownership          |
+         |10. Taken ownership          |
+         |11. Confirmation code        |
          -------------------------------
       */
       ///////////////////////////////////////////////////////////////
@@ -199,30 +203,6 @@ class Notifications {
       ///////////////////////////////////////////////////////////////
       if ($type == '1')
       {
-         // Get the category owner for this task
-         if (!empty($task_details['category_owner']))
-         {
-            $send_to = $task_details['category_owner'];
-
-         } elseif (!empty($cat_details['parent_id']))
-         {
-            // If not, see if we can get the parent category owner
-            $parent_cat_details = $db->FetchArray($db->Query('SELECT category_owner
-                                                              FROM flyspray_list_category
-                                                              WHERE category_id = ?',
-                                                              array($cat_details['parent_id'])));
-
-            // If there's a parent category owner, send to them
-            if (!empty($parent_cat_details['category_owner']))
-               $send_to = $parent_cat_details['category_owner'];
-
-         };
-
-         // Otherwise send it to the default category owner
-         if (empty($send_to))
-            $send_to = $project_prefs['default_cat_owner'];
-
-         // Generate the nofication message
          $subject = $notify_text['notifyfrom'];
 
          $body = $notify_text['donotreply'] . "\n\n";
@@ -357,7 +337,7 @@ class Notifications {
       if ($type == '7')
       {
          // Generate the nofication message
-         $subject = "Notification from Flyspray";
+         $subject = $notify_text['notifyfrom'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['commentadded'] . "\n\n";
@@ -373,7 +353,7 @@ class Notifications {
 
       if ($type == '8')
       {
-         $subject = "Notification from Flyspray";
+         $subject = $notify_text['notifyfrom'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['attachmentadded'] . "\n\n";
@@ -388,7 +368,7 @@ class Notifications {
 
       if ($type == '9')
       {
-         $subject = "Notification from Flyspray";
+         $subject = $notify_text['notifyfrom'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['relatedadded'] . "\n\n";
@@ -404,7 +384,7 @@ class Notifications {
       if ($type == '10')
       {
 
-         $subject = "Notification from Flyspray";
+         $subject = $notify_text['notifyfrom'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $task_details['assigned_to_name'] . $notify_text['takenownership'] . "\n\n";
@@ -418,6 +398,15 @@ class Notifications {
 
       if ($type == '11')
       {
+         // We need to work out how to move the confirmation code message generation
+         // from scripts/modify.php to here.
+
+         $notify_text['notifyfrom'];
+
+         $body = $notify_text['donotreply'] . "\n\n";
+
+         $body .= $notify_text['disclaimer'];
+
          return array($subject, $body);
       }
 

@@ -299,7 +299,7 @@ if ($effective_permissions['can_edit'] == '1'
         } else {
           echo "<option value=\"\" selected=\"selected\">{$details_text['undecided']}</option>\n";
         };
-        $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
+        $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' AND version_tense = '3' ORDER BY list_position", array($project_id));
         while ($row = $db->FetchArray($get_version)) {
           if ($row['version_id'] == $task_details['closedby_version']) {
             echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
