@@ -170,7 +170,7 @@ if ($_GET['project'] == '0') {
     $get = "&amp;project={$project_id}";
 };
 // for page numbering
-$extraurl = $get . "&amp;tasks={$_GET['tasks']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$dev}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
+$extraurl = $get . "&amp;tasks={$_GET['tasks']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$dev}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;due={$_GET['due']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
 // for 'sort by this column' links
 $get = $extraurl . "&amp;pagenum=$pagenum";
 $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";

@@ -4,6 +4,10 @@
 // move flyspray.conf.php to a directory where a browser can't access it.
 // (RECOMMENDED)
 
+// You might like to uncomment the next line if you are receiving lots of
+// PPHP NOTICE errors
+//error_reporting(E_ALL & -E_NOTICE);
+
 // Load the config file
 $conf_array = @parse_ini_file("flyspray.conf.php", true);
 $conf_array = array_merge($conf_array, 

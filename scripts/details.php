@@ -66,8 +66,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
       $get_user_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
       list($user_name, $real_name) = $fs->dbFetchArray($get_user_name);
     } else {
-      $user_name = "Anonymous Submitter";
-      //$real_name = "Anonymous";
+      $user_name = $details_text['anonymous'];
     };
 
     $date_opened = $fs->formatDate($task_details['date_opened'], true);
@@ -89,9 +88,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
     </p>
     <table class="taskdetails">
       <tr>
-        <th><?php echo $details_text['tasktype'];?></th>
+        <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
         <td>
-        <select name="task_type">
+        <select id="tasktype" name="task_type">
         <?php
         // Get list of task types
         $get_severity = $fs->dbQuery("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype WHERE show_in_list = ? ORDER BY list_position", array('1'));
@@ -105,9 +104,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
         ?>
         </select>
         </td>
-        <th><?php echo $details_text['severity'];?></th>
+        <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
         <td>
-        <select name="task_severity">
+        <select id="severity" name="task_severity">
         <?php
         // Get list of severities
         require("lang/$lang/severity.php");
@@ -123,9 +122,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
         </td>
       </tr>
       <tr>
-        <th><?php echo $details_text['category'];?></th>
+        <td><label for=category"><?php echo $details_text['category'];?></label></td>
         <td>
-        <select name="product_category">
+        <select id="category" name="product_category">
         <?php
         $cat_list = $fs->dbQuery('SELECT category_id, category_name
                                     FROM flyspray_list_category
@@ -155,9 +154,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
         ?>
         </select>
         </td>
-        <th><?php echo $details_text['priority'];?></th>
+        <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
         <td>
-        <select name="task_priority">
+        <select id="priority" name="task_priority">
         <?php
         // Get list of priorities
         require("lang/$lang/priority.php");
@@ -173,9 +172,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
         </td>
       </tr>
       <tr>
-        <th><?php echo $details_text['status'];?></th>
+        <td><label for="status"><?php echo $details_text['status'];?></label></td>
         <td>
-        <select name="item_status">
+        <select id="status" name="item_status">
         <?php
         // let's get a list of statuses and compare it to the saved one
         require("lang/$lang/status.php");
@@ -189,7 +188,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
 
         ?>
         </select></td>
-        <th><?php echo $details_text['reportedversion'];?></th>
+        <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
         <td>
         <!--<select name="product_version">
         <?php
@@ -211,10 +210,10 @@ if (($_SESSION['can_modify_jobs'] == '1'
         </td>
       </tr>
       <tr>
-        <th><?php echo $details_text['assignedto'];?></th>
+        <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
         <td>
         <input type="hidden" name="old_assigned" value="<?php echo $task_details['assigned_to'];?>">
-        <select name="assigned_to">
+        <select id="assignedto" name="assigned_to">
         <?php
         // Get list of users
         //$get_users = $fs->dbQuery($fs->listUserQuery());
@@ -231,9 +230,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
         ?>
         </select>
         </td>
-        <th><?php echo $details_text['dueinversion'];?></th>
+        <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
         <td>
-        <select name="closedby_version">
+        <select id="dueversion" name="closedby_version">
         <?php
         // if we don't have a fix-it version, show undecided
         if (!isset($closedby)) {
@@ -254,9 +253,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
         </td>
       </tr>
       <tr>
-        <th><?php echo $details_text['operatingsystem'];?></th>
+        <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
         <td>
-        <select name="operating_system">
+        <select id="os" name="operating_system">
         <?php
         // Get list of operating systems
         $get_os = $fs->dbQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
@@ -270,9 +269,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
         ?>
         </select>
         </td>
-        <th><?php echo $details_text['percentcomplete'];?></th>
+        <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
         <td>
-        <select name="percent_complete">
+        <select id="percent" name="percent_complete">
           <option value="0" <?php if ($task_details['percent_complete'] == '0') { echo "selected=\"selected\"";};?>>0%</option>
           <option value="10" <?php if ($task_details['percent_complete'] == '10') { echo "selected=\"selected\"";};?>>10%</option>
           <option value="20" <?php if ($task_details['percent_complete'] == '20') { echo "selected=\"selected\"";};?>>20%</option>
@@ -288,11 +287,11 @@ if (($_SESSION['can_modify_jobs'] == '1'
         </td>
       </tr>
       <tr>
-        <th><?php echo $details_text['details'];?></th>
+        <td><label for="details"><?php echo $details_text['details'];?></label></td>
         <td colspan="3">
         <?php
         ?>
-        <textarea name="detailed_desc" cols="70" rows="10"><?php echo $detailed_desc;?></textarea>
+        <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo $detailed_desc;?></textarea>
         </td>
       </tr>
       <tr>
@@ -378,14 +377,14 @@ if (($_SESSION['can_modify_jobs'] == '1'
     </p>
     <table class="taskdetails">
       <tr>
-        <th><?php echo $details_text['tasktype'];?></th>
-        <td><?php echo $task_details['tasktype_name'];?></td>
-        <th><?php echo $details_text['severity'];?></th>
-        <td><?php echo $task_details['severity_name'];?></td>
+        <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
+        <td id="tasktype"><?php echo $task_details['tasktype_name'];?></td>
+        <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
+        <td id="severity"><?php echo $task_details['severity_name'];?></td>
       </tr>
       <tr>
-        <th><?php echo $details_text['category'];?></th>
-        <td>
+        <td><label for="category"><?php echo $details_text['category'];?></label></td>
+        <td id="category">
         <?php
         if ($task_details['parent_id'] > '0') {
           $get_parent_cat = $fs->dbFetchArray($fs->dbQuery('SELECT category_name
@@ -396,14 +395,14 @@ if (($_SESSION['can_modify_jobs'] == '1'
         };
         echo $task_details['category_name'];?>
         </td>
-        <th><?php echo $details_text['priority'];?></th>
-        <td>
+        <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
+        <td id="priority">
 	<?php echo $task_details['priority_name'];?>
 	</td>
       </tr>
       <tr>
-        <th><?php echo $details_text['status'];?></th>
-        <td>
+        <td><label for="status"><?php echo $details_text['status'];?></label></td>
+        <td id="status">
 		<?php
 		if($task_details['is_closed'] == '1') {
 			echo $details_text['closed'];
@@ -412,11 +411,11 @@ if (($_SESSION['can_modify_jobs'] == '1'
 		};
 		?>
 		</td>
-         <th nowrap=""><?php echo $details_text['reportedversion'];?></th>
-        <td><?php echo $task_details['reported_version_name'];?></td>
+         <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
+        <td id="reportedver"><?php echo $task_details['reported_version_name'];?></td>
       </tr>
       <tr>
-        <th><?php echo $details_text['assignedto'];?></th>
+        <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
         <td>
         <?php
         // see if it's been assigned
@@ -430,8 +429,8 @@ if (($_SESSION['can_modify_jobs'] == '1'
         };
         ?>
         </td>
-       <th><?php echo $details_text['dueinversion'];?></th>
-        <td>
+       <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
+        <td id="dueversion">
         <?php
         if (isset($task_details['due_in_version_name'])) {
           echo $task_details['due_in_version_name'];
@@ -442,15 +441,15 @@ if (($_SESSION['can_modify_jobs'] == '1'
         </td>
       </tr>
       <tr>
-        <th nowrap=""><?php echo $details_text['operatingsystem'];?></th>
-        <td><?php echo $task_details['os_name'];?></td>
-        <th><?php echo $details_text['percentcomplete'];?></th>
+        <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
+        <td id="os"><?php echo $task_details['os_name'];?></td>
+        <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
         <td ><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?>></td>
       </tr>
 
     <!-- end of right column -->
       <tr>
-        <th><?php echo $details_text['details'];?></th>
+        <td><label for="details"><?php echo $details_text['details'];?></label></td>
         <td class="details" colspan="3">
         <?php 
         // Change URLs to hyperlinks

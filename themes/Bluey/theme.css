@@ -76,7 +76,7 @@ form p {
 }
 
 td {
-  vertical-align      : top;
+  vertical-align      : middle;
 }
 
 th {
@@ -95,7 +95,8 @@ input, textarea, select, button {
 label {
   text-align          : right;
   display             : block;
-  margin              : 4px;
+  margin-right        : 8px;
+  font-weight         : bold;
 }
 
 /* div.admin and p.admin is used for areas that only administrators can use
