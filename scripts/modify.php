@@ -64,8 +64,9 @@ if ($_POST['action'] == "newtask" && ($permissions['open_new_tasks'] == "1" OR $
     // If the reporter wanted to be added to the notification list
     if ($_POST['notifyme'] == '1') {
       $insert = $fs->dbQuery("INSERT INTO flyspray_notifications
-      (task_id, user_id)
-      VALUES('{$get_task_info['task_id']}', '{$current_user['user_id']}')");
+                              (task_id, user_id)
+                               VALUES('{$get_task_info['task_id']}',
+                                      '{$current_user['user_id']}')");
       $fs->logEvent($get_task_info['task_id'], 9, $current_user['user_id']);
     };
 
@@ -324,6 +325,7 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
           $new_username = "No-one";
         };
 
+        // Create a notification message
         $item_summary = stripslashes($_POST['item_summary']);
         $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
         $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
@@ -341,11 +343,11 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
       if ($_POST['assigned_to'] != "0" && ($_POST['assigned_to'] != $_COOKIE['flyspray_userid'])) {
 
         // Get the brief notification message to send
-$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - {$_POST['item_summary']}";
-$message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
-{$current_user['real_name']} ({$current_user['user_name']}) {$modify_text['hasassigned']}\n
-{$modify_text['task']} #{$_POST['task_id']}: {$_POST['item_summary']} \n
-{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}";
+        $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - {$_POST['item_summary']}";
+        $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
+        {$current_user['real_name']} ({$current_user['user_name']}) {$modify_text['hasassigned']}\n
+        {$modify_text['task']} #{$_POST['task_id']}: {$_POST['item_summary']} \n
+        {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}";
 
         // Send the brief notification message
         $result = $fs->SendBasicNotification($_POST['assigned_to'], $subject, $message);
@@ -384,17 +386,19 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
   if ($_POST['resolution_reason'] != "1") {
 
     $close_item = $fs->dbQuery("UPDATE flyspray_tasks SET
-
-    date_closed = ?,
-    closed_by = ?,
-    closure_comment = ?,
-    is_closed = '1',
-    resolution_reason = ?
-
-    WHERE task_id = ?
-
-    ", array($now, $_COOKIE['flyspray_userid'], $_POST['closure_comment'],
-    $_POST['resolution_reason'], $_POST['task_id']));
+                                date_closed = ?,
+                                closed_by = ?,
+                                closure_comment = ?,
+                                is_closed = '1',
+                                resolution_reason = ?
+                                WHERE task_id = ?
+                                ", array($now, 
+                                         $_COOKIE['flyspray_userid'],
+                                         $_POST['closure_comment'],
+                                         $_POST['resolution_reason'],
+                                         $_POST['task_id']
+                                        )
+                             );
 
     // Get the resolution name for the notifications
     $get_res = $fs->dbFetchArray($fs->dbQuery("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason'])));
@@ -1803,6 +1807,110 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 
 // End of requesting task re-opening
 
+
+//////////////////////////////////
+// Start of adding a dependency //
+//////////////////////////////////
+
+} elseif ($_POST['action'] == 'newdep'
+          && (($permissions['modify_own_tasks'] == '1' && $old_details['assigned_to'] == $current_user['user_id'])
+          OR $permissions['modify_all_tasks'] =='1')) {
+
+  // First check that the user hasn't tried to add this twice
+  $check_dep = $fs->dbQuery("SELECT * FROM flyspray_dependencies
+                             WHERE task_id = ? AND dep_task_id = ?",
+                             array($_POST['task_id'], $_POST['dep_task_id']));
+
+  // or that they are trying to reverse-depend the same task, creating a mutual-block
+  $check_dep2 = $fs->dbQuery("SELECT * FROM flyspray_dependencies
+                             WHERE task_id = ? AND dep_task_id = ?",
+                             array($_POST['dep_task_id'], $_POST['task_id']));
+                             
+  
+
+  if (!$fs->dbCountRows($check_dep)
+       && !$fs->dbCountRows($check_dep2)
+       // Check that the user hasn't tried to add the same task as a dependency
+       && $_POST['task_id'] != $_POST['dep_task_id']) {
+         
+    // Log this event to the task history, both ways
+    $fs->logEvent($_POST['task_id'], 22, $_POST['dep_task_id']);
+    $fs->logEvent($_POST['dep_task_id'], 23, $_POST['task_id']);
+         
+    // Add the dependency to the database
+    $add_dep = $fs->dbQuery("INSERT INTO flyspray_dependencies
+                             (task_id, dep_task_id)
+                             VALUES(?,?)",
+                             array($_POST['task_id'], $_POST['dep_task_id']));
+
+    // Get the details on the task that was just added as a dependency
+    $dep_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_tasks
+                                                   WHERE task_id = ?",
+                                                   array($_POST['dep_task_id'])));
+
+    // Create notification message 
+    $item_summary = stripslashes($old_details['item_summary']);
+    $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
+    $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
+    {$modify_text['newdepnotify']} .\n
+    FS#{$_POST['task_id']} - {$old_details['item_summary']}
+    {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}\n
+    {$modify_text['newdepis']}\n
+    FS#{$_POST['dep_task_id']}: {$dep_details['item_summary']}
+    {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['dep_task_id']}\n";
+    // End of generating a message
+
+    // Send the brief notification message
+    $result = $fs->SendBasicNotification($old_details['assigned_to'], $subject, $message);
+    echo $result;
+      
+    // Send the detailed notification message
+    $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
+    echo $result;
+  
+    // Redirect
+    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['dependadded']}</em></p>";
+    echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+  
+  // If the user tried to add the wrong task as a dependency
+  } else {
+
+    // If the user tried to add the 'wrong' task as a dependency,
+    // show error and redirect
+   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['dependaddfailed']}</em></p>";
+   echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+
+  };
+
+// End of adding a dependency
+
+
+////////////////////////////////////
+// Start of removing a dependency //
+////////////////////////////////////
+
+} elseif ($_GET['action'] == 'removedep'
+          && (($permissions['modify_own_tasks'] == '1' && $old_details['assigned_to'] == $current_user['user_id'])
+          OR $permissions['modify_all_tasks'] =='1')) {
+  
+  // We need some info about this dep for the task history
+  $dep_info = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_dependencies
+                                              WHERE depend_id = ?",
+                                              array($_GET['depend_id'])));
+  
+  $remove = $fs->dbQuery("DELETE FROM flyspray_dependencies
+                           WHERE depend_id = ?",
+                           array($_GET['depend_id']));
+  
+  // Log this event to the task's history
+  $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
+  $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
+
+  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['depremoved']}</em></p>";
+  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+
+
+// End of removing a dependency
 
 /////////////////////
 // End of actions! //

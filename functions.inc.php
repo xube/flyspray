@@ -537,6 +537,10 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
   // 19: User took ownership
   // 20: Closure request made
   // 21: Re-opening request made
+  // 22: Adding a new dependency
+  // 23: This task added as a dependency of another task
+  // 24: Removing a dependency
+  // 25: This task removed from another task's dependency list
   
 
   $this->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value) 

@@ -316,7 +316,7 @@ div#taskdetails table th {
   font-weight         : bold;
 }
 
-/* dic#content is a generic container for anything but the title and
+/* div#content is a generic container for anything but the title and
    the footer paragraph */
 div#content {
   border               : 2px solid #948d94;
@@ -651,7 +651,26 @@ div#actionbuttons {
         display: block;
     }
 
+div#deps {
+  margin-bottom: 20px;
+  width: 99%;
+}
 
+table#deps {
+  border: 1px dotted #000000;
+}
+
+td#depleft {
+  width: 50%;
+}
+
+td#depright {
+  width: 50%;
+}
+
+a.closedtasklink {
+  text-decoration: line-through;
+}
 
 }
 

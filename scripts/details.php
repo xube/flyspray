@@ -469,6 +469,61 @@ if ($effective_permissions['can_edit'] == '1'
 <div id="actionbuttons">
 
   <?php
+    // Check for task dependencies that block closing this task
+    $check_deps = $fs->dbQuery("SELECT * FROM flyspray_dependencies d
+                                LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
+                                WHERE d.task_id = ?",
+                                array($_GET['id']));
+    
+    // Check for tasks that this task blocks
+    $check_blocks = $fs->dbQuery("SELECT * FROM flyspray_dependencies d
+                                LEFT JOIN flyspray_tasks t on d.task_id = t.task_id
+                                WHERE d.dep_task_id = ?",
+                                array($_GET['id']));
+                                  
+    // Show tasks that this task depends upon
+    echo '<div id="deps">';
+    echo '<table id="deps"><tr><td id="depleft">';
+    echo '<b>' . $details_text['taskdependson'] . '</b><br />';
+    while ($dependency = $fs->dbFetchArray($check_deps)) {
+      if ($dependency['is_closed'] == '1') {
+        echo '<a class="closedtasklink" href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
+      } else {
+        echo '<a href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
+      };
+      // If the user has permission, show a link to remove a dependency
+      if ($effective_permissions['can_edit'] == '1'
+           && $task_details['is_closed'] != '1') {
+        echo '&nbsp;&mdash;&nbsp;<a class="removedeplink" href="?do=modify&amp;action=removedep&amp;depend_id=' . $dependency['depend_id'] . '">' . $details_text['remove'] . "</a>\n";
+      };
+      echo '<br />';
+    };
+    echo "<br />\n";
+    // If the user has permission, show a form to add a new dependency
+    if ($effective_permissions['can_edit'] == '1'
+        && $task_details['is_closed'] != '1') {
+    ?>
+    <form action="index.php" method="post">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="newdep" />
+      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+      <input class="admintext" type="text" name="dep_task_id" size="5" maxlength="10" />
+      <input class="adminbutton" type="submit" name="submit" value="<?php echo $details_text['addnew'];?>" />
+    </form>
+    <?php
+    };
+    
+    // Show tasks that this task blocks
+    echo '</td><td id="depright">';
+    echo '<b>' . $details_text['taskblocks'] . '</b><br />';
+    while ($block = $fs->dbFetchArray($check_blocks)) {
+      echo '<a href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
+    };
+    
+    echo '</td></tr></table>';
+    echo '</div>';
+
+
   // If the task is closed, show the closure reason
   if ($task_details['is_closed'] == '1') {
       
@@ -489,7 +544,7 @@ if ($effective_permissions['can_edit'] == '1'
      echo nl2br(stripslashes($closure_comment));
     };
     
-    // End of checking if a task is closed
+    // End of showing task closure reason
     };
 
     // Check permissions and task status, then show the "re-open task" button
@@ -522,10 +577,23 @@ if ($effective_permissions['can_edit'] == '1'
     <?php
     // End of the "re-open task" form
     };
-
+    
+    // Get info on the dependencies again
+    $check_deps = $fs->dbQuery("SELECT * FROM flyspray_dependencies d
+                                LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
+                                WHERE d.task_id = ?",
+                                array($_GET['id']));
+    // Cycle through the dependencies, checking if any are still open
+    while ($deps_details = $fs->dbFetchArray($check_deps)) {
+      if ($deps_details['is_closed'] != '1') {
+        $deps_open = 'yes';
+      };
+    };
+    
     // Check permissions and task status, then show the "close task" form
     if ($effective_permissions['can_close'] == '1'
-        && $task_details['is_closed'] != '1') {
+        && $task_details['is_closed'] != '1'
+        && $deps_open != 'yes') {
         ?>
 
       <form name="form2" action="index.php" method="post" id="formclosetask">
@@ -557,6 +625,7 @@ if ($effective_permissions['can_edit'] == '1'
     <?php
     // If the user owns this task but can't close it, show a button to request closure
     } elseif ($effective_permissions['can_close'] != '1'
+              && $open_deps != 'yes'
               && $task_details['assigned_to'] == $current_user['user_id']
               && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1') { ?>
 
@@ -1198,7 +1267,8 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                                          FROM flyspray_history h
                                          LEFT JOIN flyspray_users u ON h.user_id = u.user_id
                                          WHERE h.task_id = ? {$details}
-                                         ORDER BY h.event_date ASC, h.event_type ASC", array($_GET['id']));
+                                         ORDER BY h.event_date ASC, h.event_type ASC",
+                                         array($_GET['id']));
 
         if ($fs->dbCountRows($query_history) == 0) {
             ?>
@@ -1324,10 +1394,10 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     echo " ({$oldvalue} &nbsp;&nbsp;&rarr; {$newvalue})";
                 };
 
-            } elseif ($history['event_type'] == 1) {      //Task opened
+            } elseif ($history['event_type'] == '1') {      //Task opened
                 echo $details_text['taskopened'];
 
-            } elseif ($history['event_type'] == 2) {      //Task closed
+            } elseif ($history['event_type'] == '2') {      //Task closed
                 echo $details_text['taskclosed'];
                 $res_name = $fs->dbFetchRow($fs->dbQuery("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($newvalue)));
                 echo " ({$res_name['resolution_name']}";
@@ -1336,13 +1406,13 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                 }
                 echo ')';
 
-            } elseif ($history['event_type'] == 3) {      //Task edited
+            } elseif ($history['event_type'] == '3') {      //Task edited
                 echo $details_text['taskedited'];
 
-            } elseif ($history['event_type'] == 4) {      //Comment added
+            } elseif ($history['event_type'] == '4') {      //Comment added
                 echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=comments#{$newvalue}\">{$details_text['commentadded']}</a>";
 
-            } elseif ($history['event_type'] == 5) {      //Comment edited
+            } elseif ($history['event_type'] == '5') {      //Comment edited
                 echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['commentedited']}</a>";
                 $comment = $fs->dbQuery("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($history['field_changed']));
                 if ($fs->dbCountRows($comment) != 0) {
@@ -1360,7 +1430,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     $details_new = nl2br(stripslashes($details_new));
                 };
 
-            } elseif ($history['event_type'] == 6) {      //Comment deleted
+            } elseif ($history['event_type'] == '6') {      //Comment deleted
                 echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['commentdeleted']}</a>";
                 if ($newvalue != '' && $history['field_changed'] != '') {
                     echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($history['field_changed'], true) . ")";    
@@ -1374,7 +1444,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     $details_new = '';
                 };
 
-            } elseif ($history['event_type'] == 7) {      //Attachment added
+            } elseif ($history['event_type'] == '7') {      //Attachment added
                 echo $details_text['attachmentadded'];
                 $attachment = $fs->dbQuery("SELECT orig_name, file_desc FROM flyspray_attachments WHERE attachment_id = ?", array($newvalue));
                 if ($fs->dbCountRows($attachment) != 0) {
@@ -1385,27 +1455,27 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     };
                 };
 
-            } elseif ($history['event_type'] == 8) {      //Attachment deleted
+            } elseif ($history['event_type'] == '8') {      //Attachment deleted
                 echo "{$details_text['attachmentdeleted']}: {$newvalue}";
 
-            } elseif ($history['event_type'] == 9) {      //Notification added
+            } elseif ($history['event_type'] == '9') {      //Notification added
                 echo "{$details_text['notificationadded']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == 10) {      //Notification deleted 
+            } elseif ($history['event_type'] == '10') {      //Notification deleted 
                 echo "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == 11) {      //Related task added
+            } elseif ($history['event_type'] == '11') {      //Related task added
                 list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";      
 
-            } elseif ($history['event_type'] == 12) {      //Related task deleted
+            } elseif ($history['event_type'] == '12') {      //Related task deleted
                 list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
-            } elseif ($history['event_type'] == 13) {      //Task reopened
+            } elseif ($history['event_type'] == '13') {      //Task reopened
                 echo $details_text['taskreopened'];
 
-            } elseif ($history['event_type'] == 14) {      //Task assigned
+            } elseif ($history['event_type'] == '14') {      //Task assigned
                 if ($oldvalue == '0') {
                     echo "{$details_text['taskassigned']} " . $fs->LinkedUsername($newvalue);
                 } elseif ($newvalue == '0') {
@@ -1413,28 +1483,45 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                 } else {
                     echo "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
                 };
-            } elseif ($history['event_type'] == 15) {      //Task added to related list of another task
+            } elseif ($history['event_type'] == '15') {      //Task added to related list of another task
                 list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['addedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+                echo "{$details_text['addedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
-            } elseif ($history['event_type'] == 16) {      //Task deleted from related list of another task
+            } elseif ($history['event_type'] == '16') {      //Task deleted from related list of another task
                 list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['deletedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+                echo "{$details_text['deletedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
-            } elseif ($history['event_type'] == 17) {      //Reminder added
+            } elseif ($history['event_type'] == '17') {      //Reminder added
                 echo "{$details_text['reminderadded']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == 18) {      //Reminder deleted
+            } elseif ($history['event_type'] == '18') {      //Reminder deleted
                 echo "{$details_text['reminderdeleted']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == 19) {      //User took ownership
+            } elseif ($history['event_type'] == '19') {      //User took ownership
                 echo "{$details_text['ownershiptaken']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == 20) {      //User requested task closure
+            } elseif ($history['event_type'] == '20') {      //User requested task closure
                 echo $details_text['closerequestmade'];
 
-            } elseif ($history['event_type'] == 21) {      //User requested task re-open
+            } elseif ($history['event_type'] == '21') {      //User requested task re-open
                 echo $details_text['reopenrequestmade']; 
+
+            } elseif ($history['event_type'] == '22') {      // Dependency added
+                list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                echo "{$details_text['depadded']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
+                            
+            } elseif ($history['event_type'] == '23') {      // Dependency added to other task
+                list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                echo "{$details_text['depaddedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
+
+            } elseif ($history['event_type'] == '24') {      // Dependency removed
+                list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                echo "{$details_text['depremoved']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
+
+            } elseif ($history['event_type'] == '25') {      // Dependency removed from other task
+                list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                echo "{$details_text['depremovedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
+
             };
             ?></td>
         </tr>

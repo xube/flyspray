@@ -114,6 +114,14 @@ CREATE TABLE `flyspray_admin_requests` (
 ) TYPE=MyISAM COMMENT='Pending requests for admins and PMs to attend to' AUTO_INCREMENT=1 ;
 
 
+CREATE TABLE `flyspray_dependencies` (
+  `depend_id` mediumint(10) NOT NULL auto_increment,
+  `task_id` mediumint(10) NOT NULL default '0',
+  `dep_task_id` mediumint(10) NOT NULL default '0',
+  PRIMARY KEY  (`depend_id`)
+) TYPE=MyISAM COMMENT='Task dependencies' AUTO_INCREMENT=2 ;
+
+
 ####################################
 ## The Psi database is up to here ##
 ####################################
