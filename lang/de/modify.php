@@ -121,6 +121,7 @@ $modify_text = array (
 'projectupdated'	=>	'Projekteinstellungen gespeichert',
 'emptytitle'		=>	'Sie haben das Projekttitelfeld leer gelassen, beheben Sie das bitte.',
 'loginbelow'		=>	'Sie können nun versuchen, sich in untenstehendem Formular anzumelden.',
+'attachmentdeleted' => 'Das Attachment wurde geölscht',
 
 
 );
