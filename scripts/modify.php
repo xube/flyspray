@@ -164,10 +164,59 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
     // Get the existing task details before updating
     // We need them in order to generate the changed-task message
     $old_details = $fs->GetTaskDetails($_POST['task_id']);
+
+// Check to see if this task has already been modified before we clicked "save"...
+// If so, we need to confirm that the we really wants to save our changes
+if ($_POST['edit_start_time'] < $old_details['last_edited_time']) {
+  echo $modify_text['alreadyedited'];
+  ?>
+
+<br><br>
+<span>
+  <form name="form1" action="index.php" method="post">
+    <input type="hidden" name="do" value="modify">
+    <input type="hidden" name="action" value="update">
+    <input type="hidden" name="task_id" value="<?php echo $_POST['task_id'];?>">
+    <input type="hidden" name="edit_start_time" value="999999999999">
+    <input type="hidden" name="attached_to_project" value="<?php echo $_POST['attached_to_project'];?>">
+    <input type="hidden" name="task_type" value="<?php echo $_POST['task_type'];?>">
+
+<!-- A bit dodgy, part 1 -->
+    <input type="text" style="display:none;" name="item_summary" value="<?php echo htmlentities($_POST['item_summary']);?>">
+    <textarea style="display:none" name="detailed_desc"><?php echo htmlentities($_POST['detailed_desc']);?></textarea>
+
+    <input type="hidden" name="item_status" value="<?php echo $_POST['item_status'];?>">
+    <input type="hidden" name="assigned_to" value="<?php echo $_POST['assigned_to'];?>">
+    <input type="hidden" name="product_category" value="<?php echo $_POST['product_category'];?>">
+    <input type="hidden" name="closedby_version" value="<?php echo $_POST['closedby_version'];?>">
+    <input type="hidden" name="operating_system" value="<?php echo $_POST['operating_system'];?>">
+    <input type="hidden" name="task_severity" value="<?php echo $_POST['task_severity'];?>">
+    <input type="hidden" name="percent_complete" value="<?php echo $_POST['percent_complete'];?>">
+    <input type="submit" class="adminbutton" value="<?php echo $modify_text['saveanyway']; ?>">
+  </form>
+</span>
+&nbsp;&nbsp;&nbsp;
+<span>
+  <form action="index.php" method="get">
+    <input type="hidden" name="do" value="details">
+    <input type="hidden" name="id" value="<?php echo $_POST['task_id'];?>">
+    <input type="submit" class="adminbutton" value="<?php echo $modify_text['cancel'];?>">
+  </form>
+</span>
+
+<?php
+} else {
+
     $old_details_history = $fs->dbFetchRow($fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
 
     $item_summary = $_POST['item_summary'];
     $detailed_desc = $_POST['detailed_desc'];
+
+// A bit dodgy, part 2.
+    if ($_POST['edit_start_time'] == "999999999999") {
+      $item_summary = stripslashes($_POST['item_summary']);
+      $detailed_desc = stripslashes($_POST['detailed_desc']);
+    }
 
     $add_item = $fs->dbQuery("UPDATE flyspray_tasks SET
                   attached_to_project = ?,
@@ -265,7 +314,7 @@ $current_realname ($current_username) {$modify_text['hasjustmodified']} {$modify
           $new_username = $modify_text['unassigned'];
         };
 
-        // Generate thebrief notification message to send
+        // Generate the brief notification message to send
         $get_new = $fs->dbFetchArray($fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($_POST['assigned_to'])));
 
         if ($get_new['user_name'] != '') {
@@ -288,7 +337,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
       };
 
       // If assignment isn't "none", notify the new assignee of their task
-      if ($_POST['assigned_to'] != "0") {
+      if ($_POST['assigned_to'] != "0" && ($_POST['assigned_to'] != $_COOKIE['flyspray_userid'])) {
 
         // Get the brief notification message to send
 $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - {$_POST['item_summary']}";
@@ -312,6 +361,9 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
     echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskupdated']}</em></p>";
     echo "<p>{$modify_text['waitwhiletransfer']}</p></div>";
+
+    // End of checking if this task was modified while we were editing it.
+    };
 
   // If they didn't fill in both the summary and detailed description, show an error
   } else {
@@ -346,11 +398,11 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
     $get_res = $fs->dbFetchArray($fs->dbQuery("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason'])));
 
 
-    // Get the item summary for the norifications
+    // Get the item summary for the notifications
     list($item_summary) = $fs->dbFetchArray($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
     $item_summary = stripslashes($item_summary);
 
-    if ($_COOKIE['flyspray_userid'] != $_POST['assigned_to']) {
+    if ($_COOKIE['flyspray_userid'] != $_POST['closed_by']) {
 
 // Create a basic notification message
 $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
@@ -471,15 +523,15 @@ $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_tex
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
 
     $getdetails = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id']));
-    $bug_details = $fs->dbFetchArray($getdetails);
+    $task_details = $fs->dbFetchArray($getdetails);
 
-    //$get_jabber_id = $fs->dbQuery("SELECT jabber_id FROM flyspray_users WHERE user_id = '{$bug_details['assigned_to']}'") or die ($fs->dbQuery());
+    //$get_jabber_id = $fs->dbQuery("SELECT jabber_id FROM flyspray_users WHERE user_id = '{$task_details['assigned_to']}'") or die ($fs->dbQuery());
     //list($jabber_id) = $fs->dbFetchArray($get_jabber_id);
 
-    $item_summary = stripslashes($bug_details['item_summary']);
+    $item_summary = stripslashes($task_details['item_summary']);
 
-    if ($bug_details['assigned_to'] != "0"
-       && ($bug_details['assigned_to'] != $_COOKIE['flyspray_userid'])
+    if ($task_details['assigned_to'] != "0"
+       && ($task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
        ) {
 
       // Generate the basic notification message to send
@@ -491,7 +543,7 @@ $current_realname ($current_username) {$modify_text['commenttoassigned']}\n
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs";
 
 
-      $result = $fs->SendBasicNotification($bug_details['assigned_to'], $subject, $basic_message);
+      $result = $fs->SendBasicNotification($task_details['assigned_to'], $subject, $basic_message);
       echo $result;
 
     };
@@ -902,12 +954,12 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                                 $now));
 
       $getdetails = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id']));
-      $bug_details = $fs->dbFetchArray($getdetails);
+      $task_details = $fs->dbFetchArray($getdetails);
 
-      $item_summary = stripslashes($bug_details['item_summary']);
+      $item_summary = stripslashes($task_details['item_summary']);
 
-      if ($bug_details['assigned_to'] != "0"
-         && ($bug_details['assigned_to'] != $_COOKIE['flyspray_userid'])
+      if ($task_details['assigned_to'] != "0"
+         && ($task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
          ) {
 
 $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
@@ -917,7 +969,7 @@ $current_realname ($current_username) {$modify_text['hasuploaded']}\n
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs";
 
 
-        $result = $fs->SendBasicNotification($bug_details['assigned_to'], $subject, $basic_message);
+        $result = $fs->SendBasicNotification($task_details['assigned_to'], $subject, $basic_message);
         echo $result;
 
       };
@@ -1388,8 +1440,4 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // End of actions.
 };
 
-// Finish off the html we started earlier
-// if (!$_POST['do']) {
-//   echo "</body></html>";
-// };
 ?>

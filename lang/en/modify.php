@@ -133,6 +133,8 @@ $modify_text = array (
 'relatedproject'    =>   'Task is attached to a different project.',
 'addanyway'         =>   'Add anyway',
 'cancel'            =>   'Cancel',
+'alreadyedited'     =>   'This task was edited by someone else before you saved.',
+'saveanyway'        =>   'Save my changes anyway',
 
 );
 ?>

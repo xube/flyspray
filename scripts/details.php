@@ -36,6 +36,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
   <input type="hidden" name="do" value="modify">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
+  <input type="hidden" name="edit_start_time" value="<?php echo date(U); ?>">
   </h2>
 
   <?php echo $details_text['attachedtoproject'] . " &mdash; ";?>
