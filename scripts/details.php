@@ -542,9 +542,11 @@ if ($area == 'comments') { ?>
 
     ?>
      <div class="tabentry">
-      <em><?php echo "{$details_text['commentby']} $user_name - $formatted_date";?></em><?php
+      <em><?php echo "{$details_text['commentby']} $user_name - $formatted_date";?></em>
+      <?php
         // If the user is an admin, show the edit button
-        if ($_SESSION['admin'] == '1') { ?><div class="modifycomment">
+        if ($_SESSION['admin'] == '1') { ?>
+        <div class="modifycomment">
         <form action="index.php" method="get"> 
         <p>
           <input type="hidden" name="do" value="admin">
@@ -621,15 +623,30 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['item_status'] != '8')
 
     ?>
     <div class="tabentry">
-    <p>
-    <em><?php echo "{$details_text['fileuploadedby']} $user_name - $formatted_date";?></em><br>
-    <?php echo "<a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']} - $file_desc</a>";?>
-    </p>
-    </div>
-
+    <em><?php echo "{$details_text['fileuploadedby']} $user_name - $formatted_date";?></em>
 
 <?php
-};
+        if ($_SESSION['admin'] == '1') { ?>
+        <div class="modifycomment">
+        <form action="index.php" method="post" onSubmit="if(confirm('Really delete this attachment?')) {return true} else {return false }">
+          <p>
+          <input type="hidden" name="do" value="modify">
+          <input type="hidden" name="action" value="deleteattachment">
+          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
+          <input type="hidden" name="attachment_id" value="<?php echo $row['attachment_id'];?>">
+          <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>">
+         </p>
+        </form>
+        </div>
+      <?php 
+      }; 
+
+      echo "<p>";
+      echo "<a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']} - $file_desc</a>";
+      echo "</p>";
+
+  echo "</div>";
+ };
 echo "</div>";
 //};
 // Now, show a form to attach a file (but only if the user has the rights!)
@@ -673,8 +690,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
 } elseif ($area == 'related') { ?>
 <div class="tabentries">
   <p><em><?php echo $details_text['thesearerelated'];?></em></p>
-  <div class="tabentry">
-  <table>
+
 
     <?php
     $get_related = $fs->dbQuery("SELECT * FROM flyspray_related WHERE this_task = ?", array($_GET['id']));
@@ -682,33 +698,32 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
       $get_summary = $fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($row['related_task']));
       while ($subrow = $fs->dbFetchArray($get_summary)) {
         $summary = stripslashes($subrow['item_summary']);
-        echo "<tr><td><a href=\"{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$row['related_task']}\">#{$row['related_task']} &mdash; $summary</a></td>";
-
+        ?>
+      <div class="tabentry">
+       <?php
         // If the user can modify jobs, then show them a form to remove related tasks
         if ($_SESSION['can_modify_jobs'] == '1' && $task_details['item_status'] != '8') {
           ?>
-          <td class="admintext">
+         <div class="modifycomment">
           <form action="index.php" method="post">
-            <div>
+            <p>
             <input type="hidden" name="do" value="modify">
             <input type="hidden" name="action" value="remove_related">
             <input type="hidden" name="id" value="<?php echo $_GET['id'];?>">
             <input type="hidden" name="related_id" value="<?php echo $row['related_id'];?>">
             <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
-            </div>
+            </p>
           </form>
-          </td>
-          
-
+         </div>
         <?php
         };
-        echo "</tr>";
+        echo "<p><a href=\"{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$row['related_task']}\">#{$row['related_task']} &mdash; $summary</a></p>";
       };
+      echo "</div>";
     };
+    echo "</div>";
     if ($_SESSION['can_modify_jobs'] == "1" && $task_details['item_status'] != '8') {
     ?>
-  </table>
-  </div>
 
   <form action="index.php" method="post" id="formaddrelatedtask">
     <p>
@@ -745,37 +760,39 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
 <div class="tabentries">
 <p><em><?php echo $details_text['theseusersnotify'];?></em></p>
 
-<table>
     <?php
     $get_user_ids = $fs->dbQuery("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id']));
     while ($row = $fs->dbFetchArray($get_user_ids)) {
       $get_user = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
       while ($subrow = $fs->dbFetchArray($get_user)) {
-        echo "<tr><td class=\"tabentry\">{$subrow['real_name']} ({$subrow['user_name']})</td>";
-
-        // If the user can modify jobs, then show them a form to remove related tasks
+      ?>
+      <div class="tabentry">
+      <?php
+        // If the user can modify jobs, then show them a form to remove a notified user 
         if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
           ?>
-          <td>
+          <div class="modifycomment">
           <form action="index.php" method="post">
-              <div>
+              <p>
                 <input type="hidden" name="do" value="modify">
                 <input type="hidden" name="action" value="remove_notification">
                 <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
                 <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>">
                 <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
-              </div>
+              </p>
           </form>
-          </td>
+          </div>
 
         <?php
+
         };
-      echo "</tr>";
+                echo "<p>{$subrow['real_name']} ({$subrow['user_name']})</p>";
+      echo "</div>";
       };
     };
     if ($task_details['item_status'] != '8') {
     ?>
-</table>
+
 </div>
 <div class="tabentries">
   <?php if ($_SESSION['admin'] == '1') { ?>

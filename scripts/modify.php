@@ -801,8 +801,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
         $result = $fs->SendDetailedNotification($_POST['task_id'], $detailed_message);
         echo $result;
-
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileuploaded']}</em></p><p><a href=\"?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">{$modify_text['goback']}</a></p></div>";
+        
+      // Success message! 
+      echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
+      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileuploaded']}</em></p?<p>{$modify_text['waitwhiletransfer']}</p></div>";
 
     // If the file didn't actually get saved, better show an error to that effect
     } else {
@@ -1067,6 +1069,19 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of deleting a comment
 
+// Start of deleting an attachment
+} elseif ($_POST['action'] == "deleteattachment" && $_SESSION['admin'] == '1') {
+// if an attachment needs to be deleted do it right now
+  $delete = $fs->dbQuery("SELECT file_name FROM flyspray_attachments WHERE attachment_id = '{$_POST['attachment_id']}'");
+  if ($row = $fs->dbFetchArray($delete)) {
+    @unlink("attachments/".$row['file_name']);
+    $fs->dbQuery("DELETE FROM flyspray_attachments WHERE attachment_id = '{$_POST['attachment_id']}'");
+  }
+
+  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
+  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['attachmentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+
+// End of deleting an attachment
 
 // End of actions.
 };
