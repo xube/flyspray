@@ -14,7 +14,7 @@ Step Three:  Import the Flyspray database tables into your new empty database.
 Here is the unix/linux command line method, be sure to enter your mysql root
 password when prompted:
 
-mysql flyspray -u root -p < sql/flyspray-version.sql
+mysql flyspray -u root -p < sql/flyspray-version.mysql
 
 Step Four:  Get a copy of the ADODB database-abstraction software and install it.
 http://php.weblogs.com/ADODB
