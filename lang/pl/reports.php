@@ -3,47 +3,48 @@
 global $reports_text;
 $reports_text = array (
 
-'summary'	=>	'W skrócie',
+'summary'	=>	'W skrÃ³cie',
 
 'changelog'	=>	'Lista zmian',
 'changeloggen'	=>	'Generator listy zmian',
-'listfrom'	=>	'Poka¿ zmiany od',
+'listfrom'	=>	'PokaÅ¼ zmiany od',
 'to'		=>	'do',
-'show'		=>	'Poka¿',
-'oldestfirst'	=>	'Najpierw najstarsze',
-'recentfirst'	=>	'Najpierw najnowsze',
+'show'		=>	'PokaÅ¼',
+'oldestfirst'	=>	'Od najstarszych',
+'recentfirst'	=>	'Od najnowszych',
 
-'severity'	=>	'Dotkliwo¶æ',
-'severityrep'	=>	'Raport dotkliwo¶ci',
-'totalopen'	=>	'Ca³kowita liczba otwartych',
+'severity'	=>	'DotkliwoÅ›c',
+'severityrep'	=>	'Raport dotkliwoÅ›ci',
+'totalopen'	=>	'CaÅ‚kowita liczba otwartych',
 
 'age'		=>	'Wiek',
 'agerep'	=>	'Raport wieku',
 
-'eventsrep'     =>      'Raport zdarzeñ',
-'events'        =>      'Zdarzeniadd',
-'tasks'         =>      'Zg³oszenia',
+'eventsrep'     =>      'Raport zdarzeÅ„',
+'events'        =>      'Zdarzenia',
+'tasks'         =>      'ZgÅ‚oszenia',
 'opened'        =>      'Otwarte',
-'closed'        =>      'Zamkniête',
-'edited'        =>      'Przydzielone',
+'closed'        =>      'ZamkniÄ™te',
+'edited'        =>      'Zmieniane',
 'assigned'      =>      'Przydzielone',
 'comments'      =>      'Komentarze',
-'attachments'   =>      'Za³±czniki',
-'relatedtasks'  =>      'Powi±zane zg³oszenia',
+'attachments'   =>      'ZaÅ‚Ä…czniki',
+'relatedtasks'  =>      'PowiÄ…zane zgÅ‚oszenia',
 'notifications' =>      'Powiadomienia',
 'reminders'     =>      'Przypomnienia',
-'within'        =>      'w ci±gu',
+'within'        =>      'w ciÄ…gu',
 
-'pastday'       =>      'Miniony dzieñ',
-'pastweek'      =>      'Zesz³y tydzieñ',
-'pastmonth'     =>      'Zesz³y miesi±c',
-'pastyear'      =>      'Zesz³y rok',
-'nolimit'       =>      'Bez ograniczeñ',
+'pastday'       =>      'Miniony dzieÅ„',
+'pastweek'      =>      'ZeszÅ‚y tydzieÅ„',
+'pastmonth'     =>      'ZeszÅ‚y miesiÄ…c',
+'pastyear'      =>      'ZeszÅ‚y rok',
+'nolimit'       =>      'Bez ograniczeÅ„',
 
 'from'          =>      'Od',
 'duein'         =>      'Do wersji',
 
-'changelog'     =>      'Changelog',
+'changelog'     =>      'Lista zmian',
 
 );
+// vim:fenc=utf-8:enc=utf-8
 ?>
