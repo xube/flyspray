@@ -393,7 +393,7 @@ if ($_POST['action'] == 'newtask'
 
 
       $to  = $notify->Address($_POST['task_id']);
-      $msg = $notify->Create('6', $_POST['task_id']);
+      $msg = $notify->Create('7', $_POST['task_id']);
       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
       $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
@@ -1886,7 +1886,13 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                             );
 
 
-  if (!$db->CountRows($check_dep)
+   $to  = $notify->Address($_POST['task_id']);
+   $msg = $notify->Create('5', $_POST['task_id']);
+   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+
+
+   if (!$db->CountRows($check_dep)
        && !$db->CountRows($check_dep2)
        && $db->CountRows($check_dep3)
        // Check that the user hasn't tried to add the same task as a dependency
@@ -1902,37 +1908,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                              VALUES(?,?)",
                              array($_POST['task_id'], $_POST['dep_task_id']));
 
-    // Get the details on the task that was just added as a dependency
-    $dep_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_tasks
-                                                   WHERE task_id = ?",
-                                                   array($_POST['dep_task_id'])));
 
-    // Create notification message
-    $item_summary = stripslashes($old_details['item_summary']);
-    $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
-    $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
-    {$modify_text['newdepnotify']} .\n
-    FS#{$_POST['task_id']} - {$old_details['item_summary']}
-    {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}\n
-    {$modify_text['newdepis']}\n
-    FS#{$_POST['dep_task_id']}: {$dep_details['item_summary']}
-    {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['dep_task_id']}\n";
-    // End of generating a message
 
-    // Send the brief notification message
-    $result = $notify->Basic($old_details['assigned_to'], $subject, $message);
-    echo $result;
-
-    // Send the detailed notification message
-    $result = $notify->Detailed($_POST['task_id'], $subject, $detailed_message);
-    echo $result;
 
     // Redirect
    $_SESSION['SUCCESS'] = $modify_text['dependadded'];
    header("Location: index.php?do=details&id=" . $_POST['task_id']);
-
-    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['dependadded']}</em></p>";
-    //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
   // If the user tried to add the wrong task as a dependency
   } else {
@@ -1941,9 +1922,6 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     // show error and redirect
    $_SESSION['ERROR'] = $modify_text['dependaddfailed'];
    header("Location: index.php?do=details&id=" . $_POST['task_id']);
-
-   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['dependaddfailed']}</em></p>";
-   //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
   };
 
@@ -1968,6 +1946,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                            WHERE depend_id = ?",
                            array($_GET['depend_id']));
 
+   $to  = $notify->Address($_POST['task_id']);
+   $msg = $notify->Create('6', $_POST['task_id']);
+   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+
   // Log this event to the task's history
   $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
   $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
@@ -1975,10 +1958,6 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    // Generate status message and redirect
    $_SESSION['SUCCESS'] = $modify_text['depremoved'];
    header("Location: index.php?do=details&id=" . $dep_info['task_id']);
-
-  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['depremoved']}</em></p>";
-  //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
-
 
 // End of removing a dependency
 
