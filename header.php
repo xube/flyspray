@@ -1,6 +1,6 @@
 <?php
 
-// Directory with Flyspray scripts. It's a directory where this file is 
+// Directory with Flyspray scripts. It's the directory where this file is
 // located.
 $basedir = '/var/www/flyspray';
 
