@@ -695,7 +695,7 @@ function EventDescription($history)
 /* Main page logic to determine report to display */
 if(!isset($_REQUEST['report']))
 {
-	$report = "changelog";
+	$report = "events";
 } else {
 	$report = $_REQUEST['report'];
 }
@@ -709,11 +709,11 @@ if(!isset($_REQUEST['report']))
     //  echo "<a class=\"tabnotactive\" href=\"?do=reports&report=summary\">Summary</a><small> | </small>";
     //};
 
-    if ($report == 'changelog') {
-      echo "<a class=\"tabactive\" href=\"?do=reports&report=changelog\">{$reports_text['changelog']}</a><small> | </small>";
-    } else {
-      echo "<a class=\"tabnotactive\" href=\"?do=reports&report=changelog\">{$reports_text['changelog']}</a><small> | </small>";
-    };
+//     if ($report == 'changelog') {
+//       echo "<a class=\"tabactive\" href=\"?do=reports&report=changelog\">{$reports_text['changelog']}</a><small> | </small>";
+//     } else {
+//       echo "<a class=\"tabnotactive\" href=\"?do=reports&report=changelog\">{$reports_text['changelog']}</a><small> | </small>";
+//     };
     
     if ($report == 'events') {
       echo "<a class=\"tabactive\" href=\"?do=reports&report=events\">{$reports_text['events']}</a><small> | </small>";
@@ -735,11 +735,11 @@ if(!isset($_REQUEST['report']))
 
 switch ($report)
 {
-	case "changelog":
-		changelog_report();
-		break;
 	case "events":
 		events_report();
+		break;
+	case "changelog":
+		changelog_report();
 		break;
 	case "severity":
 		severity_report();
@@ -751,7 +751,7 @@ switch ($report)
 		summary_report();
 		break;
 	default:
-		changelog_report();
+		events_report();
 		break;
 }
 ?>

@@ -860,10 +860,11 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
             </p>
           </form>
          </div>
-      </div>
+
         <?php
         };
         echo "<p><a href=\"?do=details&amp;id={$row['related_task']}\">#{$row['related_task']} &mdash; $summary</a></p>";
+	echo '</div>';
     };
    };
 

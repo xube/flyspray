@@ -765,7 +765,7 @@ if ($_GET['show'] == 'prefs') { ?>
 <form action="index.php" method="post">
   <input type="hidden" name="do" value="modify">
   <input type="hidden" name="action" value="updateproject">
-  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+  <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
 <table class="admin">
   <tr>
     <td>

@@ -1221,7 +1221,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of updating a list //
 //////////////////////////////
 
-} elseif ($_POST['action'] == "update_list" && $permissions['is_admin'] == '1') {
+} elseif ($_POST['action'] == "update_list" && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')) {
 
   $listname = $_POST['list_name'];
   $listposition = $_POST['list_position'];
@@ -1261,7 +1261,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a list item //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "add_to_list" && $permissions['is_admin'] == '1') {
+} elseif ($_POST['action'] == "add_to_list" && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')) {
 
   if ($_POST['list_name'] != ''
     && $_POST['list_position'] != ''
@@ -1297,7 +1297,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of updating the version list //
 ////////////////////////////////////////
 
-} elseif ($_POST['action'] == "update_version_list" && $permissions['is_admin'] == '1') {
+} elseif ($_POST['action'] == "update_version_list" && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')) {
 
   $listname = $_POST['list_name'];
   $listposition = $_POST['list_position'];
@@ -1337,7 +1337,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a version list item //
 /////////////////////////////////////////
 
-} elseif ($_POST['action'] == "add_to_version_list" && $permissions['is_admin'] == '1') {
+} elseif ($_POST['action'] == "add_to_version_list" && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')) {
 
   if ($_POST['list_name'] != ''
     && $_POST['list_position'] != ''
@@ -1365,7 +1365,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // requiring their own update section     //
 ////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "update_category" && $permissions['is_admin'] == '1') {
+} elseif ($_POST['action'] == "update_category" && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')) {
 
   $listname = $_POST['list_name'];
   $listposition = $_POST['list_position'];
@@ -1405,7 +1405,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a category list item //
 //////////////////////////////////////////
 
-} elseif ($_POST['action'] == "add_category" && $permissions['is_admin'] == '1') {
+} elseif ($_POST['action'] == "add_category" && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')) {
 
   if ($_POST['list_name'] != ''
     && $_POST['list_position'] != ''

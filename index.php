@@ -225,7 +225,9 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/logout.png"). '&nbsp;' . $language['logout'] . "</a>\n";
     echo "</span>\n";
 
-    // Show the Admin menu
+      /////////////////////////
+     // Show the Admin menu //
+    /////////////////////////
     if ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
       echo '<span id="adminmenu">';
       echo '<em>' . $language['adminmenu']. '</em>';
@@ -238,7 +240,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       
       if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') {
         echo '<small> | </small>';
-        echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;id=' . $project_id . '">' .
+        echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;project=' . $project_id . '">' .
         $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/projectprefs.png") . '&nbsp;' . $language['projects'] . "</a>\n";
       };
       

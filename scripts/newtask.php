@@ -192,7 +192,7 @@ if ($permissions['open_new_tasks'] == "1" OR $flyspray_prefs['anon_open'] == "1"
   </tr>
   <tr>
     <?php
-    if ($_SESSION['userid'] != '') {
+    if ($_COOKIE['flyspray_userid'] != '') {
       echo "<td>";
       echo "{$newtask_text['notifyme']}&nbsp;&nbsp;<input class=\"admintext\" type=\"checkbox\" name=\"notifyme\" value=\"1\" checked />";
       echo "</td>";
