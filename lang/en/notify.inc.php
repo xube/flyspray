@@ -11,6 +11,7 @@ $notify_text = array (
 'newtaskopened'               =>    'A new Flyspray task has been opened.  Details are below.',
 'taskchanged'                 =>    'The following task has been changed.  The new details are below.  For full information about what has changed, visit the URL and click the History tab.',
 'taskclosed'                  =>    'The following task is now closed:',
+'taskreopened'                =>    'The following task has been re-opened:',
 'depadded'                    =>    'The following task has a new dependency:',
 'newdepis'                    =>    'The new dependency is',
 'depremoved'                  =>    'The following task has had a dependency removed:',
@@ -23,6 +24,7 @@ $notify_text = array (
 'relatedis'                   =>    'The related task is',
 'assignedtoyou'               =>    'The following task has been assigned to you:',
 'nolongerassigned'            =>    'The following task is no longer assigned to you:',
+'takenownership'              =>    'has taken ownership of the following task:',
 
 );
 ?>

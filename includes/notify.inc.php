@@ -190,13 +190,14 @@ class Notifications {
          | 1. Task opened              |
          | 2. Task details changed     |
          | 3. Task closed              |
-         | 4. Dependency added         |
-         | 5. Dependency removed       |
-         | 6. Comment added            |
-         | 7. Attachment added         |
-         | 8. Related task added       |
-         | 9. Assigned to you          |
-         |10. No longer assigned to you|
+         | 4. Task re-opened           |
+         | 5. Dependency added         |
+         | 6. Dependency removed       |
+         | 7. Comment added            |
+         | 8. Attachment added         |
+         | 9. Related task added       |
+         |10. Assigned to you          |
+         |11. Taken ownership          |
          -------------------------------
       */
       ///////////////////////////////////////////////////////////////
@@ -230,7 +231,8 @@ class Notifications {
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'];
 
-         $body =  $notify_text['newtaskopened'] . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .=  $notify_text['newtaskopened'] . "\n\n";
          $body .= $details_text['userwho'] . ' - ' . $task_details['opened_by_name'] . "\n\n";
          $body .= $details_text['attached_to_project'] . ' - ' .  $task_details['project_title'] . "\n";
          $body .= $details_text['summary'] . ' - ' . $task_details['item_summary'] . "\n";
@@ -246,11 +248,9 @@ class Notifications {
          $body .= $details_text['details'] . ' - ' . $task_details['detailed_desc'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_details['task_id'] . "\n";
+         $body .= $notify_text['disclaimer'];
 
-         // Send this notification
-         $this->Single($send_to, $subject, $body);
-
-         return true;
+         return array($subject, $body);
       }
 
       //////////////////////////
@@ -261,7 +261,8 @@ class Notifications {
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'];
 
-         $body =  $notify_text['taskchanged'] . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .=  $notify_text['taskchanged'] . "\n\n";
          $body .= $details_text['userwho'] . ' - ' . $task_details['last_edited_by_name'] . "\n\n";
          $body .= $details_text['attached_to_project'] . ' - ' .  $task_details['project_title'] . "\n";
          $body .= $details_text['summary'] . ' - ' . $task_details['item_summary'] . "\n";
@@ -277,13 +278,10 @@ class Notifications {
          $body .= $details_text['details'] . ' - ' . $task_details['detailed_desc'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_details['task_id'] . "\n";
+         $body .= $notify_text['disclaimer'];
 
-         if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
-            $this->Single($task_details['assigned_to'], $subject, $body);
+         return array($subject, $body);
 
-         $this->Multiple($task_id, $subject, $body);
-
-         return true;
       }
 
       /////////////////
@@ -294,46 +292,55 @@ class Notifications {
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'];
 
-         $body =  $notify_text['taskclosed'] . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .=  $notify_text['taskclosed'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $details_text['userwho'] . ' - ' . $task_details['closed_by_name'] . "\n\n";
          $body .= $details_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id;
+         $body .= $notify_text['disclaimer'];
 
-         if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
-            $this->Single($task_details['assigned_to'], $subject, $body);
+         return array($subject, $body);
 
-         $this->Multiple($task_id, $subject, $body);
+      }
 
-         return true;
+      if ($type == '4')
+      {
+         $subject = $notify_text['notifyfrom'];
+
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .=  $notify_text['taskreopened'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $details_text['userwho'] . ' - ' . $task_details['last_edited_by'] . "\n\n";
+         $body .= $notify_text['disclaimer'];
+
+         return array($subject, $body);
       }
 
       //////////////////////
       // Dependency added //
       //////////////////////
-      if ($type == '4')
+      if ($type == '5')
       {
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'];
 
-         $body =  $notify_text['depadded'] . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .=  $notify_text['depadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $details_text['userwho'] . ' - ' . $current_user['real_name'] . "\n\n";
          $body .= $details_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id;
+         $body .= $notify_text['disclaimer'];
 
-         if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
-            $this->Single($task_details['assigned_to'], $subject, $body);
+         return array($subject, $body);
 
-         $this->Multiple($task_id, $subject, $body);
-
-         return true;
       }
 
       ////////////////////////
       // Dependency removed //
       ////////////////////////
-      if ($type == '5')
+      if ($type == '6')
       {
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'];
@@ -346,17 +353,14 @@ class Notifications {
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
-            $this->Single($task_details['assigned_to'], $subject, $body);
+         return array($subject, $body);
 
-         $this->Multiple($task_id, $subject, $body);
-         return true;
       }
 
       ///////////////////
       // Comment added //
       ///////////////////
-      if ($type == '6')
+      if ($type == '7')
       {
          // Generate the nofication message
          $subject = "Notification from Flyspray";
@@ -367,32 +371,60 @@ class Notifications {
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
-         $body .= $notify_text['disclaimer'];
+         $body = $notify_text['donotreply'] . "\n\n";
 
-         //if (!empty($task_details['assigned_to']) && ($task_details['assigned_to'] != $_COOKIE['flyspray_userid']))
-            $this->Single($task_details['assigned_to'], $subject, $body);
+         return array($subject, $body);
 
-         //$this->Multiple($task_id, $subject, $body);
+      }
 
-         //return true;
+      if ($type == '8')
+      {
+         $subject = "Notification from Flyspray";
+
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['attachmentadded'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . "\n\n";
+         $body .= $notify_text['moreinfo'] . "\n";
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
 
          return array($subject, $body);
       }
-      if ($type == '7')
-      {
-         return true;
-      }
-      if ($type == '8')
-      {
-         return true;
-      }
+
       if ($type == '9')
       {
-         return true;
+         $subject = "Notification from Flyspray";
+
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['relatedadded'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . "\n\n";
+         $body .= $notify_text['moreinfo'] . "\n";
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
+
+         return array($subject, $body);
       }
+
       if ($type == '10')
       {
-         return true;
+
+         $subject = "Notification from Flyspray";
+
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $task_details['assigned_to_name'] . $notify_text['takenownership'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n\n";
+         $body .= $notify_text['moreinfo'] . "\n";
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
+
+         return array($subject, $body);
+      }
+
+      if ($type == '11')
+      {
+         return array($subject, $body);
       }
 
 
