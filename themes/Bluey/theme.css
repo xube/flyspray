@@ -100,6 +100,10 @@ label {
   white-space         : nowrap;
 }
 
+label.inline {
+  display             : inline;
+}
+
 /* div.admin and p.admin is used for areas that only administrators can use
    p.admin for instance for adding comments
    table.admin serves the same purpose */
@@ -218,7 +222,7 @@ table#tasklist {
 table#tasklist th {
   text-align          : left;
   padding             : 2px 1em 2px 2px;
-  border-bottom              : 1px solid #cccccc;
+  border-bottom       : 1px solid #cccccc;
 }
 
 table#tasklist td {
@@ -513,8 +517,12 @@ table#history td {
   padding-left         : 5px;
 }
 
+table#history td.taskid {
+  text-align           : center;
+  padding              : 2px 1ex;
 }
 
+}
 
 @media print {
 p#menu {

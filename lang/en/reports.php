@@ -15,7 +15,7 @@ $reports_text = array (
 
 'severity'	=>	'Severity',
 'severityrep'	=>	'Severity Report',
-'totalopen'	=>	'Total open reports',
+'totalopen'	=>	'Total open tasks',
 
 'age'		=>	'Age',
 'agerep'	=>	'Age Report',

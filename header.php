@@ -15,14 +15,15 @@ $conf_array = array_merge($conf_array,
 
 // Set values from the config file. Once these settings are loaded a connection
 // is made to the database to retrieve all the other preferences.
-$basedir    = $conf_array['general']['basedir'];
-$adodbpath    = $conf_array['general']['adodbpath'];
-$cookiesalt = $conf_array['general']['cookiesalt'];
-$dbtype     = $conf_array['database']['dbtype'];
-$dbhost     = $conf_array['database']['dbhost'];
-$dbname     = $conf_array['database']['dbname'];
-$dbuser     = $conf_array['database']['dbuser'];
-$dbpass     = $conf_array['database']['dbpass'];
+$basedir     = $conf_array['general']['basedir'];
+$adodbpath   = $conf_array['general']['adodbpath'];
+$jpgraphpath = $conf_array['general']['jpgraphpath'];
+$cookiesalt  = $conf_array['general']['cookiesalt'];
+$dbtype      = $conf_array['database']['dbtype'];
+$dbhost      = $conf_array['database']['dbhost'];
+$dbname      = $conf_array['database']['dbname'];
+$dbuser      = $conf_array['database']['dbuser'];
+$dbpass      = $conf_array['database']['dbpass'];
 
 include_once ( "$adodbpath" );
 

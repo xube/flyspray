@@ -9,6 +9,7 @@
 basedir = "/var/www/flyspray/"  ; Location of your Flyspray installation
 cookiesalt = "4t"               ; Randomisation value for cookie encoding
 adodbpath = "/usr/share/adodb/adodb.inc.php"  ; Path to the main ADODB include
+jpgraphpath = "/usr/share/jpgraph.php"  ; Path to the main JPGraph include
 
 [database]
 dbtype = "mysql"                 ; Type of database ('mysql' or 'pgsql') 

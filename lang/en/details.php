@@ -76,7 +76,7 @@ $details_text = array (
 'closurecomment'	=>   'Additional comments about closing:',
 
 'history'           =>   'History',
-'nohistory'         =>   'No history for this task available.',
+'nohistory'         =>   'No history available.',
 'eventdate'         =>   'Date',
 'user'              =>   'User',
 'event'             =>   'Event',

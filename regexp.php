@@ -116,10 +116,10 @@ if ($_GET['do'] || $_POST['do']) {
     };
 };
 
-if ($_GET['id']) {
+if ($_REQUEST['id']) {
 
     // Yes. Now check its regex format for safety -- Numbers only
-    if (preg_match ("/^\d+$/", $_GET['id'])) {
+    if (preg_match ("/^\d+$/", $_REQUEST['id'])) {
 
       // continue;
 
@@ -129,10 +129,10 @@ if ($_GET['id']) {
     };
 };
 
-if ($_GET['user_name']) {
+if ($_REQUEST['user_name']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^[a-zA-Z0-9_-]+$/", $_GET['user_name'])) {
+    if (preg_match ("/^[a-zA-Z0-9_-]+$/", $_REQUEST['user_name'])) {
 
       // continue;
     } else {
@@ -207,7 +207,7 @@ if ($_GET['area']) {
 if ($_GET['report']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(summary|changelog|severity|age)$/", $_GET['report'])) {
+    if (preg_match ("/^(summary|changelog|events|severity|age)$/", $_GET['report'])) {
        // continue;
     } else {
         print "Report request is invalid."; exit;
