@@ -10,12 +10,12 @@
 
 $authenticate_text = array (
 
-'loginsuccessful'        =>        'Logowanie udane.',
-'loginfailed'                =>        'Logowanie NIEUDANE!',
-'userandpass'                =>        'Nie podałeś prawidłowej nazwy i hasła.',
-'youareloggedout'        =>        'Zostałeś wylogowany.',
-'waitwhiletransfer'        =>        'Proszę czekać, jesteś kierowany do celu...',
-'clicknowait'                =>        'Kliknij tu, jeśli nie chcesz czekać.',
+'loginsuccessful'   =>	'Logowanie udane.',
+'loginfailed'	    =>	'Logowanie NIEUDANE!',
+'userandpass'	    =>	'Nie podałeś prawidłowej nazwy i hasła.',
+'youareloggedout'   =>	'Zostałeś wylogowany.',
+'waitwhiletransfer' =>	'Proszę czekać, jesteś kierowany do celu...',
+'clicknowait'	    =>	'Kliknij tu, jeśli nie chcesz czekać.',
 
 );
 // vim:fenc=utf-8:enc=utf-8

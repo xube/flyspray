@@ -6,29 +6,29 @@
 // Tomek 'TomasH' Zielinski
 // tomash@fidonet.org.pl, tomash@4net.pl
 //
-// last update: 22.08.2003
+// Update: Konrad Roziewski <konrad at suwalki com pl>
 
 $index_text = array (
 
-'search'                        =>        'Szukaj',
-'alltasktypes'                =>        'Każdy typ',
-'allseverities'                =>        'Każdy priorytet',
-'alldevelopers'                =>        'Wszyscy developerzy',
-'notyetassigned'        =>        'Jeszcze nie przydzielony',
-'allcategories'                =>        'Każda kategoria',
-'allstatuses'                =>        'Każdy status',
-'allopentasks'                =>        'Zgłoszenia otwarte',
-'sortthiscolumn'        =>        'Sortuj według kolumny',
-'id'                                =>        'ID',
-'tasktype'                        =>        'Typ zgłoszenia',
-'severity'                        =>        'Priorytet',
-'summary'                        =>        'W skrócie',
-'dateopened'                =>        'Data otwarcia',
-'status'                        =>        'Status',
-'progress'                        =>        'Postęp',
-'complete'                        =>        'gotowe',
-'previous'                        =>        'Poprzedni',
-'next'                                =>        'Następny',
+'search'	=>	'Szukaj',
+'alltasktypes'	=>	'Dowolny typ',
+'allseverities'	=>	'Dowolny priorytet',
+'alldevelopers'	=>	'Wszyscy programiści',
+'notyetassigned'=>	'Zadania nieprzydzielone',
+'allcategories'	=>	'Dowolna kategoria',
+'allstatuses'	=>	'Dowolny status',
+'allopentasks'	=>	'Zgłoszenia otwarte',
+'sortthiscolumn'=>	'Sortuj według kolumny',
+'id'		=>	'ID',
+'tasktype'	=>	'Typ zgłoszenia',
+'severity'	=>	'Priorytet',
+'summary'	=>	'W skrócie',
+'dateopened'	=>	'Data otwarcia',
+'status'	=>	'Status',
+'progress'	=>	'Postęp',
+'complete'	=>	'gotowe',
+'previous'	=>	'Poprzedni',
+'next'		=>	'Następny',
 
 // Added in version 0.9.5
 'searchthisproject'	=>	'Szukaj w bieżącym projekcie',

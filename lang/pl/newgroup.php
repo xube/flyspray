@@ -13,22 +13,21 @@
 
 $newgroup_text = array (
 
-'createnewgroup'        =>        'Utwórz nową grupę',
-'requiredfields'        =>        'Wymagane pola są oznaczone znakiem',
-'groupname'                        =>        'Nazwa grupy',
-'description'                =>        'Opis',
-'admin'                                =>        'Admin grupy',
-'opennewtasks'                =>        'Otwórz nowe zgłoszenia',
-'modifytasks'                =>        'Modyfikuj istniejące zgłoszenia',
-'addcomments'                =>        'Dodaj komentarz',
-'attachfiles'                =>        'Dołącz pliki',
-'vote'                                =>        'Członkowie mogą się logować',
-'addthisgroup'                =>        'Dodaj grupę',
-'nopermission'                =>        'Nie masz uprawnień do oglądania tej strony',
+'createnewgroup'=>	'Utwórz nową grupę',
+'requiredfields'=>	'Wymagane pola są oznaczone znakiem',
+'groupname'	=>	'Nazwa grupy',
+'description'	=>	'Opis',
+'admin'		=>	'Administrator grupy',
+'opennewtasks'	=>	'Otwieranie nowych zgłoszeń',
+'modifytasks'	=>	'Modyfikacja istniejących zgłoszeń',
+'addcomments'	=>	'Dodawanie komentarz',
+'attachfiles'	=>	'Dołączanie plików',
+'vote'		=>	'Członkowie mogą się logować',
+'addthisgroup'	=>	'Dodaj grupę',
+'nopermission'	=>	'Nie masz uprawnień do oglądania tej strony',
 
-//  Added in version 0.9.5
-
-'groupenabled'		=>	'Członkowie mogą się logować',
+//	Added in version 0.9.5
+'groupenabled'	=>	'Członkowie mogą się logować',
 
 );
 // vim:fenc=utf-8:enc=utf-8

@@ -10,20 +10,20 @@
 
 $newuser_text = array (
 
-'registernewuser'        =>        'Rejestracja nowego użytkownika',
-'requiredfields'        =>        'Wymagane pola są oznaczone znakiem',
-'username'                        =>        'Nazwa',
-'password'                        =>        'Hasło',
-'confirmpass'                =>        'Potwierdź hasło',
-'realname'                        =>        'Imię i nazwisko',
-'emailaddress'                =>        'Adres e-mail',
-'jabberid'                        =>        'Jabber ID',
-'notifications'                =>        'Powiadomienia',
-'none'                                =>        'Brak',
-'email'                                =>        'E-mail',
-'jabber'                        =>        'Jabber',
-'group'                                =>        'Grupa',
-'registeraccount'        =>        'Utwórz konto',
+'registernewuser'	=>	'Rejestracja nowego użytkownika',
+'requiredfields'=>	'Wymagane pola są oznaczone znakiem',
+'username'	=>	'Nazwa',
+'password'	=>	'Hasło',
+'confirmpass'	=>	'Potwierdź hasło',
+'realname'	=>	'Imię i nazwisko',
+'emailaddress'	=>	'Adres e-mail',
+'jabberid'	=>	'Jabber ID',
+'notifications'	=>	'Powiadomienia',
+'none'		=>	'Brak',
+'email'		=>	'E-mail',
+'jabber'	=>	'Jabber',
+'group'		=>	'Grupa',
+'registeraccount'=>	'Utwórz konto',
 
 );
 // vim:fenc=utf-8:enc=utf-8

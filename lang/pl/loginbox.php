@@ -10,9 +10,9 @@
 
 $loginbox_text = array (
 
-'username'                                =>        'Nazwa',
-'password'                                =>        'Hasło',
-'login'                                        =>        'Zaloguj!',
+'username'	=>	'Nazwa',
+'password'	=>	'Hasło',
+'login'		=>	'Zaloguj!',
 
 
 );
