@@ -59,9 +59,9 @@ if ($page == '1') {
 //////////////////////////////////////////////////////////
 } elseif ($page == '2') {
 
-   if (file_exists('../flyspray.conf.php')) {
+   /*if (file_exists('../flyspray.conf.php')) {
       die('Setup has already been completed.  If you really want to run it again, remove flyspray.conf.php');
-   };
+   */};
 
 ?>
 

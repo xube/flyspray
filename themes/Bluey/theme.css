@@ -431,6 +431,23 @@ p#tabs {
   padding             : 0px;
 }
 
+p#tabs a {
+  background-image    : url("tab-notactive.png");
+  background-repeat   : no-repeat;
+  background-position : top left;
+  background-color    : #cad0d7;
+  border-right        : 1px solid #93989D;
+}
+
+p#tabs a.tabactive {
+  background-image    : url("tab-active.png");
+  background-repeat   : no-repeat;
+  background-position : top left;
+  background-color    : #e6eef6;
+  border-right        : 1px solid #CCC;
+  padding-bottom      : 2px;
+}
+
 div.tabentries {
   background-color    : #e6eef6;
   margin              : 0px 0px 1em 0px;
@@ -468,22 +485,6 @@ p#tabs a {
 /* separators between the links in the tabs */
 p#tabs small {
   display             : none;
-}
-
-p#tabs a.tabnotactive {
-  background-image    : url("tab-notactive.png");
-  background-repeat   : no-repeat;
-  background-position : top left;
-  background-color    : #cad0d7;
-  border-right        : 1px solid #93989D;
-}
-
-p#tabs a.tabactive {
-  background-image    : url("tab-active.png");
-  background-repeat   : no-repeat;
-  background-position : top left;
-  background-color    : #e6eef6;
-  border-right        : 1px solid #CCC;
 }
 
 /* p.unregistered holds links to open new task when you're unregistered */

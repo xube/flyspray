@@ -1,16 +1,3 @@
-##################################################################
-## This is the mysql database upgrade schema for Flyspray 0.9.7 ##
-##################################################################
-
-# Some things to be aware of:
-# We no longer use the flyspray_users.group_in field.  Since there are now global groups and project-level
-# groups, there is a new table called flyspray_users_in_groups that keeps records of which user is in which
-# group(s).  After you insert this page into your database, you will need to run the sql/pointers.php script,
-# which creates the entries in flyspray_users_in_groups for you.
-
-
-# New group permissions
-
 ALTER TABLE `flyspray_groups` ADD `belongs_to_project` MEDIUMINT( 3 ) NOT NULL AFTER `group_desc` ;
 ALTER TABLE `flyspray_groups` ADD `manage_project` MEDIUMINT( 1 ) NOT NULL AFTER `is_admin` ;
 ALTER TABLE `flyspray_groups` ADD `view_tasks` MEDIUMINT( 1 ) NOT NULL AFTER `manage_project` ;
@@ -30,8 +17,6 @@ ALTER TABLE `flyspray_groups` ADD `close_other_tasks` MEDIUMINT( 1 ) NOT NULL AF
 ALTER TABLE `flyspray_groups` ADD `assign_to_self` MEDIUMINT( 1 ) NOT NULL AFTER `close_other_tasks` ;
 ALTER TABLE `flyspray_groups` ADD `assign_others_to_self` MEDIUMINT( 1 ) NOT NULL AFTER `assign_to_self` ;
 ALTER TABLE `flyspray_groups` ADD `view_reports` MEDIUMINT( 1 ) NOT NULL AFTER `assign_others_to_self` ;
-
-# Update group permissions
 
 UPDATE `flyspray_groups` SET `manage_project` = '1',
 `view_tasks` = '1',
@@ -75,9 +60,6 @@ UPDATE `flyspray_groups` SET `view_tasks` = '1',
 `view_attachments` = '1'
 WHERE `group_id` = '4' LIMIT 1 ;
 
-
-# Table to store which users are in which groups
-
 CREATE TABLE `flyspray_users_in_groups` (
   `record_id` mediumint(5) NOT NULL auto_increment,
   `user_id` mediumint(5) NOT NULL default '0',
@@ -85,21 +67,12 @@ CREATE TABLE `flyspray_users_in_groups` (
   PRIMARY KEY  (`record_id`)
 ) TYPE=MyISAM COMMENT='Which users are in which groups' AUTO_INCREMENT=1 ;
 
-
-# Project permissions
-
 ALTER TABLE `flyspray_projects` ADD `others_view` MEDIUMINT( 1 ) NOT NULL ;
-
-# Create a new "Basic" group that allows people to login. They can do nothing
-# unless they're a member of a project group as well.
 
 INSERT INTO `flyspray_groups` ( `group_id` , `group_name` , `group_desc` , `belongs_to_project` , `is_admin` , `manage_project` , `view_tasks` , `open_new_tasks` , `modify_own_tasks` , `modify_all_tasks` , `view_comments` , `add_comments` , `edit_comments` , `delete_comments` , `view_attachments` , `create_attachments` , `delete_attachments` , `view_history` , `close_own_tasks` , `close_other_tasks` , `assign_to_self` , `assign_others_to_self` , `view_reports` , `group_open` )
 VALUES (
 '', 'Basic', 'Members can login, relying upon Project permissions only', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1'
 );
-
-
-# Create the pending 'admin requests' table
 
 CREATE TABLE `flyspray_admin_requests` (
   `request_id` mediumint(5) NOT NULL auto_increment,
@@ -144,17 +117,4 @@ DELETE FROM `flyspray_prefs` WHERE `pref_id` = '7' LIMIT 1 ;
 DELETE FROM `flyspray_prefs` WHERE `pref_id` = '13' LIMIT 1 ;
 DELETE FROM `flyspray_prefs` WHERE `pref_id` = '16' LIMIT 1 ;
 
-## This next line can't be done until the user has run the
-## pointers.php script, so we have to leave it for the upgrade
-## script for the full version
-
-#ALTER TABLE `flyspray_users` DROP `group_in` ;
-
-# Other things that need doing include creating "Project Managers"
-# and "Developers" group for each project.
-
 ALTER TABLE `flyspray_tasks` ADD `mark_private` MEDIUMINT( 1 ) NOT NULL ;
-
-####################################
-## The Psi database is up to here ##
-####################################

@@ -777,42 +777,12 @@ $num_reminders = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_reminders
 ?>
 
 <p id="tabs">
-    <?php if ($area == 'comments') {
-      echo "<a class=\"tabactive\"";
-    } else {
-      echo "<a class=\"tabnotactive\"";
-    };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=comments#tabs"><?php echo "{$details_text['comments']} ($num_comments)";?></a><small> | </small>
-    <?php if ($area == 'attachments') {
-      echo "<a class=\"tabactive\"";
-    } else {
-      echo "<a class=\"tabnotactive\"";
-    };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=attachments#tabs"><?php echo "{$details_text['attachments']} ($num_attachments)";?></a><small> | </small>
-   <?php if ($area == 'related') {
-      echo "<a class=\"tabactive\"";
-    } else {
-      echo "<a class=\"tabnotactive\"";
-    };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=related#tabs"><?php echo "{$details_text['relatedtasks']} ($num_related/$num_related_to)";?></a><small> | </small>
-    <?php if ($area == 'notify') {
-      echo "<a class=\"tabactive\"";
-    } else {
-      echo "<a class=\"tabnotactive\"";
-    };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=notify#tabs"><?php echo "{$details_text['notifications']} ($num_notifications)";?></a><small> | </small>
-  <?php if ($area == 'remind') {
-      echo "<a class=\"tabactive\"";
-    } else {
-      echo "<a class=\"tabnotactive\"";
-    };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=remind#tabs"><?php echo "{$details_text['reminders']} ($num_reminders)";?></a><small> | </small>
-   <?php if ($area == 'history') {
-      echo "<a class=\"tabactive\"";
-    } else {
-      echo "<a class=\"tabnotactive\"";
-    };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=history#tabs"><?php echo "{$details_text['history']}";?></a><small> | </small>
+  <a <?php if ($area == 'comments') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=comments#tabs"><?php echo "{$details_text['comments']} ($num_comments)";?></a><small> | </small>
+  <a <?php if ($area == 'attachments') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=attachments#tabs"><?php echo "{$details_text['attachments']} ($num_attachments)";?></a><small> | </small>
+  <a <?php if ($area == 'related') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=related#tabs"><?php echo "{$details_text['relatedtasks']} ($num_related/$num_related_to)";?></a><small> | </small>
+  <a <?php if ($area == 'notify') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=notify#tabs"><?php echo "{$details_text['notifications']} ($num_notifications)";?></a><small> | </small>
+  <a <?php if ($area == 'remind') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=remind#tabs"><?php echo "{$details_text['reminders']} ($num_reminders)";?></a><small> | </small>
+  <a <?php if ($area == 'history') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=history#tabs"><?php echo "{$details_text['history']}";?></a><small> | </small>
 </p>
 
 <?php
