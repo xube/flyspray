@@ -723,14 +723,22 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
       };
 
       // The second column, for the descriptions
-      echo "</td><td>";
-      echo "<p>";
-      echo "<em>{$details_text['filename']}</em> <a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a><br>";
-	  echo "<em>{$details_text['description']}</em> $file_desc</a><br>";
-	  echo "<em>{$details_text['fileuploadedby']}</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a><br>";
-	  echo "<em>{$details_text['date']}</em> $formatted_date<br>";
-	  echo "<em>{$details_text['filetype']}</em> {$row['file_type']}";
-      //echo "</p>";
+      echo "</p></td><td>";
+      echo "<table>";
+      echo "<tr><td><em>{$details_text['filename']}</em></td><td><a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a></td></tr>";
+      echo "<tr><td><em>{$details_text['description']}</em></td><td>$file_desc</a></td></tr>";
+      echo "<tr><td><em>{$details_text['fileuploadedby']}</em></td><td><a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a></td></tr>";
+      echo "<tr><td><em>{$details_text['date']}</em></td><td>$formatted_date</td></tr>";
+      $size = $row['file_size'];
+      $sizes = Array(' B', ' KB', ' MB');
+      $size_ext = $sizes[0];
+      for ($i = 1; (($i < count($sizes)) && ($size >= 1024)); $i++)
+      {
+        $size = $size / 1024;
+        $size_ext  = $sizes[$i];
+      }
+      echo "<tr><td><em>{$details_text['filesize']}</em></td><td>" . round($size, 2) . $size_ext . "</td></tr>";
+      echo "</table>";
       echo "</td></tr></table>";
 
   echo "</div>";
@@ -774,7 +782,10 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
 };
 // End of attachments area
 
-// Start of related tasks area
+/////////////////////////////////
+// Start of related tasks area //
+/////////////////////////////////
+
 } elseif ($area == 'related') { ?>
 <div class="tabentries">
   <p><em><?php echo $details_text['thesearerelated'];?></em></p>
