@@ -104,7 +104,7 @@ if (!$page) {
                                  group_open)
                                  VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                  array('Project Managers', 'Permission to do anything related to this project.' ,
-                                       $fs->emptyToZero($newproject['project_id']),
+                                       $fs->emptyToZero($row['project_id']),
                                        '1',
                                        '1',
                                        '1',
