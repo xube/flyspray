@@ -1,6 +1,6 @@
 <?php
 // As of 24 July 2004, all editable config is stored in flyspray.conf.php
-// There should be no reason to edit this file anymore, except if you 
+// There should be no reason to edit this file anymore, except if you
 // move flyspray.conf.php to a directory where a browser can't access it.
 // (RECOMMENDED).
 
@@ -62,7 +62,7 @@ include_once ( "$basedir/includes/markdown.php" );
 
 // Check PHP Version (Must Be at least 4.3)
 if (PHP_VERSION  < '4.3.0') {
-	die('Your version of PHP is not compatable with Flyspray, please upgrade to the latest version of PHP.  Flyspray requires at least PHP version 4.3.0');
+        die('Your version of PHP is not compatible with Flyspray, please upgrade to the latest version of PHP.  Flyspray requires at least PHP version 4.3.0');
 };
 
 if (isset($_COOKIE['flyspray_userid']))
@@ -95,7 +95,7 @@ if (!isset($project_id))
    if (isset($_GET['project']) && $_GET['project'] != '0')
    {
       $project_id = $_GET['project'];
-      //setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
+      setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
 
   } elseif (isset($_COOKIE['flyspray_project']))
   {
@@ -104,15 +104,10 @@ if (!isset($project_id))
   } else
   {
       $project_id = $flyspray_prefs['default_project'];
-      //setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
+      setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
   };
 };
-/*
-if (isset($_GET['project']) && $_GET['project'] != '0')
-{
-   $project_id = $_GET['project'];
-}
-*/
+
 // Get the preferences for the currently selected project
 $project_prefs = $fs->getProjectPrefs($project_id);
 

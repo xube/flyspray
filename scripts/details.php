@@ -12,6 +12,7 @@ $task_exists = $fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_
 $task_details = $fs->GetTaskDetails($_GET['id']);
 
 // Only load this page if a valid task was actually requested
+// and the user has permission to view it
  if ($fs->dbCountRows($task_exists)
      && $task_details['project_is_active'] == '1'
      && ($project_prefs['others_view'] == '1'
@@ -22,13 +23,13 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
          OR $task_details['mark_private'] != '1')
      ) {
 
-$item_summary = htmlspecialchars($task_details['item_summary']);
-$detailed_desc = htmlspecialchars($task_details['detailed_desc']);
+//$item_summary = htmlspecialchars($task_details['item_summary']);
+//$detailed_desc = htmlspecialchars($task_details['detailed_desc']);
 
-if (!get_magic_quotes_gpc()) {
-  $item_summary = str_replace("\\", "&#92;", $item_summary);
-  $detailed_desc = str_replace("\\", "&#92;", $detailed_desc);
-};
+//if (!get_magic_quotes_gpc()) {
+//  $item_summary = str_replace("\\", "&#92;", $item_summary);
+// $detailed_desc = str_replace("\\", "&#92;", $detailed_desc);
+//};
 
 // Create an array with effective permissions for this user on this task
 $effective_permissions = array();
@@ -52,8 +53,8 @@ if (($permissions['close_own_tasks'] == '1' && $task_details['assigned_to'] == $
       $effective_permissions['can_close'] = '1';
 };
 
-$item_summary = stripslashes($item_summary);
-$detailed_desc = stripslashes($detailed_desc);
+//$item_summary = stripslashes($item_summary);
+//$detailed_desc = stripslashes($detailed_desc);
 
 
 ///////////////////////////////////
@@ -72,16 +73,16 @@ if ($effective_permissions['can_edit'] == '1'
 <!-- create some columns -->
 <div id="taskdetails">
 <form name="form1" action="index.php" method="post">
-  <h2 class="severity<?php echo $task_details['task_severity'];?>">
-    <?php echo "{$details_text['task']} #{$_GET['id']}";?> &mdash;
-    <input class="severity<?php echo $task_details['task_severity'];?>" type="text" name="item_summary" size="50" maxlength="100" value="<?php echo $item_summary;?>" />
-  <input type="hidden" name="do" value="modify" />
-  <input type="hidden" name="action" value="update" />
-  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-  <input type="hidden" name="edit_start_time" value="<?php echo date(U); ?>" />
-  </h2>
+   <h2 class="severity<?php echo $task_details['task_severity'];?>">
+   <?php echo $details_text['task'] .  '#' . $task_details['task_id'];?> &mdash;
+   <input class="severity<?php echo stripslashes($task_details['task_severity']);?>" type="text" name="item_summary" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($task_details['item_summary']));?>" />
+   <input type="hidden" name="do" value="modify" />
+   <input type="hidden" name="action" value="update" />
+   <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+   <input type="hidden" name="edit_start_time" value="<?php echo date(U); ?>" />
+   </h2>
 
-  <?php echo $details_text['attachedtoproject'] . " &mdash; ";?>
+  <?php echo $details_text['attachedtoproject'] . ' &mdash; ';?>
   <select name="attached_to_project">
   <?php
   $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
@@ -338,7 +339,7 @@ if ($effective_permissions['can_edit'] == '1'
         <td colspan="3">
         <?php
         ?>
-        <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo $detailed_desc;?></textarea>
+        <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo stripslashes($task_details['detailed_desc']);?></textarea>
         </td>
       </tr>
       <tr>
@@ -371,14 +372,9 @@ if ($effective_permissions['can_edit'] == '1'
 ?>
 
 <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
-    <?php
-    if ($effective_permissions['can_edit'] == '0'
-        OR $task_details['is_closed'] == '1') { ?>
+
     <h2 class="severity<?php echo $task_details['task_severity'];?>">
-    <?php } else { ?>
-    <h2 class="severity<?php echo $task_details['task_severity'];?>">
-    <?php }; ?>
-    <?php echo "{$details_text['task']} #{$_GET['id']} &mdash; $item_summary";?>
+    <?php echo $details_text['task'] . '#' . $task_details['task_id'] . ' &mdash ' . $fs->formatText($task_details['item_summary']);?>
     </h2>
     <?php
     echo $details_text['attachedtoproject'] . '&mdash; <a href="?project=' .  $task_details['attached_to_project'] . '">' . stripslashes($task_details['project_title']) . '</a>';
@@ -517,10 +513,11 @@ if ($effective_permissions['can_edit'] == '1'
         <td id="details" class="details">
         <?php
         // Change URLs to hyperlinks
-        $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $detailed_desc);
+        //$detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $detailed_desc);
         // Change FS#123 into hyperlinks to tasks
-        $detailed_desc = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $detailed_desc);
-        echo nl2br($detailed_desc);
+        //$detailed_desc = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $detailed_desc);
+        //echo nl2br($detailed_desc);
+        echo $fs->formatText($task_details['detailed_desc']);
         ?>
         </td>
       </tr>
@@ -797,30 +794,17 @@ if ($area == 'comments') { ?>
     // if there are comments, show them
     $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id", array($task_details['task_id']));
     while ($row = $fs->dbFetchArray($getcomments)) {
-      $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
-      list($user_name) = $fs->dbFetchArray($getusername);
 
-      $formatted_date = $fs->formatDate($row['date_added'], true);
+      $user_info        = $fs->getUserDetails($row['user_id']);
 
-      $comment_text = htmlspecialchars($row['comment_text']);
-      $comment_text = $row['comment_text'];
-      $comment_text = nl2br($comment_text);
-      // Change URLs into hyperlinks
-      $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $comment_text);
+      $formatted_date   = $fs->formatDate($row['date_added'], true);
 
-      // Change FS#123 into hyperlinks to tasks
-      $comment_text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $comment_text);
-      $comment_text = nl2br($comment_text);
-
-      if (!get_magic_quotes_gpc()) {
-        $comment_text = str_replace("\\", "&#92", $comment_text);
-      };
-      $comment_text = stripslashes($comment_text);
+      $comment_text     = $fs->formatText($row['comment_text']);
 
     ?>
      <div class="tabentry"><a name="<?php echo $row['comment_id'];?>"></a>
       <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">" .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png") . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png") . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$user_info['real_name']} ({$user_info['user_name']})</a> - $formatted_date";?></em>
       <?php
          echo '<div class="modifycomment">';
         // If the user has permission, show the edit button

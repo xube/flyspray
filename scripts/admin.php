@@ -39,7 +39,7 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="edituser" />
       <input type="hidden" name="user_id" value="<?php echo $user_details['user_id'];?>" />
-      
+
       <label for="realname"><?php echo $admin_text['realname'];?></label>
       </td>
       <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo $user_details['real_name'];?>" /></td>
@@ -166,29 +166,29 @@ while ($group = $fs->dbFetchArray($get_groups)) {
 
   echo '<h4><a href="?do=admin&amp;area=groups&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
   echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
-  
+
   // Now, start a form to allow use to move multiple users between groups
   echo '<form action="index.php" method="post">' . "\n";
-  
+
   echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
     $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
                               LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                               WHERE uig.group_id = ? ORDER BY u.user_name ASC",
                               array($group['group_id']));
-  
+
 
   echo '<input type="hidden" name="do" value="modify" />' . "\n";
   echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
   echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
   echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
- 
+
   $userincrement = 0;
   while ($row = $fs->dbFetchArray($get_user_list)) {
     // Next line to ensure we only display each user once on this page
     array_push($user_checklist, $row['user_id']);
     // Now, assign each user a number for submission
-    $userincrement ++;    
+    $userincrement ++;
     echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\" /></td>\n";
     echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
     echo "<td>{$row['real_name']}</td>\n";
@@ -199,29 +199,29 @@ while ($group = $fs->dbFetchArray($get_groups)) {
     };
     echo "</tr>\n";
   };
-  
+
   echo '<tr><td colspan="4">';
   echo '<input type="hidden" name="num_users" value="' . $userincrement . "\" />\n";
   echo '<input class="adminbutton" type="submit" value="' . $admin_text['moveuserstogroup'] . '" />' . "\n";
-  
+
   // Show a list of groups to switch these users to
   echo '<select class="adminlist" name="switch_to_group">'. "\n";
-  
+
   // Show an option to remove a user from a project entirely
-  // Not applicable to the global groups, as everyone is in 
+  // Not applicable to the global groups, as everyone is in
   // one global group, regardless.
   if ($project_id != '0') {
   echo '<option value="0">' . $admin_text['nogroup'] . '</option>';
   };
-  
+
   // Get the list of groups to choose from
   $groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
   while ($group = $fs->dbFetchArray($groups)) {
   echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
   };
-  
+
   echo '</select>';
-  
+
   echo '</td></tr>';
   echo "</table>\n\n";
   echo '</form>';
@@ -235,9 +235,9 @@ if ($project_id != '0') {
   echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
   echo '<br />';
   echo '<select class="adminlist" name="user_list[]" multiple="multiple" size="10">'. "\n";
-  
+
   // Get a list of the users not in any groups for this project
-  
+
   $user_query = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
                               LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                               LEFT JOIN flyspray_groups g on uig.group_id = g.group_id
@@ -245,7 +245,7 @@ if ($project_id != '0') {
                               ORDER BY user_name ASC",
                               array($project_id, '1'));
 
-  
+
   while ($row = $fs->dbFetchArray($user_query)) {
     // Check if the user is in the checklist of shown users...
     if (!in_array($row['user_id'], $user_checklist)) {
@@ -254,19 +254,19 @@ if ($project_id != '0') {
       array_push($user_checklist, $row['user_id']);
     };
   };
-  
+
   echo '</select><br />';
   echo '<input class="adminbutton" type="submit" value="' . $admin_text['addtogroup'] . '" />'. "\n";
   echo '<select class="adminbutton" name="add_to_group">'. "\n";
-  
+
   // Get the list of groups to choose from
   $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
   while ($group = $fs->dbFetchArray($get_groups)) {
   echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
   };
-  
+
   echo '</select>';
-  
+
   echo '</form>';
 
 // End of project-level user list
@@ -281,7 +281,7 @@ if ($project_id != '0') {
           && ($permissions['is_admin'] =='1'
               OR $permissions['manage_project'] == '1')) {
 
-  
+
 $get_group_details = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_GET['id']));
 $group_details = $fs->dbFetchArray($get_group_details);
 
@@ -290,7 +290,7 @@ if ($group_details['belongs_to_project'] < '1') {
   echo '<h3>' . $admin_text['editglobalgroup'] . '</h3>';
 } else {
   echo '<h3>' . $admin_text['editgroupforproj'] . ' - ' . htmlspecialchars(stripslashes($project_prefs['project_title'])) . '</h3>';
-};  
+};
 ?>
 
   <form action="index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
@@ -308,14 +308,14 @@ if ($group_details['belongs_to_project'] < '1') {
       <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
       <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']));?>" /></td>
     </tr>
-   
+
     <?php
     // We don't need this stuff shown for the admin group
     if ($_GET['id'] == '1') {
-      echo $admin_text['notshownforadmin'];  
+      echo $admin_text['notshownforadmin'];
     } else {
     ?>
-   
+
     <tr>
       <td><label for="projectmanager"><?php echo $admin_text['projectmanager'];?></label></td>
       <td><input id="projectmanager" type="checkbox" name="manage_project" value="1" <?php if ($group_details['manage_project'] == "1") { echo "checked=\"checked\"";};?> /></td>
@@ -393,12 +393,12 @@ if ($group_details['belongs_to_project'] < '1') {
     <tr>
       <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>" /></td>
     </tr>
-    
+
     <?php
    // End of hiding this stuff for the admin group
    };
    ?>
-    
+
   </table>
   </form>
 
@@ -626,7 +626,7 @@ if ($group_details['belongs_to_project'] < '1') {
     </select>
     </td>
   </tr>
-  
+
   <tr>
     <td>
       <label for="dateformat"><?php echo $admin_text['dateformat'];?></label>
@@ -634,7 +634,7 @@ if ($group_details['belongs_to_project'] < '1') {
     <td>
       <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat'];?>" />
     </td>
-  </tr>	
+  </tr>
   <tr>
     <td>
       <label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label>
@@ -642,7 +642,7 @@ if ($group_details['belongs_to_project'] < '1') {
     <td>
       <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>" />
     </td>
-  </tr>	
+  </tr>
 
 </table>
 
@@ -715,7 +715,7 @@ if ($group_details['belongs_to_project'] < '1') {
 </table>
 
 </fieldset>
-  
+
 <fieldset class="admin">
 
 <legend><?php echo $admin_text['notifications'];?></legend>
@@ -813,9 +813,9 @@ echo '<small> | </small><a href="?do=admin&amp;area=users&amp;project=' . $proje
 
 $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
 ?>
-     <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=category"><?php echo $language['categories'];?></a>
-     <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=os"><?php echo $language['operatingsystems'];?></a>
-     <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=version"><?php echo $language['versions'];?></a>
+     <small> | </small><a href="?do=admin&amp;area=projects&amp;project=<?php echo $_GET['project'];?>&amp;show=category"><?php echo $language['categories'];?></a>
+     <small> | </small><a href="?do=admin&amp;area=projects&amp;project=<?php echo $_GET['project'];?>&amp;show=os"><?php echo $language['operatingsystems'];?></a>
+     <small> | </small><a href="?do=admin&amp;area=projects&amp;project=<?php echo $_GET['project'];?>&amp;show=version"><?php echo $language['versions'];?></a>
     </span>
 
 <?php
@@ -938,7 +938,7 @@ if ($_GET['show'] == 'prefs') { ?>
     </td>
   </tr>
   <tr><td colspan="2"><hr /></td></tr>
-  
+
   <!-- Column display selector -->
   <tr>
     <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
@@ -962,7 +962,7 @@ if ($_GET['show'] == 'prefs') { ?>
 
 </table>
 </form>
-  
+
 </fieldset>
 
 <?php
@@ -979,7 +979,7 @@ if ($_GET['show'] == 'prefs') { ?>
   <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="action" value="update_category" />
   <input type="hidden" name="list_type" value="category" />
-  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>" />
+  <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
   <table class="list">
     <?php
     $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($project_id, '1'));
@@ -1049,7 +1049,7 @@ if ($_GET['show'] == 'prefs') { ?>
     ?>
       <tr>
         <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
-      </tr>	
+      </tr>
     </table>
     </form>
     <?php
@@ -1153,12 +1153,12 @@ if ($_GET['show'] == 'prefs') { ?>
     ?>
       <tr>
         <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
-      </tr>	
+      </tr>
     </table>
     </form>
     <hr />
-    <?php     
-    // Form to add a new Operating System to the list		
+    <?php
+    // Form to add a new Operating System to the list
     ?>
     <form action="index.php" method="post">
     <table class="list">
@@ -1230,7 +1230,7 @@ if ($_GET['show'] == 'prefs') { ?>
             <option value="1" <?php if ($row['version_tense'] == '1') { echo "SELECTED";};?>><?php echo $admin_text['past'];?></option>
             <option value="2" <?php if ($row['version_tense'] == '2') { echo "SELECTED";};?>><?php echo $admin_text['present'];?></option>
             <option value="3" <?php if ($row['version_tense'] == '3') { echo "SELECTED";};?>><?php echo $admin_text['future'];?></option>
-          </select> 
+          </select>
         </td>
       </tr>
     <?php
@@ -1243,7 +1243,7 @@ if ($_GET['show'] == 'prefs') { ?>
     </table>
     </form>
     <hr />
-    <?php 
+    <?php
     // Form to add a new Version to the list
     ?>
     <form action="index.php" method="post">
@@ -1271,8 +1271,8 @@ if ($_GET['show'] == 'prefs') { ?>
             <option value="1"><?php echo $admin_text['past'];?></option>
             <option value="2" SELECTED><?php echo $admin_text['present'];?></option>
             <option value="3"><?php echo $admin_text['future'];?></option>
-          </select> 
-        </td> 
+          </select>
+        </td>
         <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
       </tr>
     </table>
@@ -1300,7 +1300,7 @@ if ($_GET['show'] == 'prefs') { ?>
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
       $comment_text = stripslashes(htmlspecialchars($row['comment_text']));
-      
+
     };
 ?>
 <h3><?php echo $admin_text['editcomment'];?></h3>
@@ -1395,7 +1395,7 @@ if ($_GET['show'] == 'prefs') { ?>
 
     echo '<h3>' . $admin_text['lostpw'] . '</h3>' . "\n";
     echo $admin_text['lostpwexplain'] . "\n";
-    
+
     echo '<br /><br />' . "\n";
 
     echo '<div class="admin">' . "\n";
@@ -1407,7 +1407,7 @@ if ($_GET['show'] == 'prefs') { ?>
     echo '<input class="adminbutton" type="submit" value="' . $admin_text['sendlink'] . '" />' . "\n";
     echo '</form>' . "\n";
     echo '</div>' . "\n";
-     
+
 
   // Step Two: user enters new password
 } elseif ($_GET['magic']
@@ -1424,13 +1424,13 @@ if ($_GET['show'] == 'prefs') { ?>
       echo '<meta http-equiv="refresh" content="2; URL=index.php">';
 
     } else {
-    	
+
       echo '<h3>' . $admin_text['changepass'] . '</h3>' . "\n";
-    
+
       echo '<br />' . "\n";
-    
+
       echo '<form action="index.php" method="post">' . "\n";
-    
+
       echo '<table class="admin">' . "\n";
       echo '<input type="hidden" name="do" value="modify" />' . "\n";
       echo '<input type="hidden" name="action" value="chpass" />' . "\n";

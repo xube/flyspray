@@ -709,6 +709,29 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
    }
 
 
+
+   // Start of formatText function
+   function formatText($text) {
+
+      $text = htmlspecialchars($text);
+      $text = nl2br($text);
+
+      // Change URLs into hyperlinks
+      $text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $text);
+
+      // Change FS#123 into hyperlinks to tasks
+      $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $text);
+
+      if (!get_magic_quotes_gpc()) {
+        $text = str_replace("\\", "&#92", $text);
+      };
+      $text = stripslashes($text);
+
+      return $text;
+
+   // End of formatText function
+   }
+
 ///////////////////////////
 // End of Flyspray class //
 ///////////////////////////

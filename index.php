@@ -77,7 +77,7 @@ if ($_GET['getfile']) {
   // ob_end_flush() isn't needed in MOST cases because it is called automatically
   // at the end of script execution by PHP itself when output buffering is turned on
   // either in the php.ini or by calling ob_start().
-  
+
   // If the user has used the search box, store their search for later on
   if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order'])) {
     $_SESSION['lastindexfilter'] = "index.php?tasks={$_GET['tasks']}&amp;project={$_GET['project']}&amp;string={$_GET['string']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;due={$_GET['due']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;perpage={$_GET['perpage']}&amp;pagenum={$_GET['pagenum']}&amp;order={$_GET['order']}&amp;order2=" . $_GET['order2'] . "&amp;sort={$_GET['sort']}&amp;sort2=" . $_GET['sort2'];
@@ -97,7 +97,7 @@ if ($_GET['getfile']) {
   <script type="text/javascript" src="includes/jscalendar/calendar_stripped.js"></script>
   <script type="text/javascript" src="includes/jscalendar/lang/calendar-en.js"></script>
   <script type="text/javascript" src="includes/jscalendar/calendar-setup.js"></script>
-  
+
   <?php
       // open the themes directory
       if ($handle = opendir('themes/')) {
@@ -122,9 +122,9 @@ if ($_GET['getfile']) {
 
 <?php
 // People might like to define their own header files for their theme
-$headerfile = "$basedir/themes/".$project_prefs['theme_style']."/header.inc.php"; 
-if(file_exists("$headerfile")) { 
- include("$headerfile"); 
+$headerfile = "$basedir/themes/".$project_prefs['theme_style']."/header.inc.php";
+if(file_exists("$headerfile")) {
+ include("$headerfile");
 };
 
 
@@ -144,10 +144,10 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project']))) {
       die("Stop hacking your cookies, you naughty fellow!");
     };
-   
+
    // Fetch info on the current user
    $current_user = $fs->getUserDetails($_COOKIE['flyspray_userid']);
-   
+
    // Fetch the permissions array for the current user
    $permissions = $fs->checkPermissions($current_user['user_id'], $project_id);
 
@@ -169,19 +169,19 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
    // Display logged in username
    echo '<em>' . $language['loggedinas'] . ' - ' . $current_user['user_name'] . '</em>';
-    
+
    // Display Add New Task link
    if ($permissions['open_new_tasks'] == '1') {
       echo '<small> | </small>';
       echo '<a id="newtasklink" href="?do=newtask&amp;project=' . $project_id . '" accesskey="a">' . $language['addnewtask'] . "</a>\n";
     };
-    
+
    // Display Reports link
    if ($permissions['view_reports'] == '1' && $project_id != '0') {
       echo '<small> | </small>';
       echo '<a id="reportslink" href="index.php?do=reports" accesskey="r">' . $language['reports'] . "</a>\n";
     };
-    
+
    // Display Edit My Details link
    echo '<small> | </small>';
    echo '<a id="editmydetailslink" href="?do=admin&amp;area=users&amp;id=' . $current_user['user_id'] . '" accesskey="e">' . $language['editmydetails'] . "</a>\n";
@@ -194,11 +194,11 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
    } else {
       echo '<a id="lastsearchlink">' . $language['lastsearch'] . "</a>\n";
    };
-   
-   // Display Logout link   
+
+   // Display Logout link
    echo '<small> | </small>';
    echo '<a id="logoutlink" href="index.php?do=authenticate&amp;action=logout" accesskey="l">' . $language['logout'] . "</a>\n";
-   
+
    // End of mainmenu area
    echo "</span>\n";
 
@@ -231,7 +231,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
          echo '<small> | </small>';
          echo '<a id="optionslink" href="?do=admin&amp;area=options">' . $language['options'] . "</a>\n";
        };
-      
+
       // Project options link
       if ($permissions['manage_project'] == '1') {
          echo '<small> | </small>';
@@ -248,13 +248,13 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
         echo '</ul>';*/
 
       };
-      
+
       // Manage users link
       if ($permissions['is_admin'] == '1') {
          echo '<small> | </small>';
          echo '<a id="usersandgroupslink" href="?do=admin&amp;area=users">' . $language['usersandgroups'] . "</a>\n";
       };
-     
+
       if ($permissions['is_admin'] == '1') {
          echo '<small> | </small>';
          echo '<a id="listslink" href="?do=admin&amp;area=tasktype">' . $language['tasktypes'] . "</a>\n";
@@ -314,7 +314,7 @@ if (isset($_SESSION['SUCCESS'])) {
         <option value="assigned" <?php if($_GET['tasks'] == 'assigned') echo 'selected="selected"'; ?>><?php echo $language['tasksassigned']; ?></option>
         <option value="reported" <?php if($_GET['tasks'] == 'reported') echo 'selected="selected"'; ?>><?php echo $language['tasksreported']; ?></option>
         <option value="watched" <?php if($_GET['tasks'] == 'watched') echo 'selected="selected"'; ?>><?php echo $language['taskswatched']; ?></option>
-      <?php }; ?> 
+      <?php }; ?>
       </select>
       <?php echo $language['selectproject'];?>
       <select name="project">
@@ -380,18 +380,18 @@ if(!$_COOKIE['flyspray_userid']) {
 };
 ?>
 
-</div>      
+</div>
 <p id="footer">
 <!-- Please don't remove this line - it helps promote Flyspray -->
 <a href="http://flyspray.rocks.cc/" class="offsite"><?php printf("%s %s", $language['poweredby'], $fs->version);?></a>
 </p>
 
 
-<?php 
-$footerfile = "$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php"; 
-if(file_exists("$footerfile")) { 
- include("$footerfile"); 
-} 
+<?php
+$footerfile = "$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php";
+if(file_exists("$footerfile")) {
+ include("$footerfile");
+}
 
 // Print out permissions stuff for debugging
 /*if (isset($_COOKIE['flyspray_userid'])) {
@@ -409,7 +409,7 @@ if(file_exists("$footerfile")) {
   };
   echo '</table>';
 };*/
-?> 
+?>
 
 </body>
 </html>
