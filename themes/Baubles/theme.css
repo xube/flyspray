@@ -565,7 +565,7 @@ div#taskdetails h2 {
    font-weight          : normal;
    color                : #000000;
    background-color     : #eeffee;
-   text-align           : center;
+   text-align           : left;
 }
 
 /* Task details are listed within a table */
@@ -1044,6 +1044,28 @@ p#menu a#attention {
 span#pendingreq {
    margin               : 0px 0px 0px 7px;
 }
+
+/* container for the next/previous links in the task details */
+span#navigation {
+  position              : absolute;
+  right                 : 17px;
+  padding               : 8px 0px 0px 0px;
+}
+
+span#navigation a#next {
+   padding-right        : 20px;
+   background-image     : url(next.png);
+   background-repeat    : no-repeat;
+   background-position  : right;
+}
+
+span#navigation a#prev {
+   padding-left         : 20px;
+   background-image     : url(prev.png);
+   background-repeat    : no-repeat;
+   background-position  : left;
+}
+
 
 /* End of screen section */
 }

@@ -1701,10 +1701,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
    if (!$db->CountRows($check))
    {
-      $insert = $db->Query("INSERT INTO flyspray_notifications (task_id, user_id) VALUES(?,?)",
-      array($_GET['task_id'], $_GET['user_id']));
-
-      $fs->logEvent($_GET['task_id'], 9, $_GET['user_id']);
+      $be->AddToNotifyList($_GET['user_id'], array($_GET['task_id']));
 
       $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
       $fs->redirect("index.php?do=details&id=" . $_GET['task_id'] . "#notify");
@@ -1723,12 +1720,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif (isset($_GET['action']) && $_GET['action'] == "remove_notification"
   && ($current_user['user_id'] == $_GET['user_id'] OR $permissions['manage_project'] == '1'))
 {
-   $remove = $db->Query("DELETE FROM flyspray_notifications
-                         WHERE task_id = ?
-                         AND user_id = ?",
-                         array($_GET['task_id'], $_GET['user_id']));
-
-   $fs->logEvent($_GET['task_id'], 10, $_GET['user_id']);
+   $be->RemoveFromNotifyList($_GET['user_id'], array($_GET['task_id']));
 
    $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
    $fs->redirect("index.php?do=details&id=" . $_GET['task_id'] . "#notify");
@@ -1934,19 +1926,14 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           && (($permissions['assign_to_self'] == '1' && empty($old_details['assigned_to']))
                OR $permissions['assign_others_to_self'] == '1'))
 {
+   // Make the assignment change
+   $be->AssignToMe($current_user['user_id'], array($_GET['task_id']));
 
-   $update = $db->Query("UPDATE flyspray_tasks
-                          SET assigned_to = ?, item_status = '3'
-                          WHERE task_id = ?",
-                          array($current_user['user_id'], $_GET['task_id']));
-
+   // Get the notifications going
    $to  = $notify->Address($_GET['task_id']);
    $msg = $notify->Create('10', $_GET['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-
-   // Log this event to the task history
-   $fs->logEvent($old_details['task_id'], 19, $current_user['user_id'], $old_details['assigned_to']);
 
    $_SESSION['SUCCESS'] = $modify_text['takenownership'];
    $fs->redirect("?do=details&id=" . $_GET['task_id']);
@@ -2018,8 +2005,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    if (!$db->CountRows($check_notify))
    {
       // Add the requestor to the task notification list, so that they know when it has been re-opened
-      $insert = $db->Query("INSERT INTO flyspray_notifications (task_id, user_id) VALUES(?,?)",
-      array($_POST['task_id'], $current_user['user_id']));
+      $be->AddToNotifyList($current_user['user_id'], array($_POST['task_id']));
 
       $fs->logEvent($_POST['task_id'], 9, $current_user['user_id']);
    }

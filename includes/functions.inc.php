@@ -392,6 +392,7 @@ function GetTaskDetails($task_id) {
       $db->Query("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                   VALUES(?, ?, ?, ?, ?, ?, ?)",
                   array($task, $db->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
+
    // End of logEvent function
    }
 
@@ -675,7 +676,7 @@ function GetTaskDetails($task_id) {
    // set empty values for $_GET[...] variables
    function fixMissingIndices()
    {
-      $indexes = 'index date order class sort sort2 tasks permissions';
+      $indexes = 'index date order class order order2 sort sort2 tasks permissions sev dev due string pagenum perpage type cat status';
       $indexes = split(' ', $indexes);
       foreach ($indexes as $index)
       {

@@ -123,109 +123,48 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // at the end of script execution by PHP itself when output buffering is turned on
    // either in the php.ini or by calling ob_start().
 
-   // Define a bunch of stuff for the 'last search' line and the page numbering urls
-   $lastindex = '';
-   $extraurl = '';
 
-   if (isset($_GET['string']) && !empty($_GET['string']))
-   {
-      $lastindex .= '&amp;string=' . $_GET['string'];
-      $extraurl .= '&amp;string=' . $_GET['string'];
-   }
-
-   if (isset($_GET['type']) && !empty($_GET['type']))
-   {
-      $lastindex .= '&amp;type=' . $_GET['type'];
-      $extraurl .= '&amp;type=' . $_GET['type'];
-   }
-
-   if (isset($_GET['sev']) && !empty($_GET['sev']))
-   {
-      $lastindex .= '&amp;sev=' . $_GET['sev'];
-      $extraurl .= '&amp;sev=' . $_GET['sev'];
-   }
-
-   if (isset($_GET['dev']) && !empty($_GET['dev']))
-   {
-      $lastindex .= '&amp;dev=' . $_GET['dev'];
-      $extraurl .= '&amp;dev=' . $_GET['dev'];
-   }
-
-   if (isset($_GET['due']) && !empty($_GET['due']))
-   {
-      $lastindex .= '&amp;due=' . $_GET['due'];
-      $extraurl .= '&amp;due=' . $_GET['due'];
-   }
-
-   if (isset($_GET['cat']) && !empty($_GET['cat']))
-   {
-      $lastindex .= '&amp;cat=' . $_GET['cat'];
-      $extraurl .= '&amp;cat=' . $_GET['cat'];
-   }
-
-   if (isset($_GET['status']) && !empty($_GET['status']))
-   {
-      $lastindex .= '&amp;status=' . $_GET['status'];
-      $extraurl .= '&amp;status=' . $_GET['status'];
-   }
-
-   if (isset($_GET['perpage']) && !empty($_GET['perpage']))
-   {
-      $lastindex .= '&amp;perpage=' . $_GET['perpage'];
-      $extraurl .= '&amp;perpage=' . $_GET['perpage'];
-   }
-
-   if (isset($_GET['pagenum']) && !empty($_GET['pagenum']))
-   {
-      $lastindex .= '&amp;pagenum=' . $_GET['pagenum'];
-   }
-
-   if (isset($_GET['order']) && !empty($_GET['order']))
-   {
-      $lastindex .= '&amp;order=' . $_GET['order'];
-      $extraurl .= '&amp;order=' . $_GET['order'];
-   }
-
-   if (isset($_GET['order2']) && !empty($_GET['order2']))
-   {
-      $lastindex .= '&amp;order2=' . $_GET['order2'];
-      $extraurl .= '&amp;order2=' . $_GET['order2'];
-   }
-
-   if (isset($_GET['sort']) && !empty($_GET['sort']))
-   {
-      $lastindex .= '&amp;sort=' . $_GET['sort'];
-      $extraurl .= '&amp;sort=' . $_GET['sort'];
-   }
-
-   if (isset($_GET['sort2']) && !empty($_GET['sort2']))
-   {
-      $lastindex .= '&amp;sort2=' . $_GET['sort2'];
-      $extraurl .= '&amp;sort2=' . $_GET['sort2'];
-   }
+   // When viewing the task list, take down each value that the search form may have passed
+   if ($do == 'index')
+   $extraurl = '&amp;string=' . $_GET['string'] . '&amp;type=' . $_GET['type'] . '&amp;sev=' . $_GET['sev'] . '&amp;dev=' . $_GET['dev']
+               . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status'] . '&amp;order=' . $_GET['order']
+               . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort'] . '&amp;sort2=' . $_GET['sort2']
+               . '&amp;perpage=' . $_GET['perpage'];
 
    // If the user has used the search box, store their search for later on
    if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order']))
    {
-      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project'];
+      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project']
+                                     . '&amp;pagenum=' . $_GET['pagenum'] . $extraurl;
+
    }
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>Flyspray::&nbsp;&nbsp;<?php echo stripslashes($project_prefs['project_title']) . ':&nbsp;&nbsp;' ;?></title>
-  <link rel="icon" href="./favicon.ico" type="image/png" />
-  <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
-  <link href="themes/<?php echo $themestyle;?>/theme.css" rel="stylesheet" type="text/css" />
-  <link rel="alternate" type="text/xml" title="rss" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php?proj=<?php echo $project_id;?>" />
-  <script type="text/javascript" src="includes/functions.js"></script>
-  <script type="text/javascript" src="includes/styleswitcher.js"></script>
-  <script type="text/javascript" src="includes/tabs.js"></script>
-  <style type="text/css">@import url(includes/jscalendar/calendar-win2k-1.css);</style>
-  <script type="text/javascript" src="includes/jscalendar/calendar_stripped.js"></script>
-  <script type="text/javascript" src="includes/jscalendar/lang/calendar-en.js"></script>
-  <script type="text/javascript" src="includes/jscalendar/calendar-setup.js"></script>
+   <title>Flyspray::&nbsp;&nbsp;<?php echo stripslashes($project_prefs['project_title']) . ':&nbsp;&nbsp;' ;?></title>
+   <link rel="icon" type="image/png"
+   <?php
+   if (file_exists("themes/$themestyle/favicon.ico"))
+   {
+      echo "href=\"themes/$themestyle/favicon.ico\"";
+   } else
+   {
+      echo 'href="./favicon.ico"';
+   }
+   ?>
+   />
+   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
+   <link href="themes/<?php echo $themestyle;?>/theme.css" rel="stylesheet" type="text/css" />
+   <link rel="alternate" type="text/xml" title="rss" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php?proj=<?php echo $project_id;?>" />
+   <script type="text/javascript" src="includes/functions.js"></script>
+   <script type="text/javascript" src="includes/styleswitcher.js"></script>
+   <script type="text/javascript" src="includes/tabs.js"></script>
+   <style type="text/css">@import url(includes/jscalendar/calendar-win2k-1.css);</style>
+   <script type="text/javascript" src="includes/jscalendar/calendar_stripped.js"></script>
+   <script type="text/javascript" src="includes/jscalendar/lang/calendar-en.js"></script>
+   <script type="text/javascript" src="includes/jscalendar/calendar-setup.js"></script>
 
   <?php
    // open the themes directory
@@ -453,11 +392,9 @@ if (isset($_SESSION['SUCCESS']))
       }
 
       // Cycle through the results from whichever query above
-      // The query above is dodgy, and returns duplicate results... so I add each result to an array and filter dupes - FIXME
-      //$project_list = array();
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'] && @$_GET['project'] != '0')
+         if ($project_id == $row['project_id'])
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];

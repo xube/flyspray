@@ -61,6 +61,7 @@ include_once ( $adodbpath );
 include_once ( "$basedir/includes/functions.inc.php" );
 include_once ( "$basedir/includes/regexp.php" );
 include_once ( "$basedir/includes/db.inc.php" );
+include_once ( "$basedir/includes/backend.inc.php" );
 include_once ( "$basedir/includes/markdown.php" );
 
 
@@ -74,9 +75,10 @@ if (PHP_VERSION  < '4.3.0') {
    session_start();
 //};
 
-// Define our functions class
+// Define our functions classes
 $fs = new Flyspray;
 $db = new Database;
+$be = new Backend;
 
 // Open a connection to the database
 $res = $db->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);
