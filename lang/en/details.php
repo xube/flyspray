@@ -103,6 +103,8 @@ $details_text = array (
 'reminderadded'     =>   'Reminder added',
 'reminderdeleted'   =>   'Reminder removed',
 'priority'          =>   'Priority',
+'previousvalue'     =>   'Previous value',
+'newvalue'          =>   'New value',
 
 );
 ?>

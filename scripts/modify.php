@@ -360,7 +360,7 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
       
     //$fs->logEvent($_POST['task_id'], 3);
 
-    echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskupdated']}</em></p>";
     echo "<p>{$modify_text['waitwhiletransfer']}</p></div>";
 
@@ -439,7 +439,7 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
       $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
       
-    $fs->logEvent($_POST['task_id'], 2, $_POST['resolution_reason']);
+    $fs->logEvent($_POST['task_id'], 2, $_POST['resolution_reason'], $_POST['closure_comment']);
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskclosed']}</em></p>";
     echo "<p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['returntotask']}</a></p>";
@@ -520,7 +520,7 @@ $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_tex
     ( ?, ?, ?, ? )",
     array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
 
-    echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
 
     $getdetails = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id']));
@@ -721,7 +721,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
           echo "<p>{$modify_text['loginbelow']}</p>";
           echo "<p>{$modify_text['newuserwarning']}</p></div>";
         } else {
-          echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=users\">";
+          echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
         };
 
 
@@ -770,7 +770,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                 $fs->emptyToZero($_POST['group_open'])
                 ));
 
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=users\">";
+        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newgroupadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
     };
 
@@ -822,7 +822,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   };
 
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=options\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=options\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['optionssaved']}</em></p></div>";
   
 // End of updating application preferences
@@ -907,7 +907,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                                     $fs->emptyToZero($_POST['project_is_active']),
                                     $_POST['project_id']));
 
-    echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=prefs\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=prefs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectupdated']}</em></p></div>";
 
   } else {
@@ -1007,7 +1007,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
         $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
 
       // Success message!
-      echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
+      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileuploaded']}</em></p?<p>{$modify_text['waitwhiletransfer']}</p></div>";
 
     // If the file didn't actually get saved, better show an error to that effect
@@ -1073,9 +1073,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
       };
 
       if  ($_SESSION['admin'] == '1') {
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL=index.php?do=admin&amp;area=users\">";
+        echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php?do=admin&amp;area=users\">";
       } else {
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL=index.php\">";
+        echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
       };
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
     };
@@ -1113,7 +1113,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
               $fs->emptyToZero($_POST['can_vote']),
               $fs->emptyToZero($_POST['group_open']),
               $_POST['group_id']));
-    echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=users\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupanddesc']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
@@ -1152,9 +1152,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
       };
   };
   if($_POST['project_id'] != '') {
-      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
   } else {
-      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
   };
   echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
 
@@ -1176,7 +1176,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                         VALUES (?, ?, ?, ?)",
                 array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1'));
 
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
 
           } else {
 
@@ -1185,7 +1185,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                                 VALUES (?, ?, ?)",
                 array($_POST['list_name'], $_POST['list_position'], '1'));
 
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
 
       };
 
@@ -1231,7 +1231,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
       };
   };
 
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
   echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
 
 // End of updating the version list
@@ -1251,7 +1251,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                         VALUES (?, ?, ?, ?, ?)",
                 array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1', $_POST['version_tense']));
 
-      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
 
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
 
@@ -1299,7 +1299,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
       };
   };
   
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
   echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
 
 // End of updating the category list
@@ -1321,7 +1321,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                         $_POST['list_position'], '1',
                         $_POST['category_owner'], 
 			$fs->emptyToZero($_POST['parent_id'])));
-      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
+      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
@@ -1344,10 +1344,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
         array($_POST['related_task']));
         
     if ($fs->dbCountRows($check) > 0) {
-        echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatederror']}</em></p></div>";
     } elseif (!$fs->dbCountRows($check2)) {
-        echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
     } else {
         list($relatedproject) = $fs->dbFetchRow($check2);
@@ -1357,7 +1357,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
             $fs->logEvent($_POST['this_task'], 11, $_POST['related_task']);
             $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
             
-            echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+            echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
             echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedadded']}</em></p></div>";
         } else {
             ?>
@@ -1382,7 +1382,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
         };
     };
   } else {
-    echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
   };
 
@@ -1399,7 +1399,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   $fs->logEvent($_POST['id'], 12, $_POST['related_task']);
   $fs->logEvent($_POST['related_task'], 16, $_POST['id']);
   
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['id']}&amp;area=related#tabs\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['id']}&amp;area=related#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedremoved']}</em></p></div>";
 
 // End of removing a related task entry
@@ -1420,10 +1420,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
     
     $fs->logEvent($_POST['task_id'], 9, $_POST['user_id']);
 
-    echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyadded']}</em></p></div>";
   } else {
-    echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyerror']}</em></p></div>";
   };
 
@@ -1440,7 +1440,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
     
   $fs->logEvent($_POST['task_id'], 10, $_POST['user_id']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyremoved']}</em></p></div>";
 
 // End of removing a notification entry
@@ -1455,9 +1455,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
               SET comment_text = ?  WHERE comment_id = ?",
               array($_POST['comment_text'], $_POST['comment_id']));
               
-  $fs->logEvent($_POST['task_id'], 5, $_POST['comment_id']);
+  $fs->logEvent($_POST['task_id'], 5, $_POST['comment_text'], $_POST['previous_text'], $_POST['comment_id']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['editcommentsaved']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
 
 // End of editing a comment
@@ -1467,12 +1467,12 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 /////////////////////////////////
 
 } elseif ($_POST['action'] == "deletecomment" && $_SESSION['admin'] == '1') {
-  $row = $fs->dbFetchRow($fs->dbQuery('SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id'])));
+  $row = $fs->dbFetchRow($fs->dbQuery('SELECT comment_text, user_id, date_added FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id'])));
   $delete = $fs->dbQuery('DELETE FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id']));
   
-  $fs->logEvent($_POST['task_id'], 6, $row['user_id'], $row['date_added']);
+  $fs->logEvent($_POST['task_id'], 6, $row['user_id'], $row['comment_text'], $row['date_added']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
 
 // End of deleting a comment
@@ -1495,7 +1495,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   
   $fs->logEvent($_POST['task_id'], 8, $row['orig_name']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['attachmentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
 
 // End of deleting an attachment
@@ -1519,7 +1519,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   
   $fs->logEvent($_POST['task_id'], 17, $_POST['to_user_id']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
 
 // End of adding a reminder
@@ -1535,7 +1535,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                     
   $fs->logEvent($_POST['task_id'], 18, $reminder['to_user_id']);
   
-  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
+  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
 
 // End of removing a reminder

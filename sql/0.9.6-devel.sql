@@ -31,7 +31,7 @@ CREATE TABLE `flyspray_history` (
   `history_id` mediumint(10) NOT NULL auto_increment,
   `task_id` mediumint(10) NOT NULL default '0',
   `user_id` mediumint(3) NOT NULL default '0',
-  `event_date` text NOT NULL default '',
+  `event_date` varchar(12) NOT NULL default '',
   `event_type` mediumint(2) NOT NULL default '0',
   `field_changed` text NOT NULL default '',
   `old_value` text NOT NULL default '',

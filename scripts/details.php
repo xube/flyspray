@@ -1103,13 +1103,19 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
         <tr>
             <th><?php echo $details_text['eventdate'];?></th>
             <th><?php echo $details_text['user'];?></th>
-            <th><?php echo $details_text['event'];?></b></th>
+            <th><?php echo $details_text['event'];?></th>
         </tr>
      <?php
+        if (is_numeric($_GET['details'])) {
+            $details = " AND h.history_id = {$_GET['details']}";
+        } else {
+            $details = '';
+        };
+        
         $query_history = $fs->dbQuery("SELECT h.*, u.user_name, u.real_name
                                          FROM flyspray_history h
                                          LEFT JOIN flyspray_users u ON h.user_id = u.user_id
-                                         WHERE h.task_id = ?
+                                         WHERE h.task_id = ? {$details}
                                          ORDER BY h.event_date ASC, h.event_type ASC", array($_GET['id']));
 
         if ($fs->dbCountRows($query_history) == 0) {
@@ -1141,8 +1147,14 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
                 switch ($field) {
                 case 'item_summary':
                     $field = $details_text['summary'];
-                    $oldvalue = htmlspecialchars(stripslashes($oldvalue));
-                    $newvalue = htmlspecialchars(stripslashes($newvalue));
+                    $oldvalue = htmlspecialchars($oldvalue);
+                    $newvalue = htmlspecialchars($newvalue);
+                    if (!get_magic_quotes_gpc()) {
+                      $oldvalue = str_replace("\\", "&#92;", $oldvalue);
+                      $newvalue = str_replace("\\", "&#92;", $newvalue);
+                    };
+                    $oldvalue = stripslashes($oldvalue);
+                    $newvalue = stripslashes($newvalue);
                     break;
                 case 'attached_to_project':
                     $field = $details_text['attachedtoproject'];
@@ -1209,7 +1221,17 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
                     $newvalue .= '%';
                     break;
                 case 'detailed_desc':
-                    $field = $details_text['details'];
+                    $field = "<a href=\"index.php?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['details']}</a>";
+                    if ($details != '') {
+                        $details_previous = htmlspecialchars($oldvalue);
+                        $details_new = htmlspecialchars($newvalue);
+                        if (!get_magic_quotes_gpc()) {
+                          $details_previous = str_replace("\\", "&#92;", $details_previous);
+                          $details_new = str_replace("\\", "&#92;", $details_new);
+                        };
+                        $details_previous = nl2br(stripslashes($details_previous));
+                        $details_new = nl2br(stripslashes($details_new));
+                    };
                     $oldvalue = '';
                     $newvalue = '';
                     break;
@@ -1226,26 +1248,48 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
             } elseif ($history['event_type'] == 2) {      //Task closed
                 echo $details_text['taskclosed'];
                 $res_name = $fs->dbFetchRow($fs->dbQuery("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($newvalue)));
-                echo " ({$res_name['resolution_name']})";
+                echo " ({$res_name['resolution_name']}";
+                if ($oldvalue != '') {
+                    echo ": {$oldvalue}";
+                }
+                echo ')';
 
             } elseif ($history['event_type'] == 3) {      //Task edited
                 echo $details_text['taskedited'];
 
             } elseif ($history['event_type'] == 4) {      //Comment added
-                echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;area=comments#{$newvalue}\">{$details_text['commentadded']}</a>";
+                echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=comments#{$newvalue}\">{$details_text['commentadded']}</a>";
 
             } elseif ($history['event_type'] == 5) {      //Comment edited
-                echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;area=comments#{$newvalue}\">{$details_text['commentedited']}</a>";
-                $comment = $fs->dbQuery("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($newvalue));
+                echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['commentedited']}</a>";
+                $comment = $fs->dbQuery("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($history['field_changed']));
                 if ($fs->dbCountRows($comment) != 0) {
                     $comment = $fs->dbFetchRow($comment);
                     echo " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
                 };
+                if ($details != '') {
+                    $details_previous = htmlspecialchars($oldvalue);
+                    $details_new = htmlspecialchars($newvalue);
+                    if (!get_magic_quotes_gpc()) {
+                      $details_previous = str_replace("\\", "&#92;", $details_previous);
+                      $details_new = str_replace("\\", "&#92;", $details_new);
+                    };
+                    $details_previous = nl2br(stripslashes($details_previous));
+                    $details_new = nl2br(stripslashes($details_new));
+                };
 
             } elseif ($history['event_type'] == 6) {      //Comment deleted
-                echo $details_text['commentdeleted'];
-                if ($newvalue != '' && $oldvalue != '') {
-                    echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($oldvalue, true) . ")";    
+                echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['commentdeleted']}</a>";
+                if ($newvalue != '' && $history['field_changed'] != '') {
+                    echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($history['field_changed'], true) . ")";    
+                };
+                if ($details != '') {
+                    $details_previous = htmlspecialchars($oldvalue);
+                    if (!get_magic_quotes_gpc()) {
+                      $details_previous = str_replace("\\", "&#92;", $details_previous);
+                    };
+                    $details_previous = nl2br(stripslashes($details_previous));
+                    $details_new = '';
                 };
 
             } elseif ($history['event_type'] == 7) {      //Attachment added
@@ -1280,9 +1324,9 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
                 echo $details_text['taskreopened'];
 
             } elseif ($history['event_type'] == 14) {      //Task assigned
-                if ($history['old_value'] == '0') {
+                if ($oldvalue == '0') {
                     echo "{$details_text['taskassigned']} " . $fs->LinkedUsername($newvalue);
-                } elseif ($history['new_value'] == '0') {
+                } elseif ($newvalue == '0') {
                     echo $details_text['assignmentremoved'];
                 } else {
                     echo "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
@@ -1305,6 +1349,20 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
         </tr>
             <?php
         };
+    if ($details != '') {
+        ?>
+        </table>
+        <table id="history">
+            <tr>
+                <th><?php echo $details_text['previousvalue'];?></th>
+                <th><?php echo $details_text['newvalue'];?></th>
+            </tr>
+            <tr>
+                <td><?php echo $details_previous;?></td>
+                <td><?php echo $details_new;?></td>
+            </tr>            
+        <?php
+    };
     ?>
     </table> 
 </div>

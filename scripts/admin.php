@@ -1077,6 +1077,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <input type="hidden" name="action" value="editcomment">
     <input type="hidden" name="task_id" value="<?php echo $_GET['task_id'];?>">
     <input type="hidden" name="comment_id" value="<?php echo $_GET['id'];?>">
+    <input type="hidden" name="previous_text" value="<?php echo $comment_text;?>">
     <input class="adminbutton" type="submit" value="<?php echo $admin_text['saveeditedcomment'];?>">
   </p>
 </div>
