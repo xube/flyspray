@@ -55,6 +55,13 @@ class Flyspray {
        return $arr;
    }
 
+    /** Replace empty values with 0. Useful when inserting values from
+    checkboxes.
+    */
+    function emptyToZero($arg) {
+	return empty($arg) ? 0 : $arg;
+    }
+
    function dbExec($sql, $inputarr=false, $numrows=-1, $offset=-1) {
       // replace undef values (treated as NULL in SQL database) with empty
       // strings
