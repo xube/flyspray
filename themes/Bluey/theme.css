@@ -689,7 +689,7 @@ div#taskdetailsfull {
   padding-bottom: 15px;
   border-top: 1px solid #cccccc;
   border-bottom: 1px solid #cccccc;
-
+  text-align: left;
 }
 
 div#deps {

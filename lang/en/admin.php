@@ -154,6 +154,8 @@ $admin_text = array (
 'badmagic'              =>      'That is not a valid magic key! Are you sure that you got that from your notification message?',
 'anonreg'               =>      'Allow new user registrations',
 'allowanonopentask'     =>      'Allow anonymous users to open tasks',
+'editglobalgroup'       =>      'Edit Global Group',
+'editgroupforproj'      =>      'Edit group for Project',
 
 );
 ?>

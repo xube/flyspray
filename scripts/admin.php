@@ -270,13 +270,22 @@ if ($project_id != '0') {
 /////////////////////////////
 // Start of editing groups //
 /////////////////////////////
-} elseif ($_GET['area'] == "groups" && ($permissions['is_admin'] =='1' OR $permissions['manage_project'] == '1')) {
+} elseif ($_GET['area'] == "groups"
+          && ($permissions['is_admin'] =='1'
+              OR $permissions['manage_project'] == '1')) {
 
   
 $get_group_details = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_GET['id']));
 $group_details = $fs->dbFetchArray($get_group_details);
+
+// Set the title appropriately
+if ($group_details['belongs_to_project'] < '1') {
+  echo '<h3>' . $admin_text['editglobalgroup'] . '</h3>';
+} else {
+  echo '<h3>' . $admin_text['editgroupforproj'] . ' - ' . $project_prefs['project_title'] . '</h3>';
+};  
 ?>
-  <h3><?php echo $admin_text['editgroup'];?></h3>
+
   <form action="index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
   <table class="admin">
     <tr>
@@ -357,13 +366,15 @@ $group_details = $fs->dbFetchArray($get_group_details);
       <td><input id="assignotherstoself" type="checkbox" name="assign_others_to_self" value="1" <?php if ($group_details['assign_others_to_self'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-    <tr>
       <td><label for="viewreports"><?php echo $admin_text['viewreports'];?></label></td>
       <td><input id="viewreports" type="checkbox" name="view_reports" value="1" <?php if ($group_details['view_reports'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
+    <?php if ($group_details['belongs_to_project'] < '1') { ?>
+    <tr>
       <td><label for="groupopen"><?php echo $admin_text['groupenabled'];?></label></td>
       <td><input id="groupopen" type="checkbox" name="group_open" value="1" <?php if ($group_details['group_open'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
+    <?php }; ?>
     <tr>
       <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
     </tr>

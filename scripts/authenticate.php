@@ -35,28 +35,37 @@ if ($_GET['action'] == "logout") {
   $auth_details = $fs->dbFetchArray($result);
 
   // Encrypt the password, and compare it to the one in the database
-  if (crypt($password, '4t6dcHiefIkeYcn48B') == $auth_details['user_pass']
-    && $auth_details['account_enabled'] == '1'
-    && $auth_details['group_open'] == '1'
-    )
-  {
-    $message = $authenticate_text['loginsuccessful'];
-
-    // Determine if the user should be remembered on this machine
-    if ($_POST['remember_login']) {
-      $cookie_time = time() + (60 * 60 * 24 * 30); // Set cookies for 30 days
-    } else {
-      $cookie_time = 0; // Set cookies to expire when session ends (browser closes)
-    };
-
-    setcookie('flyspray_userid', $auth_details['user_id'], $cookie_time, "/");
-    setcookie('flyspray_passhash', crypt("{$auth_details['user_pass']}", "$cookiesalt"), $cookie_time, "/");
+  if (crypt($password, '4t6dcHiefIkeYcn48B') == $auth_details['user_pass']) {
     
-    $remove_magic = $fs->dbQuery("UPDATE flyspray_users SET
+    // Check that the user's account is enabled
+    if ($auth_details['account_enabled'] == '1'
+       // And that their global group is allowed to login
+       && $auth_details['group_open'] == '1') {
+       	
+      $message = $authenticate_text['loginsuccessful'];
+
+      // Determine if the user should be remembered on this machine
+      if ($_POST['remember_login']) {
+        $cookie_time = time() + (60 * 60 * 24 * 30); // Set cookies for 30 days
+      } else {
+        $cookie_time = 0; // Set cookies to expire when session ends (browser closes)
+      };
+
+      // Set a couple of cookies
+      setcookie('flyspray_userid', $auth_details['user_id'], $cookie_time, "/");
+      setcookie('flyspray_passhash', crypt("{$auth_details['user_pass']}", "$cookiesalt"), $cookie_time, "/");
+    
+      // If the user had previously requested a password change, remove the magic url
+      $remove_magic = $fs->dbQuery("UPDATE flyspray_users SET
                                   magic_url = ''
                                   WHERE user_id = ?",
                                   array($auth_details['user_id'])
                                 );
+
+    // If the user's account is disabled, throw an error
+    } else {
+       $message = $authenticate_text['loginfailed'] . '<br /><br />' . $authenticate_text['accountdisabled'];
+    };
     
   } else {
     $message = $authenticate_text['loginfailed'];

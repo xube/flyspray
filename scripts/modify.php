@@ -1031,7 +1031,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                               anon_open,
                               project_is_active,
                               visible_columns)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             array($_POST['project_title'],
                               $_POST['theme_style'],
                               $fs->emptyToZero($_POST['show_logo']),

@@ -135,13 +135,27 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
   $current_user = $fs->dbFetchArray($result);
 
   // Get the global group for this user, and put the permissions into an array
-  $search_global_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array('0'));
+  /*$search_global_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = '0'");
   while ($row = $fs->dbFetchRow($search_global_group)) {
     $check_in = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($_COOKIE['flyspray_userid'], $row['group_id']));
     if ($fs->dbCountRows($check_in) > '0') {
       $global_permissions = $row;
     };
-  };
+  };*/
+
+  // Get the global group permissions for the current user
+  $global_permissions = $fs->dbFetchArray($fs->dbQuery("SELECT *
+                                                        FROM flyspray_groups g
+                                                        LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
+                                                        WHERE uig.user_id = ? and g.belongs_to_project = '0'",
+                                                        array($_COOKIE['flyspray_userid'])
+                                                       ));
+  
+  // Check that their global group and user profile lets them login
+  /*if ($global_permissions['group_open'] != '1'
+      OR $current_user['account_enabled'] != '1') {
+      	Header("Location: scripts/authenticate.php?action=logout");
+  };*/
 
   // Get the project-level group for this user, and put the permissions into an array
   $search_project_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
@@ -154,7 +168,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
   
   // Define which fields we care about from the groups information
   $field = array(
-        '1'  => 'is_admin',
+                  '1'  => 'is_admin',
 		  '2'  => 'manage_project',
 		  '3'  => 'view_tasks',
 		  '4'  => 'open_new_tasks',
@@ -185,15 +199,16 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       $permissions[$val] = '0';
       
     };
-//          echo $val . ' = ' . $permissions[$val] . '<br />';  // This to print out the effective permissions for testing
+          // This to print out the effective permissions for testing
+          //echo $val . ' = ' . $permissions[$val] . '<br />';  
   };
 
   // Check that the user hasn't spoofed the cookie contents somehow
   if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], "$cookiesalt")
-    // And that their account is enabled
-    && $current_user['account_enabled'] == "1")
-    // And that their group is open   FIX ME
-//    && $group_details['group_open'] == '1')  FIX ME
+      // And that their account is enabled
+      && $current_user['account_enabled'] == '1'
+      // and that their group is enabled
+      && $global_permissions['group_open'] == '1')
     {
 
     ////////////////////////
@@ -318,7 +333,8 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     // If the user's account is closed
     } else {
       echo "<br />{$language['disabledaccount']}";
-      echo "<meta http-equiv=\"refresh\" content=\"0; URL=scripts/authenticate.php?action=logout\">\n";
+      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=scripts/authenticate.php?action=logout\">\n";
+      Header("Location: scripts/authenticate.php?action=logout");
     // End of checking if the user's account is open
     };
 

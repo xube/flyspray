@@ -333,7 +333,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
         while ($row = $this->dbFetchArray($get_users)) {
            
            // Check for current user
-           if ($row['user_id'] != $current_user['user_id'] &&  $row['user_id'] != $this_task['assigned_to']) {
+           if ($row['user_id'] != $_COOKIE['flyspray_userid'] &&  $row['user_id'] != $this_task['assigned_to']) {
            
               $get_details = $this->dbQuery("SELECT notify_type, jabber_id, email_address
                       FROM flyspray_users
