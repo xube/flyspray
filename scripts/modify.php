@@ -309,7 +309,7 @@ $current_realname ($current_username) {$modify_text['hasjustmodified']} {$modify
       $item_summary = stripslashes($_POST['item_summary']);
 
       // If someone had previously been assigned this item, notify them of the change in assignment
-      if ($_POST['old_assigned'] != "0") {
+      if ($_POST['old_assigned'] != "0" && ($_POST['old_assigned'] != $_COOKIE['flyspray_userid'])) {
 
         if ($_POST['assigned_to'] == "0") {
           $new_realname = $modify_text['noone'];
@@ -325,12 +325,12 @@ $current_realname ($current_username) {$modify_text['hasjustmodified']} {$modify
           $new_username = "No-one";
         };
 
-$item_summary = stripslashes($_POST['item_summary']);
-$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
-$message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
-{$modify_text['nolongerassigned']} {$get_new['real_name']} ($new_username).\n
-{$modify_text['task']} #{$_POST['task_id']} - {$_POST['item_summary']}\n
-{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}";
+        $item_summary = stripslashes($_POST['item_summary']);
+        $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
+        $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
+        {$modify_text['nolongerassigned']} {$get_new['real_name']} ($new_username).\n
+        {$modify_text['task']} #{$_POST['task_id']} - {$_POST['item_summary']}\n
+        {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}";
         // End of generating a message
 
         // Send the brief notification message
@@ -399,12 +399,11 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
     // Get the resolution name for the notifications
     $get_res = $fs->dbFetchArray($fs->dbQuery("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason'])));
 
-
     // Get the item summary for the notifications
     list($item_summary) = $fs->dbFetchArray($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
     $item_summary = stripslashes($item_summary);
 
-    if ($_COOKIE['flyspray_userid'] != $_POST['closed_by']) {
+    if ($_COOKIE['flyspray_userid'] != $_POST['assigned_to']) {
 
 // Create a basic notification message
 $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
