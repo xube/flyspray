@@ -62,7 +62,17 @@ function changelog_report()
 
 	$sort = $_POST['sort'];
 	
-	$get_changes = $fs->dbQuery("SELECT h.*, t.*, u.*, r.*
+	$get_changes = $fs->dbQuery("SELECT t.*, u.*, r.*
+		FROM flyspray_tasks t
+		LEFT JOIN flyspray_users u on t.closed_by = u.user_id
+		LEFT JOIN flyspray_list_resolution r on t.resolution_reason = r.resolution_id
+		WHERE t.is_closed = 1
+		AND t.attached_to_project = ?
+		AND t.date_closed >= ?
+		AND t.date_closed <= ?
+		ORDER BY t.date_closed $sort", array($_COOKIE['flyspray_project'],$ustartdate,$uenddate));
+		
+/*	$get_changes = $fs->dbQuery("SELECT h.*, t.*, u.*, r.*
 		FROM flyspray_history h
 		LEFT JOIN flyspray_tasks t ON h.task_id = t.task_id
 		LEFT JOIN flyspray_users u ON h.user_id = u.user_id
@@ -72,7 +82,7 @@ function changelog_report()
 		AND h.event_date >= ?
 		AND h.event_date <= ?
 		ORDER BY h.event_date $sort", array($_COOKIE['flyspray_project'],$ustartdate,$uenddate));
-	
+*/	
 	echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\">";
 	while ($row = $fs->dbFetchArray($get_changes))
 	{
