@@ -15,8 +15,8 @@ CREATE DATABASE flyspray ENCODING = 'UNICODE';
 
 CREATE TABLE flyspray_groups (
     group_id serial NOT NULL,
-    group_name character varying(20) DEFAULT '' NOT NULL,
-    group_desc character varying(150) DEFAULT '' NOT NULL,
+    group_name TEXT DEFAULT '' NOT NULL,
+    group_desc TEXT DEFAULT '' NOT NULL,
     is_admin integer DEFAULT '0' NOT NULL,
     can_open_jobs integer DEFAULT '0' NOT NULL,
     can_modify_jobs integer DEFAULT '0' NOT NULL,
@@ -28,30 +28,30 @@ CREATE TABLE flyspray_groups (
 
 CREATE TABLE flyspray_users (
     user_id serial NOT NULL,
-    user_name character varying(20) DEFAULT '' NOT NULL,
-    user_pass character varying(30) DEFAULT '' NOT NULL,
-    real_name character varying(100) DEFAULT '' NOT NULL,
+    user_name TEXT DEFAULT '' NOT NULL,
+    user_pass TEXT DEFAULT '' NOT NULL,
+    real_name TEXT DEFAULT '' NOT NULL,
     group_in integer DEFAULT '0' NOT NULL,
-    jabber_id character varying(100) DEFAULT '' NOT NULL,
-    email_address character varying(100) DEFAULT '' NOT NULL,
+    jabber_id TEXT DEFAULT '' NOT NULL,
+    email_address TEXT DEFAULT '' NOT NULL,
     notify_type integer DEFAULT '0' NOT NULL,
     account_enabled integer DEFAULT '0' NOT NULL
 );
 
 CREATE TABLE flyspray_projects (
     project_id serial NOT NULL,
-    project_title character varying(100) DEFAULT '' NOT NULL,
-    theme_style character varying(20) DEFAULT '0' NOT NULL,
+    project_title TEXT DEFAULT '' NOT NULL,
+    theme_style TEXT DEFAULT '0' NOT NULL,
     show_logo integer DEFAULT '0' NOT NULL,
     default_cat_owner integer,
-    intro_message text NOT NULL,
+    intro_message TEXT NOT NULL,
     project_is_active integer DEFAULT '0' NOT NULL
 );
 
 CREATE TABLE flyspray_list_category (
     category_id serial NOT NULL,
     project_id integer,
-    category_name character varying(30) DEFAULT '' NOT NULL,
+    category_name TEXT DEFAULT '' NOT NULL,
     list_position integer DEFAULT '0' NOT NULL,
     show_in_list integer DEFAULT '0' NOT NULL,
     category_owner integer
@@ -60,14 +60,14 @@ CREATE TABLE flyspray_list_category (
 CREATE TABLE flyspray_list_os (
     os_id serial NOT NULL,
     project_id integer DEFAULT '0' NOT NULL,
-    os_name character varying(20) DEFAULT '' NOT NULL,
+    os_name TEXT DEFAULT '' NOT NULL,
     list_position integer DEFAULT '0' NOT NULL,
     show_in_list integer DEFAULT '0' NOT NULL
 );
 
 CREATE TABLE flyspray_list_resolution (
     resolution_id serial NOT NULL,
-    resolution_name character varying(30) DEFAULT '' NOT NULL,
+    resolution_name TEXT DEFAULT '' NOT NULL,
     list_position integer DEFAULT '0' NOT NULL,
     show_in_list integer DEFAULT '0' NOT NULL
 );
@@ -75,14 +75,14 @@ CREATE TABLE flyspray_list_resolution (
 CREATE TABLE flyspray_list_version (
     version_id serial NOT NULL,
     project_id integer DEFAULT '0' NOT NULL,
-    version_name character varying(20) DEFAULT '' NOT NULL,
+    version_name TEXT DEFAULT '' NOT NULL,
     list_position integer DEFAULT '0' NOT NULL,
     show_in_list integer DEFAULT '0' NOT NULL
 );
 
 CREATE TABLE flyspray_list_tasktype (
     tasktype_id serial NOT NULL,
-    tasktype_name character varying(20) DEFAULT '' NOT NULL,
+    tasktype_name TEXT DEFAULT '' NOT NULL,
     list_position integer DEFAULT '0' NOT NULL,
     show_in_list integer DEFAULT '0' NOT NULL
 );
@@ -91,12 +91,12 @@ CREATE TABLE flyspray_tasks (
     task_id serial NOT NULL,
     attached_to_project integer NOT NULL,
     task_type integer NOT NULL,
-    date_opened character varying(12) DEFAULT '' NOT NULL,
+    date_opened TEXT DEFAULT '' NOT NULL,
     opened_by integer NOT NULL,
-    date_closed character varying(12) DEFAULT '' NOT NULL,
+    date_closed TEXT DEFAULT '' NOT NULL,
     closed_by integer,
-    item_summary character varying(100) DEFAULT '' NOT NULL,
-    detailed_desc text NOT NULL,
+    item_summary TEXT DEFAULT '' NOT NULL,
+    detailed_desc TEXT NOT NULL,
     item_status integer DEFAULT '0' NOT NULL,
     assigned_to integer,
     resolution_reason integer DEFAULT '1' NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE flyspray_tasks (
     operating_system integer,
     task_severity integer DEFAULT '0' NOT NULL,
     last_edited_by integer,
-    last_edited_time character varying(12) DEFAULT '0' NOT NULL,
+    last_edited_time TEXT DEFAULT '0' NOT NULL,
     percent_complete integer DEFAULT '0' NOT NULL,
     CONSTRAINT flyspray_tasks_percent_complete CHECK (((percent_complete >= 0) AND (percent_complete <= 100)))
 );
@@ -114,21 +114,21 @@ CREATE TABLE flyspray_tasks (
 CREATE TABLE flyspray_attachments (
     attachment_id serial NOT NULL,
     task_id integer DEFAULT '0' NOT NULL,
-    orig_name character varying(100) DEFAULT '' NOT NULL,
-    file_name character varying(30) DEFAULT '' NOT NULL,
-    file_desc character varying(100) DEFAULT '' NOT NULL,
-    file_type character varying(50) DEFAULT '' NOT NULL,
+    orig_name TEXT DEFAULT '' NOT NULL,
+    file_name TEXT DEFAULT '' NOT NULL,
+    file_desc TEXT DEFAULT '' NOT NULL,
+    file_type TEXT DEFAULT '' NOT NULL,
     file_size integer DEFAULT '0' NOT NULL,
     added_by integer DEFAULT '0' NOT NULL,
-    date_added character varying(12) DEFAULT '' NOT NULL
+    date_added TEXT DEFAULT '' NOT NULL
 );
 
 CREATE TABLE flyspray_comments (
     comment_id serial NOT NULL,
     task_id integer DEFAULT '0' NOT NULL,
-    date_added character varying(12) DEFAULT '' NOT NULL,
+    date_added TEXT DEFAULT '' NOT NULL,
     user_id integer DEFAULT '0' NOT NULL,
-    comment_text text NOT NULL
+    comment_text TEXT NOT NULL
 );
 
 CREATE TABLE flyspray_notifications (
@@ -139,15 +139,15 @@ CREATE TABLE flyspray_notifications (
 
 CREATE TABLE flyspray_prefs (
     pref_id serial NOT NULL,
-    pref_name character varying(20) DEFAULT '' NOT NULL,
-    pref_value character varying(50) DEFAULT '' NOT NULL,
-    pref_desc character varying(100) DEFAULT '' NOT NULL
+    pref_name TEXT DEFAULT '' NOT NULL,
+    pref_value TEXT DEFAULT '' NOT NULL,
+    pref_desc TEXT DEFAULT '' NOT NULL
 );
 
 CREATE TABLE flyspray_registrations (
     reg_id serial NOT NULL,
-    reg_time character varying(12) DEFAULT '' NOT NULL,
-    confirm_code character varying(20) DEFAULT '' NOT NULL
+    reg_time TEXT DEFAULT '' NOT NULL,
+    confirm_code TEXT DEFAULT '' NOT NULL
 );
 
 CREATE TABLE flyspray_related (
