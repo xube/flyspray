@@ -1,0 +1,17 @@
+Upgrading from 0.9.3.1 to 0.9.4
+
+Load the 'upgrade_0.9.3.1_to_0.9.4.php' script in your browser and follow the
+instructions.
+
+
+Upgrading from 0.9.3 to 0.9.3.1
+
+Simply unpack the new files into your old Flyspray directory.  If you overwrite
+config.inc.php, you will need to re-edit it.
+
+This bugfix release fixes the broken 'closed' status.  You will have previously
+noticed that closing your tasks set them to 'waiting for customer'.  If you have
+some tasks that are incorrectly set to that when you tried to close them, you are
+now able to close them properly.
+
+There are no database changes.
