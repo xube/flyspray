@@ -389,7 +389,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
         ?>
         </td>
         <th><?php echo $details_text['percentcomplete'];?></th>
-        <td ><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?></td>
+        <td ><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?>></td>
       </tr>
       <tr>
         <th nowrap=""><?php echo $details_text['operatingsystem'];?></th>
