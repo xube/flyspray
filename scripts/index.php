@@ -174,7 +174,7 @@ $extraurl = $get . "&amp;tasks={$_GET['tasks']}&amp;type={$_GET['type']}&amp;sev
 // for 'sort by this column' links
 $get = $extraurl . "&amp;pagenum=$pagenum";
 $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
-$extraurl .= "&amp;order={$_GET['order2']}&amp;sort={$_GET['sort2']}";
+$extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
 
 ?>
 
@@ -348,7 +348,7 @@ function list_heading($colname, $orderkey, $image = '')
       $sort1 = ( $sort1 == 'asc' ? 'asc' : 'desc' );
       $sort2 = ( $sort2 == 'asc' ? 'asc' : 'desc' );
       
-      echo "<th $class>";
+      echo "<th $class nowrap>";
       $title = $index_text['sortthiscolumn'];
       $link = "?order=$orderkey$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
       echo "<a title=\"$title\" href=\"$link\">";
