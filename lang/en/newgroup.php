@@ -40,6 +40,7 @@ $newgroup_text = array (
 'assignotherstoself'	=>	'Assign others\' tasks to self',
 'viewreports'		=>	'View reports',
 'othersview'		=>	'Allow anyone to view this project',
+'globalgroups'    => 'Global Groups',
 
 );
 ?>

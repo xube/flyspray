@@ -3,11 +3,18 @@ get_language_pack($lang, 'newgroup');
 
 // Make sure that only admins are using this page
 if (($permissions['admin'] == '1' && $_GET['project'] == '0')
-     OR $permissions['manage_project']) {
+     OR $permissions['manage_project'] == '1') {
+
+if ($_GET['project'] == '0') {
+   $forproject = $newgroup_text['globalgroup'];
+} else {
+   $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
+   $forproject = $project_details['project_title'];
+};
 ?>
 
-<form action="index.php" method="post" id="newgroup">
-<h1><?php echo $newgroup_text['createnewgroup'];?></h1>
+<form action="index.php?project=<?php echo $_GET['project'];?>" method="post" id="newgroup">
+<h1><?php echo $newgroup_text['createnewgroup'] . ' - ' . $forproject;?></h1>
 <p><em><?php echo $newgroup_text['requiredfields'];?></em> <strong>*</strong></p>
 
   <table class="admin">
@@ -15,7 +22,6 @@ if (($permissions['admin'] == '1' && $_GET['project'] == '0')
       <td>
       <input type="hidden" name="do" value="modify">
       <input type="hidden" name="action" value="newgroup">
-      <input type="hidden" name="belongs_to_project" value="<?php echo $_GET['project']; ?>">
       <label for="groupname">
       <?php echo $newgroup_text['groupname'];?></label></td>
       <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20"> <strong>*</strong></td>

@@ -702,7 +702,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 // Start of adding a new group //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "newgroup" && $permissions['is_admin'] == '1') {
+} elseif ($_POST['action'] == "newgroup"
+          && ($permissions['is_admin'] == '1'
+          OR $permissions['manage_project'] == '1')) {
 
   // If they filled in all the required fields
   if ($_POST['group_name'] != ""
@@ -710,28 +712,57 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
     ) {
 
     // Check to see if the group name is available
-    $check_groupname = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_name = ?", array($_POST['group_name']));
+    $check_groupname = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_name = ? AND belongs_to_project = ?", array($_POST['group_name'], $project_id));
     if ($fs->dbCountRows($check_groupname)) {
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupnametaken']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
     } else {
 
       $add_group = $fs->dbQuery("INSERT INTO flyspray_groups
-                                      (group_name, group_desc, is_admin,
-                                      can_open_jobs, can_modify_jobs,
-                                      can_add_comments, can_attach_files,
-                                      can_vote, group_open)
-                                      VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                      (group_name,
+                                      group_desc,
+                                      belongs_to_project,
+                                      manage_project,
+                                      view_tasks,
+                                      open_new_tasks,
+                                      modify_own_tasks,
+                                      modify_all_tasks,
+                                      view_comments,
+                                      add_comments,
+                                      edit_comments,
+                                      delete_comments,
+                                      create_attachments,
+                                      delete_attachments,
+                                      view_history,
+                                      close_own_tasks,
+                                      close_other_tasks,
+                                      assign_to_self,
+                                      assign_others_to_self,
+                                      view_reports,
+                                      group_open)
+                                      VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 array($_POST['group_name'], $_POST['group_desc'],
-                $fs->emptyToZero($_POST['is_admin']),
-                $fs->emptyToZero($_POST['can_open_jobs']),
-                $fs->emptyToZero($_POST['can_modify_jobs']),
-                $fs->emptyToZero($_POST['can_add_comments']),
-                $fs->emptyToZero($_POST['can_attach_files']),
-                $fs->emptyToZero($_POST['can_vote']),
+                $fs->emptyToZero($project_id),
+                $fs->emptyToZero($_POST['manage_project']),
+                $fs->emptyToZero($_POST['view_tasks']),
+                $fs->emptyToZero($_POST['open_new_tasks']),
+                $fs->emptyToZero($_POST['modify_own_tasks']),
+                $fs->emptyToZero($_POST['modify_all_tasks']),
+                $fs->emptyToZero($_POST['view_comments']),
+                $fs->emptyToZero($_POST['add_comments']),
+                $fs->emptyToZero($_POST['edit_comments']),
+                $fs->emptyToZero($_POST['delete_comments']),
+                $fs->emptyToZero($_POST['create_attachments']),
+                $fs->emptyToZero($_POST['delete_attachments']),
+                $fs->emptyToZero($_POST['view_history']),
+                $fs->emptyToZero($_POST['close_own_tasks']),
+                $fs->emptyToZero($_POST['close_other_tasks']),
+                $fs->emptyToZero($_POST['assign_to_self']),
+                $fs->emptyToZero($_POST['assign_others_to_self']),
+                $fs->emptyToZero($_POST['view_reports']),
                 $fs->emptyToZero($_POST['group_open'])
                 ));
 
-        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
+        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$_GET['project']}\">";
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newgroupadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
     };
 
@@ -797,20 +828,73 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   if ($_POST['project_title'] != '') {
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_projects
-                              (project_title, theme_style, show_logo, inline_images,
-                              default_cat_owner, intro_message, project_is_active, visible_columns)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                              (project_title,
+                              theme_style,
+                              show_logo,
+                              inline_images,
+                              default_cat_owner,
+                              intro_message,
+                              others_view,
+                              project_is_active,
+                              visible_columns)
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             array($_POST['project_title'],
                               $_POST['theme_style'],
                               $fs->emptyToZero($_POST['show_logo']),
                               $fs->emptyToZero($_POST['inline_images']),
                               $_POST['default_cat_owner'],
                               $_POST['intro_message'],
+                              $fs->emptyToZero($_POST['others_view']),
                               '1',
                               'id tasktype severity summary status dueversion progress',
                               ));
 
     $newproject = $fs->dbFetchArray($fs->dbQuery("SELECT project_id FROM flyspray_projects ORDER BY project_id DESC", false, 1));
+
+      $add_group = $fs->dbQuery("INSERT INTO flyspray_groups
+                                      (group_name,
+                                      group_desc,
+                                      belongs_to_project,
+                                      manage_project,
+                                      view_tasks,
+                                      open_new_tasks,
+                                      modify_own_tasks,
+                                      modify_all_tasks,
+                                      view_comments,
+                                      add_comments,
+                                      edit_comments,
+                                      delete_comments,
+                                      create_attachments,
+                                      delete_attachments,
+                                      view_history,
+                                      close_own_tasks,
+                                      close_other_tasks,
+                                      assign_to_self,
+                                      assign_others_to_self,
+                                      view_reports,
+                                      group_open)
+                                      VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                array('Project Managers', 'Project Managers' ,
+                $fs->emptyToZero($newproject['project_id']),
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1',
+                '1')
+                );
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_list_category
                              (project_id, category_name, list_position,
@@ -1048,7 +1132,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // End of modifying user details
 
 /////////////////////////////////////////
-// Start of modifying group definition //
+// Start of updating group definition //
 /////////////////////////////////////////
 
 } elseif ($_POST['action'] == "editgroup" && $permissions['is_admin'] == '1') {
@@ -1099,7 +1183,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
               $fs->emptyToZero($_POST['group_open']),
               $_POST['group_id']));
 
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project=$project_id\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupanddesc']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";

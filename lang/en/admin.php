@@ -134,6 +134,6 @@ $admin_text = array (
 'othersview'		=>	'Allow anyone to view this project',
 'usergroups'		=>	'Users and Groups',
 'globalgroups'		=>	'Global Groups',
-
+'defaultglobalgroup' => 'Default global group for new users',
 );
 ?>

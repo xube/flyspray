@@ -78,7 +78,7 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       <select id="groupin" name="group_in">
       <?php
       // Get the groups list
-      $get_groups = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
+      $get_groups = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
       while ($row = $fs->dbFetchArray($get_groups)) {
         if ($row['group_id'] == $user_details['group_in']) {
           echo "<option value=\"{$row['group_id']}\" selected=\"selected\">{$row['group_name']}</option>";
@@ -126,7 +126,12 @@ if (isset($_GET['project'])) {
 };
 
 echo "<h3>{$admin_text['usergroupmanage']} - $forproject</h3>";
-echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | ";
+
+// Only full admins need the link to add new users
+if ($project_id == '0' && $permissions['is_admin'] == '1') {
+  echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | ";
+};
+
 echo "<a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>";
 
 $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
@@ -164,7 +169,7 @@ $get_group_details = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id 
 $group_details = $fs->dbFetchArray($get_group_details);
 ?>
   <h3><?php echo $admin_text['editgroup'];?></h3>
-  <form action="index.php" method="post">
+  <form action="index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
   <table class="admin">
     <tr>
       <td>
@@ -505,12 +510,12 @@ $group_details = $fs->dbFetchArray($get_group_details);
   </tr>
   <tr>
     <td>
-      <label for="anongroup"><?php echo $admin_text['anongroup'];?></label>
+      <label for="defaultglobalgroup"><?php echo $admin_text['defaultglobalgroup'];?></label>
     </td>
     <td>
-      <select id="anongroup" name="anon_group">
+      <select id="defaultglobalgroup" name="anon_group">
       <?php // Get the group names
-      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
+      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
       while ($row = $fs->dbFetchArray($get_group_details)) {
         if ($flyspray_prefs['anon_group'] == $row['group_id']) {
           echo "<option value=\"{$row['group_id']}\" selected=\"selected\">{$row['group_name']}</option>";
@@ -526,7 +531,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
     <td><label><?php echo $admin_text['groupassigned'];?></label></td>
     <td class="admintext">
     <?php // Get the group names
-      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
+      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
       while ($row = $fs->dbFetchArray($get_group_details)) {
         if (ereg($row['group_id'], $flyspray_prefs['assigned_groups']) ) {
           echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" checked=\"checked\">{$row['group_name']}<br>\n";
@@ -623,12 +628,10 @@ $group_details = $fs->dbFetchArray($get_group_details);
            && $permissions['manage_project'] == '1')
           {
 
+// Fetch the project details
 $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
-echo '<h3>' . $admin_text['projectprefs'] . ' - ' . stripslashes($project_details['project_title']) . '</h3>'; ?>
+echo '<h3>' . $admin_text['projectprefs'] . ' - ' . stripslashes($project_details['project_title']) . '</h3>';
 
-
-
-<?php
 echo '<span id="projectmenu">';
 
 // Only show the 'create new project' link if the user is a full admin
@@ -636,18 +639,12 @@ if ($permissions['is_admin'] == '1') {
   echo '<small> | </small><a href="?do=newproject">' . $admin_text['createproject'] . '</a>';
 };
 
-if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') {
-  echo '<small> | </small><a href="?do=admin&amp;area=users&amp;project=' . $project_id . '">' . $admin_text['usergroups'] . '</a>';
-};
+echo '<small> | </small><a href="?do=admin&amp;area=users&amp;project=' . $project_id . '">' . $admin_text['usergroups'] . '</a>';
 
-echo '</span>';
+//if ($_GET['id']) {
 
-if ($_GET['id']) {
-
-  $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($_GET['id'])));
-
+$project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
 ?>
-    <span id="projectmenu">
      <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=category"><?php echo $language['categories'];?></a>
      <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=os"><?php echo $language['operatingsystems'];?></a>
      <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=version"><?php echo $language['versions'];?></a>
@@ -802,7 +799,7 @@ if ($_GET['show'] == 'prefs') { ?>
   <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
   <table class="list">
     <?php
-    $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($_GET['id'], '1'));
+    $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($project_id, '1'));
     $countlines = 0;
     while ($row = $fs->dbFetchArray($get_categories)) {
     ?>
@@ -833,7 +830,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <?php
       $countlines++;
       // Now we have to cycle through the subcategories
-    $get_subcategories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id = ? ORDER BY list_position", array($_GET['id'], $row['category_id']));
+    $get_subcategories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id = ? ORDER BY list_position", array($project_id, $row['category_id']));
     while ($subrow = $fs->dbFetchArray($get_subcategories)) {
     ?>
      <tr>
@@ -881,7 +878,7 @@ if ($_GET['show'] == 'prefs') { ?>
      <tr>
         <input type="hidden" name="do" value="modify">
         <input type="hidden" name="action" value="add_category">
-        <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+        <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
       <td>
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
         <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name">
@@ -943,10 +940,10 @@ if ($_GET['show'] == 'prefs') { ?>
   <input type="hidden" name="do" value="modify">
   <input type="hidden" name="action" value="update_list">
   <input type="hidden" name="list_type" value="os">
-  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+  <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
   <table class="list">
     <?php
-    $get_os = $fs->dbQuery("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($_GET['id']));
+    $get_os = $fs->dbQuery("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($project_id));
     $countlines = 0;
     while ($row = $fs->dbFetchArray($get_os)) {
     ?>
@@ -984,7 +981,7 @@ if ($_GET['show'] == 'prefs') { ?>
         <input type="hidden" name="do" value="modify">
         <input type="hidden" name="action" value="add_to_list">
         <input type="hidden" name="list_type" value="os">
-        <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+        <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
         <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
       <td>
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
@@ -1017,11 +1014,11 @@ if ($_GET['show'] == 'prefs') { ?>
   <input type="hidden" name="do" value="modify">
   <input type="hidden" name="action" value="update_version_list">
   <input type="hidden" name="list_type" value="version">
-  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+  <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
   <table class="list">
 
     <?php
-    $get_version = $fs->dbQuery("SELECT * FROM flyspray_list_version WHERE project_id = ? ORDER BY list_position", array($_GET['id']));
+    $get_version = $fs->dbQuery("SELECT * FROM flyspray_list_version WHERE project_id = ? ORDER BY list_position", array($project_id));
     $countlines = 0;
     while ($row = $fs->dbFetchArray($get_version)) {
     ?>
@@ -1067,7 +1064,7 @@ if ($_GET['show'] == 'prefs') { ?>
           <input type="hidden" name="do" value="modify">
           <input type="hidden" name="action" value="add_to_version_list">
           <input type="hidden" name="list_type" value="version">
-          <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+          <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
         <td>
           <label for="listnamenew"><?php echo $admin_text['name'];?></label>
           <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
@@ -1097,7 +1094,7 @@ if ($_GET['show'] == 'prefs') { ?>
 
 <?php
 };
-};
+//};
 // End of project preferences
 
 ////////////////////////////////

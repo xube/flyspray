@@ -22,5 +22,8 @@ $newproject_text = array (
 // Added in version 0.9.6
 'inlineimages'		=>	'Show image attachments inline',
 
+// Added in version 0.9.7
+'othersview'		=>	'Allow anyone to view this project',
+
 );
 ?>

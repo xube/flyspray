@@ -1,29 +1,11 @@
 <?php
-// Get the application preferences into an array
-$flyspray_prefs = $fs->getGlobalPrefs();
-
+// Load the language packs
 $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'newproject');
 
 // Make sure that only admins are using this page
-if ($_SESSION['admin'] == '1') {
+if ($permissions['is_admin'] == '1') {
 ?>
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-  <title>Flyspray:: <?php echo $newproject_text['createnewgroup'];?></title>
-  <link href="../themes/<?php echo $flyspray_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
-  <script type="text/javascript"> <!--
-    function Disable()
-    {
-    document.form1.buSubmit.disabled = true;
-    document.form1.submit();
-    }
-//--> </script>
-</head>
-
-<body>
 
 <h3><?php echo $newproject_text['createnewproject'];?></h3>
 
@@ -52,9 +34,9 @@ if ($_SESSION['admin'] == '1') {
     // Let's get a list of the theme names by reading the ./themes/ directory
     if ($handle = opendir('themes/')) {
       $theme_array = array();
-       while (false !== ($file = readdir($handle))) {
-        if ($file != "." && $file != ".." && file_exists("themes/$file/theme.css")) {
-          array_push($theme_array, $file);
+       while (false !== ($dir = readdir($handle))) {
+        if ($dir != "." && $dir != ".." && file_exists("themes/$dir/theme.css")) {
+          array_push($theme_array, $dir);
         }
       }
       closedir($handle);
@@ -111,7 +93,15 @@ if ($_SESSION['admin'] == '1') {
     <label for="intromessage"><?php echo $newproject_text['intromessage'];?></label>
     </td>
     <td>
-    <textarea name="intro_message" rows="10" cols="50"><?php echo $project_details['intro_message'];?></textarea>
+    <textarea name="intro_message" rows="10" cols="50"></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <label for="othersview"><?php echo $newproject_text['othersview'];?></label>
+    </td>
+    <td>
+    <input id="othersview" type="checkbox" name="others_view" value="1">
     </td>
   </tr>
   <tr>
@@ -121,8 +111,6 @@ if ($_SESSION['admin'] == '1') {
 </table>
   </form>
 
-</body>
-</html>
 
 <?php
 } else {

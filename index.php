@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include('header.php');
 
 $lang = $flyspray_prefs['lang_code'];
@@ -137,7 +137,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
   
   // Define which fields we care about from the groups information
   $field = array(
-                  '1'  => 'is_admin',
+        '1'  => 'is_admin',
 		  '2'  => 'manage_project',
 		  '3'  => 'view_tasks',
 		  '4'  => 'open_new_tasks',
@@ -230,15 +230,13 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
         $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/options.png") . '&nbsp;' . $language['options'] . "</a>\n";
       };
       
-      if ($permissions['manage_project'] == '1') {
+      if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') {
         echo '<small> | </small>';
         echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;id=' . $project_id . '">' .
         $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/projectprefs.png") . '&nbsp;' . $language['projects'] . "</a>\n";
       };
       
-      if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') {
-      // There will need to be logic in admin.php to seperate the management of 
-      // global users/groups and project-level users/groups
+      if ($permissions['is_admin'] == '1') {
         echo '<small> | </small>';
         echo '<a href="?do=admin&amp;area=users">' .
         $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/usersandgroups.png") . '&nbsp;' . $language['usersandgroups'] . "</a>\n";
