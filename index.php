@@ -35,6 +35,15 @@ if ($_GET['getfile']) {
 } else {
   header("Content-type: text/html; charset=utf-8");
 
+  // Start Output Buffering and gzip encoding if setting is present.
+  // This functionality provided Mariano D'Arcangelo
+  if ($conf_array['general']['output_buffering']=='gzip') include 'scripts/gzip_compress.php';
+  elseif ($conf_array['general']['output_buffering']=='on') ob_start();
+  // ob_end_flush() isn't needed in MOST cases because it is called automatically
+  // at the end of script execution by PHP itself when output buffering is turned on
+  // either in the php.ini or by calling ob_start().
+  
+  
 // If the user has specified column sorting, send them a cookie
 /*if ($_GET['order']) {
   setcookie('flyspray_order', $_GET['order'], time()+60*60*24*30, "/");
@@ -157,7 +166,7 @@ if ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flys
 if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
     // Check to see if the user has been trying to hack their cookies to perform sql-injection
-    if (!preg_match ("/^\d+$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d+$/", $_COOKIE['flyspray_project']))) {
+    if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project']))) {
       die("Stop hacking your cookies, you naughty fellow!");
     };
 

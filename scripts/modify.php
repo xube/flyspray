@@ -610,8 +610,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
     if ($new_pass == $confirm_pass) {
       $update_pass = $fs->dbQuery("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
       
-	  // FIXME FIXME FIXME!  Changing passwords logs the user out.
-	  //setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
+      //  Set a new passhash cookie so that the user isn't logged out
+      setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
+      
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
       echo "<p><a href=\"?\">{$modify_text['backtoindex']}</a></p></div>";
 
@@ -1048,6 +1049,11 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
             $new_pass = $_POST['adminchangepass'];
             $new_pass_hash = crypt("$new_pass", '4t6dcHiefIkeYcn48B');
             $update_pass = $fs->dbQuery("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_POST['user_id']));
+
+            // If the admin is changing their OWN password, better update their cookie hash
+            if ($_COOKIE['flyspray_userid'] == $_POST['user_id']) {
+              setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
+            };
           } else {
             echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passnomatch']}</em></p>";
             echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";

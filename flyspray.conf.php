@@ -6,10 +6,11 @@
 ; a web browser, and editing header.php to point to wherever you put this file.
 
 [general]
-basedir = "/var/www/flyspray/"  ; Location of your Flyspray installation
-cookiesalt = "4t"               ; Randomisation value for cookie encoding
+basedir = "/var/www/flyspray/"                ; Location of your Flyspray installation
+cookiesalt = "4t"                             ; Randomisation value for cookie encoding
 adodbpath = "/usr/share/adodb/adodb.inc.php"  ; Path to the main ADODB include file
-jpgraphpath = "/usr/share/jpgraph"  ; Path to the main JPGraph DIRECTORY
+jpgraphpath = "/usr/share/jpgraph"            ; Path to the main JPGraph DIRECTORY
+output_buffering = "on"                     ; Available options: "off", "on" and "gzip"
 
 [database]
 dbtype = "mysql"                 ; Type of database ('mysql' or 'pgsql') 
