@@ -23,14 +23,10 @@ function hidestuff(boxid){
 }
 
 function showhidestuff(boxid) {
-   if (document.getElementById(boxid).style.visibility="hidden")
-   {
-      document.getElementById(boxid).style.visibility="visible";
-      this.value=' - ';
-   } else
-   {
-      document.getElementById(boxid).style.visibility="hidden";
-      this.value=' + ';
+   switch (document.getElementById(boxid).style.visibility) {
+      case '': document.getElementById(boxid).style.visibility="visible"; break
+      case 'hidden': document.getElementById(boxid).style.visibility="visible"; break
+      case 'visible': document.getElementById(boxid).style.visibility="hidden"; break
    }
 }
 

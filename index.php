@@ -127,7 +127,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // When viewing the task list, take down each value that the search form may have passed
    if ($do == 'index')
    $extraurl = '&amp;string=' . $_GET['string'] . '&amp;type=' . $_GET['type'] . '&amp;sev=' . $_GET['sev'] . '&amp;dev=' . $_GET['dev']
-               . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status'] . '&amp;order=' . $_GET['order']
+               . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status']
                . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort'] . '&amp;sort2=' . $_GET['sort2']
                . '&amp;perpage=' . $_GET['perpage'];
 
@@ -394,7 +394,7 @@ if (isset($_SESSION['SUCCESS']))
       // Cycle through the results from whichever query above
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'])
+         if ($project_id == $row['project_id'] && $_GET['project'] != '0')
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];
@@ -450,9 +450,10 @@ require("scripts/$do.php");
 if (isset($_COOKIE['flyspray_userid']))
 {
    echo '<div id="permslink">';
-   echo $language['permissions'];
-   echo '<a href="#" onclick="showstuff(\'permissions\');">' . $language['show'] . '</a>&nbsp;/&nbsp;';
-   echo '<a href="#" onclick="hidestuff(\'permissions\');">' . $language['hide'] . '</a>&nbsp;';
+   echo '<a href="#" onclick="showhidestuff(\'permissions\');">' . $language['permissions'] . '</a>';
+//    echo $language['permissions'];
+//    echo '<a href="#" onclick="showstuff(\'permissions\');">' . $language['show'] . '</a>&nbsp;/&nbsp;';
+//    echo '<a href="#" onclick="hidestuff(\'permissions\');">' . $language['hide'] . '</a>&nbsp;';
    echo '</div>';
 
    echo '<div id="permissions">';

@@ -264,14 +264,11 @@ if (isset($_GET['project']) && $_GET['project'] == '0') {
     $get = "&amp;project={$project_id}";
 }
 
-// for page numbering
-$extraurl = $get . '&amp;tasks=' . $_GET['tasks'] . $extraurl;
-
 // for 'sort by this column' links
-// $get = $extraurl . "&amp;pagenum=$pagenum";
-// $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
-// $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
-$get = $extraurl;
+$get = $get . '&amp;tasks=' . $_GET['tasks'] . $extraurl;
+
+// for page numbering
+$extraurl = $get . '&amp;order=' . $_GET['order'];
 ?>
 
 <?php
@@ -679,11 +676,11 @@ ORDER BY
 
    // Store the order of the tasks returned for the next/previous links in the task details
    $id_list = array();
-   
+
    while ($task_details = $db->FetchArray($get_details))
    {
       $id_list[] = $task_details['task_id'];
-      
+
       // Set the status text to 'closed' if this task is closed
       if ($task_details['is_closed'] == "1")
       {
@@ -759,7 +756,7 @@ ORDER BY
       // The end of this row
       echo "</tr>\n";
    }
-   
+
    $_SESSION['tasklist'] = $id_list;
    ?>
    <!--</tbody>-->

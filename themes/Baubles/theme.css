@@ -750,7 +750,7 @@ div#permissions {
    left                 : 262px;
    background-color     : #ffffff;
    color                : #000000;
-   width                : auto;
+   width                : 150px;
    height               : 550px;
    overflow             : none;
 }

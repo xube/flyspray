@@ -469,7 +469,7 @@ if ($db->CountRows($task_exists)
         {
             $previous_id = 0;
             $next_id = 0;
-            
+
             $id_list = $_SESSION['tasklist'];
             $n = count($id_list);
 
@@ -494,7 +494,7 @@ if ($db->CountRows($task_exists)
                                              FROM flyspray_tasks
                                             WHERE task_id = ? OR task_id = ?",
                                           array($previous_id, $next_id));
-                                          
+
                 while ($row = $db->FetchRow($get_summary))
                 {
                     $summary[$row['task_id']] = $fs->formatText($row['item_summary']);
@@ -515,7 +515,7 @@ if ($db->CountRows($task_exists)
             }
         }
         ?>
-        
+
          <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
          <h2 class="severity<?php echo $task_details['task_severity'];?>">
          <?php echo 'FS#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
@@ -786,11 +786,11 @@ if ($db->CountRows($task_exists)
            && isset($current_user['user_id']))
          {
          ?>
-               <a href="#close" id="reqclose" class="button" onclick="showstuff('closeform');">
+               <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
                <?php echo $details_text['reopenrequest']; ?>
                </a>
                <div id="closeform">
-                  <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a>
+<!--                   <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a> -->
                   <form name="form3" action="index.php" method="post" id="formclosetask">
                      <input type="hidden" name="do" value="modify" />
                      <input type="hidden" name="action" value="requestreopen" />
@@ -822,12 +822,12 @@ if ($db->CountRows($task_exists)
        && $deps_open != 'yes')
    {
    ?>
-      <a href="#close" id="closetask" class="button" onclick="showstuff('closeform');">
+      <a href="#close" id="closetask" class="button" onclick="showhidestuff('closeform');">
       <?php
       echo $details_text['closetask'];
       ?></a>
       <div id="closeform">
-         <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a>
+<!--          <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a> -->
          <form name="form2" action="index.php" method="post" id="formclosetask">
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="close" />
@@ -869,11 +869,11 @@ if ($db->CountRows($task_exists)
        && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1')
    {
    ?>
-      <a href="#close" id="reqclose" class="button" onclick="showstuff('closeform');">
+      <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
       <?php echo $details_text['requestclose']; ?>
       </a>
       <div id="closeform">
-         <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a>
+<!--          <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a> -->
          <form name="form3" action="index.php" method="post" id="formclosetask">
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="requestclose" />

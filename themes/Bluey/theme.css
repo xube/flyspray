@@ -724,7 +724,7 @@ div#actionbuttons {
    padding                 : 5px;
 }
 
-div#actionbuttons a.button {
+div#actionbuttons a {
    background-image        : url(button.png);
    background-repeat       : repeat-x;
    color                   : #ffffff;
@@ -909,7 +909,7 @@ div#permissions {
    right                   : 5px;
    padding                 : 5px;
    margin-top              : none;
-   width                   : auto;
+   width                   : 150px;
    height                  : 550px;
    overflow                : auto;
    z-index                 : 5;
