@@ -148,5 +148,10 @@ $modify_text = array (
 'dependaddfailed'       =>        'You can\'t add that task as a dependency at this time',
 'depremoved'            =>        'Task dependency has been removed',
 'newdepis'              =>        'The new dependency is',
+'lostpwlinksent'        =>        'A message has been sent to your notification address.  It contains a link that will take you to a page to change your password.',
+'changefspass'          =>        'Change Flyspray password',
+'magicurlmessage'       =>        'Please follow the link below to change your Flyspray password:',
+'erroronform'           =>        'There was an problem with your form submission',
+
 );
 ?>

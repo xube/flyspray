@@ -370,14 +370,6 @@ if ($flyspray_prefs['anon_open'] == '1' && !$_COOKIE['flyspray_userid']) {
   echo "<p class=\"unregistered\"><a href=\"?do=newtask&amp;project=$project_id\">{$language['opentaskanon']}</a></p>";
 };
 
-// If we want to use confirmation codes in the signup form
-if (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '1' && $flyspray_prefs['anon_open'] > '0' ) {
-  echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a></p>";
-// ...and if we don't care about it
-} elseif (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] != '1' && $flyspray_prefs['anon_open'] > '0') {
-  echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a></p>";
-};
-
 // Check that this page isn't being submitted twice
 if (requestDuplicated()) {
   printf('<meta http-equiv="refresh" content="2; URL=?id=%s">', $project_id);

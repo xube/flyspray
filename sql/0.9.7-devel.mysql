@@ -125,3 +125,5 @@ CREATE TABLE `flyspray_dependencies` (
 ####################################
 ## The Psi database is up to here ##
 ####################################
+
+ALTER TABLE `flyspray_users` ADD `magic_url` VARCHAR( 40 ) NOT NULL ;

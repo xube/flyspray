@@ -1,5 +1,6 @@
 <?php get_language_pack($lang, 'loginbox'); ?>
 
+
 <map id="loginboxform" name="loginboxform">
 <form action="scripts/authenticate.php" method="post">
 <table class="login">
@@ -22,6 +23,36 @@
     <input class="adminbutton" type="submit" value="<?php echo $loginbox_text['login'];?>" />
     </td>
   </tr>
+
+  </form>
+  <br />
+
+  <tr>
+    <td colspan="4" style="text-align: center;">
+    <?php
+    // If we want to use confirmation codes in the signup form
+    if (!$_COOKIE['flyspray_userid']
+        && $flyspray_prefs['spam_proof'] == '1'
+        && $flyspray_prefs['anon_open'] > '0' ) {
+    	
+      echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
+
+    // ...and if we don't care about them
+    } elseif (!$_COOKIE['flyspray_userid']
+              && $flyspray_prefs['spam_proof'] != '1'
+              && $flyspray_prefs['anon_open'] > '0') {
+    
+     	
+      echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
+
+
+    };
+    
+
+    echo '<a href="?do=admin&amp;area=lostpw">' . $loginbox_text['lostpassword'] . '</a></p>';
+    ?>
+    </td>
+  </tr>
 </table>
-</form>
+
 </map>

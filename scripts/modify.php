@@ -1912,6 +1912,100 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 
 // End of removing a dependency
 
+
+//////////////////////////////////////////////////
+// Start of a user requesting a password change //
+//////////////////////////////////////////////////
+
+} elseif ($_POST['action'] == 'sendmagic') {
+  
+  // Check that the username exists
+  $check_details = $fs->dbQuery("SELECT * FROM flyspray_users
+                                 WHERE user_name = ?",
+                                 array($_POST['user_name']));
+
+  // If the username doesn't exist, throw an error
+  if (!$fs->dbCountRows($check_details)) {
+    // Error message goes here
+  
+  // ...otherwise get on with it
+  } else {
+    $user_details = $fs->dbFetchArray($check_details);
+  
+    // Generate a looonnnnggg random string to send as an URL
+    $magic_url = md5(microtime());
+  
+    // Insert the random "magic url" into the user's profile
+    $update = $fs->dbQuery("UPDATE flyspray_users
+                            SET magic_url = ?
+                            WHERE user_id = ?",
+                            array($magic_url, $user_details['user_id'])
+                          );
+  
+    // Create notification message
+    $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
+{$modify_text['magicurlmessage']} \n
+{$flyspray_prefs['base_url']}index.php?do=admin&amp;area=lostpw&amp;magic=$magic_url\n";
+    // End of generating a message
+
+    // Send the brief notification message
+    $result = $fs->SendBasicNotification($user_details['user_id'], $modify_text['changefspass'], $message);
+    echo $result;  
+
+    // Let the user know what just happened
+    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['lostpwlinksent']}</em></p></div>";
+
+  // End of checking if the username exists
+  };
+
+// End of a user requesting a password change
+
+
+////////////////////////////////
+// Change the user's password //
+////////////////////////////////
+
+} elseif ($_POST['action'] == 'chpass') {
+
+  // Check that the user submitted both the fields, and they are the same
+  if ($_POST['pass1'] != ''
+      && $_POST['pass2'] != ''
+      && $_POST['magic_url'] != ''
+      && $_POST['pass2'] == $_POST['pass2']) {
+  
+  // Get the user's details from the magic url
+  $user_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_users
+                                                  WHERE magic_url = ?",
+                                                  array($_POST['magic_url'])
+                                                )
+                                    );
+    
+  // Encrypt the new password
+  $new_pass_hash = crypt($_POST['pass1'], '4t6dcHiefIkeYcn48B');
+  
+  // Change the password and clear the magic_url field
+  $update = $fs->dbQuery("UPDATE flyspray_users SET
+                          user_pass = ?,
+                          magic_url = ''
+                          WHERE magic_url = ?",
+                          array($new_pass_hash, $_POST['magic_url'])
+                        );
+    
+  // Let the user know what just happened
+    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
+    echo "<p>{$modify_text['loginbelow']}</p></div>";
+    
+  // If the fields were submitted incorrectly, show an error  
+  } else {
+
+    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['erroronform']}</em></p>";
+    echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+
+  // End of checking fields were submitted correctly	
+  };
+
+// End of changing the user's password
+
 /////////////////////
 // End of actions! //
 /////////////////////

@@ -8,7 +8,11 @@ $loginbox_text = array (
 'login'					=>	'Login!',
 
 // Added in 0.9.6
-'rememberme'				=>	'Remember me', 
+'rememberme'				=>	'Remember me',
+
+
+// Added in 0.9.7
+'lostpassword'				=>	'Lost password?',
 
 
 );

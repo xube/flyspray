@@ -52,6 +52,12 @@ if ($_GET['action'] == "logout") {
     setcookie('flyspray_userid', $auth_details['user_id'], $cookie_time, "/");
     setcookie('flyspray_passhash', crypt("{$auth_details['user_pass']}", "$cookiesalt"), $cookie_time, "/");
     
+    $remove_magic = $fs->dbQuery("UPDATE flyspray_users SET
+                                  magic_url = ''
+                                  WHERE user_id = ?",
+                                  array($auth_details['user_id'])
+                                );
+    
   } else {
     $message = $authenticate_text['loginfailed'];
   };
