@@ -489,12 +489,12 @@ SELECT
         t.*,
         p.project_title,
         p.project_is_active,
-        lt.tasktype_name AS 'task_type',
-        lc.category_name AS 'product_category',
-        lv.version_name AS 'product_version',
-        lvc.version_name AS 'closedby_version',
-        u.real_name AS 'assigned_to',
-        uo.real_name AS 'opened_by'
+        lt.tasktype_name AS task_type,
+        lc.category_name AS product_category,
+        lv.version_name AS product_version,
+        lvc.version_name AS closedby_version,
+        u.real_name AS assigned_to,
+        uo.real_name AS opened_by
 FROM 
         $from
 WHERE
