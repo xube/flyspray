@@ -111,10 +111,10 @@ $modify_text = array (
 
 'relatedremoved'    =>        'Powiązane zgłoszenie usunięto z listy.',
 
-'notifyadded'       =>        'Użytkownika został dodany do listy powiadomień.',
+'notifyadded'       =>        'Użytkownik został dodany do listy powiadomień.',
 'notifyerror'       =>        'Użytkownik jest już na liście powiadomień tego zgłoszenia.',
 
-'notifyremoved'     =>        'Użytkownika został usunięty z listy powiadomień.',
+'notifyremoved'     =>        'Użytkownik został usunięty z listy powiadomień.',
 
 'editcommentsaved'  =>        'Zmieniony komentarz zachowano.',
 'commentdeleted'    =>        'Komentarz został usunięty.',
