@@ -740,22 +740,25 @@ if ($permissions['is_admin'] == '1')
    </form>
    <hr />
    <form action="index.php" method="post">
-   <table class="list">
-      <tr>
-         <td>
-         <input type="hidden" name="do" value="modify" />
-         <input type="hidden" name="action" value="add_to_list" />
-         <input type="hidden" name="list_type" value="tasktype" />
-         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-         <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" /></td>
-         <td><label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-         <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" /></td>
-         <td><label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" /></td>
-         <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
-      </tr>
-   </table>
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="add_to_list" />
+      <input type="hidden" name="list_type" value="tasktype" />
+      <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
+      <table class="list">
+         <tr>
+            <td>
+            <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+            <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" /></td>
+            <td><label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+            <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" /></td>
+            <td><label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+            <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" /></td>
+            <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
+         </tr>
+      </table>
    </form>
+
    </fieldset>
 
 <?
@@ -825,27 +828,31 @@ if ($permissions['is_admin'] == '1')
     </form>
     <hr />
     <form action="index.php" method="post">
-    <table class="list">
-      <tr>
-        <td>
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="add_to_list" />
-          <input type="hidden" name="list_type" value="resolution" />
-          <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-          <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
-        </td>
-        <td>
-          <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
-        </td>
-        <td>
-          <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
-        </td>
-        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
-      </tr>
-    </table>
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="add_to_list" />
+      <input type="hidden" name="list_type" value="resolution" />
+      <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
+      <table class="list">
+         <tr>
+           <td>
+             <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+             <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
+           </td>
+           <td>
+             <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+             <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
+           </td>
+           <td>
+             <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+             <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
+           </td>
+           <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
+         </tr>
+       </table>
+
     </form>
+
 </fieldset>
 
 <?
@@ -981,58 +988,60 @@ if ($permissions['is_admin'] == '1')
         <input type="hidden" name="action" value="add_category" />
         <input type="hidden" name="project_id" value="0" />
         <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-    <table class="list">
-     <tr>
-      <td>
-        <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-        <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name" />
-      </td>
-      <td title="<?php echo $admin_text['listordertip'];?>">
-        <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
-      </td>
-      <td title="<?php echo $admin_text['listshowtip'];?>">
-        <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
-      </td>
-      <td title="<?php echo $admin_text['categoryownertip'];?>" colspan="2">
-        <label for="categoryownernew" ><?php echo $admin_text['owner'];?></label>
-        <select id="categoryownernew" name="category_owner">
-          <option value=""><?php echo $admin_text['selectowner'];?></option>
-          <?php
-          $fs->listUsers($novar, 0);
-          ?>
-        </select>
-      </td>
-      <td colspan="2" title="<?php echo $admin_text['categoryparenttip'];?>">
-      <label for="categoryparentnew"><?php echo $admin_text['subcategoryof'];?></label>
-      <select name="parent_id">
-        <option value=""><?php echo $admin_text['notsubcategory'];?></option>
-        <?php
-        $cat_list = $db->Query('SELECT category_id, category_name
+
+      <table class="list">
+         <tr>
+            <td>
+            <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+            <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name" />
+            </td>
+            <td title="<?php echo $admin_text['listordertip'];?>">
+           <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+           <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
+         </td>
+         <td title="<?php echo $admin_text['listshowtip'];?>">
+         <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
+         </td>
+         <td title="<?php echo $admin_text['categoryownertip'];?>" colspan="2">
+         <label for="categoryownernew" ><?php echo $admin_text['owner'];?></label>
+         <select id="categoryownernew" name="category_owner">
+            <option value=""><?php echo $admin_text['selectowner'];?></option>
+            <?php
+            $fs->listUsers($novar, 0);
+            ?>
+         </select>
+         </td>
+         <td colspan="2" title="<?php echo $admin_text['categoryparenttip'];?>">
+         <label for="categoryparentnew"><?php echo $admin_text['subcategoryof'];?></label>
+         <select name="parent_id">
+            <option value=""><?php echo $admin_text['notsubcategory'];?></option>
+            <?php
+            $cat_list = $db->Query('SELECT category_id, category_name
                                     FROM flyspray_list_category
                                     WHERE project_id= 0 AND show_in_list= 1 AND parent_id < 1
                                     ORDER BY list_position');
 
-         while ($row = $db->FetchArray($cat_list))
-         {
-            $category_name = stripslashes($row['category_name']);
-            if (isset($_GET['cat']) && $_GET['cat'] == $row['category_id'])
+            while ($row = $db->FetchArray($cat_list))
             {
-               echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
-            } else
-            {
-               echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+               $category_name = stripslashes($row['category_name']);
+               if (isset($_GET['cat']) && $_GET['cat'] == $row['category_id'])
+               {
+                  echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
+               } else
+               {
+                  echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+               }
             }
-         }
-        ?>
-      </select>
-      </td>
-      <td class="buttons"><br /><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
-    </tr>
-  </table>
-    </form>
-  </div>
+            ?>
+         </select>
+         </td>
+         <td class="buttons"><br /><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
+      </tr>
+   </table>
+
+   </form>
+</div>
 
 </fieldset>
 

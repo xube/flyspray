@@ -39,7 +39,7 @@ class Backend {
                        );
 
             // Log this event to the task history
-            $fs->logEvent($task_id, 9, $row['user_id']);
+            $fs->logEvent($task_id, 9, $user_id);
          }
 
       // End of cycling through the tasks
@@ -70,7 +70,7 @@ class Backend {
                     );
 
          // Log this event to the task history
-         $fs->logEvent($task_id, 10, $row['user_id']);
+         $fs->logEvent($task_id, 10, $user_id);
 
       // End of cycling through the tasks
       }
@@ -98,13 +98,14 @@ class Backend {
          // Get the user's permissions for the project this task belongs to
          $perms = $fs->checkPermissions($user_id, $task_details['attached_to_project']);
 
-         // Check permissions to view this task
+         // Check permissions first
          if ($task_details['project_is_active'] == '1'
            && ($task_details['others_view'] == '1' OR $perms['view_tasks'] == '1')
            && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $user_id)
              OR $perms['manage_project'] == '1' OR $task_details['mark_private'] != '1')
-           && (($perms['assigned_to_self'] == '1' && empty($task_details['assigned_to']))
-             OR $perms['assign_others_to_self'] == '1') )
+           && (($perms['assign_to_self'] == '1' && empty($task_details['assigned_to']))
+             OR $perms['assign_others_to_self'] == '1')
+           && $task_details['assigned_to'] != $user_id )
          {
             // Make the change in assignment
             $db->Query("UPDATE flyspray_tasks

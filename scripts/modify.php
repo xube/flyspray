@@ -1416,28 +1416,28 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    && $permissions['manage_project'] == '1')
 {
 
-   if ($_POST['list_name'] != ''
-    && $_POST['list_position'] != '')
+   if (!empty($_POST['list_name'])
+    && !empty($_POST['list_position']) )
    {
       // If the user is requesting a project-level addition
       if (!empty($_POST['project_id']))
       {
-         $update = $db->Query("INSERT INTO $list_table_name
-                              (project_id, $list_column_name, list_position, show_in_list)
-                              VALUES (?, ?, ?, ?)",
-                              array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1'));
+         $db->Query("INSERT INTO $list_table_name
+                     (project_id, $list_column_name, list_position, show_in_list)
+                     VALUES (?, ?, ?, ?)",
+                     array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1'));
 
          // Redirect
          $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
          $fs->redirect($_POST['prev_page']);
 
-      // If the user is requesting a global list update
+      // If the user is requesting a global list addition
       } else
       {
-         $update = $db->Query("INSERT INTO $list_table_name
-                               ($list_column_name, list_position, show_in_list, project_id)
-                               VALUES (?, ?, ?, ?)",
-                               array($_POST['list_name'], $_POST['list_position'], '1', '1'));
+         $db->Query("INSERT INTO $list_table_name
+                    ($list_column_name, list_position, show_in_list, project_id)
+                    VALUES (?, ?, ?, ?)",
+                    array($_POST['list_name'], $_POST['list_position'], '1', '0'));
 
          // Redirect
          $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
@@ -2341,7 +2341,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    }
 
    $_SESSION['SUCCESS'] = $modify_text['massopsuccess'];
-   $fs->redirect("index.php");
+   $fs->redirect($_POST['prev_page']);
 
 
 //////////////////////////////////////////////////
@@ -2361,7 +2361,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    }
 
    $_SESSION['SUCCESS'] = $modify_text['massopsuccess'];
-   $fs->redirect("index.php");
+   $fs->redirect($_POST['prev_page']);
 
 
 ////////////////////////////////////
@@ -2381,7 +2381,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    }
 
    $_SESSION['SUCCESS'] = $modify_text['massopsuccess'];
-   $fs->redirect("index.php");
+   $fs->redirect($_POST['prev_page']);
 
 
 /////////////////////

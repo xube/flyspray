@@ -16,6 +16,10 @@ $fs->get_language_pack($lang, 'details');
 $orderby = array();
 $dev = null;
 
+// This generates an URL so that the action script takes us back to the previous page
+$this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
+$this_page = str_replace('&', '&amp;', $this_page);
+
 if (isset($_GET['order']) && !empty($_GET['order']))
 {
    $orderby[] = $_GET['order'];
@@ -584,6 +588,7 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
 <!-- This form for mass operations on tasks currently displayed -->
 <form action="index.php" name="massops" method="post">
    <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
 
    <!--  Summary headings, followed by the query results -->
    <table>
@@ -591,6 +596,7 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
       <tr>
 
       <?php
+      // Spacer for the checkboxes beneath it
       if (isset($_COOKIE['flyspray_userid']))
          echo '<td></td>';
 
@@ -739,6 +745,7 @@ ORDER BY
       // Start displaying the cells for this row
       echo "<tr class=\"severity{$task_details['task_severity']}\">\n";
 
+      // Checkbox for mass operations
       if (isset($_COOKIE['flyspray_userid']))
          echo "<td width=\"10\"><input type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
 
