@@ -63,8 +63,8 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
     $get_task_info = $fs->dbFetchArray($fs->dbQuery("SELECT task_id, item_summary FROM flyspray_tasks
                                                 WHERE item_summary = ?
                                                 AND detailed_desc = ?
-                                                ORDER BY task_id DESC LIMIT 1
-                                ", array($item_summary, $detailed_desc)));
+                                                ORDER BY task_id DESC",
+                                                array($item_summary, $detailed_desc), 1));
     //$task_id = $get_task_info['task_id'];
 
     // If the reporter wanted to be added to the notification list
@@ -566,7 +566,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
       $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
       
-      $row = $fs->dbFetchRow($fs->dbQuery("SELECT comment_id FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id DESC LIMIT 1", array($_POST['task_id'])));        
+      $row = $fs->dbFetchRow($fs->dbQuery("SELECT comment_id FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));        
       $fs->logEvent($_POST['task_id'], 4, $row['comment_id']);
 
   // If they pressed submit without actually typing anything
@@ -855,14 +855,14 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                               'id tasktype severity summary status dueversion progress',
                               ));
 
-    $newproject = $fs->dbFetchArray($fs->dbQuery("SELECT project_id FROM flyspray_projects ORDER BY project_id DESC limit 1"));
+    $newproject = $fs->dbFetchArray($fs->dbQuery("SELECT project_id FROM flyspray_projects ORDER BY project_id DESC", false, 1));
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_list_category
                              (project_id, category_name, list_position,
                              show_in_list, category_owner)
                              VALUES ( ?, ?, ?, ?, ?)",
-                        array($newproject['project_id'],
-                           'Backend / Core', '1', '1', '0'));
+                             array($newproject['project_id'],
+                            'Backend / Core', '1', '1', '0'));
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_list_os
                              (project_id, os_name, list_position,
@@ -1009,7 +1009,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
         $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
         echo $result;
         
-        $row = $fs->dbFetchRow($fs->dbQuery("SELECT attachment_id FROM flyspray_attachments WHERE task_id = ? ORDER BY attachment_id DESC LIMIT 1", array($_POST['task_id'])));        
+        $row = $fs->dbFetchRow($fs->dbQuery("SELECT attachment_id FROM flyspray_attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
         $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
 
       // Success message!

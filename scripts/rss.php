@@ -24,26 +24,26 @@ if ($_REQUEST['type'] == 'new') {
 
   $task_details = $fs->dbQuery("SELECT task_id, item_summary, detailed_desc
                                  FROM flyspray_tasks
-                                 WHERE is_closed != '1' ORDER BY date_opened DESC LIMIT $limit");
+                                 WHERE is_closed != '1' ORDER BY date_opened DESC", false, $limit);
 
 } elseif ($_REQUEST['type'] == 'clo') {
 
   $task_details = $fs->dbQuery("SELECT task_id, item_summary, detailed_desc
                                  FROM flyspray_tasks
-                                 WHERE is_closed = '1' ORDER BY date_closed DESC LIMIT $limit");
+                                 WHERE is_closed = '1' ORDER BY date_closed DESC", false, $limit);
   
 } elseif ($_REQUEST['type'] == 'sev') {
 
   $task_details = $fs->dbQuery("SELECT task_id, item_summary, detailed_desc
                                  FROM flyspray_tasks
-                                 WHERE is_closed != '1' ORDER BY task_severity DESC LIMIT $limit");
+                                 WHERE is_closed != '1' ORDER BY task_severity DESC", false, $limit);
 
 
 } elseif ($_REQUEST['type'] == 'pri') {
 
   $task_details = $fs->dbQuery("SELECT task_id, item_summary, detailed_desc
                                  FROM flyspray_tasks
-                                 WHERE is_closed != '1' ORDER BY task_priority DESC LIMIT $limit");
+                                 WHERE is_closed != '1' ORDER BY task_priority DESC", false, $limit);
 
 } elseif ($_REQUEST['type'] == 'due') {
 

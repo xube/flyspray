@@ -597,7 +597,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
 </form>
 
 <p id="newprojectlink">
-<a href="<?php echo $flyspray_prefs['base_url'];?>?do=newproject"><?php echo $admin_text['createproject'];?></a>
+<a href="?do=newproject"><?php echo $admin_text['createproject'];?></a>
 </p>
 
 <?php if ($_GET['id']) {
