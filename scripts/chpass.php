@@ -1,6 +1,7 @@
 <?php
 get_language_pack($lang, 'chpass');
 
+// If the user is logged in
 if ($_SESSION['userid']) {
 
   $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
@@ -41,9 +42,11 @@ if ($_SESSION['userid']) {
 
 <?php
 } else {
+  // If the user somehow spoofed their username/password cookies, dump them
   echo $chpass_text['nopermission'];
 };
 
 } else {
+  // If the user isn't logged in, dump them
   echo $chpass_text['nopermission'];
 };

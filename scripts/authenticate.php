@@ -26,7 +26,7 @@ if ($_GET['action'] == "logout") {
   $auth_details = $fs->dbFetchArray($result);
 
   // Encrypt the password, and compare it to the one in the database
-  if (crypt($password, $cookiesalt) == $auth_details['user_pass']
+  if (crypt($password, '4t6dcHiefIkeYcn48B') == $auth_details['user_pass']
     && $auth_details['account_enabled'] == "1"
     && $auth_details['group_open'] == '1')
   {

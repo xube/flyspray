@@ -127,5 +127,6 @@ $modify_text = array (
 
 'reminderadded'     =>   'Your reminder has been added.',
 'reminderdeleted'   =>   'The selected reminder has been deleted.',
+'nodupes'			=>   'That task is already in the database.  There is no need to put it in again.',
 );
 ?>

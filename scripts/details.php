@@ -551,7 +551,7 @@ if ($area == 'comments') { ?>
 
     ?>
      <div class="tabentry">
-      <em><?php echo "{$details_text['commentby']} $user_name - $formatted_date";?></em>
+      <em><?php echo "{$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
       <?php
         // If the user is an admin, show the edit button
         if ($_SESSION['admin'] == '1') { ?>
@@ -632,7 +632,7 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['item_status'] != '8')
 
     ?>
     <div class="tabentry">
-    <em><?php echo "{$details_text['fileuploadedby']} $user_name - $formatted_date";?></em>
+    <em><?php echo "{$details_text['fileuploadedby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a> - $formatted_date";?></em>
 
 <?php
 //  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
@@ -820,7 +820,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
         <?php
 
         };
-                echo "<p>{$subrow['real_name']} ({$subrow['user_name']})</p>";
+                echo "<p><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$subrow['real_name']} ({$subrow['user_name']})</a></p>";
       echo "</div>";
       };
     };
@@ -916,7 +916,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
         <?php
         }
 		echo "<div class=\"tabentry\">";
-        echo "<em>{$details_text['remindthisuser']}:</em> {$subrow['real_name']} ( {$subrow['user_name']})<br>";
+        echo "<em>{$details_text['remindthisuser']}:</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['to_user_id']}\">{$subrow['real_name']} ( {$subrow['user_name']})</a><br>";
 		
 		// Work out the unit of time to display
 		if ($row['how_often'] < 86400) {

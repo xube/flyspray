@@ -12,15 +12,24 @@ $list_column_name = addslashes($_POST['list_type'])."_name";
 $list_id = addslashes($_POST['list_type'])."_id";
 
 // Find out the current user's name
-if (!empty($_COOKIE['flyspray_userid'])) {
-  $get_current_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
-  list($current_username, $current_realname) = $fs->dbFetchArray($get_current_username);
-}
+$get_current_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
+list($current_username, $current_realname) = $fs->dbFetchArray($get_current_username);
 
 $now = date(U);
 
 // Adding a new task
 if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1")) {
+
+  // Check to see if this task has previously been entered, 
+  // and the silly user didn't just press backspace and make a DUPE
+  // I realise that this is yet another expensive query, 
+  // but it's the best way I've though of so far...
+  $check_for_dupes = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE item_summary = ? AND detailed_desc = ?", array($_POST['item_summary'], $_POST['detailed_desc']));
+  // If there was a result from our dupe check, STOP.
+  if($fs->dbCountRows($check_for_dupes) > 0) {
+	  die($modify_text['nodupes']);
+  };
+  
 
   // If they entered something in both the summary and detailed description
   if ($_POST['item_summary'] != ''
@@ -34,8 +43,7 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
         'assigned_to', 'product_category', 'product_version',
         'closedby_version', 'operating_system', 'task_severity');
     $sql_values = array($_POST['project_id'], $now, $item_summary,
-                $detailed_desc, 
-		$fs->emptyToZero($_COOKIE['flyspray_userid']), '0');
+                $detailed_desc, $_COOKIE['flyspray_userid'], '0');
     $sql_params = array();
     foreach ($param_names as $param_name) {
         if (!empty($_POST[$param_name])) {
@@ -440,9 +448,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   $get_pass_hash = $fs->dbQuery("SELECT user_pass FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
   list($db_pass_hash) = $fs->dbFetchArray($get_pass_hash);
   $old_pass = $_POST['old_pass'];
-  $old_pass_hash = crypt("$old_pass", $cookiesalt);
+  $old_pass_hash = crypt("$old_pass", '4t6dcHiefIkeYcn48B');
   $new_pass = $_POST['new_pass'];
-  $new_pass_hash = crypt("$new_pass", $cookiesalt);
+  $new_pass_hash = crypt("$new_pass", '4t6dcHiefIkeYcn48B');
   $confirm_pass = $_POST['confirm_pass'];
 
   // If they didn't fill in all the fields, show an error
@@ -462,7 +470,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
     // If the two new passwords are the same
     if ($new_pass == $confirm_pass) {
       $update_pass = $fs->dbQuery("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
-      //setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
+      
+	  // FIXME FIXME FIXME!  Changing passwords logs the user out.
+	  //setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
       echo "<p><a href=\"?\">{$modify_text['backtoindex']}</a></p></div>";
 
@@ -482,6 +492,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   if ($_POST['user_pass'] != ''
     && $_POST['user_pass2'] != ''
     ) {
+
       // If the passwords matched
       if (($_POST['user_pass'] == $_POST['user_pass2']) && $_POST['user_pass'] != '') {
         //echo "reg_ref = {$_SESSION['reg_ref']}<br>";
@@ -492,7 +503,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
         //echo "posted = {$_POST['confirmation_code']}<br>";
         if ($code_details['confirm_code'] == $_POST['confirmation_code']) {
 
-          $pass_hash = crypt("{$_POST['user_pass']}", $cookiesalt);
+          $pass_hash = crypt("{$_POST['user_pass']}", '4t6dcHiefIkeYcn48B');
 
           $add_user = $fs->dbQuery("INSERT INTO flyspray_users
                                       (user_name, user_pass, real_name,
@@ -545,7 +556,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
       // If the passwords matched, add the user
       if (($_POST['user_pass'] == $_POST['user_pass2']) && $_POST['user_pass'] != '') {
 
-        $pass_hash = crypt("{$_POST['user_pass']}", $cookiesalt);
+        $pass_hash = crypt("{$_POST['user_pass']}", '4t6dcHiefIkeYcn48B');
 
         if ($_SESSION['admin'] == '1') {
           $group_in = $_POST['group_in'];

@@ -4,9 +4,10 @@
 $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'admin');
 
-// fill missing variables
 
-// Editing Users
+////////////////////////////
+// Start of editing users //
+////////////////////////////
 if (($_SESSION['admin'] == "1" OR $_SESSION['userid'] == $_GET['id']) && ($_GET['area'] == "users")) {
 
 // if we want a specific user
@@ -119,6 +120,9 @@ while ($group = $fs->dbFetchArray($get_groups)) {
 // End of users
 };
 
+/////////////////////////////
+// Start of editing groups //
+/////////////////////////////
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "groups") {
 
 $get_group_details = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_GET['id']));
@@ -177,7 +181,9 @@ $group_details = $fs->dbFetchArray($get_group_details);
 <?php
 // End of groups
 
-// Start of task types
+/////////////////////////
+// Start of task types //
+/////////////////////////
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "tasktype") {
 ?>
   <h3><?php echo $admin_text['tasktypelist'];?></h3>
@@ -237,7 +243,10 @@ $group_details = $fs->dbFetchArray($get_group_details);
 <?
 // End of task types
 
-// Start of categories
+/////////////////////////
+// Start of categories //
+/////////////////////////
+
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "category") {
 ?>
 
@@ -319,7 +328,10 @@ $group_details = $fs->dbFetchArray($get_group_details);
 <?
 // End of Resolutions
 
-// Start of versions
+///////////////////////
+// Start of versions //
+///////////////////////
+
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "version") {
 ?>
 
@@ -327,7 +339,10 @@ $group_details = $fs->dbFetchArray($get_group_details);
 <?
 // End of Versions
 
-// Start of application preferences
+//////////////////////////////////////
+// Start of application preferences //
+//////////////////////////////////////
+
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "options") {
 ?>
 <h3><?php echo $admin_text['flysprayprefs'];?></h3>
@@ -530,7 +545,10 @@ $group_details = $fs->dbFetchArray($get_group_details);
 <?php
 // End of application preferences
 
-// Start of project preferences
+//////////////////////////////////
+// Start of project preferences //
+//////////////////////////////////
+
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "projects") {
 ?>
 <form action="index.php" method="get">
@@ -891,7 +909,10 @@ $group_details = $fs->dbFetchArray($get_group_details);
 };
 // End of project preferences
 
-// Start of editing a comment
+////////////////////////////////
+// Start of editing a comment //
+////////////////////////////////
+
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "editcomment") {
 
 // Get the comment details
@@ -924,6 +945,15 @@ $group_details = $fs->dbFetchArray($get_group_details);
 </form>
 
 <?php
-// End of areas
+
+} else {
+	// If all else fails... show an authentication error
+    echo "<br><br>";
+	echo $admin_text['nopermission'];
+    echo "<br><br>";
+
+//////////////////////
+// End of all areas //
+//////////////////////
 };
 ?>
