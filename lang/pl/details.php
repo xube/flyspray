@@ -6,10 +6,8 @@
 // Tomek 'TomasH' Zielinski
 // tomash@fidonet.org.pl, tomash@4net.pl
 // 
-// Uzupełnienie dla wersji 0.9.5:
+// Uzupełnienia od wersji 0.9.5:
 // Konrad Roziewski <konrad#suwalki-com-pl>
-//
-// last update: 22.08.2003
 
 $details_text = array (
 
@@ -66,6 +64,20 @@ $details_text = array (
 
 'attachedtoproject'	=>	'Przydzielony do projektu',
 
+// Added in version 0.9.6
+
+'reminders'         =>   'Przypomnienia',
+'system'            =>   'System',
+'remindthisuser'    =>   'Przypomnij użytkownikowi',
+'thisoften'         =>   'Z częstotliwością',
+'startafter'        =>   'Odczekaj z przypominaniem',
+'hours'             =>   'Godzin',
+'days'              =>   'Dni',
+'weeks'             =>   'Tygodni',
+'addreminder'       =>   'Dodaj przypomnienie',
+'defaultreminder'   =>   "To jest przypomnienie, by zająć się zadaniem
+Flyspray'a: ",
+'message'           =>   'Wiadomość',
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>
