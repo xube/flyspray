@@ -1,5 +1,5 @@
 <?php
-get_language_pack($lang, 'register');
+$fs->get_language_pack($lang, 'register');
 
 // If the application preferences require the use of
 // confirmation codes, use this script

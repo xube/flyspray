@@ -12,9 +12,9 @@
 
 // Import the language strings
 $lang = $flyspray_prefs['lang_code'];
-get_language_pack($lang, 'index');
-get_language_pack($lang, 'admin');
-get_language_pack($lang, 'pm');
+$fs->get_language_pack($lang, 'index');
+$fs->get_language_pack($lang, 'admin');
+$fs->get_language_pack($lang, 'pm');
 
 
 // This generates an URL so that the action script takes us back to the previous page

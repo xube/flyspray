@@ -1,5 +1,5 @@
 <?php
-get_language_pack($lang, 'newuser');
+$fs->get_language_pack($lang, 'newuser');
 
 // Make sure that only admins are using this page, unless
 // The application preferences allow anonymous signups

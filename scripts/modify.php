@@ -3,7 +3,7 @@
    This script performs all database modifications/
 */
 
-get_language_pack($lang, 'modify');
+$fs->get_language_pack($lang, 'modify');
 
 
 // Include the notifications class
@@ -285,10 +285,10 @@ if ($_POST['edit_start_time'] < $old_details['last_edited_time']) {
 
     while (list($key, $val) = each($field)) {
       if ($old_details[$val] != $new_details[$val]) {
-        $message = $message . "** " . $key . " " . stripslashes($new_details[$val]) . "\n";
+        //$message = $message . "** " . $key . " " . stripslashes($new_details[$val]) . "\n";
         $send_me = "YES";
       } else {
-        $message = $message . $key . " " . stripslashes($new_details[$val]) . "\n";
+        //$message = $message . $key . " " . stripslashes($new_details[$val]) . "\n";
       };
     };
 
@@ -302,24 +302,21 @@ if ($_POST['edit_start_time'] < $old_details['last_edited_time']) {
     };
 
 // Complete the modification notification
-$item_summary = stripslashes($_POST['item_summary']);
+/*$item_summary = stripslashes($_POST['item_summary']);
 $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
 {$current_user['real_name']} ({$current_user['user_name']}) {$modify_text['hasjustmodified']} {$modify_text['youonnotify']}
 {$modify_text['changedfields']}\n-----\n"
 . $message .
 "-----\n{$modify_text['moreinfomodify']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}\n\n";
-
-      if ($send_me == "YES") {
-        // Send the detailed notification message
-        $result = $notify->Detailed($_POST['task_id'], $subject, $message);
-        echo $result;
-      };
+*/
+      if ($send_me == "YES")
+         $notify->Create('1', $_POST['task_id']);
 
     // Check to see if the assignment has changed
     // Because we have to send a simple notification or two
     if ($_POST['old_assigned'] != $_POST['assigned_to']) {
-
+/*
       $item_summary = stripslashes($_POST['item_summary']);
 
       // If someone had previously been assigned this item, notify them of the change in assignment
@@ -368,7 +365,7 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
         echo $result;
 
       };
-
+*/
       $fs->logEvent($_POST['task_id'], 14, $_POST['assigned_to'], $_POST['old_assigned']);
 
     };
@@ -564,6 +561,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     ( ?, ?, ?, ? )",
     array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
 
+/*
+
     $getdetails = $db->Query("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id']));
     $task_details = $db->FetchArray($getdetails);
 
@@ -598,6 +597,9 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 
       $result = $notify->Detailed($_POST['task_id'], $subject, $detailed_message);
       echo $result;
+*/
+
+      $notify->Create('6', $_POST['task_id']);
 
       $row = $db->FetchRow($db->Query("SELECT comment_id FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));
       $fs->logEvent($_POST['task_id'], 4, $row['comment_id']);
@@ -699,16 +701,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                       );
 
       } elseif ($_POST['notify_type'] == '2') {
-        $notify->JabberMessage(
-                             $flyspray_prefs['jabber_server'],
-                             $flyspray_prefs['jabber_port'],
-                             $flyspray_prefs['jabber_username'],
-                             $flyspray_prefs['jabber_password'],
-                             $_POST['jabber_id'],
-                             "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}",
-                             $message,
-                             "Flyspray"
-                             );
+         $notify->SendJabber($_POST['jabber_id'], "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}", $message);
 
       };
 

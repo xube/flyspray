@@ -1,58 +1,63 @@
 <?php
 
 /*
-   This script contains all the functions we use often in
-   Flyspray to do various things, like database access etc.
+   ----------------------------------------------------------
+   | This script contains all the functions we use often in |
+   |Flyspray to do various things.                          |
+   ----------------------------------------------------------
 */
-
-
-/** Get translation for specified language and page.  It loads default
-language (en) and then merges with requested one. Thus it makes English
-messages available even if translation is not present.
-*/
-function get_language_pack($lang, $module) {
-    $before = get_defined_vars();
-    require_once("lang/en/$module.php");
-    $after_en = get_defined_vars();
-    $new_var = array_keys(array_diff($after_en, $before));
-    $new_var_name = $new_var[1];
-    $new_var['en'] = $$new_var_name;
-    require_once("lang/$lang/$module.php");
-    $new_var[$lang] = $$new_var_name;
-
-    $$new_var_name = array_merge($new_var['en'], $new_var[$lang]);
-}
-
-/** Test to see if user resubmitted a form.
-  Checks only newtask and addcomment actions.
-  @return   true if user has submitted the same action within less than
-            6 hours, false otherwise
-*/
-function requestDuplicated() {
-  // garbage collection -- clean entries older than 6 hrs
-  $now = time();
-  if (!empty($_SESSION['requests_hash'])) {
-    foreach ($_SESSION['requests_hash'] as $key => $val) {
-      if ($val < $now-6*60*60) {
-        unset($_SESSION['requests_hash'][$key]);
-      }
-    }
-  }
-  $requestarray = array_merge(array_keys($_POST), array_values($_POST));
-  if ($_POST['do']=='modify'
-        and preg_match('/^newtask|addcomment$/',$_POST['action'])) {
-    $currentrequest = md5(join(':', $requestarray));
-    if (!empty($_SESSION['requests_hash'][$currentrequest])) {
-      return true;
-    }
-  }
-  $_SESSION['requests_hash'][$currentrequest] = time();
-  return false;
-}
 
 class Flyspray {
 
+   // Change this for each release.  Don't forget!
    var $version = '0.9.8 (devel)';
+
+   /** Get translation for specified language and page.  It loads default
+      language (en) and then merges with requested one. Thus it makes English
+      messages available even if translation is not present.
+   */
+   function get_language_pack($lang, $module)
+   {
+      $before = get_defined_vars();
+      require_once("lang/en/$module.php");
+      $after_en = get_defined_vars();
+      $new_var = array_keys(array_diff($after_en, $before));
+      $new_var_name = $new_var[1];
+      $new_var['en'] = $$new_var_name;
+      require_once("lang/$lang/$module.php");
+      $new_var[$lang] = $$new_var_name;
+
+      $$new_var_name = array_merge($new_var['en'], $new_var[$lang]);
+   }
+
+   /** Test to see if user resubmitted a form.
+      Checks only newtask and addcomment actions.
+      @return   true if user has submitted the same action within less than
+               6 hours, false otherwise
+   */
+   function requestDuplicated() {
+      // garbage collection -- clean entries older than 6 hrs
+      $now = time();
+      if (!empty($_SESSION['requests_hash'])) {
+         foreach ($_SESSION['requests_hash'] as $key => $val) {
+            if ($val < $now-6*60*60) {
+               unset($_SESSION['requests_hash'][$key]);
+            }
+         }
+      }
+
+      $requestarray = array_merge(array_keys($_POST), array_values($_POST));
+      if ($_POST['do']=='modify'
+        and preg_match('/^newtask|addcomment$/',$_POST['action'])) {
+         $currentrequest = md5(join(':', $requestarray));
+         if (!empty($_SESSION['requests_hash'][$currentrequest])) {
+            return true;
+         }
+      }
+
+      $_SESSION['requests_hash'][$currentrequest] = time();
+      return false;
+   }
 
    function getGlobalPrefs() {
 
@@ -87,12 +92,14 @@ function GetTaskDetails($task_id) {
 
       global $db;
 
-   $flyspray_prefs = $this->GetGlobalPrefs();
-   $lang = $flyspray_prefs['lang_code'];
+      $flyspray_prefs = $this->GetGlobalPrefs();
+      $lang = $flyspray_prefs['lang_code'];
 
         $get_details = $db->Query("SELECT t.*,
                                               p.*,
                                               c.category_name,
+                                              c.category_owner,
+                                              c.parent_id,
                                               o.os_name,
                                               r.resolution_name,
                                               tt.tasktype_name,

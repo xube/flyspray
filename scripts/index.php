@@ -9,7 +9,7 @@
 // First, set a whole bunch of DEFAULT variables if they're not
 // already set. This is a whole convoluted bunch of crap, but it works.
 
-get_language_pack($lang, 'index');
+$fs->get_language_pack($lang, 'index');
 
 $orderby = array();
 

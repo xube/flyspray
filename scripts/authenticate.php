@@ -1,7 +1,7 @@
 <?php
 // This script authenticates the user, and sets up a session.
 
-get_language_pack($lang, 'authenticate');
+$fs->get_language_pack($lang, 'authenticate');
 
 // If logout was requested, log the user out.
 if ($_GET['action'] == "logout") {

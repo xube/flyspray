@@ -7,9 +7,9 @@
 */
 
 
-get_language_pack($lang, 'reports');
-get_language_pack($lang, 'details');
-get_language_pack($lang, 'admin');
+$fs->get_language_pack($lang, 'reports');
+$fs->get_language_pack($lang, 'details');
+$fs->get_language_pack($lang, 'admin');
 
 // Only allow those with permission to view this page
 if ($permissions['view_reports'] == '1')

@@ -1,5 +1,5 @@
 <?php
-get_language_pack($lang, 'newgroup');
+$fs->get_language_pack($lang, 'newgroup');
 
 // Make sure that only admins are using this page
 if (($permissions['admin'] == '1' && $_GET['project'] == '0')

@@ -6,7 +6,7 @@
    attachments, notifications etc.
 */
 
-get_language_pack($lang, 'details');
+$fs->get_language_pack($lang, 'details');
 
 $task_exists = $db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_GET['id']));
 $task_details = $fs->GetTaskDetails($_GET['id']);
@@ -599,7 +599,7 @@ echo '<div id="actionbuttons">';
     echo $task_details['resolution_name'];
     echo '<br />';
 
-    if ($task_details['closure_comment'] != '') {
+    if (!empty($task_details['closure_comment'])) {
      echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
      $closure_comment = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $task_details['closure_comment']);
      echo nl2br(stripslashes($closure_comment));

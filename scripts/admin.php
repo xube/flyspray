@@ -11,9 +11,9 @@
 */
 
 $lang = $flyspray_prefs['lang_code'];
-get_language_pack($lang, 'admin');
-get_language_pack($lang, 'index');
-get_language_pack($lang, 'newproject');
+$fs->get_language_pack($lang, 'admin');
+$fs->get_language_pack($lang, 'index');
+$fs->get_language_pack($lang, 'newproject');
 
 // This generates an URL so that the action script takes us back to the previous page
 $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);

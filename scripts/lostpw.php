@@ -8,7 +8,7 @@
 */
 
 $lang = $flyspray_prefs['lang_code'];
-get_language_pack($lang, 'admin');
+$fs->get_language_pack($lang, 'admin');
 
   // Step One: user requests magic url
   if (!isset($_GET['magic'])

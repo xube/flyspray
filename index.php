@@ -18,7 +18,7 @@ session_start();
 
 // Get the translation for the wrapper page (this page)
 $lang = $flyspray_prefs['lang_code'];
-get_language_pack($lang, 'main');
+$fs->get_language_pack($lang, 'main');
 
 // Set the page to include
 if (isset($_REQUEST['do'])) {
@@ -296,11 +296,11 @@ if (isset($_SESSION['SUCCESS'])) {
       <?php
       $get_projects = $db->Query("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
       while ($row = $db->FetchArray($get_projects)) {
-        if ($project_id == $row['project_id'] && isset($_GET['project']) && $_GET['project'] != '0') {
-          echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
-        } else {
-          echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
-        };
+         if ($project_id == $row['project_id'] && $project_id != '0') {
+            echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
+         } else {
+            echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
+         };
       };
       ?>
       </select>
@@ -337,7 +337,7 @@ if ($project_prefs['anon_open'] == '1' && !$_COOKIE['flyspray_userid']) {
 };
 
 // Check that this page isn't being submitted twice
-if (requestDuplicated()) {
+if ($fs->requestDuplicated()) {
   printf('<meta http-equiv="refresh" content="2; URL=?id=%s">', $project_id);
   printf('<div class="redirectmessage"><p><em>%s</em></p></div>', $language['duplicated']);
   echo '</body></html>';

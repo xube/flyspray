@@ -4,7 +4,7 @@
    This script allows a user to open a new task.
 */
 
-get_language_pack($lang, 'newtask');
+$fs->get_language_pack($lang, 'newtask');
 // Check if the user has the right to open new tasks
 
 if ($permissions['open_new_tasks'] == "1"

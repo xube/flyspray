@@ -1,4 +1,6 @@
-<?php get_language_pack($lang, 'loginbox'); ?>
+<?php
+$fs->get_language_pack($lang, 'loginbox');
+?>
 
 
 <map id="loginboxform" name="loginboxform">
