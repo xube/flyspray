@@ -182,7 +182,12 @@ function GetTaskDetails($task_id) {
                                               r.resolution_name,
                                               tt.tasktype_name,
                                               vr.version_name as reported_version_name,
-                                              vd.version_name as due_in_version_name
+                                              vd.version_name as due_in_version_name,
+                                              uo.real_name as opened_by_name,
+                                              ue.real_name as last_edited__by_name,
+                                              uc.real_name as closed_by_name,
+                                              ua.real_name as assigned_to_name
+
                                               FROM flyspray_tasks t
                                               LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
                                               LEFT JOIN flyspray_list_category c ON t.product_category = c.category_id
@@ -191,6 +196,10 @@ function GetTaskDetails($task_id) {
                                               LEFT JOIN flyspray_list_tasktype tt ON t.task_type = tt.tasktype_id
                                               LEFT JOIN flyspray_list_version vr ON t.product_version = vr.version_id
                                               LEFT JOIN flyspray_list_version vd ON t.closedby_version = vd.version_id
+                                              LEFT JOIN flyspray_users uo ON t.opened_by = uo.user_id
+                                              LEFT JOIN flyspray_users ue ON t.last_edited_by = ue.user_id
+                                              LEFT JOIN flyspray_users uc ON t.closed_by = uc.user_id
+                                              LEFT JOIN flyspray_users ua ON t.assigned_to = ua.user_id
 
                                               WHERE t.task_id = ?
                                               ", array($task_id));
@@ -664,7 +673,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 
   // Define which fields we care about from the groups information
   $field = array(
-        '1'  => 'is_admin',
+                  '1'  => 'is_admin',
                   '2'  => 'manage_project',
                   '3'  => 'view_tasks',
                   '4'  => 'open_new_tasks',
@@ -710,9 +719,9 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 
 
 
-   // Start of formatText function
-   function formatText($text) {
-
+   // This function removes html, slashes and other nasties
+   function formatText($text)
+   {
       $text = htmlspecialchars($text);
       $text = nl2br($text);
 
@@ -731,6 +740,34 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 
    // End of formatText function
    }
+
+   // This function checks if a user provided the right credentials
+   function checkLogin($username, $password)
+   {
+      $result = $this->dbQuery("SELECT uig.*, g.group_open, u.account_enabled, u.user_pass FROM flyspray_users_in_groups uig
+                              LEFT JOIN flyspray_groups g ON uig.group_id = g.group_id
+                              LEFT JOIN flyspray_users u ON uig.user_id = u.user_id
+                              WHERE u.user_name = ? AND g.belongs_to_project = ?
+                              ORDER BY g.group_id ASC",
+                              array($username, '0'));
+
+      $auth_details = $this->dbFetchArray($result);
+
+      // Encrypt the password, and compare it to the one in the database
+      if (crypt($password, '4t6dcHiefIkeYcn48B') == $auth_details['user_pass']
+         && $auth_details['account_enabled'] == '1'
+         && $auth_details['group_open'] == '1')
+      {
+         return $auth_details['user_id'];
+
+      } else
+      {
+         return false;
+      }
+
+   // End of checkLogin function
+   }
+
 
 ///////////////////////////
 // End of Flyspray class //

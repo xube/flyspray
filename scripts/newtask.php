@@ -11,7 +11,7 @@ if ($permissions['open_new_tasks'] == "1"
     OR $project_prefs['anon_open'] == "1") {
 ?>
 
-<h3><?php echo $newtask_text['createnewtask'] ." '".stripslashes($project_prefs['project_title'])."'.";?></h3>
+<h3><?php echo htmlspecialchars(stripslashes($project_prefs['project_title'])) . ':: ' . $newtask_text['newtask'];?></h3>
 
 <div id="taskdetails">
 
@@ -23,7 +23,7 @@ if ($permissions['open_new_tasks'] == "1"
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="newtask" />
       <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
-      
+
       <label for="itemsummary"><?php echo $newtask_text['summary'];?></label>
     </td>
     <td>
@@ -50,7 +50,7 @@ if ($permissions['open_new_tasks'] == "1"
         </select>
    </td>
   </tr>
- 
+
   <tr>
     <td><label for="productcategory"><?php echo $newtask_text['category'];?></label></td>
     <td>
@@ -78,7 +78,7 @@ if ($permissions['open_new_tasks'] == "1"
        };
        ?></select>
     </td>
-    
+
     <tr>
      <td><label for="itemstatus"><?php echo $newtask_text['status'];?></label></td>
      <td>
@@ -97,7 +97,7 @@ if ($permissions['open_new_tasks'] == "1"
         </select>
      </td>
    </tr>
-   
+
    <tr>
      <td>
       <?php
@@ -117,7 +117,7 @@ if ($permissions['open_new_tasks'] == "1"
         $fs->ListUsers($novar, $project_id);
         ?>
         </select>
-     </td>   
+     </td>
    </tr>
    <tr>
      <td><label for="operatingsystem"><?php echo $newtask_text['operatingsystem'];?></label></td>
@@ -125,7 +125,7 @@ if ($permissions['open_new_tasks'] == "1"
         <?php
         // Get list of operating systems
         $get_os = $fs->dbQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = ? ORDER BY list_position",
-				array($project_id, '1'));
+                                array($project_id, '1'));
         while ($row = $fs->dbFetchArray($get_os)) {
           echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
         };
@@ -133,8 +133,8 @@ if ($permissions['open_new_tasks'] == "1"
         </select>
      </td>
    </tr>
- </table>   
-  
+ </table>
+
 </div>
 
 
@@ -184,7 +184,7 @@ if ($permissions['open_new_tasks'] == "1"
         <?php
         // Get list of versions
         $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
-				    array($project_id, '1', '2'));
+                                    array($project_id, '1', '2'));
         while ($row = $fs->dbFetchArray($get_version)) {
           echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
         };
@@ -199,7 +199,7 @@ if ($permissions['open_new_tasks'] == "1"
         echo "<option value=\"\">{$newtask_text['undecided']}</option>\n";
 
         $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
-				    array($project_id, '1', '3'));
+                                    array($project_id, '1', '3'));
         while ($row = $fs->dbFetchArray($get_version)) {
           echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
         };
@@ -208,7 +208,7 @@ if ($permissions['open_new_tasks'] == "1"
      </td>
    </tr>
  </table>
-     
+
 
 </div>
 

@@ -288,12 +288,10 @@ if ($permissions['is_admin'] == '1')
    } elseif (isset($_GET['area']) && $_GET['area'] == "users" && isset($_GET['id']))
    {
 
-         echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['edituser'] . '</h3>';
-
          $get_user_details = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_GET['id']));
          $user_details = $fs->dbFetchArray($get_user_details);
 
-         echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_details['user_name']})</h3>";
+         echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['edituser'] . ': ' . $user_details['user_name'] . '</h3>';
          ?>
          <form action="index.php" method="post">
          <table class="admin">
@@ -411,7 +409,7 @@ if ($permissions['is_admin'] == '1')
             echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | \n";
          };
 
-            echo "<a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>\n\n";
+            echo "<a href=\"index.php?do=newgroup&amp;project=0\">{$admin_text['newgroup']}</a></p>\n\n";
 
             // We have to make sure that a user isn't displayed in the user list at the bottom of the page
             // if they're in a group from another project... so we set up an array...

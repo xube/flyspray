@@ -204,7 +204,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
    if ($permissions['manage_project'] == '1')
    {
       echo '<small> | </small>';
-      echo '<a id="projectslink" href="?do=pm&amp;area=prefs&ampproject=' . $project_id . '">' . $language['manageproject'] . "</a>\n";
+      echo '<a id="projectslink" href="?do=pm&amp;area=prefs&amp;project=' . $project_id . '">' . $language['manageproject'] . "</a>\n";
    }
 
    // Display Logout link
