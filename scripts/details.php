@@ -11,8 +11,6 @@ $item_summary = htmlentities($task_details['item_summary']);
 $item_summary = stripslashes($item_summary);
 
 $detailed_desc = htmlentities($task_details['detailed_desc']);
-$detailed_desc = str_replace("\n", "<br>", $detailed_desc);
-$detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
 $detailed_desc = stripslashes($detailed_desc);
 
 // Check if the user has rights to modify tasks
@@ -430,7 +428,10 @@ if (($_SESSION['can_modify_jobs'] == '1'
       <tr>
         <th><?php echo $details_text['details'];?></th>
         <td class="details" colspan="3">
-        <?php echo $detailed_desc; ?>
+        <?php 
+        $detailed_desc = str_replace("\n", "<br>", $detailed_desc);
+        $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
+        echo $detailed_desc; ?>
         </td>
       </tr>
     </table>
@@ -470,6 +471,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
   </p>
   </form>
     <?php
+    // If the user CAN modify tasks, and the task is still open
     } elseif ($_SESSION['can_modify_jobs'] == '1' && $task_details['is_closed'] != '1') {
     ?>
     <form name="form2" action="index.php" method="post" id="formclosetask">
@@ -478,7 +480,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
         <input type="hidden" name="do" value="modify">
         <input type="hidden" name="action" value="close">
         <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>">
-        <input type="hidden" name="item_summary" value="<?php echo $task_details['item_summary'];?>">
+        <!--<input type="hidden" name="item_summary" value="<?php echo $task_details['item_summary'];?>">-->
         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
         <select class="adminlist" name="resolution_reason">
         <?php

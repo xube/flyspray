@@ -62,10 +62,12 @@ $flyspray_prefs = $fs->getGlobalPrefs();
 
 if ($_GET['project']) {
   $project_id = $_GET['project'];
+  setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
 } elseif ($_COOKIE['flyspray_project']) {
   $project_id = $_COOKIE['flyspray_project'];
 } else {
   $project_id = $flyspray_prefs['default_project'];
+  setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
 };
 
 if (!(ereg("upgrade", $_SERVER['PHP_SELF']))) {
