@@ -110,7 +110,7 @@ $modify_text = array (
 'editcommentsaved'	=>	'Bijgewerkte commentaar opgeslagen.',
 'commentdeleted'	=>	'Commentaar is verwijderd.',
 
-
+'deleteattachment'	=>	'De bijlage is verwijderd.',
 
 );
 ?>

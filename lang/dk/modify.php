@@ -124,6 +124,6 @@ $modify_text = array (
 'projectupdated'	=>	'Projektes pr&aelig;ferenceer er opdateret',
 'emptytitle'		=>	'Projektes titel felter er blankt, g&aring; tilbage og ret det.',
 'loginbelow'		=>	'Nu m&aring; du godt fors&oslash;ge at logge p&aring; ved at bruge nedenst&aring;ende formular.',
-'deleteattachment'	=>	'De bijlage is verwijderd.',
+'deleteattachment'	=>	'',
 );
 ?>
