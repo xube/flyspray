@@ -13,6 +13,7 @@
 $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'admin');
 get_language_pack($lang, 'index');
+get_language_pack($lang, 'newproject');
 
 // This generates an URL so that the action script takes us back to the previous page
 $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
@@ -32,6 +33,7 @@ if ($permissions['is_admin'] == '1')
    echo '<small>|</small><a id="globcatlink" href="?do=admin&amp;area=cat">' . $admin_text['categories'] . '</a>';
    echo '<small>|</small><a id="globoslink" href="?do=admin&amp;area=os">' . $admin_text['operatingsystems'] . '</a>';
    echo '<small>|</small><a id="globverlink" href="?do=admin&amp;area=ver">' . $admin_text['versions'] . '</a>';
+   echo '<small>|</small><a id="globnewprojlink" href="?do=admin&amp;area=newproject">' . $admin_text['newproject'] . '</a>';
 
    // End of the toolboxmenu
    echo '</div>';
@@ -43,7 +45,7 @@ if ($permissions['is_admin'] == '1')
    // Start of application preferences //
    //////////////////////////////////////
 
-   if ($_GET['area'] == "prefs")
+   if (isset($_GET['area']) && $_GET['area'] == "prefs")
    {
       echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['preferences'] . '</h3>';
       ?>
@@ -300,6 +302,8 @@ if ($permissions['is_admin'] == '1')
                <input type="hidden" name="do" value="modify" />
                <input type="hidden" name="action" value="edituser" />
                <input type="hidden" name="user_id" value="<?php echo $user_details['user_id'];?>" />
+               <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
                <label for="realname"><?php echo $admin_text['realname'];?></label>
                </td>
                <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo $user_details['real_name'];?>" /></td>
@@ -335,10 +339,6 @@ if ($permissions['is_admin'] == '1')
                <td><label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label></td>
                <td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat_extended'];?>" /></td>
             </tr>
-            <?php
-            // This is for changing the user's global group ONLY
-            if ($permissions['is_admin'] == '1') {
-            ?>
             <tr>
                <td><label for="groupin"><?php echo $admin_text['globalgroup'];?></label></td>
                <td>
@@ -371,9 +371,6 @@ if ($permissions['is_admin'] == '1')
                <td><label for="accountenabled"><?php echo $admin_text['accountenabled'];?></label></td>
                <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?> /></td>
             </tr>
-            <?php
-            };
-            ?>
             <tr>
                <td colspan="2"><hr /></td>
             </tr>
@@ -741,44 +738,6 @@ if ($permissions['is_admin'] == '1')
 <?
 // End of Resolutions
 
-
-
-//////////////////////////////////
-// Start of project preferences //
-//////////////////////////////////
-
-} elseif ($_GET['area'] == "projects"
-           && $permissions['manage_project'] == '1')
-          {
-
-// Fetch the project details
-$project_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
-echo '<h3>' . $admin_text['projectprefs'] . ' - ' . stripslashes($project_details['project_title']) . '</h3>';
-
-echo '<span id="projectmenu">';
-
-// Only show the 'create new project' link if the user is a full admin
-if ($permissions['is_admin'] == '1') {
-  echo '<small> | </small><a href="?do=newproject">' . $admin_text['createproject'] . '</a>';
-};
-
-echo '<small> | </small><a href="?do=admin&amp;area=users&amp;project=' . $project_id . '">' . $admin_text['usergroups'] . '</a>';
-
-//if ($_GET['id']) {
-
-$project_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
-?>
-     <small> | </small><a href="?do=admin&amp;area=projects&amp;project=<?php echo $_GET['project'];?>&amp;show=category"><?php echo $language['categories'];?></a>
-     <small> | </small><a href="?do=admin&amp;area=projects&amp;project=<?php echo $_GET['project'];?>&amp;show=os"><?php echo $language['operatingsystems'];?></a>
-     <small> | </small><a href="?do=admin&amp;area=projects&amp;project=<?php echo $_GET['project'];?>&amp;show=version"><?php echo $language['versions'];?></a>
-    </span>
-
-<?php
-// By default, show the project prefs first
-if ($_GET['show'] == 'prefs') { ?>
-
-
-<?php
 // Show the list of categories
 } elseif ($_GET['show'] == 'category') { ?>
 
@@ -1095,10 +1054,6 @@ if ($_GET['show'] == 'prefs') { ?>
 </fieldset>
 
 <?php
-};
-//};
-// End of project preferences
-
 ////////////////////////////////
 // Start of editing a comment //
 ////////////////////////////////
@@ -1196,79 +1151,110 @@ if ($_GET['show'] == 'prefs') { ?>
 
 // End of pending admin requests
 
-//////////////////////////////////////////////////
-// Start of a user requesting a password change //
-//////////////////////////////////////////////////
+///////////////////////////////////
+// Start of adding a new project //
+///////////////////////////////////
 
-} elseif ($_GET['area'] == 'lostpw'
-          && !$_COOKIE['flyspray_userid']) {
+} elseif ($_GET['area'] == 'newproject')
+{
 
-  // Step One: user requests magic url
-  if (!$_GET['magic']) {
+   echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $newproject_text['createnewproject'] . '</h3>';
+?>
+   <form action="index.php" method="post">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="newproject" />
+      <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+      <table class="admin">
+      <tr>
+         <td>
+            <label for="projecttitle"><?php echo $newproject_text['projecttitle'];?></label>
+         </td>
+         <td>
+            <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo $project_details['project_title'];?>" />
+         </td>
+      </tr>
+      <tr>
+         <td>
+            <label for="themestyle"><?php echo $newproject_text['themestyle'];?></label>
+         </td>
+         <td>
+            <select id="themestyle" name="theme_style">
+            <?php
+            // Let's get a list of the theme names by reading the ./themes/ directory
+            if ($handle = opendir('themes/')) {
+               $theme_array = array();
+               while (false !== ($dir = readdir($handle))) {
+                  if ($dir != "." && $dir != ".." && file_exists("themes/$dir/theme.css")) {
+                     array_push($theme_array, $dir);
+                  }
+               }
+               closedir($handle);
+            }
 
-    echo '<h3>' . $admin_text['lostpw'] . '</h3>' . "\n";
-    echo $admin_text['lostpwexplain'] . "\n";
+            // Sort the array alphabetically
+            sort($theme_array);
+            // Then display them
+            while (list($key, $val) = each($theme_array)) {
+               // If the theme is currently being used, pre-select it in the list
+               if ($val == $project_details['theme_style']) {
+                  echo "<option class=\"adminlist\" selected=\"selected\">$val</option>\n";
+               // If it's not, don't pre-select it
+               } else {
+                  echo "<option class=\"adminlist\">$val</option>\n";
+               };
+            };
+            ?>
+            </select>
+         </td>
+      </tr>
+      <tr>
+         <td>
+            <label for="showlogo"><?php echo $newproject_text['showlogo'];?></label>
+         </td>
+         <td>
+            <input type="checkbox" name="show_logo" value="1" checked />
+         </td>
+      </tr>
+      <tr>
+         <td>
+            <label for="inlineimages"><?php echo $newproject_text['inlineimages'];?></label>
+         </td>
+         <td>
+            <input type="checkbox" name="inline_images" value="1" />
+         </td>
+      </tr>
+      <tr>
+         <td>
+            <label for="intromessage"><?php echo $newproject_text['intromessage'];?></label>
+         </td>
+         <td>
+            <textarea name="intro_message" rows="10" cols="50"></textarea>
+         </td>
+      </tr>
+      <tr>
+         <td>
+            <label for="othersview"><?php echo $newproject_text['othersview'];?></label>
+         </td>
+         <td>
+            <input id="othersview" type="checkbox" name="others_view" value="1" checked />
+         </td>
+      </tr>
+      <tr>
+         <td>
+            <label for="anonopen"><?php echo $newproject_text['allowanonopentask'];?></label>
+         </td>
+         <td>
+            <input id="anonopen" type="checkbox" name="anon_open" value="1" />
+         </td>
+      </tr>
+      <tr>
+         <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $newproject_text['createthisproject'];?>" /></td>
+      </tr>
+   </table>
+   </form>
 
-    echo '<br /><br />' . "\n";
 
-    echo '<div class="admin">' . "\n";
-    echo '<form action="index.php" method="post">' . "\n";
-    echo '<input type="hidden" name="do" value="modify" />' . "\n";
-    echo '<input type="hidden" name="action" value="sendmagic" />' . "\n";
-    echo '<b>' . $admin_text['username'] . '</b>' . "\n";
-    echo '<input class="admintext" type="text" name="user_name" size="20" maxlength="20" />' . "\n";
-    echo '<input class="adminbutton" type="submit" value="' . $admin_text['sendlink'] . '" />' . "\n";
-    echo '</form>' . "\n";
-    echo '</div>' . "\n";
-
-
-  // Step Two: user enters new password
-} elseif ($_GET['magic']
-          && !$_COOKIE['flyspray_userid']) {
-
-    // Check that the magic url is valid
-    $check_magic = $db->Query("SELECT * FROM flyspray_users
-                                 WHERE magic_url = ?",
-                                 array($_GET['magic'])
-                               );
-
-    if (!$db->CountRows($check_magic)) {
-      echo "<div class=\"redirectmessage\"><p><em>{$admin_text['badmagic']}</em></p></div>";
-      echo '<meta http-equiv="refresh" content="2; URL=index.php">';
-
-    } else {
-
-      echo '<h3>' . $admin_text['changepass'] . '</h3>' . "\n";
-
-      echo '<br />' . "\n";
-
-      echo '<form action="index.php" method="post">' . "\n";
-
-      echo '<table class="admin">' . "\n";
-      echo '<input type="hidden" name="do" value="modify" />' . "\n";
-      echo '<input type="hidden" name="action" value="chpass" />' . "\n";
-      echo '<input type="hidden" name="magic_url" value="' . $_GET['magic'] . '" />' . "\n";
-      echo '<tr><td><b>' . $admin_text['changepass'] . '</b></td>' . "\n";
-      echo '<td><input class="admintext" type="password" name="pass1" size="20" /></td></tr>' . "\n";
-      echo '<tr><td><b>' . $admin_text['confirmpass'] . '</b></td>' . "\n";
-      echo '<td><input class="admintext" type="password" name="pass2" size="20" /></tr>' . "\n";
-      echo '<tr><td></td><td><input class="adminbutton" type="submit" value="' . $admin_text['savenewpass'] . '" /></td></tr>' . "\n";
-      echo '</table>' . "\n";
-      echo '</form>' . "\n";
-      echo '</div>' . "\n";
-
-    // End of checking magic url validity
-    };
-
-  // End of checking for magic url
-  };
-
-
-// End of a user requesting a password change
-
-// End of the toolbox div
-echo '</div>';
-
+<?
 ///////////////////////////////////////////////////////
 // If all else fails... show an authentication error //
 ///////////////////////////////////////////////////////
@@ -1278,11 +1264,13 @@ echo '</div>';
   echo $admin_text['nopermission'];
   echo "<br /><br />";
 
-
 //////////////////////
 // End of all areas //
 //////////////////////
 };
+
+// End of the toolbox div
+echo '</div>';
 
 // End of checking if a user is in the global Admin group
 }

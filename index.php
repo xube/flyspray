@@ -38,16 +38,16 @@ if (!$db->CountRows($check_proj_exists)) {
 };
 
 // If a file was requested, deliver it
-if ($_GET['getfile']) {
+if (isset($_GET['getfile']) && !empty($_GET['getfile'])) {
 
-  list($orig_name, $file_name, $file_type) = $db->FetchArray(
-                                $db->Query("SELECT orig_name,
-                                              file_name,
-                                              file_type
-                                              FROM flyspray_attachments
-                                              WHERE attachment_id = '{$_GET['getfile']}'
-                                      ")
-                                 );
+  list($orig_name, $file_name, $file_type) = $db->FetchArray($db->Query("SELECT orig_name,
+                                                                         file_name,
+                                                                         file_type
+                                                                         FROM flyspray_attachments
+                                                                         WHERE attachment_id = ?",
+                                                                         array($_GET['getfile'])
+                                                                       )
+                                                            );
 
   if (file_exists("attachments/$file_name")) {
 
@@ -184,7 +184,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
    // Display Edit My Details link
    echo '<small> | </small>';
-   echo '<a id="editmydetailslink" href="?do=admin&amp;area=users&amp;id=' . $current_user['user_id'] . '" accesskey="e">' . $language['editmydetails'] . "</a>\n";
+   echo '<a id="editmydetailslink" href="?do=myprofile" accesskey="e">' . $language['editmydetails'] . "</a>\n";
 
 
    // If the user has conducted a search, then show a link to the most recent task list filter
@@ -285,18 +285,18 @@ if (isset($_SESSION['SUCCESS'])) {
       <select name="tasks">
         <option value="all"><?php echo $language['tasksall'];?></option>
       <?php if (isset($_COOKIE['flyspray_userid'])) { ?>
-        <option value="assigned" <?php if($_GET['tasks'] == 'assigned') echo 'selected="selected"'; ?>><?php echo $language['tasksassigned']; ?></option>
-        <option value="reported" <?php if($_GET['tasks'] == 'reported') echo 'selected="selected"'; ?>><?php echo $language['tasksreported']; ?></option>
-        <option value="watched" <?php if($_GET['tasks'] == 'watched') echo 'selected="selected"'; ?>><?php echo $language['taskswatched']; ?></option>
+        <option value="assigned" <?php if(isset($_GET['tasks']) && $_GET['tasks'] == 'assigned') echo 'selected="selected"'; ?>><?php echo $language['tasksassigned']; ?></option>
+        <option value="reported" <?php if(isset($_GET['tasks']) && $_GET['tasks'] == 'reported') echo 'selected="selected"'; ?>><?php echo $language['tasksreported']; ?></option>
+        <option value="watched" <?php if(isset($_GET['tasks']) && $_GET['tasks'] == 'watched') echo 'selected="selected"'; ?>><?php echo $language['taskswatched']; ?></option>
       <?php }; ?>
       </select>
       <?php echo $language['selectproject'];?>
       <select name="project">
-      <option value="0"<?php if ($_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
+      <option value="0"<?php if (isset($_GET['project']) && $_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
       <?php
       $get_projects = $db->Query("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
       while ($row = $db->FetchArray($get_projects)) {
-        if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
+        if ($project_id == $row['project_id'] && isset($_GET['project']) && $_GET['project'] != '0') {
           echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
         } else {
           echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
@@ -324,7 +324,7 @@ if ($project_prefs['project_is_active'] == '1'
     && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
     && $project_prefs['intro_message'] != ''
     && ($do == 'details' OR $do == 'index')
-    OR $_GET['project'] == '0'
+    OR (isset($_GET['project']) && $_GET['project'] == '0')
 ) {
    $intro_message = Markdown(stripslashes($project_prefs['intro_message']));
    echo "<p class=\"intromessage\">$intro_message</p>";

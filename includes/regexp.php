@@ -95,7 +95,7 @@ if ($_REQUEST['action']) {
 if ($_REQUEST['do']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report)$/", $_REQUEST['do'])) {
+    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw)$/", $_REQUEST['do'])) {
 
        // continue;
 
@@ -198,7 +198,7 @@ if ($_GET['jabber_id']) {
 if ($_GET['area']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(editcomment|comments|attachments|related|notify|users|tt|res|groups|remind|system|history|pendingreq|lostpw|prefs|cat|os|ver|editgroup)$/", $_GET['area'])) {
+    if (preg_match ("/^(editcomment|comments|attachments|related|notify|users|tt|res|groups|remind|system|history|pendingreq|prefs|cat|os|ver|editgroup|newproject)$/", $_GET['area'])) {
 
        // continue;
     } else {

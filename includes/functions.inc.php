@@ -218,41 +218,49 @@ function GetTaskDetails($task_id) {
 
   // This provides funky page numbering
   // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-  function pagenums($pagenum, $perpage, $pagesper, $totalcount, $extraurl)
+  function pagenums($pagenum, $perpage, $totalcount, $extraurl)
   {
 
       global $db;
+      global $lang;
 
-    $flyspray_prefs = $this->GetGlobalPrefs();
-    $lang = $flyspray_prefs['lang_code'];
-    require("lang/$lang/functions.inc.php");
+      //$flyspray_prefs = $this->GetGlobalPrefs();
 
-    if (!($totalcount / $perpage <= 1)) {
+      require("lang/$lang/functions.inc.php");
 
-      if ($pagenum - 1000 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 1000) . $extraurl . "\">{$functions_text['back']} 1,000</a> - ";
-      if ($pagenum - 100 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 100) . $extraurl . "\">{$functions_text['back']} 100</a> - ";
-      if ($pagenum - 10 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 10) . $extraurl . "\">{$functions_text['back']} 10</a> - ";
-      if ($pagenum - 1 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">{$functions_text['back']}</a> - ";
-      $start = floor($pagenum - ($pagesper / 2)) + 1;
-      if ($start <= 0) $start = 0;
-      $finish = $pagenum + ceil($pagesper / 2);
-      if ($finish >= $totalcount / $perpage) $finish = floor($totalcount / $perpage);
-      for ($pagelink = $start; $pagelink <= $finish;  $pagelink++)
+      $pages = ceil($totalcount / $perpage);
+      $output = sprintf($functions_text['page'], $pagenum, $pages);
+
+      if (!($totalcount / $perpage <= 1))
       {
-          if ($pagelink != $start) $output .= " - ";
-          if ($pagelink == $pagenum) {
-              $output .= "<a href=\"?pagenum=" . ($pagelink) . "$extraurl\"><b>" . ($pagelink + 1) . "</b></a>";
-          } else {
-              $output .= "<a href=\"?pagenum=" . ($pagelink) . "$extraurl\">" . ($pagelink + 1) . "</a>";
-          }
-      }
-      if ($pagenum + 1 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1) . $extraurl . "\">{$functions_text['forward']}</a> ";
-      if ($pagenum + 10 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 10) . $extraurl . "\">{$functions_text['forward']} 10</a> ";
-      if ($pagenum + 100 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 100) . $extraurl . "\">{$functions_text['forward']} 100</a> ";
-      if ($pagenum + 1000 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1000) . $extraurl . "\">{$functions_text['forward']} 1,000</a> ";
+
+         $output .= " &nbsp;&nbsp;--&nbsp;&nbsp; ";
+
+         $start = max(1, $pagenum - 3);
+         $finish = min($pages, $pagenum + 3);
+
+         if ($start > 1) $output .= "<a href=\"?pagenum=1" . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
+         if ($pagenum > 1) $output .= "<a href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
+
+         for ($pagelink = $start; $pagelink <= $finish;  $pagelink++)
+         {
+
+            if ($pagelink != $start) $output .= " - ";
+
+            if ($pagelink == $pagenum)
+            {
+               $output .= "<strong>" . $pagelink . "</strong>";
+            } else {
+               $output .= "<a href=\"?pagenum=" . $pagelink . $extraurl . "\">" . $pagelink . "</a>";
+            };
+         };
+
+         if ($pagenum < $pages) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a> ";
+         if ($finish < $pages) $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
+      };
       return $output;
-    }
-  }
+   }
+
 
   function formatDate($timestamp, $extended)
   {

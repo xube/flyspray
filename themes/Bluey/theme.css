@@ -320,11 +320,13 @@ table#tasklist td.progress {
   text-align          : center;
 }
 
-table#tasklist tfoot td {
-  text-align          : center;
-  background-color    : white;
-  padding             : 1em 0px;
-  border : none;
+table#tasklist td#taskrange {
+  padding             : 3px 2ex;
+ }
+
+table#tasklist td#pagenumbers {
+  padding             : 3px 2ex;
+  text-align          : right;
 }
 
 /* table.list is any table holding lists like resolutions, ... */

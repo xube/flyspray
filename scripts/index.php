@@ -11,9 +11,12 @@
 
 get_language_pack($lang, 'index');
 
-$orderby = array($_GET['order']);
+$orderby = array();
 
-if ($_GET['order2'] != '') {
+//if (isset($_GET['order']) && !empty($_GET['order']))
+   $orderby[] = $_GET['order'];
+
+if (isset($_GET['order2']) && !empty($_GET['order2'])) {
   $orderby[] = $_GET['order2'];
 } else {
   $orderby[] = 'pri';
@@ -23,7 +26,6 @@ foreach ( $orderby as $key => $val ) {
   switch ($orderby[$key]) {
     case "id": $orderby[$key] = 'task_id';
     break;
-    //case "proj": $orderby[$key] = 'attached_to_project';
     case "proj": $orderby[$key] = 'project_title';
     break;
     case "type": $orderby[$key] = 'tasktype_name';
@@ -32,7 +34,6 @@ foreach ( $orderby as $key => $val ) {
     break;
     case "sev": $orderby[$key] = 'task_severity';
     break;
-    //case "cat": $orderby[$key] = 'product_category';
     case "cat": $orderby[$key] = 'lc.category_name';
     break;
     case "status": $orderby[$key] = 'item_status';
@@ -45,12 +46,10 @@ foreach ( $orderby as $key => $val ) {
     break;
     case "pri": $orderby[$key] = 'task_priority';
     break;
-    //case "openedby": $orderby[$key] = 't.opened_by';
     case "openedby": $orderby[$key] = 'uo.real_name';
     break;
     case "reportedin": $orderby[$key] = 't.product_version';
     break;
-    //case "assignedto": $orderby[$key] = 't.assigned_to';
     case "assignedto": $orderby[$key] = 'u.real_name';
     break;
     default: $orderby[$key] = 'task_severity';
@@ -78,7 +77,7 @@ $sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, t.task_id ASC"
 if (is_numeric($_GET['pagenum'])) {
   $pagenum = $_GET['pagenum'];
 } else {
-  $pagenum = "0";
+  $pagenum = "1";
 };
 // number of results per page
 if (is_numeric($_GET['perpage'])) {
@@ -88,7 +87,7 @@ if (is_numeric($_GET['perpage'])) {
 };
 
 // the mysql query offset is a combination of the num results per page and the page num
-$offset = $perpage * $pagenum;
+$offset = $perpage * ($pagenum - 1);
 
 $sql_params = array();
 $where = array();
@@ -161,7 +160,7 @@ if ($_GET['tasks'] == 'assigned') {
 
 
 // developer whose bugs to show
-if (is_numeric($dev)) {
+if (isset($dev) && is_numeric($dev)) {
   $where[] = "assigned_to = ?";
   $sql_params[] = $dev;
 } elseif ($dev == "notassigned") {
@@ -170,19 +169,19 @@ if (is_numeric($dev)) {
 
 
 // The default task type
-if (is_numeric($_GET['type'])) {
+if (isset($_GET['type']) && is_numeric($_GET['type'])) {
   $where[] = "task_type = ?";
   $sql_params[] = $_GET['type'];
 };
 
 // The default severity
-if (is_numeric($_GET['sev'])) {
+if (isset($_GET['sev']) && is_numeric($_GET['sev'])) {
   $where[] = "task_severity = ?";
   $sql_params[] = $_GET['sev'];
 };
 
 // The default category
-if (is_numeric($_GET['cat'])) {
+if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
   $temp_where = "(product_category = ?";
   $sql_params[] = $_GET['cat'];
 
@@ -199,11 +198,11 @@ if (is_numeric($_GET['cat'])) {
 };
 
 // The default status
-if ($_GET['status'] == "all") {
-} elseif ($_GET['status'] == "closed") {
+if (isset($_GET['status']) && $_GET['status'] == "all") {
+} elseif (isset($_GET['status']) && $_GET['status'] == "closed") {
   $where[] = "is_closed = ?";
   $sql_params[] = "1";
-} elseif (is_numeric($_GET['status'])) {
+} elseif (isset($_GET['status']) && is_numeric($_GET['status'])) {
   $where[]      = "item_status = ? AND is_closed <> '1'";
   $sql_params[] = $_GET['status'];
 } else {
@@ -211,12 +210,12 @@ if ($_GET['status'] == "all") {
   $sql_params[] = '1';
 };
 // The default due in version
-if (is_numeric($_GET['due'])) {
+if (isset($_GET['due']) && is_numeric($_GET['due'])) {
   $where[] = "closedby_version = ?";
   $sql_params[] = $_GET['due'];
 };
 // The default search string
-if ($_GET['string']) {
+if (isset($_GET['string']) && $_GET['string']) {
   $string = $_GET['string'];
   $string = ereg_replace('\(', " ", $string);
   $string = ereg_replace('\)', " ", $string);
@@ -239,7 +238,7 @@ if ($permissions['manage_project'] == '1') {
   $where[] = "t.mark_private <> '1'";
 };
 
-if ($_GET['project'] == '0') {
+if (isset($_GET['project']) && $_GET['project'] == '0') {
     $get = "&amp;project=0";
 } else {
     $get = "&amp;project={$project_id}";
@@ -272,7 +271,7 @@ if ($project_prefs['project_is_active'] == '1'
 <input type="hidden" name="project" value="<?php echo $_GET['project'] == '0' ? '0' : $project_id;?>" />
   <label for="searchtext"><?php echo $index_text['searchthisproject'];?>:</label>
     <input id="searchtext" name="string" type="text" size="20"
-    maxlength="100" value="<?php echo $_GET['string'];?>" accesskey="q" />
+    maxlength="100" value="<?php if(isset($_GET['string'])) echo $_GET['string'];?>" accesskey="q" />
 
     <select name="type">
       <option value=""><?php echo $index_text['alltasktypes'];?></option>
@@ -281,7 +280,7 @@ if ($project_prefs['project_is_active'] == '1'
                                        WHERE show_in_list = 1
                                        ORDER BY list_position');
       while ($row = $db->FetchArray($tasktype_list)) {
-        if ($_GET['type'] == $row['tasktype_id']) {
+        if (isset($_GET['type']) && $_GET['type'] == $row['tasktype_id']) {
           echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>\n";
         } else {
           echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>\n";
@@ -295,7 +294,7 @@ if ($project_prefs['project_is_active'] == '1'
       <?php
       require("lang/$lang/severity.php");
       foreach($severity_list as $key => $val) {
-        if ($_GET['sev'] == $key) {
+        if (isset($_GET['sev']) && $_GET['sev'] == $key) {
           echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
         } else {
           echo "<option value=\"$key\">$val</option>\n";
@@ -304,7 +303,7 @@ if ($project_prefs['project_is_active'] == '1'
       ?>
     </select>
 
-    <select name="due" <?php if($_GET['project'] == '0') { echo 'DISABLED';};?>>
+    <select name="due" <?php if(isset($_GET['project']) && $_GET['project'] == '0') { echo 'DISABLED';};?>>
       <option value=""><?php echo $index_text['dueanyversion'];?></option>
       <?php
       $ver_list = $db->Query("SELECT version_id, version_name
@@ -312,7 +311,7 @@ if ($project_prefs['project_is_active'] == '1'
                                   WHERE project_id=? AND show_in_list=? AND version_tense=?
                                   ORDER BY list_position", array($project_id, '1', '3'));
       while ($row = $db->FetchArray($ver_list)) {
-        if ($_GET['due'] == $row['version_id']) {
+        if (isset($_GET['due']) && $_GET['due'] == $row['version_id']) {
           echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
         } else {
           echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>";
@@ -331,7 +330,7 @@ if ($project_prefs['project_is_active'] == '1'
       ?>
     </select>
 
-    <select name="cat" <?php if($_GET['project'] == '0') { echo 'DISABLED';};?>>
+    <select name="cat" <?php if(isset($_GET['project']) && $_GET['project'] == '0') echo 'DISABLED';?>>
       <option value=""><?php echo $index_text['allcategories'];?></option>
       <?php
       $cat_list = $db->Query('SELECT category_id, category_name
@@ -340,7 +339,7 @@ if ($project_prefs['project_is_active'] == '1'
                                   ORDER BY list_position', array($project_id, '1', '1'));
       while ($row = $db->FetchArray($cat_list)) {
         $category_name = stripslashes($row['category_name']);
-        if ($_GET['cat'] == $row['category_id']) {
+        if (isset($_GET['cat']) && $_GET['cat'] == $row['category_id']) {
           echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
         } else {
           echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
@@ -352,7 +351,7 @@ if ($project_prefs['project_is_active'] == '1'
                                   ORDER BY list_position', array($project_id, '1', $row['category_id']));
         while ($subrow = $db->FetchArray($subcat_list)) {
           $subcategory_name = stripslashes($subrow['category_name']);
-          if ($_GET['cat'] == $subrow['category_id']) {
+          if (isset($_GET['cat']) && $_GET['cat'] == $subrow['category_id']) {
             echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
           } else {
             echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
@@ -363,19 +362,19 @@ if ($project_prefs['project_is_active'] == '1'
     </select>
 
     <select name="status">
-      <option value="all" <?php if ($_GET['status'] == "all") { echo "selected=\"selected\"";};?>><?php echo $index_text['allstatuses'];?></option>
-      <option value="" <?php if ($_GET['status'] == "") { echo "selected=\"selected\"";};?>><?php echo $index_text['allopentasks'];?></option>
+      <option value="all" <?php if (isset($_GET['status']) && $_GET['status'] == "all") echo 'selected="selected"';?>><?php echo $index_text['allstatuses'];?></option>
+      <option value="" <?php if (isset($_GET['status']) && $_GET['status'] == "") { echo "selected=\"selected\"";};?>><?php echo $index_text['allopentasks'];?></option>
       <?php
       require("lang/$lang/status.php");
       foreach($status_list as $key => $val) {
-        if ($_GET['status'] == $key) {
+        if (isset($_GET['status']) && $_GET['status'] == $key) {
           echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
         } else {
           echo "<option value=\"$key\">$val</option>\n";
         };
       };
       ?>
-      <option value="closed" <?php if($_GET['status'] == "closed") { echo "SELECTED";};?>><?php echo $index_text['closed'];?></option>
+      <option value="closed" <?php if(isset($_GET['status']) && $_GET['status'] == "closed") { echo "SELECTED";};?>><?php echo $index_text['closed'];?></option>
     </select>
 
     <select name="perpage">
@@ -413,14 +412,14 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
   {
     if($orderkey)
     {
-      if($_GET['order'] == "$orderkey")
+      if(isset($_GET['order']) && $_GET['order'] == "$orderkey")
       {
         $class = 'class="severity3"';
 
         $order2 = $_GET['order2'];
         $sort2 = $_GET['sort2'];
 
-        if ($_GET['sort'] == 'desc')
+        if (isset($_GET['sort']) && $_GET['sort'] == 'desc')
         {
           $sort1 = "asc";
         }
@@ -446,7 +445,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
       echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" />\n";
 
       // Sort indicator arrows
-      if($_GET['order'] == $orderkey) {
+      if(isset($_GET['order']) && $_GET['order'] == $orderkey) {
         echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png" />';
       };
 
@@ -511,9 +510,6 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 
   <?php
   list_heading('id','id');
-  //list_heading('project','proj');
-  //list_heading('tasktype','type');
-  //list_heading('category','cat');
   list_heading('project','proj','asc');
   list_heading('tasktype','type','asc');
   list_heading('category','cat','asc');
@@ -522,15 +518,11 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
   list_heading('summary','');
   list_heading('dateopened','date');
   list_heading('status','status');
-  //list_heading('openedby','openedby');
-  //list_heading('assignedto','assignedto');
   list_heading('openedby','openedby','asc');
   list_heading('assignedto','assignedto','asc');
   list_heading('lastedit', 'lastedit');
   list_heading('reportedin','reportedin');
   list_heading('dueversion','due');
-  //list_heading('comments','', "themes/{$project_prefs['theme_style']}/comment.png");
-  //list_heading('attachments','', "themes/{$project_prefs['theme_style']}/attachment.png");
   list_heading('comments','','', "themes/{$project_prefs['theme_style']}/comment.png");
   list_heading('attachments','','', "themes/{$project_prefs['theme_style']}/attachment.png");
   list_heading('progress','prog');
@@ -538,13 +530,13 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 
   </tr>
 </thead>
-<tfoot><tr><td colspan="20">
+
 <?php
 
 // SQL JOIN condition
 $from = 'flyspray_tasks t';
 
-if ($_GET['tasks'] == 'watched') {
+if (isset($_GET['tasks']) && $_GET['tasks'] == 'watched') {
     //join the notification table to get watched tasks
     $from .= ' RIGHT JOIN flyspray_notifications fsn ON t.task_id = fsn.task_id';
     $where[] = 'fsn.user_id = ?';
@@ -570,8 +562,6 @@ $get_total = $db->Query("SELECT * FROM $from
           ORDER BY $sortorder", $sql_params);
 
 $total = $db->CountRows($get_total);
-print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
-
 
 ?>
 </td></tr></tfoot>
@@ -674,6 +664,20 @@ ORDER BY
   };
   ?>
 <!--</tbody>-->
+</table>
+
+<table id="tasklist">
+   <tr>
+   <?php
+   if ($total > 0) {
+      echo "<td id=\"taskrange\">";
+      printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
+      echo "</td><td id=\"pagenumbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl) . "</td>";
+   } else {
+      echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";
+   };
+   ?>
+   </tr>
 </table>
 
 <?php

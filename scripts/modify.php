@@ -1127,7 +1127,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                         array($newproject['project_id'], '1.0', '1', '1', '2'));
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectcreated']}";
-    echo "<br><br><a href=\"?do=admin&amp;area=projects&amp;show=prefs&amp;project={$newproject['project_id']}\">{$modify_text['customiseproject']}</a></em></p></div>";
+    echo "<br><br><a href=\"?do=pm&amp;area=prefs&amp;project={$newproject['project_id']}\">{$modify_text['customiseproject']}</a></em></p></div>";
 
   } else {
 
@@ -1296,13 +1296,14 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 
 } elseif ($_POST['action'] == "edituser"
           && ($permissions['is_admin'] == '1'
-              OR ($_COOKIE['flyspray_userid'] == $_POST['user_id']))) {
+              OR ($current_user['user_id'] == $_POST['user_id']))) {
 
-  // If they filled in all the required fields
-  if ($_POST['real_name'] != ""
-    && ($_POST['email_address'] != ""
-        OR $_POST['jabber_id'] != "")
-    ) {
+   // If they filled in all the required fields
+   if (!empty($_POST['real_name'])
+       && (!empty($_POST['email_address'])
+          OR !empty($_POST['jabber_id']))
+      )
+   {
       //If the user entered matching password and confirmation
       //we can change the selected user's password
       $password_problem = false;
@@ -1326,45 +1327,56 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
           };
       };
 
-      if ($password_problem == false){
-        $update = $db->Query("UPDATE flyspray_users SET
-                  real_name = ?,
-                  email_address = ?,
-                  jabber_id = ?,
-                  notify_type = ?,
-                  dateformat = ?,
-                  dateformat_extended = ?
-        WHERE user_id = ?",
-        array($_POST['real_name'], $_POST['email_address'],
-          $_POST['jabber_id'], $db->emptyToZero($_POST['notify_type']),
-          $_POST['dateformat'], $_POST['dateformat_extended'], $_POST['user_id']));
+      if ($password_problem == false)
+      {
+         $update = $db->Query("UPDATE flyspray_users SET
+                                 real_name = ?,
+                                 email_address = ?,
+                                 jabber_id = ?,
+                                 notify_type = ?,
+                                 dateformat = ?,
+                                 dateformat_extended = ?
+                                 WHERE user_id = ?",
+                                 array(
+                                       $_POST['real_name'],
+                                       $_POST['email_address'],
+                                       $_POST['jabber_id'],
+                                       $db->emptyToZero($_POST['notify_type']),
+                                       $_POST['dateformat'],
+                                       $_POST['dateformat_extended'],
+                                       $_POST['user_id']
+                                      )
+                              );
 
-      if ($permissions['is_admin'] == '1') {
-        $update = $db->Query("UPDATE flyspray_users SET
-                  account_enabled = ?
-        WHERE user_id = ?",
-        array($db->emptyToZero($_POST['account_enabled']),
-              $_POST['user_id']));
+         if ($permissions['is_admin'] == '1' && !empty($_POST['group_in']))
+         {
+            $update = $db->Query("UPDATE flyspray_users SET
+                                  account_enabled = ?
+                                  WHERE user_id = ?",
+                                  array(
+                                        $db->emptyToZero($_POST['account_enabled']),
+                                        $_POST['user_id']
+                                        )
+                                );
+
+            $update = $db->Query("UPDATE flyspray_users_in_groups SET
+                                  group_id = ?
+                                  WHERE record_id = ?",
+                                  array($_POST['group_in'], $_POST['record_id'])
+                              );
+
+         }
+
+         $_SESSION['SUCCESS'] = $modify_text['userupdated'];
+         header("Location: " . $_POST['prev_page']);
       };
 
-      /* UNUSED?
-      $update = $db->Query("UPDATE flyspray_users_in_groups SET
-                              group_id = ?
-                              WHERE record_id = ?",
-                              array($_POST['group_in'], $_POST['record_id']));
-      */
-
-      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
-      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
-      $_SESSION['SUCCESS'] = $modify_text['userupdated'];
-      header("Location: ?do=admin&area=users&id=" . $_POST['user_id']);
-    };
-  } else {
-    $_SESSION['ERROR'] = $modify_text['realandnotify'];
-    header("Location: ?do=admin&area=users&id=" . $_POST['user_id']);
-    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['realandnotify']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-  };
-// End of modifying user details
+   } else
+   {
+      $_SESSION['ERROR'] = $modify_text['realandnotify'];
+      header("Location: " . $_POST['prev_page']);
+   }
+   // End of modifying user details
 
 //////////////////////////////////////////
 // Start of updating a group definition //
@@ -2251,7 +2263,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     // Create notification message
     $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['magicurlmessage']} \n
-{$flyspray_prefs['base_url']}index.php?do=admin&amp;area=lostpw&amp;magic=$magic_url\n";
+{$flyspray_prefs['base_url']}index.php?do=lostpw&amp;magic=$magic_url\n";
     // End of generating a message
 
     // Send the brief notification message

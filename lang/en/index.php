@@ -44,5 +44,10 @@ $index_text = array (
 'priority'                 =>      'Priority',
 
 
+// Added in version 0.9.8
+'taskrange'                =>      'Showing tasks %d - %d of %d',
+'noresults'                =>      'Your search returned no results.',
+
+
 );
 ?>

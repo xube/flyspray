@@ -172,6 +172,7 @@ $admin_text = array (
 'operatingsystems'         =>    'Operating Systems',
 'versions'                 =>    'Versions',
 'admintoolbox'             =>    'Administrator\'s Toolbox',
+'newproject'               =>    'New Project',
 
 );
 ?>

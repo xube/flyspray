@@ -47,7 +47,7 @@
     };
 
 
-    echo '<a href="?do=admin&amp;area=lostpw">' . $loginbox_text['lostpassword'] . '</a></p>';
+    echo '<a href="?do=lostpw">' . $loginbox_text['lostpassword'] . '</a></p>';
     ?>
     </td>
   </tr>
