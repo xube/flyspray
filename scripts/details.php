@@ -431,6 +431,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
         <?php 
         $detailed_desc = str_replace("\n", "<br>", $detailed_desc);
         $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
+        $detailed_desc = preg_replace("/ (FS#)(\d+) /", "<a href=\"?do=details&amp;id=$2\">$0</a>", $detailed_desc);
         echo $detailed_desc; ?>
         </td>
       </tr>
@@ -588,6 +589,7 @@ if ($area == 'comments') { ?>
       $comment_text = htmlentities($row['comment_text']);
       $comment_text = str_replace("\n", "<br>", "$comment_text");
       $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $comment_text);
+      $comment_text = preg_replace("/ (FS#)(\d+) /", "<a href=\"?do=details&amp;id=$2\">$0</a>", $comment_text);
       $comment_text = stripslashes($comment_text);
 
     ?>

@@ -60,7 +60,9 @@ if (!$res) {
 
 $flyspray_prefs = $fs->getGlobalPrefs();
 
-if ($_GET['project']) {
+if ($_GET['do'] == 'details') {
+  list($project_id) = $fs->dbFetchArray($fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
+} elseif ($_GET['project']) {
   $project_id = $_GET['project'];
   setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
 } elseif ($_COOKIE['flyspray_project']) {
