@@ -9,7 +9,7 @@ $language = array (
 'opentaskanon'		=>	'Open a new Task anonymously',
 'register'			=>	'Register as a new user',
 'loggedinas'		=>	'Logged in as',
-'mytasks'			=>	'My Tasks',
+//'mytasks'			=>	'My Tasks',
 'addnewtask'		=>	'Add new task',
 'editmydetails'		=>	'Edit my details',
 'changepassword'	=>	'Change Password',
@@ -27,14 +27,19 @@ $language = array (
 
 // Added in version 0.9.5
 
-'selectproject'		=>	'Task list for Project:',
+//'selectproject'	=>	'Task list for Project:',
 'show'				=>	'Show',
 'projects'			=>	'Projects',
 'adminmenu'			=>	'Admin Menu',
 
 // Added in version 0.9.6
 'duplicated'		=>	'Repeated action. Redirecting to main page.',
-'mytasksallprojects'	=>	'in all projects',
+'allprojects'       =>	'All Projects',
+'selectproject'		=>	'for Project:',
+'tasksall'          =>  'All tasks',
+'tasksassigned'     =>  'Tasks assigned to me',
+'tasksreported'     =>  'Tasks reported by me',
+'taskswatched'      =>  'Tasks I watch',
 
 
 );

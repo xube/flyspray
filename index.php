@@ -95,15 +95,22 @@ if ($project_prefs['show_logo'] == '1') {
 ?>
 
 <div id="content">
-
-<form action="scripts/chproject.php" method="get">
-    <p id="changeproject">
+<form action="index.php" method="get">
+      <select name="tasks">
+        <option value="all"><?php echo $language['tasksall'];?></option>
+      <?php if ($_COOKIE['flyspray_userid']) { ?>
+        <option value="assigned" <?php if($_GET['tasks'] == 'assigned') echo 'SELECTED'; ?>><?php echo $language['tasksassigned']; ?></option>
+        <option value="reported" <?php if($_GET['tasks'] == 'reported') echo 'SELECTED'; ?>><?php echo $language['tasksreported']; ?></option>
+        <option value="watched" <?php if($_GET['tasks'] == 'watched') echo 'SELECTED'; ?>><?php echo $language['taskswatched']; ?></option>
+      <?php }; ?> 
+      </select>
       <?php echo $language['selectproject'];?>
       <select name="project">
+      <option value="0"<?php if ($_GET['project'] == '0') echo ' SELECTED';?>><?php echo $language['allprojects'];?></option>
       <?php
       $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = '1'");
       while ($row = $fs->dbFetchArray($get_projects)) {
-        if ($project_id == $row['project_id']) {
+        if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
           echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";
         } else {
           echo "<option value=\"{$row['project_id']}\">{$row['project_title']}</option>";
@@ -112,7 +119,6 @@ if ($project_prefs['show_logo'] == '1') {
       ?>
       </select>
       <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>">
-    </p>
 </form>
 <!--<a href="<?php echo $flyspray_prefs['base_url'];?>"><?php echo $flyspray_prefs['project_title'];?></a></h2>-->
 <form action="index.php" method="get">
@@ -179,9 +185,6 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo "<p id=\"menu\">";
     echo "<em>{$language['loggedinas']} - {$current_user['user_name']}</em>";
     echo "<span id=\"mainmenu\">";
-    echo "<small> | </small><a href=\"?dev={$_COOKIE['flyspray_userid']}\">{$language['mytasks']}</a>";
-    printf(' (<a href="?dev=%s&amp;allprojects=1">%s</a>)',
-    $_COOKIE['flyspray_userid'], $language['mytasksallprojects']);
     echo "<small> | </small><a href=\"?do=newtask&amp;project=$project_id\">{$language['addnewtask']}</a>";
     echo "<small> | </small><a href=\"?do=admin&amp;area=users&amp;id={$_SESSION['userid']}\">{$language['editmydetails']}</a>";
     echo "<small> | </small><a href=\"index.php?do=chpass\">{$language['changepassword']}</a>";

@@ -70,6 +70,10 @@ if ($_GET['project']) {
   setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
 };
 
+if ($_GET['project'] == '0') {
+    $allprojects = 1;
+};
+
 if (!(ereg("upgrade", $_SERVER['PHP_SELF']))) {
   $project_prefs = $fs->getProjectPrefs($project_id);
 };

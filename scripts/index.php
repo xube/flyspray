@@ -5,7 +5,7 @@
 get_language_pack($lang, 'index');
 
 switch ($_GET['order']) {
-  case "id": $orderby = 'task_id';
+  case "id": $orderby = 'flyspray_tasks.task_id';
   break;
   case "type": $orderby = 'task_type';
   break;
@@ -58,17 +58,28 @@ $where = array();
 $where[] = 'project_is_active = 1';
 
 // Set the default queries
-if (empty($_GET['allprojects'])) {
+if (!isset($allprojects)) {
   $where[]	= "attached_to_project = ?";
   $sql_params[] = $project_id;
 };
 
 
+// Check for special tasks to display
+$dev = $_GET['dev'];
+
+if ($_GET['tasks'] == 'assigned') {
+    $dev = $_SESSION['userid'];
+} elseif ($_GET['tasks'] == 'reported') {
+    $where[] = 'opened_by = ?';
+    $sql_params[] = $_SESSION['userid'];
+};
+
+
 // developer whos bugs to show
-if (is_numeric($_GET['dev'])) {
+if (is_numeric($dev)) {
   $where[]	= "assigned_to = ?";
-  $sql_params[] = $_GET['dev'];
-} elseif ($_GET['dev'] == "notassigned") {
+  $sql_params[] = $dev;
+} elseif ($dev == "notassigned") {
   $where[] = "assigned_to = '0'";
 };
 
@@ -131,10 +142,22 @@ if ($_GET['string']) {
   $sql_params[] = "%$string%";
 };
 
+if (isset($allprojects)) {
+    $get = "&amp;project=0";
+} else {
+    $get = "&amp;project={$project_id}";
+};
+// for page numbering
+$extraurl = $get . "&amp;tasks={$_GET['tasks']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$dev}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
+// for 'sort by this column' links
+$get = $extraurl . "&amp;pagenum=$pagenum";
+
 ?>
 
 <!-- Query line -->
 <form action="index.php" method="get">
+<input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>">
+<input type="hidden" name="project" value="<?php echo isset($allprojects) ? '0' : $project_id;?>">
 <p id="search">
   <label for="searchtext"><?php echo $index_text['searchthisproject'];?>:</label>
     <input id="searchtext" name="string" type="text" size="40"
@@ -191,9 +214,9 @@ if ($_GET['string']) {
     
     <select name="dev">
       <option value=""><?php echo $index_text['alldevelopers'];?></option>
-      <option value="notassigned" <?php if ($_GET['dev'] == "notassigned") { echo "SELECTED";};?>><?php echo $index_text['notyetassigned'];?></option>
+      <option value="notassigned" <?php if ($dev == "notassigned") { echo "SELECTED";};?>><?php echo $index_text['notyetassigned'];?></option>
       <?php
-      $fs->ListUsers($_GET['dev']);
+      $fs->ListUsers($dev);
       ?>
     </select>
 
@@ -270,26 +293,26 @@ if ($getproject['project_is_active'] == 1) {
 <thead>
   <tr>
   <th class="taskid">
-  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=id<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "id") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['id'];?></a>
+  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=id<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "id") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['id'];?></a>
   </th>
   <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=type<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "type") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['tasktype'];?></a>
+  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=type<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "type") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['tasktype'];?></a>
   </th>
   <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=sev<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "sev") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['severity'];?></a>
+  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=sev<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "sev") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['severity'];?></a>
   </th>
   <th><?php echo $index_text['summary'];?></th>
   <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=date<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "date") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['dateopened'];?></a>
+  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=date<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "date") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['dateopened'];?></a>
   </th>
   <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=status<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "status") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['status'];?></a>
+  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=status<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "status") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['status'];?></a>
   </th>
   <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=due<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "due") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['dueversion'];?></a>
+  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=due<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "due") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['dueversion'];?></a>
   </th>
   <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=prog<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "prog") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['progress'];?></a>
+  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=prog<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "prog") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['progress'];?></a>
   </th>
   </tr>
 </thead>
@@ -297,14 +320,22 @@ if ($getproject['project_is_active'] == 1) {
 <?php
  
 // SQL JOIN condition
+$from = 'flyspray_tasks, flyspray_projects';
+
+if ($_GET['tasks'] == 'watched') {
+    //join the notification table to get watched tasks
+    $from .= ' RIGHT JOIN flyspray_notifications ON flyspray_tasks.task_id = flyspray_notifications.task_id';
+    $where[] = 'user_id = ?';
+    $sql_params[] = $_SESSION['userid'];
+};
+    
 $where[] = 'flyspray_tasks.attached_to_project = flyspray_projects.project_id';
 $where = join(' AND ', $where);
-$get_total = $fs->dbQuery("SELECT * FROM flyspray_tasks, flyspray_projects
+$get_total = $fs->dbQuery("SELECT * FROM $from
           WHERE $where
           ORDER BY $orderby $sort", $sql_params);
 
 $total = $fs->dbCountRows($get_total);
-$extraurl = "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;due={$_GET['due']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
 print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
 
@@ -316,8 +347,7 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 <!--<tbody>-->
   <?php
 
-  $getsummary = $fs->dbQuery("SELECT * FROM flyspray_tasks,
-  flyspray_projects
+  $getsummary = $fs->dbQuery("SELECT * FROM $from
           WHERE $where
           ORDER BY $orderby $sort", $sql_params, $perpage, $offset);
 
