@@ -18,12 +18,9 @@ function addEvent(elm, evType, fn, useCapture)
   }
 } 
 
-var COOKIE_NAME = 'POLPAY_HELP_SHOWN';
-var COOKIE_VALIDITY = 30;
+var _TAB_DIVS;
 
-var _HELP_DIVS, _TAB_DIVS;
-
-// OBSŁUGA CIASTEK {{{
+// cookies {{{
 function createCookie(name,value,days) {
     if (days) {
 	var date = new Date();
@@ -47,8 +44,8 @@ function readCookie(name) {
 }
 // }}}
 
-// OBSŁUGA ZAKŁADEK {{{
-// pokaż zakładkę o podanym ID
+// tabs handling {{{
+// show tab with given id
 function showTabById(tabid) { // {{{
   var divs = document.getElementsByTagName('div');
   var tab = document.getElementById(tabid);
@@ -79,7 +76,7 @@ function showTabById(tabid) { // {{{
   }
 } // }}}
 
-// utwórz JavaScriptowe wywołania odsłaniające zakładki
+// create JavaScript calls to switch tabs
 function makeTabLinks() { // {{{
   var submenu = document.getElementById('submenu');
   var links, i, target;
@@ -94,9 +91,9 @@ function makeTabLinks() { // {{{
   }
 } // }}}
 
-// pokaż zakładkę o podanym numerze
+// show tab with given number
 function showTabByNumber(number) { // {{{
-  var targets = new Array();    // nazwy zakładek
+  var targets = new Array();    // tab names
   var divs = document.getElementsByTagName('div');
   var i;
 
@@ -111,26 +108,7 @@ function showTabByNumber(number) { // {{{
   showTabById(targets[number]);
 } // }}}
 
-// zwróć listę DIVów zawierających pomoc
-function getHelpDivs() {/*{{{*/
-  if (_HELP_DIVS == null) {
-    var divs = document.getElementsByTagName('div');
-    var i;
-    _HELP_DIVS = new Array();
-
-    for (i=0; i<divs.length; i++) {
-	if (divs[i].className) {
-	    if ((divs[i].className == 'help') || 
-		    (divs[i].className == 'hideHelp')) {
-		_HELP_DIVS.push(divs[i]);
-	    }
-	}
-    }
-  }
-  return _HELP_DIVS;
-}/*}}}*/
-  
-// zwróć listę DIVów zawierających zakładki
+// get list of all DIVs that contain tabs
 function getTabDivs() {/*{{{*/
     if (_TAB_DIVS == null) {
 	_TAB_DIVS = new Array();
@@ -145,92 +123,11 @@ function getTabDivs() {/*{{{*/
     return _TAB_DIVS;
 }/*}}}*/
 
-// ustaw prawostronne dopełnienie elementu body
-function setBodyPadding(newWidth) {/*{{{*/
-    newWidth += 20;
-    document.getElementById("menu").style.paddingRight = ""+newWidth+"px";
-    document.getElementById("content").style.paddingRight = ""+newWidth+"px";
-    // document.getElementsByTagName('body')[0].style.paddingRight = ""+newWidth+"px";
-}/*}}}*/
-
-// czy panel pomocy jest rozwinięty?
-function isHelpShown() {/*{{{*/
-  var divs = getHelpDivs();
-  if (divs.length > 0) {
-    return (divs[0].className == "help");
-  } else {
-    return false;
-  }
-}/*}}}*/
-
-// zwiń panel pomocy -- podmień nazwę klasy elementów pomocy
-// patrz również: showHelp()
-function hideHelp() {/*{{{*/
-  var i, divs = getHelpDivs();
-  setBodyPadding(0);
-  for (i=0; i<divs.length; i++) {
-    divs[i].className = "hiddenhelp";
-  }
-  createCookie(COOKIE_NAME, 0, COOKIE_VALIDITY);
-}/*}}}*/
-
-// rozwiń panel pomocy -- podmień nazwę klasy elementów pomocy
-// patrz również: hideHelp()
-function showHelp() {/*{{{*/
-  var i, divs = getHelpDivs();
-  setBodyPadding(150);
-  for (i=0; i<divs.length; i++) {
-    divs[i].className = "help";
-  }
-  createCookie(COOKIE_NAME, 1, COOKIE_VALIDITY);
-}/*}}}*/
-
-// przestaw widoczność panelu pomocy
-function toggleHelpWidth() {/*{{{*/
-  if (getHelpDivs().length > 0) {
-    if (isHelpShown()) { hideHelp(); }
-    else { showHelp(); }
-  }
-}/*}}}*/
-
-// utwórz reakcję na kliknięcie na panelu pomocy
-function createTabToggle() {/*{{{*/
-  var i, divs = getHelpDivs();
-
-  for (i=0; i<divs.length; i++) {
-    divs[i]["onclick"] = new Function("toggleHelpWidth()");
-  }
-}/*}}}*/
-
-// utwórz puste DIVy pomocy w zakładkach, w których ich brakuje
-function createMissingHelpDivs() {/*{{{*/
-    var i, divs = getTabDivs();
-    for (i=0; i<divs.length; i++) {
-	var j, innerdivs = divs[i].getElementsByTagName('div');
-	var helppresent = false;
-	
-	for (j=0; j<innerdivs.length; j++) {
-	    if (innerdivs[j].className &&
-		    (innerdivs[j].className.indexOf('help') >=0)) {
-		helppresent = true;
-		break;
-	    }
-	}
-	
-	if (!helppresent) {
-	    var helpdiv = document.createElement('div');
-	    helpdiv.className = 'help';
-	    divs[i].appendChild(helpdiv);
-	}
-    }
-}/*}}}*/
-
-// inicjalizacja zakładek
-// pokaż pierwszą zakładkę lub zakładkę o nazwie podanej w adresie (za #)
+// tabs init
+// show first tab or tab with given name (string after #)
 function initTabs() {/*{{{*/
   var target = location.href.substring(location.href.indexOf('#')+1);
   makeTabLinks();
-  createMissingHelpDivs();
   createTabToggle();
 
   if (target && document.getElementById(target)) {
@@ -239,12 +136,6 @@ function initTabs() {/*{{{*/
     showTabByNumber(0);
   }
 
-  var helpVisible = readCookie(COOKIE_NAME);
-  if (helpVisible > 0) {
-    showHelp();
-  } else {
-    hideHelp();
-  }
 }/*}}}*/
 
 // }}}
