@@ -386,7 +386,7 @@ table.list label, p#showtask label, p.admin label, form#formaddrelatedtask label
 
 /* Area containing all details to a given task */
 div#taskdetails {
-  margin              : 0px 0px 1em 0px;
+  margin              : 2em 0px 1em 0px;
   background-color    : #e6eef6;
   border              : 1px solid #000000;
 }
@@ -935,6 +935,26 @@ span#pendingreq {
    float                : right;
    color                : red;
    background-color     : yellow;
+}
+
+/* container for the next/previous links in the task details */
+span#navigation {
+  position              : absolute;
+  right                 : 1em;
+}
+
+span#navigation a#next {
+   padding-right        : 20px;
+   background-image     : url(next.png);
+   background-repeat    : no-repeat;
+   background-position  : right;
+}
+
+span#navigation a#prev {
+   padding-left         : 20px;
+   background-image     : url(prev.png);
+   background-repeat    : no-repeat;
+   background-position  : left;
 }
 
 /* End of the @screen section */

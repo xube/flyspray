@@ -677,9 +677,13 @@ WHERE
 ORDER BY
         $sortorder", $sql_params, $perpage, $offset);
 
-
+   // Store the order of the tasks returned for the next/previous links in the task details
+   $id_list = array();
+   
    while ($task_details = $db->FetchArray($get_details))
    {
+      $id_list[] = $task_details['task_id'];
+      
       // Set the status text to 'closed' if this task is closed
       if ($task_details['is_closed'] == "1")
       {
@@ -755,6 +759,8 @@ ORDER BY
       // The end of this row
       echo "</tr>\n";
    }
+   
+   $_SESSION['tasklist'] = $id_list;
    ?>
    <!--</tbody>-->
    </table>

@@ -143,6 +143,8 @@ $details_text = array (
 'givereason'            =>    'Reason for this request',
 'pmreqdenied'           =>    'Project Manager denied request',
 'taskpendingreq'        =>    'Project Manager action pending.  See the History tab for details.',
+'previoustask'          =>    'Previous task',
+'nexttask'              =>    'Next task',
 
 );
 ?>

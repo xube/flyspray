@@ -463,10 +463,60 @@ if ($db->CountRows($task_exists)
    // OR if the task is in VIEW mode,  //
    // OR if the job is closed          //
    //////////////////////////////////////
-   ?>
 
-      <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
+        // Display the next/previous navigation links
+        if (isset($_SESSION['tasklist']))
+        {
+            $previous_id = 0;
+            $next_id = 0;
+            
+            $id_list = $_SESSION['tasklist'];
+            $n = count($id_list);
 
+            // Search for current task to get the adjacent IDs
+            for ($i = 0; $i < $n; $i++)
+            {
+                if ($id_list[$i] == $task_details['task_id'])
+                {
+                    if ($i > 0)
+                        $previous_id = $id_list[$i - 1];
+                    if ($i < $n - 1)
+                        $next_id = $id_list[$i + 1];
+                    break;
+                }
+            }
+
+            if ($previous_id > 0 || $next_id > 0)
+            {
+                // Get the summary of the next/previous task for use as tooltips
+                $summary = array();
+                $get_summary = $db->Query("SELECT task_id, item_summary
+                                             FROM flyspray_tasks
+                                            WHERE task_id = ? OR task_id = ?",
+                                          array($previous_id, $next_id));
+                                          
+                while ($row = $db->FetchRow($get_summary))
+                {
+                    $summary[$row['task_id']] = $fs->formatText($row['item_summary']);
+                }
+
+                echo "<span id=\"navigation\">";
+                if ($previous_id > 0)
+                {
+                   echo "<a id=\"prev\" title=\"FS#{$previous_id} &mdash; {$summary[$previous_id]}\" href=\"?do=details&amp;id={$previous_id}\">{$details_text['previoustask']}</a>";
+                   if ($next_id > 0)
+                       echo ' | ';
+                }
+                if ($next_id > 0)
+                {
+                   echo "<a id=\"next\" title=\"FS#{$next_id} &mdash; {$summary[$next_id]}\" href=\"?do=details&amp;id={$next_id}\">{$details_text['nexttask']}</a>";
+                }
+                echo '</span>';
+            }
+        }
+        ?>
+        
+         <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
          <h2 class="severity<?php echo $task_details['task_severity'];?>">
          <?php echo 'FS#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
          </h2>

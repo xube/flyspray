@@ -457,7 +457,7 @@ if (isset($_SESSION['SUCCESS']))
       //$project_list = array();
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'] && !isset($_GET['project']))
+         if ($project_id == $row['project_id'] && @$_GET['project'] != '0')
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];
