@@ -5,7 +5,9 @@
 // (RECOMMENDED)
 
 // Load the config file
-$conf_array = parse_ini_file("flyspray.conf.php", true);
+$conf_array = @parse_ini_file("flyspray.conf.php", true);
+$conf_array = array_merge($conf_array, 
+	      @parse_ini_file("../flyspray.conf.php", true));
 
 // Set values from the config file. Once these settings are loaded a connection
 // is made to the database to retrieve all the other preferences.
