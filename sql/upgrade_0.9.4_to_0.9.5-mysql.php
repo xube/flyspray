@@ -1,6 +1,6 @@
 <?php
 
-include('../config.inc.php');
+include('../header.php');
 
 ?>
 <html>
@@ -32,9 +32,9 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 
   } else {
     echo "<table class=\"admin\"><tr><td class=\"admintext\">This script will upgrade your database for use with Flyspray 0.9.5.";
-    echo " You should ensure that your database settings are correct in config.inc.php before continuing.";
+    echo " You should ensure that your database settings are correct in header.php before continuing.";
     echo "<br><br><a href=\"" . $_SERVER['PHP_SELF'] . "?page=2\">Perform upgrade now!</a></td></tr></table>";
-    echo $_SERVER['PHP_SELF'];
+    //echo $_SERVER['PHP_SELF'];
   };
 
 } elseif ($page == '2') {
@@ -102,7 +102,7 @@ $upgrade = $fs->dbQuery("ALTER TABLE `flyspray_list_version` CHANGE `version_nam
 $upgrade = $fs->dbQuery("ALTER TABLE `flyspray_list_resolution` CHANGE `resolution_name` `resolution_name` VARCHAR( 30 ) NOT NULL ");
 
   echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database is now upgraded for use with version 0.9.5.  You can delete this script.<br><br>";
-  echo "<a href=\"./\">Take me to Flyspray 0.9.5 now!</a></td></tr><table>";
+  echo "<a href=\"../\">Take me to Flyspray 0.9.5 now!</a></td></tr><table>";
 };
 
 };

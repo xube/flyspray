@@ -2,15 +2,15 @@
 
 // Directory with Flyspray scripts. It's the directory where this file is
 // located.
-$basedir = '/var/www/flyspray';
+$basedir = '/home/tony/public_html/flyspray';
 
-// Flyspray uses ADODB for database access.  You will need to install 
+// Flyspray uses ADODB for database access.  You will need to install
 // it somewhere on your server for Flyspray to function.  It can be installed
 // inside the Flyspray directory if you wish. The next line needs to be the
 // correct path to your adodb.inc.php file.
-include_once ( "$basedir/adodb/adodb.inc.php" );
+include_once ( "/usr/share/adodb/adodb.inc.php" );
 
-//  Modify this next line to reflect the correct path to your Flyspray 
+//  Modify this next line to reflect the correct path to your Flyspray
 //  functions.inc.php file.
 include ( "$basedir/functions.inc.php" );
 
@@ -23,9 +23,9 @@ include ( "$basedir/regexp.php" );
 $dbtype = 'mysql';  
 
 $dbhost = 'localhost';  // Name or IP of Database Server
-$dbname = 'flyspray';  // The name of the database.
-$dbuser = 'USERNAME';   // The user to access the database.
-$dbpass = 'PASSWORD';   // The password to go with that username above.
+$dbname = 'flyspray-test';  // The name of the database.
+$dbuser = 'root';   // The user to access the database.
+$dbpass = 'dLAr0f3';   // The password to go with that username above.
 
 
 // This is the key that your cookies are encrypted against.
@@ -56,6 +56,8 @@ if ($_GET['project']) {
   $project_id = $flyspray_prefs['default_project'];
 };
 
-$project_prefs = $fs->getProjectPrefs($project_id);
+if (!(ereg("upgrade", $_SERVER['PHP_SELF']))) {
+  $project_prefs = $fs->getProjectPrefs($project_id);
+};
 
 ?>
