@@ -383,7 +383,7 @@ switch ($_REQUEST['sort']) {
                 </td></tr>
                 </table>
             </td>
-            <td><b>Date:</b><br>
+            <td><b><?php echo $reports_text['date'];?></b><br>
                 <table border="0">
                 <?php if(!isset($_REQUEST['within'])) { $_REQUEST['within'] = 'year'; } ?>
                 <tr>

@@ -155,7 +155,7 @@ INSERT INTO `flyspray_prefs` VALUES (10, 'user_notify', '1', 'Force task notific
 INSERT INTO `flyspray_prefs` VALUES (11, 'admin_email', 'flyspray@example.com', 'Reply email address for notifications');
 INSERT INTO `flyspray_prefs` VALUES (12, 'assigned_groups', '1 2 3', 'Members of these groups can be assigned tasks');
 INSERT INTO `flyspray_prefs` VALUES (13, 'default_cat_owner', '0', 'Default category owner');
-INSERT INTO `flyspray_prefs` VALUES (14, 'lang_code', 'fr', 'Language');
+INSERT INTO `flyspray_prefs` VALUES (14, 'lang_code', 'en', 'Language');
 INSERT INTO `flyspray_prefs` VALUES (15, 'spam_proof', '1', 'Use confirmation codes for user registrations');
 INSERT INTO `flyspray_prefs` VALUES (16, 'anon_view', '1', 'Allow anonymous users to view this BTS');
 INSERT INTO `flyspray_prefs` VALUES (17, 'default_project', '1', 'Default project id');
@@ -175,7 +175,7 @@ CREATE TABLE `flyspray_projects` (
   PRIMARY KEY  (`project_id`)
 ) TYPE=MyISAM COMMENT='Details on multiple Flyspray projects' AUTO_INCREMENT=2 ;
 
-INSERT INTO `flyspray_projects` VALUES (1, 'Default Project', 'Bluey', 1, 0, 0, 'This message can be customised under the <b>Projects</b> admin menu...', 1, 'id category tasktype severity summary dateopened status openedby assignedto dueversion comments attachments progress');
+INSERT INTO `flyspray_projects` VALUES (1, 'Default Project', 'Bluey', 1, 0, 0, 'This message can be customised under the <b>Projects</b> admin menu...', 1, 'id category tasktype severity summary status progress');
 
 CREATE TABLE `flyspray_registrations` (
   `reg_id` mediumint(10) NOT NULL auto_increment,
@@ -247,4 +247,4 @@ CREATE TABLE `flyspray_users` (
   PRIMARY KEY  (`user_id`)
 ) TYPE=MyISAM COMMENT='Users for the Flyspray bug killer' AUTO_INCREMENT=6 ;
 
-INSERT INTO `flyspray_users` VALUES (1, 'super', '4tuKHcjxpFYag', 'Mr Super User', 1, 'super@yourdomain', 'super@yourdomain', 0, 1, '', '');
+INSERT INTO `flyspray_users` VALUES (1, 'super', '4tuKHcjxpFYag', 'Mr Super User', 1, 'super@example.com', 'super@example.com', 0, 1, '', '');

@@ -25,7 +25,7 @@ $reports_text = array (
 'tasks'         =>      'Tasks',
 'opened'        =>      'Opened',
 'closed'        =>      'Closed',
-'edited'        =>      'Assigned',
+'edited'        =>      'Edited',
 'assigned'      =>      'Assigned',
 'comments'      =>      'Comments',
 'attachments'   =>      'Attachments',
@@ -44,6 +44,7 @@ $reports_text = array (
 'duein'         =>      'Due in',
 
 'changelog'     =>      'Changelog',
+'date'          =>      'Date',
 
 );
 ?>

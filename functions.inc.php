@@ -454,7 +454,7 @@ if (!($totalcount / $perpage <= 1)) {
 		}
 
 		if($dateformat == '')		
-			$dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-j";
+			$dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-d";
 
 		return date($dateformat, $timestamp);
 	}

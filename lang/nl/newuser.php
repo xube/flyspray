@@ -1,5 +1,6 @@
 <?php
 
+global $newuser_text;
 $newuser_text = array (
 
 'registernewuser'	=>	'Registreer nieuwe gebruiker',

@@ -1,5 +1,6 @@
 <?php
 
+global $chpass_text;
 $chpass_text = array (
 
 'changeyourpass'	=>	'Verander uw wachtwoord',

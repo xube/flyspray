@@ -1,5 +1,6 @@
 <?php
 
+global $admin_text;
 $admin_text = array (
 
 'edituser'			=>	'Bewerk gebruiker',
@@ -7,9 +8,9 @@ $admin_text = array (
 'realname'			=>	'Echte naam',
 'emailaddress'		=>	'Email adres',
 'jabberid'			=>	'Jabber ID',
-'notifytype'		=>	'Berichttype',
+'notifytype'		=>	'Notificatie type',
 'group'				=>	'Groep',
-'accountenabled'	=>	'Account aan',
+'accountenabled'	=>	'Account ingeschakeld',
 'updatedetails'		=>	'Details bijwerken',
 'setglobally'		=>	'Deze voorkeur is globaal ingesteld',
 
@@ -33,10 +34,10 @@ $admin_text = array (
 'tasktypelist'		=>	'Lijst met taaktypes',
 'categorylist'		=>	'Categorielijst',
 'oslist'			=>	'Besturingssysteemlijst',
-'resolutionlist'	=>	'Lijst met voorstellen',
+'resolutionlist'	=>	'Lijst met oplossingen',
 'versionlist'		=>	'Versielijst',
 'severitylist'		=>	'Lijst met ernstigheden',
-'listnote'			=>	'Nota:  Het uitvinken van dit vakje in de bewerkmodus kan een paar taken wijzigen.  Veranderen van het naamveld verandert alle taken met die naam',
+'listnote'			=>	'Let op:  Het uitvinken van dit vakje in de bewerkmodus kan een paar taken wijzigen.  Veranderen van het naamveld verandert alle taken met die naam',
 'name'				=>	'Naam',
 'order'				=>	'Volgorde',
 'back'				=>	'Terug',
@@ -45,13 +46,13 @@ $admin_text = array (
 'show'				=>	'Toon',
 'owner'				=>	'Eigenaar',
 'selectowner'		=>	'Selecteer eigenaar',
-'update'			=>	'Pas aan',
+'update'			=>	'Aanpassen',
 'addnew'			=>	'Voeg nieuwe toe',
 
 'flysprayprefs'		=>	'Flyspray voorkeuren',
 'projecttitle'		=>	'Project titel',
 'baseurl'			=>	'Basis URL voor deze installatie',
-'replyaddress'		=>	'Antwoordadres voor berichten',
+'replyaddress'		=>	'Antwoordadres voor notificatie berichten',
 'themestyle'		=>	'Thema / Stijl',
 'language'			=>	'Taal',
 'anonview'			=>	'Laat anonieme gebruikers de taken zien',
@@ -65,7 +66,7 @@ $admin_text = array (
 'forcenotify'		=>	'Forceer taakberichten als',
 'none'				=>	'Nooit zenden',
 'userchoose'		=>	'Laat elke gebruiker kiezen',
-'email'				=>	'Email',
+'email'				=>	'E-mail',
 'jabber'			=>	'Jabber',
 'defaultcatowner'	=>	'Standaard categorie eigenaar',
 'noone'				=>	'Niemand',
@@ -78,7 +79,38 @@ $admin_text = array (
 
 'editcomment'		=>	'Bewerk commentaar',
 'commentby'			=>	'Commentaar door',
-'saveeditedcomment'	=>	'Slaag bewerkte commentaar op',
+'saveeditedcomment'	=>	'Sla bewerkte commentaar op',
+
+// Added in version 0.9.5
+
+'projectprefs'		=>	'Project voorkeuren',
+'defaultproject'	=>	'Standaard Project',
+'projectlists'		=>	'Project lijsten',
+'showlogo'			=>	'Toon titel logo',
+'intromessage'		=>	'Welkomstbericht',
+'isactive'			=>	'Project is actief',
+'createproject'		=>	'Maak een nieuw Project aan',
+
+// Added in version 0.9.6
+
+'nopermission'		=>  'Je hebt geen rechten om deze pagina te gebruiken.',
+'listordertip'		=>  'De volgorde van deze items zal verschijnen in de lijst',
+'listshowtip'		=>	'Toon dit item in de lijst',
+'categoryownertip'	=>  'Deze persoon ontvangt notificaties als een taak in deze categorie geopend wordt',
+'categoryparenttip'	=>	'Bovenliggende categorie waaronder deze nieuwe valt',
+'notsubcategory'	=>	'Geen - top-niveau categorie',
+'showinlineimages'	=>  'Toon plaatjes bijlagen inline',
+'dateformat'		=>	'Datum formaat',
+'dateformat_extended' => 'Gedetaileerd datum formaat',
+'subcategoryof'		=>	'Sub-categorie van',
+'visiblecolumns'	=>	'Kolommen getoond in taken lijst',
+'tense'			=>	'Tijd',
+'listtensetip'		=>	'Verleden, Nu of Toekomst',
+'past'			=>	'Verleden',
+'present'		=>	'Nu',
+'future'		=>	'Toekomst',
+'changepass'	=>      'Wijzig wachtwoord',
+'confirmpass'	=>      'Bevestig Wachtwoord',
 
 );
 ?>

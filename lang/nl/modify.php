@@ -1,5 +1,6 @@
 <?php
 
+global $modify_text;
 $modify_text = array (
 
 'modify'			=>	'Aanpassen',
@@ -110,7 +111,30 @@ $modify_text = array (
 'editcommentsaved'	=>	'Bijgewerkte commentaar opgeslagen.',
 'commentdeleted'	=>	'Commentaar is verwijderd.',
 
-'deleteattachment'	=>	'De bijlage is verwijderd.',
+// Added in version 0.9.5
 
+'project'                        =>        'Project:',
+'gotonewtask'                =>        'Ga direct naar de taak die je net aangemaakt hebt',
+'addanother'                =>        'Voeg nog een taak toe aan dit project',
+'projectcreated'        =>        'Je nieuwe Project is toegevoegd.  Volg onderstaande link om de categorie, besturingssystemen en versie-lijsten in te stellen',
+'customiseproject'        =>        'Customise this project',
+'projectupdated'        =>        'Project voorkeuren aangepast',
+'emptytitle'                =>        'Je liet het Project Titel veld leeg.  Ga terug en pas dit aan.',
+'loginbelow'                =>        'Je kunt in onderstaand formulier inloggen.',
+'attachmentdeleted' => 'De bijlage is verwijderd',
+
+// Added in 0.9.6
+
+'reminderadded'     =>   'Je herinnering is toegevoegd.',
+'reminderdeleted'   =>   'De geselecteerde herinnering is verwijderd.',
+'flyspraytask'		=>   'Flyspray taak',
+'fieldsmissing'     =>   'Sommige velden bevatten geen of foute gegevens.',
+'relatedinvalid'    =>   'Taak is niet gevonden.',
+'relatedproject'    =>   'Taak is aan een ander project gekoppeld.',
+'addanyway'         =>   'Toch toevoegen',
+'cancel'            =>   'Annuleren',
+'alreadyedited'     =>   'Deze taak is door iemand anders gewijzigd voordat jij hem opgeslagen had.',
+'saveanyway'        =>   'Sla de wijzigingen toch op',
+'priority'          =>   'Prioriteit',
 );
 ?>

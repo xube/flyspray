@@ -361,13 +361,13 @@ function list_heading($colname, $orderkey, $image = '')
         echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png" />';
       };
       
-      echo "</a></th>";
+      echo "</a></th>\n";
     }
     else
     {
       echo "<th>";
       echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\" />";
-      echo "</th>";
+      echo "</th>\n";
     }
   } 
 }

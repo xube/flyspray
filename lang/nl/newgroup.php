@@ -15,5 +15,9 @@ $newgroup_text = array (
 'addthisgroup'		=>	'Voeg deze groep to',
 'nopermission'		=>	'U hebt geen toestemming om deze pagina te gebruiken',
 
+//  Added in version 0.9.5
+
+'groupenabled'		=>	'Leden kunnen inloggen',
+
 );
 ?>
