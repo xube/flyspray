@@ -5,9 +5,8 @@
 # Some things to be aware of:
 # We no longer use the flyspray_users.group_in field.  Since there are now global groups and project-level
 # groups, there is a new table called flyspray_users_in_groups that keeps records of which user is in which
-# group(s).  There is currently NO upgrade script to populate this table.  If you want to use this development
-# version, you will need to create the entries yourself.  If you don't, your users will still retain their
-# GLOBAL permissions, but will not appear in the pages to manage users and groups.
+# group(s).  After you insert this page into your database, you will need to run the sql/pointers.php script,
+# which creates the entries in flyspray_users_in_groups for you.
 
 
 # New group permissions
@@ -88,10 +87,10 @@ CREATE TABLE `flyspray_users_in_groups` (
 
 #  Add the 'super' user into the above table (in the 'Admin' group)
 #  This will be written into the upgrade script to put all users into the global groups
-INSERT INTO `flyspray_users_in_groups` ( `record_id` , `user_id` , `group_id` )
-VALUES (
-'', '1', '1'
-);
+# INSERT INTO `flyspray_users_in_groups` ( `record_id` , `user_id` , `group_id` )
+# VALUES (
+# '', '1', '1'
+# );
 
 
 # Project permissions
