@@ -24,7 +24,7 @@ if ($_GET['order']) {
 
     // Yes. Now check its regex format for safety -- Limited range
     // Added | to end of match list to allow for blank variable
-    $regex='/^(id|proj|type|date|sev|cat|status|due|proj|lastedit|pri|openedby|reportedin|assignedto|prog|)$/';
+    $regex='/^(id|proj|type|date|sev|cat|status|due|lastedit|pri|openedby|reportedin|assignedto|prog|)$/';
     if (preg_match ($regex, $_GET['order']) &&
         preg_match ($regex, $_GET['order2'])) {
 

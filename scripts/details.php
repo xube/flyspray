@@ -38,11 +38,11 @@ if (($_SESSION['can_modify_jobs'] == '1'
 <form name="form1" action="index.php" method="post">
   <h2 class="severity<?php echo $task_details['task_severity'];?>">
     <?php echo "{$details_text['task']} #{$_GET['id']}";?> &mdash;
-    <input class="severity<?php echo $task_details['task_severity'];?>" type="text" name="item_summary" size="50" maxlength="100" value="<?php echo $item_summary;?>">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="update">
-  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-  <input type="hidden" name="edit_start_time" value="<?php echo date(U); ?>">
+    <input class="severity<?php echo $task_details['task_severity'];?>" type="text" name="item_summary" size="50" maxlength="100" value="<?php echo $item_summary;?>" />
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="update" />
+  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+  <input type="hidden" name="edit_start_time" value="<?php echo date(U); ?>" />
   </h2>
 
   <?php echo $details_text['attachedtoproject'] . " &mdash; ";?>
@@ -81,7 +81,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
 
       $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
 
-      echo "<br>{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
+      echo "<br />{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
 
     };
     ?>
@@ -212,7 +212,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
       <tr>
         <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
         <td>
-        <input type="hidden" name="old_assigned" value="<?php echo $task_details['assigned_to'];?>">
+        <input type="hidden" name="old_assigned" value="<?php echo $task_details['assigned_to'];?>" />
         <select id="assignedto" name="assigned_to">
         <?php
         // Get list of users
@@ -287,7 +287,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
         </td>
       </tr>
       <tr>
-        <td><label for="details"><?php echo $details_text['details'];?></label></td>
+        <td><label><?php echo $details_text['details'];?></label></td>
         <td colspan="3">
         <?php
         ?>
@@ -296,8 +296,8 @@ if (($_SESSION['can_modify_jobs'] == '1'
       </tr>
       <tr>
     <td class="buttons" colspan="4">
-    <input class="adminbutton" type="submit"  name="buSubmit" value="<?php echo $details_text['savedetails'];?>" onclick="Disable1()">
-    <input class="adminbutton" type="reset" name="buReset">
+    <input class="adminbutton" type="submit"  name="buSubmit" value="<?php echo $details_text['savedetails'];?>" onclick="Disable1()" />
+    <input class="adminbutton" type="reset" name="buReset" />
     </td>
   </tr>
 </table>
@@ -359,7 +359,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
       $date_edited = $task_details['last_edited_time'];
       $date_edited = $fs->formatDate($date_edited, true);
 
-      echo "<br>{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
+      echo "<br />{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
 
     };
     ?>
@@ -405,7 +405,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
       </tr>
       <tr>
         <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
-        <td>
+        <td id="assignedto">
         <?php
         // see if it's been assigned
         if (!$task_details['assigned_to']) {
@@ -433,13 +433,13 @@ if (($_SESSION['can_modify_jobs'] == '1'
         <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
         <td id="os"><?php echo $task_details['os_name'];?></td>
         <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
-        <td ><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?>></td>
+        <td id="percent"><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?> /></td>
       </tr>
 
     <!-- end of right column -->
       <tr>
         <td><label for="details"><?php echo $details_text['details'];?></label></td>
-        <td class="details" colspan="3">
+        <td id="details" class="details" colspan="3">
         <?php 
         // Change URLs to hyperlinks
         $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
@@ -459,13 +459,13 @@ if (($_SESSION['can_modify_jobs'] == '1'
       list($closedby_username, $closedby_realname) = $fs->dbFetchArray($get_closedby_name);
       $date_closed = $task_details['date_closed'];
       $date_closed = $fs->formatDate($date_closed, true);
-      echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br>";
+      echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br />";
 	  echo "{$details_text['date']}&nbsp;&nbsp;$date_closed.";
       ?>
-      <br>
+      <br />
       <?php echo $details_text['reasonforclosing'];?>&nbsp;&nbsp;
       <?php echo $task_details['resolution_name'];?>
-      <br>
+      <br />
       <?php
       if ($task_details['closure_comment'] != '') {
        echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
@@ -479,10 +479,10 @@ if (($_SESSION['can_modify_jobs'] == '1'
     if ($_SESSION['can_modify_jobs'] == '1' && $task_details['is_closed'] == '1') { ?>
   <form name="form2" action="index.php" method="post" id="formreopentask">
   <p>
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="reopen">
-      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['reopenthistask'];?>" onclick="Disable2()">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="reopen" />
+      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['reopenthistask'];?>" onclick="Disable2()" />
   </p>
   </form>
     <?php
@@ -492,11 +492,11 @@ if (($_SESSION['can_modify_jobs'] == '1'
     <form name="form2" action="index.php" method="post" id="formclosetask">
     <p>
         <?php echo $details_text['closetask'];?>&nbsp;
-        <input type="hidden" name="do" value="modify">
-        <input type="hidden" name="action" value="close">
-        <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>">
-        <!--<input type="hidden" name="item_summary" value="<?php echo $task_details['item_summary'];?>">-->
-        <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
+        <input type="hidden" name="do" value="modify" />
+        <input type="hidden" name="action" value="close" />
+        <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>" />
+        <!--<input type="hidden" name="item_summary" value="<?php echo $task_details['item_summary'];?>" />-->
+        <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
         <select class="adminlist" name="resolution_reason">
         <?php
         $get_resolution = $fs->dbQuery("SELECT resolution_id, resolution_name FROM flyspray_list_resolution ORDER BY list_position");
@@ -509,11 +509,11 @@ if (($_SESSION['can_modify_jobs'] == '1'
         };
         ?>
         </select>
-        <br>
+        <br />
         <?php echo $details_text['closurecomment'];?>
-        <br>
+        <br />
         <textarea class="admintext" name="closure_comment" rows="2" cols="30"></textarea>
-        <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" onclick="Disable2()">
+        <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" onclick="Disable2()" />
     </p>
     </form>
 
@@ -614,18 +614,18 @@ if ($area == 'comments') { ?>
     ?>
      <div class="tabentry"><a name="<?php echo $row['comment_id'];?>"></a>
       <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">
-      <img src=\"themes/{$project_prefs['theme_style']}/menu/comment.png\" /></a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
+      <img src=\"themes/{$project_prefs['theme_style']}/menu/comment.png\" alt=\"\" /></a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
       <?php
         // If the user is an admin, show the edit button
         if ($_SESSION['admin'] == '1') { ?>
         <div class="modifycomment">
         <form action="index.php" method="get">
         <p>
-          <input type="hidden" name="do" value="admin">
-          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-          <input type="hidden" name="area" value="editcomment">
-          <input type="hidden" name="id" value="<?php echo $row['comment_id'];?>">
-          <input class="adminbutton" type="submit" value="<?php echo $details_text['edit'];?>">
+          <input type="hidden" name="do" value="admin" />
+          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+          <input type="hidden" name="area" value="editcomment" />
+          <input type="hidden" name="id" value="<?php echo $row['comment_id'];?>" />
+          <input class="adminbutton" type="submit" value="<?php echo $details_text['edit'];?>" />
         </p>
         </form>
         <form action="index.php" method="post"
@@ -636,11 +636,11 @@ if ($area == 'comments') { ?>
           return false }
         ">
           <p>
-          <input type="hidden" name="do" value="modify">
-          <input type="hidden" name="action" value="deletecomment">
-          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-          <input type="hidden" name="comment_id" value="<?php echo $row['comment_id'];?>">
-          <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>">
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="deletecomment" />
+          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+          <input type="hidden" name="comment_id" value="<?php echo $row['comment_id'];?>" />
+          <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>" />
         </p>
         </form>
         </div>
@@ -662,13 +662,13 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
 
 <form action="index.php" method="post">
 <p class="admin">
-    <input type="hidden" name="do" value="modify">
-    <input type="hidden" name="action" value="addcomment">
-    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-    <label><?php echo $details_text['addcomment'];?><br>
+    <input type="hidden" name="do" value="modify" />
+    <input type="hidden" name="action" value="addcomment" />
+    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+    <label><?php echo $details_text['addcomment'];?><br />
     <textarea name="comment_text" cols="72" rows="10"></textarea></label>
-    <br>
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>">
+    <br />
+    <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />
 </p>
 </form>
 
@@ -705,11 +705,11 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
         <div class="modifycomment">
         <form action="index.php" method="post" onSubmit="if(confirm('Really delete this attachment?')) {return true} else {return false }">
           <p>
-          <input type="hidden" name="do" value="modify">
-          <input type="hidden" name="action" value="deleteattachment">
-          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-          <input type="hidden" name="attachment_id" value="<?php echo $row['attachment_id'];?>">
-          <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>">
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="deleteattachment" />
+          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+          <input type="hidden" name="attachment_id" value="<?php echo $row['attachment_id'];?>" />
+          <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>" />
          </p>
         </form>
         </div>
@@ -732,10 +732,10 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
             $new_height = round(($height*$v_fraction),0);
 
 			// Display the resized image, with a link to the fullsized one
-            echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\"></a>";
+            echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\" /></a>";
          } else {
 			 // If the image is already small, just display it.
-             echo "<br><img src=\"?getfile={$row['attachment_id']}\">";
+             echo "<br /><img src=\"?getfile={$row['attachment_id']}\" />";
          };
 
       // If the attachment isn't an image, or the inline images is OFF,
@@ -746,10 +746,10 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
 		 list($main, $specific) = split('[/]', $row['file_type']);
 		 if(file_exists("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png")) {
             list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png");
-	        echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png\" width=\"$width\" height=\"$height\"></a>";
+	        echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png\" width=\"$width\" height=\"$height\" /></a>";
          } elseif (file_exists("themes/{$project_prefs['theme_style']}/mime/$main.png")) {
             list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/$main.png");
-	        echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/$main.png\" width=\"$width\" height=\"$height\"></a>";
+	        echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/$main.png\" width=\"$width\" height=\"$height\" /></a>";
 		 };
       };
 
@@ -785,13 +785,13 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
 <table class="admin">
   <tr>
     <td>
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="addattachment">
-      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="addattachment" />
+      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
       <label><?php echo $details_text['uploadafile'];?></label>
     </td>
     <td>
-      <input type="file" size="55" name="userfile">
+      <input type="file" size="55" name="userfile" />
     </td>
   </tr>
   <tr>
@@ -799,11 +799,11 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
       <label><?php echo $details_text['description'];?></label>
     </td>
     <td>
-      <input class="admintext" type="text" name="file_desc" size="70" maxlength="100">
+      <input class="admintext" type="text" name="file_desc" size="70" maxlength="100" />
     </td>
   </tr>
   <tr>
-    <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $details_text['uploadnow'];?>"></td>
+    <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $details_text['uploadnow'];?>" /></td>
   </tr>
 </table>
 </form>
@@ -837,12 +837,12 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
          <div class="modifycomment">
           <form action="index.php" method="post">
             <p>
-            <input type="hidden" name="do" value="modify">
-            <input type="hidden" name="action" value="remove_related">
-            <input type="hidden" name="id" value="<?php echo $_GET['id'];?>">
-            <input type="hidden" name="related_id" value="<?php echo $row['related_id'];?>">
-            <input type="hidden" name="related_task" value="<?php echo $row['related_task'];?>">
-            <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
+            <input type="hidden" name="do" value="modify" />
+            <input type="hidden" name="action" value="remove_related" />
+            <input type="hidden" name="id" value="<?php echo $_GET['id'];?>" />
+            <input type="hidden" name="related_id" value="<?php echo $row['related_id'];?>" />
+            <input type="hidden" name="related_task" value="<?php echo $row['related_task'];?>" />
+            <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
             </p>
           </form>
          </div>
@@ -858,12 +858,12 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
 
   <form action="index.php" method="post" id="formaddrelatedtask">
     <p>
-    <input type="hidden" name="do" value="modify">
-    <input type="hidden" name="action" value="add_related">
-    <input type="hidden" name="this_task" value="<?php echo $_GET['id'];?>">
+    <input type="hidden" name="do" value="modify" />
+    <input type="hidden" name="action" value="add_related" />
+    <input type="hidden" name="this_task" value="<?php echo $_GET['id'];?>" />
     <label><?php echo $details_text['addnewrelated'];?>
-    <input name="related_task" size="10" maxlength="10"></label>
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['add'];?>">
+    <input name="related_task" size="10" maxlength="10" /></label>
+    <input class="adminbutton" type="submit" value="<?php echo $details_text['add'];?>" />
     </p>
   </form>
 
@@ -880,7 +880,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
       $get_summary = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($row['this_task']));
       while ($subrow = $fs->dbFetchArray($get_summary)) {
         $summary = stripslashes($subrow['item_summary']);
-        echo "<a href=\"?do=details&amp;id={$row['this_task']}\">#{$row['this_task']} &mdash; $summary</a><br>";
+        echo "<a href=\"?do=details&amp;id={$row['this_task']}\">#{$row['this_task']} &mdash; $summary</a><br />";
       };
     };
     echo "</p></div>";
@@ -906,11 +906,11 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
           <div class="modifycomment">
           <form action="index.php" method="post">
               <p>
-                <input type="hidden" name="do" value="modify">
-                <input type="hidden" name="action" value="remove_notification">
-                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-                <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>">
-                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
+                <input type="hidden" name="do" value="modify" />
+                <input type="hidden" name="action" value="remove_notification" />
+                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+                <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>" />
+                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
               </p>
           </form>
           </div>
@@ -938,10 +938,10 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
     $fs->listUsers();
     ?>
     </select>
-    <input type="hidden" name="do" value="modify">
-    <input type="hidden" name="action" value="add_notification">
-    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['addtolist'];?>">
+    <input type="hidden" name="do" value="modify" />
+    <input type="hidden" name="action" value="add_notification" />
+    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+    <input class="adminbutton" type="submit" value="<?php echo $details_text['addtolist'];?>" />
   </p>
   </form>
   </div>
@@ -958,21 +958,21 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
   ?>
   <form action="index.php" method="post" id="addmyself">
     <p>
-    <input type="hidden" name="do" value="modify">
-    <input type="hidden" name="action" value="add_notification">
-    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-    <input type="hidden" name="user_id" value="<?php echo $_SESSION['userid'];?>">
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['addmyself'];?>">
+    <input type="hidden" name="do" value="modify" />
+    <input type="hidden" name="action" value="add_notification" />
+    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+    <input type="hidden" name="user_id" value="<?php echo $_SESSION['userid'];?>" />
+    <input class="adminbutton" type="submit" value="<?php echo $details_text['addmyself'];?>" />
     </p>
   </form>
   <?php } else { ?>
   <form action="index.php" method="post" id="removemyself">
     <p>
-    <input type="hidden" name="do" value="modify">
-    <input type="hidden" name="action" value="remove_notification">
-    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-    <input type="hidden" name="user_id" value="<?php echo $_SESSION['userid'];?>">
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['removemyself'];?>">
+    <input type="hidden" name="do" value="modify" />
+    <input type="hidden" name="action" value="remove_notification" />
+    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+    <input type="hidden" name="user_id" value="<?php echo $_SESSION['userid'];?>" />
+    <input class="adminbutton" type="submit" value="<?php echo $details_text['removemyself'];?>" />
     </p>
   </form>
   <?php
@@ -1001,11 +1001,11 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
           <div class="modifycomment">
           <form action="index.php" method="post">
               <p>
-                <input type="hidden" name="do" value="modify">
-                <input type="hidden" name="action" value="deletereminder">
-                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-                <input type="hidden" name="reminder_id" value="<?php echo $row['reminder_id'];?>">
-                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
+                <input type="hidden" name="do" value="modify" />
+                <input type="hidden" name="action" value="deletereminder" />
+                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+                <input type="hidden" name="reminder_id" value="<?php echo $row['reminder_id'];?>" />
+                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
               </p>
           </form>
           </div>
@@ -1014,7 +1014,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
         <?php
         }
 		echo "<div class=\"tabentry\">";
-        echo "<em>{$details_text['remindthisuser']}:</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['to_user_id']}\">{$subrow['real_name']} ( {$subrow['user_name']})</a><br>";
+        echo "<em>{$details_text['remindthisuser']}:</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['to_user_id']}\">{$subrow['real_name']} ( {$subrow['user_name']})</a><br />";
 		
 		// Work out the unit of time to display
 		if ($row['how_often'] < 86400) {
@@ -1027,11 +1027,11 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
 		
 		echo "<em>{$details_text['thisoften']}:</em> $how_often";
 		
-		echo "<br>";
+		echo "<br />";
 		
 		echo "<em>{$details_text['message']}:</em> {$row['reminder_message']}";
 
-		echo "<br><br></div>";
+		echo "<br /><br /></div>";
       };
     };
   ?>
@@ -1045,9 +1045,9 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
 
 <div class="tabentry">
  <form action="index.php" method="post" id="formaddreminder">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="addreminder">
-  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="addreminder" />
+  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
   <em><?php echo $details_text['remindthisuser'];?></em>
   <select class="adminlist" name="to_user_id">
     <?php
@@ -1056,10 +1056,10 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
     ?>
     </select>
 
-   <br>
+   <br />
 
    <em><?php echo $details_text['thisoften'];?></em>
-   <input type="admintext" name="timeamount1" size="3" maxlength="3">
+   <input type="admintext" name="timeamount1" size="3" maxlength="3" />
    
    <select class="adminlist" name="timetype1">
      <option value="3600"><?php echo $details_text['hours'];?></option>
@@ -1067,10 +1067,10 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
      <option value="604800"><?php echo $details_text['weeks'];?></option>
    </select>
 
-  <br>
+  <br />
 
   <em><?php echo $details_text['startafter'];?></em>
-  <input type="admintext" name="timeamount2" size="3" maxlength="3">
+  <input type="admintext" name="timeamount2" size="3" maxlength="3" />
   
   <select class="adminlist" name="timetype2">
      <option value="3600"><?php echo $details_text['hours'];?></option>
@@ -1078,13 +1078,13 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
      <option value="604800"><?php echo $details_text['weeks'];?></option>
   </select>
   
-  <br>
+  <br />
   
   <textarea class="admintext" name="reminder_message" rows="10" cols="72"><?php echo "{$details_text['defaultreminder']}\n\n{$flyspray_prefs['base_url']}?do=details&amp;id={$_GET['id']}";?></textarea>
   
-  <br>
+  <br />
   
-  <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>">
+  <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>" />
   </div>
   </form>
 </div>

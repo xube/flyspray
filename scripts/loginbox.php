@@ -16,7 +16,7 @@
     <td>
           <?php
           if ($_GET['do']) {
-            echo "<input type=\"hidden\" name=\"task\" value=\"{$_GET['id']}\">";
+            echo "<input type=\"hidden\" name=\"task\" value=\"{$_GET['id']}\" />";
           };
           ?>
     <input class="adminbutton" type="submit" value="<?php echo $loginbox_text['login'];?>" />

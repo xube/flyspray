@@ -10,18 +10,20 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
 
 <div id="taskdetails">
 
+<map id="formnewtask" name="formnewtask">
 <form name="form1" action="index.php" method="post">
+<p>
 <table>
 <colgroup><col width="25%" span="4"></colgroup>
   <tr>
     <td>
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="newtask">
-      <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="newtask" />
+      <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
       <label for="itemsummary"><?php echo $newtask_text['summary'];?></label>
     </td>
     <td colspan="3">
-      <input id="itemsummary" type="text" name="item_summary" size="50" maxlength="100">
+      <input id="itemsummary" type="text" name="item_summary" size="50" maxlength="100" />
     </td>
   </tr>
   <tr>
@@ -192,12 +194,12 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
     <?php
     if ($_SESSION['userid'] != '') {
       echo "<td>";
-      echo "{$newtask_text['notifyme']}&nbsp;&nbsp;<input class=\"admintext\" type=\"checkbox\" name=\"notifyme\" value=\"1\" CHECKED>";
+      echo "{$newtask_text['notifyme']}&nbsp;&nbsp;<input class=\"admintext\" type=\"checkbox\" name=\"notifyme\" value=\"1\" checked />";
       echo "</td>";
     };
     ?>
     <td colspan="3">
-    <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newtask_text['addthistask'];?>" onclick="Disable1()">
+    <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newtask_text['addthistask'];?>" onclick="Disable1()" />
     </td>
   </tr>
 </table>
