@@ -2,7 +2,7 @@
 // As of 24 July 2004, all editable config is stored in flyspray.conf.php
 // There should be no reason to edit this file anymore, except if you 
 // move flyspray.conf.php to a directory where a browser can't access it.
-// (RECOMMENDED)
+// (RECOMMENDED).
 
 // You might like to uncomment the next line if you are receiving lots of
 // PHP NOTICE errors.  We are in the process of making Flyspray stop making
@@ -35,8 +35,8 @@ if (!isset($basedir)
 
 
 include_once ( "$adodbpath" );
-include ( "$basedir/functions.inc.php" );
-include ( "$basedir/regexp.php" );
+include ( "$basedir/includes/functions.inc.php" );
+include ( "$basedir/includes/regexp.php" );
 
 // Check PHP Version (Must Be > 4.2)
 if (PHP_VERSION  < '4.2.0') {

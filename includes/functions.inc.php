@@ -164,21 +164,28 @@ function GetTaskDetails($task_id) {
    $flyspray_prefs = $this->GetGlobalPrefs();
    $lang = $flyspray_prefs['lang_code'];
 
-        $get_details = $this->dbQuery("SELECT *,
-                                                vr.version_name as reported_version_name,
-                                                vd.version_name as due_in_version_name
-                                                FROM flyspray_tasks t
-                                                LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
-                                                LEFT JOIN flyspray_list_category c ON t.product_category = c.category_id
-                                                LEFT JOIN flyspray_list_os o ON t.operating_system = o.os_id
-                                                LEFT JOIN flyspray_list_resolution r ON t.resolution_reason = r.resolution_id
-                                                LEFT JOIN flyspray_list_tasktype tt ON t.task_type = tt.tasktype_id
-                                                LEFT JOIN flyspray_list_version vr ON t.product_version = vr.version_id
-                                                LEFT JOIN flyspray_list_version vd ON t.closedby_version = vd.version_id
+        $get_details = $this->dbQuery("SELECT t.*,
+                                              p.*,
+                                              c.category_name,
+                                              o.os_name,
+                                              r.resolution_name,
+                                              tt.tasktype_name,
+                                              vr.version_name as reported_version_name,
+                                              vd.version_name as due_in_version_name
+                                              FROM flyspray_tasks t
+                                              LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
+                                              LEFT JOIN flyspray_list_category c ON t.product_category = c.category_id
+                                              LEFT JOIN flyspray_list_os o ON t.operating_system = o.os_id
+                                              LEFT JOIN flyspray_list_resolution r ON t.resolution_reason = r.resolution_id
+                                              LEFT JOIN flyspray_list_tasktype tt ON t.task_type = tt.tasktype_id
+                                              LEFT JOIN flyspray_list_version vr ON t.product_version = vr.version_id
+                                              LEFT JOIN flyspray_list_version vd ON t.closedby_version = vd.version_id
 
-                                                WHERE t.task_id = ?
-                                                ", array($task_id));
+                                              WHERE t.task_id = ?
+                                              ", array($task_id));
+        
         $get_details = $this->dbFetchArray($get_details);
+    
     if (empty($get_details))
            $get_details = array();
 
@@ -605,6 +612,89 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
       return false;
     };
   }
+
+   // Get the current user's details
+   function getCurrentUser($user_id)
+   {
+    
+      // Get current user details.  We need this to see if their account is enabled or disabled
+      $result = $this->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($user_id));
+      $current_user = $this->dbFetchArray($result);
+  
+      return $current_user;
+   
+   // End of getCurrentUser() function      
+   }
+
+
+   // Get the permissions for the current user
+   function checkPermissions($user_id, $project_id)
+   {
+   
+   $current_user = $this->getCurrentUser($user_id);
+   
+  // Get the global group permissions for the current user
+  $global_permissions = $this->dbFetchArray($this->dbQuery("SELECT *
+                                                        FROM flyspray_groups g
+                                                        LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
+                                                        WHERE uig.user_id = ? and g.belongs_to_project = '0'",
+                                                        array($user_id)
+                                                       ));
+  
+
+  // Get the project-level group for this user, and put the permissions into an array
+  $search_project_group = $this->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
+  while ($row = $this->dbFetchRow($search_project_group)) {
+    $check_in = $this->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($user_id, $row['group_id']));
+    if ($this->dbCountRows($check_in) > '0') {
+      $project_permissions = $row;
+    };
+  };
+  
+  // Define which fields we care about from the groups information
+  $field = array(
+        '1'  => 'is_admin',
+		  '2'  => 'manage_project',
+		  '3'  => 'view_tasks',
+		  '4'  => 'open_new_tasks',
+		  '5'  => 'modify_own_tasks',
+		  '6'  => 'modify_all_tasks',
+		  '7'  => 'view_comments',
+		  '8'  => 'add_comments',
+		  '9'  => 'edit_comments',
+		  '10' => 'delete_comments',
+		  '11' => 'view_attachments',
+		  '12' => 'create_attachments',
+		  '13' => 'delete_attachments',
+		  '14' => 'view_history',
+		  '15' => 'close_own_tasks',
+		  '16' => 'close_other_tasks',
+		  '17' => 'assign_to_self',
+		  '18' => 'assign_others_to_self',
+		  '19' => 'view_reports',
+		 );
+
+  // Now, merge the two arrays, making the highest permission active (basically, use a boolean OR)
+  $permissions = array();
+
+  while (list($key, $val) = each($field)) {
+    if ($global_permissions[$val] == '1' OR $project_permissions[$val] == '1') {
+      $permissions[$val] = '1';
+    } else {
+      $permissions[$val] = '0';
+      
+    };
+
+  };
+   
+   $permissions['account_enabled'] = $current_user['account_enabled'];
+   $permissions['user_pass'] = $current_user['user_pass'];
+   $permissions['group_open'] = $global_permissions['group_open'];
+   
+   return $permissions;
+   
+   // End of checkPermissions() function
+   }
 
 
 ///////////////////////////

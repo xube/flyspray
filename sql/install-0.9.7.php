@@ -7,7 +7,7 @@ if (isset($_GET['p'])) {
 };
 
 session_start();
-include('../functions.inc.php');
+include('../includes/functions.inc.php');
 ?>
 
 
@@ -29,11 +29,12 @@ include('../functions.inc.php');
 
 <?php
 
-if (file_exists('SETUP_HAS_RUN')) {
-   die('Setup has already been completed.  You cannot run it again.');
-};
-
 echo '<h3>Flyspray setup</h3>';
+
+
+if (file_exists('../flyspray.conf.php')) {
+   die('Setup has already been completed.  If you really want to run it again, remove flyspray.conf.php');
+};
 
 //////////////////////////////
 // Page one, the intro page //
@@ -227,8 +228,8 @@ if (is_writable($filename)) {
    echo '<br /><br />';
    echo 'FIXME: Generate a cookie salt on this page, instead of using the same one for every install.';
    echo '<br /><br />';
-   echo 'Next, we are going to try setting up your database using the settings you just provided.';
-   echo 'Note that the next page may be a little slow to load, because it has a lot of database work to do.';
+   echo 'Next, we are going to try setting up your database using the settings you just provided.  ';
+   echo 'The next page may be a little slow to load, because it has a lot of database work to do.';
    echo '<br /><br />';
    echo "\n";
    echo '<form action="install-0.9.7.php" method="get">';
@@ -265,9 +266,9 @@ include_once ($_SESSION['adodbpath']);
 $fs = new Flyspray;
 
 // Open a connection to the database
-$res = $fs->dbOpen($_SESSION['dbhost'], $_SESSION['dbuser'], $_SESSION['dbpass'], $_SESSION['dbname'], $_SESSION['dbtype']);
+$res = @$fs->dbOpen($_SESSION['dbhost'], $_SESSION['dbuser'], $_SESSION['dbpass'], $_SESSION['dbname'], $_SESSION['dbtype']);
 if (!$res) {
-  die('Flyspray was unable to connect to the database.  Go back and <a href="install-0.9.7.php?p=2">Check your settings!</a>');
+   die('Flyspray was unable to connect to the database.<br /><br /><b>The reason was:</b> '.$fs->dblink->ErrorMsg().'.<br /><br /> Go back and <a href="install-0.9.7.php?p=2">check your settings!</a>');
 }
 
 // Retrieve th database schema into a string
@@ -286,7 +287,7 @@ while (list($key, $val) = each($sql)) {
 //$update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = $base_url WHERE pref_name = 'base_url'");
 
 // Create a 'completed' file to stop this script running again
-touch($_SESSION['basedir'] . 'sql/SETUP_HAS_RUN');
+//touch($_SESSION['basedir'] . 'sql/SETUP_HAS_RUN');
 
 echo 'The Flyspray configuration process is complete.  The Flyspray developers hope that you have many hours';
 echo 'of increased productivity though the use of this software.  If you find Flyspray useful, please consider';

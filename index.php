@@ -64,7 +64,7 @@ if ($_GET['getfile']) {
 
   // Start Output Buffering and gzip encoding if setting is present.
   // This functionality provided Mariano D'Arcangelo
-  if ($conf_array['general']['output_buffering']=='gzip') include 'scripts/gzip_compress.php';
+  if ($conf_array['general']['output_buffering']=='gzip') include 'includes/gzip_compress.php';
   elseif ($conf_array['general']['output_buffering']=='on') ob_start();
   // ob_end_flush() isn't needed in MOST cases because it is called automatically
   // at the end of script execution by PHP itself when output buffering is turned on
@@ -83,8 +83,8 @@ if ($_GET['getfile']) {
   <link rel="icon" href="./favicon.ico" type="image/png" />
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
   <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
-  <script type="text/javascript" src="functions.js"></script>
-  <script type="text/javascript" src="styleswitcher.js"></script>
+  <script type="text/javascript" src="includes/functions.js"></script>
+  <script type="text/javascript" src="includes/styleswitcher.js"></script>
   <style type="text/css">@import url(jscalendar/calendar-win2k-1.css);</style>
   <script type="text/javascript" src="jscalendar/calendar_stripped.js"></script>
   <script type="text/javascript" src="jscalendar/lang/calendar-en.js"></script>
@@ -136,72 +136,21 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project']))) {
       die("Stop hacking your cookies, you naughty fellow!");
     };
+   
+   // Fetch info on the current user
+   $current_user = $fs->getCurrentUser($_COOKIE['flyspray_userid']);
+   
+   // Fetch the permissions array for the current user
+   $permissions = $fs->checkPermissions($current_user['user_id'], $_COOKIE['flyspray_project']);
 
-  // Get current user details.  We need this to see if their account is enabled or disabled
-  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
-  $current_user = $fs->dbFetchArray($result);
-
-  // Get the global group permissions for the current user
-  $global_permissions = $fs->dbFetchArray($fs->dbQuery("SELECT *
-                                                        FROM flyspray_groups g
-                                                        LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
-                                                        WHERE uig.user_id = ? and g.belongs_to_project = '0'",
-                                                        array($_COOKIE['flyspray_userid'])
-                                                       ));
-  
-
-  // Get the project-level group for this user, and put the permissions into an array
-  $search_project_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
-  while ($row = $fs->dbFetchRow($search_project_group)) {
-    $check_in = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($_COOKIE['flyspray_userid'], $row['group_id']));
-    if ($fs->dbCountRows($check_in) > '0') {
-      $project_permissions = $row;
-    };
-  };
-  
-  // Define which fields we care about from the groups information
-  $field = array(
-        '1'  => 'is_admin',
-		  '2'  => 'manage_project',
-		  '3'  => 'view_tasks',
-		  '4'  => 'open_new_tasks',
-		  '5'  => 'modify_own_tasks',
-		  '6'  => 'modify_all_tasks',
-		  '7'  => 'view_comments',
-		  '8'  => 'add_comments',
-		  '9'  => 'edit_comments',
-		  '10' => 'delete_comments',
-		  '11' => 'view_attachments',
-		  '12' => 'create_attachments',
-		  '13' => 'delete_attachments',
-		  '14' => 'view_history',
-		  '15' => 'close_own_tasks',
-		  '16' => 'close_other_tasks',
-		  '17' => 'assign_to_self',
-		  '18' => 'assign_others_to_self',
-		  '19' => 'view_reports',
-		 );
-
-  // Now, merge the two arrays, making the highest permission active (basically, use a boolean OR)
-  $permissions = array();
-
-  while (list($key, $val) = each($field)) {
-    if ($global_permissions[$val] == '1' OR $project_permissions[$val] == '1') {
-      $permissions[$val] = '1';
-    } else {
-      $permissions[$val] = '0';
-      
-    };
-
-  };
 
   // Check that the user hasn't spoofed the cookie contents somehow
   if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], "$cookiesalt")
       // And that their account is enabled
-      && $current_user['account_enabled'] == '1'
+      && $permissions['account_enabled'] == '1'
       // and that their group is enabled
-      && $global_permissions['group_open'] == '1')
-    {
+      && $permissions['group_open'] == '1'
+     ){
 
     ////////////////////////
     // Show the user menu //
@@ -326,7 +275,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     } else {
       echo "<br />{$language['disabledaccount']}";
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=scripts/authenticate.php?action=logout\">\n";
-      Header("Location: scripts/authenticate.php?action=logout");
+      Header("Location: ?do=authenticate&action=logout");
     // End of checking if the user's account is open
     };
 
