@@ -103,6 +103,7 @@ $admin_text = array (
 'dateformat'		=>	'Date format',
 'dateformat_extended' => 'Detailed date format',
 'subcategoryof'		=>	'Sub-category of',
+'visiblecolumns'	=>	'Columns displayed in task list',
 
 
 );

@@ -7,6 +7,8 @@ get_language_pack($lang, 'index');
 switch ($_GET['order']) {
   case "id": $orderby = 'flyspray_tasks.task_id';
   break;
+  case "project_title": $orderby = 'attached_to_project';
+  break;
   case "type": $orderby = 'task_type';
   break;
   case "date": $orderby = 'date_opened';
@@ -282,6 +284,98 @@ $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
 </p>
 </form>
 
+<?php
+/**
+ * Displays header cell for report list
+ *
+ * @param string $colname	The name of the column
+ * @param string $orderkey	The actual key to use when ordering the list
+ */
+function list_heading($colname, $orderkey)
+{
+  global $project_prefs;
+  global $index_text;
+  global $get;
+  
+  if(ereg("$colname", $project_prefs['visible_columns']))
+  { 
+    if($orderkey)
+    {
+      echo "<th ";
+      if($_GET['order'] == "$orderkey")
+      {
+        echo "class=\"severity3\"";
+      }
+      echo ">";
+      echo "<a title=\"";
+      echo $index_text['sortthiscolumn'];
+      echo "\" href=\"?order=$orderkey";
+      echo $get;
+      echo "&amp;sort=";
+      if (($_GET['sort'] == "desc") && ($_GET['order'] == "$orderkey"))
+      {
+        echo "asc";
+      }
+      else
+      {
+        echo "desc";
+      }
+      echo "\">";
+      echo $index_text[$colname];
+      echo "</a></th>";
+    }
+    else
+    {
+      echo "<th>";
+      echo $index_text[$colname];
+      echo "</th>";
+    }
+  } 
+}
+
+/**
+ * Displays data cell for report list
+ *
+ * @param string $colname	The name of the column
+ * @param string $cellvalue	The value to display in the cell
+ * @param integer $nowrap	Whether to force the cell contents not to wrap
+ * @param string $url		A URL to wrap around the cell contents
+ */
+function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
+{
+  global $project_prefs;
+
+  if(ereg("$colname", $project_prefs['visible_columns']))
+  {
+    // We have a problem with these conversions applied to the progress cell
+    if($colname != "progress")
+    {
+      $cellvalue = str_replace("&", "&amp;", $cellvalue);
+      $cellvalue = str_replace("<", "&lt;", $cellvalue);
+      $cellvalue = stripslashes($cellvalue);
+    }
+    
+    // Check if we're meant to force this cell not to wrap
+    if($nowrap)
+    {
+      $cellvalue = str_replace(" ", "&nbsp;", $cellvalue);
+    }
+    
+    echo "<td class=\"project_$colname\">";
+    if($url)
+    {
+      echo "<a href=\"$url\">$cellvalue";
+    }
+    else
+    {
+      echo "$cellvalue";
+    }
+    echo "</td>\n";
+  }
+}
+
+?>
+
 
 <?php
 // Check that the requested project is active
@@ -293,31 +387,24 @@ if ($getproject['project_is_active'] == 1) {
 <table id="tasklist">
 <thead>
   <tr>
-  <th class="taskid">
-  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=id<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "id") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['id'];?></a>
-  </th>
-  <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=type<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "type") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['tasktype'];?></a>
-  </th>
-  <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=sev<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "sev") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['severity'];?></a>
-  </th>
-  <th><?php echo $index_text['summary'];?></th>
-  <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>" href="?order=date<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "date") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['dateopened'];?></a>
-  </th>
-  <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=status<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "status") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['status'];?></a>
-  </th>
-  <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=due<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "due") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['dueversion'];?></a>
-  </th>
-  <th>
-  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=prog<?php echo $get;?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "prog") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['progress'];?></a>
-  </th>
+
+  <?php
+  list_heading('id','id');
+  list_heading('project','proj');
+  list_heading('tasktype','type');  
+  list_heading('category','cat');
+  list_heading('severity','sev');
+  list_heading('summary','');
+  list_heading('dateopened','date');
+  list_heading('status','status');
+  list_heading('lastedit', 'lastedit');
+  list_heading('dueversion','due');
+  list_heading('progress','prog');
+  ?>
+
   </tr>
 </thead>
-<tfoot><tr><td colspan="8">
+<tr><td colspan="8">
 <?php
  
 // SQL JOIN condition
@@ -341,7 +428,7 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
 
 ?>
-</td></tr></tfoot>
+</td></tr>
 
 
 
@@ -354,6 +441,10 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
 
   while ($task_details = $fs->dbFetchArray($getsummary)) {
+
+    // Get the full project title
+    $get_project_title = $fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id=?", array($task_details['project']));
+    $project = $fs->dbFetchArray($get_project_title);
 
     // Get the full tasktype name
     $get_tasktype_name = $fs->dbQuery("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id=?", array($task_details['task_type']));
@@ -377,6 +468,23 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     $get_due_name = $fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id=?", array($task_details['closedby_version']));
     list($due) = $fs->dbFetchArray($get_due_name);
 
+    // Convert the date_opened to a human-readable format
+    $date_opened = $fs->formatDate($task_details['date_opened'], false);
+
+    // Convert the last_edited_time to a human-readable format
+    if ($task_details['last_edited_time'] != '0') {
+      $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
+    } else {
+      $last_edited_time = $date_opened;
+    };
+    
+    // Set the status text to 'closed' if this task is closed
+    if ($task_details['is_closed'] == "1")
+    {
+      $status = $index_text['closed'];
+    }
+    
+    // Start displaying the cells for this row
     echo "<tr class=\"severity{$task_details['task_severity']}\"
     onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'
     onmouseover=\"this.className = 'severity{$task_details['task_severity']}_over';
@@ -384,44 +492,19 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     onmouseout=\"this.className = 'severity{$task_details['task_severity']}';
     this.style.cursor = 'default'\">\n";
 
-
-    echo "<td class=\"taskid\">\n";
-    echo "<a href=\"?do=details&amp;id={$task_details['task_id']}\">{$task_details['task_id']}</a>\n</td>\n";
-
-    $tasktype_info = str_replace(" ", "&nbsp;", $tasktype_info['tasktype_name']);
-    echo "<td class=\"tasktype\">$tasktype_info\n";
-    echo "\n</td>\n";
-
-    $severity = str_replace(" ", "&nbsp;", $severity);
-    echo "<td class=\"severity\">$severity\n";
-    echo "\n</td>\n";
-
-    echo "<td class=\"summary\">\n";
-    $item_summary = str_replace("&", "&amp;", $task_details['item_summary']);
-    $item_summary = str_replace("<", "&lt;", $item_summary);
-    $item_summary = stripslashes($item_summary);
-    echo "<a href=\"?do=details&amp;id={$task_details['task_id']}\">$item_summary</a>\n</td>\n";
-
-    $date_opened = $task_details['date_opened'];
-    $date_opened = $fs->formatDate($date_opened, false);
-    echo "<td class=\"taskdate\">\n";
-    echo "$date_opened\n</td>\n";
-
-    $status = str_replace(" ", "&nbsp;", $status);
-    echo "<td class=\"status\">\n";
-    if ($task_details['is_closed'] == "1") {
-		echo $index_text['closed'];
-	} else {
-		echo "$status\n</td>\n";
-	};
-
-    $due = str_replace(" ", "&nbsp;", $due);
-    echo "<td class=\"version\">\n";
-    echo "$due\n</td>\n";
-
-    echo "<td class=\"progress\">\n";
-    echo "<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\">\n</td>\n";
-
+    list_cell("id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
+    list_cell("project",$task_details['project_title'],1);
+    list_cell("tasktype",$tasktype_info['tasktype_name'],1);
+    list_cell("category",$category,1);
+    list_cell("severity",$severity,1);
+    list_cell("summary",$task_details['item_summary'],0,"?do=details&amp;id={$task_details['task_id']}");
+    list_cell("opened",$date_opened);
+    list_cell("status",$status,1);
+    list_cell("lastedit",$last_edited_time);
+    list_cell("dueversion",$due,1);
+    list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\">\n");
+    
+    // The end of this row
     echo "</tr>\n";
   };
   ?>

@@ -23,7 +23,7 @@ if ($_GET['getfile']) {
 if ($_GET['order']) {
 
     // Yes. Now check its' regex format for safety -- Limited range
-    if (preg_match ("/^(id|type|date|sev|cat|status|prog|due)$/", $_GET['order'])) {
+    if (preg_match ("/^(id|type|date|sev|cat|status|prog|due|proj|lastedit)$/", $_GET['order'])) {
 
       //continue;
 

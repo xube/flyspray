@@ -223,7 +223,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
        }
     }
     else {
-       fputs ( $socket, '<message to="' . $vTo . '" ><body>' . $sBody . '</body><subject>' . $sSubject . '</subject></message>' );
+           fputs ( $socket, '<message to="' . $vTo . '" ><body><![CDATA[' . $sBody . ']]></body><subject><![CDATA[' . $sSubject . ']]></subject></message>' );
     }
 
    fclose ( $socket );

@@ -3,6 +3,7 @@
 
 $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'admin');
+get_language_pack($lang, 'index');
 
 
 ////////////////////////////
@@ -415,7 +416,6 @@ $group_details = $fs->dbFetchArray($get_group_details);
     </select>
     </td>
   </tr>
-
   <tr>
     <td>
       <label for="anonview"><?php echo $admin_text['anonview']; ?></label>
@@ -700,6 +700,25 @@ if ($_GET['show'] == 'prefs') { ?>
     <input type="checkbox" name="project_is_active" value="1" <?php if ($project_details['project_is_active'] == '1') { echo "CHECKED";};?>>
     </td>
   </tr>
+  <tr><td colspan="2"><hr></td></tr>
+  
+  <!-- Column display selector -->
+  <tr>
+    <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
+    <td class="admintext">
+      <?php // Set the selectable column names
+      $columnnames = array('id','project','tasktype','category','severity','summary','dateopened','status', 'lastedit','dueversion','progress');
+      foreach ($columnnames AS $column) {
+        if (ereg($column, $project_prefs['visible_columns']) ) {
+          echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\">$index_text[$column]<br>\n";
+        } else {
+          echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\">$index_text[$column]<br>\n";
+        };
+      };
+      ?>
+    </td>
+  </tr>
+  <tr><td colspan="2"><hr></td></tr>
   <tr>
     <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>"></td>
   </tr>

@@ -30,6 +30,9 @@ $index_text = array (
 'closed'			=>	'Closed',
 'dueanyversion'		=>	'Due In Any Version',
 'dueversion'		=>	'Due In',
+'project'		=>	'Project',
+'category'		=>	'Category',
+'lastedit'		=>	'Last Edited',
 
 );
 ?>

@@ -38,3 +38,6 @@ CREATE TABLE `flyspray_history` (
   `new_value` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`history_id`)
 ) TYPE=MyISAM;
+
+ALTER TABLE `flyspray_projects` ADD `visible_columns` VARCHAR( 255 ) NOT NULL;
+UPDATE flyspray_projects SET visible_columns = 'id category tasktype severity summary dateopened status progress';

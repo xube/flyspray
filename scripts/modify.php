@@ -823,7 +823,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=options\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['optionssaved']}</em></p></div>";
-
+  
 // End of updating application preferences
 
 ///////////////////////////////////
@@ -912,6 +912,19 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
   };
 
+  // Process the list of visible columns
+  $columnnames = array('id','project','category','tasktype','severity','summary','dateopened','status', 'lastedit','dueversion','progress');
+  foreach ($columnnames AS $column)
+  {
+    $colname = "visible_columns".$column;
+    if($_POST[$colname])
+    {
+      $columnlist .= "$column ";
+    }
+  }
+  $update = $fs->dbQuery("UPDATE flyspray_projects SET visible_columns = ? WHERE project_id = ?", array($columnlist, $_POST['project_id']));  
+  
+  
 // End of updating project preferences
 
 //////////////////////////////////////
