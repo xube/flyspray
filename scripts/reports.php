@@ -32,7 +32,7 @@ function changelog_report()
 	{
 		$startdate = $_REQUEST['startdate'];
 	} else {
-		$startdate = date("d")."-".date("M")."-".(date("Y") - 1);
+		$startdate = date("d-M-Y", strtotime("-1 month"));
 	}
 
 	if(isset($_REQUEST['enddate']))
@@ -681,7 +681,7 @@ function EventDescription($history)
 /* Main page logic to determine report to display */
 if(!isset($_REQUEST['report']))
 {
-	$report = "summary";
+	$report = "changelog";
 } else {
 	$report = $_REQUEST['report'];
 }
@@ -689,11 +689,11 @@ if(!isset($_REQUEST['report']))
 
 <p id="tabs">
     <?php
-    if ($report == 'summary') {
-      echo "<a class=\"tabactive\" href=\"?do=reports&report=summary\">Summary</a><small> | </small>";
-    } else {
-      echo "<a class=\"tabnotactive\" href=\"?do=reports&report=summary\">Summary</a><small> | </small>";
-    };
+    //if ($report == 'summary') {
+    //  echo "<a class=\"tabactive\" href=\"?do=reports&report=summary\">Summary</a><small> | </small>";
+    //} else {
+    //  echo "<a class=\"tabnotactive\" href=\"?do=reports&report=summary\">Summary</a><small> | </small>";
+    //};
 
     if ($report == 'changelog') {
       echo "<a class=\"tabactive\" href=\"?do=reports&report=changelog\">Changelog</a><small> | </small>";
@@ -707,17 +707,17 @@ if(!isset($_REQUEST['report']))
       echo "<a class=\"tabnotactive\" href=\"?do=reports&report=events\">Events</a><small> | </small>";
     };
 
-    if ($report == 'severity') {
-      echo "<a class=\"tabactive\" href=\"?do=reports&report=severity\">Severity</a><small> | </small>";
-    } else {
-      echo "<a class=\"tabnotactive\" href=\"?do=reports&report=severity\">Severity</a><small> | </small>";
-    };
+    //if ($report == 'severity') {
+    //  echo "<a class=\"tabactive\" href=\"?do=reports&report=severity\">Severity</a><small> | </small>";
+    //} else {
+    //  echo "<a class=\"tabnotactive\" href=\"?do=reports&report=severity\">Severity</a><small> | </small>";
+    //};
 
-    if ($report == 'age') {
-      echo "<a class=\"tabactive\" href=\"?do=reports&report=age\">Age</a><small> | </small>";
-    } else {
-      echo "<a class=\"tabnotactive\" href=\"?do=reports&report=age\">Age</a><small> | </small>";
-    };
+    //if ($report == 'age') {
+    //  echo "<a class=\"tabactive\" href=\"?do=reports&report=age\">Age</a><small> | </small>";
+    //} else {
+    //  echo "<a class=\"tabnotactive\" href=\"?do=reports&report=age\">Age</a><small> | </small>";
+    //};
 
 switch ($report)
 {
@@ -737,7 +737,7 @@ switch ($report)
 		summary_report();
 		break;
 	default:
-		summary_report();
+		changelog_report();
 		break;
 }
 ?>

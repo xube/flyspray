@@ -943,7 +943,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
 } elseif ($_POST['action'] == "addattachment" && $_SESSION['can_attach_files'] == '1') {
 
-     // This function came from ZenTracker http://zentrack.phpzen.net/
+     // This function came from the php function page for mt_srand()
      // seed with microseconds to create a random filename
        function make_seed() {
           list($usec, $sec) = explode(' ', microtime());

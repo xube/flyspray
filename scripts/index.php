@@ -12,7 +12,7 @@ foreach ( $orderby as $key => $val ) {
     break;
     case "proj": $orderby[$key] = 'attached_to_project';
     break;
-    case "type": $orderby[$key] = 'task_type';
+    case "type": $orderby[$key] = 'tasktype_name';
     break;
     case "date": $orderby[$key] = 'date_opened';
     break;
@@ -22,7 +22,7 @@ foreach ( $orderby as $key => $val ) {
     break;
     case "status": $orderby[$key] = 'item_status';
     break;
-    case "due": $orderby[$key] = 'closedby_version';
+    case "due": $orderby[$key] = 't.closedby_version';
     break;
     case "prog": $orderby[$key] = 'percent_complete';
     break;
@@ -30,11 +30,11 @@ foreach ( $orderby as $key => $val ) {
     break;
     case "pri": $orderby[$key] = 'task_priority';
     break;
-    case "openedby": $orderby[$key] = 'opened_by';
+    case "openedby": $orderby[$key] = 't.opened_by';
     break;
-    case "reportedin": $orderby[$key] = 'product_version';
+    case "reportedin": $orderby[$key] = 't.product_version';
     break;
-    case "assignedto": $orderby[$key] = 'assigned_to';
+    case "assignedto": $orderby[$key] = 't.assigned_to';
     break;
     default: $orderby[$key] = 'task_severity';
     break;

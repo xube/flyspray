@@ -367,6 +367,7 @@ input.adminbutton:hover, input.mainbutton:hover, button:hover {
   background-repeat   : repeat-x;
   border              : 1px ridge #000000;
   font-weight         : bold;
+  cursor              : pointer;
 }
 
 /* The acknowledgement/refusal of login information is displayed in
@@ -497,6 +498,7 @@ p.unregistered {
 .severity1:hover {
   background-color     : #ffe9b4;
   color                : #000000;
+  cursor               : pointer;
 }
 
 .severity2 {
@@ -507,6 +509,7 @@ p.unregistered {
 .severity2:hover {
   background-color     : #efca80;
   color                : #000000;
+  cursor               : pointer;
 }
 
 .severity3 {
@@ -517,6 +520,7 @@ p.unregistered {
 .severity3:hover {
   background-color     : #edb98a;
   color                : #000000;
+  cursor               : pointer;
 }
 
 .severity4 {
@@ -527,6 +531,7 @@ p.unregistered {
 .severity4:hover {
   background-color     : #ffb2ac;
   color                : #000000;
+  cursor               : pointer;
 }
 
 .severity5 {
@@ -537,6 +542,7 @@ p.unregistered {
 .severity5:hover {
   background-color     : #f3867e;
   color                : #000000;
+  cursor               : pointer;
 }
 
 /* .fineprint is merely used for the details about when a task has
