@@ -87,17 +87,20 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       <td><label for="accountenabled"><?php echo $admin_text['accountenabled'];?></label></td>
       <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?>></td>
     </tr>
-    <tr>
-      <td><label for="adminchangepass"><?php echo $admin_text['adminchangepass'];?></label></td>
-      <td><input id="adminchangepass" type="password" name="adminchangepass" size="40" maxlength="100"></td>
-    </tr>
-    <tr>
-      <td><label for="adminconfirmpass"><?php echo $admin_text['adminconfirmpass'];?></label></td>
-      <td><input id="adminconfirmpass" type="password" name="adminconfirmpass" size="40" maxlength="100"></td>
-    </tr>
     <?php
     };
     ?>
+    <tr>
+      <td colspan="2"><hr></td>
+    </tr>
+    <tr>
+      <td><label for="changepass"><?php echo $admin_text['changepass'];?></label></td>
+      <td><input id="changepass" type="password" name="changepass" size="40" maxlength="100"></td>
+    </tr>
+    <tr>
+      <td><label for="confirmpass"><?php echo $admin_text['confirmpass'];?></label></td>
+      <td><input id="confirmpass" type="password" name="confirmpass" size="40" maxlength="100"></td>
+    </tr>
     <tr>
       <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
     </tr>

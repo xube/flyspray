@@ -580,7 +580,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 /////////////////////////////////////////
 // Start of changing a user's password //
 /////////////////////////////////////////
-
+/*
 } elseif ($_POST['action'] == "chpass" && $_COOKIE['flyspray_userid'] && $_SESSION['userid']) {
 
   // get the password hash out of the db and hash the new one
@@ -624,7 +624,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
   };
 // End of changing a user's password
-
+*/
 ////////////////////////////////////
 // Start of new user registration //
 ////////////////////////////////////
@@ -1037,20 +1037,19 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   if ($_POST['real_name'] != ""
     && $_POST['email_address'] != ""
     ) {
-      //If the user is admin and entered matching password and confirmation
+      //If the user entered matching password and confirmation
       //we can change the selected user's password
       $password_problem = false;
-      if ($_SESSION['admin'] == '1'
-        && ($_POST['adminchangepass']
-        || $_POST['adminconfirmpass'])
+      if ($_POST['changepass']
+        || $_POST['confirmpass']
         ) {
           //check that the entered passwords match
-          if ($_POST['adminchangepass'] == $_POST['adminconfirmpass']) {
-            $new_pass = $_POST['adminchangepass'];
+          if ($_POST['changepass'] == $_POST['confirmpass']) {
+            $new_pass = $_POST['changepass'];
             $new_pass_hash = crypt("$new_pass", '4t6dcHiefIkeYcn48B');
             $update_pass = $fs->dbQuery("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_POST['user_id']));
 
-            // If the admin is changing their OWN password, better update their cookie hash
+            // If the user is changing their password, better update their cookie hash
             if ($_COOKIE['flyspray_userid'] == $_POST['user_id']) {
               setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
             };

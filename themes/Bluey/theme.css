@@ -121,9 +121,15 @@ div.admin, p.admin, table.admin, table.login, table.userlist {
 /* The paragraph containing the main menu */
 p#menu {
   border              : 1px solid #ccc;
-  margin              : 1em 0px;
+  margin              : 0em 0px;
   padding             : 0px;
   background-color    : #e6eef6;
+}
+
+p#menu a:hover {
+  color               : #6395c8;
+  background-color    : #d7e9ff;
+  text-decoration     : none;
 }
 
 p#menu span#adminmenu {
@@ -172,19 +178,21 @@ a {
 }
 
 a:link {
-  color               : #03008f;
+  color               : #47617b;
   background-color    : transparent;
+  font-weight         : bold;
 }
 
 a:visited {
-  color               : #03008f;
+  color               : #47617b;
   background-color    : transparent;
+  font-weight         : bold;
 }
 
 a:hover {
-  color               : #0600ff;
+  color               : #6395c8;
   background-color    : transparent;
-  text-decoration     : underline;
+  text-decoration     : none;
 }
 
 /* offsite is only used for the link to the Flyspray homepage */
@@ -310,7 +318,27 @@ div#content {
 
 /* Powered by Flyspray */
 p#footer {
-  margin              : 2em 1em;
+  margin               : 0em 0em;
+  padding              : 10px;
+  background-color     : #47617b;
+  border               : 3px double white;
+  color                : #ffffff;
+  text-align           : center;
+}
+
+p#footer a:link {
+  color              : #ffffff;
+  background-color   : transparent;
+}
+
+p#footer a:visited {
+  color              : #ffffff;
+  background-color   : transparent;
+}
+
+p#footer a:hover {
+  color              : #ffffff;
+  background-color   : transparent;
 }
 
 /* used solely for several browsers do not support [type="submit"]

@@ -33,6 +33,8 @@ if ($_GET['getfile']) {
 
 // If no file was requested, show the page as per normal
 } else {
+  // Send this header for i18n support
+  // Note that server admins can override this, breaking Flyspray.
   header("Content-type: text/html; charset=utf-8");
 
   // Start Output Buffering and gzip encoding if setting is present.
@@ -43,17 +45,12 @@ if ($_GET['getfile']) {
   // at the end of script execution by PHP itself when output buffering is turned on
   // either in the php.ini or by calling ob_start().
   
-  
-// If the user has specified column sorting, send them a cookie
-/*if ($_GET['order']) {
-  setcookie('flyspray_order', $_GET['order'], time()+60*60*24*30, "/");
-};
-
-if ($_GET['sort']) {
-  setcookie('flyspray_sort', $_GET['sort'], time()+60*60*24*30, "/");
-};*/
-
+  // If the user has used the search box, store their search for later on
+  if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order'])) {
+    $_SESSION['lastindexfilter'] = "index.php?tasks={$_GET['tasks']}&amp;project={$_GET['project']}&amp;string={$_GET['string']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;due={$_GET['due']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;perpage={$_GET['perpage']}&amp;order={$_GET['order']}&amp;order2=" . $_GET['order2'] . "&amp;sort={$_GET['sort']}&amp;sort2=" . $_GET['sort2'];
+  }
 ?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
@@ -83,7 +80,7 @@ if ($_GET['sort']) {
 
     // Sort the array alphabetically
     sort($theme_array);
-    // Then display them
+    // Then display them as alternate themes for browsers that support such features, like Mozilla!
     while (list($key, $val) = each($theme_array)) {
       echo "<link href=\"themes/$val/theme.css\" title=\"$val\" rel=\"alternate stylesheet\" type=\"text/css\" />\n";
     };
@@ -92,75 +89,17 @@ if ($_GET['sort']) {
 <body>
 
 <?php
-
+// People might like to define their own header files for their theme
 $headerfile = "$basedir/themes/".$project_prefs['theme_style']."/header.inc.php"; 
 if(file_exists("$headerfile")) { 
  include("$headerfile"); 
 };
 
+// If the admin wanted the Flyspray logo shown at the top of the page...
 if ($project_prefs['show_logo'] == '1') {
   echo "<h1 id=\"title\"><span>{$project_prefs['project_title']}</span></h1>";
 };
-?>
 
-<div id="content">
-<map id="formselecttasks" name="formselecttasks">
-<form action="index.php" method="get">
-      <p>
-      <select name="tasks">
-        <option value="all"><?php echo $language['tasksall'];?></option>
-      <?php if ($_COOKIE['flyspray_userid']) { ?>
-        <option value="assigned" <?php if($_GET['tasks'] == 'assigned') echo 'selected="selected"'; ?>><?php echo $language['tasksassigned']; ?></option>
-        <option value="reported" <?php if($_GET['tasks'] == 'reported') echo 'selected="selected"'; ?>><?php echo $language['tasksreported']; ?></option>
-        <option value="watched" <?php if($_GET['tasks'] == 'watched') echo 'selected="selected"'; ?>><?php echo $language['taskswatched']; ?></option>
-      <?php }; ?> 
-      </select>
-      <?php echo $language['selectproject'];?>
-      <select name="project">
-      <option value="0"<?php if ($_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
-      <?php
-      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
-      while ($row = $fs->dbFetchArray($get_projects)) {
-        if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
-          echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
-        } else {
-          echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
-        };
-      };
-      ?>
-      </select>
-      <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>" />
-      </p>
-</form>
-</map>
-<!--<a href="<?php echo $flyspray_prefs['base_url'];?>"><?php echo $flyspray_prefs['project_title'];?></a></h2>-->
-<form action="index.php" method="get">
-    <p id="showtask">
-      <label><?php echo $language['showtask'];?> #
-      <input name="id" type="text" size="10" maxlength="10" accesskey="t" /></label>
-      <input type="hidden" name="do" value="details" />
-      <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>" />
-    </p>
-</form>
-
-<?php
-if ($project_prefs['intro_message'] != '') {
-  $intro_message = nl2br(stripslashes($project_prefs['intro_message'])); 
-  echo "<p class=\"intromessage\">$intro_message</p>";
-};
-
-// If we have allowed anonymous logging of new tasks
-// Show the link to the Add Task form
-if ($flyspray_prefs['anon_open'] == '1' && $flyspray_prefs['anon_view'] == '1' && !$_COOKIE['flyspray_userid']) {
-  echo "<p class=\"unregistered\"><a href=\"?do=newtask&amp;project=$project_id\">{$language['opentaskanon']}</a></p>";
-};
-
-// Otherwise show the link to a registration form
-if ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '1') {
-  echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a></p>";
-} elseif ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] != '1') {
-  echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a></p>";
-};
 
 // If the user has the right name cookies
 if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
@@ -212,10 +151,20 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     
     echo '<small> | </small><a href="?do=admin&amp;area=users&amp;id=' . $_SESSION['userid'] . '">
     <img src="themes/' . $project_prefs['theme_style'] . '/menu/editmydetails.png" />&nbsp;' . $language['editmydetails'] . '</a>' . "\n";
-    
+    /*
     echo '<small> | </small><a href="index.php?do=chpass">
     <img src="themes/' . $project_prefs['theme_style'] . '/menu/password.png" />&nbsp;' . $language['changepassword'] . '</a>' . "\n";
+    */
     
+    // If the user has conducted a search, then show a link to the most recent task list filter
+    if(isset($_SESSION['lastindexfilter'])) {
+      echo '<small> | </small><a href="' . $_SESSION['lastindexfilter'] . '">
+      <img src="themes/' . $project_prefs['theme_style'] . '/menu/search.png" />&nbsp;' . $language['lastsearch'] . '</a>';
+    } else {
+      echo '<small> | </small>
+      <img src="themes/' . $project_prefs['theme_style'] . '/menu/search.png" />&nbsp;' . $language['lastsearch'];
+    };
+      
     echo '<small> | </small><a href="scripts/authenticate.php?action=logout">
     <img src="themes/' . $project_prefs['theme_style'] . '/menu/logout.png" />&nbsp;' . $language['logout'] . '</a></span>' . "\n";
 
@@ -255,6 +204,69 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     };
 
 };
+?>
+
+
+<div id="content">
+<map id="formselecttasks" name="formselecttasks">
+<form action="index.php" method="get">
+      <p>
+      <select name="tasks">
+        <option value="all"><?php echo $language['tasksall'];?></option>
+      <?php if ($_COOKIE['flyspray_userid']) { ?>
+        <option value="assigned" <?php if($_GET['tasks'] == 'assigned') echo 'selected="selected"'; ?>><?php echo $language['tasksassigned']; ?></option>
+        <option value="reported" <?php if($_GET['tasks'] == 'reported') echo 'selected="selected"'; ?>><?php echo $language['tasksreported']; ?></option>
+        <option value="watched" <?php if($_GET['tasks'] == 'watched') echo 'selected="selected"'; ?>><?php echo $language['taskswatched']; ?></option>
+      <?php }; ?> 
+      </select>
+      <?php echo $language['selectproject'];?>
+      <select name="project">
+      <option value="0"<?php if ($_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
+      <?php
+      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
+      while ($row = $fs->dbFetchArray($get_projects)) {
+        if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
+          echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
+        } else {
+          echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
+        };
+      };
+      ?>
+      </select>
+      <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>" />
+      </p>
+</form>
+</map>
+
+<form action="index.php" method="get">
+    <p id="showtask">
+      <label><?php echo $language['showtask'];?> #
+      <input name="id" type="text" size="10" maxlength="10" accesskey="t" /></label>
+      <input type="hidden" name="do" value="details" />
+      <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>" />
+    </p>
+</form>
+
+<?php
+
+// Show the project blurb if the project manager defined one
+if ($project_prefs['intro_message'] != '') {
+  $intro_message = nl2br(stripslashes($project_prefs['intro_message'])); 
+  echo "<p class=\"intromessage\">$intro_message</p>";
+};
+
+// If we have allowed anonymous logging of new tasks
+// Show the link to the Add Task form
+if ($flyspray_prefs['anon_open'] == '1' && $flyspray_prefs['anon_view'] == '1' && !$_COOKIE['flyspray_userid']) {
+  echo "<p class=\"unregistered\"><a href=\"?do=newtask&amp;project=$project_id\">{$language['opentaskanon']}</a></p>";
+};
+
+// Otherwise show the link to a registration form
+if ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '1') {
+  echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a></p>";
+} elseif ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] != '1') {
+  echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a></p>";
+};
 
       $do = $_REQUEST['do'];
 
@@ -280,11 +292,12 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
         require('scripts/loginbox.php');
       };
       ?>
-</div>
+</div>      
 <p id="footer">
 <!-- Please don't remove this line - it helps promote Flyspray -->
 <a href="http://flyspray.rocks.cc/" class="offsite"><?php printf("%s %s", $language['poweredby'], $fs->version);?></a>
 </p>
+
 
 <?php 
 $footerfile = "$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php"; 

@@ -92,7 +92,7 @@ div.admin, p.admin, table.admin, table.login, table.userlist {
 /* The paragraph containing the main menu */
 p#menu {
   border              : 1px solid green;
-  margin              : 0px 0px 1ex 1em;
+  margin              : 60px 0px 1ex 1em;
   padding             : 0px;
   text-align          : left;
   position            : relative;

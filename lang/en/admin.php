@@ -109,8 +109,8 @@ $admin_text = array (
 'past'			=>	'Past',
 'present'		=>	'Present',
 'future'		=>	'Future',
-'adminchangepass'	=>      'Change Password',
-'adminconfirmpass'	=>      'Confirm Password',
+'changepass'	=>      'Change Password',
+'confirmpass'	=>      'Confirm Password',
 
 );
 ?>
