@@ -1094,49 +1094,6 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
 // End of scheduled reminders area
 
 
-// Start of system log area
-} elseif ($area == 'system') { ?>
-<div class="tabentries">
-
-
-    <?php
-    $get_user_ids = $fs->dbQuery("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id']));
-    while ($row = $fs->dbFetchArray($get_user_ids)) {
-      $get_user = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
-      while ($subrow = $fs->dbFetchArray($get_user)) {
-      ?>
-      <div class="tabentry">
-      <?php
-        // If the user can modify jobs, then show them a form to remove a notified user
-        if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
-          ?>
-          <div class="modifycomment">
-          <form action="index.php" method="post">
-              <p>
-                <input type="hidden" name="do" value="modify">
-                <input type="hidden" name="action" value="remove_notification">
-                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-                <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>">
-                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
-              </p>
-          </form>
-          </div>
-
-        <?php
-
-        };
-                echo "<p>{$subrow['real_name']} ({$subrow['user_name']})</p>";
-      echo "</div>";
-      };
-    };
-
-    ?>
-
-</div>
-
-<?php
-// End of system log area
-
 // Start of History Tab
 } elseif($area == 'history') { ?>
 
@@ -1207,6 +1164,11 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
                     $field = $details_text['status'];
                     $oldvalue = $status_list[$oldvalue];
                     $newvalue = $status_list[$newvalue];
+                    break;
+                case 'task_priority':
+                    $field = $details_text['priority'];
+                    $oldvalue = $priority_list[$oldvalue];
+                    $newvalue = $priority_list[$newvalue];
                     break;
                 case 'operating_system':
                     $field = $details_text['operatingsystem'];
