@@ -6,5 +6,6 @@ CREATE TABLE `flyspray_reminders` (
   `start_time` varchar(12) NOT NULL default '0',
   `how_often` mediumint(12) NOT NULL default '0',
   `last_sent` varchar(12) NOT NULL default '0',
+  `reminder_message` longtext NOT NULL,
   PRIMARY KEY  (`reminder_id`)
-) TYPE=MyISAM COMMENT='Scheduled reminders about tasks' AUTO_INCREMENT=12 ;
+) TYPE=MyISAM COMMENT='Scheduled reminders about tasks' AUTO_INCREMENT=19 ;

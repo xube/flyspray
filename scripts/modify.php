@@ -1115,7 +1115,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   $start_time = ($_POST['timeamount2'] * $_POST['timetype2']) + $now;
   //echo "start time = $start_time";
   
-  $insert = $fs->dbQuery("INSERT INTO flyspray_reminders (task_id, to_user_id, from_user_id, start_time, how_often) VALUES(?,?,?,?,?)", array($_POST['task_id'], $_POST['to_user_id'], $_SESSION['userid'], $start_time, $how_often));
+  $insert = $fs->dbQuery("INSERT INTO flyspray_reminders (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array($_POST['task_id'], $_POST['to_user_id'], $_SESSION['userid'], $start_time, $how_often, $_POST['reminder_message']));
 
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";

@@ -867,9 +867,9 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
 // Start of scheduled reminders area
 } elseif ($area == 'remind') { ?>
 <div class="tabentries">
-  <div class="tabentry">
+
   <?php
-    $get_reminders = $fs->dbQuery("SELECT * FROM flyspray_reminders WHERE task_id = ?", array($_GET['id']));
+    $get_reminders = $fs->dbQuery("SELECT * FROM flyspray_reminders WHERE task_id = ? ORDER BY reminder_id", array($_GET['id']));
     while ($row = $fs->dbFetchArray($get_reminders)) {
       $get_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($row['to_user_id']));
       while ($subrow = $fs->dbFetchArray($get_username)) {
@@ -888,16 +888,34 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
               </p>
           </form>
           </div>
+		  
 
         <?php
         }
-        echo "{$subrow['real_name']} ( {$subrow['user_name']})<br>";
-        echo "How often (in seconds): {$row['how_often']}<br>";
+		echo "<div class=\"tabentry\">";
+        echo "<em>{$details_text['remindthisuser']}:</em> {$subrow['real_name']} ( {$subrow['user_name']})<br>";
+		
+		// Work out the unit of time to display
+		if ($row['how_often'] < 86400) {
+			$how_often = $row['how_often'] / 3600 . " " . $details_text['hours'];
+		} elseif ($row['how_often'] < 604800) {
+			$how_often = $row['how_often'] / 86400 . " " . $details_text['days'];
+		} else {
+			$how_often = $row['how_often'] / 604800 . " " . $details_text['weeks'];
+		};
+		
+		echo "<em>{$details_text['thisoften']}:</em> $how_often";
+		
+		echo "<br>";
+		
+		echo "<em>{$details_text['message']}:</em> {$row['reminder_message']}";
 
+		echo "<br><br></div>";
       };
     };
   ?>
-  </div>
+
+
 </div>
 <?php
 if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
@@ -928,7 +946,7 @@ if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
      <option value="604800"><?php echo $details_text['weeks'];?></option>
    </select>
 
-  <br />
+  <br>
 
   <em><?php echo $details_text['startafter'];?></em>
   <input type="admintext" name="timeamount2" size="3" maxlength="3">
@@ -938,6 +956,12 @@ if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
      <option value="86400"><?php echo $details_text['days'];?></option>
      <option value="604800"><?php echo $details_text['weeks'];?></option>
   </select>
+  
+  <br>
+  
+  <textarea class="admintext" name="reminder_message" rows="7" cols="50"><?php echo "{$details_text['defaultreminder']}\n\n{$flyspray_prefs['base_url']}?do=details&amp;id={$_GET['id']}";?></textarea>
+  
+  <br>
   
   <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>">
   </div>

@@ -67,7 +67,8 @@ $details_text = array (
 'days'              =>   'Day(s)',
 'weeks'             =>   'Week(s)',
 'addreminder'       =>   'Add Reminder',
-
+'defaultreminder'   =>   'This is a reminder to look at the following Flyspray task:',
+'message'           =>   'Message',
 
 );
 ?>
