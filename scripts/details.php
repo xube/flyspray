@@ -485,7 +485,9 @@ if ($_SESSION['can_modify_jobs'] == '1'
     </div>
 
 <?php
-// End of checking if a job should be editable
+/////////////////////////////////////////////////
+// End of checking if a job should be editable //
+/////////////////////////////////////////////////
 };
 ?>
 
@@ -544,7 +546,10 @@ $num_reminders = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_reminders
 </p>
 
 <?php
-// Start of comments area
+////////////////////////////
+// Start of comments area //
+////////////////////////////
+
 if ($area == 'comments') { ?>
   <div class="tabentries">
     <?php
@@ -628,7 +633,10 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
 
 // End of comments area
 
-// Start of file attachments area
+////////////////////////////////////
+// Start of file attachments area //
+////////////////////////////////////
+
 } elseif ($area == 'attachments') {
 ?>
 <div class="tabentries">
@@ -645,7 +653,6 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
 
     ?>
     <div class="tabentry">
-    <em><?php echo "{$details_text['fileuploadedby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a> - $formatted_date";?></em>
 
 <?php
 //  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
@@ -664,9 +671,12 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
       <?php
       };
 
+      // Divide the attachments area into two columns for display
+      echo "<table><tr><td>";
+
 	  // Detect if the attachment is an image
 	  $pos = strpos($row['file_type'], "image/");
-      if($pos===0) {
+      if($pos===0 && $project_prefs['inline_images'] == '1') {
 
          // Find out the size of the image
 		 $image_details = getimagesize("attachments/{$row['file_name']}");
@@ -686,10 +696,18 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
 
       // If the attachment isn't an image, just show a link to download it.
       } else {
-         echo "<p>";
-         echo "<a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']} - $file_desc</a>";
-         echo "</p>";
+
       };
+
+      // The second column, for the descriptions
+      echo "</td><td>";
+      echo "<p>";
+	  echo "<em>{$details_text['fileuploadedby']}</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a><br>";
+	  echo "<em>{$details_text['date']}</em> $formatted_date<br>";
+      echo "<em>{$details_text['originalfilename']}</em> <a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a><br>";
+	  echo "<em>{$details_text['description']}</em> $file_desc</a>";
+      echo "</p>";
+      echo "</td></tr></table>";
 
   echo "</div>";
  };

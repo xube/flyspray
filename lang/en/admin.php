@@ -91,5 +91,11 @@ $admin_text = array (
 'isactive'			=>	'Project is active',
 'createproject'		=>	'Create a new Project',
 
+// Added in version 0.9.6
+
+'nopermission'		=>  'You do not have permission to use this page.',
+'showinlineimages'	=>  'Show image attachments inline',
+
+
 );
 ?>

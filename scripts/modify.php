@@ -20,6 +20,17 @@ $now = date(U);
 // Adding a new task
 if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1")) {
 
+  // Check to see if this task has previously been entered, 
+  // and the silly user didn't just press backspace and make a DUPE
+  // I realise that this is yet another expensive query, 
+  // but it's the best way I've though of so far...
+  $check_for_dupes = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE item_summary = ? AND detailed_desc = ?", array($_POST['item_summary'], $_POST['detailed_desc']));
+  // If there was a result from our dupe check, STOP.
+  if($fs->dbCountRows($check_for_dupes) > 0) {
+	  die($modify_text['nodupes']);
+  };
+  
+
   // If they entered something in both the summary and detailed description
   if ($_POST['item_summary'] != ''
     && $_POST['detailed_desc'] != '')
@@ -714,7 +725,10 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
 // End of adding a new project
 
-// Start of updating project preferences
+///////////////////////////////////////////
+// Start of updating project preferences //
+///////////////////////////////////////////
+
 } elseif ($_POST['action'] == "updateproject" && $_SESSION['admin'] == '1') {
 
   if ($_POST['project_title'] != '') {
@@ -723,6 +737,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                              project_title = ?,
                              theme_style = ?,
                              show_logo = ?,
+                             inline_images =?,
                              default_cat_owner = ?,
                              intro_message = ?,
                              project_is_active = ?
@@ -730,6 +745,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                           ", array($_POST['project_title'],
                                     $_POST['theme_style'],
                                     $fs->emptyToZero($_POST['show_logo']),
+                                    $fs->emptyToZero($_POST['inline_images']),
                                     $fs->emptyToZero($_POST['default_cat_owner']),
                                     $_POST['intro_message'],
                                     $fs->emptyToZero($_POST['project_is_active']),

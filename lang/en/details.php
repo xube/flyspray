@@ -69,6 +69,8 @@ $details_text = array (
 'addreminder'       =>   'Add Reminder',
 'defaultreminder'   =>   'This is a reminder to look at the following Flyspray task:',
 'message'           =>   'Message',
-
+'closed'			=>   'Closed',
+'originalfilename'	=>   'Original Filename:',
+'date'				=>   'Date:',
 );
 ?>

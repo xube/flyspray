@@ -13,4 +13,6 @@ CREATE TABLE `flyspray_reminders` (
 
 ALTER TABLE `flyspray_tasks` ADD `is_closed` MEDIUMINT( 1 ) NOT NULL AFTER `opened_by` ;
 
-update flyspray_tasks set is_closed = '1' where item_status = '8';
+UPDATE flyspray_tasks SET is_closed = '1' WHERE item_status = '8';
+
+ALTER TABLE `flyspray_projects` ADD `inline_images` MEDIUMINT( 1 ) NOT NULL AFTER `show_logo` ;

@@ -634,6 +634,14 @@ $group_details = $fs->dbFetchArray($get_group_details);
   </tr>
   <tr>
     <td>
+    <label for="inlineimages"><?php echo $admin_text['showinlineimages'];?></label>
+    </td>
+    <td>
+    <input type="checkbox" name="inline_images" value="1" <?php if ($project_details['inline_images'] == '1') { echo "CHECKED"; }; ?>>
+    </td>
+  </tr>
+  <tr>
+    <td>
       <label for="defaultcatowner"><?php echo $admin_text['defaultcatowner'];?></label>
     </td>
     <td>
