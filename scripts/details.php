@@ -457,7 +457,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
       <?php
       if ($task_details['closure_comment'] != '') {
        echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
-       echo stripslashes($task_details['closure_comment']);
+       echo nl2br(stripslashes($task_details['closure_comment']));
       };
      ?>
     </p>
