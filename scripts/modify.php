@@ -667,14 +667,32 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
         };
 
         $add_user = $fs->dbQuery("INSERT INTO flyspray_users
-                                    (user_name, user_pass, real_name,
-                                    group_in, jabber_id, email_address,
-                                    notify_type, account_enabled)
-                                    VALUES( ?, ?, ?, ?, ?, ?, ?, ?)",
-                        array($_POST['user_name'], $pass_hash,
-                            $_POST['real_name'], $group_in,
-                            $_POST['jabber_id'], $_POST['email_address'],
-                            $_POST['notify_type'], '1'));
+                                    (user_name,
+                                     user_pass,
+                                     real_name,
+                                     jabber_id,
+                                     email_address,
+                                     notify_type,
+                                     account_enabled)
+                                     VALUES( ?, ?, ?, ?, ?, ?, ?)",
+                                    array($_POST['user_name'],
+                                          $pass_hash,
+                                          $_POST['real_name'],
+                                          $_POST['jabber_id'],
+                                          $_POST['email_address'],
+                                          $_POST['notify_type'],
+                                          '1')
+                                 );
+
+        // Get this user's id for the record
+        $user_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_users WHERE user_name = ?", array($_POST['user_name'])));
+
+        // Now, create a new record in the users_in_groups table
+        $set_global_group = $fs->dbQuery("INSERT INTO flyspray_users_in_groups
+                                          (user_id,
+                                          group_id)
+                                          VALUES( ?, ?)",
+                                          array($user_details['user_id'], $group_in));
 
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newusercreated']}</em></p>";
 
@@ -832,7 +850,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                               theme_style,
                               show_logo,
                               inline_images,
-                              default_cat_owner,
+
                               intro_message,
                               others_view,
                               project_is_active,
@@ -842,7 +860,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                               $_POST['theme_style'],
                               $fs->emptyToZero($_POST['show_logo']),
                               $fs->emptyToZero($_POST['inline_images']),
-                              $_POST['default_cat_owner'],
+
                               $_POST['intro_message'],
                               $fs->emptyToZero($_POST['others_view']),
                               '1',
@@ -1115,13 +1133,16 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
       if ($permissions['is_admin'] == '1') {
         $update = $fs->dbQuery("UPDATE flyspray_users SET
-                  group_in = ?,
                   account_enabled = ?
         WHERE user_id = ?",
-        array($_POST['group_in'],
-                $fs->emptyToZero($_POST['account_enabled']),
-                $_POST['user_id']));
+        array($fs->emptyToZero($_POST['account_enabled']),
+              $_POST['user_id']));
       };
+      
+      $update = $fs->dbQuery("UPDATE flyspray_users_in_groups SET
+                              group_id = ?
+                              WHERE record_id = ?",
+                              array($_POST['group_in'], $_POST['record_id']));
 
       echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
@@ -1617,6 +1638,16 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
 
 // End of removing a reminder
+
+/////////////////////////////////////////////////
+// Start of adding a bunch of users to a group //
+/////////////////////////////////////////////////
+} elseif ($_POST['action'] == "addtogroup"
+          && ($permissions['manage_project'] == '1'
+              OR $permissions['is_admin'] == '1')) {
+
+
+// End of adding a bunch of users to a group
 
 // End of actions.
 };

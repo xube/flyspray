@@ -1,5 +1,4 @@
 <?php
-
 /** Get translation for specified language and page.  It loads default
 language (en) and then merges with requested one. Thus it makes English
 messages available even if translation is not present.
@@ -371,30 +370,72 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 
 
    // This function generates a query of users for the "Assigned To" list
-   function listUsers($current) {
+   function listUsers($current, $in_project) {
      $flyspray_prefs = $this->getGlobalPrefs();
 
       $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
       while (list($key, $val) = each($these_groups)) {
         if (empty($val))
           continue;
-        $group_details = $this->dbFetchArray($this->dbQuery("SELECT group_name FROM flyspray_groups WHERE group_id = ?", array($val)));
+        $group_details = $this->dbFetchArray($this->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($val)));
 
-        echo "<optgroup label=\"{$group_details['group_name']}\">\n";
+        // Check that there is a user in the selected group prior to display
+        $check_group = $this->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
+        if (!$this->dbCountRows($check_group)) {
+          continue;
+        } else {
 
-        $user_query = $this->dbQuery("SELECT * FROM flyspray_users WHERE account_enabled = ? AND group_in = ? ORDER BY real_name", array('1', $val));
+          echo "<optgroup label=\"{$group_details['group_name']}\">\n";
 
-        while ($row = $this->dbFetchArray($user_query)) {
-          if ($current == $row['user_id']) {
-            echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
-          } else {
-            echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
+  //         $user_query = $this->dbQuery("SELECT * FROM flyspray_users WHERE account_enabled = ? AND group_in = ? ORDER BY real_name", array('1', $val));
+
+          $user_query = $this->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+                                        LEFT JOIN flyspray_users u on uig.user_id = u.user_id
+                                        WHERE group_id = ?",
+                                        array($group_details['group_id']));
+
+          while ($row = $this->dbFetchArray($user_query)) {
+            if ($current == $row['user_id']) {
+              echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
+            } else {
+              echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
+            };
           };
+
+          echo "</optgroup>\n";
         };
-
-        echo "</optgroup>\n";
       };
+      
+      echo 'project id = ' . $project_id;
+      // Now, we get the users from groups in the current project
+      $get_group_details = $this->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($in_project));
+      while ($group_details = $this->dbFetchArray($get_group_details)) {
+        
+        // Check that there is a user in the selected group prior to display
+        $check_group = $this->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
+        if (!$this->dbCountRows($check_group)) {
+          continue;
+        } else {
 
+        // print the group name 
+        echo "<optgroup label=\"{$group_details['group_name']}\">\n";
+        // Get the users that belong to this group
+          $user_query = $this->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+                                        LEFT JOIN flyspray_users u on uig.user_id = u.user_id
+                                        WHERE group_id = ?",
+                                        array($group_details['group_id']));
+          
+          while ($row = $this->dbFetchArray($user_query)) {
+            if ($current == $row['user_id']) {
+              echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
+            } else {
+              echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
+            };
+          };
+
+          echo "</optgroup>\n";
+        };
+     };
   }
 
 

@@ -74,7 +74,7 @@ if ($permissions['is_admin'] == '1') {
     <input type="checkbox" name="inline_images" value="1">
     </td>
   </tr>
-  <tr>
+  <!--<tr>
     <td>
       <label for="defaultcatowner"><?php echo $newproject_text['defaultcatowner'];?></label>
     </td>
@@ -87,7 +87,7 @@ if ($permissions['is_admin'] == '1') {
       ?>
     </select>
     </td>
-  </tr>
+  </tr>-->
   <tr>
     <td>
     <label for="intromessage"><?php echo $newproject_text['intromessage'];?></label>

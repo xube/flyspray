@@ -12,6 +12,7 @@ if ($_GET['action'] == "logout") {
 //  session_destroy();
   setcookie('flyspray_userid', '', time()-60, '/');
   setcookie('flyspray_passhash', '', time()-60, '/');
+  setcookie('flyspray_project', '', time()-60, '/');
 
   $message = $authenticate_text['youareloggedout'];
 
@@ -20,15 +21,24 @@ if ($_GET['action'] == "logout") {
   $username = $_POST['username'];
   $password = $_POST['password'];
   // Get the user's account and group details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_users, flyspray_groups 
+  /*$result = $fs->dbQuery("SELECT * FROM flyspray_users, flyspray_groups 
 			    WHERE user_name = ? AND group_id = group_in", 
-			array($username));
+			array($username));*/
+			
+  $result = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+                          LEFT JOIN flyspray_groups g ON uig.group_id = g.group_id
+                          LEFT JOIN flyspray_users u ON uig.user_id = u.user_id
+                          WHERE u.user_name = ? AND g.belongs_to_project = ?
+                          ORDER BY g.group_id ASC",
+                          array($_POST['username'], '0'));
+
   $auth_details = $fs->dbFetchArray($result);
 
   // Encrypt the password, and compare it to the one in the database
   if (crypt($password, '4t6dcHiefIkeYcn48B') == $auth_details['user_pass']
-    && $auth_details['account_enabled'] == "1"
-    && $auth_details['group_open'] == '1')
+    && $auth_details['account_enabled'] == '1'
+    && $auth_details['group_open'] == '1'
+    )
   {
     $message = $authenticate_text['loginsuccessful'];
 

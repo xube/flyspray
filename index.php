@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 include('header.php');
 
 $lang = $flyspray_prefs['lang_code'];

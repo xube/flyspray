@@ -3,7 +3,7 @@ get_language_pack($lang, 'newuser');
 
 // Make sure that only admins are using this page, unless
 // The application preferences allow anonymous signups
-if ($_SESSION['admin'] == "1" OR ($flyspray_prefs['spam_proof'] == '0' && !$_SESSION['userid'])) {
+if ($permissions['is_admin'] == "1" OR ($flyspray_prefs['spam_proof'] == '0' && !$_SESSION['userid'])) {
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -63,11 +63,11 @@ if ($_SESSION['admin'] == "1" OR ($flyspray_prefs['spam_proof'] == '0' && !$_SES
       <input type="radio" name="notify_type" value="2"><?php echo $newuser_text['jabber'];?> <br>
       </td>
     </tr>
-    <?php if ($_SESSION['admin'] == "1") { ?>
+    <?php if ($permissions['is_admin'] == "1") { ?>
     <tr>
       <td><label for="groupin"><?php echo $newuser_text['group'];?></label></td>
       <td>
-      <select class="adminlist" name="group_in" id="groupin">
+      <select id="groupin" class="adminlist" name="group_in">
       <?php // Get the group names
       $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups ORDER BY group_id ASC");
       while ($row = $fs->dbFetchArray($get_group_details)) {

@@ -151,7 +151,7 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
         // Get list of users
         echo "<option value=\"0\">{$newtask_text['noone']}</option>\n";
 
-        $fs->ListUsers();
+        $fs->ListUsers($novar, $project_id);
         ?>
         </select>
      </td>

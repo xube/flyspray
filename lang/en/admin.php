@@ -133,7 +133,11 @@ $admin_text = array (
 'viewreports'		=>	'View reports',
 'othersview'		=>	'Allow anyone to view this project',
 'usergroups'		=>	'Users and Groups',
-'globalgroups'		=>	'Global Groups',
+'globalgroup'		=>	'Global Group',  // Singular 
+'globalgroups'		=>	'Global Groups', // Plural
 'defaultglobalgroup' => 'Default global group for new users',
+'addtogroup'		=>	'Add to group',
+
+
 );
 ?>

@@ -2,6 +2,14 @@
 ## This is the mysql database upgrade schema for Flyspray 0.9.7 ##
 ##################################################################
 
+# Some things to be aware of:
+# We no longer use the flyspray_users.group_in field.  Since there are now global groups and project-level
+# groups, there is a new table called flyspray_users_in_groups that keeps records of which user is in which
+# group(s).  There is currently NO upgrade script to populate this table.  If you want to use this development
+# version, you will need to create the entries yourself.  If you don't, your users will still retain their
+# GLOBAL permissions, but will not appear in the pages to manage users and groups.
+
+
 # New group permissions
 
 ALTER TABLE `flyspray_groups` ADD `belongs_to_project` MEDIUMINT( 3 ) NOT NULL AFTER `group_desc` ;
@@ -89,3 +97,11 @@ VALUES (
 # Project permissions
 
 ALTER TABLE `flyspray_projects` ADD `others_view` MEDIUMINT( 1 ) NOT NULL ;
+
+# Create a new "Basic" group that allows people to login. They can do nothing
+# unless they're a member of a project group as well.
+
+INSERT INTO `flyspray_groups` ( `group_id` , `group_name` , `group_desc` , `belongs_to_project` , `is_admin` , `manage_project` , `view_tasks` , `open_new_tasks` , `modify_own_tasks` , `modify_all_tasks` , `view_comments` , `add_comments` , `edit_comments` , `delete_comments` , `view_attachments` , `create_attachments` , `delete_attachments` , `view_history` , `close_own_tasks` , `close_other_tasks` , `assign_to_self` , `assign_others_to_self` , `view_reports` , `group_open` )
+VALUES (
+'', 'Basic', 'Members can login, relying upon Project permissions only', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1'
+);

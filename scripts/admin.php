@@ -16,10 +16,16 @@ if (isset($_GET['project'])) {
 ////////////////////////////
 // Start of editing users //
 ////////////////////////////
-if ($_GET['area'] == "users" && ($permissions['is_admin'] == "1" OR $current_user['user_id'] == $_GET['id'])) {
+
+if ($_GET['area'] == "users" &&
+   ($permissions['is_admin'] == "1"
+    OR $current_user['user_id'] == $_GET['id']
+    OR $permissions['manage_project'] == '1')) {
 
 // if we want a specific user
-if ($_GET['id']) {
+if ($_GET['id']
+    && ($permissions['is_admin'] == '1'
+        OR $current_user['user_id'] == $_GET['id'])) {
 
 $get_user_details = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_GET['id']));
 $user_details = $fs->dbFetchArray($get_user_details);
@@ -70,17 +76,27 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
         <td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat_extended'];?>"></td>
     </tr>
     <?php
+    // This is for changing the user's global group ONLY
     if ($permissions['is_admin'] == '1') {
     ?>
     <tr>
-      <td><label for="groupin"><?php echo $admin_text['group'];?></label></td>
+      <td><label for="groupin"><?php echo $admin_text['globalgroup'];?></label></td>
       <td>
       <select id="groupin" name="group_in">
       <?php
       // Get the groups list
-      $get_groups = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
-      while ($row = $fs->dbFetchArray($get_groups)) {
-        if ($row['group_id'] == $user_details['group_in']) {
+      $current_global_group = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+                                                    LEFT JOIN flyspray_groups g ON uig.group_id = g.group_id
+                                                    WHERE uig.user_id = ? AND g.belongs_to_project = ?
+                                                    ORDER BY g.group_id ASC",
+                                                    array($user_details['user_id'], '0')));
+
+      // Now, get the list of global groups and compare for display
+      $global_groups = $fs->dbQuery("SELECT * FROM flyspray_groups
+                                     WHERE belongs_to_project = ?",
+                                     array('0'));
+      while ($row = $fs->dbFetchArray($global_groups)) {
+        if ($row['group_id'] == $current_global_group['group_id']) {
           echo "<option value=\"{$row['group_id']}\" selected=\"selected\">{$row['group_name']}</option>";
         } else {
           echo "<option value=\"{$row['group_id']}\">{$row['group_name']}</option>";
@@ -88,6 +104,7 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       };
       ?>
       </select>
+      <input type="hidden" name="record_id" value="<?php echo $current_global_group['record_id'];?>">
       </td>
     </tr>
     <tr>
@@ -125,6 +142,10 @@ if (isset($_GET['project'])) {
   $project_id = '0';
 };
 
+if ($project_id == '0' AND $permissions['is_admin'] == '0') {
+  die($admin_text['nopermission']);
+};
+
 echo "<h3>{$admin_text['usergroupmanage']} - $forproject</h3>";
 
 // Only full admins need the link to add new users
@@ -134,14 +155,25 @@ if ($project_id == '0' && $permissions['is_admin'] == '1') {
 
 echo "<a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>";
 
+// Cycle through the groups that belong to this project
 $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
 while ($group = $fs->dbFetchArray($get_groups)) {
+
   echo "<h4><a href=\"?do=admin&amp;area=groups&amp;id={$group['group_id']}\">{$group['group_name']}</a></h4>";
   echo "<p>{$group['group_desc']}</p>";
   echo "<table class=\"userlist\"><tr><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>";
 
-  $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users WHERE group_in = ? ORDER BY user_name ASC", array($group['group_id']));
+    $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+                              LEFT JOIN flyspray_users u on uig.user_id = u.user_id
+                              WHERE uig.group_id = ? ORDER BY u.user_name ASC",
+                              array($group['group_id']));
+  
+  // We have to make sure that a user isn't displayed in the user list at the bottom of the page
+  // if they're in a group from another project... so we set up an array...
+  $user_checklist = array();
+    
   while ($row = $fs->dbFetchArray($get_user_list)) {
+    array_push($user_checklist, $row['user_id']);
     echo "<tr>";
     echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>";
     echo "<td>{$row['real_name']}</td>";
@@ -156,6 +188,50 @@ while ($group = $fs->dbFetchArray($get_groups)) {
   echo "</table>";
 };
 
+// If this is a project-level edit, we need a method of placing users into a project group
+if ($project_id != '0') {
+  echo '<form action="index.php">' . "\n";
+  echo '<input type="hidden" name="do" value="modify">'. "\n";
+  echo '<input type="hidden" name="action" value="addtogroup">'. "\n";
+  
+  echo '<select class="adminlist" name="user_list" multiple="multiple" size="10">'. "\n";
+  
+// Get a list of the users not in any groups for this project
+
+// REMEMBER THAT YOU HAVE TO BE ABLE TO ADD MULTIPLE USERS AT ONCE, MEANING WE MAY HAVE TO LOOP AND INCREMENT
+
+  $user_query = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+                              LEFT JOIN flyspray_users u on uig.user_id = u.user_id
+                              LEFT JOIN flyspray_groups g on uig.group_id = g.group_id
+                              WHERE g.belongs_to_project <> ? AND u.account_enabled = ?",
+                              array($project_id, '1'));
+
+  
+  while ($row = $fs->dbFetchArray($user_query)) {
+    // ...and check if the user is in it...
+    if (!in_array($row['user_id'], $user_checklist)) {
+      // ...if not, we display them, and add them to the array so that they don't get shown again!
+      echo "<option value=\"{$row['user_id']}\">{$row['real_name']} ({$row['user_name']})</option>\n";
+      array_push($user_checklist, $row['user_id']);
+    };
+  };
+  
+  echo '</select><br />';
+  echo '<input class="adminbutton" type="submit" value="' . $admin_text['addtogroup'] . '" DISABLED>'. "\n";
+  echo '<select class="adminbutton" name="add_to_group">'. "\n";
+  
+  // Get the list of groups to choose from
+  $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+  while ($group = $fs->dbFetchArray($get_groups)) {
+  echo '<option value="' . $group['group_id'] . '">' . $group['group_name'] . "</a>\n";
+  };
+  
+  echo '</select>';
+  
+  echo '</form>';
+
+// End of project-level user list
+};
 // End of users
 };
 
@@ -728,7 +804,7 @@ if ($_GET['show'] == 'prefs') { ?>
       <option value=""><?php echo $admin_text['noone'];?></option>
       <?php
       // Get list of developers
-      $fs->listUsers($project_details['default_cat_owner']);
+      $fs->listUsers($project_details['default_cat_owner'], $project_id);
       ?>
     </select>
     </td>
@@ -822,7 +898,7 @@ if ($_GET['show'] == 'prefs') { ?>
         <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
-        $fs->listUsers($row['category_owner']);
+        $fs->listUsers($row['category_owner'], $project_id);
         ?>
       </select>
       </td>
@@ -853,7 +929,7 @@ if ($_GET['show'] == 'prefs') { ?>
         <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
-        $fs->listUsers($subrow['category_owner']);
+        $fs->listUsers($subrow['category_owner'], $project_id);
         ?>
       </select>
       </td>
@@ -896,7 +972,7 @@ if ($_GET['show'] == 'prefs') { ?>
         <select id="categoryownernew" name="category_owner">
           <option value=""><?php echo $admin_text['selectowner'];?></option>
           <?php
-          $fs->listUsers();
+          $fs->listUsers($novar, $project_id);
           ?>
         </select>
       </td>

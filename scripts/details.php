@@ -231,7 +231,7 @@ if ($canedit == '1'
           echo "<option value=\"0\">{$details_text['noone']}</option>\n";
         };
 
-        $fs->ListUsers($task_details['assigned_to']);
+        $fs->ListUsers($task_details['assigned_to'], $project_id);
 
         ?>
         </select>
@@ -948,7 +948,7 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
     <select class="adminlist" name="user_id">
     <?php
     // Get list of users
-    $fs->listUsers();
+    $fs->listUsers($novar, $project_id);
     ?>
     </select>
     <input type="hidden" name="do" value="modify" />
@@ -1065,7 +1065,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
   <select class="adminlist" name="to_user_id">
     <?php
     // Get list of users
-    $fs->listUsers();
+    $fs->listUsers($novar, $project_id);
     ?>
     </select>
 
