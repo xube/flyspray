@@ -953,7 +953,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
        $file_name = $_POST['task_id']."_$randval";
 
   // If there is a file attachment to be uploaded, upload it
-  if ($_FILES['userfile']['name'] && $_POST['file_desc'] != "") {
+  if ($_FILES['userfile']['name']) {
 
     // Then move the uploaded file into the attachments directory and remove exe permissions
     @move_uploaded_file($_FILES['userfile']['tmp_name'], "attachments/$file_name");

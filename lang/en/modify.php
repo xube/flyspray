@@ -86,7 +86,7 @@ $modify_text = array (
 'fileuploaded'                =>        'File has been uploaded.',
 'fileerror'                        =>        'There was an error uploading your file.  Perhaps the permissions on the <i>attachments/</i> directory are incorrect.',
 'contactadmin'                =>        'Contact the Administrator for this project.',
-'selectfileerror'        =>        'You didn\'t select a file and/or enter a description.',
+'selectfileerror'        =>        'You didn\'t select a file.',  // Changed in 0.9.6
 
 'userupdated'                =>        'User details have been updated',
 'realandemail'                =>        'You didn\'t fill in both the Real Name and Email Address fields.',

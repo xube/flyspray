@@ -1,3 +1,40 @@
+0.9.6 - Soon!
+
+NEW: Config settings have been moved from header.php into flyspray.conf.php
+NEW: Closure comments
+NEW: Configurable date and time formats, global and per-user
+NEW: Sub-categories
+NEW: Priority
+NEW: Dropdown list to show only tasks assigned to me,
+       tasks opened by me, and
+       tasks I watch
+NEW: Locking tasks while editing, so no-one else can save over your 
+       changes-in-progress
+NEW: Referring to a Flyspray task in the format - FS#123 - creates a hyperlink
+       to that task
+NEW: Versions are separated into past, present and future
+NEW: Per theme custom header.inc.php and footer.inc.php files
+NEW: Customisable columns in task list
+NEW: 'Remember login' option
+NEW: Secondary sort in task list
+NEW: Visual indicator on which column is sorted in task list
+NEW: Reports
+NEW: Task history tab
+NEW: Scheduled reminders tab
+NEW: Admins can change user's passwords for them
+NEW: 
+
+IMPROVED: Method of marking tasks 'closed'.
+IMPROVED: Task summary is now in notification subject lines
+IMPROVED: Admin lists are now one form per page instead of per row
+IMPROVED: Projects are now sorted alphabetically in the dropdown lists
+
+FIXED: Changing passwords now works if the cookie salt has been changed
+FIXED: Protection against opening duplicate tasks using your browser's
+         'back' button
+
+
+
 0.9.5 - 19 February 2004
 
 NEW: Multiple projects with different categories etc for each

@@ -156,6 +156,11 @@ if ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flys
 // If the user has the right name cookies
 if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
+    // Check to see if the user has been trying to hack their cookies to perform sql-injection
+    if (!preg_match ("/^\d+$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d+$/", $_COOKIE['flyspray_project']))) {
+      die("Stop hacking your cookies, you naughty fellow!");
+    };
+
   // Get current user details
   $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
   $current_user = $fs->dbFetchArray($result);
