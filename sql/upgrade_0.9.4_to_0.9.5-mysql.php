@@ -1,15 +1,6 @@
 <?php
 
-include('config.inc.php');
-include('functions.inc.php');
-
-session_start();
-
-$fs = new Flyspray;
-
-$fs->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);
-
-$flyspray_prefs = $fs->getGlobalPrefs();
+include('../header.php');
 
 ?>
 <html>
@@ -25,7 +16,7 @@ $flyspray_prefs = $fs->getGlobalPrefs();
 $page = $_GET['page'];
 if (!$page) {
 
-// Query to see if this database has been already upgraded to 0.9.4
+// Query to see if this database has been already upgraded to 0.9.5
 $checkdb = $fs->dbQuery("SHOW TABLES");
 while ($tables_array = $fs->dbFetchArray($checkdb)) {
   list($table) = $tables_array;
@@ -37,16 +28,18 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 
   if ($upgraded == 'yes') {
     echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database has already been upgraded for use with version 0.9.5.  You can delete this script.<br><br>";
-	echo "<a href=\"./\">Take me to Flyspray 0.9.5 now!</a></td></tr><table>";
+	echo "<a href=\"../\">Take me to Flyspray 0.9.5 now!</a></td></tr><table>";
+
   } else {
     echo "<table class=\"admin\"><tr><td class=\"admintext\">This script will upgrade your database for use with Flyspray 0.9.5.";
     echo " You should ensure that your database settings are correct in config.inc.php before continuing.";
-    echo "<br><br><a href=\"upgrade_0.9.4_to_0.9.5.php?page=2\">Perform upgrade now!</a></td></tr></table>";
+    echo "<br><br><a href=\"" . $_SERVER['PHP_SELF'] . "?page=2\">Perform upgrade now!</a></td></tr></table>";
+    echo $_SERVER['PHP_SELF'];
   };
 
 } elseif ($page == '2') {
 
-// Query to see if this database has been already upgraded to 0.9.4
+// Query to see if this database has been already upgraded to 0.9.5
 $checkdb = $fs->dbQuery("SHOW TABLES");
 while ($tables_array = $fs->dbFetchArray($checkdb)) {
   list($table) = $tables_array;
@@ -58,7 +51,8 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 
   if ($upgraded == 'yes') {
     echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database has already been upgraded for use with version 0.9.5.  You can delete this script.<br><br>";
-	echo "<a href=\"./\">Take me to Flyspray 0.9.5 now!</a></td></tr><table>";
+	echo "<a href=\"../\">Take me to Flyspray 0.9.5 now!</a></td></tr><table>";
+
   } else {
 
 $upgrade = $fs->dbQuery("CREATE TABLE flyspray_projects (
@@ -85,17 +79,6 @@ $insert_project = $fs->dbQuery("INSERT INTO flyspray_projects
                                           )
                                 ");
 
-/*$set_project_prefs = $fs->dbQuery("INSERT INTO `flyspray_projects` ( `project_id` , `project_title` , `theme_style` , 'show_logo' , 'default_cat_owner' , 'intro_message' , 'project_is_active' )
-                                     VALUES (
-                                             '',
-                                             '{$flyspray_prefs['project_title']}',
-                                             'Bluey',
-                                             '1',
-                                             '',
-                                             'Modify your project preferences to change this text.',
-                                             '1')
-                                  ");
-*/
 $upgrade = $fs->dbQuery("ALTER TABLE `flyspray_tasks`
                            ADD `attached_to_project` MEDIUMINT( 3 ) NOT NULL AFTER `task_id`
                        ");

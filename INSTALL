@@ -19,11 +19,12 @@ mysql flyspray -u root -p < flyspray-version.sql
 Step Four:  Get a copy of the ADODB database-abstraction software and install it.
 http://php.weblogs.com/ADODB
 
-Step Five:  Edit the config.inc.php file to suit your database setup.  Examples
+Step Five:  Edit the header.php file to suit your database setup.  Examples
 are provided in the file.  You will need to set your database type to an ADODB
 supported database, your database username and password, and the host
 the database server runs on.  You will also need to enter the location of the 
-adodb.inc.php file.
+adodb.inc.php file and functions.inc.php file.  Consider changing the cookie salt
+value as well.
 
 Step Six: Point your browser to http://yourserver.com/flyspray-version/ and you should
 see Flyspray!  Login as 'super', with the password 'super'.
