@@ -556,7 +556,7 @@ if ($area == 'comments') { ?>
         // If the user is an admin, show the edit button
         if ($_SESSION['admin'] == '1') { ?>
         <div class="modifycomment">
-        <form action="index.php" method="get"> 
+        <form action="index.php" method="get">
         <p>
           <input type="hidden" name="do" value="admin">
           <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
@@ -571,7 +571,7 @@ if ($area == 'comments') { ?>
           return true
         } else {
           return false }
-        "> 
+        ">
           <p>
           <input type="hidden" name="do" value="modify">
           <input type="hidden" name="action" value="deletecomment">
@@ -648,8 +648,8 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['item_status'] != '8')
          </p>
         </form>
         </div>
-      <?php 
-      }; 
+      <?php
+      };
 
       echo "<p>";
       echo "<a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']} - $file_desc</a>";
@@ -778,7 +778,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
       ?>
       <div class="tabentry">
       <?php
-        // If the user can modify jobs, then show them a form to remove a notified user 
+        // If the user can modify jobs, then show them a form to remove a notified user
         if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
           ?>
           <div class="modifycomment">
@@ -867,95 +867,49 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
 } elseif ($area == 'remind') { ?>
 <div class="tabentries">
 
-
-    <?php
-    $get_user_ids = $fs->dbQuery("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id']));
-    while ($row = $fs->dbFetchArray($get_user_ids)) {
-      $get_user = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
-      while ($subrow = $fs->dbFetchArray($get_user)) {
-      ?>
-      <div class="tabentry">
-      <?php
-        // If the user can modify jobs, then show them a form to remove a notified user 
-        if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
-          ?>
-          <div class="modifycomment">
-          <form action="index.php" method="post">
-              <p>
-                <input type="hidden" name="do" value="modify">
-                <input type="hidden" name="action" value="remove_notification">
-                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
-                <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>">
-                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
-              </p>
-          </form>
-          </div>
-
-        <?php
-
-        };
-                echo "<p>{$subrow['real_name']} ({$subrow['user_name']})</p>";
-      echo "</div>";
-      };
-    };
-    if ($task_details['item_status'] != '8') {
-    ?>
-
 </div>
+
 <div class="tabentries">
-  <?php if ($_SESSION['admin'] == '1') { ?>
-
-
-  <div class="tabentry">
-  <?php
-  };
-  if ($_SESSION['userid']) {
-    $result = $fs->dbQuery("SELECT * FROM flyspray_notifications
-              WHERE task_id = ?
-              AND user_id = ?
-              ", array($_GET['id'], $_SESSION['userid']));
-    if (!$fs->dbCountRows($result)) {
-  ?>
-
-  <?php } else { ?>
-
-  <?php
-    };
-  };?>
-  </div>
 
 <div class="tabentry">
-<form>
-Remind <select class="adminlist">
-<option>-Assign Someone-</option>
-<option>MySelf</option>
-<option>Task Assignee</option>
-</select> Every <input type=text> <select class="adminlist"><option>-Time Period-</option>
-<option>Minute(s)</option>
-<option>Hour(s)</option>
+ <form action="index.php" method="post" id="formaddreminder>
+  <input type="hidden" name="do" value="modify">
+  <input type="hidden" name="action" value="addreminder">
+  <input type="hidden" name="thistask" value="<?php echo $_GET['id'];?>">
+  <em><?php echo $details_text['remindthisuser'];?></em>
+  <select class="adminlist" name="user_id">
+    <?php
+    // Get list of users
+    $fs->listUsers();
+    ?>
+    </select>
 
-<option>Days(s)</option>
-<option>Month(s)</option>
-<option>Year(s)</option>
-</select>
-<br />
-Start Reminders After <input type=text> <select class="adminlist"><option>-Time Period-</option>
-<option>Minute(s)</option>
-<option>Hour(s)</option>
-<option>Days(s)</option>
+   <br>
 
-<option>Month(s)</option>
-<option>Year(s)</option>
-</select> of being assigned.
+   <em><?php echo $details_text['thisoften'];?></em>
+   <input type="admintext" name="timeamount1" size="3" maxlength="3">
+   <select class="adminlist" name="timeamount1">
+     <option value="3600"><?php echo $details_text['hours'];?></option>
+     <option value="86400"><?php echo $details_text['days'];?></option>
+     <option value="604800"><?php echo $details_text['weeks'];?></option>
+   </select>
+
+  <br />
+
+  <em><?php echo $details_text['startafter'];?></em>
+  <input type="admintext" name="timeamount2" size="3" maxlength="3">
+  <select class="adminlist" name="timetype2">
+     <option value="3600"><?php echo $details_text['hours'];?></option>
+     <option value="86400"><?php echo $details_text['days'];?></option>
+     <option value="604800"><?php echo $details_text['weeks'];?></option>
+  </select>
+  </div>
+
 </div>
 
-    <?php
-    };
-    ?>
-
-<?
-
+<?php
 // End of scheduled reminders area
+
 
 // Start of system log area
 } elseif ($area == 'system') { ?>
@@ -970,7 +924,7 @@ Start Reminders After <input type=text> <select class="adminlist"><option>-Time 
       ?>
       <div class="tabentry">
       <?php
-        // If the user can modify jobs, then show them a form to remove a notified user 
+        // If the user can modify jobs, then show them a form to remove a notified user
         if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
           ?>
           <div class="modifycomment">
