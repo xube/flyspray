@@ -1,5 +1,6 @@
-<?php
+﻿<?php
 
+global $newuser_text;
 $newuser_text = array (
 
 'registernewuser' =>  'Neuen Benutzer registrieren',
@@ -8,11 +9,11 @@ $newuser_text = array (
 'password'        =>  'Passwort',
 'confirmpass'     =>  'Passwort bestätigen',
 'realname'        =>  'Realname',
-'emailaddress'    =>  'eMail Adresse',
+'emailaddress'    =>  'E-Mail',
 'jabberid'        =>  'Jabber ID',
 'notifications'   =>  'Benachrichtigungen',
 'none'            =>  'Keine',
-'email'           =>  'eMail',
+'email'           =>  'E-Mail',
 'jabber'          =>  'Jabber',
 'group'           =>  'Gruppe',
 'registeraccount' =>  'Benutzer registrieren',

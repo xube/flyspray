@@ -1,24 +1,28 @@
 <?php
 
+global $newtask_text;
 $newtask_text = array (
 
-'createnewtask'		=>	'Créer une nouvelle tâche',
+'createnewtask'		=>	'Créer une nouvelle tâche dans le projet:',  // Changed in 0.9.6
 'summary'			=>	'Résumé',
-'tasktype'			=>	'Type',
+'tasktype'			=>	'Type de tâche',
 'category'			=>	'Catégorie',
-'status'			=>	'Statut',
-'assignedto'		=>	'Assignée à',
+'status'			=>	'Etat',
+'assignedto'		=>	'Assigné à',
 'noone'				=>	'Personne',
 'operatingsystem'	=>	'Système d\'exploitation',
 'severity'			=>	'Sévérité',
-'reportedversion'	=>	'Version convernée',
-'dueinversion'		=>	'Résolu dans la version',
+'reportedversion'	=>	'Basée sur la version',
+'dueinversion'		=>	'Due pour la version',
 'details'			=>	'Détails',
-'addanother'		=>	'Ajouter une nouvelle tâche après celle-ci',
+'addanother'		=>	'Ajouter une autre tâche après celle-ci',
 'addthistask'		=>	'Ajouter cette tâche',
-'nopermission'		=>	'Vous n\'avez pas l\'autorisation d\'accéder à cette page',
+'nopermission'		=>	'Vous n\'avez pas la permission d\'utiliser cette page',
 
-'notifyme'			=>	'Me notifier lorsque cette tâche est modifiée',
+// Added in version 0.9.5
 
+'notifyme'			=>	'M\'avertir quand cette tâche change',
+'priority'			=>	'Priorité',
+'undecided'			=>	'Non décidé'
 );
 ?>

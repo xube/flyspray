@@ -1,28 +1,47 @@
 <?php
 
+global $index_text;
 $index_text = array (
 
-'search'			=>	'Recherche',
-'alltasktypes'		=>	'Tous les types',
-'allseverities'		=>	'Toutes les sévérités',
-'alldevelopers'		=>	'Tous les développeurs',
-'notyetassigned'	=>	'Pas encore assignées',
-'allcategories'		=>	'Toutes les catégories',
-'allstatuses'		=>	'Tous les statuts',
-'allopentasks'		=>	'Toutes les tâches ouvertes',
-'sortthiscolumn'	=>	'Classer cette colonne',
-'id'				=>	'Numéro',
-'tasktype'			=>	'Type',
-'severity'			=>	'Sévérité',
-'summary'			=>	'Résumé',
+'search'			=>	'Rechercher',
+'alltasktypes'		=>	'Tous les types de tÃ¢che',
+'allseverities'		=>	'Toutes les sÃ©vÃ©ritÃ©s',
+'alldevelopers'		=>	'Tous',
+'notyetassigned'	=>	'Pas encore assignÃ©es',
+'allcategories'		=>	'Toutes les catÃ©gories',
+'allstatuses'		=>	'Tous les Ã©tats',
+'allopentasks'		=>	'Toutes les tÃ¢ches ouvertes',
+'sortthiscolumn'	=>	'Trier selon cette colonne',
+'id'				=>	'ID',
+'tasktype'			=>	'Type de tÃ¢che',
+'project'			=>	'Projet',
+'category'			=>	'CatÃ©gorie',
+'severity'			=>	'SÃ©vÃ©ritÃ©',
+'summary'			=>	'RÃ©sumÃ©',
 'dateopened'		=>	'Date d\'ouverture',
-'status'			=>	'Statut',
+'status'			=>	'Etat',
 'progress'			=>	'Progression',
-'complete'			=>	'complête',
-'previous'			=>	'Précédent',
+'complete'			=>	'terminÃ©',
+'previous'			=>	'PrÃ©cÃ©dent',
 'next'				=>	'Suivant',
 
-'searchthisproject'	=>	'Rechercher ce projet',
+// Added in version 0.9.5
+'searchthisproject'	=>	'Rechercher dans ce projet',
+
+// Added in version 0.9.6
+'closed'			=>	'Close',
+'dueanyversion'		=>	'Due pour version quelconque',
+'dueversion'		=>	'Due pour version',
+'project'			=>	'Projet',
+'category'			=>	'CatÃ©gorie',
+'lastedit'			=>	'DerniÃ¨re Ã©dition',
+'assignedto'		=>	'AssignÃ©e Ã ',
+'os'				=>	'SystÃ¨me d\'exploitation',
+'reportedin'		=>	'BasÃ©e sur',
+'openedby'			=>	'Ouverte par',
+'comments'			=>  'Commentaires',
+'attachments'		=>  'Fichiers joints',
+'priority'			=>	'PrioritÃ©',
 
 );
 ?>

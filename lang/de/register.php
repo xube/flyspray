@@ -1,5 +1,6 @@
-<?php
+﻿<?php
 
+global $newuser_text;
 $register_text = array (
 
 'registernewuser' =>  'Neuen Benutzer registrieren',
@@ -8,22 +9,22 @@ $register_text = array (
 'password'        =>  'Passwort',
 'confirmpass'     =>  'Passwort bestätigen',
 'realname'        =>  'Realname',
-'emailaddress'    =>  'eMail Adresse',
+'emailaddress'    =>  'E-Mail',
 'jabberid'        =>  'Jabber ID',
 'notifications'   =>  'Benachrichtigungen',
 'none'            =>  'Keine',
-'email'           =>  'eMail',
+'email'           =>  'E-Mail',
 'jabber'          =>  'Jabber',
-'note'            =>  '<em>Anmerkung:</em> Sie bekommen einen Code auf dem gewählten Weg zugesandt, bevor Ihr Konto eröffnet wird. <strong>Wenn Sie falsche Angaben machen, werden Sie den Code nicht erhalten!</strong>',
+'note'            =>  '<em>Hinweis:</em> Ihnen wird auf dem gewählten Weg ein Bestätigungscode zugesandt, bevor Ihr Konto eröffnet wird. <strong>Wenn Sie falsche Angaben machen, werden Sie den Code nicht erhalten!</strong>',
 'sendcode'        =>  'Code senden!',
-'entercode'       =>  'Ihr Bestätigungscode wurde versendet. Wenn Sie ihn erhalten haben, geben Sie ihn un untenstehendem Feld ein. Geben Sie auch Ihr gewünschtes Passwort ein.',
+'entercode'       =>  'Ihr Bestätigungscode wurde versendet. Wenn Sie ihn erhalten haben, geben Sie ihn zusammen mit Ihrem gewünschten Passwort in untenstehendem Formular ein.',
 'confirmationcode'=>  'Bestätigungscode',
 'registeraccount' =>  'Konto registrieren',
 'registererror'   =>  'Stellen Sie sicher, dass Sie alle notwendigen Felder ausgefüllt und korrekte Details zu Ihrer Benachrichtigungsmethode gemacht haben.',
-'usernametaken'   =>  'Dieser Benutzername wurde bereits vergeben. Sie müssen einen anderen wählen.',
-'goback'          =>  'Zurück.',
+'usernametaken'   =>  'Dieser Benutzername wurde bereits vergeben. Wählen Sie bitte einen anderen Namen.',
+'goback'          =>  'Zurück',
 'noticefrom'      =>  'Nachricht von',
-'addressused'     =>  'Diese Adresse wurde bereits verwendet, um ein Flyspraykonto anzulegen. Wenn Sie diese Nachricht nicht erwartet haben, ignorieren und löschen Sie sie bitte. Ihr Bestätigungscode lautet: '
+'addressused'     =>  'Diese Adresse wurde verwendet, um ein Flyspray-Benutzerkonto anzulegen. Wenn Sie diese Nachricht nicht erwartet haben, ignorieren und löschen Sie sie bitte. Ihr Bestätigungscode lautet: '
 
 
 );

@@ -1,12 +1,13 @@
 <?php
 
+global $severity_list;
 $severity_list = array (
 
-'1'	=>	'Très basse',
-'2'	=>	'Basse',
-'3'	=>	'Moyenne',
-'4'	=>	'Haute',
 '5'	=>	'Critique',
+'4'	=>	'Haute',
+'3'	=>	'Moyenne',
+'2'	=>	'Basse',
+'1'	=>	'Très basse',
 
 );
 ?>

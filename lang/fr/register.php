@@ -1,29 +1,30 @@
 <?php
 
+global $register_text;
 $register_text = array (
 
 'registernewuser'	=>	'Enregistrer un nouvel utilisateur',
-'requiredfields'	=>	'Les champs obligatoires sont marqués d\'un',
+'requiredfields'	=>	'Les champs requis sont marqués d\'une',
 'username'			=>	'Nom d\'utilisateur',
 'password'			=>	'Mot de passe',
 'confirmpass'		=>	'Confirmer le mot de passe',
-'realname'			=>	'Identité',
-'emailaddress'		=>	'Courriel',
-'jabberid'			=>	'Identifiant Jabber',
+'realname'			=>	'Nom réel',
+'emailaddress'		=>	'Adresse email',
+'jabberid'			=>	'Jabber ID',
 'notifications'		=>	'Notifications',
-'none'				=>	'Aucun',
-'email'				=>	'Courriel',
+'none'				=>	'Aucune',
+'email'				=>	'Email',
 'jabber'			=>	'Jabber',
-'note'				=>	'<b>Note:</b> vous allez recevoir un code confirmation permettant d\'activer votre nouveau compte. Ce code vous sera envoyé selon le type de notification que vous avez choisi plus haut. SI VOUS ENTREZ DES DETAILS ERRONES, VOUS NE RECEVREZ PAS VOTRE CODE.',
-'sendcode'			=>	'Code envoyé !',
-'entercode'			=>	'Votre code de confirmation vous a été envoyé en utilisant votre type de notification préféré. Dès que vous le recevez, entrez-le dessous. Entrez également un mot de passe pour votre compte.',
+'note'				=>	'<b>Note:</b>  Vous recevrez un code de confirmation avant que votre compte soit créé.  Le code vous sera envoyé selon la méthode de notification choisie ci-dessus.<br>SI VOUS ENTREZ DE FAUX RENSEIGNEMENTS, VOUS NE RECEVREZ PAS VOTRE CODE.',
+'sendcode'			=>	'Envoyer le code!',
+'entercode'			=>	'Votre code de confirmation a été envoyé. Quand vous l\'aurez reçu, entrez le ci-dessous.  Entrez aussi le mot de passe souhaité.',
 'confirmationcode'	=>	'Code de confirmation',
 'registeraccount'	=>	'Enregistrer ce compte',
-'registererror'		=>	'Vérifiez que vous avez bien rempli tout les champs nécessaires et que vous avez choisi votre type de notification par défaut.',
-'usernametaken'		=>	'Ce nom d\'utilisateur est déja pris. Vous devez en choisir un autre.',
-'goback'			=>	'Revenez et faites-le.',
-'noticefrom'		=>	'Notification de',
-'addressused'		=>	'Cette adresse a été utilisée pour enregistrer un compte Flyspray. Si vous ne comprenez pas ce message, merci de l\'ignorer et de le supprimer. Votre code de confirmation est:',
+'registererror'		=>	'Assurez-vous d\'avoir rempli tous les champs requis, et que vous avez entré des données correctes pour le type de notification souhaité.',
+'usernametaken'		=>	'Ce nom d\'utilisateur est déjà pris.  Vous devez en choisir un autre.',
+'goback'			=>	'Retour.',
+'noticefrom'		=>	'Note de',
+'addressused'		=>	'Cette adresse a été utilisée pour enregistrer un compte Flyspray.  Si vous n\'attendiez pas ce message, ignorez-le et effacez-le.  Votre code de confirmation est:',
 
 );
 ?>

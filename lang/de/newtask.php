@@ -1,24 +1,29 @@
-<?php
+﻿<?php
 
+global $newtask_text;
 $newtask_text = array (
 
-'createnewtask'   =>  'Neue Aufgabe erstellen',
-'summary'         =>  'Zusammenfassung',
-'tasktype'        =>  'Aufgabentyp',
-'category'        =>  'Kategorie',
-'status'          =>  'Status',
-'assignedto'      =>  'Zugeteilt',
-'noone'           =>  '-Niemand-',
-'operatingsystem' =>  'Betriebssystem',
-'severity'        =>  'Schweregrad',
-'reportedversion' =>  'Berichtete Version',
-'dueinversion'    =>  'Fällige Version',
-'details'         =>  'Details',
-'addanother'      =>  'Weitere Aufgabe nach dieser hinzufügen',
-'addthistask'     =>  'Aufgabe hinzufügen',
-'nopermission'    =>  'Sie sind nicht berechtigt, diese Seite zu verwenden',
+'createnewtask'     =>  'Neue Aufgabe in diesem Projekt anlegen:',
+'summary'           =>  'Zusammenfassung',
+'tasktype'          =>  'Aufgabentyp',
+'category'          =>  'Kategorie',
+'status'            =>  'Status',
+'assignedto'        =>  'Zugeteilt',
+'noone'             =>  'Niemand',
+'operatingsystem'   =>  'Betriebssystem',
+'severity'          =>  'Schweregrad',
+'reportedversion'   =>  'Berichtete Version',
+'dueinversion'      =>  'Fällig in Version',
+'details'           =>  'Details',
+'addanother'        =>  'Weitere Aufgabe nach dieser hinzufügen',
+'addthistask'       =>  'Aufgabe hinzufügen',
+'nopermission'      =>  'Sie sind nicht berechtigt, diese Seite zu verwenden',
 
-'notifyme'        =>  'Benachrichtige mich, wenn sich diese Aufgabe ändert',
+// Added in version 0.9.5
+
+'notifyme'          =>  'Automatische Benachrichtigung bei Änderungen an dieser Aufgabe',
+'priority'			=>	'Priorität',
+'undecided'			=>	'Unbestimmt',
 
 );
 ?>

@@ -1,5 +1,6 @@
-<?php
+﻿<?php
 
+global $details_text;
 $details_text = array (
 
 'task'              =>  'Aufgabe',
@@ -10,7 +11,7 @@ $details_text = array (
 'category'          =>  'Kategorie',
 'status'            =>  'Status',
 'assignedto'        =>  'Zugeteilt',
-'noone'             =>  '-Niemand-',
+'noone'             =>  'Niemand',
 'operatingsystem'   =>  'Betriebssystem',
 'severity'          =>  'Schweregrad',
 'reportedversion'   =>  'Berichtete Version',
@@ -27,7 +28,7 @@ $details_text = array (
 'reopenthistask'    =>  'Aufgabe wieder öffnen',
 'closetask'         =>  'Aufgabe schließen',
 'comments'          =>  'Kommentare',
-'attachments'       =>  'Attachments',
+'attachments'       =>  'Anhänge',
 'relatedtasks'      =>  'Verwandte Aufgaben',
 'notifications'     =>  'Benachrichtigungen',
 'edit'              =>  'Bearbeiten',
@@ -55,6 +56,54 @@ $details_text = array (
 
 'attachedtoproject'	=>	'gehört zu Projekt',
 
+// Added in version 0.9.6
+
+'reminders'         =>   'Erinnerungen',
+'remindthisuser'    =>   'Diesen Benutzer',
+'thisoften'         =>   'so oft erinnern',
+'startafter'        =>   'Zeit bis zur ersten Erinnerung',
+'hours'             =>   'Stunde(n)',
+'days'              =>   'Tag(e)',
+'weeks'             =>   'Woche(n)',
+'addreminder'       =>   'Erinnerung hinzufügen',
+'defaultreminder'   =>   'Dies ist eine Erinnerung, einen Blick auf die folgende Flyspray-Aufgabe zu werfen:',
+'message'           =>   'Nachricht',
+'closed'			=>   'Geschlossen',
+'filename'			=>   'Dateiname:',
+'date'				=>   'Datum:',
+'filesize'			=>   'Dateigröße:',
+'closurecomment'	=>   'Zusätzlicher Kommentar zur Schließung:',
+
+'history'           =>   'Historie',
+'nohistory'         =>   'Keine Daten verfügbar.',
+'eventdate'         =>   'Datum',
+'user'              =>   'Benutzer',
+'event'             =>   'Ereignis',
+'fieldchanged'      =>   'Feld geändert',
+'taskopened'        =>   'Aufgabe geöffnet',
+'taskreopened'      =>   'Aufgabe wiedereröffnet',
+'taskclosed'        =>   'Aufgabe geschlossen',
+'commentadded'      =>   'Kommentar hinzugefügt',
+'commentedited'     =>   'Kommentar geändert',
+'commentdeleted'    =>   'Kommentar gelöscht',
+'attachmentadded'   =>   'Anhang hinzugefügt',
+'attachmentdeleted' =>   'Anhang gelöscht',
+'taskedited'        =>   'Aufgabendetails geändert',
+'notificationadded' =>   'Benutzer zur Benachrichtigungsliste hinzugefügt',
+'notificationdeleted' => 'Benutzer von der Benachrichtigungsliste entfernt',
+'relatedadded'      =>   'Verwandte Aufgabe hinzugefügt',
+'relateddeleted'    =>   'Verwandte Aufgabe entfernt',
+'taskassigned'      =>   'Aufgabe zugeteilt an',
+'taskreassigned'    =>   'Aufgabe neu zugeteilt an',
+'assignmentremoved' =>   'Zuteilung rückgängig gemacht',
+'summary'           =>   'Zusammenfassung',
+'addedasrelated'    =>   'Aufgabe hinzugefügt zur Verwandtschaftsliste von Aufgabe',
+'deletedasrelated'  =>   'Aufgabe entfernt von der Verwandtschaftsliste von Aufgabe',
+'reminderadded'     =>   'Erinnerung hinzugefügt',
+'reminderdeleted'   =>   'Erinnerung entfernt',
+'priority'          =>   'Priorität',
+'previousvalue'     =>   'Voriger Wert',
+'newvalue'          =>   'Neuer Wert',
 
 );
 ?>

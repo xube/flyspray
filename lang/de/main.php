@@ -1,36 +1,57 @@
 <?php
 
-$language = array (
+/*
+ *
+ * Deutsche Übersetzung für Flyspray:
+ * Stefan Huber
+ * 
+ * ab Version 0.9.6:
+ * Patrick Dubbert
+ * patrick@dexpot.de
+ *
+ */
 
-'filenotexist'    =>  'Datei existiert nicht. Wenden Sie sich an den Flyspray Administrator dieses Projektes.',
-'showtask'      =>  'Zeige Aufgabe',
-'go'        =>  'Los!',
-'opentaskanon'  =>  'Neue Aufgabe anonym anlegen',
-'addnewtask'    =>  'Neue Aufgabe anlegen',
-'register'      =>  'Registrieren Sie sich als neuer Benutzer',
-'loggedinas'    =>  'Eingeloggt als',
-'mytasks'      =>  'Meine Aufgaben',
-'addnewtask'    =>  'Neue Aufgaben',
-'editmydetails'    =>  'Meine Details bearbeiten',
-'changepassword'  =>  'Passwort ändern',
-'logout'      =>  'Logout',
-'options'      =>  'Optionen',
-'usersandgroups'  =>  'Benutzer &amp; Gruppen',
-'tasktypes'      =>  'Aufgabentypen',
-'categories'    =>  'Kategorien',
+global $language;
+$language = array(
+
+'filenotexist'      =>  'Datei nicht gefunden. Wenden Sie sich an den Flyspray-Administrator dieses Projektes.',
+'showtask'          =>  'Zeige Aufgabe',
+'now'               =>  'Jetzt',
+'go'                =>  'Los!',
+'opentaskanon'      =>  'Neue Aufgabe anonym anlegen',
+'register'          =>  'Als neuer Benutzer registrieren',
+'loggedinas'        =>  'Eingeloggt als',
+'addnewtask'        =>  'Neue Aufgabe anlegen',
+'reports'           =>  'Berichte',
+'editmydetails'     =>  'Meine Details bearbeiten',
+'changepassword'    =>  'Passwort ändern',
+'logout'            =>  'Logout',
+'options'           =>  'Optionen',
+'usersandgroups'    =>  'Benutzer &amp; Gruppen',
+'tasktypes'         =>  'Aufgabentypen',
+'categories'        =>  'Kategorien',
 'operatingsystems'  =>  'Betriebssysteme',
-'resolutions'    =>  'Erledigungsstatus',
-'versions'      =>  'Versionen',
-'severities'    =>  'Schweregrade',
-'disabledaccount'  =>  'Ihr Konto wurde abgedreht!<br>Sie werden sofort ausgeloggt...',
-'poweredby'      =>  'Hier läuft Flyspray',
+'resolutions'       =>  'Erledigungsstatus',
+'versions'          =>  'Versionen',
+'severities'        =>  'Schweregrade',
+'disabledaccount'   =>  'Ihr Konto wurde deaktiviert!<br>Sie werden jetzt ausgeloggt...',
+'poweredby'         =>  'Powered by Flyspray',
 
 // Added in version 0.9.5
 
-'selectproject'		=>	'Aufgabenliste für Projekt:',
-'show'				=>	'Zeigen',
-'projects'			=>	'Projekte',
-'adminmenu'			=>	'Admin Menü',
+'show'              =>  'Zeigen',
+'projects'          =>  'Projekte',
+'adminmenu'         =>  'Admin Menü',
+
+// Added in version 0.9.6
+'duplicated'        =>  'Wiederholte Aktion. Sie werden zur Aufgabenliste weitergeleitet.',
+'allprojects'       =>  'Alle Projekte',
+'selectproject'     =>  'im Projekt:',
+'tasksall'          =>  'Alle Aufgaben',
+'tasksassigned'     =>  'Aufgaben, die mir zugeteilt sind',
+'tasksreported'     =>  'Aufgaben, die ich geöffnet habe',
+'taskswatched'      =>  'Aufgaben, die ich beobachte',
+'lastsearch'        =>  'Meine letzte Suche',
 
 );
 ?>

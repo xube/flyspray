@@ -1,5 +1,8 @@
 <?php
 
+// Original translation by Ben Branders.
+// Updated for 0.9.6 by Bram Gerritsen
+
 global $language;
 $language = array (
 
@@ -19,7 +22,7 @@ $language = array (
 'options'			=>	'Opties',
 'usersandgroups'	=>	'Gebruikers &amp; Groepen',
 'tasktypes'			=>	'Taaktypes',
-'categories'		=>	'Categoriën',
+'categories'		=>	'Categoriï¿½',
 'operatingsystems'	=>	'Besturingssystemen',
 'resolutions'		=>	'Oplossingen',
 'versions'			=>	'Versies',

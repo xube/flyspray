@@ -1,5 +1,6 @@
-<?php
+﻿<?php
 
+global $newgroup_text;
 $newgroup_text = array (
 
 'createnewgroup'  =>  'Neue Gruppe erstellen',
@@ -11,11 +12,13 @@ $newgroup_text = array (
 'modifytasks'     =>  'Existierende Aufgaben ändern',
 'addcomments'     =>  'Kommentare hinzufügen',
 'attachfiles'     =>  'Dateien anhängen',
-'vote'            =>  'Mitglieder dürfen sich einloggen',
+'vote'            =>  'Abstimmen',
 'addthisgroup'    =>  'Gruppe hinzufügen',
-'nopermission'    =>  'Sie sind nicht berechtigt, diese Seite zu verwenden',
+'nopermission'    =>  'Sie sind nicht berechtigt, diese Seite zu verwenden.',
 
-'groupenabled'    =>  'Mitglieder können sich einloggen',
+//  Added in version 0.9.5
+
+'groupenabled'    =>  'Mitglieder können sich einloggen (Gruppe aktiv)',
 
 );
 ?>

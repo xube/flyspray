@@ -1,18 +1,19 @@
-<?php
+﻿<?php
 
+global $modify_text;
 $modify_text = array (
 
 'modify'          =>  'Ändern',
 'noticefrom'      =>  'Nachricht von',
-'hasopened'       =>  'hat eine NEUE Flyspray AUFGABE GEÖFFNET und sie Ihnen zugeteilt:',
+'hasopened'       =>  'hat eine neue Flyspray-Aufgabe geöffnet und Ihnen zugeteilt:',
 'newtask'         =>  'Neue Aufgabe:',
-'moreinfonew'     =>  'Sie können mehr über diesen Bug auf folgender Flyspray Seite erfahren:',
+'moreinfonew'     =>  'Sie können mehr über diese Aufgabe auf folgender Flyspray-Seite erfahren:',
 'newtaskcategory' =>  'Eine neue Flyspray-Aufgabe wurde in dieser Kategorie geöffnet',
 'categoryowner'   =>  'Sie erhalten diese Nachricht, weil Sie als Kategorieinhaber geführt werden.',
 'tasksummary'     =>  'Aufgabenzusammenfassung:',
 'newtaskadded'    =>  'Ihre neue Aufgabe wurde hinzugefügt.',
-'waitwhiletransfer'=>  'Sie werden gleich weitergeleitet...',
-'clicknowait'     =>  'Weiter, wenn Sie nicht warten wollen.',
+'waitwhiletransfer'=>  'Sie werden weitergeleitet...',
+'clicknowait'     =>  'Weiter',
 'summaryanddetails'=>  'Sie müssen sowohl Zusammenfassung als auch Details ausfüllen.',
 'goback'          =>  'Zurück.',
 
@@ -21,34 +22,34 @@ $modify_text = array (
 'category'        =>  'Kategorie:',
 'status'          =>  'Status:',
 'operatingsystem' =>  'Betriebssystem:',
-'severity'        =>  'Sschweregrad:',
+'severity'        =>  'Schweregrad:',
 'reportedversion' =>  'Berichtete Version:',
 'dueinversion'    =>  'Fällige Version:',
 'percentcomplete' =>  'Prozent erledigt:',
 'details'         =>  'Details:',
 
-'messagefrom'     =>  'Dies ist eine Nachricht vom Flyspray Bugtracking System auf',
-'hasjustmodified' =>  'hat gerade folgende Aufgabe verändert.',
-'changedfields'   =>  'Veränderte Felder sind mit Sternchen versehen (**)',
+'messagefrom'     =>  'Dies ist eine Nachricht vom Flyspray Bugtracking-System auf',
+'hasjustmodified' =>  'hat soeben folgende Aufgabe verändert.',
+'changedfields'   =>  'Veränderte Felder sind mit Sternchen hervorgehoben (**)',
 'moreinfomodify'  =>  'Mehr Informationen zu dieser Aufgabe auf',
 
 'task'            =>  'Aufgabe',
 'nolongerassigned'=>  'Folgende Aufgabe ist Ihnen nicht länger zugeteilt. Stattdessen ist dafür zuständig:',
 'hasassigned'     =>  'hat Ihnen die folgende Flyspray-Aufgabe zugeteilt:',
 
-'taskupdated'     =>  'Aufgabe wurde upgedatet.',
+'taskupdated'     =>  'Aufgabe wurde aktualisiert.',
 
 'hasclosedassigned'=>  'hat die folgende Flyspray-Aufgabe geschlossen, die Ihnen zugeteilt war:',
-'reasonforclosing'=>  'Grund fürs Schließen:',
-'noone'           =>  '-Niemand-',
+'reasonforclosing'=>  'Grund für Schließung:',
+'noone'           =>  'Niemand',
 'unassigned'      =>  'Nicht zugeteilt',
 
-'hasclosed'       =>  'hat folgende Aufgabe geschlossen.',
+'hasclosed'       =>  'hat die folgende Aufgabe geschlossen:',
 'youonnotify'     =>  'Sie erhalten diese Nachricht, weil Sie auf der Benachrichtigungsliste geführt sind.',
 'taskclosed'      =>  'Aufgabe wurde geschlossen.',
 'returntotask'    =>  'Zurück zu den Aufgabendetails',
 'backtoindex'     =>  'Zurück zur Aufgabenliste',
-'noclosereason'   =>  'Sie haben keinen Grund für das Schließen der Aufgabe angegeben.',
+'noclosereason'   =>  'Sie haben keinen Grund für die Schließung der Aufgabe angegeben.',
 'hasreopened'     =>  'hat folgende Flyspray-Aufgabe wieder geöffnet, die Sie geschlossen hatten:',
 'taskreopened'    =>  'Aufgabe wurde wieder geöffnet.',
 'backtotask'      =>  'Zurück zur Aufgabe.',
@@ -62,12 +63,12 @@ $modify_text = array (
 'notcurrentpass'  =>  'Das ist nicht Ihr aktuelles Passwort!',
 'passchanged'     =>  'Ihr Passwort wurde geändert.',
 'closewindow'     =>  'Sie können dieses Fenster jetzt schließen.',
-'passnomatch'     =>  'Ihre neuen Passwörter stimmen nicht überein!',
+'passnomatch'     =>  'Neues Passwort und Bestätigung stimmen nicht überein!',
 
 'usernametaken'   =>  'Dieser Benutzername existiert bereits.',
 'newusercreated'  =>  'Neues Benutzerkonto wurde angelegt.',
 'accountcreated'  =>  'Ihr Konto wurde angelegt.',
-'newuserwarning'  =>  'Beachten Sie, dass die Einstellungen es erfordern können, dass das Konto von einem Administrator gebilligt wird. Wenn Sie sich nicht einloggen können, könnte das der Grund sein.',
+'newuserwarning'  =>  'Beachten Sie, dass Ihr Konto möglicherweise erst von einem Administrator aktiviert werden muss. Bitte haben Sie deshalb etwas Geduld, wenn Sie sich nicht einloggen können.',
 'nomatchpass'     =>  'Ihre Passwörter stimmen nicht überein!',
 'confirmwrong'    =>  'Bestätigungscode ungültig!',
 'formnotcomplete' =>  'Formular wurde nicht vollständig ausgefüllt.',
@@ -75,25 +76,25 @@ $modify_text = array (
 'groupnametaken'  =>  'Dieser Gruppenname existiert bereits.',
 'newgroupadded'   =>  'Neue Gruppe hinzugefügt.',
 
-'optionssaved'    =>  'Flyspray Optionen gespeichert.',
+'optionssaved'    =>  'Flyspray-Optionen gespeichert.',
 
-'hasuploaded'     =>  'hat eine Datei für eine Aufgabe hochgeladen, die Ihnen zugeteilt ist:',
-'hasattached'     =>  'hat eine Datei zu folgender Aufgabe hochgeladen:',
+'hasuploaded'     =>  'hat eine Datei an eine Aufgabe angehängt, die Ihnen zugeteilt ist:',
+'hasattached'     =>  'hat eine Datei an folgende Aufgabe angehängt:',
 'filename'        =>  'Dateiname:',
 'description'     =>  'Beschreibung:',
 'fileuploaded'    =>  'Datei wurde hochgeladen.',
 'fileerror'       =>  'Fehler beim Hochladen der Datei. Vielleicht stimmen die Berechtigungen für das <code>attachments</code> Verzeichnis nicht.',
 'contactadmin'    =>  'Kontaktieren Sie den Administrator dieses Projektes.',
-'selectfileerror' =>  'Sie haben keine Datei ausgewählt oder keine Beschreibung eingegeben.',
+'selectfileerror' =>  'Sie haben keine Datei ausgewählt.',
 
-'userupdated'     =>  'Benutzerdetails wurden aufgefrischt',
-'realandemail'    =>  'Sie haben keinen Realnamen und/oder eMail-Adresse eingegeben.',
+'userupdated'     =>  'Benutzerdetails wurden aktualisiert',
+'realandemail'    =>  'Sie haben keinen Realnamen und/oder keine E-Mail-Adresse eingegeben.',
 
 'groupupdated'    =>  'Gruppendefinition aufgefrischt.',
-'groupanddesc'    =>  'Sie haben keinen Gruppennamen und/oder Beschreibung eingegeben.',
+'groupanddesc'    =>  'Sie haben keinen Gruppennamen und/oder keine Beschreibung eingegeben.',
 
 'fillallfields'   =>  'Bitte füllen Sie alle Felder aus.',
-'listupdated'     =>  'Liste wurde aufgefrischt.',
+'listupdated'     =>  'Liste wurde aktualisiert.',
 'listitemadded'   =>  'Neues Listenelement hinzugefügt.',
 
 'relatedadded'    =>  'Verwandte Aufgabe zur Liste hinzugefügt.',
@@ -106,23 +107,37 @@ $modify_text = array (
 
 'notifyremoved'   =>  'Benutzer von der Benachrichtigungsliste entfernt.',
 
-'editcommentsaved'=>  'Geänderter Kommentar gespeichert.',
+'editcommentsaved'=>  'Geänderten Kommentar gespeichert.',
 'commentdeleted'  =>  'Kommentar wurde gelöscht.',
 
 
 
 // Added in version 0.9.5
 
-'project'			=>	'Projekt:',
-'gotonewtask'		=>	'Zur eben erstellten neuen Aufgabe springen',
-'addanother'		=>	'Weitere Aufgabe zu diesem Projekt hinzufügen',
-'projectcreated'	=>	'Ihr neues Projekt wurde erstellt. Folgen sie untenstehendem Link, um Kategorien, Betriebssysteme und Versionslisten zu verwalten',
-'customiseproject'	=>	'Dieses Projekt anpassen',
-'projectupdated'	=>	'Projekteinstellungen gespeichert',
-'emptytitle'		=>	'Sie haben das Projekttitelfeld leer gelassen, beheben Sie das bitte.',
-'loginbelow'		=>	'Sie können nun versuchen, sich in untenstehendem Formular anzumelden.',
-'attachmentdeleted' => 'Das Attachment wurde geölscht',
+'project'           =>  'Projekt:',
+'gotonewtask'       =>  'Zu den Details der soeben erstellten Aufgabe',
+'addanother'        =>  'Weitere Aufgabe zu diesem Projekt hinzufügen',
+'projectcreated'    =>  'Neues Projekt wurde erstellt. Folgen sie untenstehendem Link, um Kategorien, Betriebssysteme und Versionslisten einzurichten.',
+'customiseproject'  =>  'Dieses Projekt anpassen',
+'projectupdated'    =>  'Projekteinstellungen gespeichert.',
+'emptytitle'        =>  'Bitte geben Sie einen Projekttitel an.',
+'loginbelow'        =>  'Sie können sich nun über das Formular unten auf dieser Seite einloggen.',
+'attachmentdeleted' =>  'Anhang wurde gelöscht.',
 
+
+// Added in 0.9.6
+
+'reminderadded'     =>   'Ihre Erinnerung wurde erstellt.',
+'reminderdeleted'   =>   'Die gewählte Erinnerung wurde gelöscht.',
+'flyspraytask'      =>   'Flyspray-Aufgabe',
+'fieldsmissing'     =>   'Felder ohne oder mit ungültigen Werten wurden ignoriert.',
+'relatedinvalid'    =>   'Aufgabe nicht vorhanden.',
+'relatedproject'    =>   'Die gewählte Aufgabe gehört zu einem anderen Projekt.',
+'addanyway'         =>   'Trotzdem hinzufügen',
+'cancel'            =>   'Abbrechen',
+'alreadyedited'     =>   'Die Aufgabe wurde von einem anderen Benutzer bearbeitet, während Sie Ihre Änderungen vorgenommen haben.',
+'saveanyway'        =>   'Meine Änderungen speichern',
+'priority'          =>   'Priorität',
 
 );
 ?>

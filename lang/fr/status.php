@@ -1,15 +1,17 @@
 <?php
 
+global $status_list;
 $status_list = array (
 
-'1'	=>	'Non confirmé',
-'2'	=>	'Nouveau',
-'3'	=>	'Assigné',
-'4'	=>	'Recherche',
-'5'	=>	'Attente de client',
-'6'	=>	'En test',
-'7'	=>	'Réouvert',
-'8'	=>	'Fermé',
+'1'	=>	'Non confirmée',
+'2'	=>	'Nouvelle',
+'3'	=>	'Assignée',
+'4'	=>	'En cours d\'examen',
+'5'	=>	'Attendre le client',
+'6'	=>	'Nécessite un test',
+'7'	=>	'Rouverte',
+// Removed in version 0.9.6
+//'8'	=>	'Close',
 
 );
 ?>

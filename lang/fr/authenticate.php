@@ -1,13 +1,14 @@
 <?php
 
+global $authenticate_text;
 $authenticate_text = array (
 
-'loginsuccessful'	=>	'Identification réussie.',
-'loginfailed'		=>	'Echec de l\'identification !',
-'userandpass'		=>	'Vous devez entrer un nom d\'utilisateur ET un mot de passe.',
+'loginsuccessful'	=>	'Connexion réussie.',
+'loginfailed'		=>	'Connexion échouée!',
+'userandpass'		=>	'Vous n\'avez pas saisi un nom d\'utilisateur ET un mot de passe.',
 'youareloggedout'	=>	'Vous avez été déconnecté.',
-'waitwhiletransfer'	=>	'Merci de patientez le temps du transfert...',
-'clicknowait'		=>	'Cliquez ici si vous ne souhaitez pas attendre.',
+'waitwhiletransfer'	=>	'Veuillez patienter pendant le transfert...',
+'clicknowait'		=>	'Cliquez ici si vous ne voulez pas attendre.',
 
 );
 ?>
