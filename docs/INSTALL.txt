@@ -10,6 +10,14 @@ prompted:
 
 mysqladmin -u root -p create flyspray
 
+If you prefer PostgreSQL, create flyspray database user:
+
+createuser -ADP flyspray
+
+and then a database itself:
+
+createdb -E UNICODE -O flyspray flyspray
+
 Step Three:  Point your browser to http://yourserver/flyspray-version/ and
 follow along with the setup script.
 
