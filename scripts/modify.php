@@ -715,7 +715,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of new user self-registration with a confirmation code //
 //////////////////////////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "registeruser" && $flyspray_prefs['anon_open'] == '1') {
+} elseif ($_POST['action'] == "registeruser" && $flyspray_prefs['anon_reg'] == '1') {
 
   // If they filled in all the required fields
   if ($_POST['user_pass'] != ''
