@@ -274,10 +274,10 @@ if ($project_prefs['project_is_active'] == '1'
 <!-- Query line -->
 <map id="projectsearchform" name="projectsearchform">
 <form action="index.php" method="get">
-<p id="search">
+<div id="search">
 <input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>" />
 <input type="hidden" name="project" value="<?php echo $_GET['project'] == '0' ? '0' : $project_id;?>" />
-  <label for="searchtext"><?php echo $index_text['searchthisproject'];?>:</label>
+  <em><?php echo $index_text['searchthisproject'];?>:</em>
     <input id="searchtext" name="string" type="text" size="20"
     maxlength="100" value="<?php if(isset($_GET['string'])) echo $_GET['string'];?>" accesskey="q" />
 
@@ -429,7 +429,7 @@ if ($project_prefs['project_is_active'] == '1'
     </select>
 
     <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />
-</p>
+</div>
 </form>
 </map>
 
@@ -469,7 +469,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
     {
       if(isset($_GET['order']) && $_GET['order'] == "$orderkey")
       {
-        $class = 'class="severity3"';
+        $class = 'class="orderby"';
 
         $order2 = $_GET['order2'];
         $sort2 = $_GET['sort2'];

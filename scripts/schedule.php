@@ -8,54 +8,62 @@ $now = date(U);
 
 $notify = new Notifications;
 
-$get_reminders = $db->Query("SELECT * FROM flyspray_reminders ORDER BY reminder_id");
+$get_reminders = $db->Query("SELECT * FROM flyspray_reminders r
+                             LEFT JOIN flyspray_tasks t ON r.task_id = t.task_id
+                             LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
+                             ORDER BY r.reminder_id");
 
 // Cycle through all reminders in the database table
-while ($row = $db->FetchRow($get_reminders)) {
+while ($row = $db->FetchRow($get_reminders))
+{
+   // Check to see if it's time to send a reminder
+   if (($row['start_time'] < $now) && (($row['last_sent'] + $row['how_often']) < $now))
+   {
+      // Send the reminder
+      $lang = $flyspray_prefs['lang_code'];
+      require("../lang/$lang/functions.inc.php");
 
-        // Check to see if it's time to send a reminder
-        if (($row['start_time'] < $now) && (($row['last_sent'] + $row['how_often']) < $now)) {
+      $jabber_users = array();
+      $email_users = array();
 
-                // Send the reminder
+      // Get the user's notification type and address
+      $get_details = $db->Query("SELECT notify_type, jabber_id, email_address
+                                 FROM flyspray_users
+                                 WHERE user_id = ?",
+                                 array($row['to_user_id']));
 
-        $lang = $flyspray_prefs['lang_code'];
-        require("../lang/$lang/functions.inc.php");
+      while ($subrow = $db->FetchArray($get_details))
+      {
+         if (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
+            OR ($flyspray_prefs['user_notify'] == '2'))
+         {
+            array_push($email_users, $subrow['email_address']);
 
-        $jabber_users = array();
-        $email_users = array();
+         } elseif (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '2')
+            OR ($flyspray_prefs['user_notify'] == '3'))
+         {
+            array_push($jabber_users, $subrow['jabber_id']);
+         }
+      }
 
-                // Get the user's notification type and address
-        $get_details = $db->Query("SELECT notify_type, jabber_id, email_address
-                FROM flyspray_users
-                WHERE user_id = ?",
-                array($row['to_user_id']));
+      $subject = $functions_text['notifyfrom'] . " " . $row['project_title'];
+      $message = stripslashes($row['reminder_message']);
 
-        while ($subrow = $db->FetchArray($get_details)) {
+      // Pass the recipients and message onto the notification function
+      $notify->SendEmail($email_users, $subject, $message);
+      $notify->SendJabber($jabber_users, $subject, $message);
 
-            if (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
-                    OR ($flyspray_prefs['user_notify'] == '2')) {
-                array_push($email_users, $subrow['email_address']);
-            } elseif (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '2')
-                    OR ($flyspray_prefs['user_notify'] == '3')) {
-                array_push($jabber_users, $subrow['jabber_id']);
-            };
-        };
+      // Update the database with the time sent
+      $update_db = $db->Query("UPDATE flyspray_reminders
+                               SET last_sent = ?
+                               WHERE reminder_id = ?",
+                               array($now, $row['reminder_id']));
 
-        $subject = $functions_text['notifyfrom'] . " " . $project_prefs['project_title'];
-        $message = stripslashes($row['reminder_message']);
+      // Debug
+      echo "Reminder Sent!<br>";
 
-        // Pass the recipients and message onto the notification function
-        $notify->SendEmail($email_users, $subject, $message);
-        $notify->SendJabber($jabber_users, $subject, $message);
-
-                // Update the database with the time sent
-                $update_db = $db->Query("UPDATE flyspray_reminders SET last_sent = ? WHERE reminder_id = ?", array($now, $row['reminder_id']));
-
-                // Debug
-                echo "Reminder Sent!<br>";
-
-        };
-};
+   }
+}
 
 
 ?>

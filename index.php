@@ -182,6 +182,18 @@ if ($project_prefs['show_logo'] == '1')
    echo '<h1 id="title"><span>' . $project_prefs['project_title'] . '</span></h1>';
 }
 
+// if no-one's logged in, show the login box
+if(!isset($_COOKIE['flyspray_userid']))
+   require('scripts/loginbox.php');
+
+
+// If we have allowed anonymous logging of new tasks
+// Show the link to the Add Task form
+if ($project_prefs['anon_open'] == '1' && !isset($_COOKIE['flyspray_userid']))
+   echo '<div id="anonopen"><a href="?do=newtask&amp;project=' . $project_id . '">' . $language['opentaskanon'] . '</a></div>';
+
+
+
 ////////////////////////////////////////////////
 // OK, now we start the new permissions stuff //
 ////////////////////////////////////////////////
@@ -205,7 +217,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    echo '<span id="mainmenu">' . "\n";
 
    // Display "Logged in as - username"
-   echo '<em>' . $language['loggedinas'] . ' - ' . $current_user['user_name'] . '</em>';
+   echo '<em>' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ')</em>';
 
    // Display Add New Task link
    if ($permissions['open_new_tasks'] == '1')
@@ -401,7 +413,7 @@ if (isset($_SESSION['SUCCESS']))
 <form action="index.php" method="get">
     <p id="showtask">
       <label><?php echo $language['showtask'];?> #
-      <input name="id" type="text" size="10" maxlength="10" accesskey="t" /></label>
+      <input id="taskid" name="id" type="text" size="10" maxlength="10" accesskey="t" /></label>
       <input type="hidden" name="do" value="details" />
       <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>" />
     </p>
@@ -420,13 +432,6 @@ if ($project_prefs['project_is_active'] == '1'
    echo '<div id="intromessage">' . $intro_message . '</div>';
 }
 
-// If we have allowed anonymous logging of new tasks
-// Show the link to the Add Task form
-if ($project_prefs['anon_open'] == '1' && !$_COOKIE['flyspray_userid'])
-{
-   echo "<p class=\"unregistered\"><a href=\"?do=newtask&amp;project=$project_id\">{$language['opentaskanon']}</a></p><br />";
-}
-
 // Check that this page isn't being submitted twice
 if ($fs->requestDuplicated())
 {
@@ -438,13 +443,6 @@ if ($fs->requestDuplicated())
 
 // Show the page the user wanted
 require("scripts/$do.php");
-
-// if no-one's logged in, show the login box
-if(!$_COOKIE['flyspray_userid'])
-{
-   require('scripts/loginbox.php');
-}
-
 
 // Show the user's permissions
 if (isset($_COOKIE['flyspray_userid']))

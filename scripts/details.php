@@ -465,7 +465,7 @@ if ($db->CountRows($task_exists)
       <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
 
          <h2 class="severity<?php echo $task_details['task_severity'];?>">
-         <?php echo $details_text['task'] . '#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
+         <?php echo 'FS#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
          </h2>
 
          <div id="fineprint">
@@ -1532,7 +1532,7 @@ if ($permissions['view_history'] == '1')
                     $newvalue .= '%';
                     break;
                 case 'detailed_desc':
-                    $field = "<a href=\"index.php?do=details&amp;id={$history['task_id']}amp;details={$history['history_id']}#history\">{$details_text['details']}</a>";
+                    $field = "<a href=\"index.php?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}#history\">{$details_text['details']}</a>";
                     if (!empty($details))
                     {
                        $details_previous = htmlspecialchars($oldvalue);

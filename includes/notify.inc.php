@@ -34,56 +34,6 @@ class Notifications {
           OR empty($flyspray_prefs['jabber_password']))
             return false;
 
-      /*require_once("class.jabber.php");
-
-      $JABBER = new Jabber;
-
-      $JABBER->server         = $flyspray_prefs['jabber_server'];
-      $JABBER->port           = $flyspray_prefs['jabber_port'];
-      $JABBER->username       = $flyspray_prefs['jabber_username'];
-      $JABBER->password       = $flyspray_prefs['jabber_password'];
-      $JABBER->resource       = "Flyspray";
-
-      $JABBER->Connect() or die("Couldn't connect to Jabber service!  There is a possiblity that the remote server is down.");
-      $JABBER->SendAuth() or die("Couldn't authenticate with Jabber service!  Perhaps the Flyspray administrator has the wrong username or password in the options.");
-
-      $JABBER->SendPresence();
-
-      if (is_array($to)) {
-
-         while (list($key, $val) = each($to))
-         {
-            $JABBER->SendMessage($val,
-                                 "normal",
-                                 NULL,
-                                 array( // body, thread... whatever
-                                       "subject"   => $subject,
-                                       "body"      => $body
-                                       ),
-                                 $payload
-                                 );
-            //sleep(1);
-         }
-
-      } else
-      {
-         $JABBER->SendMessage($to,
-                              "normal",
-                              NULL,
-                              array( // body, thread... whatever
-                                    "subject"   => $subject,
-                                    "body"      => $body
-                                    ),
-                              $payload
-                              );
-
-         //sleep(1);
-      }
-
-      sleep(1);
-      $JABBER->Disconnect();
-*/
-
       $client='Flyspray';
 
       $body = str_replace('&amp;', '&', $body);
@@ -111,8 +61,8 @@ class Notifications {
    }
 
 
-   function SendEmail($to, $subject, $body) {
-
+   function SendEmail($to, $subject, $body)
+   {
       global $db;
       global $fs;
       global $notify_text;
@@ -162,12 +112,15 @@ class Notifications {
       $mail->Body = $body;
       //$mail->AltBody = $body;
 
-      if(!$mail->Send())
+      /*if(!$mail->Send())
       {
          echo "Message could not be sent. <p>";
          //echo "Mailer Error: " . $mail->ErrorInfo;
          exit;
-      }
+      }*/
+      // The above is commented out to stop Flyspray throwing an error.
+      // We should fix this by using templating.  Until then, the below line gives no error on failure.
+      $mail->Send();
 
    }
 

@@ -24,7 +24,10 @@ class Flyspray {
       $new_var = array_keys(array_diff($after_en, $before));
       $new_var_name = $new_var[1];
       $new_var['en'] = $$new_var_name;
-      require_once("lang/$lang/$module.php");
+      if (file_exists("lang/$lang/$module.php"))
+      {
+         require_once("lang/$lang/$module.php");
+      }
       $new_var[$lang] = $$new_var_name;
 
       $$new_var_name = array_merge($new_var['en'], $new_var[$lang]);

@@ -10,6 +10,8 @@ body {
    padding              : 0px;
    font-size            : 1em;
    font-family          : Arial, sans-serif;
+   color                : #818181;
+   background-color     : transparent;
 }
 
 h1 {
@@ -42,6 +44,7 @@ h1#title {
    background-position  : top left;
    background-repeat    : no-repeat;
    border-bottom        : 1px solid #008000;
+   width                : 90%;
 }
 
 h1#title span {
@@ -98,12 +101,57 @@ label {
 /* div.admin and p.admin is used for areas that only administrators can use
    p.admin for instance for adding comments
    table.admin serves the same purpose */
-/* table.login is the framework for the login form at the bottom of a page */
 /* table.userlist is found in the user&groups section */
-div.admin, p.admin, table.admin, table.login, table.userlist {
-   border               : 1px solid #008000;
+div.admin, p.admin, table.admin, table.userlist {
+   border               : none;
    margin               : 1em 0px;
    padding              : 0px;
+}
+
+div#loginbox {
+   border               : 1px solid green;
+   margin               : 80px 0px 1ex 1em;
+   padding              : 0px;
+   text-align           : left;
+   position             : absolute;
+   top                  : -77px;
+   right                : 14px;
+   background-color     : white;
+   width                : 200px;
+   z-index              : 5;
+   background-image     : url(flies.jpg);
+   background-repeat    : no-repeat;
+   background-position  : 20px 35px;
+}
+
+div#loginbox em {
+   display              : block;
+   font-weight          : normal;
+   padding              : 0px;
+   padding-left         : 5px;
+   margin-bottom        : 1ex;
+   border-bottom        : 1px solid green;
+   background-color     : #eeffee;
+   height               : 20px;
+}
+
+div#loginbox label, div#loginbox input.maintext {
+   width                : 48%;
+   color                : #818181;
+   background-color     : transparent;
+   display              : inline;
+   padding              : 0 3px 0 3px;
+}
+
+div#loginbox a {
+   display              : block;
+   padding              : 0 0 0 3px;
+}
+
+div#loginbox input.mainbutton {
+   width                : 100%;
+   color                : #000000;
+   background-color     : transparent;
 }
 
 /* The paragraph containing the main menu */
@@ -132,6 +180,7 @@ p#menu em {
    margin-bottom        : 1ex;
    border-bottom        : 1px solid green;
    background-color     : #EFE;
+   height               : 25px;
 }
 
 p#menu small {
@@ -221,15 +270,23 @@ a:hover {
 div#tasklist {
    width                : 77%;
    border               : 1px solid #008000;
-   color                : #000000;
-   background-color     : #eeffee;
+   color                : #818181;
+   background-color     : #ffffff;
 }
 
 /* The table listing tasks on the main page */
 table#tasklist {
-   width                : 100%;
+   width                : 99.9%;
    border-spacing       : 0px;
    border-collapse      : collapse;
+}
+table#tasklist th {
+   text-align           : left;
+}
+
+table#tasklist th.orderby {
+   color                : #757575;
+   background-color     : #d6eed6;
 }
 
 table#tasklist td {
@@ -247,10 +304,10 @@ table#tasklist td.progress {
 }
 
 table#pagenumbers {
-   width                : 100%;
-   color                : #000000;
-   background-color     : #cfeccf;
-   border-right         : 1px solid #008000;
+   width                : 99.9%;
+   color                : #818181;
+   background-color     : #eeffee;
+   border-top           : 1px solid #a0a0a0;
 }
 
 table#pagenumbers td#taskrange {
@@ -267,9 +324,9 @@ table#pagenumbers td#pagenumbers {
 
 table#tasklist thead {
    color                : #000000;
-   background-color     : #cfeccf;
+   background-color     : #eeffee;
+   height               : 20px;
    border-bottom        : 1px solid #a0a0a0;
-   border-right         : 1px solid #008000;
 }
 
 table#tasklist tfoot td {
@@ -288,6 +345,10 @@ table.list label, p#showtask label, p.admin label, form#formaddrelatedtask label
    display              : inline;
 }
 
+p#showtask input#taskid {
+   width                : 4ex;
+}
+
 /* dic#content is a generic container for anything but the title and
    the footer paragraph */
 div#content {
@@ -302,15 +363,12 @@ p#footer {
    margin               : 0px;
    padding              : 0px;
    text-align           : right;
-   color                : #000000;
-   background-color     : transparent;
    font-size            : 12px;
 }
 
 p#footer a {
-   color                : #818181;
+   color                : #757575;
    background-color     : transparent;
-   font-weight          : bold;
    border               : none;
    padding              : 0px 4px 0px 4px;
    margin               : 0px 15px 0px 0px;
@@ -384,9 +442,9 @@ p#tabs a.tabactive {
    for hover effects */
 
 .severity1 {
-   color                : #000000;
+   color                : #818181;
    background-color     : transparent;
-   border-bottom        : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #ebe9e8;
 }
 
 .severity1 td.task_summary a {
@@ -397,18 +455,18 @@ p#tabs a.tabactive {
 }
 
 .severity1:hover {
-   color                : #000000;
+   color                : #818181;
    background-color     : #fffff3;
 }
 
 .severity2 {
-   color                : #000000;
+   color                : #818181;
    background-color     : transparent;
-   border-bottom        : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #ebe9e8;
 }
 
 .severity2:hover {
-   color                : #000000;
+   color                : #818181;
    background-color     : #f2f8ff;
 }
 
@@ -420,13 +478,13 @@ p#tabs a.tabactive {
 }
 
 .severity3 {
-   color                : #000000;
+   color                : #818181;
    background-color     : transparent;
-   border-bottom        : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #ebe9e8;
 }
 
 .severity3:hover {
-   color                : #000000;
+   color                : #818181;
    background-color     : #fff2da;
 }
 
@@ -438,13 +496,13 @@ p#tabs a.tabactive {
 }
 
 .severity4 {
-   color                : #000000;
+   color                : #818181;
    background-color     : transparent;
-   border-bottom        : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #ebe9e8;
 }
 
 .severity4:hover {
-   color                : #000000;
+   color                : #818181;
    background-color     : #f8d7fa;
 }
 
@@ -456,14 +514,14 @@ p#tabs a.tabactive {
 }
 
 .severity5 {
-   color                : #000000;
+   color                : #818181;
    background-color     : transparent;
-   border-bottom        : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #ebe9e8;
 }
 
 .severity5:hover {
-   color                : #000000;
-   background-color     : #ec9797;
+   color                : #818181;
+   background-color     : #ffcdcd;
 }
 
 .severity5 td.task_summary a {
@@ -479,7 +537,7 @@ div#taskdetails {
    border               : 1px solid #008000;
    margin-bottom        : 2em;
    min-height           : 450px;
-   color                : #000000;
+   color                : #818181;
    background-color     : #ffffff;
 }
 
@@ -489,6 +547,7 @@ div#taskdetails h2 {
    font-weight          : normal;
    color                : #000000;
    background-color     : #eeffee;
+   text-align           : center;
 }
 
 /* Task details are listed within a table */
@@ -564,7 +623,7 @@ div#taskdetailsfull {
    padding              : 0px;
    text-align           : left;
    top                  : -15em;
-   color                : #000000;
+   color                : #818181;
    background-color     : #ffffff;
    width                : 69%;
    text-align           : left;
@@ -683,10 +742,26 @@ div#permissions table {
    border               : 1px solid black;
 }
 
+div#anonopen {
+   position             : absolute;
+   top                  : 32px;
+   left                 : 262px;
+   color                : #757575;
+   background-color     : transparent;
+   font-size            : 12px;
+   font-weight          : normal;
+}
+
+div#anonopen a {
+   color                : #757575;
+   background-color     : transparent;
+   font-weight          : normal;
+}
+
 div#toolboxmenu {
    border               : 1px solid green;
    margin               : 80px 0px 1ex 1em;
-   padding              : 1ex 0 1ex 0;
+   padding              : 1em 0 1ex 0;
    text-align           : left;
    float                : right;
    background-color     : white;
@@ -774,7 +849,7 @@ div.tab                             { clear: left; }
    been created and changed (in the details pages) */
 #fineprint {
    font-size            : smaller;
-   margin               : 0px 0px 0px 5px;
+   padding              : 0px 0px 0px 5px;
 }
 
 table#history
@@ -819,7 +894,7 @@ input.mainbutton:hover {
 }
 
 input.adminbutton {
-   color                : #000000;
+   color                : #818181;
    background-color     : #ffffff;
    padding              : 2px 4px 2px 22px;
    background-image     : url(dot-blue.png);
@@ -868,42 +943,58 @@ div#successbar {
    border-bottom        : 1px solid #008000;
 }
 
-fieldset {
+fieldset.admin {
    margin-bottom        : 20px;
+   border               : 1px solid #008000;
+   color                : #818181;
 }
 
-p#search {
+fieldset.admin legend {
+   color                : #000000;
+   background-color     : transparent;
+/*    font-weight          : bold; */
+}
+
+div#search {
    float                : right;
    width                : 200px;
    height               : auto;
    margin               : 0px 0px 0px 0px;
    padding              : 0px 0px 0px 0px;
    border               : 1px solid #008000;
-}
-
-p#search {
    display              : block;
 }
 
-p#search label {
+div#search em {
    display              : block;
+   font-weight          : normal;
+   padding              : 0px;
+   padding-left         : 5px;
+   margin-bottom        : 0;
+   border-bottom        : 1px solid green;
+   background-color     : #eeffee;
+   height               : 25px;
 }
 
-p#search select, p#search button {
+div#search select, div#search button {
    width                : 100%;
 }
 
-p#search input {
+div#search input {
    width                : 95%;
+   color                : #818181;
+   background-color     : transparent;
 }
 
-p#search input.mainbutton {
+div#search input.mainbutton {
    width                : 100%;
 }
 
 div#projectselector {
    position             : absolute;
    left                 : 30%;
+   color                : #818181;
+   background-color     : transparent;
 }
 
 div#fileupload {

@@ -169,8 +169,13 @@ if ($permissions['manage_project'] == '1')
             <tr>
                <td colspan="2"><hr /></td>
             </tr>
+         </table>
+      </fieldset>
 
-            <!-- Column display selector -->
+      <fieldset class="admin">
+
+      <legend><?php echo $admin_text['lookandfeel'];?></legend>
+          <table class="admin">
             <tr>
                <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
                <td class="admintext">
@@ -186,17 +191,19 @@ if ($permissions['manage_project'] == '1')
                   ?>
                </td>
             </tr>
-            <tr>
-               <td colspan="2"><hr /></td>
-            </tr>
-            <tr>
-               <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>" /></td>
-            </tr>
-
          </table>
-         </form>
-
       </fieldset>
+
+      <table>
+         <tr>
+            <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>" /></td>
+            <td class="buttons"><input class="adminbutton" type="reset" value="<?php echo $admin_text['resetoptions'];?>" /></td>
+         </tr>
+      </table>
+
+   </form>
+
+
 
    <?
    ////////////////////////////////////////////////

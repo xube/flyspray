@@ -62,7 +62,7 @@ if ($permissions['is_admin'] == '1')
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="globaloptions" />
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-            <label for="baseurl"><?php echo $admin_text['baseurl'];?></label>
+            <label id="baseurllabel" for="baseurl"><?php echo $admin_text['baseurl'];?></label>
             </td>
             <td>
             <input id="baseurl" name="base_url" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['base_url'];?>" />
@@ -70,7 +70,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="adminemail"><?php echo $admin_text['replyaddress'];?></label>
+            <label id="adminemaillabel" for="adminemail"><?php echo $admin_text['replyaddress'];?></label>
             </td>
             <td>
             <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['admin_email'];?>" />
@@ -78,10 +78,10 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="defaultproject"><?php echo $admin_text['defaultproject'];?></label>
+            <label id="defaultprojectlabel" for="defaultproject"><?php echo $admin_text['defaultproject'];?></label>
             </td>
             <td>
-            <select name="default_project">
+            <select id="defaultproject" name="default_project">
             <?php
             $get_projects = $db->Query("SELECT * FROM flyspray_projects");
             while ($row = $db->FetchArray($get_projects)) {
@@ -97,7 +97,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="langcode"><?php echo $admin_text['language'];?></label>
+            <label id="langcodelabel" for="langcode"><?php echo $admin_text['language'];?></label>
             </td>
             <td>
             <select id="langcode" name="lang_code">
@@ -133,7 +133,7 @@ if ($permissions['is_admin'] == '1')
 
          <tr>
             <td>
-            <label for="dateformat"><?php echo $admin_text['dateformat'];?></label>
+            <label id="dateformatlabel" for="dateformat"><?php echo $admin_text['dateformat'];?></label>
             </td>
             <td>
             <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat'];?>" />
@@ -141,7 +141,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label>
+            <label id="dateformatextendedlabel" for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label>
             </td>
             <td>
             <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>" />
@@ -159,7 +159,7 @@ if ($permissions['is_admin'] == '1')
       <table class="admin">
          <tr>
             <td>
-            <label for="allowusersignups"><?php echo $admin_text['anonreg'];?></label>
+            <label id="allowusersignupslabel" for="allowusersignups"><?php echo $admin_text['anonreg'];?></label>
             </td>
             <td>
             <input id="allowusersignups" type="checkbox" name="anon_reg" value="1" <?php if ($flyspray_prefs['anon_reg'] == '1') { echo "checked=\"checked\"";};?> />
@@ -167,7 +167,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="spamproof"><?php echo $admin_text['spamproof']; ?></label>
+            <label id="spamprooflabel" for="spamproof"><?php echo $admin_text['spamproof']; ?></label>
             </td>
             <td>
             <input id="spamproof" type="checkbox" name="spam_proof" value="1" <?php if ($flyspray_prefs['spam_proof'] == '1') { echo "checked=\"checked\"";};?> />
@@ -175,7 +175,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="defaultglobalgroup"><?php echo $admin_text['defaultglobalgroup'];?></label>
+            <label id="defglobalgplabel" for="defaultglobalgroup"><?php echo $admin_text['defaultglobalgroup'];?></label>
             </td>
             <td>
             <select id="defaultglobalgroup" name="anon_group">
@@ -193,17 +193,20 @@ if ($permissions['is_admin'] == '1')
             </td>
          </tr>
          <tr>
-            <td><label><?php echo $admin_text['groupassigned'];?></label></td>
+            <td><label id="groupsassignedlabel"><?php echo $admin_text['groupassigned'];?></label></td>
             <td class="admintext">
             <?php // Get the group names
             $get_group_details = $db->Query("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
-            while ($row = $db->FetchArray($get_group_details)) {
-               if (ereg($row['group_id'], $flyspray_prefs['assigned_groups']) ) {
+            while ($row = $db->FetchArray($get_group_details))
+            {
+               if (ereg($row['group_id'], $flyspray_prefs['assigned_groups']) )
+               {
                   echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" checked=\"checked\" />{$row['group_name']}<br />\n";
-               } else {
+               } else
+               {
                   echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" />{$row['group_name']}<br />\n";
-               };
-            };
+               }
+            }
             ?>
             </td>
          </tr>
@@ -218,7 +221,7 @@ if ($permissions['is_admin'] == '1')
       <table class="admin">
          <tr>
             <td>
-            <label for="usernotify"><?php echo $admin_text['forcenotify'];?></label>
+            <label id="usernotifylabel" for="usernotify"><?php echo $admin_text['forcenotify'];?></label>
             </td>
             <td>
             <select id="usernotify" name="user_notify">
@@ -237,7 +240,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="jabberserver"><?php echo $admin_text['jabberserver'];?></label>
+            <label id="jabservlabel" for="jabberserver"><?php echo $admin_text['jabberserver'];?></label>
             </td>
             <td>
             <input id="jabberserver" name="jabber_server" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_server'];?>" />
@@ -245,7 +248,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="jabberport"><?php echo $admin_text['jabberport'];?></label>
+            <label id="jabportlabel" for="jabberport"><?php echo $admin_text['jabberport'];?></label>
             </td>
             <td>
             <input id="jabberport" name="jabber_port" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_port'];?>" />
@@ -253,7 +256,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="jabberusername"><?php echo $admin_text['jabberuser'];?></label>
+            <label id="jabuserlabel" for="jabberusername"><?php echo $admin_text['jabberuser'];?></label>
             </td>
             <td>
             <input id="jabberusername" name="jabber_username" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_username'];?>" />
@@ -261,7 +264,7 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label for="jabberpassword"><?php echo $admin_text['jabberpass'];?></label>
+            <label id="jabpasslabel" for="jabberpassword"><?php echo $admin_text['jabberpass'];?></label>
             </td>
             <td>
             <input id="jabberpassword" name="jabber_password" type="password" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_password'];?>" />
@@ -278,10 +281,10 @@ if ($permissions['is_admin'] == '1')
       <table class="admin">
          <tr>
             <td>
-            <label for="globaltheme"><?php echo $admin_text['globaltheme'];?></label>
+            <label id="globalthemelabel" for="globaltheme"><?php echo $admin_text['globaltheme'];?></label>
             </td>
             <td>
-            <select id="themestyle" name="global_theme">
+            <select id="globaltheme" name="global_theme">
                <?php
                // Let's get a list of the theme names by reading the ./themes/ directory
                if ($handle = opendir('themes/')) {
@@ -311,7 +314,7 @@ if ($permissions['is_admin'] == '1')
             </td>
          </tr>
          <tr>
-            <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
+            <td><label id="viscollabel"><?php echo $admin_text['visiblecolumns'];?></label></td>
             <td class="admintext">
             <?php // Set the selectable column names
             $columnnames = array('id','project','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');

@@ -8,7 +8,7 @@ if ($_GET['action'] == "logout") {
 //  session_destroy();
   setcookie('flyspray_userid', '', time()-60, '/');
   setcookie('flyspray_passhash', '', time()-60, '/');
-  setcookie('flyspray_project', '', time()-60, '/');
+//   setcookie('flyspray_project', '', time()-60, '/');
 
    $_SESSION['SUCCESS'] = $authenticate_text['youareloggedout'];
    header("Location: index.php");

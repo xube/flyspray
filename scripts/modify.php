@@ -734,7 +734,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == "newuser"
            && ($permissions['is_admin'] == '1'
                 OR ($flyspray_prefs['anon_reg'] == '1'
-                    && $flyspray_prefs['spam_proof'] != '1'))) {
+                    && $flyspray_prefs['spam_proof'] != '1')))
+{
 
   // If they filled in all the required fields
   if (!empty($_POST['user_name'])
