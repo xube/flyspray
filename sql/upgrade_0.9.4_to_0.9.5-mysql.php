@@ -1,13 +1,13 @@
 <?php
 
-include('../header.php');
+include('../config.inc.php');
 
 ?>
 <html>
 <head>
 <title>Flyspray upgrade script</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf8">
-<link href="themes/<?php echo $flyspray_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
+<link href="themes/Bluey/theme.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
