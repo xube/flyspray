@@ -1070,6 +1070,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // End of deleting a comment
 
 // Start of deleting an attachment
+//  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
 } elseif ($_POST['action'] == "deleteattachment" && $_SESSION['admin'] == '1') {
 // if an attachment needs to be deleted do it right now
   $delete = $fs->dbQuery("SELECT file_name FROM flyspray_attachments WHERE attachment_id = '{$_POST['attachment_id']}'");

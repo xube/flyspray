@@ -626,6 +626,7 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['item_status'] != '8')
     <em><?php echo "{$details_text['fileuploadedby']} $user_name - $formatted_date";?></em>
 
 <?php
+//  This code contributed by Harm Verbeek <info@certeza.nl>
         if ($_SESSION['admin'] == '1') { ?>
         <div class="modifycomment">
         <form action="index.php" method="post" onSubmit="if(confirm('Really delete this attachment?')) {return true} else {return false }">

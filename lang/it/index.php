@@ -4,7 +4,7 @@ $index_text = array (
 
 'search'			=>	'Cerca',
 'alltasktypes'		=>	'Qualsiasi tipo di task',
-'allseverities'		=>	'Qualsiasi severit&agrave;',
+'allseverities'		=>	'Qualsiasi gravità',
 'alldevelopers'		=>	'Tutti gli sviluppatori',
 'notyetassigned'	=>	'Non ancora assegnato',
 'allcategories'		=>	'Qualsiasi categoria',
@@ -13,7 +13,7 @@ $index_text = array (
 'sortthiscolumn'	=>	'Ordina per questa colonna',
 'id'				=>	'ID',
 'tasktype'			=>	'Tipo di task',
-'severity'			=>	'Severit&agrave;',
+'severity'			=>	'Gravità',
 'summary'			=>	'Riassunto',
 'dateopened'		=>	'Data di apertura',
 'status'			=>	'Status',

@@ -10,7 +10,7 @@ $newtask_text = array (
 'assignedto'		=>	'Assegnato a',
 'noone'				=>	'Nessuno',
 'operatingsystem'	=>	'Sistema Operativo',
-'severity'			=>	'Severit&agrave;',
+'severity'			=>	'Gravità',
 'reportedversion'	=>	'Riportato nella Versione',
 'dueinversion'		=>	'Dovuto per la Versione',
 'details'			=>	'Dettagli',
@@ -20,7 +20,7 @@ $newtask_text = array (
 
 // Added in version 0.9.5
 
-'notifyme'			=>	'Notificami quando questo task cambia',
+'notifyme'			=>	'Avvisami quando questo task cambia',
 
 );
 ?>

@@ -20,8 +20,8 @@ $language = array (
 'operatingsystems'	=>	'Sistemi Operativi',
 'resolutions'		=>	'Soluzioni',
 'versions'			=>	'Versioni',
-'severities'		=>	'Severit&agrave;',
-'disabledaccount'	=>	'La tua utenza &eacute; stato disabilitato!<br>Disconnessione immediata...',
+'severities'		=>	'Gravità',
+'disabledaccount'	=>	'La tua utenza è stato disabilitato!<br>Disconnessione immediata...',
 'poweredby'			=>	'Powered by Flyspray 0.9.5',
 
 // Added in version 0.9.5

@@ -4,14 +4,14 @@ $admin_text = array (
 
 'edituser'			=>	'Modifica utente',
 'username'			=>	'Username',
-'realname'			=>	'Vero nome',
+'realname'			=>	'Nome vero',
 'emailaddress'		=>	'Indirizzo e-mail',
 'jabberid'			=>	'Jabber ID',
 'notifytype'		=>	'Tipo di notifica',
 'group'				=>	'Gruppo',
 'accountenabled'	=>	'Utenza abilitata',
 'updatedetails'		=>	'Aggiorna le informazioni',
-'setglobally'		=>	'Questa opzione&eacute; stata impostata a livello globale.',
+'setglobally'		=>	'Questa opzione è stata impostata a livello globale.',
 
 'usergroupmanage'	=>	'Gestione Utenti e Gruppi',
 'newuser'			=>	'Registra un nuovo utente',
@@ -35,9 +35,8 @@ $admin_text = array (
 'oslist'			=>	'Lista dei sistemi operativi',
 'resolutionlist'	=>	'Lista delle soluzioni',
 'versionlist'		=>	'Lista delle versioni',
-'severitylist'		=>	'Lista delle severit&agrave;',
-'listnote'			=>	'Nota:  Disabilitando il box "mostra" potrebbe alterare alcuni task quando in modalit&agrave;
-modifica.  La modifica del campo "Nome" cambier&agrave; tutti i task con quel nome.',
+'severitylist'		=>	'Lista delle gravità',
+'listnote'			=>	'Nota:  Disabilitando il box "mostra" potrebbe alterare alcuni task quando in modalità modifica.  La modifica del campo "Nome" cambierà tutti i task con quel nome.',
 'name'				=>	'Nome',
 'order'				=>	'Ordinamento',
 'back'				=>	'Sfondo',
@@ -88,7 +87,7 @@ modifica.  La modifica del campo "Nome" cambier&agrave; tutti i task con quel no
 'projectlists'		=>	'Lista di progetti',
 'showlogo'			=>	'Mostra titolo logo immagine',
 'intromessage'		=>	'Messaggio di introduzione',
-'isactive'			=>	'Il progetto &egrave; attivo',
+'isactive'			=>	'Il progetto è attivo',
 'createproject'		=>	'Crea un nuovo progetto',
 
 );
