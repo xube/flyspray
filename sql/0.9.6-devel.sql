@@ -41,3 +41,6 @@ CREATE TABLE `flyspray_history` (
 
 ALTER TABLE `flyspray_projects` ADD `visible_columns` VARCHAR( 255 ) NOT NULL;
 UPDATE flyspray_projects SET visible_columns = 'id category tasktype severity summary dateopened status progress';
+
+ALTER TABLE `flyspray_list_version` ADD `version_tense` MEDIUMINT( 1 ) NOT NULL ;
+UPDATE flyspray_list_version SET version_tense = '2';

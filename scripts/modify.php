@@ -19,7 +19,9 @@ if (!empty($_COOKIE['flyspray_userid'])) {
 
 $now = date(U);
 
-$old_details = $fs->GetTaskDetails($_POST['task_id']);
+if (!empty($_POST['task_id'])) {
+  $old_details = $fs->GetTaskDetails($_POST['task_id']);
+};
 
 ////////////////////////////////
 // Start of adding a new task //
@@ -161,9 +163,6 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
   if ($_POST['item_summary'] != ''
     && $_POST['detailed_desc'] != '')
   {
-    // Get the existing task details before updating
-    // We need them in order to generate the changed-task message
-    $old_details = $fs->GetTaskDetails($_POST['task_id']);
 
 // Check to see if this task has already been modified before we clicked "save"...
 // If so, we need to confirm that the we really wants to save our changes
@@ -836,14 +835,17 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_projects
                               (project_title, theme_style, show_logo, inline_images,
-                              default_cat_owner, intro_message, project_is_active)
-                              VALUES (?, ?, ?, ?, ?, ?, ?)",
+                              default_cat_owner, intro_message, project_is_active, visible_columns)
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                             array($_POST['project_title'],
                               $_POST['theme_style'],
                               $fs->emptyToZero($_POST['show_logo']),
                               $fs->emptyToZero($_POST['inline_images']),
                               $_POST['default_cat_owner'],
-                              $_POST['intro_message'], '1'));
+                              $_POST['intro_message'],
+                              '1',
+                              'id tasktype severity summary status dueversion progress',
+                              ));
 
     $newproject = $fs->dbFetchArray($fs->dbQuery("SELECT project_id FROM flyspray_projects ORDER BY project_id DESC limit 1"));
 
@@ -862,9 +864,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_list_version
                              (project_id, version_name, list_position,
-                             show_in_list)
-                             VALUES (?, ?, ?, ?)",
-                        array($newproject['project_id'], '1.0', '1', '1'));
+                             show_in_list, version_tense)
+                             VALUES (?, ?, ?, ?, ?)",
+                        array($newproject['project_id'], '1.0', '1', '1', '2'));
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectcreated']}";
     echo "<br><br><a href=\"?do=admin&amp;area=projects&amp;show=prefs&amp;id={$newproject['project_id']}\">{$modify_text['customiseproject']}</a></em></p></div>";
@@ -1172,6 +1174,72 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
   };
 // End of adding a list item
+
+////////////////////////////////////////
+// Start of updating the version list //
+////////////////////////////////////////
+
+} elseif ($_POST['action'] == "update_version_list" && $_SESSION['admin'] == '1') {
+
+  $listname = $_POST['list_name'];
+  $listposition = $_POST['list_position'];
+  $listshow = $_POST['show_in_list'];
+  $listtense = $_POST['version_tense'];
+  $listid = $_POST['id'];
+  
+  $redirectmessage = $modify_text['listupdated'];
+
+  for($i = 0; $i < count($listname); $i++) {
+      $listname[$i] = stripslashes($listname[$i]);
+      if($listname[$i] != ''
+          && is_numeric($listposition[$i])
+          ) {
+          $update = $fs->dbQuery("UPDATE $list_table_name SET
+                                    $list_column_name = ?,
+                                    list_position = ?,
+                                    show_in_list = ?,
+                                    version_tense = ?
+          WHERE $list_id = '{$listid[$i]}'",
+          array($listname[$i], $listposition[$i],
+                $fs->emptyToZero($listshow[$i]),
+                $listtense[$i]
+                ));
+      }
+      else {
+          $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
+      };
+  };
+
+  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+  echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
+
+// End of updating the version list
+
+/////////////////////////////////////////
+// Start of adding a version list item //
+/////////////////////////////////////////
+
+} elseif ($_POST['action'] == "add_to_version_list" && $_SESSION['admin'] == '1') {
+
+  if ($_POST['list_name'] != ''
+    && $_POST['list_position'] != ''
+    ) {
+
+      $update = $fs->dbQuery("INSERT INTO $list_table_name
+                        (project_id, $list_column_name, list_position, show_in_list, version_tense)
+                        VALUES (?, ?, ?, ?, ?)",
+                array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1', $_POST['version_tense']));
+
+      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+
+      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
+
+  } else {
+    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
+  };
+// End of adding a version list item
+
+
 
 ////////////////////////////////////////////
 // Start of updating the category list    //

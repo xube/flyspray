@@ -201,8 +201,8 @@ $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
       <?php
       $ver_list = $fs->dbQuery("SELECT version_id, version_name
                                   FROM flyspray_list_version
-                                  WHERE project_id=? AND show_in_list=?
-                                  ORDER BY list_position", array($project_id, '1'));
+                                  WHERE project_id=? AND show_in_list=? AND version_tense=?
+                                  ORDER BY list_position", array($project_id, '1', '3'));
       while ($row = $fs->dbFetchArray($ver_list)) {
         if ($_GET['due'] == $row['version_id']) {
           echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";

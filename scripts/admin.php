@@ -957,7 +957,7 @@ if ($_GET['show'] == 'prefs') { ?>
   <div class="admin">
   <form action="index.php" method="post">
   <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="update_list">
+  <input type="hidden" name="action" value="update_version_list">
   <input type="hidden" name="list_type" value="version">
   <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
   <table class="list">
@@ -973,13 +973,21 @@ if ($_GET['show'] == 'prefs') { ?>
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
           <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo stripslashes($row['version_name']);?>">
         </td>
-        <td title="The order the items are shown in the Version list">
+        <td title="<?php echo $admin_text['listordertip'];?>">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
           <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
         </td>
-        <td title="Show this item in the Version list">
+        <td title="<?php echo $admin_text['listshowtip'];?>">
           <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
           <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        </td>
+        <td title="<?php echo $admin_text['listtensetip'];?>">
+          <label for="tense<?php echo $countlines;?>"><?php echo $admin_text['tense'];?></label>
+          <select id="tense<?php echo $countlines;?>" name="version_tense[<?php echo $countlines;?>]">
+            <option value="1" <?php if ($row['version_tense'] == '1') { echo "SELECTED";};?>><?php echo $admin_text['past'];?></option>
+            <option value="2" <?php if ($row['version_tense'] == '2') { echo "SELECTED";};?>><?php echo $admin_text['present'];?></option>
+            <option value="3" <?php if ($row['version_tense'] == '3') { echo "SELECTED";};?>><?php echo $admin_text['future'];?></option>
+          </select> 
         </td>
       </tr>
     <?php
@@ -998,11 +1006,11 @@ if ($_GET['show'] == 'prefs') { ?>
     <form action="index.php" method="post">
     <table class="list">
       <tr>
-        <td>
           <input type="hidden" name="do" value="modify">
-          <input type="hidden" name="action" value="add_to_list">
+          <input type="hidden" name="action" value="add_to_version_list">
           <input type="hidden" name="list_type" value="version">
           <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+        <td>
           <label for="listnamenew"><?php echo $admin_text['name'];?></label>
           <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
         </td>
@@ -1014,7 +1022,15 @@ if ($_GET['show'] == 'prefs') { ?>
           <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
           <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
         </td>
-        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+       <td title="<?php echo $admin_text['listtensetip'];?>">
+          <label for="tensenew"><?php echo $admin_text['tense'];?></label>
+          <select id="tensenew" name="version_tense">
+            <option value="1"><?php echo $admin_text['past'];?></option>
+            <option value="2" SELECTED><?php echo $admin_text['present'];?></option>
+            <option value="3"><?php echo $admin_text['future'];?></option>
+          </select> 
+        </td> 
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>  
       </tr>
     </table>
     </form>
