@@ -318,7 +318,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
     </form>
     <?php };
 
-    echo "{$details_text['attachedtoproject']} &mdash; <a href=\"{$flyspray_prefs['base_url']}index.php?project={$task_details['attached_to_project']}\">{$task_details['project_title']}</a>";
+    echo "{$details_text['attachedtoproject']} &mdash; <a href=\"?project={$task_details['attached_to_project']}\">{$task_details['project_title']}</a>";
 
     ?>
 
@@ -626,7 +626,7 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['item_status'] != '8')
     <em><?php echo "{$details_text['fileuploadedby']} $user_name - $formatted_date";?></em>
 
 <?php
-//  This code contributed by Harm Verbeek <info@certeza.nl>
+//  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
         if ($_SESSION['admin'] == '1') { ?>
         <div class="modifycomment">
         <form action="index.php" method="post" onSubmit="if(confirm('Really delete this attachment?')) {return true} else {return false }">
@@ -718,7 +718,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
          </div>
         <?php
         };
-        echo "<p><a href=\"{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$row['related_task']}\">#{$row['related_task']} &mdash; $summary</a></p>";
+        echo "<p><a href=\"?do=details&amp;id={$row['related_task']}\">#{$row['related_task']} &mdash; $summary</a></p>";
       };
       echo "</div>";
     };
@@ -749,7 +749,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
       $get_summary = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($row['this_task']));
       while ($subrow = $fs->dbFetchArray($get_summary)) {
         $summary = stripslashes($subrow['item_summary']);
-        echo "<a href=\"{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$row['this_task']}\">#{$row['this_task']} &mdash; $summary</a><br>";
+        echo "<a href=\"?do=details&amp;id={$row['this_task']}\">#{$row['this_task']} &mdash; $summary</a><br>";
       };
     };
     echo "</p></div>";

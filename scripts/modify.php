@@ -114,9 +114,9 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
         <p>
           <em><?php echo $modify_text['newtaskadded'];?></em>
         </p>
-        <p><?php echo "<a href=\"{$flyspray_prefs['base_url']}index.php?do=details&id=$task_id\">{$modify_text['gotonewtask']}</a>";?></p>
-        <p><?php echo "<a href=\"{$flyspray_prefs['base_url']}index.php?do=newtask\">{$modify_text['addanother']}</a>";?></p>
-        <p><?php echo "<a href=\"{$flyspray_prefs['base_url']}\">{$modify_text['backtoindex']}</a>";?></p>
+        <p><?php echo "<a href=\"?do=details&id=$task_id\">{$modify_text['gotonewtask']}</a>";?></p>
+        <p><?php echo "<a href=\"?do=newtask\">{$modify_text['addanother']}</a>";?></p>
+        <p><?php echo "<a href=\"?\">{$modify_text['backtoindex']}</a>";?></p>
       </div>
 <?php
   // If they didn't fill in both the summary and detailed description, show an error
@@ -460,7 +460,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
       $update_pass = $fs->dbQuery("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
       //setcookie('flyspray_passhash', crypt("$new_pass_hash", "4t6dcHiefIkeYcn48B"), time()+60*60*24*30, "/");
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
-      echo "<p><a href=\"{$flyspray_prefs['base_url']}\">{$modify_text['backtoindex']}</a></p></div>";
+      echo "<p><a href=\"?\">{$modify_text['backtoindex']}</a></p></div>";
 
     // if the two new passwords aren't the same, show an error
     } else {
@@ -694,7 +694,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 			array($newproject['project_id'], '1.0', '1', '1'));
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectcreated']}";
-    echo "<br><br><a href=\"{$flyspray_prefs['base_url']}index.php?do=admin&amp;area=projects&amp;show=prefs&amp;id={$newproject['project_id']}\">{$modify_text['customiseproject']}</a></em></p></div>";
+    echo "<br><br><a href=\"?do=admin&amp;area=projects&amp;show=prefs&amp;id={$newproject['project_id']}\">{$modify_text['customiseproject']}</a></em></p></div>";
 
   } else {
 

@@ -690,7 +690,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
         <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
         <input type="hidden" name="id" value="<?php echo $row['category_id'];?>">
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['category_name'];?>">
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name" value="<?php echo $row['category_name'];?>">
       </td>
       <td title="The order these items will appear in the Category list">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -726,7 +726,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
         <input type="hidden" name="action" value="add_category">
         <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-        <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
+        <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name">
       </td>
       <td>
         <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
