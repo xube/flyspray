@@ -1177,23 +1177,57 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 //////////////////////////////////////////
 
 } elseif ($_POST['action'] == "add_related" && $_SESSION['can_modify_jobs'] == '1') {
-
-  $check = $fs->dbQuery("SELECT * FROM flyspray_related
-    WHERE this_task = ?
-    AND related_task = ?",
-    array($_POST['this_task'], $_POST['related_task']));
-  if (!$fs->dbCountRows($check)) {
-
-    $insert = $fs->dbQuery("INSERT INTO flyspray_related (this_task, related_task) VALUES(?,?)", array($_POST['this_task'], $_POST['related_task']));
     
-    $fs->logEvent($_POST['this_task'], 11, $_POST['related_task']);
-    $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
-    
-    echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedadded']}</em></p></div>";
+  if (is_numeric($_POST['related_task'])) {  
+    $check = $fs->dbQuery("SELECT * FROM flyspray_related
+        WHERE this_task = ?
+        AND related_task = ?",
+        array($_POST['this_task'], $_POST['related_task']));
+    $check2 = $fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks
+        WHERE task_id = ?",
+        array($_POST['related_task']));
+        
+    if ($fs->dbCountRows($check) > 0) {
+        echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatederror']}</em></p></div>";
+    } elseif (!$fs->dbCountRows($check2)) {
+        echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
+    } else {
+        list($relatedproject) = $fs->dbFetchRow($check2);
+        if ($project_id == $relatedproject || isset($_POST['allprojects'])) {
+            $insert = $fs->dbQuery("INSERT INTO flyspray_related (this_task, related_task) VALUES(?,?)", array($_POST['this_task'], $_POST['related_task']));
+            
+            $fs->logEvent($_POST['this_task'], 11, $_POST['related_task']);
+            $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
+            
+            echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+            echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedadded']}</em></p></div>";
+        } else {
+            ?>
+            <div class="redirectmessage">
+                <p><em><?php echo $modify_text['relatedproject'];?></em></p>
+                <form action="index.php" method="post">
+                    <input type="hidden" name="do" value="modify">
+                    <input type="hidden" name="action" value="add_related">
+                    <input type="hidden" name="this_task" value="<?php echo $_POST['this_task'];?>">
+                    <input type="hidden" name="related_task" value="<?php echo $_POST['related_task'];?>">
+                    <input type="hidden" name="allprojects" value="1">
+                    <input class="adminbutton" type="submit" value="<?php echo $modify_text['addanyway'];?>">
+                </form>
+                <form action="index.php" method="get">
+                    <input type="hidden" name="do" value="details">
+                    <input type="hidden" name="id" value="<?php echo $_POST['this_task'];?>">
+                    <input type="hidden" name="area" value="related">
+                    <input class="adminbutton" type="submit" value="<?php echo $modify_text['cancel'];?>">
+                </form>
+            </div>
+            <?php
+        };
+    };
   } else {
     echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatederror']}</em></p></div>";
+    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
   };
 
 // End of adding a related task entry
