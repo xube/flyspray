@@ -39,7 +39,7 @@ $index_text = array (
 'openedby'		=>	'Aperto da',
 'comments'		=>      'Commenti',
 'attachments'		=>      'Attachment',
-'priority'		=>	'Priorit\a'',
+'priority'		=>	'Priorita\'',
 
 );
 ?>
