@@ -55,7 +55,11 @@ if ($_GET['sort']) {
   <link href="calendar/styles/calendar.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="functions.js"></script>
   <script type="text/javascript" src="styleswitcher.js"></script>
-  <script type="text/javascript" src="calendar/javascript/simplecalendar.js"></script>
+  <style type="text/css">@import url(jscalendar/calendar-win2k-1.css);</style>
+  <script type="text/javascript" src="jscalendar/calendar_stripped.js"></script>
+  <script type="text/javascript" src="jscalendar/lang/calendar-en.js"></script>
+  <script type="text/javascript" src="jscalendar/calendar-setup.js"></script>
+  
   <?php
       // open the themes directory
       if ($handle = opendir('themes/')) {

@@ -98,8 +98,41 @@ $upgrade = $fs->dbQuery("UPDATE flyspray_tasks SET last_edited_time=date_opened 
   
   echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database is now upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
   echo "<a href=\"../\">Take me to Flyspray 0.9.6 now!</a></td></tr><table>";
-};
 
+// Initialise the history table with basic information we 
+// Gather from the existing tables.
+
+//Tasks opened
+$init_history = $fs->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type)
+                    SELECT task_id, opened_by AS user_id, date_opened AS event_date, 1 AS event_type
+                    FROM flyspray_tasks");
+
+//Tasks closed
+$init_history = $fs->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, new_value)
+                    SELECT task_id, closed_by AS user_id, date_closed AS event_date, 2 AS event_type, resolution_reason AS new_value
+                    FROM flyspray_tasks
+                    WHERE is_closed = 1");
+
+//Tasks edited
+$init_history = $fs->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type)
+                    SELECT task_id, last_edited_by AS user_id, last_edited_time AS event_date, 3 AS event_type
+                    FROM flyspray_tasks
+                    WHERE last_edited_by <> 0");
+
+//Comments added
+$init_history = $fs->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, new_value)
+                    SELECT t.task_id, c.user_id AS user_id, c.date_added AS event_date, 4 AS event_type, c.comment_id AS new_value
+                    FROM flyspray_tasks t
+                    RIGHT JOIN flyspray_comments c ON t.task_id = c.task_id");
+
+//Attachments added
+$init_history = $fs->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, new_value)
+                    SELECT t.task_id, a.added_by AS user_id, a.date_added AS event_date, 7 AS event_type, a.attachment_id AS new_value
+                    FROM flyspray_tasks t
+                    RIGHT JOIN flyspray_attachments a ON t.task_id = a.task_id");
+// End of checking if upgrade is already done
+};
+// End of pages
 };
 ?>
 

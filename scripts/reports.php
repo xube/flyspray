@@ -45,13 +45,32 @@ function changelog_report()
 
 	<form name="changelog_form" action="?do=reports&report=changelog" method="POST">
 	
-	<?php echo $reports_text['listfrom']?> <input type="text" size="12" name="startdate" value="<?php echo $startdate?>">
+	<?php echo $reports_text['listfrom']?> 
 	
-	<a href="javascript: void(0);" onmouseover="if (timeoutId) clearTimeout(timeoutId);window.status='Show Calendar';return true;" onmouseout="if (timeoutDelay) calendarTimeout();window.status='';" onclick="g_Calendar.show(event,'changelog_form.startdate',false); return false;"><img src="themes/<?php echo $flyspray_prefs['theme_style']?>/calendar.png" name="imgCalendar" border="0" alt=""></a>
+        <input id="startdate" type="text" name="startdate" size="10" value="<?=$startdate?>">
+	<button id="triggerstartdate">...</button>
+        <script type="text/javascript">
+          Calendar.setup(
+            {
+              inputField  : "startdate",         // ID of the input field
+              ifFormat    : "%d-%b-%Y",    // the date format
+              button      : "triggerstartdate"       // ID of the button
+            }
+          );
+        </script>
 	
-	<?php echo $reports_text['to']?> <input type="text" size="12" name="enddate" value="<?php echo $enddate?>">
-	
-	<a href="javascript: void(0);" onmouseover="if (timeoutId) clearTimeout(timeoutId);window.status='Show Calendar';return true;" onmouseout="if (timeoutDelay) calendarTimeout();window.status='';" onclick="g_Calendar.show(event,'changelog_form.enddate',false); return false;"><img src="themes/<?php echo $flyspray_prefs['theme_style']?>/calendar.png" name="imgCalendar" border="0" alt=""></a>
+	<?php echo $reports_text['to']?> <input id="enddate" type="text" name="enddate" size="10" value="<?php echo $enddate?>">
+        <button id="triggerenddate">...</button>
+        <script type="text/javascript">
+          Calendar.setup(
+            {
+              inputField  : "enddate",         // ID of the input field
+              ifFormat    : "%d-%b-%Y",    // the date format
+              button      : "triggerenddate"       // ID of the button
+            }
+          );
+        </script>
+
 	
 	<select name="sort">
 		<option value="asc" <?php if($_REQUEST['sort'] == 'asc') { echo "SELECTED";};?>><?php echo $reports_text['oldestfirst'];?></option>
@@ -65,7 +84,7 @@ function changelog_report()
 	<?php
 	$ustartdate = strtotime("$startdate");
 	$uenddate   = strtotime("$enddate + 1 day");
-
+	
 	$sort = $_REQUEST['sort'];
 	
 	$get_changes = $fs->dbQuery("SELECT t.*, u.*, r.*
@@ -288,7 +307,7 @@ switch ($_REQUEST['sort']) {
         $date = 'from';
         $fromdate = $_REQUEST['fromdate'];
         $todate = $_REQUEST['todate'];
-	
+
         $ufromdate = strtotime($fromdate);
         $utodate = strtotime($todate);
 
@@ -367,13 +386,30 @@ switch ($_REQUEST['sort']) {
 		<tr>
 		    <td><label class="inline"><input type="radio" name="date" value="from" <?php if($date == 'from') echo 'checked';?>>From:</label></td>
 		    <td>
-		    <input type="text" name="fromdate" size="10" value="<?=$fromdate?>">
-		    <a href="javascript: void(0);" onmouseover="if (timeoutId) clearTimeout(timeoutId);window.status='Show Calendar';return true;" onmouseout="if (timeoutDelay) calendarTimeout();window.status='';" onclick="g_Calendar.show(event,'events_form.fromdate',false); return false;"><img src="themes/<?php echo $flyspray_prefs['theme_style']?>/calendar.png" name="imgCalendar" border="0" alt=""></a>
-		    to
-		    <input type="text" name="todate" size="10" value="<?=$todate?>">
-		    <a href="javascript: void(0);" onmouseover="if (timeoutId) clearTimeout(timeoutId);window.status='Show Calendar';return true;" onmouseout="if (timeoutDelay) calendarTimeout();window.status='';" onclick="g_Calendar.show(event,'events_form.todate',false); return false;"><img src="themes/<?php echo $flyspray_prefs['theme_style']?>/calendar.png" name="imgCalendar" border="0" alt=""></a>
-		    
-		    </td>
+		    <input id="fromdate" type="text" name="fromdate" size="10" value="<?php echo $fromdate?>">
+                    <button id="triggerfromdate">...</button>
+                    <script type="text/javascript">
+                     Calendar.setup(
+                       {
+                         inputField  : "fromdate",         // ID of the input field
+                         ifFormat    : "%d-%b-%Y",    // the date format
+                         button      : "triggerfromdate"       // ID of the button
+                       }
+                     );
+                   </script>
+		   &mdash;
+		   <input id="todate" type="text" name="todate" size="10" value="<?php echo $todate?>">
+	           <button id="triggertodate">...</button>
+                   <script type="text/javascript">
+                     Calendar.setup(
+                       {
+                         inputField  : "todate",         // ID of the input field
+                         ifFormat    : "%d-%b-%Y",    // the date format
+                         button      : "triggertodate"       // ID of the button
+                       }
+                     );
+                  </script>
+                  </td>
                 <tr>
                     <td><label class="inline"><input type="radio" name="date" value="duein" <?php if($date == 'duein') echo 'checked';?>>Due in:</label></td>
                     <td colspan="6">
