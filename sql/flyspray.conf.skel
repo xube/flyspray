@@ -1,4 +1,5 @@
 ; <?php die( 'Do not access this page directly.' ); ?>
+
 ; This is the Flysplay configuration file. It contains the basic settings
 ; needed for Flyspray to operate. All other preferences are stored in the
 ; database itself and are managed directly within the Flyspray admin interface.

@@ -15,7 +15,7 @@ $register_text = array (
 'none'				=>	'Geen',
 'email'				=>	'Email',
 'jabber'			=>	'Jabber',
-'note'				=>	'<b>Nota:</b>  U krijgt een bevestigingscode voordat uw account aangemaakt wordt. Deze code wordt verzonden naar uw gekozen berichttype hierboven.  ALS U VALSE GEGEVENS INVULT, ONTVANGT U UW CODE NIET.',
+'note'				=>	'<b>Opmerking:</b>  U krijgt een bevestigingscode voordat uw account aangemaakt wordt. Deze code wordt verzonden naar uw gekozen berichttype hierboven.  ALS U VALSE GEGEVENS INVULT, ONTVANGT U UW CODE NIET.',
 'sendcode'			=>	'Verzend code!',
 'entercode'			=>	'Uw bevestigingscode is verzonden volgens uw gekozen berichttype.  Als u dit ontvangt, typ dit hieronder.  Typ ook uw gewenste wachtwoord.',
 'confirmationcode'	=>	'Bevestigingscode',
@@ -25,6 +25,9 @@ $register_text = array (
 'goback'			=>	'Ga terug en voer uit.',
 'noticefrom'		=>	'Bericht van',
 'addressused'		=>	'Dit adres is gebruikt voor een Flyspray account.  Als u dit bericht niet verwacht, gelieve het dan te verwijderen.  Uw bevestigingscode is:',
+
+// Added in version 0.9.7
+'badmagic'              =>      'Dit is een ongeldige magische sleutel! Weet je zeker dat deze sleutel in je notificatie bericht stond?',
 
 );
 ?>

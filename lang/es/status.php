@@ -7,10 +7,11 @@ $status_list = array (
 '2'	=>	'Nueva',
 '3'	=>	'Asignada',
 '4'	=>	'Investigando',
-'5'	=>	'Esperando Cliente',
-'6'	=>	'Requiere pruebas',
+'5'	=>	'Esperando cliente',
+'6'	=>	'Requiere testeo',
 '7'	=>	'Reabierta',
 // Removed in version 0.9.6
-//'8'	=>	'Cerrada',
+//'8'	=>	'Closed',
+
 );
 ?>

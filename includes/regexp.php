@@ -122,7 +122,6 @@ if ($_REQUEST['id']) {
 
         } else {
 
-
             print "ID request is invalid."; exit;
         };
      };
@@ -185,8 +184,10 @@ if ($_GET['jabber_id']) {
 
     // Yes. Now check its regex format for safety -- Limited range
     // Credit: http://xrl.us/9x3
-    if (preg_match ("/^[A-Za-z0-9\._-]+@([A-Za-z][A-Za-z0-9-]{1,62})(\.[A-Za-z][A-Za-z0-9-]{1,62})+$/", $_GET['jabber_id'])) {
-
+    //if (preg_match ("/^[A-Za-z0-9\._-]+@([A-Za-z][A-Za-z0-9-]{1,62})(\.[A-Za-z][A-Za-z0-9-]{1,62})+$/", $_GET['jabber_id'])) {
+   
+   // New regexp from FS#382 - I suck at regexps; someone tell me if it's safe.
+   if (preg_match ("/^[a-z0-9._-']+(?:\+[a-z0-9._-]+)?[a-z0-9.-]+\.[a-z]{2,4}+$/i", $_GET['jabber_id'])) {
        // continue;
     } else {
 

@@ -65,15 +65,13 @@ CREATE TABLE `flyspray_groups` (
   `view_reports` mediumint(1) NOT NULL default '0',
   `group_open` mediumint(1) NOT NULL default '0',
   PRIMARY KEY  (`group_id`)
-) TYPE=MyISAM COMMENT='User Groups for the Flyspray bug killer' AUTO_INCREMENT=8 ;
+) TYPE=MyISAM COMMENT='User Groups for the Flyspray bug killer' AUTO_INCREMENT=6 ;
 
 INSERT INTO `flyspray_groups` VALUES (1, 'Admin', 'Members have unlimited access to all functionality.', 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-INSERT INTO `flyspray_groups` VALUES (2, 'Developers', 'The core development team', 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1);
-INSERT INTO `flyspray_groups` VALUES (3, 'Contributors', 'Additional helpers who submit patches', 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1);
-INSERT INTO `flyspray_groups` VALUES (4, 'Reporters', 'These people can open new jobs only', 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-INSERT INTO `flyspray_groups` VALUES (5, 'Pending', 'Users who are awaiting approval of their accounts.', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-INSERT INTO `flyspray_groups` VALUES (6, 'Basic', 'Members can login, relying upon Project permissions only', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-INSERT INTO `flyspray_groups` VALUES (7, 'Project Managers', 'Permission to do anything related to this project.', 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+INSERT INTO `flyspray_groups` VALUES (2, 'Reporters', 'These people can open new tasks and add comments', 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO `flyspray_groups` VALUES (3, 'Basic', 'Members can login, relying upon Project permissions only', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO `flyspray_groups` VALUES (4, 'Pending', 'Users who are awaiting approval of their accounts.', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+INSERT INTO `flyspray_groups` VALUES (5, 'Project Managers', 'Permission to do anything related to the Default Project.', 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
 CREATE TABLE `flyspray_history` (
   `history_id` mediumint(10) NOT NULL auto_increment,
@@ -174,23 +172,24 @@ CREATE TABLE `flyspray_prefs` (
   `pref_value` varchar(100) NOT NULL default '',
   `pref_desc` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`pref_id`)
-) TYPE=MyISAM COMMENT='Application preferences are set here' AUTO_INCREMENT=16 ;
+) TYPE=MyISAM COMMENT='Application preferences are set here' AUTO_INCREMENT=17 ;
 
-INSERT INTO `flyspray_prefs` VALUES (1, 'jabber_server', '', 'Jabber server');
-INSERT INTO `flyspray_prefs` VALUES (2, 'jabber_port', '5222', 'Jabber server port');
-INSERT INTO `flyspray_prefs` VALUES (3, 'jabber_username', '', 'Jabber username');
-INSERT INTO `flyspray_prefs` VALUES (4, 'jabber_password', '', 'Jabber password');
-INSERT INTO `flyspray_prefs` VALUES (5, 'anon_group', '4', 'Group for anonymous registrations');
-INSERT INTO `flyspray_prefs` VALUES (6, 'base_url', 'http://example.com/flyspray/', 'Base URL for this installation');
-INSERT INTO `flyspray_prefs` VALUES (7, 'user_notify', '1', 'Force task notifications as');
-INSERT INTO `flyspray_prefs` VALUES (8, 'admin_email', 'flyspray@example.com', 'Reply email address for notifications');
-INSERT INTO `flyspray_prefs` VALUES (9, 'assigned_groups', '1 2 3', 'Members of these groups can be assigned tasks');
-INSERT INTO `flyspray_prefs` VALUES (10, 'lang_code', 'en', 'Language');
-INSERT INTO `flyspray_prefs` VALUES (11, 'spam_proof', '1', 'Use confirmation codes for user registrations');
-INSERT INTO `flyspray_prefs` VALUES (12, 'default_project', '1', 'Default project id');
-INSERT INTO `flyspray_prefs` VALUES (13, 'dateformat', '', 'Default date format for new users and guests used in the task list');
-INSERT INTO `flyspray_prefs` VALUES (14, 'dateformat_extended', '', 'Default date format for new users and guests used in task details');
-INSERT INTO `flyspray_prefs` VALUES (15, 'anon_reg', '1', 'Allow new user registrations');
+INSERT INTO `flyspray_prefs` VALUES (1, 'fs_ver', '0.9.7', 'Current Flyspray version');
+INSERT INTO `flyspray_prefs` VALUES (2, 'jabber_server', '', 'Jabber server');
+INSERT INTO `flyspray_prefs` VALUES (3, 'jabber_port', '5222', 'Jabber server port');
+INSERT INTO `flyspray_prefs` VALUES (4, 'jabber_username', '', 'Jabber username');
+INSERT INTO `flyspray_prefs` VALUES (5, 'jabber_password', '', 'Jabber password');
+INSERT INTO `flyspray_prefs` VALUES (6, 'anon_group', '4', 'Group for anonymous registrations');
+INSERT INTO `flyspray_prefs` VALUES (7, 'base_url', 'http://example.com/flyspray/', 'Base URL for this installation');
+INSERT INTO `flyspray_prefs` VALUES (8, 'user_notify', '1', 'Force task notifications as');
+INSERT INTO `flyspray_prefs` VALUES (9, 'admin_email', 'flyspray@example.com', 'Reply email address for notifications');
+INSERT INTO `flyspray_prefs` VALUES (10, 'assigned_groups', '1 2 3', 'Members of these groups can be assigned tasks');
+INSERT INTO `flyspray_prefs` VALUES (11, 'lang_code', 'en', 'Language');
+INSERT INTO `flyspray_prefs` VALUES (12, 'spam_proof', '1', 'Use confirmation codes for user registrations');
+INSERT INTO `flyspray_prefs` VALUES (13, 'default_project', '1', 'Default project id');
+INSERT INTO `flyspray_prefs` VALUES (14, 'dateformat', '', 'Default date format for new users and guests used in the task list');
+INSERT INTO `flyspray_prefs` VALUES (15, 'dateformat_extended', '', 'Default date format for new users and guests used in task details');
+INSERT INTO `flyspray_prefs` VALUES (16, 'anon_reg', '1', 'Allow new user registrations');
 
 CREATE TABLE `flyspray_projects` (
   `project_id` mediumint(3) NOT NULL auto_increment,

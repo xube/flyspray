@@ -19,5 +19,27 @@ $newgroup_text = array (
 
 'groupenabled'		=>	'Leden kunnen inloggen',
 
+// Added in version 0.9.7
+
+'projectmanager'	=>	'Project Manager',
+'viewtasks'		=>	'Bekijk taken',
+'opennewtasks'		=>	'Open nieuwe taken',
+'modifyowntasks'	=>	'Bewerk eigen taken',
+'modifyalltasks'	=>	'Bewerk taken die niet van de gebruiker zelf zijn',
+'viewcomments'		=>	'Bekijk opmerkingen',
+'editcomments'		=>	'Bewerk opmerkingen',
+'deletecomments'	=>	'Verwijder opmerkingen',
+'viewattachments'	=>	'Bekijk bijlagen',
+'createattachments'	=>	'Maak bijlagen',
+'deleteattachments'	=>	'Verwijder bijlagen',
+'viewhistory'		=>	'Bekijk geschiedenis',
+'closeowntasks'		=>	'Sluit eigen taken',
+'closeothertasks'	=>	'Sluit taken die niet van de gebruiker zelf zijn',
+'assigntoself'		=>	'Taak aan jezelf toewijzen als deze nog niet toegewezen is',
+'assignotherstoself'	=>	'Wijs andermans taak aan jezelf toe',
+'viewreports'		=>	'Bekijk rapporten',
+'othersview'		=>	'Iedereen toestaan dit project te bekijken',
+'globalgroups'    => 'Globale Groepen',
+
 );
 ?>

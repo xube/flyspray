@@ -4,44 +4,45 @@ global $index_text;
 $index_text = array (
 
 'search'			=>	'Buscar',
-'alltasktypes'		=>	'Todos los tipos de tareas',
-'allseverities'		=>	'Todas las gravedades',
-'alldevelopers'		=>	'Todos los desarrolladores',
+'alltasktypes'		=>	'Todos los Tipos de Tareas',
+'allseverities'		=>	'Todas las Gravedades',
+'alldevelopers'		=>	'Todos los Desarrolladores',
 'notyetassigned'	=>	'Sin asignar',
-'allcategories'		=>	'Todas las categor&iacute;as',
+'allcategories'		=>	'Todas las categorias',
 'allstatuses'		=>	'Todos los estados',
 'allopentasks'		=>	'Todas las tareas abiertas',
 'sortthiscolumn'	=>	'Ordenar por esta columna',
-'id'				=>	'ID',
-'tasktype'			=>	'Tarea',
-'project'			=>	'Proyecto',
+'id'			=>	'ID',
+'tasktype'			=>	'Tipo de Tarea',
+'project'			=>	'Projecto',
 'category'			=>	'Categoria',
 'severity'			=>	'Gravedad',
-'summary'			=>	'Resumen',
-'dateopened'		=>	'Fecha apertura',
+'summary'			=>	'Descripcion',
+'dateopened'		=>	'Abierta',
 'status'			=>	'Estado',
 'progress'			=>	'Progreso',
-'complete'			=>	'Completa',
+'complete'			=>	'completa',
 'previous'			=>	'Previa',
-'next'				=>	'Pr&oacute;xima',
+'next'				=>	'Proxima',
 
-// added in version 0.9.5
+// Added in version 0.9.5
 'searchthisproject'	=>	'Buscar en este proyecto',
 
 // Added in version 0.9.6
 'closed'			=>	'Cerrada',
-'dueanyversion'		=>	'Agendada para cualquier versi&oacute;n',
+'dueanyversion'		=>	'Agendada para cualquier version',
 'dueversion'		=>	'Agendada para',
 'project'		=>	'Proyecto',
-'category'		=>	'Categor&iacute;a',
-'lastedit'		=>	'Ultima edici&oacute;n',
+'category'		=>	'Categoria',
+'lastedit'		=>	'Ultima edicion',
 'assignedto'		=>	'Asignada a',
 'os'			=>	'Sistema Operativo',
-'reportedin'		=>	'Reportada En',
+'reportedin'		=>	'Reportada en',
 'openedby'		=>	'Abierta por',
-'comments'          =>  'Comentarios',
-'attachments'       =>  'Adjuntos',
-'priority'		=>	'Prioridad'
+'comments'		=>      'Comentarios',
+'attachments'		=>      'Adjuntos',
+'priority'		=>	'Prioridad',
+
 
 );
 ?>

@@ -10,6 +10,8 @@ $loginbox_text = array (
 // Added in 0.9.6
 'rememberme'				=>	'Onthoudt login', 
 
+// Added in 0.9.7
+'lostpassword'				=>	'Wachtwoord verloren?',
 
 );
 ?>

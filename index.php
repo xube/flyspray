@@ -138,7 +138,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     };
    
    // Fetch info on the current user
-   $current_user = $fs->getCurrentUser($_COOKIE['flyspray_userid']);
+   $current_user = $fs->getUserDetails($_COOKIE['flyspray_userid']);
    
    // Fetch the permissions array for the current user
    $permissions = $fs->checkPermissions($current_user['user_id'], $_COOKIE['flyspray_project']);

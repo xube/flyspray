@@ -29,19 +29,20 @@ include('../includes/functions.inc.php');
 
 <?php
 
-echo '<h3>Flyspray setup</h3>';
-
-
-if (file_exists('../flyspray.conf.php')) {
-   die('Setup has already been completed.  If you really want to run it again, remove flyspray.conf.php');
-};
+echo '<h3>Flyspray 0.9.7 Setup</h3>';
 
 //////////////////////////////
 // Page one, the intro page //
 //////////////////////////////
 if ($page == '1') {
    
+   if (file_exists('../flyspray.conf.php')) {
+      die('Setup has already been completed.  If you really want to run it again, remove flyspray.conf.php');
+   };
+   
    echo 'Flyspray does not appear to be set up on this server.  Click the button below to start the configuration process.';
+   echo '<br /><br />';
+   echo 'You might like to read the <a href="http://flyspray.rocks.cc/?p=Installation" target="_blank">installation instructions</a> to help you through Setup.';
    echo '<br /><br />';
    echo "\n";
    echo '<form action="install-0.9.7.php" method="get">';
@@ -57,9 +58,16 @@ if ($page == '1') {
 // Page two, where the user enters their config details //
 //////////////////////////////////////////////////////////
 } elseif ($page == '2') {
+
+   if (file_exists('../flyspray.conf.php')) {
+      die('Setup has already been completed.  If you really want to run it again, remove flyspray.conf.php');
+   };
+
 ?>
 
-Adjust the settings below to suit your system's setup.
+Adjust the settings below to suit your system's setup.  Note that you must have already created
+the database that you wish to use for Flyspray, and it must NOT have a Flyspray structure already
+inside it.  If you do not follow these instructions, setup will fail.
 
 <br /><br />
 
@@ -163,6 +171,10 @@ if (!isset($_SESSION['basedir'])) {
 /////////////////////////////////////////////////////
 } elseif ($page == '3') {
 
+   if (file_exists('../flyspray.conf.php')) {
+      die('Setup has already been completed.  If you really want to run it again, remove flyspray.conf.php');
+   };
+
    $_SESSION['basedir'] = stripslashes($_POST['basedir']);
    $_SESSION['adodbpath'] = stripslashes($_POST['adodbpath']);
    $_SESSION['dbtype'] = $_POST['dbtype'];
@@ -181,26 +193,34 @@ if (!isset($_SESSION['basedir'])) {
          
          // Now, check for the correct path to the adodb.inc.php file
          if (!file_exists($_SESSION['adodbpath']))
-            
-            echo 'The path to adodb.inc.php wasn\'t set correctly.  Press your browser\'s BACK button to return to the previous page.';
+         {
+            die('The path to adodb.inc.php wasn\'t set correctly.  Press your browser\'s BACK button to return to the previous page.');
          
+         }         
+
+// Save flyspray.conf.php
+
          // If the adodbpath is correct, continue to saving flyspray.conf.php
          $filename = '../flyspray.conf.php';         
          
-         // Delete flyspray.conf.php, then re-create it
-         @unlink($filename);
-         @copy("flyspray.conf.skel", "../flyspray.conf.php");
+         // Create a random cookie salt
+         $cookiesalt = substr(md5(microtime()), 0, 2);
+         
+         // Copy the skeleton config file to the Flyspray directory         
+         if (!@copy("flyspray.conf.skel", "../flyspray.conf.php")) {
+            die ('Cannot create flyspray.conf.php in the Flyspray directory.  Perhaps we do not have write permission?');
+         };
          
          $somecontent = '
          
 [general]
 basedir = "' . $_SESSION['basedir'] . '"      ; Location of your Flyspray installation
-cookiesalt = "4t"                             ; Randomisation value for cookie encoding
+cookiesalt = "' . $cookiesalt . '"            ; Randomisation value for cookie encoding
 adodbpath = "' . $_SESSION['adodbpath']. '"   ; Path to the main ADODB include file
 output_buffering = "on"                       ; Available options: "off", "on" and "gzip"
 
 [database]
-dbtype = "' . $_SESSION['dbtype'] . '"        ; Type of database ("mysql" or "pgsql") 
+dbtype = "' . $_SESSION['dbtype'] . '"        ; Type of database ("mysql" or "pgsql" are currently supported) 
 dbhost = "' . $_SESSION['dbhost'] . '"        ; Name or IP of your database server
 dbname = "' . $_SESSION['dbname'] . '"        ; The name of the database
 dbuser = "' . $_SESSION['dbuser'] . '"        ; The user to access the database
@@ -223,13 +243,19 @@ if (is_writable($filename)) {
        echo "Cannot write to file ($filename)";
        exit;
    };
-  
+   
+   fclose($handle);
+  // End of saving flyspray.conf.php  
+
+
+   // Tell the user what just happened
+     
    echo 'Your config settings were successfully saved to flyspray.conf.php';
-   echo '<br /><br />';
-   echo 'FIXME: Generate a cookie salt on this page, instead of using the same one for every install.';
    echo '<br /><br />';
    echo 'Next, we are going to try setting up your database using the settings you just provided.  ';
    echo 'The next page may be a little slow to load, because it has a lot of database work to do.';
+   echo '<br /><br />';
+   echo '<b>REMEMBER:</b> Your database must already exist, and NOT already contain a Flyspray structure.';
    echo '<br /><br />';
    echo "\n";
    echo '<form action="install-0.9.7.php" method="get">';
@@ -239,11 +265,10 @@ if (is_writable($filename)) {
    echo '<input class="adminbutton" type="submit" value="Continue to next page" />';
    echo "\n";
    echo '</form>';
-  
-   fclose($handle);
 
+// If saving the config file failed
 } else {
-   echo "The file $filename is not writable";
+   echo "Could not save settings to flyspray.conf.php.  Perhaps we do not have write permission?";
 };
 
    // If the user hasn't filled in all the fields
@@ -259,6 +284,11 @@ if (is_writable($filename)) {
 /////////////////////////////////////////////////////
 } elseif ($page == '4') {
 
+   if (!isset($_SESSION['basedir'])) {
+      Header("Location: install-0.9.7.php?p=1");
+   };
+
+
 // Activate adodb   
 include_once ($_SESSION['adodbpath']);
 
@@ -271,7 +301,13 @@ if (!$res) {
    die('Flyspray was unable to connect to the database.<br /><br /><b>The reason was:</b> '.$fs->dblink->ErrorMsg().'.<br /><br /> Go back and <a href="install-0.9.7.php?p=2">check your settings!</a>');
 }
 
-// Retrieve th database schema into a string
+// See if the Flyspray db schema already exists.  exists = bad.
+//$check_db = $fs->dbQuery("SELECT * FROM flyspray_tasks");
+//if ($fs->dbCountRows($check_db)) {
+//   die('The Flyspray database structure already seems to exist.  We are not going to create it again!<br /><br />To restart this setup, first remove flyspray.conf.php from the Flyspray directory.');
+//};
+
+// Retrieve the database schema into a string
 $sql_file = file_get_contents('flyspray-0.9.7.' . $_SESSION['dbtype']);
 
 // Separate each query
@@ -286,17 +322,28 @@ while (list($key, $val) = each($sql)) {
 // Then update the database with it
 //$update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = $base_url WHERE pref_name = 'base_url'");
 
-// Create a 'completed' file to stop this script running again
-//touch($_SESSION['basedir'] . 'sql/SETUP_HAS_RUN');
-
-echo 'The Flyspray configuration process is complete.  The Flyspray developers hope that you have many hours';
-echo 'of increased productivity though the use of this software.  If you find Flyspray useful, please consider';
+echo 'The Flyspray configuration process is complete.  The Flyspray developers hope that you have many hours ';
+echo 'of increased productivity though the use of this software.  If you find Flyspray useful, please consider ';
 echo 'returning to the Flyspray website and <a href="http://flyspray.rocks.cc/?p=Download">making a donation</a>.';
 echo '<br /><br />';
-echo '<a href="../>Take me to Flyspray 0.9.7 now!</a>';
+echo 'Click "Finish Setup" to log into Flyspray as the default "super" user, and create yourself a personal admin account.';
 echo '<br /><br />';
-echo 'Also remember to set some of the global prefs in the database, like the base url.';
+echo 'Remember to read the <a href="http://flyspray.rocks.cc/?p=First_Login" target=_blank">First Login documentation</a> while you do that.';
 echo '<br /><br />';
+
+   echo "\n";
+   echo '<form action="../index.php?do=authenticate" method="post">';
+   echo "\n";
+   echo '<input type="hidden" name="prev_page" value="index.php?do=newuser" />';
+   echo "\n";
+   echo '<input type="hidden" name="username" value="super" />';
+   echo "\n";
+   echo '<input type="hidden" name="password" value="super" />';
+   echo "\n";
+   echo '<input class="adminbutton" type="submit" value="Finish Setup" />';
+   echo "\n";
+   echo '</form>';
+
 
 // End of pages
 };

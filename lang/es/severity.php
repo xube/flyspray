@@ -9,6 +9,5 @@ $severity_list = array (
 '2'	=>	'Baja',
 '1'	=>	'Muy baja',
 
-
 );
 ?>

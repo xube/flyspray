@@ -3,12 +3,12 @@
 global $chpass_text;
 $chpass_text = array (
 
-'changeyourpass'	=>	'Cambio de su Contrase&ntilde;a',
+'changeyourpass'	=>	'Cambie su contraseña',
 'current'			=>	'Actual',
 'new'				=>	'Nueva',
 'confirm'			=>	'Confirme',
-'savepass'			=>	'Grabar su Contrase&ntilde;a',
-'nopermission'		=>	'No tiene permiso suficiente para usar esta p&aacute;gina',
+'savepass'			=>	'Guardar nueva contraseña',
+'nopermission'		=>	'No tiene permiso para usar esta pagina',
 
 );
 ?>

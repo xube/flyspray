@@ -15,8 +15,12 @@ $newuser_text = array (
 'none'				=>	'Geen',
 'email'				=>	'Email',
 'jabber'			=>	'Jabber',
-'group'				=>	'Groep',
+//'group'				=>	'Groep',    Not used from 0.9.7
 'registeraccount'	=>	'Registreer deze account',
+
+// New in 0.9.7
+
+'globalgroup'		=>	'Globale groep',
 
 );
 ?>

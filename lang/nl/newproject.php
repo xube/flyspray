@@ -22,5 +22,9 @@ $newproject_text = array (
 // Added in version 0.9.6
 'inlineimages'		=>	'Toon plaatjes bijlagen inline',
 
+// Added in version 0.9.7
+'othersview'		=>	'Iedereen toestaan dit project te bekijken',
+'allowanonopentask'     =>      'Anonieme gebruikers toestaan taken te openen',
+
 );
 ?>

@@ -93,13 +93,21 @@ class Flyspray {
    @param arr        input array or false
    @return        SQL safe array (without undefined values)
    */
-   function dbUndefToEmpty($arr) {
-       if (is_array($arr)) {
+   function dbUndefToEmpty($arr)
+   {
+       if (is_array($arr))
+       {
            $c = count($arr);
 
            for($i=0; $i<$c; $i++)
+           {
                if (!isset($arr[$i]))
-                   $arr[$i] = '';
+               {
+                  $arr[$i] = '';
+               }
+               // This line safely escapes sql before it goes to the db
+               $this->dblink->qmagic($arr[$i]);
+           }
        }
        return $arr;
    }
@@ -107,14 +115,17 @@ class Flyspray {
     /** Replace empty values with 0. Useful when inserting values from
     checkboxes.
     */
-    function emptyToZero($arg) {
+    function emptyToZero($arg)
+    {
         return empty($arg) ? 0 : $arg;
     }
 
-   function dbExec($sql, $inputarr=false, $numrows=-1, $offset=-1) {
+   function dbExec($sql, $inputarr=false, $numrows=-1, $offset=-1)
+   {
       // replace undef values (treated as NULL in SQL database) with empty
       // strings
       $inputarr = $this->dbUndefToEmpty($inputarr);
+      //$inputarr = $this->dbMakeSqlSafe($inputarr);
 
       $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
       if (($numrows>=0) or ($offset>=0)) {
@@ -614,16 +625,16 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
   }
 
    // Get the current user's details
-   function getCurrentUser($user_id)
+   function getUserDetails($user_id)
    {
     
       // Get current user details.  We need this to see if their account is enabled or disabled
       $result = $this->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($user_id));
-      $current_user = $this->dbFetchArray($result);
+      $user_details = $this->dbFetchArray($result);
   
-      return $current_user;
+      return $user_details;
    
-   // End of getCurrentUser() function      
+   // End of getUserDetails() function      
    }
 
 
@@ -631,7 +642,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
    function checkPermissions($user_id, $project_id)
    {
    
-   $current_user = $this->getCurrentUser($user_id);
+   $current_user = $this->getUserDetails($user_id);
    
   // Get the global group permissions for the current user
   $global_permissions = $this->dbFetchArray($this->dbQuery("SELECT *

@@ -3,46 +3,50 @@
 global $language;
 $language = array (
 
-'filenotexist'		=>	'El archivo no existe. Contacte al administrador de este proyecto.',
+'filenotexist'		=>	'El archivo no existe. Contacte al Administrador Flyspray de este proyecto.',
 'showtask'			=>	'Mostrar tarea',
-'now'					=> 'Ahora',
+'now'			=>	'Ahora',
 'go'				=>	'Ir!',
-'opentaskanon'		=>	'Abrir una nueva tarea anonimamente',
+'opentaskanon'		=>	'Abrir anonimanete una nueva tarea',
 'register'			=>	'Registrarse como usuario nuevo',
 'loggedinas'		=>	'Logueado como',
-//'mytasks'			=>	'Mis Tareas',
+//'mytasks'			=>	'My Tasks',
 'addnewtask'		=>	'Agregar nueva tarea',
-'reports'			=> 'Reportes',
+'reports'		=>	'Reportes',
 'editmydetails'		=>	'Editar mis detalles',
-'changepassword'	=>	'Cambiar contrase&ntilde;a',
+'changepassword'	=>	'Cambiar contraseña',
 'logout'			=>	'Logout',
 'options'			=>	'Opciones',
 'usersandgroups'	=>	'Usuarios &amp; Grupos',
-'tasktypes'			=>	'Tipo de Tareas',
-'categories'		=>	'Categor&iacute;as',
+'tasktypes'			=>	'Tipos de Tareas',
+'categories'		=>	'Categorias',
 'operatingsystems'	=>	'Sistemas Operativos',
 'resolutions'		=>	'Resoluciones',
 'versions'			=>	'Versiones',
 'severities'		=>	'Gravedades',
-'disabledaccount'	=>	'Su cuenta ha sido desactivada.<br>El sistema lo esta desconectando...',
+'disabledaccount'	=>	'Su cuenta ha sido deshabilitada!<br>La sesion finalizara de inmediato...',
 'poweredby'			=>	'Powered by Flyspray',
 
-// added in version 0.9.5
+// Added in version 0.9.5
 
-//'selectproject'		=>	'Lista de Tareas para el Proyecto:',
+//'selectproject'	=>	'Task list for Project:',
 'show'				=>	'Mostrar',
 'projects'			=>	'Proyectos',
-'adminmenu'			=>	'Men&uacute; administrativo',
+'adminmenu'			=>	'Menu Admin',
 
 // Added in version 0.9.6
-'duplicated'		=>	'Acci&oacute;n repetida. Redireccionando a la p&aacute;gina principal.',
-'allprojects'       =>	'Todos los Proyectos',
-'selectproject'		=>	'para el Proyecto:',
-'tasksall'          =>  'Todas las Tareas',
+'duplicated'		=>	'Accion repetida. Redireccionandolo a la pagina principal.',
+'allprojects'       =>	'Todos los proyectos',
+'selectproject'		=>	'para el proyecto:',
+'tasksall'          =>  'Todas las tareas',
 'tasksassigned'     =>  'Tareas asignadas a mi',
 'tasksreported'     =>  'Tareas reportadas por mi',
-'taskswatched'      =>  'Tareas que obvservo',
-'lastsearch'		=>	'Mi ultima busqueda',
+'taskswatched'      =>  'Tareas que observo',
+'lastsearch'   =>  'Ultima busqueda',
+
+// Added in version 0.9.7
+'adminreqwaiting'   =>   'Pedidos Admin',
+
 
 
 );

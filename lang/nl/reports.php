@@ -44,6 +44,7 @@ $reports_text = array (
 'duein'         =>      'Geimplementeerd in',
 
 'changelog'     =>      'Changelog',
+'date'          =>      'Datum',
 
 );
 ?>

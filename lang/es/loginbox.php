@@ -4,11 +4,15 @@ global $loginbox_text;
 $loginbox_text = array (
 
 'username'				=>	'Nombre de Usuario',
-'password'				=>	'Contrase&ntilde;a',
+'password'				=>	'Contraseña',
 'login'					=>	'Login!',
 
 // Added in 0.9.6
-'rememberme'				=>	'Recu&eacute;rdame', 
+'rememberme'				=>	'Recordarme',
+
+
+// Added in 0.9.7
+'lostpassword'				=>	'Perdio su contraseña?',
 
 
 );
