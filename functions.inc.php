@@ -94,7 +94,7 @@ class Flyspray {
       }
       if (!$result) {
 	  if (function_exists("debug_backtrace")) {
-	      echo "<pre>";
+	      echo "<pre style='text-align: left;'>";
 	      var_dump(debug_backtrace());
 	      echo "<pre>";
 	  }

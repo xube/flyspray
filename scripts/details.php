@@ -7,8 +7,6 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
 // Only load this page if a valid task was actually requested
  if ($fs->dbCountRows($task_exists) && $task_details['project_is_active'] == '1') {
 
-$task_details = $fs->GetTaskDetails($_GET['id']);
-
 $item_summary = str_replace("&", "&amp;", $task_details['item_summary']);
 $item_summary = str_replace("<", "&lt;", $item_summary);
 $item_summary = str_replace("\"", "&quot;", $item_summary);

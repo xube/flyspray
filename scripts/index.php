@@ -50,50 +50,54 @@ if (is_numeric($_GET['perpage'])) {
 // the mysql query offset is a combination of the num results per page and the page num
 $offset = $perpage * $pagenum;
 
-// Set the default queries
+$sql_params = array();
+$where = array();
 
-$sql_params[0] = $project_id;
+$where[] = 'project_is_active = 1';
+
+// Set the default queries
+if (empty($_GET['allprojects'])) {
+  $where[]	= "attached_to_project = ?";
+  $sql_params[] = $project_id;
+};
+
+
 // developer whos bugs to show
 if (is_numeric($_GET['dev'])) {
-  $dev_sql = "AND assigned_to = ?";
+  $where[]	= "assigned_to = ?";
   $sql_params[] = $_GET['dev'];
 } elseif ($_GET['dev'] == "notassigned") {
-  $dev_sql = "AND assigned_to = '0'";
-} else {
-  $dev_sql = "";
+  $where[] = "assigned_to = '0'";
 };
+
 
 // The default task type
 if (is_numeric($_GET['type'])) {
-  $type_sql = "AND task_type = ?";
+  $where[]	= "task_type = ?";
   $sql_params[] = $_GET['type'];
-} else {
-  $type_sql = "";
 };
 
 // The default severity
 if (is_numeric($_GET['sev'])) {
-  $sev_sql = "AND task_severity = ?";
+  $where[]	= "task_severity = ?";
   $sql_params[] = $_GET['sev'];
-} else {
-  $sev_sql = "";
 };
+
 // The default category
 if (is_numeric($_GET['cat'])) {
-  $cat_sql = "AND product_category = ?";
+  $where[]	= "product_category = ?";
   $sql_params[] = $_GET['cat'];
-} else {
-  $cat_sql = "";
 };
+
 // The default status
 if ($_GET['status'] == "all") {
-  $status_sql = "";
 } elseif (is_numeric($_GET['status'])) {
-  $status_sql = "AND item_status = ?";
+  $where[]	= "item_status = ?";
   $sql_params[] = $_GET['status'];
 } else {
-  $status_sql = "AND item_status != '8'";
+  $where[] = "item_status != '8'";
 };
+
 // The default search string
 if ($_GET['string']) {
   $string = $_GET['string'];
@@ -101,12 +105,10 @@ if ($_GET['string']) {
   $string = ereg_replace('\)', " ", $string);
   $string = trim($string);
 
-  $string_sql = "AND (item_summary LIKE ? OR detailed_desc LIKE ? OR task_id LIKE ?)";
+  $where[]	= "(item_summary LIKE ? OR detailed_desc LIKE ? OR task_id LIKE ?)";
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
-} else {
-  $string_sql = "";
 };
 
 ?>
@@ -120,10 +122,9 @@ if ($_GET['string']) {
     <select name="type">
       <option value=""><?php echo $index_text['alltasktypes'];?></option>
       <?php
-      $tasktype_list = $fs->dbQuery("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
-                                       WHERE show_in_list = '1'
-                                       ORDER BY list_position
-                                    ");
+      $tasktype_list = $fs->dbQuery('SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
+                                       WHERE show_in_list = 1
+                                       ORDER BY list_position');
       while ($row = $fs->dbFetchArray($tasktype_list)) {
         if ($_GET['type'] == $row['tasktype_id']) {
           echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>\n";
@@ -161,10 +162,10 @@ if ($_GET['string']) {
     <select name="cat">
       <option value=""><?php echo $index_text['allcategories'];?></option>
       <?php
-      $cat_list = $fs->dbQuery("SELECT category_id, category_name
+      $cat_list = $fs->dbQuery('SELECT category_id, category_name
                                   FROM flyspray_list_category
                                   WHERE project_id=? AND show_in_list=?
-                                  ORDER BY list_position", array($project_id, '1'));
+                                  ORDER BY list_position', array($project_id, '1'));
       while ($row = $fs->dbFetchArray($cat_list)) {
         if ($_GET['cat'] == $row['category_id']) {
           echo "<option value=\"{$row['category_id']}\" selected=\"selected\">{$row['category_name']}</option>";
@@ -207,8 +208,8 @@ if ($_GET['string']) {
 
 <?php
 // Check that the requested project is active
-$getproject = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
-if ($getproject['project_is_active'] == '1') {
+$getproject = $fs->dbFetchArray($fs->dbQuery('SELECT * FROM flyspray_projects WHERE project_id = ?', array($project_id)));
+if ($getproject['project_is_active'] == 1) {
 ?>
 
 <!--  Summary headings, followed by the query results -->
@@ -242,17 +243,13 @@ if ($getproject['project_is_active'] == '1') {
 </thead>
 <tfoot><tr><td colspan="7">
 <?php
-
-$get_total = $fs->dbQuery("SELECT * FROM flyspray_tasks
-          WHERE attached_to_project = ? 
-          $type_sql
-          $dev_sql
-          $sev_sql
-          $cat_sql
-          $status_sql
-          $string_sql
+ 
+// SQL JOIN condition
+$where[] = 'flyspray_tasks.attached_to_project = flyspray_projects.project_id';
+$where = join(' AND ', $where);
+$get_total = $fs->dbQuery("SELECT * FROM flyspray_tasks, flyspray_projects
+          WHERE $where
           ORDER BY $orderby $sort", $sql_params);
-# !CR!
 
 $total = $fs->dbCountRows($get_total);
 $extraurl = "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
@@ -267,14 +264,9 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 <!--<tbody>-->
   <?php
 
-  $getsummary = $fs->dbQuery("SELECT * FROM flyspray_tasks
-          WHERE attached_to_project = ?
-          $type_sql 
-          $dev_sql 
-          $sev_sql 
-          $cat_sql 
-          $status_sql 
-          $string_sql
+  $getsummary = $fs->dbQuery("SELECT * FROM flyspray_tasks,
+  flyspray_projects
+          WHERE $where
           ORDER BY $orderby $sort", $sql_params, $perpage, $offset);
 
 

@@ -2,7 +2,7 @@
 include('header.php');
 
 $lang = $flyspray_prefs['lang_code'];
-require("lang/$lang/main.php");
+get_language_pack($lang, 'main');
 
 // If a file was requested, deliver it
 if ($_GET['getfile']) {
@@ -170,6 +170,8 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo "<em>{$language['loggedinas']} - {$current_user['user_name']}</em>";
     echo "<span id=\"mainmenu\">";
     echo "<small> | </small><a href=\"?dev={$_COOKIE['flyspray_userid']}\">{$language['mytasks']}</a>";
+    printf(' (<a href="?dev=%s&amp;allprojects=1">%s</a>)',
+    $_COOKIE['flyspray_userid'], $language['mytasksallprojects']);
     echo "<small> | </small><a href=\"?do=newtask&amp;project=$project_id\">{$language['addnewtask']}</a>";
     echo "<small> | </small><a href=\"?do=admin&amp;area=users&amp;id={$_SESSION['userid']}\">{$language['editmydetails']}</a>";
     echo "<small> | </small><a href=\"index.php?do=chpass\">{$language['changepassword']}</a>";

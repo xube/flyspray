@@ -34,6 +34,7 @@ $language = array (
 
 // Added in version 0.9.6
 'duplicated'		=>	'Repeated action. Redirecting to main page.',
+'mytasksallprojects'	=>	'in all projects',
 
 
 );
