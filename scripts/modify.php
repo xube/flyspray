@@ -1317,7 +1317,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                   dateformat_extended = ?
         WHERE user_id = ?",
         array($_POST['real_name'], $_POST['email_address'],
-        $_POST['jabber_id'], $_POST['notify_type'], $_POST['dateformat'], $_POST['dateformat_extended'], $_POST['user_id']));
+	  $_POST['jabber_id'], $fs->emptyToZero($_POST['notify_type']), 
+	  $_POST['dateformat'], $_POST['dateformat_extended'], $_POST['user_id']));
 
       if ($permissions['is_admin'] == '1') {
         $update = $fs->dbQuery("UPDATE flyspray_users SET
