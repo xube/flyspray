@@ -400,78 +400,76 @@ if ($permissions['is_admin'] == '1')
          echo '<fieldset class="admin">';
          echo '<legend>' . $admin_text['usergroups'] . '</legend>';
 
+         echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | \n";
+         echo "<a href=\"index.php?do=newgroup&amp;project=0\">{$admin_text['newgroup']}</a></p>\n\n";
 
-         // Only full admins need the link to add new users
-         if ($project_id == '0' && $permissions['is_admin'] == '1') {
-            echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | \n";
-         };
+         // We have to make sure that a user isn't displayed in the user list at the bottom of the page
+         // if they're in a group from another project... so we set up an array...
+         $user_checklist = array();
 
-            echo "<a href=\"index.php?do=newgroup&amp;project=0\">{$admin_text['newgroup']}</a></p>\n\n";
+         // Cycle through the groups that belong to this project
+         $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+         while ($group = $db->FetchArray($get_groups))
+         {
+            echo '<h4><a href="?do=admin&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
+            echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
-            // We have to make sure that a user isn't displayed in the user list at the bottom of the page
-            // if they're in a group from another project... so we set up an array...
-            $user_checklist = array();
+            // Now, start a form to allow use to move multiple users between groups
+            echo '<form action="index.php" method="post">' . "\n";
 
-            // Cycle through the groups that belong to this project
-            $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
-            while ($group = $db->FetchArray($get_groups)) {
+            echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
-               echo '<h4><a href="?do=admin&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
-               echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
-
-               // Now, start a form to allow use to move multiple users between groups
-               echo '<form action="index.php" method="post">' . "\n";
-
-               echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
-
-               $get_user_list = $db->Query("SELECT * FROM flyspray_users_in_groups uig
-                                             LEFT JOIN flyspray_users u on uig.user_id = u.user_id
-                                             WHERE uig.group_id = ? ORDER BY u.user_name ASC",
-                                             array($group['group_id']));
+            $get_user_list = $db->Query("SELECT * FROM flyspray_users_in_groups uig
+                                          LEFT JOIN flyspray_users u on uig.user_id = u.user_id
+                                          WHERE uig.group_id = ? ORDER BY u.user_name ASC",
+                                          array($group['group_id']));
 
 
-               echo '<input type="hidden" name="do" value="modify" />' . "\n";
-               echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
-               echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
-               echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
-               echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
+            echo '<input type="hidden" name="do" value="modify" />' . "\n";
+            echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
+            echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
+            echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
+            echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
 
-               $userincrement = 0;
-               while ($row = $db->FetchArray($get_user_list)) {
-                  // Next line to ensure we only display each user once on this page
-                  array_push($user_checklist, $row['user_id']);
-                  // Now, assign each user a number for submission
-                  $userincrement ++;
-                  echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\" /></td>\n";
-                  echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
-                  echo "<td>{$row['real_name']}</td>\n";
-                  if ($row['account_enabled'] == "1") {
-                     echo "<td>{$admin_text['yes']}</td>";
-                  } else {
-                     echo "<td>{$admin_text['no']}</td>";
-                  };
+            $userincrement = 0;
+            while ($row = $db->FetchArray($get_user_list))
+            {
+               // Next line to ensure we only display each user once on this page
+               array_push($user_checklist, $row['user_id']);
+               // Now, assign each user a number for submission
+               $userincrement ++;
+               echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\" /></td>\n";
+               echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
+               echo "<td>{$row['real_name']}</td>\n";
+               if ($row['account_enabled'] == "1") {
+                  echo "<td>{$admin_text['yes']}</td>";
+               } else
+               {
+                  echo "<td>{$admin_text['no']}</td>";
+               }
                   echo "</tr>\n";
-               };
-
-               echo '<tr><td colspan="4">';
-               echo '<input type="hidden" name="num_users" value="' . $userincrement . "\" />\n";
-               echo '<input class="adminbutton" type="submit" value="' . $admin_text['moveuserstogroup'] . '" />' . "\n";
-
-               // Show a list of groups to switch these users to
-               echo '<select class="adminlist" name="switch_to_group">'. "\n";
-
-               // Get the list of groups to choose from
-               $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
-               while ($group = $db->FetchArray($groups)) {
-                  echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
-               };
-
-               echo '</select>';
-
-               echo '</td></tr>';
-               echo "</table>\n\n";
-               echo '</form>';
             };
+
+            echo '<tr><td colspan="4">';
+            echo '<input type="hidden" name="num_users" value="' . $userincrement . "\" />\n";
+            echo '<input class="adminbutton" type="submit" value="' . $admin_text['moveuserstogroup'] . '" />' . "\n";
+
+            // Show a list of groups to switch these users to
+            echo '<select class="adminlist" name="switch_to_group">'. "\n";
+
+            // Get the list of groups to choose from
+            $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+            while ($group = $db->FetchArray($groups))
+            {
+               echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
+            }
+
+            echo '</select>';
+
+            echo '</td></tr>';
+            echo "</table>\n\n";
+            echo '</form>';
+         };
 
    /////////////////////////////
    // Start of editing groups //
@@ -618,7 +616,7 @@ if ($permissions['is_admin'] == '1')
    $get_tasktypes = $db->Query("
        SELECT *, count(t.task_id) AS used_in_tasks
        FROM `flyspray_list_tasktype` tt
-       LEFT JOIN flyspray_tasks t ON ( t.task_type = tt.tasktype_id ) 
+       LEFT JOIN flyspray_tasks t ON ( t.task_type = tt.tasktype_id )
        GROUP BY tt.tasktype_id
        ORDER BY list_position");
    $countlines = 0;
@@ -637,14 +635,14 @@ if ($permissions['is_admin'] == '1')
          <label for="showinlist<?php echo $countlines?>"><?php echo $admin_text['show'];?></label>
          <input id="showinlist<?php echo $countlines?>" type="checkbox" name="show_in_list[<?php echo $countlines?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
          </td>
-         <?php if ($row['used_in_tasks'] == 0): ?>         
+         <?php if ($row['used_in_tasks'] == 0): ?>
          <td title="Delete this item from the TaskType list">
          <label for="delete<?php echo $row['tasktype_id']?>"><?php echo $admin_text['delete'];?></label>
          <input id="delete<?php echo $row['tasktype_id']?>" type="checkbox" name="delete[<?php echo $row['tasktype_id']?>]" value="1" />
          <?php else: ?>
          <td>&nbsp;
          <?php endif; ?>
-         </td>         
+         </td>
       </tr>
       <?php
       $countlines++;

@@ -6,22 +6,22 @@
    ---------------------------------------------------
 */
 
-// Define the language pack
+// Define the language packs used
 $fs->get_language_pack($lang, 'notify.inc');
-
-// We need database access functions
-//include('db.inc.php');
+$fs->get_language_pack($lang, 'notify.inc');
 
 // Start of the Notifications class
 class Notifications {
 
-   // Thank you to Mr Lance Conry for this awesome, FAST Jabber message function
-   // Check out his company at http://www.rhinosw.com/
    function SendJabber( $to, $subject, $body )
    {
       global $db;
       global $fs;
+      global $notify_text;
+      global $details_text;
+      global $project_prefs;
       global $flyspray_prefs;
+      global $current_user;
 
       $body = htmlspecialchars($body);
 
@@ -41,38 +41,41 @@ class Notifications {
       $JABBER->password       = $flyspray_prefs['jabber_password'];
       $JABBER->resource       = "Flyspray";
 
-      $JABBER->Connect() or die("Couldn't connect to Jabber service!");
-      $JABBER->SendAuth() or die("Couldn't authenticate with Jabber service!");
+      $JABBER->Connect() or die("Couldn't connect to Jabber service!  There is a possiblity that the remote server is down.");
+      $JABBER->SendAuth() or die("Couldn't authenticate with Jabber service!  Perhaps the Flyspray administrator has the wrong username or password in the options.");
 
       $JABBER->SendPresence();
 
       if (is_array($to)) {
-         //implode(",", $to);
 
-         foreach($to as $key => $val)
+         while (list($key, $val) = each($to))
          {
-      $JABBER->SendMessage($to,
-                           "normal",
-                           NULL,
-                           array( // body, thread... whatever
-                                 "subject"   => $subject,
-                                 "body"      => $body
-                                 ),
-                           $payload
-                          );
+            $JABBER->SendMessage($val,
+                                 "normal",
+                                 NULL,
+                                 array( // body, thread... whatever
+                                       "subject"   => $subject,
+                                       "body"      => $body
+                                       ),
+                                 $payload
+                                 );
+            //sleep(1);
          }
-       } else {
-       $JABBER->SendMessage($to,
-                           "normal",
-                           NULL,
-                           array( // body, thread... whatever
-                                 "subject"   => $subject,
-                                 "body"      => $body
-                                 ),
-                           $payload
-                          );
 
-       }
+      } else
+      {
+         $JABBER->SendMessage($to,
+                              "normal",
+                              NULL,
+                              array( // body, thread... whatever
+                                    "subject"   => $subject,
+                                    "body"      => $body
+                                    ),
+                              $payload
+                              );
+
+         //sleep(1);
+      }
 
       sleep(1);
       $JABBER->Disconnect();
@@ -115,6 +118,11 @@ class Notifications {
 
       global $db;
       global $fs;
+      global $notify_text;
+      global $details_text;
+      global $project_prefs;
+      global $flyspray_prefs;
+      global $current_user;
 
       $flyspray_prefs = $fs->GetGlobalPrefs();
       $project_prefs = $fs->GetProjectPrefs($_COOKIE['flyspray_project']);
@@ -166,12 +174,13 @@ class Notifications {
    {
       global $db;
       global $fs;
-      global $lang;
+      global $notify_text;
+      global $details_text;
+      global $project_prefs;
       global $flyspray_prefs;
       global $current_user;
 
-      $fs->get_language_pack($lang, 'notify.inc');
-      $fs->get_language_pack($lang, 'details');
+
 
       // Get the task details
       $task_details = $fs->getTaskDetails($task_id);
@@ -329,11 +338,13 @@ class Notifications {
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'];
 
-         $body =  $notify_text['depremoved'] . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['depremoved'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $details_text['userwho'] . ' - ' . $current_user['real_name'] . "\n\n";
          $body .= $details_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id;
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $notify_text['disclaimer'];
 
          if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
             $this->Single($task_details['assigned_to'], $subject, $body);
@@ -350,18 +361,22 @@ class Notifications {
          // Generate the nofication message
          $subject = "Notification from Flyspray";
 
-         $body =  $notify_text['commentadded'] . "\n\n";
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['commentadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id;
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $notify_text['disclaimer'];
 
-         if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
+         //if (!empty($task_details['assigned_to']) && ($task_details['assigned_to'] != $_COOKIE['flyspray_userid']))
             $this->Single($task_details['assigned_to'], $subject, $body);
 
-         $this->Multiple($task_id, $subject, $body);
+         //$this->Multiple($task_id, $subject, $body);
 
-         return true;
+         //return true;
+
+         return array($subject, $body);
       }
       if ($type == '7')
       {
@@ -391,15 +406,15 @@ class Notifications {
 
       global $db;
       global $fs;
-
-      $flyspray_prefs = $fs->getGlobalPrefs();
-
-      $lang = $flyspray_prefs['lang_code'];
-      $fs->get_language_pack($lang, 'notify.inc');
+      global $notify_text;
+      global $details_text;
+      global $project_prefs;
+      global $flyspray_prefs;
+      global $current_user;
 
       $user_details = $fs->getUserDetails($user_id);
 
-      $body = $notify_text['donotreply'] . "\n\n" . $body . "\n\n" . $notify_text['disclaimer'];
+      //$body = $notify_text['donotreply'] . "\n\n" . $body . "\n\n" . $notify_text['disclaimer'];
 
       // Email
       if ($flyspray_prefs['user_notify'] == '2'
@@ -419,71 +434,78 @@ class Notifications {
 
 
    // This sends a notification to multiple users, usually from the notifications tab on a task
-   function Multiple($task_id, $subject, $body)
+   function Address($task_id)
    {
       global $db;
       global $fs;
-
-      $flyspray_prefs = $fs->GetGlobalPrefs();
-
-      $lang = $flyspray_prefs['lang_code'];
-      $fs->get_language_pack($lang, 'notify.inc');
+      global $notify_text;
+      global $details_text;
+      global $project_prefs;
+      global $flyspray_prefs;
+      global $current_user;
 
       $body = $notify_text['donotreply'] . "\n\n" . $body . "\n\n" . $notify_text['disclaimer'];
 
-      $flyspray_prefs = $fs->GetGlobalPrefs();
       $task_details = $fs->GetTaskDetails($task_id);
 
       $jabber_users = array();
       $email_users = array();
 
-      $notify_sql = $db->Query("SELECT n.user_id,
-                               u.notify_type,
-                               u.jabber_id,
-                               u.email_address
+      $get_users = $db->Query("SELECT *
                                FROM flyspray_notifications n
                                LEFT JOIN flyspray_users u ON n.user_id = u.user_id
                                WHERE n.task_id = ?",
                                array($task_id));
 
-      while ($row = $db->FetchArray($notify_sql)) {
-
+      while ($row = $db->FetchArray($get_users))
+      {
          // Check for current user
          if ($row['user_id'] != $_COOKIE['flyspray_userid'] &&  $row['user_id'] != $task_details['assigned_to'])
          {
-            // If this particular user wants email
-            if (($flyspray_prefs['user_notify'] == '1' & $row['notify_type'] == '1')
-                 OR ($flyspray_prefs['user_notify'] == '2')
-               )
-            {
-               array_push($email_users, $row['email_address']);
 
-            // If this user wants Jabber
-            } elseif (($flyspray_prefs['user_notify'] == '1' & $row['notify_type'] == '2')
-                 OR ($flyspray_prefs['user_notify'] == '3')
-               )
-            {
-               array_push($jabber_users, $row['jabber_id']);
-            };
+               if (($flyspray_prefs['user_notify'] == '1' && $row['notify_type'] == '1')
+                     OR $flyspray_prefs['user_notify'] == '2')
+               {
+                  array_push($email_users, $row['email_address']);
+               } elseif (($flyspray_prefs['user_notify'] == '1' && $row['notify_type'] == '2')
+                           OR $flyspray_prefs['user_notify'] == '3')
+               {
+                  array_push($jabber_users, $row['jabber_id']);
+               }
 
          // End of checking for current user
-         };
+         }
 
       // End of cycling through user array
       };
 
-      $subject = stripslashes($subject);
-      $message = stripslashes($message);
+      // Now we need to get the person assigned to this task, and add them to the correct address list
+      if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
+      {
+         $user_details = $fs->getUserDetails($task_details['assigned_to']);
 
-      // Pass the recipients and message onto the Jabber Message function
-      $this->SendJabber($jabber_users, $subject, $body);
+         // Email
+         if ($flyspray_prefs['user_notify'] == '2'
+            OR ($flyspray_prefs['user_notify'] = '1' && $user_details['notify_type'] == '1')
+            && !in_array($user_details['email_address'], $email_users))
+         {
+            array_push($jabber_users, $user_details['email_address']);
 
+         // Jabber
+         } elseif ($flyspray_prefs['user_notify'] == '3'
+            OR ($flyspray_prefs['user_notify'] = '1' && $user_details['notify_type'] == '2')
+            && !in_array($user_details['jabber_id'], $jabber_users))
+         {
+            array_push($jabber_users, $user_details['jabber_id']);
+         }
 
-      // Pass the recipients and message onto the mass email function
-      $this->SendEmail($email_users, $subject, $body);
+      // End of adding the assigned_to address
+      }
 
-      //return TRUE;
-   // End of detailed notification function
+      // Send back two arrays containing the notification addresses
+      return array($email_users, $jabber_users);
+
+   // End of multiple notification function
    }
 
 

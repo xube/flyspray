@@ -370,9 +370,6 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
 
     };
 
-    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}\">";
-    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskupdated']}</em></p>";
-    //echo "<p>{$modify_text['waitwhiletransfer']}</p></div>";
     $_SESSION['SUCCESS'] = $modify_text['taskupdated'];
     header("Location: index.php?do=details&id=" . $_POST['task_id']);
 
@@ -397,7 +394,7 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
              && $old_details['assigned_to'] == $current_user['user_id']))
          ) {
 
-  if ($_POST['resolution_reason'] != '0') {
+  if (!empty($_POST['resolution_reason'])) {
 
     $close_item = $db->Query("UPDATE flyspray_tasks SET
                                 date_closed = ?,
@@ -549,73 +546,57 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 // Start of adding a comment //
 ///////////////////////////////
 
-} elseif ($_POST['action'] == "addcomment"
-          && $permissions['add_comments'] == "1") {
+} elseif ($_POST['action'] == 'addcomment'
+          && $permissions['add_comments'] == '1')
+{
 
-  if ($_POST['comment_text'] != "") {
+   if (!empty($_POST['comment_text']))
+   {
+      $comment = $_POST['comment_text'];
 
-    $comment = $_POST['comment_text'];
-
-    $insert = $db->Query("INSERT INTO flyspray_comments
-    (task_id, date_added, user_id, comment_text) VALUES
-    ( ?, ?, ?, ? )",
-    array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
-
-/*
-
-    $getdetails = $db->Query("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id']));
-    $task_details = $db->FetchArray($getdetails);
-
-    $item_summary = stripslashes($task_details['item_summary']);
-
-    if ($task_details['assigned_to'] != "0"
-       && ($task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
-       ) {
-
-      // Generate the basic notification message to send
-$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
-$basic_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
-{$current_user['real_name']} ({$current_user['user_name']}) {$modify_text['commenttoassigned']}\n
-{$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
------\n {$_POST['comment_text']} \n -----
-{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs";
+      $insert = $db->Query("INSERT INTO flyspray_comments
+                           (task_id, date_added, user_id, comment_text) VALUES
+                           ( ?, ?, ?, ? )",
+                           array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
 
 
-      //$result = $notify->Basic($task_details['assigned_to'], $subject, $basic_message);
-      echo $result;
+      $to  = $notify->Address($_POST['task_id']);
+      $msg = $notify->Create('6', $_POST['task_id']);
+      $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+      $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
-    };
+      /*$email = $to[0];
+      foreach ($email as $key => $val)
+      {
+         echo $key . ' - ' . $val . '<br />';
+      }
 
-      // Generate the detailed notification message to send
-$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
-$detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
-{$current_user['real_name']} ({$current_user['user_name']}) {$modify_text['commenttotask']} {$modify_text['youonnotify']}\n
-{$modify_text['task']} #{$_POST['task_id']}: $item_summary
------\n {$_POST['comment_text']} \n -----
-{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs";
+      $jabber = $to[1];
+      foreach ($jabber as $key => $val)
+      {
+         echo $key . ' - ' . $val . '<br />';
+      }
 
-
-      $result = $notify->Detailed($_POST['task_id'], $subject, $detailed_message);
-      echo $result;
+      echo $msg[0] . ' - ';
+      echo $msg[1];
 */
-
-      $notify->Create('6', $_POST['task_id']);
+      //echo $to['0'] . ' - ';
+      //echo $to['1'] . ' - ';
+      //echo $to['2'] . ' - ';
 
       $row = $db->FetchRow($db->Query("SELECT comment_id FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));
       $fs->logEvent($_POST['task_id'], 4, $row['comment_id']);
 
 
-    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-    $_SESSION['SUCCESS'] = $modify_text['commentadded'];
-    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
+      $_SESSION['SUCCESS'] = $modify_text['commentadded'];
+      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
 
-  // If they pressed submit without actually typing anything
-  } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['nocommententered']}</em></p></table>";
-    $_SESSION['ERROR'] = $modify_text['nocommententered'];
-    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
-  };
+   // If they pressed submit without actually typing anything
+   } else
+   {
+      $_SESSION['ERROR'] = $modify_text['nocommententered'];
+      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
+   }
 
 
 // End of adding a comment
@@ -625,46 +606,48 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 // Start of sending a new user a confirmation code //
 /////////////////////////////////////////////////////
 
-} elseif ($_POST['action'] == 'sendcode') {
+} elseif ($_POST['action'] == 'sendcode')
+{
+   if (!empty($_POST['user_name'])
+         && !empty($_POST['real_name'])
+         && (($_POST['email_address'] != '' && $_POST['notify_type'] == '1')
+               OR ($_POST['jabber_id'] != '' && $_POST['notify_type'] == '2'))
+   )
+   {
 
-  if (!empty($_POST['user_name'])
-      && !empty($_POST['real_name'])
-      && (($_POST['email_address'] != '' && $_POST['notify_type'] == '1')
-           OR ($_POST['jabber_id'] != '' && $_POST['notify_type'] == '2'))
-     ) {
 
       // Check to see if the username is available
       $check_username = $db->Query("SELECT * FROM flyspray_users WHERE user_name = ?",
                                      array($_POST['user_name']));
-      if ($db->CountRows($check_username)) {
+      if ($db->CountRows($check_username))
+      {
         echo "<p class=\"admin\">{$register_text['usernametaken']}<br>";
         echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></p>";
-      } else {
-
-
-        // Delete registration codes older than 24 hours
-        $now = date(U);
-        $yesterday = $now - '86400';
-        $remove = $db->Query("DELETE FROM flyspray_registrations WHERE reg_time < ?",
+      } else
+      {
+         // Delete registration codes older than 24 hours
+         $now = date(U);
+         $yesterday = $now - '86400';
+         $remove = $db->Query("DELETE FROM flyspray_registrations WHERE reg_time < ?",
                                 array($yesterday));
 
-        // Generate a random bunch of numbers for the confirmation code
-        function make_seed() {
-           list($usec, $sec) = explode(' ', microtime());
-           return (float) $sec + ((float) $usec * 100000);
-        }
-        mt_srand(make_seed());
-        $randval = mt_rand();
+         // Generate a random bunch of numbers for the confirmation code
+         function make_seed()
+         {
+            list($usec, $sec) = explode(' ', microtime());
+            return (float) $sec + ((float) $usec * 100000);
+         }
+         mt_srand(make_seed());
+         $randval = mt_rand();
 
-        // Convert those numbers to a seemingly random string using crypt
-        $confirm_code = crypt($randval, $cookiesalt);
+         // Convert those numbers to a seemingly random string using crypt
+         $confirm_code = crypt($randval, $cookiesalt);
 
+         // Generate a looonnnnggg random string to send as an URL to complete this registration
+         $magic_url = md5(microtime());
 
-        // Generate a looonnnnggg random string to send as an URL to complete this registration
-        $magic_url = md5(microtime());
-
-        // Insert everything into the database
-        $save_code = $db->Query("INSERT INTO flyspray_registrations
+         // Insert everything into the database
+         $save_code = $db->Query("INSERT INTO flyspray_registrations
                                   (reg_time,
                                   confirm_code,
                                   user_name,
@@ -877,8 +860,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           echo "<p>{$modify_text['newuserwarning']}</p></div>";
         } else {
           $_SESSION['SUCCESS'] = $modify_text['newusercreated'];
-          header("Location: index.php?do=admin&area=users");
-          //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
+          header("Location: index.php?do=admin&area=groups");
         };
 
 
@@ -899,7 +881,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 /////////////////////////////////
 
 } elseif ($_POST['action'] == "newgroup"
-          && ($permissions['is_admin'] == '1'
+          && (($_POST['belongs_to_project'] == '0' && $permissions['is_admin'] == '1')
           OR $permissions['manage_project'] == '1')) {
 
   // If they filled in all the required fields
@@ -911,9 +893,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     $check_groupname = $db->Query("SELECT * FROM flyspray_groups WHERE group_name = ? AND belongs_to_project = ?", array($_POST['group_name'], $project_id));
     if ($db->CountRows($check_groupname)) {
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupnametaken']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-    } else {
-
-      $add_group = $db->Query("INSERT INTO flyspray_groups
+    } else
+    {
+       $add_group = $db->Query("INSERT INTO flyspray_groups
                                       (group_name,
                                       group_desc,
                                       belongs_to_project,
@@ -958,10 +940,14 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                 $db->emptyToZero($_POST['group_open'])
                 ));
 
-        //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$_GET['project']}\">";
-        //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newgroupadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-        $_SESSION['SUCCESS'] = $modify_text['newgroupadded'];
-        header("Location: index.php?do=admin&area=users&project=" . $project_id);
+         $_SESSION['SUCCESS'] = $modify_text['newgroupadded'];
+         if ($project_id == '0')
+         {
+            header("Location: index.php?do=admin&area=groups");
+         } else
+         {
+            header("Location: index.php?do=pm&area=groups&project=" . $project_id);
+         }
     };
 
   } else {
@@ -983,14 +969,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_username'", array($_POST['jabber_username']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_password'", array($_POST['jabber_password']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_group'", array($_POST['anon_group']));
-//  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = '{$_POST['project_title']}' WHERE pref_name = 'project_title'");
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'base_url'", array($_POST['base_url']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'user_notify'", array($_POST['user_notify']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'admin_email'", array($_POST['admin_email']));
-//  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_cat_owner'", array($_POST['default_cat_owner']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'lang_code'", array($_POST['lang_code']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'spam_proof'", array($_POST['spam_proof']));
-//  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_view'", array($_POST['anon_view']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_project'", array($_POST['default_project']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));

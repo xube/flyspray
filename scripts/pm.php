@@ -218,7 +218,7 @@ if ($permissions['manage_project'] == '1')
       $user_checklist = array();
 
       // Cycle through the groups that belong to this project
-      $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+      $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
       while ($group = $db->FetchArray($get_groups)) {
 
          echo '<h4><a href="?do=pm&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
@@ -270,7 +270,7 @@ if ($permissions['manage_project'] == '1')
 
 
          // Get the list of groups to choose from
-         $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+         $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
          while ($group = $db->FetchArray($groups)) {
             echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
          };
@@ -315,7 +315,7 @@ if ($permissions['manage_project'] == '1')
       echo '<select class="adminbutton" name="add_to_group">'. "\n";
 
       // Get the list of groups to choose from
-      $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+      $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
       while ($group = $db->FetchArray($get_groups)) {
       echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
       };
