@@ -139,7 +139,7 @@ if ($permissions['manage_project'] == '1')
                <label for="intromessage"><?php echo $admin_text['intromessage'];?></label>
                </td>
                <td>
-               <textarea id="intromessage" name="intro_message" rows="10" cols="50"><?php echo stripslashes($project_prefs['intro_message']);?></textarea>
+               <textarea id="intromessage" name="intro_message" rows="12" cols="70"><?php echo stripslashes($project_prefs['intro_message']);?></textarea>
                </td>
             </tr>
             <tr>
@@ -580,12 +580,17 @@ if ($permissions['manage_project'] == '1')
             $cat_list = $db->Query('SELECT category_id, category_name
                                        FROM flyspray_list_category
                                        WHERE project_id=? AND show_in_list=? AND parent_id < ?
-                                       ORDER BY list_position', array($project_id, '1', '1'));
-            while ($row = $db->FetchArray($cat_list)) {
+                                       ORDER BY list_position', array($project_id, '1', '1')
+                                   );
+
+            while ($row = $db->FetchArray($cat_list))
+            {
                $category_name = stripslashes($row['category_name']);
-               if ($_GET['cat'] == $row['category_id']) {
+               if ($_GET['cat'] == $row['category_id'])
+               {
                   echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
-               } else {
+               } else
+               {
                   echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
                };
             };

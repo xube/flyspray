@@ -1286,15 +1286,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       $db->Query("DELETE FROM $list_table_name WHERE $deleteids");
   }
 
-  if($_POST['project_id'] != '') {
-      header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=" . $_POST['list_type']);
-      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
-  } else {
-      header("Location: " . $_POST['prev_page']);
+   header("Location: " . $_POST['prev_page']);
+   $_SESSION['SUCCESS'] = $redirectmessage;
 
-  };
-  $_SESSION['SUCCESS'] = $redirectmessage;
-  //echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
 
 // End of updating a list
 
@@ -1409,10 +1403,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                         VALUES (?, ?, ?, ?, ?)",
                 array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1', $_POST['version_tense']));
 
-      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
-      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
+
       $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
-      header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+      header("Location: " . $_POST['prev_page']);
 
 } else {
     $_SESSION['ERROR'] = $modify_text['fillallfields'];
@@ -1488,7 +1481,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                         $db->emptyToZero($_POST['parent_id'])));
 
       $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
-      header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=category");
+      header("Location: " . $_POST['prev_page']);
 
 } else {
     $_SESSION['ERROR'] = $modify_text['fillallfields'];

@@ -503,33 +503,35 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 
 ?>
 
-<!--  Summary headings, followed by the query results -->
-<table id="tasklist">
-<thead>
-  <tr>
+<div id="tasklist">
 
-  <?php
-  list_heading('id','id');
-  list_heading('project','proj','asc');
-  list_heading('tasktype','type','asc');
-  list_heading('category','cat','asc');
-  list_heading('severity','sev');
-  list_heading('priority','pri');
-  list_heading('summary','');
-  list_heading('dateopened','date');
-  list_heading('status','status');
-  list_heading('openedby','openedby','asc');
-  list_heading('assignedto','assignedto','asc');
-  list_heading('lastedit', 'lastedit');
-  list_heading('reportedin','reportedin');
-  list_heading('dueversion','due');
-  list_heading('comments','','', "themes/{$project_prefs['theme_style']}/comment.png");
-  list_heading('attachments','','', "themes/{$project_prefs['theme_style']}/attachment.png");
-  list_heading('progress','prog');
-  ?>
+   <!--  Summary headings, followed by the query results -->
+   <table id="tasklist">
+   <thead>
+      <tr>
 
-  </tr>
-</thead>
+      <?php
+      list_heading('id','id');
+      list_heading('project','proj','asc');
+      list_heading('tasktype','type','asc');
+      list_heading('category','cat','asc');
+      list_heading('severity','sev');
+      list_heading('priority','pri');
+      list_heading('summary','');
+      list_heading('dateopened','date');
+      list_heading('status','status');
+      list_heading('openedby','openedby','asc');
+      list_heading('assignedto','assignedto','asc');
+      list_heading('lastedit', 'lastedit');
+      list_heading('reportedin','reportedin');
+      list_heading('dueversion','due');
+      list_heading('comments','','', "themes/{$project_prefs['theme_style']}/comment.png");
+      list_heading('attachments','','', "themes/{$project_prefs['theme_style']}/attachment.png");
+      list_heading('progress','prog');
+      ?>
+
+      </tr>
+   </thead>
 
 <?php
 
@@ -587,95 +589,103 @@ ORDER BY
         $sortorder", $sql_params, $perpage, $offset);
 
 
-  while ($task_details = $db->FetchArray($get_details)) {
+   while ($task_details = $db->FetchArray($get_details)) {
 
-    // Set the status text to 'closed' if this task is closed
-    if ($task_details['is_closed'] == "1")
-    {
-      $status = $index_text['closed'];
-    } else {
-      // Get the full status name
-      $status_id = $task_details['item_status'];
-      require("lang/$lang/status.php");
-      $status = $status_list[$status_id];
-    }
+      // Set the status text to 'closed' if this task is closed
+      if ($task_details['is_closed'] == "1")
+      {
+         $status = $index_text['closed'];
+      } else
+      {
+         // Get the full status name
+         $status_id = $task_details['item_status'];
+         require("lang/$lang/status.php");
+         $status = $status_list[$status_id];
+      }
 
-    // Get the full severity name
-    $severity_id = $task_details['task_severity'];
-    require("lang/$lang/severity.php");
-    $severity = $severity_list[$severity_id];
+      // Get the full severity name
+      $severity_id = $task_details['task_severity'];
+      require("lang/$lang/severity.php");
+      $severity = $severity_list[$severity_id];
 
-    // Get the full priority name
-    $priority_id = $task_details['task_priority'];
-    require("lang/$lang/priority.php");
-    $priority = $priority_list[$priority_id];
+      // Get the full priority name
+      $priority_id = $task_details['task_priority'];
+      require("lang/$lang/priority.php");
+      $priority = $priority_list[$priority_id];
 
-    // see if it's been assigned
-    if (!$task_details['assigned_to']) {
-      $assigned_to = $details_text['noone'];
-    } else {
-      $assigned_to = $task_details['assigned_to'];
-    };
+      // see if it's been assigned
+      if (!$task_details['assigned_to'])
+      {
+         $assigned_to = $details_text['noone'];
+      } else
+      {
+         $assigned_to = $task_details['assigned_to'];
+      };
 
-    // Convert the date_opened to a human-readable format
-    $date_opened = $fs->formatDate($task_details['date_opened'], false);
+      // Convert the date_opened to a human-readable format
+      $date_opened = $fs->formatDate($task_details['date_opened'], false);
 
-    // Convert the last_edited_time to a human-readable format
-    if ($task_details['last_edited_time'] > 0) {
-      $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
-    } else {
-      $last_edited_time = '';
-    };
+      // Convert the last_edited_time to a human-readable format
+      if ($task_details['last_edited_time'] > 0)
+      {
+         $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
+      } else
+      {
+         $last_edited_time = '';
+      };
 
-    // get the number of comments and attachments
-    $getcomments = $db->Query("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
-    list($comments) = $db->FetchRow($getcomments);
+      // get the number of comments and attachments
+      $getcomments = $db->Query("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
+      list($comments) = $db->FetchRow($getcomments);
 
-    $getattachments = $db->Query("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
-    list($attachments) = $db->FetchRow($getattachments);
+      $getattachments = $db->Query("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
+      list($attachments) = $db->FetchRow($getattachments);
 
-    // Start displaying the cells for this row
-    echo "<tr class=\"severity{$task_details['task_severity']}\"
-    onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'>\n";
+      // Start displaying the cells for this row
+      echo "<tr class=\"severity{$task_details['task_severity']}\"
+      onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'>\n";
 
-    list_cell("id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
-    list_cell("project",$task_details['project_title'],1);
-    list_cell("tasktype",$task_details['task_type'],1);
-    list_cell("category",$task_details['product_category'],1);
-    list_cell("severity",$severity,1);
-    list_cell("priority",$priority,1);
-    list_cell("summary",$task_details['item_summary'],0,"?do=details&amp;id={$task_details['task_id']}");
-    list_cell("dateopened",$date_opened);
-    list_cell("status",$status,1);
-    list_cell("openedby",$task_details['opened_by'],0);
-    list_cell("assigned",$task_details['assigned_to'],0);
-    list_cell("lastedit",$last_edited_time);
-    list_cell("reportedin",$task_details['product_version']);
-    list_cell("dueversion",$task_details['closedby_version'],1);
-    list_cell("comments",$comments);
-    list_cell("attachments",$attachments);
-    list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\" />\n");
+      list_cell("id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
+      list_cell("project",$task_details['project_title'],1);
+      list_cell("tasktype",$task_details['task_type'],1);
+      list_cell("category",$task_details['product_category'],1);
+      list_cell("severity",$severity,1);
+      list_cell("priority",$priority,1);
+      list_cell("summary",$task_details['item_summary'],0,"?do=details&amp;id={$task_details['task_id']}");
+      list_cell("dateopened",$date_opened);
+      list_cell("status",$status,1);
+      list_cell("openedby",$task_details['opened_by'],0);
+      list_cell("assigned",$task_details['assigned_to'],0);
+      list_cell("lastedit",$last_edited_time);
+      list_cell("reportedin",$task_details['product_version']);
+      list_cell("dueversion",$task_details['closedby_version'],1);
+      list_cell("comments",$comments);
+      list_cell("attachments",$attachments);
+      list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\" />\n");
 
-    // The end of this row
-    echo "</tr>\n";
-  };
-  ?>
-<!--</tbody>-->
-</table>
-
-<table id="tasklist">
-   <tr>
-   <?php
-   if ($total > 0) {
-      echo "<td id=\"taskrange\">";
-      printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
-      echo "</td><td id=\"pagenumbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl) . "</td>";
-   } else {
-      echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";
+      // The end of this row
+      echo "</tr>\n";
    };
    ?>
-   </tr>
-</table>
+   <!--</tbody>-->
+   </table>
+
+   <table id="tasklist">
+      <tr>
+      <?php
+      if ($total > 0) {
+         echo "<td id=\"taskrange\">";
+         printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
+         echo "</td><td id=\"pagenumbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl) . "</td>";
+      } else
+      {
+         echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";
+      };
+      ?>
+      </tr>
+   </table>
+
+</div>
 
 <?php
 // End of checking if the reqeusted project is active,

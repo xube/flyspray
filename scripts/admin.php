@@ -605,7 +605,10 @@ if ($permissions['is_admin'] == '1')
    echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['tasktypes'] . '</h3>';
    ?>
    <p><?php echo $admin_text['listnote'];?></p>
-   <div class="admin">
+
+   <fieldset class="admin">
+   <legend><?php echo $admin_text['tasktypes'];?></legend>
+
    <form action="index.php" method="post">
    <input type="hidden" name="do" value="modify" />
    <input type="hidden" name="action" value="update_list" />
@@ -671,7 +674,7 @@ if ($permissions['is_admin'] == '1')
       </tr>
    </table>
    </form>
-   </div>
+   </fieldset>
 
 <?
 // End of task types
@@ -684,8 +687,11 @@ if ($permissions['is_admin'] == '1')
    echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['resolutions'] . '</h3>';
    ?>
 
-  <p><?php echo $admin_text['listnote'];?></p>
-  <div class="admin">
+   <p><?php echo $admin_text['listnote'];?></p>
+
+   <fieldset class="admin">
+   <legend><?php echo $admin_text['resolutions'];?></legend>
+
   <form action="index.php" method="post">
   <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="action" value="update_list" />
@@ -757,13 +763,19 @@ if ($permissions['is_admin'] == '1')
       </tr>
     </table>
     </form>
-</div>
+</fieldset>
 
 <?
 // End of Resolutions
 
-// Show the list of categories
-} elseif ($_GET['show'] == 'category') { ?>
+/////////////////////////
+// Start of categories //
+/////////////////////////
+} elseif (isset($_GET['area']) && $_GET['area'] == 'cat')
+{
+   echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['categories'] . '</h3>';
+   ?>
+   <p><?php echo $admin_text['listnote'];?></p>
 
 <fieldset class="admin">
 
@@ -775,10 +787,11 @@ if ($permissions['is_admin'] == '1')
   <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="action" value="update_category" />
   <input type="hidden" name="list_type" value="category" />
-  <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+  <input type="hidden" name="project_id" value="0" />
+  <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
   <table class="list">
     <?php
-    $get_categories = $db->Query("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($project_id, '1'));
+    $get_categories = $db->Query("SELECT * FROM flyspray_list_category WHERE project_id = '0' AND parent_id < '1' ORDER BY list_position");
     $countlines = 0;
     while ($row = $db->FetchArray($get_categories)) {
     ?>
@@ -801,7 +814,7 @@ if ($permissions['is_admin'] == '1')
         <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
-        $fs->listUsers($row['category_owner'], $project_id);
+         $fs->listUsers($novar, 0);
         ?>
       </select>
       </td>
@@ -809,8 +822,15 @@ if ($permissions['is_admin'] == '1')
     <?php
       $countlines++;
       // Now we have to cycle through the subcategories
-    $get_subcategories = $db->Query("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id = ? ORDER BY list_position", array($project_id, $row['category_id']));
-    while ($subrow = $db->FetchArray($get_subcategories)) {
+    $get_subcategories = $db->Query("SELECT * FROM flyspray_list_category
+                                     WHERE project_id = '0'
+                                     AND parent_id = ?
+                                     ORDER BY list_position",
+                                     array($row['category_id'])
+                                   );
+
+    while ($subrow = $db->FetchArray($get_subcategories))
+    {
     ?>
      <tr>
       <td>
@@ -832,7 +852,7 @@ if ($permissions['is_admin'] == '1')
         <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
-        $fs->listUsers($subrow['category_owner'], $project_id);
+         $fs->listUsers($novar, 0);
         ?>
       </select>
       </td>
@@ -857,7 +877,8 @@ if ($permissions['is_admin'] == '1')
      <tr>
         <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="add_category" />
-        <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+        <input type="hidden" name="project_id" value="0" />
+        <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
       <td>
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
         <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name" />
@@ -875,7 +896,7 @@ if ($permissions['is_admin'] == '1')
         <select id="categoryownernew" name="category_owner">
           <option value=""><?php echo $admin_text['selectowner'];?></option>
           <?php
-          $fs->listUsers($novar, $project_id);
+          $fs->listUsers($novar, 0);
           ?>
         </select>
       </td>
@@ -886,16 +907,20 @@ if ($permissions['is_admin'] == '1')
         <?php
         $cat_list = $db->Query('SELECT category_id, category_name
                                     FROM flyspray_list_category
-                                    WHERE project_id=? AND show_in_list=? AND parent_id < ?
-                                    ORDER BY list_position', array($project_id, '1', '1'));
-        while ($row = $db->FetchArray($cat_list)) {
-          $category_name = stripslashes($row['category_name']);
-          if ($_GET['cat'] == $row['category_id']) {
-            echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
-          } else {
-            echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
-          };
-        };
+                                    WHERE project_id= 0 AND show_in_list= 1 AND parent_id < 1
+                                    ORDER BY list_position');
+
+         while ($row = $db->FetchArray($cat_list))
+         {
+            $category_name = stripslashes($row['category_name']);
+            if ($_GET['cat'] == $row['category_id'])
+            {
+               echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
+            } else
+            {
+               echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+            }
+         }
         ?>
       </select>
       </td>
@@ -909,173 +934,213 @@ if ($permissions['is_admin'] == '1')
 
 <?php
 // Show the list of Operating Systems
-} elseif ($_GET['show'] == 'os') { ?>
+} elseif (isset($_GET['area']) && $_GET['area'] == 'os')
+{
+   echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['operatingsystems'] . '</h3>';
+   ?>
+   <p><?php echo $admin_text['listnote'];?></p>
 
-<fieldset class="admin">
+   <fieldset class="admin">
+   <legend><?php echo $admin_text['operatingsystems'];?></legend>
 
-<legend><?php echo $admin_text['oslist'];?></legend>
+   <form action="index.php" method="post">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="update_list" />
+      <input type="hidden" name="list_type" value="os" />
+      <input type="hidden" name="project_id" value="0" />
+      <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+      <table class="list">
+         <?php
+         $get_os = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+                               FROM flyspray_list_os os
+                               LEFT JOIN flyspray_tasks t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
+                               WHERE os.project_id = '0'
+                               GROUP BY os.os_id
+                               ORDER BY list_position");
+         $countlines = 0;
+         while ($row = $db->FetchArray($get_os)) {
+         ?>
+         <tr>
+            <td>
+            <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>" />
+            <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']));?>" />
+            </td>
+            <td title="The order these items will appear in the Operating System list">
+            <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
+            <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
+            </td>
+            <td title="Show this item in the Operating System list">
+            <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
+            <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
+            </td>
+            <?php
+            if ($row['used_in_tasks'] == 0)
+            { ?>
+               <td title="Delete this item from the Operating System list">
+               <label for="delete<?php echo $row['os_id']?>"><?php echo $admin_text['delete'];?></label>
+               <input id="delete<?php echo $row['os_id']?>" type="checkbox" name="delete[<?php echo $row['os_id']?>]" value="1" />
+            <?php
+            } else
+            {
+               echo '<td>&nbsp;';
+            }
+            ?>
+            </td>
+         </tr>
+         <?php
+         $countlines++;
+         };
+         ?>
+         <tr>
+            <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
+         </tr>
+      </table>
+      </form>
+      <hr />
 
-  <p><?php echo $admin_text['listnote'];?></p>
-  <div class="admin">
-  <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify" />
-  <input type="hidden" name="action" value="update_list" />
-  <input type="hidden" name="list_type" value="os" />
-  <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
-  <table class="list">
-    <?php
-    $get_os = $db->Query("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($project_id));
-    $countlines = 0;
-    while ($row = $db->FetchArray($get_os)) {
-    ?>
-      <tr>
-        <td>
-          <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>" />
-          <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']));?>" />
-        </td>
-        <td title="The order these items will appear in the Operating System list">
-          <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
-          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
-        </td>
-        <td title="Show this item in the Operating System list">
-          <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
-          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
-        </td>
-      </tr>
-    <?php
-      $countlines++;
-    };
-    ?>
-      <tr>
-        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
-      </tr>
-    </table>
-    </form>
-    <hr />
-    <?php
-    // Form to add a new Operating System to the list
-    ?>
-    <form action="index.php" method="post">
-    <table class="list">
-    <tr>
-        <input type="hidden" name="do" value="modify" />
-        <input type="hidden" name="action" value="add_to_list" />
-        <input type="hidden" name="list_type" value="os" />
-        <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
-        <input type="hidden" name="id" value="<?php echo $row['os_id'];?>" />
-      <td>
-        <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-        <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
-      </td>
-      <td>
-        <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
-      </td>
-      <td>
-        <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
-      </td>
-      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
-      </tr>
-    </table>
-   </form>
-</div>
+      <!-- Form to add a new operating system to the list -->
+      <form action="index.php" method="post">
+      <table class="list">
+         <tr>
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="add_to_list" />
+         <input type="hidden" name="list_type" value="os" />
+         <input type="hidden" name="project_id" value="0" />
+         <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+            <td>
+            <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+            <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
+            </td>
+            <td>
+            <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+            <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
+            </td>
+            <td>
+            <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+            <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
+            </td>
+            <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
+         </tr>
+      </table>
+      </form>
+   </div>
 
-</fieldset>
-
+   </fieldset>
 <?php
 // Show the list of Versions
-} elseif ($_GET['show'] == 'version') { ?>
+} elseif (isset($_GET['area']) && $_GET['area'] == 'ver')
+{
+   echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['versions'] . '</h3>';
+   ?>
+   <p><?php echo $admin_text['listnote'];?></p>
 
-<fieldset class="admin">
+      <fieldset class="admin">
 
-  <legend><?php echo $admin_text['versionlist'];?></legend>
+      <legend><?php echo $admin_text['versions'];?></legend>
 
-  <p><?php echo $admin_text['listnote'];?></p>
-  <div class="admin">
-  <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify" />
-  <input type="hidden" name="action" value="update_version_list" />
-  <input type="hidden" name="list_type" value="version" />
-  <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
-  <table class="list">
+      <p><?php echo $admin_text['listnote'];?></p>
+      <div class="admin">
+      <form action="index.php" method="post">
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="update_version_list" />
+         <input type="hidden" name="list_type" value="0>" />
+         <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+         <table class="list">
 
-    <?php
-    $get_version = $db->Query("SELECT * FROM flyspray_list_version WHERE project_id = ? ORDER BY list_position", array($project_id));
-    $countlines = 0;
-    while ($row = $db->FetchArray($get_version)) {
-    ?>
-      <tr>
-        <td>
-          <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>" />
-          <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']));?>" />
-        </td>
-        <td title="<?php echo $admin_text['listordertip'];?>">
-          <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
-          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
-        </td>
-        <td title="<?php echo $admin_text['listshowtip'];?>">
-          <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
-          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
-        </td>
-        <td title="<?php echo $admin_text['listtensetip'];?>">
-          <label for="tense<?php echo $countlines;?>"><?php echo $admin_text['tense'];?></label>
-          <select id="tense<?php echo $countlines;?>" name="version_tense[<?php echo $countlines;?>]">
-            <option value="1" <?php if ($row['version_tense'] == '1') { echo "SELECTED";};?>><?php echo $admin_text['past'];?></option>
-            <option value="2" <?php if ($row['version_tense'] == '2') { echo "SELECTED";};?>><?php echo $admin_text['present'];?></option>
-            <option value="3" <?php if ($row['version_tense'] == '3') { echo "SELECTED";};?>><?php echo $admin_text['future'];?></option>
-          </select>
-        </td>
-      </tr>
-    <?php
-      $countlines++;
-    };
-    ?>
-      <tr>
-        <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
-      </tr>
-    </table>
-    </form>
-    <hr />
-    <?php
-    // Form to add a new Version to the list
-    ?>
-    <form action="index.php" method="post">
-    <table class="list">
-      <tr>
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="add_to_version_list" />
-          <input type="hidden" name="list_type" value="version" />
-          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
-        <td>
-          <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-          <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name" />
-        </td>
-        <td>
-          <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
-        </td>
-        <td>
-          <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
-        </td>
-       <td title="<?php echo $admin_text['listtensetip'];?>">
-          <label for="tensenew"><?php echo $admin_text['tense'];?></label>
-          <select id="tensenew" name="version_tense">
+         <?php
+         $get_version = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+                                    FROM flyspray_list_version v
+                                    LEFT JOIN flyspray_tasks t ON (t.product_version = v.version_id OR t.closedby_version = v.version_id AND t.attached_to_project = v.project_id)
+                                    WHERE v.project_id = '0'
+                                    GROUP BY v.version_id
+                                    ORDER BY list_position"
+                                  );
+         $countlines = 0;
+         while ($row = $db->FetchArray($get_version)) {
+         ?>
+         <tr>
+            <td>
+            <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>" />
+            <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']));?>" />
+            </td>
+            <td title="<?php echo $admin_text['listordertip'];?>">
+            <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
+            <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
+            </td>
+            <td title="<?php echo $admin_text['listshowtip'];?>">
+            <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
+            <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
+            </td>
+            <td title="<?php echo $admin_text['listtensetip'];?>">
+            <label for="tense<?php echo $countlines;?>"><?php echo $admin_text['tense'];?></label>
+            <select id="tense<?php echo $countlines;?>" name="version_tense[<?php echo $countlines;?>]">
+               <option value="1" <?php if ($row['version_tense'] == '1') { echo "SELECTED";};?>><?php echo $admin_text['past'];?></option>
+               <option value="2" <?php if ($row['version_tense'] == '2') { echo "SELECTED";};?>><?php echo $admin_text['present'];?></option>
+               <option value="3" <?php if ($row['version_tense'] == '3') { echo "SELECTED";};?>><?php echo $admin_text['future'];?></option>
+            </select>
+            </td>
+            <?php
+            if ($row['used_in_tasks'] == 0)
+            { ?>
+               <td title="<?php echo $admin_text['listdeletetip'];?>">
+               <label for="delete<?php echo $row['version_id']?>"><?php echo $admin_text['delete'];?></label>
+               <input id="delete<?php echo $row['version_id']?>" type="checkbox" name="delete[<?php echo $row['version_id']?>]" value="1" />
+            <?php
+            } else
+            {
+               echo '<td>&nbsp;';
+            } ?>
+            </td>
+         </tr>
+         <?php
+         $countlines++;
+         };
+         ?>
+         <tr>
+            <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
+         </tr>
+      </table>
+      </form>
+      <hr />
+
+      <!-- Form to add a new version to the list -->
+      <form action="index.php" method="post">
+      <table class="list">
+         <tr>
+            <input type="hidden" name="do" value="modify" />
+            <input type="hidden" name="action" value="add_to_version_list" />
+            <input type="hidden" name="list_type" value="version" />
+            <input type="hidden" name="project_id" value="0" />
+            <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+            <td>
+            <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+            <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name" />
+            </td>
+            <td>
+            <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+            <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
+            </td>
+            <td>
+            <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+            <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
+            </td>
+            <td title="<?php echo $admin_text['listtensetip'];?>">
+            <label for="tensenew"><?php echo $admin_text['tense'];?></label>
+            <select id="tensenew" name="version_tense">
             <option value="1"><?php echo $admin_text['past'];?></option>
             <option value="2" SELECTED><?php echo $admin_text['present'];?></option>
             <option value="3"><?php echo $admin_text['future'];?></option>
-          </select>
-        </td>
-        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
-      </tr>
-    </table>
-    </form>
-  </div>
+            </select>
+            </td>
+            <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
+         </tr>
+      </table>
+      </form>
+      </div>
 
-</fieldset>
+   </fieldset>
 
 <?php
 ////////////////////////////////
@@ -1184,6 +1249,9 @@ if ($permissions['is_admin'] == '1')
 
    echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $newproject_text['createnewproject'] . '</h3>';
 ?>
+   <fieldset class="admin">
+   <legend><?php echo $admin_text['newproject'];?></legend>
+
    <form action="index.php" method="post">
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="newproject" />
@@ -1276,6 +1344,7 @@ if ($permissions['is_admin'] == '1')
       </tr>
    </table>
    </form>
+   </fieldset>
 
 
 <?

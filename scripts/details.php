@@ -149,34 +149,46 @@ if ($effective_permissions['can_edit'] == '1'
         <td>
         <select id="category" name="product_category">
         <?php
-        $cat_list = $db->Query('SELECT category_id, category_name
-                                    FROM flyspray_list_category
-                                    WHERE project_id=? AND show_in_list=? AND parent_id < ?
-                                    ORDER BY list_position', array($project_id, '1', '1'));
-        while ($row = $db->FetchArray($cat_list)) {
-          $category_name = stripslashes($row['category_name']);
-          if ($task_details['product_category'] == $row['category_id']) {
-            echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
-          } else {
-            echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
-          };
+        $cat_list = $db->Query("SELECT category_id, category_name
+                                FROM flyspray_list_category
+                                WHERE project_id= ? AND show_in_list= '1' AND parent_id < '1'
+                                ORDER BY list_position",
+                                array($project_id)
+                              );
 
-          $subcat_list = $db->Query('SELECT category_id, category_name
-                                    FROM flyspray_list_category
-                                    WHERE project_id=? AND show_in_list=? AND parent_id = ?
-                                    ORDER BY list_position', array($project_id, '1', $row['category_id']));
-          while ($subrow = $db->FetchArray($subcat_list)) {
-            $subcategory_name = stripslashes($subrow['category_name']);
-            if ($task_details['product_category'] == $subrow['category_id']) {
-              echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-            } else {
-              echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-            };
-          };
-        };
-        ?>
-        </select>
-        </td>
+         while ($row = $db->FetchArray($cat_list))
+         {
+            $category_name = stripslashes($row['category_name']);
+            if ($task_details['product_category'] == $row['category_id'])
+            {
+               echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
+            } else
+            {
+               echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+            }
+
+            $subcat_list = $db->Query("SELECT category_id, category_name
+                                       FROM flyspray_list_category
+                                       WHERE project_id = ? AND show_in_list = '1' AND parent_id = ?
+                                       ORDER BY list_position",
+                                       array($project_id, $row['category_id'])
+                                     );
+
+            while ($subrow = $db->FetchArray($subcat_list))
+            {
+               $subcategory_name = stripslashes($subrow['category_name']);
+               if ($task_details['product_category'] == $subrow['category_id'])
+               {
+                  echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
+               } else
+               {
+                  echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
+               }
+            }
+         }
+         ?>
+         </select>
+         </td>
       </tr>
       <tr>
         <td><label for="status"><?php echo $details_text['status'];?></label></td>
@@ -203,39 +215,47 @@ if ($effective_permissions['can_edit'] == '1'
         <input type="hidden" name="old_assigned" value="<?php echo $task_details['assigned_to'];?>" />
         <select id="assignedto" name="assigned_to">
         <?php
-        // Get list of users
-        //$get_users = $db->Query($fs->listUserQuery());
+         // see if it's been assigned
+         if ($task_details['assigned_to'] == "0")
+         {
+            echo "<option value=\"0\" selected=\"selected\">{$details_text['noone']}</option>\n";
+         } else
+         {
+            echo "<option value=\"0\">{$details_text['noone']}</option>\n";
+         }
 
-        // see if it's been assigned
-        if ($task_details['assigned_to'] == "0") {
-          echo "<option value=\"0\" selected=\"selected\">{$details_text['noone']}</option>\n";
-        } else {
-          echo "<option value=\"0\">{$details_text['noone']}</option>\n";
-        };
+         $fs->ListUsers($task_details['assigned_to'], $project_id);
 
-        $fs->ListUsers($task_details['assigned_to'], $project_id);
-
-        ?>
-        </select>
-        </td>
+         ?>
+         </select>
+         </td>
       </tr>
       <tr>
-        <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
-        <td>
-        <select id="os" name="operating_system">
-        <?php
-        // Get list of operating systems
-        $get_os = $db->Query("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
-        while ($row = $db->FetchArray($get_os)) {
-          if ($row['os_id'] == $task_details['operating_system']) {
-            echo "<option value=\"{$row['os_id']}\" selected=\"selected\">{$row['os_name']}</option>";
-          } else {
-            echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
-          };
-        };
-        ?>
-        </select>
-        </td>
+         <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
+         <td>
+         <select id="os" name="operating_system">
+         <?php
+         // Get list of operating systems
+         $get_os = $db->Query("SELECT os_id, os_name
+                              FROM flyspray_list_os
+                              WHERE project_id = ? AND show_in_list = '1'
+                              ORDER BY list_position",
+                              array($project_id)
+                            );
+
+         while ($row = $db->FetchArray($get_os))
+         {
+            if ($row['os_id'] == $task_details['operating_system'])
+            {
+               echo "<option value=\"{$row['os_id']}\" selected=\"selected\">{$row['os_name']}</option>";
+            } else
+            {
+               echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
+            }
+         }
+         ?>
+         </select>
+         </td>
       </tr>
     </table>
   </div>
@@ -243,41 +263,47 @@ if ($effective_permissions['can_edit'] == '1'
 
   <div id="taskfields2">
      <table class="taskdetails">
-       <tr>
-        <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
-        <td>
-        <select id="severity" name="task_severity">
-        <?php
-        // Get list of severities
-        require("lang/$lang/severity.php");
-        foreach($severity_list as $key => $val) {
-          if ($task_details['task_severity'] == $key) {
-            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-          } else {
-            echo "<option value=\"$key\">$val</option>\n";
-          };
-        };
-        ?>
-        </select>
+         <tr>
+            <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
+            <td>
+            <select id="severity" name="task_severity">
+            <?php
+            // Get list of severities
+            require("lang/$lang/severity.php");
+            foreach($severity_list as $key => $val)
+            {
+               if ($task_details['task_severity'] == $key)
+               {
+                  echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+               } else
+               {
+                  echo "<option value=\"$key\">$val</option>\n";
+               }
+            }
+            ?>
+         </select>
         </td>
       </tr>
       <tr>
-        <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
-        <td>
-        <select id="priority" name="task_priority">
-        <?php
-        // Get list of priorities
-        require("lang/$lang/priority.php");
-        foreach($priority_list as $key => $val) {
-          if ($task_details['task_priority'] == $key) {
-            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-          } else {
-            echo "<option value=\"$key\">$val</option>\n";
-          };
-        };
-        ?>
-        </select>
-        </td>
+         <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
+         <td>
+         <select id="priority" name="task_priority">
+         <?php
+         // Get list of priorities
+         require("lang/$lang/priority.php");
+         foreach($priority_list as $key => $val)
+         {
+            if ($task_details['task_priority'] == $key)
+            {
+               echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+            } else
+            {
+               echo "<option value=\"$key\">$val</option>\n";
+            }
+         }
+         ?>
+         </select>
+         </td>
       </tr>
       <tr>
         <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
@@ -289,43 +315,49 @@ if ($effective_permissions['can_edit'] == '1'
         </td>
       </tr>
       <tr>
-        <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
-        <td>
-        <select id="dueversion" name="closedby_version">
-        <?php
-        // if we don't have a fix-it version, show undecided
-        if (!isset($closedby)) {
-          echo "<option value=\"\">{$details_text['undecided']}</option>\n";
-        } else {
-          echo "<option value=\"\" selected=\"selected\">{$details_text['undecided']}</option>\n";
-        };
-        $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' AND version_tense = '3' ORDER BY list_position", array($project_id));
-        while ($row = $db->FetchArray($get_version)) {
-          if ($row['version_id'] == $task_details['closedby_version']) {
-            echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
-          } else {
-            echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
-          };
-        };
-        ?>
-        </select>
-        </td>
+         <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
+         <td>
+         <select id="dueversion" name="closedby_version">
+         <?php
+         // if we don't have a fix-it version, show undecided
+         if (!isset($closedby))
+         {
+            echo "<option value=\"\">{$details_text['undecided']}</option>\n";
+         } else
+         {
+            echo "<option value=\"\" selected=\"selected\">{$details_text['undecided']}</option>\n";
+         }
+
+         $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' AND version_tense = '3' ORDER BY list_position", array($project_id));
+         while ($row = $db->FetchArray($get_version))
+         {
+            if ($row['version_id'] == $task_details['closedby_version'])
+            {
+               echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
+            } else
+            {
+               echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
+            }
+         }
+         ?>
+         </select>
+         </td>
       </tr>
       <tr>
         <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
         <td>
         <select id="percent" name="percent_complete">
-          <option value="0" <?php if ($task_details['percent_complete'] == '0') { echo "selected=\"selected\"";};?>>0%</option>
-          <option value="10" <?php if ($task_details['percent_complete'] == '10') { echo "selected=\"selected\"";};?>>10%</option>
-          <option value="20" <?php if ($task_details['percent_complete'] == '20') { echo "selected=\"selected\"";};?>>20%</option>
-          <option value="30" <?php if ($task_details['percent_complete'] == '30') { echo "selected=\"selected\"";};?>>30%</option>
-          <option value="40" <?php if ($task_details['percent_complete'] == '40') { echo "selected=\"selected\"";};?>>40%</option>
-          <option value="50" <?php if ($task_details['percent_complete'] == '50') { echo "selected=\"selected\"";};?>>50%</option>
-          <option value="60" <?php if ($task_details['percent_complete'] == '60') { echo "selected=\"selected\"";};?>>60%</option>
-          <option value="70" <?php if ($task_details['percent_complete'] == '70') { echo "selected=\"selected\"";};?>>70%</option>
-          <option value="80" <?php if ($task_details['percent_complete'] == '80') { echo "selected=\"selected\"";};?>>80%</option>
-          <option value="90" <?php if ($task_details['percent_complete'] == '90') { echo "selected=\"selected\"";};?>>90%</option>
-          <option value="100" <?php if ($task_details['percent_complete'] == '100') { echo "selected=\"selected\"";};?>>100%</option>
+          <option value="0" <?php if ($task_details['percent_complete'] == '0') { echo 'selected="selected"';};?>>0%</option>
+          <option value="10" <?php if ($task_details['percent_complete'] == '10') { echo 'selected="selected"';};?>>10%</option>
+          <option value="20" <?php if ($task_details['percent_complete'] == '20') { echo 'selected="selected"';};?>>20%</option>
+          <option value="30" <?php if ($task_details['percent_complete'] == '30') { echo 'selected="selected"';};?>>30%</option>
+          <option value="40" <?php if ($task_details['percent_complete'] == '40') { echo 'selected="selected"';};?>>40%</option>
+          <option value="50" <?php if ($task_details['percent_complete'] == '50') { echo 'selected="selected"';};?>>50%</option>
+          <option value="60" <?php if ($task_details['percent_complete'] == '60') { echo 'selected="selected"';};?>>60%</option>
+          <option value="70" <?php if ($task_details['percent_complete'] == '70') { echo 'selected="selected"';};?>>70%</option>
+          <option value="80" <?php if ($task_details['percent_complete'] == '80') { echo 'selected="selected"';};?>>80%</option>
+          <option value="90" <?php if ($task_details['percent_complete'] == '90') { echo 'selected="selected"';};?>>90%</option>
+          <option value="100" <?php if ($task_details['percent_complete'] == '100') { echo 'selected="selected"';};?>>100%</option>
         </select>
         </td>
       </tr>
@@ -373,30 +405,33 @@ if ($effective_permissions['can_edit'] == '1'
 
 <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
 
-    <h2 class="severity<?php echo $task_details['task_severity'];?>">
-    <?php echo $details_text['task'] . '#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
-    </h2>
-    <?php
-    echo $details_text['attachedtoproject'] . '&mdash; <a href="?project=' .  $task_details['attached_to_project'] . '">' . stripslashes($task_details['project_title']) . '</a>';
-    ?>
+   <h2 class="severity<?php echo $task_details['task_severity'];?>">
+   <?php echo $details_text['task'] . '#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
+   </h2>
+   <?php
+   echo $details_text['attachedtoproject'] . '&mdash; <a href="?project=' .  $task_details['attached_to_project'] . '">' . stripslashes($task_details['project_title']) . '</a>';
+   ?>
 
-    <div id="fineprint">
-    <?php
-    // Get the user details of the person who opened this item
-    if ($task_details['opened_by']) {
+   <div id="fineprint">
+   <?php
+   // Get the user details of the person who opened this item
+   if ($task_details['opened_by'])
+   {
       $get_user_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
       list($user_name, $real_name) = $db->FetchArray($get_user_name);
-    } else {
+   } else
+   {
       $user_name = $details_text['anonymous'];
-    };
+   }
 
-    $date_opened = $task_details['date_opened'];
-    $date_opened = $fs->formatDate($date_opened, true);
+   $date_opened = $task_details['date_opened'];
+   $date_opened = $fs->formatDate($date_opened, true);
 
-    echo "{$details_text['openedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['opened_by']}\">$real_name ($user_name)</a> - $date_opened";
+   echo "{$details_text['openedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['opened_by']}\">$real_name ($user_name)</a> - $date_opened";
 
-    // If it's been edited, get the details
-    if ($task_details['last_edited_by']) {
+   // If it's been edited, get the details
+   if ($task_details['last_edited_by'])
+   {
       $get_user_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['last_edited_by']));
       list($user_name, $real_name) = $db->FetchArray($get_user_name);
 
@@ -404,209 +439,227 @@ if ($effective_permissions['can_edit'] == '1'
       $date_edited = $fs->formatDate($date_edited, true);
 
       echo "<br />{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
+   }
+   ?>
+   </div>
 
-    };
-    ?>
-    </div>
+   <div id="taskfields1">
 
-    <div id="taskfields1">
+   <table class="taskdetails">
+      <tr>
+         <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
+         <td id="tasktype"><?php echo $task_details['tasktype_name'];?></td>
+      </tr>
+      <tr>
+         <td><label for="category"><?php echo $details_text['category'];?></label></td>
+         <td id="category">
+         <?php
+         if ($task_details['parent_id'] > '0')
+         {
+            $get_parent_cat = $db->FetchArray($db->Query('SELECT category_name
+                                                          FROM flyspray_list_category
+                                                          WHERE category_id = ?',
+                                                          array($task_details['parent_id'])
+                                                        )
+                                             );
 
-    <table class="taskdetails">
-      <tr>
-        <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
-        <td id="tasktype"><?php echo $task_details['tasktype_name'];?></td>
+            echo $get_parent_cat['category_name'] . " &nbsp;&nbsp;&rarr; ";
+         }
+         echo $task_details['category_name'];?>
+         </td>
       </tr>
       <tr>
-        <td><label for="category"><?php echo $details_text['category'];?></label></td>
-        <td id="category">
-        <?php
-        if ($task_details['parent_id'] > '0') {
-          $get_parent_cat = $db->FetchArray($db->Query('SELECT category_name
-                                          FROM flyspray_list_category
-                                          WHERE category_id = ?',
-                                          array($task_details['parent_id'])));
-          echo $get_parent_cat['category_name'] . " &nbsp;&nbsp;&rarr; ";
-        };
-        echo $task_details['category_name'];?>
-        </td>
+         <td><label for="status"><?php echo $details_text['status'];?></label></td>
+         <td id="status">
+         <?php
+         if($task_details['is_closed'] == '1')
+         {
+            echo $details_text['closed'];
+         } else
+         {
+            echo $task_details['status_name'];
+         }
+         ?>
+         </td>
       </tr>
       <tr>
-        <td><label for="status"><?php echo $details_text['status'];?></label></td>
-        <td id="status">
-                <?php
-                if($task_details['is_closed'] == '1') {
-                        echo $details_text['closed'];
-                } else {
-                        echo $task_details['status_name'];
-                };
-                ?>
-        </td>
+         <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
+         <td id="assignedto">
+         <?php
+         // see if it's been assigned
+         if (!$task_details['assigned_to'])
+         {
+            echo $details_text['noone'];
+         } else
+         {
+            // find out the username
+            $getusername = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
+            list ($user_name, $real_name) = $db->FetchArray($getusername);
+            echo "$real_name ($user_name)";
+         }
+         ?>
+         </td>
       </tr>
       <tr>
-        <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
-        <td id="assignedto">
-        <?php
-        // see if it's been assigned
-        if (!$task_details['assigned_to']) {
-          echo $details_text['noone'];
-        } else {
-          // find out the username
-          $getusername = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
-          list ($user_name, $real_name) = $db->FetchArray($getusername);
-          echo "$real_name ($user_name)";
-        };
-        ?>
-        </td>
+         <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
+         <td id="os"><?php echo $task_details['os_name'];?></td>
       </tr>
-      <tr>
-        <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
-        <td id="os"><?php echo $task_details['os_name'];?></td>
-      </tr>
-    </table>
+   </table>
 
-    </div>
+   </div>
 
 
    <div id="taskfields2">
 
-     <table class="taskdetails">
-       <tr>
-         <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
-         <td id="severity"><?php echo $task_details['severity_name'];?></td>
-       </tr>
-       <tr>
-         <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
-         <td id="priority">
-         <?php echo $task_details['priority_name'];?>
-         </td>
-       </tr>
-       <tr>
-         <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
-         <td id="reportedver"><?php echo $task_details['reported_version_name'];?></td>
-       </tr>
-       <tr>
-        <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
-         <td id="dueversion">
-         <?php
-         if (isset($task_details['due_in_version_name'])) {
-           echo $task_details['due_in_version_name'];
-         } else {
-           echo $details_text['undecided'];
-         };
-         ?>
-         </td>
-       </tr>
-       <tr>
-         <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
-         <td id="percent"><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?> /></td>
-       </tr>
-     </table>
+      <table class="taskdetails">
+         <tr>
+            <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
+            <td id="severity"><?php echo $task_details['severity_name'];?></td>
+         </tr>
+         <tr>
+            <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
+            <td id="priority">
+            <?php echo $task_details['priority_name'];?>
+            </td>
+         </tr>
+         <tr>
+            <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
+            <td id="reportedver"><?php echo $task_details['reported_version_name'];?></td>
+         </tr>
+         <tr>
+            <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
+            <td id="dueversion">
+            <?php
+            if (isset($task_details['due_in_version_name']))
+            {
+               echo $task_details['due_in_version_name'];
+            } else
+            {
+               echo $details_text['undecided'];
+            }
+            ?>
+            </td>
+         </tr>
+         <tr>
+            <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
+            <td id="percent"><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?> /></td>
+         </tr>
+      </table>
 
    </div>
 
 
    <div id="taskdetailsfull">
 
-     <table class="taskdetails">
-      <tr>
-        <td><label for="details"><?php echo $details_text['details'];?></label></td>
-        <td id="details" class="details">
-        <?php
-        // Change URLs to hyperlinks
-        //$detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $detailed_desc);
-        // Change FS#123 into hyperlinks to tasks
-        //$detailed_desc = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $detailed_desc);
-        //echo nl2br($detailed_desc);
-        echo $fs->formatText($task_details['detailed_desc']);
-        ?>
-        </td>
-      </tr>
-    </table>
+      <table class="taskdetails">
+         <tr>
+            <td><label for="details"><?php echo $details_text['details'];?></label></td>
+            <td id="details" class="details">
+            <?php
+            // New function to strip html, convert urls to links etc
+            echo $fs->formatText($task_details['detailed_desc']);
+            ?>
+            </td>
+         </tr>
+      </table>
 
-  </div>
+   </div>
 
 
-  <?php
-    // Check for task dependencies that block closing this task
-    $check_deps = $db->Query("SELECT * FROM flyspray_dependencies d
-                                LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
-                                WHERE d.task_id = ?",
-                                array($_GET['id']));
+   <?php
+   // Check for task dependencies that block closing this task
+   $check_deps = $db->Query("SELECT * FROM flyspray_dependencies d
+                             LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
+                             WHERE d.task_id = ?",
+                             array($_GET['id'])
+                           );
 
-    // Check for tasks that this task blocks
-    $check_blocks = $db->Query("SELECT * FROM flyspray_dependencies d
-                                LEFT JOIN flyspray_tasks t on d.task_id = t.task_id
-                                WHERE d.dep_task_id = ?",
-                                array($_GET['id']));
+   // Check for tasks that this task blocks
+   $check_blocks = $db->Query("SELECT * FROM flyspray_dependencies d
+                               LEFT JOIN flyspray_tasks t on d.task_id = t.task_id
+                               WHERE d.dep_task_id = ?",
+                               array($_GET['id'])
+                             );
 
-    echo '<div id="deps">';
-    // Show tasks that this task depends upon
-    echo '<div id="taskdeps">';
-    echo '<b>' . $details_text['taskdependson'] . '</b><br />';
-    while ($dependency = $db->FetchArray($check_deps)) {
-      if ($dependency['is_closed'] == '1') {
-        echo '<a class="closedtasklink" href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
-      } else {
-        echo '<a href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
-      };
+   echo '<div id="deps">';
+   // Show tasks that this task depends upon
+   echo '<div id="taskdeps">';
+   echo '<b>' . $details_text['taskdependson'] . '</b><br />';
+   while ($dependency = $db->FetchArray($check_deps))
+   {
+      if ($dependency['is_closed'] == '1')
+      {
+         echo '<a class="closedtasklink" href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
+      } else
+      {
+         echo '<a href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
+      }
+
       // If the user has permission, show a link to remove a dependency
       if ($effective_permissions['can_edit'] == '1'
-           && $task_details['is_closed'] != '1') {
-        echo '&nbsp;&mdash;&nbsp;<a class="removedeplink" href="?do=modify&amp;action=removedep&amp;depend_id=' . $dependency['depend_id'] . '">' . $details_text['remove'] . "</a>\n";
-      };
+           && $task_details['is_closed'] != '1')
+      {
+         echo '&nbsp;&mdash;&nbsp;<a class="removedeplink" href="?do=modify&amp;action=removedep&amp;depend_id=' . $dependency['depend_id'] . '">' . $details_text['remove'] . "</a>\n";
+      }
+
       echo '<br />';
-    };
-    echo "<br />\n";
-    // If the user has permission, show a form to add a new dependency
-    if ($effective_permissions['can_edit'] == '1'
-        && $task_details['is_closed'] != '1') {
-    ?>
-    <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="newdep" />
-      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-      <input class="admintext" type="text" name="dep_task_id" size="5" maxlength="10" />
-      <input class="adminbutton" type="submit" name="submit" value="<?php echo $details_text['addnew'];?>" />
-    </form>
-    <?php
-    };
-    echo '</div>';
+   }
+   echo "<br />\n";
+   // If the user has permission, show a form to add a new dependency
+   if ($effective_permissions['can_edit'] == '1'
+        && $task_details['is_closed'] != '1')
+   {
+   ?>
+      <form action="index.php" method="post">
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="newdep" />
+         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+         <input class="admintext" type="text" name="dep_task_id" size="5" maxlength="10" />
+         <input class="adminbutton" type="submit" name="submit" value="<?php echo $details_text['addnew'];?>" />
+      </form>
 
-    echo '<div id="taskblocks">';
-    // Show tasks that this task blocks
-    echo '<b>' . $details_text['taskblocks'] . '</b><br />';
-    while ($block = $db->FetchArray($check_blocks)) {
+      <?php
+   }
+
+   echo '</div>';
+
+   echo '<div id="taskblocks">';
+   // Show tasks that this task blocks
+   echo '<b>' . $details_text['taskblocks'] . '</b><br />';
+   while ($block = $db->FetchArray($check_blocks))
+   {
       echo '<a href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
-    };
+   }
 
-    echo '</div>';
-    echo '</div>';
+   echo '</div>';
+   echo '</div>';
 
-echo "\n\n";
-echo '<div id="actionbuttons">';
+   echo "\n\n";
+   echo '<div id="actionbuttons">';
 
-  // If the task is closed, show the closure reason
-  if ($task_details['is_closed'] == '1') {
+   // If the task is closed, show the closure reason
+   if ($task_details['is_closed'] == '1')
+   {
+      $get_closedby_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['closed_by']));
+      list($closedby_username, $closedby_realname) = $db->FetchArray($get_closedby_name);
+      $date_closed = $task_details['date_closed'];
+      $date_closed = $fs->formatDate($date_closed, true);
+      echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br />";
+      echo "{$details_text['date']}&nbsp;&nbsp;$date_closed.";
+      echo '<br />';
+      echo $details_text['reasonforclosing'] . '&nbsp;&nbsp;';
+      echo $task_details['resolution_name'];
+      echo '<br />';
 
-    $get_closedby_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['closed_by']));
-    list($closedby_username, $closedby_realname) = $db->FetchArray($get_closedby_name);
-    $date_closed = $task_details['date_closed'];
-    $date_closed = $fs->formatDate($date_closed, true);
-    echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br />";
-    echo "{$details_text['date']}&nbsp;&nbsp;$date_closed.";
-    echo '<br />';
-    echo $details_text['reasonforclosing'] . '&nbsp;&nbsp;';
-    echo $task_details['resolution_name'];
-    echo '<br />';
+      if (!empty($task_details['closure_comment']))
+      {
+         echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
+         $closure_comment = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $task_details['closure_comment']);
+         echo nl2br(stripslashes($closure_comment));
+      }
 
-    if (!empty($task_details['closure_comment'])) {
-     echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
-     $closure_comment = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $task_details['closure_comment']);
-     echo nl2br(stripslashes($closure_comment));
-    };
-
-    // End of showing task closure reason
-    };
+   // End of showing task closure reason
+   }
 
     // Check permissions and task status, then show the "re-open task" button
     if ($effective_permissions['can_close'] == '1' && $task_details['is_closed'] == '1') { ?>
@@ -1097,7 +1150,7 @@ echo '</div>';
 
    while ($row = $db->FetchArray($get_related))
    {
-      $summary = stripslashes($subrow['item_summary']);
+      $summary = stripslashes($row['item_summary']);
       echo "<a href=\"?do=details&amp;id={$row['this_task']}\">FS#{$row['this_task']} &mdash; $summary</a><br />";
    }
    echo '</p>';
@@ -1244,7 +1297,7 @@ echo '</div>';
       <?php
       // End of checking permissions to remove a reminder
       }
-      echo "<em>{$details_text['remindthisuser']}:</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['to_user_id']}\">{$subrow['real_name']} ( {$subrow['user_name']})</a><br />";
+      echo "<em>{$details_text['remindthisuser']}:</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['to_user_id']}\">{$row['real_name']} ( {$row['user_name']})</a><br />";
 
       // Work out the unit of time to display
       if ($row['how_often'] < 86400)

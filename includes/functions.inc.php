@@ -155,72 +155,83 @@ function GetTaskDetails($task_id) {
 
       global $db;
 
-     $flyspray_prefs = $this->getGlobalPrefs();
+      $flyspray_prefs = $this->getGlobalPrefs();
 
       $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
-      while (list($key, $val) = each($these_groups)) {
-        if (empty($val))
-          continue;
-        $group_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_groups WHERE group_id = ?", array($val)));
+      while (list($key, $val) = each($these_groups))
+      {
+         if (empty($val))
+            continue;
 
-        // Check that there is a user in the selected group prior to display
-        $check_group = $db->Query("SELECT * FROM flyspray_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
-        if (!$db->CountRows($check_group)) {
-          continue;
-        } else {
+         $group_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_groups WHERE group_id = ?", array($val)));
 
-          echo "<optgroup label=\"{$group_details['group_name']}\">\n";
+         // Check that there is a user in the selected group prior to display
+         $check_group = $db->Query("SELECT * FROM flyspray_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
+         if (!$db->CountRows($check_group))
+         {
+            continue;
+         } else
+         {
+            echo "<optgroup label=\"{$group_details['group_name']}\">\n";
 
-  //         $user_query = $db->Query("SELECT * FROM flyspray_users WHERE account_enabled = ? AND group_in = ? ORDER BY real_name", array('1', $val));
-
-          $user_query = $db->Query("SELECT * FROM flyspray_users_in_groups uig
+            $user_query = $db->Query("SELECT * FROM flyspray_users_in_groups uig
                                         LEFT JOIN flyspray_users u on uig.user_id = u.user_id
-                                        WHERE group_id = ? AND u.account_enabled = ?
+                                        WHERE group_id = ? AND u.account_enabled = '1'
                                         ORDER BY u.real_name ASC",
-                                        array($group_details['group_id'], '1'));
+                                        array($group_details['group_id'])
+                                     );
 
-          while ($row = $db->FetchArray($user_query)) {
-            if ($current == $row['user_id']) {
-              echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
-            } else {
-              echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
-            };
-          };
+            while ($row = $db->FetchArray($user_query))
+            {
+               if ($current == $row['user_id'])
+               {
+                  echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
+               } else
+               {
+                  echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
+               }
+            }
 
-          echo "</optgroup>\n";
-        };
-      };
+            echo "</optgroup>\n";
+         }
+      }
 
       // Now, we get the users from groups in the current project
       $get_group_details = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($in_project));
-      while ($group_details = $db->FetchArray($get_group_details)) {
+      while ($group_details = $db->FetchArray($get_group_details) AND $in_project > '0')
+      {
+         // Check that there is a user in the selected group prior to display
+         $check_group = $db->Query("SELECT * FROM flyspray_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
+         if (!$db->CountRows($check_group))
+         {
+            continue;
+         } else
+         {
+           // print the group name
+            echo "<optgroup label=\"{$group_details['group_name']}\">\n";
 
-        // Check that there is a user in the selected group prior to display
-        $check_group = $db->Query("SELECT * FROM flyspray_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
-        if (!$db->CountRows($check_group)) {
-          continue;
-        } else {
-
-        // print the group name
-        echo "<optgroup label=\"{$group_details['group_name']}\">\n";
-        // Get the users that belong to this group
-          $user_query = $db->Query("SELECT * FROM flyspray_users_in_groups uig
+            // Get the users that belong to this group
+            $user_query = $db->Query("SELECT * FROM flyspray_users_in_groups uig
                                         LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                                         WHERE group_id = ?",
-                                        array($group_details['group_id']));
+                                        array($group_details['group_id'])
+                                     );
 
-          while ($row = $db->FetchArray($user_query)) {
-            if ($current == $row['user_id']) {
-              echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
-            } else {
-              echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
-            };
-          };
+            while ($row = $db->FetchArray($user_query))
+            {
+               if ($current == $row['user_id'])
+               {
+                  echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
+               } else
+               {
+                  echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
+               }
+            }
 
-          echo "</optgroup>\n";
-        };
-     };
-  }
+            echo "</optgroup>\n";
+         }
+      }
+   }
 
 
   // This provides funky page numbering

@@ -269,7 +269,7 @@ a.offsite:after {
 /* The paragraph containing the search form */
 p#search {
   margin-bottom       : 1em;
-  border              : 1px solid #cccccc;
+  border              : 1px solid #000000;
   background-color    : #e6eef6;
 }
 
@@ -286,10 +286,16 @@ p#search label {
   height              : 2.5em;
 }
 
+div#tasklist {
+   width             : 100%;
+   border            : 1px solid #000000;
+   color             : #000000;
+   background-color  : #e6eef6;
+}
+
 /* The table listing tasks on the main page */
 table#tasklist {
   width               : 100%;
-  background-color    : #e6eef6;
   border-spacing      : 0px;
   border-collapse     : collapse;
 }
@@ -342,7 +348,7 @@ table.list label, p#showtask label, p.admin label, form#formaddrelatedtask label
 div#taskdetails {
   margin              : 0px 0px 1em 0px;
   background-color    : #e6eef6;
-  border              : 1px solid #ccc;
+  border              : 1px solid #000000;
 }
 
 div#taskdetails h2 {
@@ -674,7 +680,9 @@ div#actionbuttons {
 }
 
 fieldset.admin {
-  margin-top: 15px;
+   margin-top              : 15px;
+   background-color        : #e6eef6;
+   color                   : #000000;
 }
 
 fieldset.admin legend {
@@ -683,6 +691,8 @@ fieldset.admin legend {
    padding                 : 2px;
    font                    : 120% Helvetica, Verdana, sans-serif;
    margin                  : 5px;
+   background-color         : #ffffff;
+   color                    : #000000;
 }
 
 div#errorbar {
