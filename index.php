@@ -218,7 +218,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
   <link rel="icon" href="./favicon.ico" type="image/png" />
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
   <link href="themes/<?php echo $themestyle;?>/theme.css" rel="stylesheet" type="text/css" />
-  <link rel="alternate" type="text/xml" title="rss" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php" />
+  <link rel="alternate" type="text/xml" title="rss" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php?proj=<?php echo $project_id;?>" />
   <script type="text/javascript" src="includes/functions.js"></script>
   <script type="text/javascript" src="includes/styleswitcher.js"></script>
   <script type="text/javascript" src="includes/tabs.js"></script>
@@ -457,7 +457,7 @@ if (isset($_SESSION['SUCCESS']))
       $project_list = array();
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'] && (isset($_GET['project']) && !empty($_GET['project'])) && !in_array($row['project_id'], $project_list))
+         if ($project_id == $row['project_id'] && !isset($_GET['project']) && !in_array($row['project_id'], $project_list))
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];

@@ -129,7 +129,7 @@ if ($_POST['action'] == 'newtask'
       $to = $notify->Address($task_details['task_id']);
       $msg = $notify->Create('1', $task_details['task_id']);
       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-      $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+      $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // End of checking if there's a category owner set, and notifying them.
    }
@@ -361,7 +361,7 @@ if ($_POST['action'] == 'newtask'
          $to = $notify->Address($new_details['task_id']);
          $msg = $notify->Create('2', $new_details['task_id']);
          $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-         $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
       }
 
       // Check to see if the assignment has changed
@@ -429,7 +429,7 @@ if ($_POST['action'] == 'newtask'
       $to = $notify->Address($get_task_info['task_id']);
       $msg = $notify->Create('3', $get_task_info['task_id']);
       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-      $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+      $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
       // Log this to the task's history
       $fs->logEvent($_POST['task_id'], 2, $_POST['resolution_reason'], $_POST['closure_comment']);
@@ -475,7 +475,7 @@ if ($_POST['action'] == 'newtask'
    $to = $notify->Address($old_task_info['task_id']);
    $msg = $notify->Create('4', $old_task_info['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // If there's an admin request related to this, close it
    if ($fs->AdminRequestCheck(2, $_GET['task_id']) == '1')
@@ -514,7 +514,7 @@ if ($_POST['action'] == 'newtask'
       $to  = $notify->Address($_POST['task_id']);
       $msg = $notify->Create('7', $_POST['task_id']);
       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-      $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+      $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
       $row = $db->FetchRow($db->Query("SELECT comment_id FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));
       $fs->logEvent($_POST['task_id'], 4, $row['comment_id']);
@@ -615,7 +615,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
       } elseif ($_POST['notify_type'] == '2')
       {
-         $notify->SendJabber($_POST['jabber_id'], $subject, $message);
+         $notify->StoreJabber($_POST['jabber_id'], $subject, $message);
 
       };
 
@@ -1173,7 +1173,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       $to  = $notify->Address($_POST['task_id']);
       $msg = $notify->Create('8', $_POST['task_id']);
       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-      $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+      $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
       $row = $db->FetchRow($db->Query("SELECT attachment_id FROM flyspray_attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
       $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
@@ -1633,7 +1633,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
             $to  = $notify->Address($_POST['task_id']);
             $msg = $notify->Create('9', $_POST['task_id']);
             $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-            $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+            $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
             $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
             $fs->redirect("index.php?do=details&id=" . $_POST['this_task'] . "#related");
@@ -1942,7 +1942,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $to  = $notify->Address($_GET['task_id']);
    $msg = $notify->Create('10', $_GET['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // Log this event to the task history
    $fs->logEvent($old_details['task_id'], 19, $current_user['user_id'], $old_details['assigned_to']);
@@ -1987,7 +1987,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $to  = $notify->SpecificAddresses($pms);
    $msg = $notify->Create('12', $_POST['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
    $fs->redirect("?do=details&id=" . $_POST['task_id']);
@@ -2045,7 +2045,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $to  = $notify->SpecificAddresses($pms);
    $msg = $notify->Create('12', $_POST['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
 
    $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
@@ -2082,7 +2082,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $to  = $notify->Address($req_details['task_id']);
    $msg = $notify->Create('13', $req_details['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // Redirect
    $_SESSION['SUCCESS'] = $modify_text['pmreqdenied'];
@@ -2120,7 +2120,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $to  = $notify->Address($_POST['task_id']);
    $msg = $notify->Create('5', $_POST['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
 
    if (!$db->CountRows($check_dep)
@@ -2176,7 +2176,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $to  = $notify->Address($dep_info['task_id']);
    $msg = $notify->Create('6', $dep_info['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // Log this event to the task's history
    $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);

@@ -15,8 +15,9 @@ $fs->get_language_pack($lang, 'details');
 // Start of the Notifications class
 class Notifications {
 
-   function SendJabber( $to, $subject, $body )
+   function StoreJabber( $to, $subject, $body )
    {
+      // not sure all of these are needed any longer
       global $db;
       global $fs;
       global $notify_text;
@@ -34,30 +35,144 @@ class Notifications {
           OR empty($flyspray_prefs['jabber_password']))
             return false;
 
-      $client='Flyspray';
-
       $body = str_replace('&amp;', '&', $body);
 
-      $socket = fsockopen ( $flyspray_prefs['jabber_server'], $flyspray_prefs['jabber_port'], $errno, $errstr, 30 );
-      if ( !$socket ) {
-            return '$errstr (' . $errno . ')';
-         } else {
+      // store notification in table
+      $db->Query("INSERT INTO flyspray_notification_messages
+                  (subject, body, created)
+                  VALUES (?, ?, ?)",
+                  array($subject, $body, date(U))
+                );
 
-            fputs($socket, '<?xml version="1.0" encoding="UTF-8"?><stream:stream to="' . $flyspray_prefs['jabber_server'] . '" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams">' );
-            fgets( $socket, 1 );
+      // grab notification id
+      $result = $db->Query("SELECT id FROM flyspray_notification_messages
+                            WHERE subject= ?
+                            AND body= ?
+                            AND created= ?",
+                            array($subject, $body, date(U))
+                          );
 
-            fputs( $socket, '<iq type="set" id="AUTH_01"><query xmlns="jabber:iq:auth"><username>' . $flyspray_prefs['jabber_username'] . '</username><password>' . $flyspray_prefs['jabber_password'] . '</password><resource>' . $client . '</resource></query></iq>' );
-            fgets( $socket, 1 );
+      $row = $db->FetchRow($result);
+      $notify_id = $row['id'];
 
-            foreach ($to as $jid)
+      foreach ($to as $jid)
+      {
+         // store each recipient in table
+         $db->Query("INSERT INTO flyspray_notification_recipients
+                     (method, notification_id, address)
+                     VALUES (?, ?, ?)",
+                     array('j', $notify_id, $jid)
+                    );
+
+      }
+
+      return TRUE;
+   }
+
+   function SendJabber()
+   {
+      global $db;
+      global $fs;
+      global $notify_text;
+      global $details_text;
+      global $project_prefs;
+      global $flyspray_prefs;
+      global $current_user;
+
+      if (empty($flyspray_prefs['jabber_server'])
+          OR empty($flyspray_prefs['jabber_port'])
+          OR empty($flyspray_prefs['jabber_username'])
+          OR empty($flyspray_prefs['jabber_password']))
+            return false;
+
+      require_once('class.jabber.php');
+      $JABBER = new Jabber;
+
+      $JABBER->server      = $flyspray_prefs['jabber_server'];
+      $JABBER->port        = $flyspray_prefs['jabber_port'];
+      $JABBER->username    = $flyspray_prefs['jabber_username'];
+      $JABBER->password    = $flyspray_prefs['jabber_password'];
+      $JABBER->resource    = 'Flyspray';
+
+      // get listing of all pending jabber notifications
+      $result = $db->Query("SELECT DISTINCT notification_id
+                            FROM flyspray_notification_recipients
+                            WHERE method='j'");
+
+      if ( $db->CountRows($result) > 0 )
+      {
+         // we have notifications to process - connect
+         $JABBER->Connect() or die("AAAHHHH can't connect!!!!");
+         $JABBER->SendAuth() or die("GAHHHH bad auth!!!!");
+
+         $JABBER->SendPresence("invisible", null, null,null,5);
+
+         $desired = join(",", $result);
+
+         $notifications = $db->Query("SELECT * FROM flyspray_notification_messages
+                                      WHERE id in (?)",
+                                      array($desired)
+                                    );
+
+         // loop through notifications
+         while ( $notification = $db->FetchRow($notifications) )
+         {
+            // check notification age?
+            $subject = $notification['subject'];
+            $body = $notification['body'];
+            $notification_id = $notification['id'];
+
+            $recipients = $db->Query("SELECT * FROM flyspray_notification_recipients
+                                      WHERE notification_id = ?
+                                      AND method = 'j'",
+                                      array($notification_id)
+                                    );
+
+            // loop through recipients
+            while ( $recipient = $db->FetchRow($recipients) )
             {
-               fputs ( $socket, '<message to="' . $jid . '" ><body><![CDATA[' . $body . ']]></body><subject><![CDATA[' . $subject . ']]></subject></message>' );
+               $jid = $recipient['address'];
+
+               // send notification
+               $success = $JABBER->SendMessage($jid, "normal", NULL,
+                  array(
+                     "subject"   => $subject,
+                     "body"      => $body
+                  ), $payload);
+
+               if ( $success == true )
+               {
+                  // delete entry from notification_recipients
+                  $result = $db->Query("DELETE FROM flyspray_notification_recipients
+                                        WHERE notification_id=?
+                                        AND method='j'
+                                        AND address= ?",
+                                        array($notification_id, $jid)
+                                      );
+               }
             }
 
-            fclose ( $socket );
+            // check to see if there are still recipients for this notification
+            $result = $db->Query("SELECT * FROM flyspray_notification_recipients
+                                  WHERE notification_id = ?",
+                                  array($notification_id)
+                                );
+
+            if ( $db->CountRows($result) == 0 )
+            {
+               // remove notification no more recipients
+               $result = $db->Query("DELETE FROM flyspray_notification_messages
+                                     WHERE id = ?",
+                                     array($notification_id)
+                                   );
+            }
          }
 
-         return TRUE;
+         // disconnect from server
+         $JABBER->Disconnect();
+      }
+      return TRUE;
+   // End of SendJabber() function
    }
 
 

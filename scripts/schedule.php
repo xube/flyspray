@@ -51,13 +51,15 @@ while ($row = $db->FetchRow($get_reminders))
 
       // Pass the recipients and message onto the notification function
       $notify->SendEmail($email_users, $subject, $message);
-      $notify->SendJabber($jabber_users, $subject, $message);
+      $notify->StoreJabber($jabber_users, $subject, $message);
 
       // Update the database with the time sent
       $update_db = $db->Query("UPDATE flyspray_reminders
                                SET last_sent = ?
                                WHERE reminder_id = ?",
                                array($now, $row['reminder_id']));
+                               
+      $notify->SendJabber();
 
       // Debug
       echo "Reminder Sent!<br>";

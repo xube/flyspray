@@ -16,3 +16,20 @@ VALUES (
 ALTER TABLE `flyspray_list_tasktype` ADD `project_id` MEDIUMINT( 3 ) NOT NULL ;
 ALTER TABLE `flyspray_list_resolution` ADD `project_id` MEDIUMINT( 3 ) NOT NULL ;
 ALTER TABLE `flyspray_admin_requests` ADD `reason_given` LONGTEXT NOT NULL AFTER `request_type` ;
+
+# added 20050320 by Jamin W. Collins
+CREATE TABLE IF NOT EXISTS `flyspray_notification_messages` (
+    `id`        mediumint(10)   NOT NULL    auto_increment,
+    `subject`   varchar(50)     NOT NULL,
+    `body`      longtext        NOT NULL,
+    `created`   datetime,
+    PRIMARY KEY (`id`)
+) TYPE=MyISAM COMMENT='Notification body and subject' AUTO_INCREMENT=2 ;
+
+CREATE TABLE IF NOT EXISTS `flyspray_notification_recipients` (
+    `id`                mediumint(10)   NOT NULL    auto_increment,
+    `notification_id`   mediumint(10)   NOT NULL,
+    `method`            varchar(1)      NOT NULL,
+    `address`           varchar(100)    NOT NULL,
+    PRIMARY KEY (`id`)
+) TYPE=MyISAM COMMENT='Notification recipient list' AUTO_INCREMENT=2 ;
