@@ -73,5 +73,6 @@ $details_text = array (
 'filename'			=>   'Filename:',
 'date'				=>   'Date:',
 'filetype'			=>   'File Type:',
+'closurecomment'	=>   'Additional comments about closing:',
 );
 ?>

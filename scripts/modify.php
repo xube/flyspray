@@ -105,7 +105,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 
       // ...And send it off to the category owner or default owner
       $result = $fs->SendBasicNotification($send_to, $message);
-      echo $result;
+      //echo $result;
 
 ?>
       <div class="redirectmessage">
@@ -280,12 +280,13 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
 
     date_closed = ?,
     closed_by = ?,
+    closure_comment = ?,
     is_closed = '1',
     resolution_reason = ?
 
     WHERE task_id = ?
 
-    ", array($now, $_COOKIE['flyspray_userid'],
+    ", array($now, $_COOKIE['flyspray_userid'], $_POST['closure_comment'],
     $_POST['resolution_reason'], $_POST['task_id']));
 
     // Get the resolution name for the notifications
@@ -331,7 +332,8 @@ $current_realname ($current_username) {$modify_text['hasclosed']} {$modify_text[
 
     item_status = '7',
     resolution_reason = '1',
-	is_closed = '0'
+    closure_comment = ' ',
+    is_closed = '0'
 
     WHERE task_id = ?
 
@@ -673,12 +675,13 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   if ($_POST['project_title'] != '') {
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_projects
-                              (project_title, theme_style, show_logo,
+                              (project_title, theme_style, show_logo, inline_images,
                               default_cat_owner, intro_message, project_is_active)
-                              VALUES (?, ?, ?, ?, ?, ?)",
+                              VALUES (?, ?, ?, ?, ?, ?, ?)",
                             array($_POST['project_title'],
                               $_POST['theme_style'],
                               $fs->emptyToZero($_POST['show_logo']),
+                              $fs->emptyToZero($_POST['inline_images']),
                               $_POST['default_cat_owner'],
                               $_POST['intro_message'], '1'));
 
@@ -726,7 +729,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                              project_title = ?,
                              theme_style = ?,
                              show_logo = ?,
-                             inline_images =?,
+                             inline_images = ?,
                              default_cat_owner = ?,
                              intro_message = ?,
                              project_is_active = ?

@@ -86,6 +86,14 @@ if ($_SESSION['admin'] == '1') {
   </tr>
   <tr>
     <td>
+    <label for="inlineimages"><?php echo $newproject_text['inlineimages'];?></label>
+    </td>
+    <td>
+    <input type="checkbox" name="inline_images" value="1">
+    </td>
+  </tr>
+  <tr>
+    <td>
       <label for="defaultcatowner"><?php echo $newproject_text['defaultcatowner'];?></label>
     </td>
     <td>

@@ -19,5 +19,8 @@ $newproject_text = array (
 'createthisproject'	=>	'Create this project',
 'nopermission'		=>	'You don\'t have permission to use this page',
 
+// Added in version 0.9.6
+'inlineimages'		=>	'Show image attachments inline',
+
 );
 ?>

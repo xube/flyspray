@@ -25,6 +25,8 @@ if ($_SESSION['can_modify_jobs'] == '1'
 
 ///////////////////////////////////
 // If the user can modify tasks, //
+// and the task is still open,   //
+// and we're in edit mode,       //
 // then use this section.        //
 ///////////////////////////////////
 ?>
@@ -434,11 +436,19 @@ if ($_SESSION['can_modify_jobs'] == '1'
       list($closedby_username, $closedby_realname) = $fs->dbFetchArray($get_closedby_name);
       $date_closed = $task_details['date_closed'];
       $date_closed = date("j M Y", $date_closed);
-      echo "{$details_text['closedby']} $closedby_realname ($closedby_username) on $date_closed.";
+      echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br>";
+	  echo "{$details_text['date']}&nbsp;&nbsp;$date_closed.";
       ?>
       <br>
       <?php echo $details_text['reasonforclosing'];?>&nbsp;&nbsp;
       <?php echo $task_details['resolution_name'];?>
+      <br>
+      <?php
+      if ($task_details['closure_comment'] != '') {
+       echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
+       echo stripslashes($task_details['closure_comment']);
+      };
+     ?>
     </p>
     <?php
     };
@@ -474,6 +484,10 @@ if ($_SESSION['can_modify_jobs'] == '1'
         };
         ?>
         </select>
+        <br>
+        <?php echo $details_text['closurecomment'];?>
+        <br>
+        <textarea class="admintext" name="closure_comment" rows="2" cols="30"></textarea>
         <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" onclick="Disable2()">
     </p>
     </form>
