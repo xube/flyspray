@@ -139,7 +139,7 @@ $modify_text = array (
 
 // Added in version 0.9.7
 
-'nouserselected'        =>        'No user selected.  Press your browser\'s back button and select at least one.',
+'nouserselected'        =>        'No user selected.  Select at least one user before trying again.',  // Changed in svn r191
 'groupswitchupdated'    =>        'User groups modified successfully.',
 'takenownership'        =>        'This task is now assigned to you.',
 'adminrequestmade'      =>        'Your request has been sent to a Project Manager.',
@@ -155,6 +155,8 @@ $modify_text = array (
 'addressused'           =>        'This address has been used to register a Flyspray account.  If you were not expecting this message, please ignore and delete it.  Go to the following URL to complete your registration:',
 'confirmcodeis'         =>        'Your confirmation code is:',
 'codesent'              =>        'Your confirmation code has been sent.  Please follow the instructions contained in the message.',
+'taskmadeprivate'       =>        'This task has been made private',
+'taskmadepublic'        =>        'This task has been made public again',
 
 );
 ?>

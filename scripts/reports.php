@@ -1,7 +1,10 @@
 <?php
-// This script generates all different types of reports.
-// The majority of work was done by Jonathan Oxer - http://www.ivt.com.au/
-//  Thanks, Jon!
+
+/*
+   This script generates all different types of reports.
+   The majority of work was done by Jonathan Oxer - http://www.ivt.com.au/
+   Thanks, Jon!
+*/
 
 get_language_pack($lang, 'reports');
 get_language_pack($lang, 'details');

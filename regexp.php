@@ -160,7 +160,7 @@ if ($_GET['email_address']) {
     //if (preg_match ("/^[A-Za-z0-9\._-]+@([A-Za-z][A-Za-z0-9-]{1,62})(\.[A-Za-z][A-Za-z0-9-]{1,62})+$/", $_GET['email_address'])) {
     
     // New regexp from FS#382 - I suck at regexps; someone tell me if it's safe.
-    if (preg_match ("/^[a-zA-Z0-9._%-]+@[a-zA-Z0-9._%-]+\.[a-zA-Z]{2,4}+$/", $_GET['email_address'])) {
+    if (preg_match ("/^[a-z0-9._-']+(?:\+[a-z0-9._-]+)?[a-z0-9.-]+\.[a-z]{2,4}+$/i", $_GET['email_address'])) {
 
       // continue;
     } else {

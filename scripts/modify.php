@@ -365,9 +365,9 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
     };
     
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskupdated']}</em></p>";
-    echo "<p>{$modify_text['waitwhiletransfer']}</p></div>";
-    sleep(2);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskupdated']}</em></p>";
+    //echo "<p>{$modify_text['waitwhiletransfer']}</p></div>";
+    $_SESSION['SUCCESS'] = $modify_text['taskupdated'];
     header("Location: index.php?do=details&id=" . $_POST['task_id']);
     
     // End of checking if this task was modified while we were editing it.
@@ -387,10 +387,11 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
 
 } elseif($_POST['action'] == "close" 
          && ($permissions['close_other_tasks'] == '1'
-         OR ($permissions['close_own_tasks'] == '1')) // FIX THIS PERMISSION CHECK!!
+         OR ($permissions['close_own_tasks'] == '1'
+             && $old_details['assigned_to'] == $current_user['user_id']))
          ) {
 
-  if ($_POST['resolution_reason'] != "1") {
+  if ($_POST['resolution_reason'] != "1") {  // This needs fixing up
 
     $close_item = $fs->dbQuery("UPDATE flyspray_tasks SET
                                 date_closed = ?,
@@ -475,18 +476,16 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
 // Start of re-opening an task //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "reopen" && $permissions['manage_project'] == "1") {
+} elseif ($_POST['action'] == "reopen"
+          && $permissions['manage_project'] == "1") {
 
     $add_item = $fs->dbQuery("UPDATE flyspray_tasks SET
-
-    item_status = '7',
-    resolution_reason = '1',
-    closure_comment = ' ',
-    is_closed = '0'
-
-    WHERE task_id = ?
-
-    ", array($_POST['task_id']));
+                              item_status = '7',
+                              resolution_reason = '1',
+                              closure_comment = ' ',
+                              is_closed = '0'
+                              WHERE task_id = ?",
+                              array($_POST['task_id']));
 
     // Find out the user who closed this
     list($item_summary, $closed_by) = $fs->dbFetchArray($fs->dbQuery("SELECT item_summary, closed_by FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
@@ -590,13 +589,13 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-    sleep(2);
+    $_SESSION['SUCCESS'] = $modify_text['commentadded'];
     header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
 
   // If they pressed submit without actually typing anything
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['nocommententered']}</em></p></table>";
-    sleep(2);
+    $_SESSION['ERROR'] = $modify_text['nocommententered'];
     header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
   };
 
@@ -862,12 +861,13 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                           VALUES( ?, ?)",
                                           array($user_details['user_id'], $group_in));
 
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newusercreated']}</em></p>";
+        //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newusercreated']}</em></p>";
 
         if ($permissions['is_admin'] != '1') {
           echo "<p>{$modify_text['loginbelow']}</p>";
           echo "<p>{$modify_text['newuserwarning']}</p></div>";
         } else {
+          $_SESSION['SUCCESS'] = $modify_text['newusercreated'];
           header("Location: index.php?do=admin&area=users");
           //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
         };
@@ -950,8 +950,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                 ));
 
         //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$_GET['project']}\">";
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newgroupadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-        sleep(2);
+        //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newgroupadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+        $_SESSION['SUCCESS'] = $modify_text['newgroupadded'];
         header("Location: index.php?do=admin&area=users&project=" . $project_id);
     };
 
@@ -1006,9 +1006,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
   
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=options\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['optionssaved']}</em></p></div>";
-  sleep(2);
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=options\">";
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['optionssaved']}</em></p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
   header("Location: index.php?do=admin&area=options");
   
 // End of updating application preferences
@@ -1156,8 +1156,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                     $_POST['project_id']));
 
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=prefs\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectupdated']}</em></p></div>";
-    sleep(2);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectupdated']}</em></p></div>";
+    $_SESSION['SUCCESS'] = $modify_text['projectupdated'];
     header("Location: index.php?do=admin&area=projects&id=" . $project_id . "&show=prefs");
     
   } else {
@@ -1259,8 +1259,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 
       // Success message!
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileuploaded']}</em></p?<p>{$modify_text['waitwhiletransfer']}</p></div>";
-      sleep(2);
+      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileuploaded']}</em></p?<p>{$modify_text['waitwhiletransfer']}</p></div>";
+      $_SESSION['SUCCESS'] = $modify_text['fileuploaded'];
       header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
       
     // If the file didn't actually get saved, better show an error to that effect
@@ -1336,8 +1336,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                               array($_POST['group_in'], $_POST['record_id']));
 
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
-      sleep(2);
+      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
+      $_SESSION['SUCCESS'] = $modify_text['userupdated'];
       header("Location: index.php");
     };
   } else {
@@ -1406,8 +1406,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     $group_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_POST['group_id'])));
 
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$group_details['belongs_to_project']}\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
-    sleep(2);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
+    $_SESSION['SUCCESS'] = $modify_text['groupupdated'];
     header("Location: index.php?do=admin&area=users&project=" . $group_details['belongs_to_project']);
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupanddesc']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
@@ -1454,7 +1454,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       header("Location: index.php?do=admin&area=" . $_POST['list_type']);
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
   };
-  echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
+  $_SESSION['SUCCESS'] = $redirectmessage;
+  //echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
 
 // End of updating a list
 
@@ -1476,10 +1477,12 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                         VALUES (?, ?, ?, ?)",
                 array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1'));
 
+        $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
         header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+        
         //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
 
-          } else {
+     } else {
 
       $update = $fs->dbQuery("INSERT INTO $list_table_name
                                 ($list_column_name, list_position, show_in_list)
@@ -1490,11 +1493,16 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
         //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
 
       };
+      
+      $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
+      header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
 
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
-
-  } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
+    } else {
+      
+      $_SESSION['ERROR'] = $modify_text['fillallfields'];
+      header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
   };
 // End of adding a list item
 
@@ -1536,8 +1544,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   };
 
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
-  sleep(2);
+  //echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
+  $_SESSION['SUCCESS'] = $redirectmessage;
   header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
 
 // End of updating the version list
@@ -1560,12 +1568,14 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                 array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1', $_POST['version_tense']));
 
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
-      sleep(2);
+      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
+      $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
       header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
 
-  } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
+} else {
+    $_SESSION['ERROR'] = $modify_text['fillallfields'];
+    header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
   };
 // End of adding a version list item
 
@@ -1611,8 +1621,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   };
   
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
-  sleep(1);
+  //echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
+  $_SESSION['SUCCESS'] = $redirectmessage;
   header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=category");
 
 // End of updating the category list
@@ -1637,12 +1647,14 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                         $_POST['category_owner'], 
 			$fs->emptyToZero($_POST['parent_id'])));
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
-      sleep(1);
+      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
+      $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
       header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=category");
 
-  } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
+} else {
+    $_SESSION['ERROR'] = $modify_text['fillallfields'];
+    header("Location: index.php?do=admin&area=projects&show=category&id=" . $_POST['project_id']);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
   };
 // End of adding a category list item
 
@@ -1665,13 +1677,13 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
         
     if ($fs->dbCountRows($check) > 0) {
         //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatederror']}</em></p></div>";
-        sleep(2);
+        //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatederror']}</em></p></div>";
+        $_SESSION['ERROR'] = $modify_text['relatederror'];
         header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
     } elseif (!$fs->dbCountRows($check2)) {
         //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
-        sleep(2);
+        //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
+        $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
         header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
     } else {
         list($relatedproject) = $fs->dbFetchRow($check2);
@@ -1682,8 +1694,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
             $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
             
             //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
-            echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedadded']}</em></p></div>";
-            sleep(2);
+            //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedadded']}</em></p></div>";
+            $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
             header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
             
         } else {
@@ -1710,8 +1722,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     };
   } else {
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
-    sleep(2);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
+    $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
     header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
   };
 
@@ -1731,8 +1743,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $fs->logEvent($_POST['related_task'], 16, $_POST['id']);
   
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['id']}&amp;area=related#tabs\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedremoved']}</em></p></div>";
-  sleep(2);
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedremoved']}</em></p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['relatedremoved'];
   header("Location: index.php?do=details&id=" . $_POST['id'] . "&area=related#tabs");
 
 // End of removing a related task entry
@@ -1755,13 +1767,13 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     $fs->logEvent($_POST['task_id'], 9, $_POST['user_id']);
 
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyadded']}</em></p></div>";
-    sleep(2);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyadded']}</em></p></div>";
+    $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
     header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
   } else {
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyerror']}</em></p></div>";
-    sleep(2);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyerror']}</em></p></div>";
+    $_SESSION['ERROR'] = $modify_text['notifyerror'];
     header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
   };
 
@@ -1780,8 +1792,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $fs->logEvent($_POST['task_id'], 10, $_POST['user_id']);
 
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyremoved']}</em></p></div>";
-  sleep(2);
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyremoved']}</em></p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
   header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
 
 // End of removing a notification entry
@@ -1800,8 +1812,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $fs->logEvent($_POST['task_id'], 5, $_POST['comment_text'], $_POST['previous_text'], $_POST['comment_id']);
 
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['editcommentsaved']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-  sleep(2);
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['editcommentsaved']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['editcommentsaved'];
   header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
 
 // End of editing a comment
@@ -1819,8 +1831,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $fs->logEvent($_POST['task_id'], 6, $row['user_id'], $row['comment_text'], $row['date_added']);
 
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-  sleep(2);
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
   header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
 
 // End of deleting a comment
@@ -1846,8 +1858,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $fs->logEvent($_POST['task_id'], 8, $row['orig_name']);
 
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['attachmentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-  sleep(2);
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['attachmentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['attachmentdeleted'];
   header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
 
 // End of deleting an attachment
@@ -1874,8 +1886,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $fs->logEvent($_POST['task_id'], 17, $_POST['to_user_id']);
 
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-  sleep(2);
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['reminderadded'];
   header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=remind#tabs");
 
 // End of adding a reminder
@@ -1894,8 +1906,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $fs->logEvent($_POST['task_id'], 18, $reminder['to_user_id']);
   
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-  sleep(2);
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['reminderdeleted'];
   header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=remind#tabs");
 
 // End of removing a reminder
@@ -1907,9 +1919,13 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
           && ($permissions['manage_project'] == '1'
               OR $permissions['is_admin'] == '1')) {
 
+  // If no users were selected, throw an error
   if (!is_array($_POST['user_list'])) {
-    die($modify_text['nouserselected']);
-  };
+    $_SESSION['ERROR'] = $modify_text['nouserselected'];
+    header("Location: index.php?do=admin&area=users&project=" . $_POST['project_id']);
+  
+  // If users were select, keep going
+  } else {
 
   // Cycle through the users passed to us
   while (list($key, $val) = each($_POST['user_list'])) {
@@ -1920,9 +1936,13 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                             VALUES(?, ?)",
                             array($val, $_POST['add_to_group']));  
   };
+  
+  $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
+  header("Location: index.php?do=admin&area=users&project=" . $_POST['project_id']);
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupswitchupdated']}</em></p>";
+  //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupswitchupdated']}</em></p>";
-  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+  };
 
 // End of adding a bunch of users to a group
 
@@ -1945,7 +1965,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       $remove = $fs->dbQuery("DELETE FROM flyspray_users_in_groups
                               WHERE user_id = ? AND group_id = ?",
                               array($_POST[$foo], $_POST['old_group']));
-
+     
     } else {
     
       $update = $fs->dbQuery("UPDATE flyspray_users_in_groups
@@ -1957,8 +1977,15 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     $num_users --;
   };
   
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupswitchupdated']}</em></p>";
-  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+  $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
+  if ($_POST['project_id'] != '') {
+    header("Location: index.php?do=admin&area=users&project=" . $_POST['project_id']);
+  } else {
+    header("Location: index.php?do=admin&area=users");
+  };
+  
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupswitchupdated']}</em></p>";
+  //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
   // End of changing a bunch of users' groups
 
@@ -2274,6 +2301,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                           array($_GET['id'])
                          );
 
+  $_SESSION['SUCCESS'] = $modify_text['taskmadeprivate'];
   header("Location: index.php?do=details&id=" . $_GET['id']);
 
 // End of making a task private
@@ -2291,7 +2319,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                           WHERE task_id = ?",
                           array($_GET['id'])
                          );
-
+  
+  $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];
   header("Location: index.php?do=details&id=" . $_GET['id']);
 
 // End of making a task public

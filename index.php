@@ -12,11 +12,11 @@ include('header.php');
 $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'main');
 
-// Fetch the page to include below
-$do = $_REQUEST['do'];
-
-// Default page is the task list
-if (!isset($_REQUEST['do'])) {
+// Set the page to include
+if (isset($_REQUEST['do'])) {
+  $do = $_REQUEST['do'];
+} else {
+  // Default page is the task list
   $do = "index";
 }
 
@@ -140,15 +140,6 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
   // Get current user details.  We need this to see if their account is enabled or disabled
   $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
   $current_user = $fs->dbFetchArray($result);
-
-  // Get the global group for this user, and put the permissions into an array
-  /*$search_global_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = '0'");
-  while ($row = $fs->dbFetchRow($search_global_group)) {
-    $check_in = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($_COOKIE['flyspray_userid'], $row['group_id']));
-    if ($fs->dbCountRows($check_in) > '0') {
-      $global_permissions = $row;
-    };
-  };*/
 
   // Get the global group permissions for the current user
   $global_permissions = $fs->dbFetchArray($fs->dbQuery("SELECT *
@@ -291,7 +282,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
         echo '<ul>';
         while ($this_project = $fs->dbFetchArray($get_projects)) {
            echo '<li>';
-           echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;project=' . $this_project['project_id'] . '">' . $this_project['project_title'] . "</a>\n";
+           echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;project=' . $this_project['project_id'] . '">' . stripslashes($this_project['project_title']) . "</a>\n";
            echo '</li>';
         };
         echo '</ul>';
@@ -341,11 +332,24 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
 // End of checking if the user has the right cookies
 };
+
+// ERROR status bar
+if (isset($_SESSION['ERROR'])) {
+   echo '<h3 id="errorbar">&nbsp;&nbsp;' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/frown.png") . '&nbsp;&nbsp;' . $_SESSION['ERROR'] . '</h3>';
+   unset($_SESSION['ERROR']);
+};
+
+// SUCCESS status bar
+if (isset($_SESSION['SUCCESS'])) {
+   echo '<h3 id="successbar">&nbsp;&nbsp;' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/smile.png") . '&nbsp;&nbsp;' . $_SESSION['SUCCESS'] . '</h3>';
+   unset($_SESSION['SUCCESS']);
+};
+
 ?>
 
 
 <div id="content">
-<map id="formselecttasks" name="formselecttasks">
+<!--<map id="formselecttasks" name="formselecttasks">-->
 <form action="index.php" method="get">
       <p>
       <select name="tasks">
@@ -373,7 +377,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>" />
       </p>
 </form>
-</map>
+<!--</map>-->
 
 <form action="index.php" method="get">
     <p id="showtask">

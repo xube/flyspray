@@ -86,9 +86,9 @@ if ($effective_permissions['can_edit'] == '1'
   $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
   while ($row = $fs->dbFetchArray($get_projects)) {
     if ($task_details['attached_to_project'] == $row['project_id']) {
-      echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";
+      echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
     } else {
-      echo "<option value=\"{$row['project_id']}\">{$row['project_title']}</option>";
+      echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
     };
   };
   ?>
@@ -380,7 +380,7 @@ if ($effective_permissions['can_edit'] == '1'
     <?php echo "{$details_text['task']} #{$_GET['id']} &mdash; $item_summary";?>
     </h2>
     <?php
-    echo "{$details_text['attachedtoproject']} &mdash; <a href=\"?project={$task_details['attached_to_project']}\">{$task_details['project_title']}</a>";
+    echo $details_text['attachedtoproject'] . '&mdash; <a href="?project=' .  $task_details['attached_to_project'] . '">' . stripslashes($task_details['project_title']) . '</a>';
     ?>
 
     <div id="fineprint">

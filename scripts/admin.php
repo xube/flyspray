@@ -135,7 +135,8 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
 // Show users list if the user has the permissions
 } elseif ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
 
-if (isset($_GET['project'])) {
+if (isset($_GET['project'])
+    && $_GET['project'] > '0') {
   $forproject = $project_prefs['project_title'];
 } else {
   $forproject = $admin_text['globalgroups'];
@@ -177,6 +178,7 @@ while ($group = $fs->dbFetchArray($get_groups)) {
   echo '<input type="hidden" name="do" value="modify">' . "\n";
   echo '<input type="hidden" name="action" value="movetogroup">' . "\n";
   echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '">' . "\n";
+  echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
   
   while ($row = $fs->dbFetchArray($get_user_list)) {
     // Next line to ensure we only display each user once on this page
@@ -224,8 +226,9 @@ while ($group = $fs->dbFetchArray($get_groups)) {
 // If this is a project-level edit, we need a method of placing users into a project group
 if ($project_id != '0') {
   echo '<form action="index.php" method="post">' . "\n";
-  echo '<input type="hidden" name="do" value="modify">'. "\n";
-  echo '<input type="hidden" name="action" value="addtogroup">'. "\n";
+  echo '<input type="hidden" name="do" value="modify" />'. "\n";
+  echo '<input type="hidden" name="action" value="addtogroup" />'. "\n";
+  echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
   echo '<br />';
   echo '<select class="adminlist" name="user_list[]" multiple="multiple" size="10">'. "\n";
   
@@ -576,9 +579,9 @@ if ($group_details['belongs_to_project'] < '1') {
     $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
     while ($row = $fs->dbFetchArray($get_projects)) {
       if ($flyspray_prefs['default_project'] == $row['project_id']) {
-        echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";
+        echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
       } else {
-        echo "<option value=\"{$row['project_id']}\">{$row['project_title']}</option>";
+        echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
       };
     };
     ?>
