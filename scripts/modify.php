@@ -274,7 +274,10 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
 
 // End of updating an task
 
-// Start of closing a task
+/////////////////////////////
+// Start of closing a task //
+/////////////////////////////
+
 } elseif($_POST['action'] == "close" && $_SESSION['can_modify_jobs'] == "1") {
 
   if ($_POST['resolution_reason'] != "1") {
@@ -302,7 +305,14 @@ $brief_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']}
 $current_realname ($current_username) {$modify_text['hasclosedassigned']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
 {$modify_text['reasonforclosing']} {$get_res['resolution_name']} \n
-{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']} \n";
+
+if($_POST['closure_comment'] != '') {
+   $brief_message = $brief_message . "\n {$modify_text['closurecomment']} {$_POST['closure_comment']}\n";
+};
+
+$brief_message = $brief_message . "\n{$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']} \n";
+
+
 
       $result = $fs->SendBasicNotification($_POST['assigned_to'], $brief_message);
       echo $result;
@@ -313,7 +323,11 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 $current_realname ($current_username) {$modify_text['hasclosed']} {$modify_text['youonnotify']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
 {$modify_text['reasonforclosing']} {$get_res['resolution_name']} \n
-{$modify_text['moreinfomodify']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']} \n";
+
+if($_POST['closure_comment'] != '') {
+   $detailed_message = $detailed_message . "{$modify_text['closurecomment']} {$_POST['closure_comment']}\n";
+};
+$detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']} \n";
 
       $result = $fs->SendDetailedNotification($_POST['task_id'], $detailed_message);
       echo $result;

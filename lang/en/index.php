@@ -26,5 +26,8 @@ $index_text = array (
 // Added in version 0.9.5
 'searchthisproject'	=>	'Search this project',
 
+// Added in version 0.9.6
+'closed'			=>	'Closed',
+
 );
 ?>

@@ -24,3 +24,5 @@ ALTER TABLE flyspray_users ADD dateformat_extended varchar(30) NOT NULL default 
 
 INSERT INTO flyspray_prefs VALUES (18, 'dateformat', '', 'Default date format for new users and guests used in the task list');
 INSERT INTO flyspray_prefs VALUES (19, 'dateformat_extended', '', 'Default date format for new users and guests used in task details');
+
+ALTER TABLE `flyspray_list_category` ADD `parent_id` MEDIUMINT( 1 ) NOT NULL ;

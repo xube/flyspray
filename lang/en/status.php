@@ -10,7 +10,8 @@ $status_list = array (
 '5'	=>	'Waiting on Customer',
 '6'	=>	'Requires testing',
 '7'	=>	'Reopened',
-'8'	=>	'Closed',
+// Removed in version 0.9.6
+//'8'	=>	'Closed',
 
 );
 ?>
