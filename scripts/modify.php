@@ -391,7 +391,7 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
              && $old_details['assigned_to'] == $current_user['user_id']))
          ) {
 
-  if ($_POST['resolution_reason'] != "1") {  // This needs fixing up
+  if ($_POST['resolution_reason'] != '0') {
 
     $close_item = $fs->dbQuery("UPDATE flyspray_tasks SET
                                 date_closed = ?,
@@ -462,12 +462,17 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
                     array($current_user['user_id'], date(U), $_POST['task_id'], 1));
     };
 
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskclosed']}</em></p>";
-    echo "<p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['returntotask']}</a></p>";
-    echo "<p><a href=\"?\">{$modify_text['backtoindex']}</a></p></div>";
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskclosed']}</em></p>";
+    //echo "<p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['returntotask']}</a></p>";
+    //echo "<p><a href=\"?\">{$modify_text['backtoindex']}</a></p></div>";
 
-  } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['noclosereason']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+    $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
+    header("Location: index.php?do=details&id=" . $_POST['task_id']);
+
+} else {
+    $_SESSION['ERROR'] = $modify_text['noclosereason'];
+    Header("Location: index.php?do=details&id=" . $_POST['task_id']);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['noclosereason']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
   };
 
 // End of closing a task
@@ -528,7 +533,9 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
  
     $fs->logEvent($_POST['task_id'], 13);
 
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskreopened']}</em></p><p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['backtotask']}</a></p></div>";
+    $_SESSION['SUCCESS'] = $modify_text['taskreopened'];
+    header("Location: index.php?do=details&id=" . $_POST['task_id']);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskreopened']}</em></p><p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['backtotask']}</a></p></div>";
 
 // End of re-opening an item
 
@@ -1284,7 +1291,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 
   // If they filled in all the required fields
   if ($_POST['real_name'] != ""
-    && $_POST['email_address'] != ""
+    && ($_POST['email_address'] != ""
+        OR $_POST['jabber_id'] != "")
     ) {
       //If the user entered matching password and confirmation
       //we can change the selected user's password
@@ -1338,10 +1346,12 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
       //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
       $_SESSION['SUCCESS'] = $modify_text['userupdated'];
-      header("Location: index.php");
+      header("Location: ?do=admin&area=users&id=" . $_POST['user_id']);
     };
   } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['realandemail']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+    $_SESSION['ERROR'] = $modify_text['realandnotify'];
+    header("Location: ?do=admin&area=users&id=" . $_POST['user_id']);
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['realandnotify']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
   };
 // End of modifying user details
 

@@ -89,7 +89,7 @@ $modify_text = array (
 'selectfileerror'       =>        'You didn\'t select a file.',  // Changed in 0.9.6
 
 'userupdated'           =>        'User details have been updated',
-'realandemail'          =>        'You didn\'t fill in both the Real Name and Email Address fields.',
+'realandemail'          =>        'You didn\'t fill in both the Real Name and Email Address fields.', // Not used from 0.9.7
 
 'groupupdated'          =>        'Group definition updated.',
 'groupanddesc'          =>        'You didn\'t fill in the Group name and description fields.',
@@ -157,6 +157,7 @@ $modify_text = array (
 'codesent'              =>        'Your confirmation code has been sent.  Please follow the instructions contained in the message.',
 'taskmadeprivate'       =>        'This task has been made private',
 'taskmadepublic'        =>        'This task has been made public again',
+'realandnotify'         =>        'You need to fill in the Real Name field, and either the Email Address or Jabber ID field.',
 
 );
 ?>

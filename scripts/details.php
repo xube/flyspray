@@ -56,16 +56,17 @@ $item_summary = stripslashes($item_summary);
 $detailed_desc = stripslashes($detailed_desc);
 
 
-if ($effective_permissions['can_edit'] == '1'
-  && $task_details['is_closed'] != '1'
-  && $_GET['edit'] == 'yep') {
-
 ///////////////////////////////////
 // If the user can modify tasks, //
 // and the task is still open,   //
 // and we're in edit mode,       //
 // then use this section.        //
 ///////////////////////////////////
+
+if ($effective_permissions['can_edit'] == '1'
+  && $task_details['is_closed'] != '1'
+  && $_GET['edit'] == 'yep') {
+
 ?>
 
 <!-- create some columns -->
@@ -666,14 +667,15 @@ echo '<div id="actionbuttons">';
         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
         <?php echo $details_text['closetask'];?>
         <select class="adminlist" name="resolution_reason">
+          <option value="0"><?php echo $details_text['selectareason']; ?></option>
         <?php
         $get_resolution = $fs->dbQuery("SELECT resolution_id, resolution_name FROM flyspray_list_resolution ORDER BY list_position");
         while ($row = $fs->dbFetchArray($get_resolution)) {
-          if ($row['resolution_id'] == $task_details['resolution_reason']) {
-            echo "<option value=\"{$row['resolution_id']}\" selected=\"selected\">{$row['resolution_name']}</option>\n";
-          } else {
+          //if ($row['resolution_id'] == $task_details['resolution_reason']) {
+            //echo "<option value=\"{$row['resolution_id']}\" selected=\"selected\">{$row['resolution_name']}</option>\n";
+          //} else {
             echo "<option value=\"{$row['resolution_id']}\">{$row['resolution_name']}</option>\n";
-          };
+          //};
         };
         ?>
         </select>

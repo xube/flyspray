@@ -137,7 +137,7 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
 
 if (isset($_GET['project'])
     && $_GET['project'] > '0') {
-  $forproject = $project_prefs['project_title'];
+  $forproject = stripslashes($project_prefs['project_title']);
 } else {
   $forproject = $admin_text['globalgroups'];
   $project_id = '0';
@@ -164,7 +164,7 @@ $user_checklist = array();
 $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
 while ($group = $fs->dbFetchArray($get_groups)) {
 
-  echo "<h4><a href=\"?do=admin&amp;area=groups&amp;id={$group['group_id']}\">{$group['group_name']}</a></h4>\n";
+  echo '<h4><a href="?do=admin&amp;area=groups&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
   echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
   echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
@@ -285,7 +285,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
 if ($group_details['belongs_to_project'] < '1') {
   echo '<h3>' . $admin_text['editglobalgroup'] . '</h3>';
 } else {
-  echo '<h3>' . $admin_text['editgroupforproj'] . ' - ' . $project_prefs['project_title'] . '</h3>';
+  echo '<h3>' . $admin_text['editgroupforproj'] . ' - ' . htmlspecialchars(stripslashes($project_prefs['project_title'])) . '</h3>';
 };  
 ?>
 
@@ -298,11 +298,11 @@ if ($group_details['belongs_to_project'] < '1') {
       <input type="hidden" name="group_id" value="<?php echo $group_details['group_id'];?>">
 
       <label for="groupname"><?php echo $admin_text['groupname'];?></label></td>
-      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo $group_details['group_name'];?>"></td>
+      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']));?>"></td>
     </tr>
     <tr>
       <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
-      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo $group_details['group_desc'];?>"></td>
+      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']));?>"></td>
     </tr>
    
     <?php
@@ -423,7 +423,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <td>
       <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>">
       <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
-      <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo $row['tasktype_name'];?>"></td>
+      <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']));?>"></td>
       <td title="The order these items will appear in the TaskType list">
         <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
         <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
@@ -487,7 +487,7 @@ if ($group_details['belongs_to_project'] < '1') {
         <td>
           <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>">
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo $row['resolution_name'];?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']));?>">
         </td>
         <td title="The order these items will be shown in the Resolution list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -986,7 +986,7 @@ if ($_GET['show'] == 'prefs') { ?>
       <td>
         <input type="hidden" name="id[]" value="<?php echo $row['category_id'];?>">
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name[]" value="<?php echo stripslashes($row['category_name']);?>">
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['category_name']));?>">
       </td>
       <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -1132,7 +1132,7 @@ if ($_GET['show'] == 'prefs') { ?>
         <td>
           <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>">
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo stripslashes($row['os_name']);?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']));?>">
         </td>
         <td title="The order these items will appear in the Operating System list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -1210,7 +1210,7 @@ if ($_GET['show'] == 'prefs') { ?>
         <td>
           <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>">
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo stripslashes($row['version_name']);?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']));?>">
         </td>
         <td title="<?php echo $admin_text['listordertip'];?>">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>

@@ -68,7 +68,7 @@ if ($permissions['is_admin'] == "1"
     </tr>
     <?php if ($permissions['is_admin'] == "1") { ?>
     <tr>
-      <td><label for="groupin"><?php echo $newuser_text['group'];?></label></td>
+      <td><label for="groupin"><?php echo $newuser_text['globalgroup'];?></label></td>
       <td>
       <select id="groupin" class="adminlist" name="group_in">
       <?php // Get the group names
