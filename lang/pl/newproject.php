@@ -18,6 +18,9 @@ $newproject_text = array (
 'createthisproject'	=>	'Utwórz projekt',
 'nopermission'		=>	'Nie masz uprawnień do używania tej strony',
 
+// Added in version 0.9.6
+'inlineimages'		=>	'Wyświetl załączniki w treści strony',
+
 );
 // vim:fenc=utf-8:enc=utf-8:nowrap
 ?>

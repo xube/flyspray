@@ -133,6 +133,10 @@ $modify_text = array (
 'loginbelow'	    =>	'Teraz możesz zalogować się, korzystając z poniższego formularza.',
 'attachmentdeleted' =>	'Załącznik został usunięty',
 
+// Added in 0.9.6
+'reminderadded'     =>   'Przypomnienie zostało dodane.',
+'reminderdeleted'   =>   'Przypomnienie zostało usunięte.',
+
 );
 // vim:fenc=utf-8:enc=utf-8:nowrap
 ?>

@@ -78,6 +78,12 @@ $details_text = array (
 'defaultreminder'   =>   "To jest przypomnienie, by zająć się zadaniem
 Flyspray'a: ",
 'message'           =>   'Wiadomość',
+'closed'			=>   'Zamknięte',
+'filename'			=>   'Nazwa pliku:',
+'date'				=>   'Data:',
+'filetype'			=>   'Typ pliku:',
+'closurecomment'	=>   'Dodatkowe adnotacje dotyczące zamknięcia:',
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>
