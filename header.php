@@ -10,8 +10,15 @@
 
 //error_reporting(E_ALL & -E_NOTICE);
 
+
+// This line gets the operating system so that we know which way to put slashes in the path
+strstr( PHP_OS, "WIN") ? $slash = "\\" : $slash = "/";
+
+// Define the path to the config file.  Change this line if you move flyspray.conf.php elsewhere
+$conf_file = realpath('./') . $slash . 'flyspray.conf.php';
+
 // Load the config file
-$conf_array = @parse_ini_file("flyspray.conf.php", true);
+$conf_array = @parse_ini_file($conf_file, true);
 
 
 // Set values from the config file. Once these settings are loaded a connection
@@ -32,7 +39,6 @@ if (!isset($basedir)
    OR $basedir == '') {
       Header("Location: sql/install-0.9.7.php");
 };
-
 
 include_once ( "$adodbpath" );
 include ( "$basedir/includes/functions.inc.php" );

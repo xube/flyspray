@@ -171,9 +171,9 @@ if (!isset($_SESSION['basedir'])) {
 /////////////////////////////////////////////////////
 } elseif ($page == '3') {
 
-   if (file_exists('../flyspray.conf.php')) {
+   /*if (file_exists('../flyspray.conf.php')) {
       die('Setup has already been completed.  If you really want to run it again, remove flyspray.conf.php');
-   };
+   };*/
 
    $_SESSION['basedir'] = stripslashes($_POST['basedir']);
    $_SESSION['adodbpath'] = stripslashes($_POST['adodbpath']);
@@ -194,7 +194,7 @@ if (!isset($_SESSION['basedir'])) {
          // Now, check for the correct path to the adodb.inc.php file
          if (!file_exists($_SESSION['adodbpath']))
          {
-            die('The path to adodb.inc.php wasn\'t set correctly.  Press your browser\'s BACK button to return to the previous page.');
+            die('The path to adodb.inc.php wasn\'t set correctly.  <a href="?p=2">Go back and fix it up.</a>');
          
          }         
 
@@ -208,7 +208,7 @@ if (!isset($_SESSION['basedir'])) {
          
          // Copy the skeleton config file to the Flyspray directory         
          if (!@copy("flyspray.conf.skel", "../flyspray.conf.php")) {
-            die ('Cannot create flyspray.conf.php in the Flyspray directory.  Perhaps we do not have write permission?');
+            die ('Cannot create flyspray.conf.php in the Flyspray directory.  Perhaps we do not have write permission?  Check the directory permissions, then  <a href="?p=2">go back and try again</a>.');
          };
          
          $somecontent = '
