@@ -38,6 +38,7 @@ while ($row = $fs->dbFetchRow($get_reminders)) {
             };
         };
 
+        $subject = $functions_text['notifyfrom'] . " " . $project_prefs['project_title'];
         $message = stripslashes($row['reminder_message']);
 
         // Pass the recipients and message onto the Jabber Message function
@@ -47,14 +48,14 @@ while ($row = $fs->dbFetchRow($get_reminders)) {
                 $flyspray_prefs['jabber_username'],
                 $flyspray_prefs['jabber_password'],
                 $jabber_users,
-                "{$functions_text['notifyfrom']} {$project_prefs['project_title']}",
+                $subject,
                 $message,
                 "Flyspray"
                 );
 
 
         // Pass the recipients and message onto the mass email function
-        $fs->SendEmail($email_users, $message);
+        $fs->SendEmail($email_users, $subject, $message);
 		
 		// Update the database with the time sent
 		$update_db = $fs->dbQuery("UPDATE flyspray_reminders SET last_sent = ? WHERE reminder_id = ?", array($now, $row['reminder_id']));

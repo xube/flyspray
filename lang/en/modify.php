@@ -141,6 +141,7 @@ $modify_text = array (
 'nouserselected'     =>   'No user selected.  Press your browser\'s back button and select at least one.',
 'groupswitchupdated' =>   'User groups modified successfully.',
 'takenownership'     =>   'This task is now assigned to you.',
+'adminrequestmade' =>   'Your request has been sent to a Project Manager.',
 
 );
 ?>

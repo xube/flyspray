@@ -85,13 +85,6 @@ CREATE TABLE `flyspray_users_in_groups` (
   PRIMARY KEY  (`record_id`)
 ) TYPE=MyISAM COMMENT='Which users are in which groups' AUTO_INCREMENT=1 ;
 
-#  Add the 'super' user into the above table (in the 'Admin' group)
-#  This will be written into the upgrade script to put all users into the global groups
-# INSERT INTO `flyspray_users_in_groups` ( `record_id` , `user_id` , `group_id` )
-# VALUES (
-# '', '1', '1'
-# );
-
 
 # Project permissions
 
@@ -104,3 +97,21 @@ INSERT INTO `flyspray_groups` ( `group_id` , `group_name` , `group_desc` , `belo
 VALUES (
 '', 'Basic', 'Members can login, relying upon Project permissions only', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1'
 );
+
+####################################
+## The Psi database is up to here ##
+####################################
+
+# Create the pending 'admin requests' table
+
+CREATE TABLE `flyspray_admin_requests` (
+  `request_id` mediumint(5) NOT NULL auto_increment,
+  `project_id` mediumint(5) NOT NULL default '0',
+  `task_id` mediumint(5) NOT NULL default '0',
+  `submitted_by` mediumint(5) NOT NULL default '0',
+  `request_type` mediumint(2) NOT NULL default '0',
+  `time_submitted` varchar(12) NOT NULL default '',
+  `resolved_by` mediumint(5) NOT NULL default '0',
+  `time_resolved` varchar(12) NOT NULL default '',
+  PRIMARY KEY  (`request_id`)
+) TYPE=MyISAM COMMENT='Pending requests for admins and PMs to attend to' AUTO_INCREMENT=1 ;

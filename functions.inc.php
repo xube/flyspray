@@ -365,7 +365,6 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
                 $flyspray_prefs['jabber_username'],
                 $flyspray_prefs['jabber_password'],
                 $jabber_users,
-                //"{$functions_text['notifyfrom']} {$flyspray_prefs['project_title']}",
                 $subject,
                 $message,
                 "Flyspray"
@@ -455,86 +454,146 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
   // This provides funky page numbering
   // Thanks to Nathan Fritz for this.  http://www.netflint.net/
   function pagenums($pagenum, $perpage, $pagesper, $totalcount, $extraurl)
-{
-$flyspray_prefs = $this->GetGlobalPrefs();
-$lang = $flyspray_prefs['lang_code'];
-require("lang/$lang/functions.inc.php");
+  {
+    $flyspray_prefs = $this->GetGlobalPrefs();
+    $lang = $flyspray_prefs['lang_code'];
+    require("lang/$lang/functions.inc.php");
 
-if (!($totalcount / $perpage <= 1)) {
-
-    if ($pagenum - 1000 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 1000) . $extraurl . "\">{$functions_text['back']} 1,000</a> - ";
-    if ($pagenum - 100 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 100) . $extraurl . "\">{$functions_text['back']} 100</a> - ";
-    if ($pagenum - 10 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 10) . $extraurl . "\">{$functions_text['back']} 10</a> - ";
-    if ($pagenum - 1 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">{$functions_text['back']}</a> - ";
-    $start = floor($pagenum - ($pagesper / 2)) + 1;
-    if ($start <= 0) $start = 0;
-    $finish = $pagenum + ceil($pagesper / 2);
-    if ($finish >= $totalcount / $perpage) $finish = floor($totalcount / $perpage);
-    for ($pagelink = $start; $pagelink <= $finish;  $pagelink++)
-    {
-        if ($pagelink != $start) $output .= " - ";
-        if ($pagelink == $pagenum) {
-            $output .= "<a href=\"?pagenum=" . ($pagelink) . "$extraurl\"><b>" . ($pagelink + 1) . "</b></a>";
-        } else {
-            $output .= "<a href=\"?pagenum=" . ($pagelink) . "$extraurl\">" . ($pagelink + 1) . "</a>";
-        }
+    if (!($totalcount / $perpage <= 1)) {
+  
+      if ($pagenum - 1000 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 1000) . $extraurl . "\">{$functions_text['back']} 1,000</a> - ";
+      if ($pagenum - 100 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 100) . $extraurl . "\">{$functions_text['back']} 100</a> - ";
+      if ($pagenum - 10 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 10) . $extraurl . "\">{$functions_text['back']} 10</a> - ";
+      if ($pagenum - 1 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">{$functions_text['back']}</a> - ";
+      $start = floor($pagenum - ($pagesper / 2)) + 1;
+      if ($start <= 0) $start = 0;
+      $finish = $pagenum + ceil($pagesper / 2);
+      if ($finish >= $totalcount / $perpage) $finish = floor($totalcount / $perpage);
+      for ($pagelink = $start; $pagelink <= $finish;  $pagelink++)
+      {
+          if ($pagelink != $start) $output .= " - ";
+          if ($pagelink == $pagenum) {
+              $output .= "<a href=\"?pagenum=" . ($pagelink) . "$extraurl\"><b>" . ($pagelink + 1) . "</b></a>";
+          } else {
+              $output .= "<a href=\"?pagenum=" . ($pagelink) . "$extraurl\">" . ($pagelink + 1) . "</a>";
+          }
+      }
+      if ($pagenum + 1 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1) . $extraurl . "\">{$functions_text['forward']}</a> ";
+      if ($pagenum + 10 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 10) . $extraurl . "\">{$functions_text['forward']} 10</a> ";
+      if ($pagenum + 100 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 100) . $extraurl . "\">{$functions_text['forward']} 100</a> ";
+      if ($pagenum + 1000 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1000) . $extraurl . "\">{$functions_text['forward']} 1,000</a> ";
+      return $output;
     }
-    if ($pagenum + 1 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1) . $extraurl . "\">{$functions_text['forward']}</a> ";
-    if ($pagenum + 10 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 10) . $extraurl . "\">{$functions_text['forward']} 10</a> ";
-    if ($pagenum + 100 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 100) . $extraurl . "\">{$functions_text['forward']} 100</a> ";
-    if ($pagenum + 1000 < $totalcount / $perpage) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1000) . $extraurl . "\">{$functions_text['forward']} 1,000</a> ";
-    return $output;
-}
-}
+  }
 
-	function formatDate($timestamp, $extended)
-	{	
-		$dateformat = '';
-		$format_id = $extended ? "dateformat_extended" : "dateformat";
+  function formatDate($timestamp, $extended)
+  {	
+    $dateformat = '';
+    $format_id = $extended ? "dateformat_extended" : "dateformat";
 
-		if(isset($_SESSION['userid']))
-		{
-			$get_user_details = $this->dbQuery("SELECT {$format_id} FROM flyspray_users WHERE user_id = " . $_SESSION['userid']);
-			$user_details = $this->dbFetchArray($get_user_details);
-			$dateformat = $user_details[$format_id];
-		}
+    if(isset($_SESSION['userid']))
+      {
+      $get_user_details = $this->dbQuery("SELECT {$format_id} FROM flyspray_users WHERE user_id = " . $_SESSION['userid']);
+      $user_details = $this->dbFetchArray($get_user_details);
+      $dateformat = $user_details[$format_id];
+      }
 		
-		if($dateformat == '')
-		{
-			$flyspray_prefs = $this->GetGlobalPrefs();
-			$dateformat = $flyspray_prefs[$format_id];
-		}
+    if($dateformat == '')
+    {
+      $flyspray_prefs = $this->GetGlobalPrefs();
+      $dateformat = $flyspray_prefs[$format_id];
+    }
 
-		if($dateformat == '')		
-			$dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-d";
+    if($dateformat == '')		
+      $dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-d";
 
-		return date($dateformat, $timestamp);
-	}
+    return date($dateformat, $timestamp);
+  }
+
 	
-	function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
-	{
-	    $this->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value) 
-	                      VALUES(?, ?, ?, ?, ?, ?, ?)",
-	                      array($task, $this->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
-	}
-	
-	function LinkedUsername($user_id)
-	{
-	    $result = $this->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($user_id));
-	    if ($this->dbCountRows($result) == 0) return '';
-	    $result = $this->dbFetchRow($result);
-	    return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";	
-	}
+  function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
+  {
 
-	// To stop some browsers showing a blank box when an image doesn't exist
-	function ShowImg($path)
-	{
-		if(file_exists($path))
-		{
-			echo '<img src="' . $path . '" alt="" />';
-		}
-	}
-// End of Flyspray class
+  // This function creates entries in the history table.  These are the event types:
+  //  0: Fields changed in a task
+  //  1: New task created
+  //  2: Task closed
+  //  3: Task edited (for backwards compatibility with events prior to the history system)
+  //  4: Comment added
+  //  5: Comment edited
+  //  6: Comment deleted
+  //  7: Attachment added
+  //  8: Attachment deleted
+  //  9: User added to notification list
+  // 10: User removed from notification list
+  // 11: Related task added to this task
+  // 12: Related task removed from this task
+  // 13: Task re-opened
+  // 14: Task assigned to user / re-assigned to different user / Unassigned
+  // 15: This task was added to another task's related list
+  // 16: This task was removed from another task's related list
+  // 17: Reminder added
+  // 18: Reminder deleted
+  // 19: User took ownership
+  // 20: Closure request made
+  // 21: Re-opening request made
+  
+
+  $this->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value) 
+                  VALUES(?, ?, ?, ?, ?, ?, ?)",
+                  array($task, $this->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
+  }
+
+	
+  function LinkedUsername($user_id)
+  {
+    $result = $this->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($user_id));
+    if ($this->dbCountRows($result) == 0) return '';
+    $result = $this->dbFetchRow($result);
+    return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";	
+  }
+
+  // To stop some browsers showing a blank box when an image doesn't exist
+  function ShowImg($path)
+  {
+    if(file_exists($path))
+    {
+      echo '<img src="' . $path . '" alt="" />';
+    }
+  }
+
+  // Log a request for an admin/project manager to do something
+  // Types are:
+  //  1: Task close
+  //  2: Task re-open
+  //  3: Application for project membership
+
+  function AdminRequest($type, $project, $task, $submitter)
+  {
+    $this->dbQuery("INSERT INTO flyspray_admin_requests (project_id, task_id, submitted_by, request_type, time_submitted)
+                    VALUES(?, ?, ?, ?, ?)",
+                    array($project, $task, $submitter, $type, date(U)));
+
+  }
+  
+  
+  // Check for an existing admin request for a task and event type
+  function AdminRequestCheck($type, $task)
+  {
+    $check = $this->dbQuery("SELECT * FROM flyspray_admin_requests
+                             WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
+                             array($type, $task));
+    if ($this->dbCountRows($check)) {
+      return true;
+    } else {
+      return false;
+    };
+  }
+
+
+///////////////////////////
+// End of Flyspray class //
+///////////////////////////
 }
 
 ?>

@@ -65,14 +65,14 @@ if ($_POST['action'] == "newtask" && ($permissions['open_new_tasks'] == "1" OR $
     if ($_POST['notifyme'] == '1') {
       $insert = $fs->dbQuery("INSERT INTO flyspray_notifications
       (task_id, user_id)
-      VALUES('{$get_task_info['task_id']}', '{$_COOKIE['flyspray_userid']}')");
-      $fs->logEvent($get_task_info['task_id'], 9, $_COOKIE['flyspray_userid']);
+      VALUES('{$get_task_info['task_id']}', '{$current_user['user_id']}')");
+      $fs->logEvent($get_task_info['task_id'], 9, $current_user['user_id']);
     };
 
     // Check if the new task was assigned to anyone
     if ($_POST['assigned_to'] != '' && $_POST['assigned_to'] != '0') {
         $fs->logEvent($get_task_info['task_id'], 14, $_POST['assigned_to'], '0');
-        if ($_POST['assigned_to'] != $_COOKIE['flyspray_userid']) {
+        if ($_POST['assigned_to'] != $current_user['user_id']) {
 
 // Create the brief notification message
 $subject = "{$modify_text['flyspraytask']} #{$get_task_info['task_id']} - {$get_task_info['item_summary']}";
@@ -356,9 +356,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
       $fs->logEvent($_POST['task_id'], 14, $_POST['assigned_to'], $_POST['old_assigned']);
 
     };
-      
-    //$fs->logEvent($_POST['task_id'], 3);
-
+    
     echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskupdated']}</em></p>";
     echo "<p>{$modify_text['waitwhiletransfer']}</p></div>";
@@ -440,8 +438,17 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
 
       $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
-      
+    
+    // Log this to the task's history 
     $fs->logEvent($_POST['task_id'], 2, $_POST['resolution_reason'], $_POST['closure_comment']);
+
+    // If there's an admin request related to this, close it
+    if ($fs->AdminRequestCheck(1, $_POST['task_id']) == '1') {
+      $fs->dbQuery("UPDATE flyspray_admin_requests
+                    SET resolved_by = ?, time_resolved = ?
+                    WHERE task_id = ? AND request_type = ?",
+                    array($current_user['user_id'], date(U), $_POST['task_id'], 1));
+    };
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskclosed']}</em></p>";
     echo "<p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['returntotask']}</a></p>";
@@ -500,7 +507,15 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 
       $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
-      
+
+    // If there's an admin request related to this, close it
+    if ($fs->AdminRequestCheck(2, $_POST['task_id']) == '1') {
+      $fs->dbQuery("UPDATE flyspray_admin_requests
+                    SET resolved_by = ?, time_resolved = ?
+                    WHERE task_id = ? AND request_type = ?",
+                    array($current_user['user_id'], date(U), $_POST['task_id'], 2));
+    };
+ 
     $fs->logEvent($_POST['task_id'], 13);
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskreopened']}</em></p><p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['backtotask']}</a></p></div>";
@@ -1717,23 +1732,81 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 ///////////////////////////////
 
 } elseif ($_POST['action'] == 'takeownership'
-          && ($permissions['assign_to_self'] == '1' OR $permissions['assign_others_to_self'] == '1')) {  // FIX THIS PERMISSION CHECK
+          && (($permissions['assign_to_self'] == '1' && $old_details['assigned_to'] == '0')
+               OR $permissions['assign_others_to_self'] == '1')) { 
 
   $update = $fs->dbQuery("UPDATE flyspray_tasks
                           SET assigned_to = ?, item_status = '3'
                           WHERE task_id = ?",
                           array($current_user['user_id'], $_POST['task_id']));
+  // Add code for notifications
+
+  // If this task was previously assigned to someone else, better notify them of their loss
+  if($old_details['assigned_to'] != '0') {
+
+    $item_summary = stripslashes($_POST['item_summary']);
+    $subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
+    $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
+    {$modify_text['nolongerassigned']} {$current_user['real_name']} ({$current_user['username']}).\n
+    {$modify_text['task']} #{$_POST['task_id']} - {$old_details['item_summary']}\n
+    {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}";
+    // End of generating a message
+
+    // Send the brief notification message
+    $result = $fs->SendBasicNotification($old_details['assigned_to'], $subject, $message);
+    echo $result;
+
+  };
+
+  // Log this event to the task history
+  $fs->logEvent($_POST['task_id'], 19, $current_user['user_id'], $old_details['assigned_to']); 
+
 
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['takenownership']}</em></p>";
   echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
-// Add code for notifications
-// Add code for logging the history of this event
-
 // End of taking ownership
 
 
-// End of actions!
+//////////////////////////////////////
+// Start of requesting task closure //
+//////////////////////////////////////
+
+} elseif ($_POST['action'] == 'requestclose') {
+
+  // Log the admin request
+  $fs->AdminRequest(1, $project_id, $_POST['task_id'], $current_user['user_id']);
+
+  // Log this event to the task history
+  $fs->logEvent($_POST['task_id'], 20, $current_user['user_id']);
+
+  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['adminrequestmade']}</em></p>";
+  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+
+// End of requesting task closure
+
+
+/////////////////////////////////////////
+// Start of requesting task re-opening //
+/////////////////////////////////////////
+
+} elseif ($_POST['action'] == 'requestreopen') {
+
+  // Log the admin request
+  $fs->AdminRequest(2, $project_id, $_POST['task_id'], $current_user['user_id']);
+
+  // Log this event to the task history
+  $fs->logEvent($_POST['task_id'], 21, $current_user['user_id']);
+
+  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['adminrequestmade']}</em></p>";
+  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+
+// End of requesting task re-opening
+
+
+/////////////////////
+// End of actions! //
+/////////////////////
 };
 
 ?>

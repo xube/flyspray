@@ -229,6 +229,20 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
      // Show the Admin menu //
     /////////////////////////
     if ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
+
+    // Find out if there are any PM requests wanting attention
+    $get_req = $fs->dbQuery("SELECT * FROM flyspray_admin_requests
+                             WHERE project_id = ? AND resolved_by = '0'",
+                             array($project_id));
+    $num_req = $fs->dbCountRows($get_req);
+
+    // Check for admin requests too
+    if ($permissions['is_admin'] == '1') {
+      $get_admin_req = $fs->dbQuery("SELECT * FROM flyspray_admin_requests
+                                     WHERE project_id = '0' AND resolved_by = '0'");
+      $num_req = $num_req + $fs->dbCountRows($get_admin_req);
+    };
+
       echo '<span id="adminmenu">';
       echo '<em>' . $language['adminmenu']. '</em>';
       
@@ -258,8 +272,18 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
         echo '<small> | </small>';
         echo '<a href="?do=admin&amp;area=resolution">' .
         $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['resolutions'] . "</a>\n";
-        echo "</span>\n";
       };
+
+      // Show the amount of admin requests waiting
+      if (($permissions['manage_project'] == '1'
+          OR $permissions['is_admin'] == '1')
+          && $num_req > '0') {
+         echo '<small> | </small>';
+         echo '<span class="attention"><a href="?do=admin&amp;area=pendingreq">' . $num_req . ' ' . $language['adminreqwaiting'] . '</a></span>';
+      };
+
+      echo "</span>\n";
+
     // End of checking if the admin menu should be displayed
     };
     echo "</p>";

@@ -135,10 +135,18 @@ $admin_text = array (
 'usergroups'		=>	'Users and Groups',
 'globalgroup'		=>	'Global Group',  // Singular 
 'globalgroups'		=>	'Global Groups', // Plural
-'defaultglobalgroup' => 'Default global group for new users',
+'defaultglobalgroup'    =>      'Default global group for new users',
 'addtogroup'		=>	'Add to group',
 'moveuserstogroup'	=>	'Move users to group',
 'nogroup'		=>	'No Group - Remove from project',
+'pendingrequests'       =>      'Pending Admin Requests',
+'eventdesc'             =>      'Event Description',
+'requestedby'           =>      'Requested by',
+'daterequested'         =>      'Date Requested',
+'closetask'             =>      'Close Task',
+'reopentask'            =>      'Re-open Task',
+'applymember'           =>      'Apply for Project membership',
+'forcurrentproj'        =>      'For current project',
 
 
 );

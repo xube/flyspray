@@ -500,7 +500,7 @@ if ($effective_permissions['can_edit'] == '1'
     };
 
     // Check permissions and task status, then show the "re-open task" button
-    if ($effective_permissions['can_edit'] == '1' && $task_details['is_closed'] == '1') { ?>
+    if ($effective_permissions['can_close'] == '1' && $task_details['is_closed'] == '1') { ?>
 
       <form name="form2" action="index.php" method="post" id="formreopentask">
       <p>
@@ -513,12 +513,14 @@ if ($effective_permissions['can_edit'] == '1'
 
     <?php
     // If they can't re-open this, show a button to request a PM re-open it
-    } elseif ($effective_permissions['can_edit'] != '1' && $task_details['is_closed'] == '1') { ?>
+    } elseif ($effective_permissions['can_close'] != '1' 
+              && $task_details['is_closed'] == '1'
+              && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1')  { ?>
 
       <form name="form2" action="index.php" method="post" id="formreopenrequesttask">
       <p>
           <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="reopenrequest" />
+          <input type="hidden" name="action" value="requestreopen" />
           <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
           <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['reopenrequest'];?>" onclick="Disable2()" />
       </p>
@@ -562,7 +564,7 @@ if ($effective_permissions['can_edit'] == '1'
     <?php
     // If the user owns this task but can't close it, show a button to request closure
     } elseif ($effective_permissions['can_close'] != '1'
-              && $task_details['assigned_to'] == $current_user['user_id']) { ?>
+              && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1') { ?>
 
                 <form name-"form2" action="index.php" method="post" id="formrequestclose">
                   <input type="hidden" name="do" value="modify" />
@@ -597,13 +599,12 @@ if ($effective_permissions['can_edit'] == '1'
     <form action="?do=details&id=<?php echo $_GET['id'];?>&edit=yep" method="post">
       <input class="adminbutton" type="submit" value="<?php echo $details_text['edittask'];?>" />
     </form>
-    </div>
-    </div>
 
    <?php
    // End of showing the "edit task" button
    };
-
+   echo '</div>';
+   echo '</div>';
 
 /////////////////////////////////////////////////
 // End of checking if a job should be editable //
@@ -1431,6 +1432,15 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
 
             } elseif ($history['event_type'] == 18) {      //Reminder deleted
                 echo "{$details_text['reminderdeleted']}: " . $fs->LinkedUsername($newvalue);
+
+            } elseif ($history['event_type'] == 19) {      //User took ownership
+                echo "{$details_text['ownershiptaken']}: " . $fs->LinkedUsername($newvalue);
+
+            } elseif ($history['event_type'] == 20) {      //User requested task closure
+                echo $details_text['closerequestmade'];
+
+            } elseif ($history['event_type'] == 21) {      //User requested task re-open
+                echo $details_text['reopenrequestmade']; 
             };
             ?></td>
         </tr>

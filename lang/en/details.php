@@ -113,6 +113,9 @@ $details_text = array (
 'assigntome'        =>   'Assign to me',
 'reopenrequest'     =>   'Request re-open',
 'requestclose'      =>   'Request closure',
+'ownershiptaken'    =>   'User took ownership',
+'closerequestmade'  =>   'Requested task closure',
+'reopenrequestmade' =>   'Requested task be re-opened',
 
 );
 ?>

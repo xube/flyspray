@@ -1242,11 +1242,77 @@ if ($_GET['show'] == 'prefs') { ?>
 
 <?php
 
+// End of editing a comment
+
+
+/////////////////////////////////////
+// Start of pending admin requests //
+/////////////////////////////////////
+
+} elseif ($_GET['area'] == 'pendingreq'
+          && ($permissions['is_admin'] == '1'
+          OR $permissions['manage_project'] == '1')) {
+
+  echo '<h2>' . $admin_text['pendingrequests'] . '</h2>';
+
+  // For full admins
+  if ($permissions['is_admin'] == '1') {
+    // Requests for full admins go here.  (None have been implemented yet.)
+  };
+
+  // Requests for Project Managers go here
+
+  echo '<h3>' . $admin_text['forcurrentproj'] . '</h3>';
+
+  echo '<table class="admin" border="1"><tr>';
+  echo '<th>' . $admin_text['eventdesc'] . '</th>';
+  echo '<th>' . $admin_text['requestedby'] . '</th>';
+  echo '<th>' . $admin_text['daterequested'] . '</th>';
+  echo '</tr>';
+
+
+
+  // Get a list of pending admin requests for this project
+  $get_pending = $fs->dbQuery("SELECT * FROM flyspray_admin_requests ar
+                               LEFT JOIN flyspray_tasks t ON ar.task_id = t.task_id
+                               LEFT JOIN flyspray_users u ON ar.submitted_by = u.user_id
+                               WHERE project_id = ? AND resolved_by = '0'",
+                               array($project_id));
+
+  // ...and cycle through them
+  while($pending_req = $fs->dbFetchRow($get_pending)) {
+
+    // Change the numerical request type into a readable value
+    switch($pending_req['request_type']) {
+      case "1": $request_type = $admin_text['closetask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
+      break;
+      case "2": $request_type = $admin_text['reopentask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
+      break;
+      case "3": $request_type = $admin_text['applymember'];
+      break;
+    };
+
+    echo '<tr>';
+    echo "<td>$request_type</td>";
+    echo '<td><a href="?do=admin&amp;area=users&amp;id=' . $pending_req['user_id'] . '">' . $pending_req['real_name'] . '(' . $pending_req['user_name'] . ')</a></td>';
+    echo '<td>' . $fs->formatDate($pending_req['time_submitted'], true) . '</td>';
+  };
+
+  echo '</table>';
+
+// End of pending admin requests
+
+
+
+///////////////////////////////////////////////////////
+// If all else fails... show an authentication error //
+///////////////////////////////////////////////////////
+
 } else {
-	// If all else fails... show an authentication error
-    echo "<br><br>";
-	echo $admin_text['nopermission'];
-    echo "<br><br>";
+  echo "<br><br>";
+  echo $admin_text['nopermission'];
+  echo "<br><br>";
+
 
 //////////////////////
 // End of all areas //

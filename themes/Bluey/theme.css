@@ -585,6 +585,11 @@ div#actionbuttons {
   margin-left          : 5px;
 }
 
+.attention {
+  text-color           : #ff0000;
+  background-color     : #fff000;
+}
+
 
 }
 

@@ -42,7 +42,11 @@ $language = array (
 'tasksassigned'     =>  'Tasks assigned to me',
 'tasksreported'     =>  'Tasks reported by me',
 'taskswatched'      =>  'Tasks I watch',
-'lastsearch'   =>  'My last search'
+'lastsearch'   =>  'My last search',
+
+// Added in version 0.9.7
+'adminreqwaiting'   =>   'Admin requests',
+
 
 
 );

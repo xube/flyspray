@@ -78,7 +78,7 @@ if ($_GET['page']) {
 if ($_REQUEST['action']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(logout|newtask|update|close|reopen|addcomment|chpass|registeruser|newuser|newgroup|globaloptions|newproject|updateproject|addattachment|edituser|editgroup|update_list|add_to_list|update_category|add_category|add_related|remove_related|add_notification|remove_notification|editcomment|deletecomment|deleteattachment|addreminder|deletereminder|update_version_list|add_to_version_list|addtogroup|movetogroup|reopenrequest|takeownership|requestclose)$/", $_REQUEST['action'])) {
+    if (preg_match ("/^(logout|newtask|update|close|reopen|addcomment|chpass|registeruser|newuser|newgroup|globaloptions|newproject|updateproject|addattachment|edituser|editgroup|update_list|add_to_list|update_category|add_category|add_related|remove_related|add_notification|remove_notification|editcomment|deletecomment|deleteattachment|addreminder|deletereminder|update_version_list|add_to_version_list|addtogroup|movetogroup|requestreopen|takeownership|requestclose)$/", $_REQUEST['action'])) {
 
        // continue;
 
@@ -194,7 +194,7 @@ if ($_GET['jabber_id']) {
 if ($_GET['area']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(editcomment|comments|attachments|related|notify|options|projects|users|tasktype|resolution|groups|remind|system|history)$/", $_GET['area'])) {
+    if (preg_match ("/^(editcomment|comments|attachments|related|notify|options|projects|users|tasktype|resolution|groups|remind|system|history|pendingreq)$/", $_GET['area'])) {
 
        // continue;
     } else {
