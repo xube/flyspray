@@ -53,6 +53,7 @@ if ($_GET['sort']) {
   <link rel="icon" href="./favicon.ico" type="image/png">
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP.">
   <script type="text/javascript" src="functions.js"></script>
+  <script type="text/javascript" src="styleswitcher.js"></script>
   <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
   <?php
       // open the themes directory
