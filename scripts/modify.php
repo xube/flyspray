@@ -875,7 +875,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                               others_view,
                               project_is_active,
                               visible_columns)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                             array($_POST['project_title'],
                               $_POST['theme_style'],
                               $fs->emptyToZero($_POST['show_logo']),

@@ -558,7 +558,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
   {
     if(file_exists($path))
     {
-      echo '<img src="' . $path . '" alt="" />';
+      return '<img src="' . $path . '" alt="" />';
     }
   }
 

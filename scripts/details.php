@@ -340,9 +340,7 @@ if ($effective_permissions['can_edit'] == '1'
 
 <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
     <?php 
-    if ($permissions['modify_all_tasks'] == '0' 
-        && $permissions['modify_own_tasks'] == '0'
-        OR ($permissions['modify_own_tasks'] == '1' && $task_details['assigned_to'] != $current_user['user_id'])
+    if ($effective_permissions['can_edit'] == '0' 
         OR $task_details['is_closed'] == '1') { ?>
     <h2 class="severity<?php echo $task_details['task_severity'];?>">
     <?php } else { ?>
@@ -351,11 +349,6 @@ if ($effective_permissions['can_edit'] == '1'
     <?php echo "{$details_text['task']} #{$_GET['id']} &mdash; $item_summary";?>
     </h2>
     <?php
-    //if ($effective_permissions['can_edit'] == '1'
-    //&& $task_details['is_closed'] != '1') {
-    ?>
-    <!--<span id="linkedittask"><?php echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;edit=yep\">" . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/edit.png") . "&nbsp;{$details_text['edittask']}</a>";?></span>-->
-    <?php //};
     echo "{$details_text['attachedtoproject']} &mdash; <a href=\"?project={$task_details['attached_to_project']}\">{$task_details['project_title']}</a>";
     ?>
 
@@ -564,6 +557,7 @@ if ($effective_permissions['can_edit'] == '1'
     <?php
     // If the user owns this task but can't close it, show a button to request closure
     } elseif ($effective_permissions['can_close'] != '1'
+              && $task_details['assigned_to'] == $current_user['user_id']
               && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1') { ?>
 
                 <form name-"form2" action="index.php" method="post" id="formrequestclose">
@@ -865,7 +859,7 @@ echo "</div>";
 //};
 // Now, show a form to attach a file (but only if the user has the rights!)
 
-if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
+if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '1') {
 ?>
 
 <form enctype="multipart/form-data" action="index.php" method="post" id="formupload">
@@ -989,7 +983,7 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
       <div class="tabentry">
       <?php
         // If the user can modify jobs, then show them a form to remove a notified user
-        if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
+        if ($permissions['manage_project'] == '1' && $task_details['is_closed'] != '1') {
           ?>
           <div class="modifycomment">
           <form action="index.php" method="post">

@@ -98,9 +98,6 @@ VALUES (
 '', 'Basic', 'Members can login, relying upon Project permissions only', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1'
 );
 
-####################################
-## The Psi database is up to here ##
-####################################
 
 # Create the pending 'admin requests' table
 
@@ -115,3 +112,8 @@ CREATE TABLE `flyspray_admin_requests` (
   `time_resolved` varchar(12) NOT NULL default '',
   PRIMARY KEY  (`request_id`)
 ) TYPE=MyISAM COMMENT='Pending requests for admins and PMs to attend to' AUTO_INCREMENT=1 ;
+
+
+####################################
+## The Psi database is up to here ##
+####################################

@@ -132,6 +132,7 @@ p#menu {
   margin              : 0em 0px;
   padding             : 0px;
   background-color    : #e6eef6;
+  height              : 40px;
 }
 
 p#menu a:hover {
@@ -589,6 +590,67 @@ div#actionbuttons {
   text-color           : #ff0000;
   background-color     : #fff000;
 }
+
+    #admenu{                         /* menu list container */
+        list-style-type: none;      /* disable the display of the list item bullets */
+        margin: 0px;                /* space around the list container */
+        padding: 0px;               /* space within the list container */
+        position: static;           /* need this so that the z-index stuff works correctly */
+        background-color: #e6eef6;     /* the default background color within the main menu container */
+        color: #000;                /* the default font color (not links) within the main menu container */
+        z-index: 20;                /* push the menu up in the layer order a bit so it isn't hidden behind anything */
+            /* Browser plug-ins like Flash or Quicktime may not allow you to overlap then with this menu! */
+    }
+    #admenu li{                      /* top-level menu element */
+        list-style-type: none;      /* disable the display of the list item bullets */
+        float: left;                /* this is to allow for the horizontal main menu */
+        border: black solid 1px;    /* border for each of the main menu items */
+        border-right: none;
+        border-top: none;
+        border-bottom: none;
+        background-color: #e6eef6;     /* main menu item background color */
+        color: #000;                /* main menu item font color (not links) */
+        margin: 0px;                /* spacing between main menu items */
+        padding-left: 5px;               /* padding within main menu items */
+        padding-right: 5px;
+        width: auto;               /* the width of each main menu item */
+        display: block;
+    }
+    #admenu li a{                    /* top-level menu element links */
+        text-align: center;         /* text alignment in main menu item links */
+        width: auto;               /* set this to (#admenu li -> width) - (2 * (#admenu li -> padding)) */
+        display: block;
+    }
+    #admenu li ul{                   /* sub-menu list container */
+        position: absolute;         /* this is so that it doesn't push that page content around on hover */
+        margin: 0px;                /* space around the list container */
+        padding: 0px;               /* space within the list container */
+        list-style-type: none;      /* disable the display of the list item bullets */
+        display: none;
+        width: 200px;               /* the width of the sub menus */
+        border: black solid 1px;    /* sub-menu borders */
+        background-color: #e6eef6;     /* sub-menu default background color */
+        color: #000;                /* sub-menu default font color (not links) */
+    }
+    #admenu li ul li{                /* sub-menu element links */
+        background-color: #e6eef6;     /* default background color for sub-menu container */
+        color: #000;                /* default font color (not links) for sub-menu container */
+        border: none;               /* sub-menu item border settings */
+        margin: 0px;                /* spacing between sub-menu containers */
+        padding: 3px;               /* This is for padding between menu items in the drop-downs */
+        width: 193px;               /* (padding*2 - 5) must be subtracted from #admenu li ul -> width and set for this one, or borders won't display properly...
+                                       not sure where the other 5 pixels come from... Maybe it's actually padding*4 instead? I'll find out some other time */
+    }
+    #admenu li ul li a{
+        display: block;
+        width: 193px;               /* should be set to the same value as #admenu li ul li -> width */
+        text-align: left;
+    }
+
+    #admenu li:hover ul, #admenu li.over ul{ /* lists nested under hovered list items */
+        display: block;
+    }
+
 
 
 }
