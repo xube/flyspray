@@ -10,7 +10,7 @@
 -- Konrad Roziewski <konrad at suwalki com pl>.
 
 CREATE USER flyspray WITH PASSWORD 'flyspray' CREATEDB;
-CREATE DATABASE flyspray ENCODING = 'utf-8';
+CREATE DATABASE flyspray ENCODING = 'UNICODE';
 \connect flyspray flyspray
 
 CREATE TABLE flyspray_groups (
