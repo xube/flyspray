@@ -14,8 +14,15 @@
 // This line gets the operating system so that we know which way to put slashes in the path
 strstr( PHP_OS, "WIN") ? $slash = "\\" : $slash = "/";
 
+// Check if we're upgrading, modify the path to the config file accordingly
+if ($doing_upgrade === '1') {
+       $path_append = '..';
+} else {
+       $path_append = '';
+};
+
 // Define the path to the config file.  Change this line if you move flyspray.conf.php elsewhere
-$conf_file = realpath('./') . $slash . 'flyspray.conf.php';
+$conf_file = realpath('./'.$path_append) . $slash . 'flyspray.conf.php';
 
 // Load the config file
 $conf_array = @parse_ini_file($conf_file, true);

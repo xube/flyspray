@@ -1,4 +1,5 @@
 <?php
+$doing_upgrade = 1;
 include('../header.php');
 ?>
 
