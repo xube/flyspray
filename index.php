@@ -34,6 +34,16 @@ if ($_GET['getfile']) {
 // If no file was requested, show the page as per normal
 } else {
 
+  /* double-click protection */
+  $currentrequest = md5(join(':', array_merge(array_keys($_POST), array_values($_POST))));
+  $lastrequest = $_COOKIE['flyspray_lastrequest'];
+  if ($currentrequest != $lastrequest && !empty($_POST)) {
+    // we're safe
+    setcookie('flyspray_lastrequest', $currentrequest);
+  } else {
+    setcookie('flyspray_lastrequest', '');
+  }
+
   header("Content-type: text/html; charset=utf-8");
 
 // If the user has specified column sorting, send them a cookie
@@ -209,6 +219,13 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       if (!isset($_REQUEST['do'])) {
         $do = "index";
       }
+
+    if ($currentrequest == $lastrequest) {
+      printf('<meta http-equiv="refresh" content="2; URL=?id=%s">', $project_id);
+      printf('<div class="redirectmessage"><p><em>%s</em></p></div>', $language['duplicated']);
+      echo '</body></html>';
+      exit;
+    }
 
       // This is to only allow people to request valid pages, instead of things like config.inc.php or /etc/passwd 
       if (preg_match ("/^(admin|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register)$/", $do)
