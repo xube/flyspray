@@ -910,12 +910,12 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
 <ul id="submenu">
 
    <?php
-   if (@$permissions['view_comments'] == '1' OR @$permissions['add_comments'] == '1')
+   if (@$permissions['view_comments'] == '1' OR @$permissions['add_comments'] == '1' OR $project_prefs['others_view'] == '1')
    {
       echo '<li id="commentstab"><a href="#comments">'. $details_text['comments'] . "($num_comments)" . '</a></li>';
    }
 
-   if (@$permissions['view_attachments'] == '1')
+   if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
    {
       echo '<li id="attachtab"><a href="#attach">' . $details_text['attachments'] . "($num_attachments)" . '</a></li>';
    }
@@ -955,7 +955,7 @@ while ($row = $db->FetchArray($getcomments))
    $comment_text     = $fs->formatText($row['comment_text']);
 
    // If the user has permissions, show the comments already added
-   if (@$permissions['view_comments'] == '1')
+   if (@$permissions['view_comments'] == '1' OR $project_prefs['others_view'] == '1')
    {
       echo '<a name="' . $row['comment_id'] . '"></a>';
       echo "<em><a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">\n" .
@@ -1017,7 +1017,7 @@ echo '</div>';
 // Start of file attachments area //
 ////////////////////////////////////
 
-if (@$permissions['view_attachments'] == '1')
+if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
 {
    echo '<div id="attach" class="tab">';
 

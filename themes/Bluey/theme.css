@@ -928,6 +928,13 @@ div#fileupload {
 
 span#pendingreq {
    margin               : 0px 0px 0px 9px;
+   display:             : block;
+   clear                : both;
+   font-size            : 120%;
+   font-weight          : bold;
+   float                : right;
+   color                : red;
+   background-color     : yellow;
 }
 
 /* End of the @screen section */

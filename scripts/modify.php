@@ -426,8 +426,8 @@ if ($_POST['action'] == 'newtask'
       list($item_summary) = $db->FetchArray($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
       $item_summary = stripslashes($item_summary);
 
-      $to = $notify->Address($get_task_info['task_id']);
-      $msg = $notify->Create('3', $get_task_info['task_id']);
+      $to = $notify->Address($_POST['task_id']);
+      $msg = $notify->Create('3', $_POST['task_id']);
       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
       $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 

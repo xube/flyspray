@@ -33,3 +33,25 @@ function showhidestuff(boxid) {
       this.value=' + ';
    }
 }
+
+window.setTimeout(fader,4000);
+function fader() {
+  if (document.getElementById('errorbar')) {
+    el = document.getElementById('errorbar');
+  } else if (document.getElementById('successbar')) {
+    el = document.getElementById('successbar');
+  } else {
+    return;
+  }
+  opacity = el.style.opacity;
+  if (opacity == '') {
+    el.style.opacity = 1;
+    window.setTimeout(fader,10);
+  } else if (opacity == 0) {
+    el.style.display = 'none';
+  } else if (!isNaN(opacity)) {
+    opacity -= .01;
+    el.style.opacity = opacity;
+    window.setTimeout(fader,10);
+  }
+}
