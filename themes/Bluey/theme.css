@@ -14,6 +14,37 @@ body {
   font-family         : Helvetica, Verdana, sans-serif;
 }
 
+img {
+   border               : none;
+}
+
+a {
+   text-decoration      : none;
+}
+
+a:link {
+   color                : #47617b;
+   background-color     : transparent;
+   font-weight          : bold;
+}
+
+a:visited {
+   color                : #47617b;
+   background-color     : transparent;
+   font-weight          : bold;
+}
+
+a:hover {
+   color                : #6395c8;
+   background-color     : transparent;
+   text-decoration      : none;
+}
+
+/* offsite is only used for the link to the Flyspray homepage */
+a.offsite:after {
+   content              : "\2197";
+}
+
 h1 {
   /*text-align           : center;*/
   font-size            : 150%;
@@ -147,22 +178,21 @@ div#loginbox span#links a {
 
 /* The paragraph containing the main menu */
 p#menu {
-  border              : 1px solid #ccc;
-  margin              : 0em 0px;
-  padding             : 0px;
-  background-color    : #e6eef6;
-  height              : 22px;
+   border               : 1px solid #ccc;
+   margin               : 0em 0px;
+   padding              : 0px;
+   background-color     : #e6eef6;
+   height               : 22px;
+}
+
+p#menu a {
+   height               : 22px;
 }
 
 p#menu a:hover {
   color                 : #6395c8;
   background-color      : #d7e9ff;
   text-decoration       : none;
-}
-
-p#menu span#mainmenu {
-  display               : block;
-  height                : 20px;
 }
 
 div#anonopen {
@@ -263,13 +293,6 @@ table.userlist td, table.userlist th {
   border                : 1px solid #ccc;
 }
 
-/* table.head is the table containing the task-list-link and the
-   search-bug-number form */
-table.head {
-   width                : 100%;
-}
-
-
 /* p#showtask contains the form to search for a specific task number */
 p#showtask {
    text-align           : right;
@@ -279,36 +302,6 @@ p#showtask {
    top                  : -2em;
 }
 
-img {
-   border               : none;
-}
-
-a {
-   text-decoration      : none;
-}
-
-a:link {
-   color                : #47617b;
-   background-color     : transparent;
-   font-weight          : bold;
-}
-
-a:visited {
-   color                : #47617b;
-   background-color     : transparent;
-   font-weight          : bold;
-}
-
-a:hover {
-   color                : #6395c8;
-   background-color     : transparent;
-   text-decoration      : none;
-}
-
-/* offsite is only used for the link to the Flyspray homepage */
-a.offsite:after {
-   content              : "\2197";
-}
 /* The paragraph containing the search form */
 div#search {
    margin-bottom        : 1em;

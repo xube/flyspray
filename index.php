@@ -214,7 +214,6 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    ////////////////////////
 
    echo '<p id="menu">' . "\n";
-   echo '<span id="mainmenu">' . "\n";
 
    // Display "Logged in as - username"
    echo '<em>' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ')</em>';
@@ -267,7 +266,6 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    echo '<a id="logoutlink" href="index.php?do=authenticate&amp;action=logout" accesskey="l">' . $language['logout'] . "</a>\n";
 
    // End of mainmenu area
-   echo "</span>\n";
 
    /*
       /////////////////////////

@@ -33,6 +33,24 @@ class Flyspray {
       $$new_var_name = array_merge($new_var['en'], $new_var[$lang]);
    }
 
+   /**   Redirects the browser to the page in $url
+   */
+   function redirect($url)
+   {
+      $flyspray_prefs = $this->GetGlobalPrefs();
+      $server_prefix = $flyspray_prefs['base_url'];
+      // Redirect via an HTML form for PITA webservers
+      if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
+      {
+         header('Refresh: 0; URL=' . $server_prefix . $url);
+         echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_prefix . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_prefix . $url . '">HERE</a> to be redirected</div></body></html>';
+      } else
+      {
+         // Behave as per HTTP/1.1 spec for others
+         header('Location: ' . $url);
+      }
+   }
+
    /** Test to see if user resubmitted a form.
       Checks only newtask and addcomment actions.
       @return   true if user has submitted the same action within less than

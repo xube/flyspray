@@ -11,7 +11,7 @@ if ($_GET['action'] == "logout") {
 //   setcookie('flyspray_project', '', time()-60, '/');
 
    $_SESSION['SUCCESS'] = $authenticate_text['youareloggedout'];
-   header("Location: index.php");
+	 $fs->redirect('index.php');
 
 // Otherwise, they requested login.  See if they provided the correct credentials...
 } elseif ($_POST['username'] AND $_POST['password']) {
@@ -22,7 +22,7 @@ if ($_GET['action'] == "logout") {
    if (!$fs->checkLogin($username, $password))
    {
       $_SESSION['ERROR'] = $authenticate_text['loginfailed'];
-      header("Location: " . $_POST['prev_page']);
+			$fs->redirect($_POST['prev_page']);
 
    } else
    {
@@ -30,7 +30,6 @@ if ($_GET['action'] == "logout") {
 
       session_start();
       $_SESSION['SUCCESS'] = $authenticate_text['loginsuccessful'];
-      header("Location: " . $_POST['prev_page']);
 
       // Determine if the user should be remembered on this machine
       if ($_POST['remember_login']) {
@@ -52,12 +51,13 @@ if ($_GET['action'] == "logout") {
                                   array($user['user_id'])
                                 );
 
+      $fs->redirect($_POST['prev_page']);
    // End of checking credentials
    };
 
 } else {
   // If the user didn't provide both a username and a password, show this error:
    $_SESSION['ERROR'] = $authenticate_text['loginfailed'] . ' - ' . $authenticate_text['userandpass'];
-   header("Location: " . $_POST['prev_page']);
+   $fs->redirect($_POST['prev_page']);
 
 };

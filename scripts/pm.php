@@ -72,6 +72,62 @@ if ($permissions['manage_project'] == '1')
 
             <tr>
                <td>
+               <label for="defaultcatowner"><?php echo $admin_text['defaultcatowner'];?></label>
+               </td>
+               <td>
+                <select id="defaultcatowner" name="default_cat_owner">
+                  <option value=""><?php echo $admin_text['noone'];?></option>
+                  <?php
+                  // Get list of developers
+                  $fs->listUsers($project_prefs['default_cat_owner'], $project_id);
+                  ?>
+               </select>
+               </td>
+            </tr>
+            <tr>
+               <td>
+               <label for="intromessage"><?php echo $admin_text['intromessage'];?></label>
+               </td>
+               <td>
+               <textarea id="intromessage" name="intro_message" rows="12" cols="70"><?php echo stripslashes($project_prefs['intro_message']);?></textarea>
+               </td>
+            </tr>
+            <tr>
+               <td>
+               <label for="isactive"><?php echo $admin_text['isactive'];?></label>
+               </td>
+               <td>
+               <input id="isactive" type="checkbox" name="project_is_active" value="1" <?php if ($project_prefs['project_is_active'] == '1') { echo "CHECKED";};?> />
+               </td>
+            </tr>
+            <tr>
+               <td>
+               <label for="othersview"><?php echo $admin_text['othersview'];?></label>
+               </td>
+               <td>
+               <input id="othersview" type="checkbox" name="others_view" value="1" <?php if ($project_prefs['others_view'] == '1') { echo "CHECKED";};?> />
+               </td>
+            </tr>
+            <tr>
+               <td>
+               <label for="anonopen"><?php echo $admin_text['allowanonopentask'];?></label>
+               </td>
+               <td>
+               <input id="anonopen" type="checkbox" name="anon_open" value="1" <?php if ($project_prefs['anon_open'] == '1') { echo "CHECKED"; }; ?> />
+               </td>
+            </tr>
+            <tr>
+               <td colspan="2"></td>
+            </tr>
+         </table>
+      </fieldset>
+
+      <fieldset class="admin">
+
+      <legend><?php echo $admin_text['lookandfeel'];?></legend>
+         <table class="admin">
+            <tr>
+               <td>
                <label for="themestyle"><?php echo $admin_text['themestyle'];?></label>
                </td>
                <td>
@@ -120,62 +176,6 @@ if ($permissions['manage_project'] == '1')
                <input id="inlineimages" type="checkbox" name="inline_images" value="1" <?php if ($project_prefs['inline_images'] == '1') { echo "CHECKED"; }; ?> />
                </td>
             </tr>
-            <tr>
-               <td>
-               <label for="defaultcatowner"><?php echo $admin_text['defaultcatowner'];?></label>
-               </td>
-               <td>
-                <select id="defaultcatowner" name="default_cat_owner">
-                  <option value=""><?php echo $admin_text['noone'];?></option>
-                  <?php
-                  // Get list of developers
-                  $fs->listUsers($project_prefs['default_cat_owner'], $project_id);
-                  ?>
-               </select>
-               </td>
-            </tr>
-            <tr>
-               <td>
-               <label for="intromessage"><?php echo $admin_text['intromessage'];?></label>
-               </td>
-               <td>
-               <textarea id="intromessage" name="intro_message" rows="12" cols="70"><?php echo stripslashes($project_prefs['intro_message']);?></textarea>
-               </td>
-            </tr>
-            <tr>
-               <td>
-               <label for="isactive"><?php echo $admin_text['isactive'];?></label>
-               </td>
-               <td>
-               <input id="isactive" type="checkbox" name="project_is_active" value="1" <?php if ($project_prefs['project_is_active'] == '1') { echo "CHECKED";};?> />
-               </td>
-            </tr>
-            <tr>
-               <td>
-               <label for="othersview"><?php echo $admin_text['othersview'];?></label>
-               </td>
-               <td>
-               <input id="othersview" type="checkbox" name="others_view" value="1" <?php if ($project_prefs['others_view'] == '1') { echo "CHECKED";};?> />
-               </td>
-            </tr>
-            <tr>
-               <td>
-               <label for="anonopen"><?php echo $admin_text['allowanonopentask'];?></label>
-               </td>
-               <td>
-               <input id="anonopen" type="checkbox" name="anon_open" value="1" <?php if ($project_prefs['anon_open'] == '1') { echo "CHECKED"; }; ?> />
-               </td>
-            </tr>
-            <tr>
-               <td colspan="2"><hr /></td>
-            </tr>
-         </table>
-      </fieldset>
-
-      <fieldset class="admin">
-
-      <legend><?php echo $admin_text['lookandfeel'];?></legend>
-          <table class="admin">
             <tr>
                <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
                <td class="admintext">
