@@ -128,7 +128,6 @@ function getTabDivs() {/*{{{*/
 function initTabs() {/*{{{*/
   var target = location.href.substring(location.href.indexOf('#')+1);
   makeTabLinks();
-  createTabToggle();
 
   if (target && document.getElementById(target)) {
     showTabById(target);
@@ -139,4 +138,5 @@ function initTabs() {/*{{{*/
 }/*}}}*/
 
 // }}}
+
 // vim:enc=utf-8:fenc=utf-8:fdm=marker
