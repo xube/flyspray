@@ -1,9 +1,12 @@
 <?php
 // This script checks for pending scheduled notifications
 // and sends them at the right time.
-include('../header.php');
+include_once('../header.php');
+include_once('../includes/notify.inc.php');
 
 $now = date(U);
+
+$notify = new Notifications;
 
 $get_reminders = $db->Query("SELECT * FROM flyspray_reminders ORDER BY reminder_id");
 
@@ -41,21 +44,9 @@ while ($row = $db->FetchRow($get_reminders)) {
         $subject = $functions_text['notifyfrom'] . " " . $project_prefs['project_title'];
         $message = stripslashes($row['reminder_message']);
 
-        // Pass the recipients and message onto the Jabber Message function
-        $fs->JabberMessage(
-                $flyspray_prefs['jabber_server'],
-                $flyspray_prefs['jabber_port'],
-                $flyspray_prefs['jabber_username'],
-                $flyspray_prefs['jabber_password'],
-                $jabber_users,
-                $subject,
-                $message,
-                "Flyspray"
-                );
-
-
-        // Pass the recipients and message onto the mass email function
-        $fs->SendEmail($email_users, $subject, $message);
+        // Pass the recipients and message onto the notification function
+        $notify->SendEmail($email_users, $subject, $message);
+        $notify->SendJabber($jabber_users, $subject, $message);
 
                 // Update the database with the time sent
                 $update_db = $db->Query("UPDATE flyspray_reminders SET last_sent = ? WHERE reminder_id = ?", array($now, $row['reminder_id']));
@@ -76,7 +67,10 @@ while ($row = $db->FetchRow($get_reminders)) {
 </head>
 
 <body>
-<h1>Nothing to see here.</h1>
+<h1>Scheduled Reminders</h1>
 This is a backend script that really isn't meant to be displayed in your browser.
+To enable scheduled reminders, you set up some sort of background program to
+activate this script regularly.  The unix utility 'cron' can be used in conjunction
+with 'wget' to do this.
 </body>
 </html>

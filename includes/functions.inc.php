@@ -543,6 +543,36 @@ function GetTaskDetails($task_id) {
    // End of checkLogin function
    }
 
+   function startReminderDaemon()
+   {
+        $script  = 'scripts/daemon.php';
+        $include = 'schedule.php';
+        $runfile = 'running';
+        $timeout = 600;
+
+        if (!file_exists($runfile) or filemtime($runfile) < time() - ($timeout * 2))
+        {
+            // Starting runner...
+            $php = '';
+            foreach (array('/usr/local/bin/php', '/usr/bin/php') as $path)
+            {
+                if (file_exists($path) and is_executable($path))
+                {
+                    $php = $path;
+                    break;
+                }
+            }
+
+            if (!$php)
+            {
+                // No PHP executable found... sorry!";
+                return;
+            }
+
+            exec("$php $script $include $timeout ../$runfile >/dev/null &");
+        }
+   }
+
 
 ///////////////////////////
 // End of Flyspray class //

@@ -16,6 +16,9 @@ if (isset($flyspray_prefs['dateformat']) && !isset($flyspray_prefs['fs_ver']))
 
 session_start();
 
+// Background daemon that does scheduled reminders
+$fs->startReminderDaemon();
+
 // Get the translation for the wrapper page (this page)
 $lang = $flyspray_prefs['lang_code'];
 $fs->get_language_pack($lang, 'main');

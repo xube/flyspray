@@ -55,7 +55,7 @@ if (!isset($basedir)
 };
 
 include_once ( "$adodbpath" );
-include ( "$basedir/includes/functions.inc.php" );
+include_once ( "$basedir/includes/functions.inc.php" );
 include_once ( "$basedir/includes/regexp.php" );
 include_once ( "$basedir/includes/db.inc.php" );
 include_once ( "$basedir/includes/markdown.php" );
