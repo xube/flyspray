@@ -101,6 +101,67 @@ if ($project_prefs['show_logo'] == '1') {
 };
 
 
+  // Get current user details
+  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
+  $current_user = $fs->dbFetchArray($result);
+  
+  // Get the global group for this user
+  $search_global_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array('0'));
+  while ($row = $fs->dbFetchRow($search_global_group)) {
+    $check_in = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($_COOKIE['flyspray_userid'], $row['group_id']));
+    if ($fs->dbCountRows($check_in) > '0') {
+      //echo "YAY!<br />";
+     $global_permissions = $row;
+    };
+  };
+
+  //echo 'project id = ' . $project_id . '<br />';
+  
+  // Get the project-level group for this user
+  $search_project_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
+  while ($row = $fs->dbFetchRow($search_project_group)) {
+    $check_in = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($_COOKIE['flyspray_userid'], $row['group_id']));
+    if ($fs->dbCountRows($check_in) > '0') {
+      //echo "YAY!<br />";
+     $project_permissions = $row;
+    };
+  };
+  
+  // Check if our arrays have been populated correctly
+  echo 'global = ' . $global_permissions['open_new_tasks'] . '<br />';
+  echo 'project = ' . $project_permissions['open_new_tasks'] . '<br />';
+  
+  // Now, merge the arrays, keeping the highest permission (basically, use a boolean OR)
+  $field = array(
+                  '1'  => 'is_admin',
+		  '2'  => 'manage_project',
+		  '3'  => 'view_tasks',
+		  '4'  => 'open_new_tasks',
+		  '5'  => 'modify_own_tasks',
+		  '6'  => 'modify_all_tasks',
+		  '7'  => 'view_comments',
+		  '8'  => 'add_comments',
+		  '9'  => 'edit_comments',
+		  '10' => 'delete_comments',
+		  '11' => 'view_attachments',
+		  '12' => 'create_attachments',
+		  '13' => 'delete_attachments',
+		  '14' => 'view_history',
+		  '15' => 'close_own_tasks',
+		  '16' => 'close_other_tasks',
+		  '17' => 'assign_to_self',
+		  '18' => 'assign_others_to_self',
+		 );
+
+  while (list($key, $val) = each($field)) {
+    if ($global_permissions[$val] == '1' OR $project_permissions[$val] == '1') {
+      $_SESSION[$val] = '1';
+    } else {
+      $_SESSION[$val] = '0';
+    };
+      echo $val . ' = ' . $_SESSION[$val] . '<br />';      
+  };
+/*
 // If the user has the right name cookies
 if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
@@ -157,10 +218,10 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     /*
     echo '<small> | </small><a href="index.php?do=chpass">
     <img src="themes/' . $project_prefs['theme_style'] . '/menu/password.png" />&nbsp;' . $language['changepassword'] . "</a>\n";;
-    */
+*/
     
     // If the user has conducted a search, then show a link to the most recent task list filter
-    echo '<small> | </small>';
+/*    echo '<small> | </small>';
     if(isset($_SESSION['lastindexfilter'])) {
       echo '<a href="' . $_SESSION['lastindexfilter'] . '">' .
       $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png"). '&nbsp;' . $language['lastsearch'] . "</a>\n";
@@ -213,7 +274,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       echo "<meta http-equiv=\"refresh\" content=\"0; URL=scripts/authenticate.php?action=logout\">\n";
     };
 
-};
+};*/
 ?>
 
 
