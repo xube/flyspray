@@ -3,9 +3,9 @@
 // rest of Flyspray, including the sql database.  We don't want Flyspray to end
 // up on BugTraq!
 
-if (($_POST['lang_code']) && (!preg_match ("/^(de|dk|en|fr|it|nl|pl|es)$/", $_POST['lang_code']))) {
-        print "Invalid language code."; exit;
-}
+//if (($_POST['lang_code']) && (!preg_match ("/^(de|dk|en|fr|it|nl|pl|es)$/", $_POST['lang_code']))) {
+//        print "Invalid language code."; exit;
+//}
 
 if ($_GET['getfile']) {
 
@@ -113,13 +113,12 @@ if ($_REQUEST['id']) {
         };
     } else {
         if (preg_match ("/^\d+$/", $_REQUEST['id'])) {
- 
+
 
         // continue;
- 
 
         } else {
- 
+
 
             print "ID request is invalid."; exit;
         };

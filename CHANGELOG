@@ -18,11 +18,11 @@ NEW: Customisable columns in task list
 NEW: 'Remember login' option
 NEW: Secondary sort in task list
 NEW: Visual indicator on which column is sorted in task list
-NEW: Reports
+NEW: Reports.  Only two so far, but more to come
 NEW: Task history tab
 NEW: Scheduled reminders tab
 NEW: Admins can change user's passwords for them
-NEW: 
+NEW: Basic RSS feed script - /scripts/rss.php
 
 IMPROVED: Method of marking tasks 'closed'.
 IMPROVED: Task summary is now in notification subject lines
