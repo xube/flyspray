@@ -60,8 +60,8 @@ if ($_GET['page']) {
     // Yes. Now check its' regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['page'])) {
 
-        print "Request is fine: " . $_GET['page'];
-        // Other actions here.
+		//continue
+
     } else {
 
         print "Page request is invalid."; exit;

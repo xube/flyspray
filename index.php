@@ -49,7 +49,7 @@ if ($_GET['sort']) {
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title><?php echo "{$project_prefs['project_title']} :: {$_GET['do']}";?></title>
+<title><?php echo "{$project_prefs['project_title']}";?></title>
   <link rel="icon" href="./favicon.ico" type="image/png">
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP.">
   <script type="text/javascript" src="functions.js"></script>
@@ -79,7 +79,7 @@ if ($_GET['sort']) {
 
 <?php
 if ($project_prefs['show_logo'] == '1') {
-  echo "<h1 id=\"title\"><span>{$flyspray_prefs['project_title']}</span></h1>";
+  echo "<h1 id=\"title\"><span>{$project_prefs['project_title']}</span></h1>";
 };
 ?>
 
@@ -201,21 +201,17 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
 };
 
-      /*if ($_GET['do']) {
-        $do = $_GET['do'];
-      } elseif ($_POST['do']) {
-        $do = $_POST['do'];
-      };
-      */
       $do = $_REQUEST['do'];
 
+      if (!isset($_REQUEST['do'])) {
+        $do = "index";
+      }
+
       // This is to only allow people to request valid pages, instead of things like config.inc.php or /etc/passwd 
-      if (preg_match ("/^(admin|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|register)$/", $do)
-         && ($flyspray_prefs['anon_view'] == '1' OR $_SESSION['userid'])) {
+      if (preg_match ("/^(admin|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register)$/", $do)
+         && ($flyspray_prefs['anon_view'] == '1' OR $_COOKIE['flyspray_userid'])) {
          
          require("scripts/$do.php");
-      } else {
-        require("scripts/index.php");
       };
 
       // if no-one's logged in, show the login box
