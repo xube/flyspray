@@ -30,8 +30,6 @@ if ($permissions['open_new_tasks'] == '1'
       </tr>
    </table>
 
-   <map id="formnewtask" name="formnewtask">
-
    <div id="taskfields1">
 
       <table>

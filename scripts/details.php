@@ -711,14 +711,25 @@ if ($db->CountRows($task_exists)
          // End of showing task closure reason
          }
 
+         // Check for pending PM requests
+         $get_pending = $db->Query("SELECT * FROM flyspray_admin_requests
+                                    WHERE task_id = ?
+                                    AND resolved_by <> '1'",
+                                    array($task_details['task_id']));
+
+         if ($db->CountRows($get_pending))
+         {
+            echo '<span id="pendingreq">' . $details_text['taskpendingreq'] . '</span>';
+         }
+
          echo '<div id="actionbuttons">';
 
-         // Check permissions and task status, then show the " task" button
+         // Check permissions and task status, then show the "re-open task" button
          if (@$effective_permissions['can_close'] == '1' && $task_details['is_closed'] == '1')
          {
             echo '<a href="?do=modify&amp;action=reopen&amp;task_id=' . $_GET['id'] . '">' . $details_text['reopenthistask'] . '</a>';
 
-            // If they can't  this, show a button to request a PM  it
+            // If they can't  this, show a button to request a PM re-open it
          } elseif (@$effective_permissions['can_close'] != '1'
            && $task_details['is_closed'] == '1'
            && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
@@ -732,7 +743,7 @@ if ($db->CountRows($task_exists)
                   <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a>
                   <form name="form3" action="index.php" method="post" id="formclosetask">
                      <input type="hidden" name="do" value="modify" />
-                     <input type="hidden" name="action" value="requestclose" />
+                     <input type="hidden" name="action" value="requestreopen" />
                      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
                      <label for="reason"><?php echo $details_text['givereason'];?></label>
                      <textarea id="reason" name="reason_given"></textarea><br />
@@ -763,7 +774,7 @@ if ($db->CountRows($task_exists)
    ?>
       <a href="#close" id="closetask" class="button" onclick="showstuff('closeform');">
       <?php
-      echo $details_text['closetask'] . '</a>';
+      echo $details_text['closetask'];
       ?></a>
       <div id="closeform">
          <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a>
@@ -802,8 +813,8 @@ if ($db->CountRows($task_exists)
    <?php
    // If the user is assigned this task but can't close it, show a button to request closure
    } elseif (@$effective_permissions['can_close'] != '1'
-       && @$open_deps != 'yes'	    // FIXME: where does $open_deps come from?
-       && @defined($current_user)
+       && !isset($deps_open)
+       && isset($current_user)
        && $task_details['assigned_to'] == $current_user['user_id']
        && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1')
    {
@@ -871,7 +882,9 @@ if ($db->CountRows($task_exists)
       }
    }
 
+   // End of actionbuttons area
    echo '</div>';
+   // End of taskdetails area
    echo '</div>';
 
 /////////////////////////////////////////////////
@@ -1416,19 +1429,22 @@ if (@$permissions['view_history'] == '1')
 
 <div id="history" class="tab">
 
-   <table id="history">
+   <table class="history">
       <tr>
          <th><?php echo $details_text['eventdate'];?></th>
          <th><?php echo $details_text['user'];?></th>
          <th><?php echo $details_text['event'];?></th>
       </tr>
       <?php
-      if (is_numeric($_GET['details']))
+      if (isset($_GET['details']) && is_numeric($_GET['details']))
       {
          $details = " AND h.history_id = {$_GET['details']}";
 
          echo '<b>' . $details_text['selectedhistory'] . '</b>';
          echo '&nbsp;&mdash;&nbsp;<a href="?do=details&amp;id=' . $_GET['id'] . '#history">' . $details_text['showallhistory'] . '</a>';
+      } else
+      {
+         $details = '';
       }
 
       $query_history = $db->Query("SELECT h.*, u.user_name, u.real_name
@@ -1737,6 +1753,10 @@ if (@$permissions['view_history'] == '1')
             } elseif ($history['event_type'] == '27')   // Task privacy removed - task made public
             {
                echo $details_text['taskmadepublic'];
+
+            } elseif ($history['event_type'] == '28')   // PM request denied
+            {
+               echo $details_text['pmreqdenied'];
             }
 
             ?>
@@ -1751,7 +1771,7 @@ if (@$permissions['view_history'] == '1')
       if (isset($_GET['details']) && !empty($_GET['details']))
       {
       ?>
-         <table id="history">
+         <table class="history">
             <tr>
                <th><?php echo $details_text['previousvalue'];?></th>
                <th><?php echo $details_text['newvalue'];?></th>
@@ -1760,10 +1780,11 @@ if (@$permissions['view_history'] == '1')
                <td><?php echo $details_previous;?></td>
                <td><?php echo $details_new;?></td>
             </tr>
-            <?php
+         </table>
+      <?php
       }
       ?>
-      </table>
+
 
    <?php
    // End of History Tab

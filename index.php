@@ -8,6 +8,9 @@
 
 include_once('header.php');
 
+// Set a generic "blank" variable so that we don't get notices
+$novar = '';
+
 // Send this header for i18n support
 // Note that server admins can override this, breaking Flyspray.
 header("Content-type: text/html; charset=utf-8");
@@ -120,47 +123,86 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // at the end of script execution by PHP itself when output buffering is turned on
    // either in the php.ini or by calling ob_start().
 
-   // Define a bunch of stuff for the last search line
+   // Define a bunch of stuff for the 'last search' line and the page numbering urls
    $lastindex = '';
+   $extraurl = '';
 
    if (isset($_GET['string']) && !empty($_GET['string']))
+   {
       $lastindex .= '&amp;string=' . $_GET['string'];
+      $extraurl .= '&amp;string=' . $_GET['string'];
+   }
 
    if (isset($_GET['type']) && !empty($_GET['type']))
+   {
       $lastindex .= '&amp;type=' . $_GET['type'];
+      $extraurl .= '&amp;type=' . $_GET['type'];
+   }
 
    if (isset($_GET['sev']) && !empty($_GET['sev']))
+   {
       $lastindex .= '&amp;sev=' . $_GET['sev'];
+      $extraurl .= '&amp;sev=' . $_GET['sev'];
+   }
 
    if (isset($_GET['dev']) && !empty($_GET['dev']))
+   {
       $lastindex .= '&amp;dev=' . $_GET['dev'];
+      $extraurl .= '&amp;dev=' . $_GET['dev'];
+   }
 
    if (isset($_GET['due']) && !empty($_GET['due']))
+   {
       $lastindex .= '&amp;due=' . $_GET['due'];
+      $extraurl .= '&amp;due=' . $_GET['due'];
+   }
 
    if (isset($_GET['cat']) && !empty($_GET['cat']))
+   {
       $lastindex .= '&amp;cat=' . $_GET['cat'];
+      $extraurl .= '&amp;cat=' . $_GET['cat'];
+   }
 
    if (isset($_GET['status']) && !empty($_GET['status']))
+   {
       $lastindex .= '&amp;status=' . $_GET['status'];
+      $extraurl .= '&amp;status=' . $_GET['status'];
+   }
 
    if (isset($_GET['perpage']) && !empty($_GET['perpage']))
+   {
       $lastindex .= '&amp;perpage=' . $_GET['perpage'];
+      $extraurl .= '&amp;perpage=' . $_GET['perpage'];
+   }
 
    if (isset($_GET['pagenum']) && !empty($_GET['pagenum']))
+   {
       $lastindex .= '&amp;pagenum=' . $_GET['pagenum'];
+   }
 
    if (isset($_GET['order']) && !empty($_GET['order']))
+   {
       $lastindex .= '&amp;order=' . $_GET['order'];
+      $extraurl .= '&amp;order=' . $_GET['order'];
+   }
 
    if (isset($_GET['order2']) && !empty($_GET['order2']))
+   {
       $lastindex .= '&amp;order2=' . $_GET['order2'];
+      $extraurl .= '&amp;order2=' . $_GET['order2'];
+   }
 
    if (isset($_GET['sort']) && !empty($_GET['sort']))
+   {
       $lastindex .= '&amp;sort=' . $_GET['sort'];
+      $extraurl .= '&amp;sort=' . $_GET['sort'];
+   }
 
    if (isset($_GET['sort2']) && !empty($_GET['sort2']))
+   {
       $lastindex .= '&amp;sort2=' . $_GET['sort2'];
+      $extraurl .= '&amp;sort2=' . $_GET['sort2'];
+   }
 
    // If the user has used the search box, store their search for later on
    if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order']))
@@ -381,7 +423,7 @@ if (isset($_SESSION['SUCCESS']))
       <option value="0"<?php if (isset($_GET['project']) && $_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
       <?php
       // If the user has permission to view all projects
-      if ($permissions['global_view'] == '1')
+      if (isset($permissions['global_view']) && $permissions['global_view'] == '1')
       {
          $get_projects = $db->Query("SELECT * FROM flyspray_projects
                                      ORDER BY project_title");
@@ -415,7 +457,7 @@ if (isset($_SESSION['SUCCESS']))
       $project_list = array();
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'] && $_GET['project'] != '0' && !in_array($row['project_id'], $project_list))
+         if ($project_id == $row['project_id'] && (isset($_GET['project']) && !empty($_GET['project'])) && !in_array($row['project_id'], $project_list))
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];

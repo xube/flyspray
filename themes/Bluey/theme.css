@@ -370,7 +370,7 @@ table#pagenumbers td#taskrange {
    padding              : 3px 2ex;
  }
 
-table#pagenumbers td#pagenumbers {
+table#pagenumbers td#numbers {
    padding              : 3px 2ex;
    text-align           : right;
 }
@@ -430,7 +430,7 @@ p#footer {
   color                : #ffffff;
   text-align           : center;
   margin-top            :  15px;
-  clear			: both;
+  clear                 : both;
 }
 
 p#footer a:link {
@@ -630,7 +630,7 @@ div#fineprint {
   padding-bottom       : 10px;
 }
 
-table#history
+table.history
 {
   width                : 100%;
   margin               : 1em 0px 1em 0px;
@@ -640,13 +640,13 @@ table#history
   font-family          : Helvetica, Verdana, Sans-Serif;
 }
 
-table#history td {
+table.history td {
   border-bottom        : 1px solid #ccc;
   border-left          : 1px solid #ccc;
   padding-left         : 5px;
 }
 
-table#history td.taskid {
+table.history td.taskid {
   text-align           : center;
   padding              : 2px 1ex;
 }
@@ -854,7 +854,7 @@ div#toolbox {
    min-height              : 350px;
 }
 
-a#grouptitle {
+a.grouptitle {
    font-size               : 16px;
 }
 
@@ -926,6 +926,9 @@ div#fileupload {
    margin                  : 20px 0px 20px 0px;
 }
 
+span#pendingreq {
+   margin               : 0px 0px 0px 9px;
+}
 
 /* End of the @screen section */
 }

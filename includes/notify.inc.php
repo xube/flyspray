@@ -153,6 +153,8 @@ class Notifications {
          | 9. Related task added       |
          |10. Taken ownership          |
          |11. Confirmation code        |
+         |12. PM request               |
+         |13. PM denied request        |
          -------------------------------
       */
       ///////////////////////////////////////////////////////////////
@@ -165,7 +167,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['newtaskopened'] . "\n\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
-         $body .= $details_text['attached_to_project'] . ' - ' .  $task_details['project_title'] . "\n";
+         $body .= $details_text['attachedtoproject'] . ' - ' .  $task_details['project_title'] . "\n";
          $body .= $details_text['summary'] . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $details_text['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
          $body .= $details_text['category'] . ' - ' . $task_details['category_name'] . "\n";
@@ -361,19 +363,48 @@ class Notifications {
          $notify_text['notifyfrom'] . $project_prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
-
+         // Confirmation code message goes here
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
       }
 
+      if ($type == '12')
+      {
+         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['pendingreq'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['moreinfo'] . "\n";
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $notify_text['disclaimer'];
+
+         return array($subject, $body);
+      }
+
+      if ($type == '13')
+      {
+         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['pmdeny'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['moreinfo'] . "\n";
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $notify_text['disclaimer'];
+
+         return array($subject, $body);
+      }
 
    // End of Detailed notification function
    }
 
 
-   // This sends a notification to a single user
-   function Single($user_id, $subject, $body)
+   // This sends a notification to a specific users, eg project managers.
+   function SpecificAddresses($users)
    {
 
       global $db;
@@ -384,24 +415,31 @@ class Notifications {
       global $flyspray_prefs;
       global $current_user;
 
-      $user_details = $fs->getUserDetails($user_id);
+      $jabber_users = array();
+      $email_users = array();
 
-      //$body = $notify_text['donotreply'] . "\n\n" . $body . "\n\n" . $notify_text['disclaimer'];
-
-      // Email
-      if ($flyspray_prefs['user_notify'] == '2'
-          OR ($flyspray_prefs['user_notify'] = '1' && $user_details['notify_type'] == '1'))
+      foreach ($users AS $key => $val)
       {
-         $this->SendEmail($user_details['email_address'], $subject, $body);
+         // Get each user's notify prefs
+         $user_details = $fs->getUserDetails($val);
 
-      // Jabber
-      } elseif ($flyspray_prefs['user_notify'] == '3'
-          OR ($flyspray_prefs['user_notify'] = '1' && $user_details['notify_type'] == '2'))
-      {
-         $this->SendJabber($user_details['email_address'], $subject, $body);
+         if (($flyspray_prefs['user_notify'] == '1' && $user_details['notify_type'] == '1')
+            OR $flyspray_prefs['user_notify'] == '2')
+         {
+               array_push($email_users, $user_details['email_address']);
+
+         } elseif (($flyspray_prefs['user_notify'] == '1' && $user_details['notify_type'] == '2')
+            OR $flyspray_prefs['user_notify'] == '3')
+         {
+               array_push($jabber_users, $user_details['jabber_id']);
+         }
+
+
       }
 
-   // End of Single function
+      return array($email_users, $jabber_users);
+
+   // End of SpecificAddresses function
    }
 
 

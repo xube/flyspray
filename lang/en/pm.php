@@ -22,6 +22,7 @@ $pm_text = array (
 'verlisted'                =>    'Version List Editor',
 'tasktypeed'               =>    'Task Types List Editor',
 'resed'                    =>    'Resolutions List Editor',
+'deny'                     =>    'Deny',
 
 
 );

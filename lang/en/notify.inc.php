@@ -25,6 +25,8 @@ $notify_text = array (
 'assignedtoyou'               =>    'The following task has been assigned to you:',
 'nolongerassigned'            =>    'The following task is no longer assigned to you:',
 'takenownership'              =>    'has taken ownership of the following task:',
+'pendingreq'                  =>    'The following task requires action by a Project Manager:',
+'pmdeny'                      =>    'A Project Manager has denied the request pending for the following task:',
 
 );
 ?>

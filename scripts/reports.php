@@ -37,7 +37,7 @@ function changelog_report()
    global $fs;
    global $flyspray_prefs;
    global $reports_text;
-   
+
         echo "<div class=\"tabentries\">";
         echo "<p><em>$reports_text[changeloggen]</em></p>";
         echo "<div class=\"tabentry\">";
@@ -192,7 +192,7 @@ function severity_report()
         $data = urlencode($data);
         #echo "d: $data<br>\n";
 
-        echo "$reports_text[totalopen]: $counttotal<br>\n";
+        echo "$reports_text[totalopen]: $counttotal<br />\n";
         foreach ($sevarray as $severity=>$count)
         {
         #       echo "$severity: $count<br>\n";
@@ -366,12 +366,12 @@ switch ($_REQUEST['sort']) {
 ?>
 
     <div id="events" class="tab">
-        <form action="?do=reports&report=events" method="post" name="events_form">
+        <form action="?do=reports&amp;report=events" method="post" name="events_form">
         <!-- <input type="hidden" name="do" value="reports">
         <input type="hidden" name="report" value="events"> -->
         <table>
         <tr>
-            <td><b><?php echo $reports_text['events'];?></b><br>
+            <td><b><?php echo $reports_text['events'];?></b><br />
                 <table>
                 <tr><td><?php echo $reports_text['tasks'];?></td>
                     <td><label class="inline"><input type="checkbox" name="open" <?php if (isset($_REQUEST['open'])) echo 'checked';?> />
@@ -380,7 +380,7 @@ switch ($_REQUEST['sort']) {
                     <?php echo $reports_text['closed'];?></label></td>
                     <td><label class="inline"><input type="checkbox" name="edit" <?php if (isset($_REQUEST['edit'])) echo 'checked';?> />
                     <?php echo $reports_text['edited'];?></label></td>
-                </td></tr>
+                </tr>
                 <tr><td></td>
                     <td><label class="inline"><input type="checkbox" name="assign" <?php if (isset($_REQUEST['assign'])) echo 'checked';?> />
                     <?php echo $reports_text['assigned'];?></label></td>
@@ -388,7 +388,7 @@ switch ($_REQUEST['sort']) {
                     <?php echo $reports_text['comments'];?></label></td>
                     <td><label class="inline"><input type="checkbox" name="attachments" <?php if (isset($_REQUEST['attachments'])) echo 'checked';?> />
                     <?php echo $reports_text['attachments'];?></label></td>
-                </td></tr>
+                </tr>
                 <tr><td></td>
                     <td><label class="inline"><input type="checkbox" name="related" <?php if (isset($_REQUEST['related'])) echo 'checked';?> />
                     <?php echo $reports_text['relatedtasks'];?></label></td>
@@ -396,10 +396,10 @@ switch ($_REQUEST['sort']) {
                     <?php echo $reports_text['notifications'];?></label></td>
                     <td><label class="inline"><input type="checkbox" name="reminders" <?php if (isset($_REQUEST['reminders'])) echo 'checked';?> />
                     <?php echo $reports_text['reminders'];?></label></td>
-                </td></tr>
+                </tr>
                 </table>
             </td>
-            <td><b><?php echo $reports_text['date'];?></b><br>
+            <td><b><?php echo $reports_text['date'];?></b><br />
                 <table border="0">
                 <?php if(!isset($_REQUEST['within'])) { $_REQUEST['within'] = 'year'; } ?>
                 <tr>
@@ -419,7 +419,7 @@ switch ($_REQUEST['sort']) {
                     <td><label class="inline"><input type="radio" name="date" value="from" <?php if($date == 'from') echo 'checked';?> />
                     <?php echo $reports_text['from'];?></label></td>
                     <td>
-                    <input id="fromdate" type="text" name="fromdate" size="10" value="<?php echo $fromdate?>" />
+                    <input id="fromdate" type="text" name="fromdate" size="10" value="<?php if(isset($fromdate)) echo $fromdate?>" />
                     <button id="triggerfromdate">...</button>
                     <script type="text/javascript">
                      Calendar.setup(
@@ -431,7 +431,7 @@ switch ($_REQUEST['sort']) {
                      );
                    </script>
                    &mdash;
-                   <input id="todate" type="text" name="todate" size="10" value="<?php echo $todate;?>" />
+                   <input id="todate" type="text" name="todate" size="10" value="<?php if(isset($todate)) echo $todate;?>" />
                    <button id="triggertodate">...</button>
                    <script type="text/javascript">
                      Calendar.setup(
@@ -460,7 +460,7 @@ switch ($_REQUEST['sort']) {
 
                               while ($row = $db->FetchArray($ver_list))
                               {
-                                 if ($_REQUEST['duein'] == $row['version_id'])
+                                 if (isset($_REQUEST['duein']) && $_REQUEST['duein'] == $row['version_id'])
                                  {
                                     echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
                                  } else
@@ -514,8 +514,8 @@ switch ($_REQUEST['sort']) {
                         } else {
                             echo "<a href=\"?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
                         }?></td>
-                <?php echo "<td><a href=\"?do=details&id={$history['task_id']}\">FS#{$history['task_id']}</a></td>";?>
-                <?php echo "<td><a href=\"?do=details&id={$history['task_id']}&area=history#tabs\">" . htmlspecialchars(stripslashes($history['item_summary'])) . "</a></td>";?>
+                <?php echo "<td><a href=\"?do=details&amp;id={$history['task_id']}\">FS#{$history['task_id']}</a></td>";?>
+                <?php echo "<td><a href=\"?do=details&amp;id={$history['task_id']}#history\">" . htmlspecialchars(stripslashes($history['item_summary'])) . "</a></td>";?>
                 <td><?php echo EventDescription($history);?></td>
                 </tr>
                 <?php

@@ -333,7 +333,7 @@ table#pagenumbers td#taskrange {
    text-align           : right;
  }
 
-table#pagenumbers td#pagenumbers {
+table#pagenumbers td#numbers {
    width                : 49%;
    padding              : 3px 2ex;
    text-align           : left;
@@ -667,7 +667,7 @@ div#taskblocks {
 }
 
 div#actionbuttons {
-   margin-top           : 25px;
+   margin-top           : 15px;
    margin-left          : 5px;
    clear                : bottom;
    padding-bottom       : 7px;
@@ -868,7 +868,7 @@ div.tab                             { clear: left; }
    padding              : 0px 0px 0px 5px;
 }
 
-table#history
+table.history
 {
    width                : 100%;
    margin               : 1em 0px 1em 0px;
@@ -878,13 +878,13 @@ table#history
    font-family          : Helvetica, Verdana, Sans-Serif;
 }
 
-table#history td {
+table.history td {
   border-bottom        : 1px solid #ccc;
   border-left          : 1px solid #ccc;
   padding-left         : 5px;
 }
 
-table#history td.taskid {
+table.history td.taskid {
   text-align           : center;
   padding              : 2px 1ex;
 }
@@ -1033,8 +1033,13 @@ p#menu a#attention {
    right                : 210px;
    color                : #fff000;
    background-color     : #f30000;
+   background-image     : none;
+   padding              : 0px 0px 0px 5px;
 }
 
+span#pendingreq {
+   margin               : 0px 0px 0px 7px;
+}
 
 /* End of screen section */
 }

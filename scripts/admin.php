@@ -22,7 +22,6 @@ $this_page = str_replace('&', '&amp;', $this_page);
 // The user must be a member of the global "Admin" group to use this page
 if ($permissions['is_admin'] == '1')
 {
-
    // Show the menu that stays visible, regardless of which area we're in
    echo '<div id="toolboxmenu">';
 
@@ -50,11 +49,11 @@ if ($permissions['is_admin'] == '1')
       echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['preferences'] . '</h3>';
       ?>
 
+      <form action="index.php" method="post">
+
       <fieldset class="admin">
 
       <legend><?php echo $admin_text['general'];?></legend>
-
-      <form action="index.php" method="post">
 
       <table class="admin">
          <tr>
@@ -360,6 +359,11 @@ if ($permissions['is_admin'] == '1')
 
          echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['edituser'] . ': ' . $user_details['user_name'] . '</h3>';
          ?>
+
+         <fieldset class="admin">
+
+         <legend><?php echo $admin_text['edituser'];?></legend>
+
          <form action="index.php" method="post">
          <table class="admin">
             <tr>
@@ -453,6 +457,8 @@ if ($permissions['is_admin'] == '1')
          </table>
          </form>
 
+      </fieldset>
+
       <?php
       /////////////////////////////////
       // Start of the groups manager //
@@ -474,18 +480,23 @@ if ($permissions['is_admin'] == '1')
 
          // Cycle through the groups that belong to this project
          $get_groups = $db->Query("SELECT * FROM flyspray_groups
-                                   WHERE belongs_to_project = ?
-                                   ORDER BY group_id ASC",
-                                   array($project_id)
+                                   WHERE belongs_to_project = '0'
+                                   ORDER BY group_id ASC"
                                  );
 
          while ($group = $db->FetchArray($get_groups))
          {
-            echo '<a id="grouptitle" href="?do=admin&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
+            echo '<a class="grouptitle" href="?do=admin&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
             echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
             // Now, start a form to allow use to move multiple users between groups
             echo '<form action="index.php" method="post">' . "\n";
+
+            echo '<input type="hidden" name="do" value="modify" />' . "\n";
+            echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
+            echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
+            echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
+            echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
 
             echo '<table class="userlist"><tr><th></th><th>' . $admin_text['username'] . '</th><th>' . $admin_text['realname'] . '</th><th>' . $admin_text['accountenabled'] . '</th></tr>';
 
@@ -494,12 +505,6 @@ if ($permissions['is_admin'] == '1')
                                           WHERE uig.group_id = ? ORDER BY u.user_name ASC",
                                           array($group['group_id']));
 
-
-            echo '<input type="hidden" name="do" value="modify" />' . "\n";
-            echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
-            echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
-            echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
-            echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
 
             $userincrement = 0;
             while ($row = $db->FetchArray($get_user_list))
@@ -528,7 +533,7 @@ if ($permissions['is_admin'] == '1')
             echo '<select class="adminlist" name="switch_to_group">'. "\n";
 
             // Get the list of groups to choose from
-            $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+            $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
             while ($group = $db->FetchArray($groups))
             {
                echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
@@ -540,6 +545,8 @@ if ($permissions['is_admin'] == '1')
             echo "</table>\n\n";
             echo '</form>';
          }
+
+         echo '</fieldset>';
 
    /////////////////////////////
    // Start of editing groups //
@@ -970,12 +977,12 @@ if ($permissions['is_admin'] == '1')
     ?>
     <hr />
     <form action="index.php" method="post">
-    <table class="list">
-     <tr>
-        <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="add_category" />
         <input type="hidden" name="project_id" value="0" />
         <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+    <table class="list">
+     <tr>
       <td>
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
         <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name" />
@@ -1010,7 +1017,7 @@ if ($permissions['is_admin'] == '1')
          while ($row = $db->FetchArray($cat_list))
          {
             $category_name = stripslashes($row['category_name']);
-            if ($_GET['cat'] == $row['category_id'])
+            if (isset($_GET['cat']) && $_GET['cat'] == $row['category_id'])
             {
                echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
             } else
@@ -1100,13 +1107,14 @@ if ($permissions['is_admin'] == '1')
 
       <!-- Form to add a new operating system to the list -->
       <form action="index.php" method="post">
-      <table class="list">
-         <tr>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="add_to_list" />
          <input type="hidden" name="list_type" value="os" />
          <input type="hidden" name="project_id" value="0" />
          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
+      <table class="list">
+         <tr>
             <td>
             <label for="listnamenew"><?php echo $admin_text['name'];?></label>
             <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
@@ -1123,9 +1131,8 @@ if ($permissions['is_admin'] == '1')
          </tr>
       </table>
       </form>
-   </div>
-
    </fieldset>
+
 <?php
 ///////////////////////////////
 // Show the list of Versions //
@@ -1206,13 +1213,14 @@ if ($permissions['is_admin'] == '1')
 
       <!-- Form to add a new version to the list -->
       <form action="index.php" method="post">
-      <table class="list">
-         <tr>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_to_version_list" />
             <input type="hidden" name="list_type" value="version" />
             <input type="hidden" name="project_id" value="0" />
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
+      <table class="list">
+         <tr>
             <td>
             <label for="listnamenew"><?php echo $admin_text['name'];?></label>
             <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name" />
@@ -1265,7 +1273,7 @@ if ($permissions['is_admin'] == '1')
             <label for="projecttitle"><?php echo $newproject_text['projecttitle'];?></label>
          </td>
          <td>
-            <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo $project_details['project_title'];?>" />
+            <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" />
          </td>
       </tr>
       <tr>
@@ -1289,15 +1297,10 @@ if ($permissions['is_admin'] == '1')
             // Sort the array alphabetically
             sort($theme_array);
             // Then display them
-            while (list($key, $val) = each($theme_array)) {
-               // If the theme is currently being used, pre-select it in the list
-               if ($val == $project_details['theme_style']) {
-                  echo "<option class=\"adminlist\" selected=\"selected\">$val</option>\n";
-               // If it's not, don't pre-select it
-               } else {
-                  echo "<option class=\"adminlist\">$val</option>\n";
-               };
-            };
+            while (list($key, $val) = each($theme_array))
+            {
+               echo "<option class=\"adminlist\">$val</option>\n";
+            }
             ?>
             </select>
          </td>

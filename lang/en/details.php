@@ -141,6 +141,8 @@ $details_text = array (
 'commentlink'           =>    'Link to this comment',
 'submitreq'             =>    'Submit request',
 'givereason'            =>    'Reason for this request',
+'pmreqdenied'           =>    'Project Manager denied request',
+'taskpendingreq'        =>    'Project Manager action pending.  See the History tab for details.',
 
 );
 ?>

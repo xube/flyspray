@@ -53,11 +53,12 @@ if ($permissions['manage_project'] == '1')
       echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $project_prefs['project_title'] . ': ' . $admin_text['preferences'] . '</h3>';
    ?>
 
+   <form action="index.php" method="post">
+
       <fieldset class="admin">
 
       <legend><?php echo $admin_text['general'];?></legend>
 
-      <form action="index.php" method="post">
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="updateproject" />
          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
@@ -229,11 +230,17 @@ if ($permissions['manage_project'] == '1')
       $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
       while ($group = $db->FetchArray($get_groups)) {
 
-         echo '<a id="grouptitle" href="?do=pm&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
+         echo '<a class="grouptitle" href="?do=pm&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
          echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
          // Now, create a form used for moving multiple users between groups
          echo '<form action="index.php" method="post">' . "\n";
+
+         echo '<input type="hidden" name="do" value="modify" />' . "\n";
+         echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
+         echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
+         echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
+         echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
 
          echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
@@ -241,13 +248,6 @@ if ($permissions['manage_project'] == '1')
                                        LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                                        WHERE uig.group_id = ? ORDER BY u.user_name ASC",
                                        array($group['group_id']));
-
-
-         echo '<input type="hidden" name="do" value="modify" />' . "\n";
-         echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
-         echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
-         echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
-         echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
 
          $userincrement = 0;
          while ($row = $db->FetchArray($get_user_list)) {
@@ -647,11 +647,12 @@ if ($permissions['manage_project'] == '1')
       <p><?php echo $admin_text['listnote'];?></p>
       <div class="admin">
       <form action="index.php" method="post">
-      <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="update_category" />
-      <input type="hidden" name="list_type" value="category" />
-      <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
-      <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="update_category" />
+         <input type="hidden" name="list_type" value="category" />
+         <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+         <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
       <table class="list">
          <?php
          $get_categories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
@@ -755,12 +756,13 @@ if ($permissions['manage_project'] == '1')
 
       <!-- Form to add a new category to the list -->
       <form action="index.php" method="post">
-      <table class="list">
-         <tr>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_category" />
             <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
+      <table class="list">
+         <tr>
             <td>
             <label for="listnamenew"><?php echo $admin_text['name'];?></label>
             <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name" />
@@ -792,7 +794,7 @@ if ($permissions['manage_project'] == '1')
             while ($row = $db->FetchArray($cat_list))
             {
                $category_name = stripslashes($row['category_name']);
-               if ($_GET['cat'] == $row['category_id'])
+               if (isset($_GET['cat']) && $_GET['cat'] == $row['category_id'])
                {
                   echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
                } else
@@ -882,13 +884,14 @@ if ($permissions['manage_project'] == '1')
 
       <!-- Form to add a new operating system to the list -->
       <form action="index.php" method="post">
-      <table class="list">
-         <tr>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="add_to_list" />
          <input type="hidden" name="list_type" value="os" />
          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
+      <table class="list">
+         <tr>
             <td>
             <label for="listnamenew"><?php echo $admin_text['name'];?></label>
             <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
@@ -987,13 +990,14 @@ if ($permissions['manage_project'] == '1')
 
       <!-- Form to add a new version to the list -->
       <form action="index.php" method="post">
-      <table class="list">
-         <tr>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_to_version_list" />
             <input type="hidden" name="list_type" value="version" />
             <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+
+      <table class="list">
+         <tr>
             <td>
             <label for="listnamenew"><?php echo $admin_text['name'];?></label>
             <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name" />
@@ -1050,39 +1054,40 @@ if ($permissions['manage_project'] == '1')
       } else
       {
 
-      echo '<fieldset class="admin">';
-      echo '<legend>' . $pm_text['pendingreq'] . '</legend>';
-      echo '<table class="admin" border="1"><tr>';
-      echo '<th>' . $admin_text['eventdesc'] . '</th>';
-      echo '<th>' . $admin_text['requestedby'] . '</th>';
-      echo '<th>' . $admin_text['daterequested'] . '</th>';
-      echo '<th>' . $pm_text['reasongiven'] . '</th>';
-      echo '</tr>';
+         echo '<fieldset class="admin">';
+         echo '<legend>' . $pm_text['pendingreq'] . '</legend>';
+         echo '<table class="history" border="1"><tr>';
+         echo '<th>' . $admin_text['eventdesc'] . '</th>';
+         echo '<th>' . $admin_text['requestedby'] . '</th>';
+         echo '<th>' . $admin_text['daterequested'] . '</th>';
+         echo '<th>' . $pm_text['reasongiven'] . '</th>';
+         echo '</tr>';
 
-      // ...and cycle through them
-      while($pending_req = $db->FetchRow($get_pending))
-      {
-         // Change the numerical request type into a readable value
-         switch($pending_req['request_type'])
+         // ...and cycle through them
+         while($pending_req = $db->FetchRow($get_pending))
          {
-            case "1": $request_type = $admin_text['closetask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
-            break;
-            case "2": $request_type = $admin_text['reopentask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
-            break;
-            case "3": $request_type = $admin_text['applymember'];
-            break;
+            // Change the numerical request type into a readable value
+            switch($pending_req['request_type'])
+            {
+               case "1": $request_type = $admin_text['closetask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
+               break;
+               case "2": $request_type = $admin_text['reopentask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
+               break;
+               case "3": $request_type = $admin_text['applymember'];
+               break;
+            }
+
+            echo '<tr>';
+            echo "<td>$request_type</td>";
+            echo '<td><a href="?do=admin&amp;area=users&amp;id=' . $pending_req['user_id'] . '">' . $pending_req['real_name'] . '(' . $pending_req['user_name'] . ')</a></td>';
+            echo '<td>' . $fs->formatDate($pending_req['time_submitted'], true) . '</td>';
+            echo '<td>' . stripslashes($pending_req['reason_given']) . '</td>';
+            echo '<td><a href="?do=modify&amp;action=denypmreq&req_id=' . $pending_req['request_id'] . '&amp;prev_page=' . $this_page . '">' . $pm_text['deny'] . '</a></td>';
          }
 
-         echo '<tr>';
-         echo "<td>$request_type</td>";
-         echo '<td><a href="?do=admin&amp;area=users&amp;id=' . $pending_req['user_id'] . '">' . $pending_req['real_name'] . '(' . $pending_req['user_name'] . ')</a></td>';
-         echo '<td>' . $fs->formatDate($pending_req['time_submitted'], true) . '</td>';
-         echo '<td>' . stripslashes($pending_req['reason_given']) . '</td>';
+         echo '</table>';
+         echo '</fieldset>';
       }
-
-      echo '</table>';
-
-   }
 // End of pending admin requests
 
    // End of areas

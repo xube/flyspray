@@ -21,7 +21,7 @@ if (isset($_GET['order']) && !empty($_GET['order']))
    $orderby[] = $_GET['order'];
 } else
 {
-   $orderby[] = 'cat';
+   $orderby[] = 'sev';
 }
 
 if (isset($_GET['order2']) && !empty($_GET['order2'])) {
@@ -112,7 +112,7 @@ $sql_params[] = '1';
 if (isset($_GET['project']) && $_GET['project'] == '0')
 {
    // If the user has the global 'view tasks' permission, view all projects unrestricted
-   if ($permissions['global_view'] == '1')
+   if (isset($permissions['global_view']) && $permissions['global_view'] == '1')
    {
       $check_projects = $db->Query("SELECT p.project_id
                                        FROM flyspray_projects p"
@@ -247,7 +247,7 @@ if (isset($_GET['string']) && $_GET['string']) {
 }
 
 // Do this to hide private tasks from the list
-if (@$permissions['manage_project'] != '1'	    // $permissions empty unless user logged in
+if (@$permissions['manage_project'] != '1'          // $permissions empty unless user logged in
      && isset($_COOKIE['flyspray_userid']))
 {
    $where[] = "(t.mark_private <> '1' OR t.assigned_to = ?)";
@@ -263,8 +263,10 @@ if (isset($_GET['project']) && $_GET['project'] == '0') {
 } else {
     $get = "&amp;project={$project_id}";
 }
+
 // for page numbering
-$extraurl = $get . '&amp;tasks=' . $_GET['tasks'] . '&amp;project=' . $_GET['project'] . $lastindex;
+$extraurl = $get . '&amp;tasks=' . $_GET['tasks'] . $extraurl;
+
 // for 'sort by this column' links
 // $get = $extraurl . "&amp;pagenum=$pagenum";
 // $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
@@ -277,9 +279,9 @@ $get = $extraurl;
 //$getproject = $db->FetchArray($db->Query('SELECT * FROM flyspray_projects WHERE project_id = ?', array($project_id)));
 
 if ($project_prefs['project_is_active'] == '1'
-    && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
-    OR $_GET['project'] == '0'
-    ) {
+  && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
+  OR $_GET['project'] == '0')
+{
 ?>
 
 
@@ -288,7 +290,7 @@ if ($project_prefs['project_is_active'] == '1'
 <form action="index.php" method="get">
 <div id="search">
 <input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>" />
-<input type="hidden" name="project" value="<?php echo $_GET['project'] == '0' ? '0' : $project_id;?>" />
+<input type="hidden" name="project" value="<?php echo $project_id;?>" />
   <em><?php echo $index_text['searchthisproject'];?>:</em>
     <input id="searchtext" name="string" type="text" size="20"
     maxlength="100" value="<?php if(isset($_GET['string'])) echo $_GET['string'];?>" accesskey="q" />
@@ -455,8 +457,14 @@ if ($project_prefs['project_is_active'] == '1'
  * @param string $image    An image to display instead of the column name
  */
 
-// Setting this for the function below
-$project = $_GET['project'];
+// Setting this for the functions below
+if (isset($_GET['project']))
+{
+   $project = $_GET['project'];
+} else
+{
+   $project = $project_id;
+}
 
 //function list_heading($colname, $orderkey, $image = '')
 function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
@@ -537,9 +545,6 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
  * @param integer $nowrap       Whether to force the cell contents not to wrap
  * @param string $url           A URL to wrap around the cell contents
  */
-
-// Setting this for the function below
-$project = $_GET['project'];
 
 function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 {
@@ -760,7 +765,7 @@ ORDER BY
       if ($total > 0) {
          echo "<td id=\"taskrange\">";
          printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
-         echo "</td><td id=\"pagenumbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl) . "</td>";
+         echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl) . "</td>";
       } else
       {
          echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";

@@ -82,6 +82,9 @@ if ($_POST['action'] == 'newtask'
                                                 ORDER BY task_id DESC",
                                                 array($item_summary, $detailed_desc), 1));
 
+   // Log that the task was opened
+   $fs->logEvent($task_details['task_id'], 1);
+
    $cat_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_list_category
                                               WHERE category_id = ?",
                                               array($_POST['product_category'])
@@ -142,11 +145,8 @@ if ($_POST['action'] == 'newtask'
                           );
 
       // Log to the history that we added the user to the notification list
-      $fs->logEvent($get_task_info['task_id'], 9, $current_user['user_id']);
+      $fs->logEvent($task_details['task_id'], 9, $current_user['user_id']);
    }
-
-   // Log that the task was opened
-   $fs->logEvent($task_details['task_id'], 1);
 
 
    function make_seed()
@@ -1957,47 +1957,96 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of requesting task closure //
 //////////////////////////////////////
 
-} elseif ($_POST['action'] == 'requestclose') {
+} elseif ($_POST['action'] == 'requestclose')
+{
+   // Log the admin request
+   $fs->AdminRequest(1, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
 
-  // Log the admin request
-  $fs->AdminRequest(1, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
+   // Log this event to the task history
+   $fs->logEvent($_POST['task_id'], 20, $current_user['user_id']);
 
-  // Log this event to the task history
-  $fs->logEvent($_POST['task_id'], 20, $current_user['user_id']);
+   // Now, get the project managers details for this project
+   $get_pms = $db->Query("SELECT u.user_id
+                          FROM flyspray_users u
+                          LEFT JOIN flyspray_users_in_groups uig ON u.user_id = uig.user_id
+                          LEFT JOIN flyspray_groups g ON uig.group_id = g.group_id
+                          WHERE g.belongs_to_project = ?
+                          AND g.manage_project = '1'",
+                          array($project_id)
+                        );
+
+   $pms = array();
+
+   // Add each PM to the array
+   while ($row = $db->FetchArray($get_pms))
+   {
+      array_push($pms, $row['user_id']);
+   }
+
+   // Call the functions to create the address arrays, and send notifications
+   $to  = $notify->SpecificAddresses($pms);
+   $msg = $notify->Create('12', $_POST['task_id']);
+   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
    $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
    $fs->redirect("?do=details&id=" . $_POST['task_id']);
 
-// End of requesting task closure
 
+// End of requesting task closure
 
 /////////////////////////////////////////
 // Start of requesting task re-opening //
 /////////////////////////////////////////
 
-} elseif ($_POST['action'] == 'requestreopen') {
+} elseif ($_POST['action'] == 'requestreopen')
+{
+   // Log the admin request
+   $fs->AdminRequest(2, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
 
-  // Log the admin request
-  $fs->AdminRequest(2, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
+   // Log this event to the task history
+   $fs->logEvent($_POST['task_id'], 21, $current_user['user_id']);
 
-  // Log this event to the task history
-  $fs->logEvent($_POST['task_id'], 21, $current_user['user_id']);
+   // Check if the user is on the notification list
+   $check_notify = $db->Query("SELECT * FROM flyspray_notifications
+                               WHERE task_id = ?
+                               AND user_id = ?",
+                               array($_POST['task_id'], $current_user['user_id'])
+                             );
 
-  // Check if the user is on the notification list
-  $check_notify = $db->Query("SELECT * FROM flyspray_notifications
-                                WHERE task_id = ?
-                                AND user_id = ?",
-                                array($_POST['task_id'], $current_user['user_id'])
-                              );
+   if (!$db->CountRows($check_notify))
+   {
+      // Add the requestor to the task notification list, so that they know when it has been re-opened
+      $insert = $db->Query("INSERT INTO flyspray_notifications (task_id, user_id) VALUES(?,?)",
+      array($_POST['task_id'], $current_user['user_id']));
 
-  if (!$db->CountRows($check_notify))
-  {
-    // Add the requestor to the task notification list, so that they know when it has been re-opened
-    $insert = $db->Query("INSERT INTO flyspray_notifications (task_id, user_id) VALUES(?,?)",
-    array($_POST['task_id'], $current_user['user_id']));
+      $fs->logEvent($_POST['task_id'], 9, $current_user['user_id']);
+   }
 
-    $fs->logEvent($_POST['task_id'], 9, $current_user['user_id']);
-  };
+   // Now, get the project managers details for this project
+   $get_pms = $db->Query("SELECT u.user_id
+                          FROM flyspray_users u
+                          LEFT JOIN flyspray_users_in_groups uig ON u.user_id = uig.user_id
+                          LEFT JOIN flyspray_groups g ON uig.group_id = g.group_id
+                          WHERE g.belongs_to_project = ?
+                          AND g.manage_project = '1'",
+                          array($project_id)
+                        );
+
+   $pms = array();
+
+   // Add each PM to the array
+   while ($row = $db->FetchArray($get_pms))
+   {
+      array_push($pms, $row['user_id']);
+   }
+
+   // Call the functions to create the address arrays, and send notifications
+   $to  = $notify->SpecificAddresses($pms);
+   $msg = $notify->Create('12', $_POST['task_id']);
+   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+
 
    $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
    $fs->redirect("?do=details&id=" . $_POST['task_id']);
@@ -2005,15 +2054,52 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // End of requesting task re-opening
 
 
+///////////////////////////////////
+// Start of denying a PM request //
+///////////////////////////////////
+
+} elseif (isset($_GET['action']) && $_GET['action'] == 'denypmreq' && $permissions['is_admin'] == '1')
+{
+   // Get info on the pm request
+   $req_details = $db->FetchArray($db->Query("SELECT task_id
+                                              FROM flyspray_admin_requests
+                                              WHERE request_id = ?",
+                                              array($_GET['req_id'])
+                                             )
+                                 );
+
+   // Mark the PM request as 'resolved'
+   $db->Query("UPDATE flyspray_admin_requests
+               SET resolved_by = ?, time_resolved = ?
+               WHERE request_id = ?",
+               array($current_user['user_id'], date(U), $_GET['req_id']));
+
+
+   // Log this event to the task's history
+   $fs->logEvent($req_details['task_id'], 28, $current_user['user_id']);
+
+   // Send notifications
+   $to  = $notify->Address($req_details['task_id']);
+   $msg = $notify->Create('13', $req_details['task_id']);
+   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+
+   // Redirect
+   $_SESSION['SUCCESS'] = $modify_text['pmreqdenied'];
+   $fs->redirect($_GET['prev_page']);
+
+// End of denying a PM request
+
+
 //////////////////////////////////
 // Start of adding a dependency //
 //////////////////////////////////
 
 } elseif ($_POST['action'] == 'newdep'
-          && (($permissions['modify_own_tasks'] == '1'
-               && $old_details['assigned_to'] == $current_user['user_id'])
-             OR $permissions['modify_all_tasks'] =='1')) {
-
+   && (($permissions['modify_own_tasks'] == '1'
+   && $old_details['assigned_to'] == $current_user['user_id'])
+   OR $permissions['modify_all_tasks'] =='1'))
+{
   // First check that the user hasn't tried to add this twice
   $check_dep = $db->Query("SELECT * FROM flyspray_dependencies
                              WHERE task_id = ? AND dep_task_id = ?",

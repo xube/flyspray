@@ -127,7 +127,7 @@ $modify_text = array (
 
 'reminderadded'         =>        'Your reminder has been added.',
 'reminderdeleted'       =>        'The selected reminder has been deleted.',
-'flyspraytask'		=>        'Flyspray task',
+'flyspraytask'          =>        'Flyspray task',
 'fieldsmissing'         =>        'Some fields contained no or invalid data.',
 'relatedinvalid'        =>        'There is no such task.',
 'relatedproject'        =>        'Task is attached to a different project.',
@@ -159,5 +159,9 @@ $modify_text = array (
 'taskmadepublic'        =>        'This task has been made public again',
 'realandnotify'         =>        'You need to fill in the Real Name field, and either the Email Address or Jabber ID field.',
 
+
+// Added in version 0.9.8
+
+'pmreqdenied'           =>       'Project Manager request denied',
 );
 ?>

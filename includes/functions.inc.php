@@ -372,6 +372,7 @@ function GetTaskDetails($task_id) {
       // 25: This task removed from another task's dependency list
       // 26: Task was made private
       // 27: Task was made public
+      // 28: PM request denied
 
 
       $db->Query("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
@@ -663,9 +664,9 @@ function GetTaskDetails($task_id) {
     $indexes = split(' ', $indexes);
     foreach ($indexes as $index) {
       if (!isset($_GET[$index]))
-	$_GET[$index] = '';
+        $_GET[$index] = '';
       if (!isset($_REQUEST[$index]))
-	$_REQUEST[$index] = '';
+        $_REQUEST[$index] = '';
     }
   }
 
