@@ -1,5 +1,5 @@
 <?php
-$doing_upgrade = 1;
+// Include the header file that includes the database information
 include('../header.php');
 ?>
 

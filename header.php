@@ -15,17 +15,24 @@
 strstr( PHP_OS, "WIN") ? $slash = "\\" : $slash = "/";
 
 // Check if we're upgrading, modify the path to the config file accordingly
-if ($doing_upgrade === '1') {
+if (ereg("upgrade", $_SERVER['PHP_SELF'])) {
        $path_append = '..';
-} else {
-       $path_append = '';
 };
 
+// Get the path to the Flyspray directory
+$path = realpath('./' . $path_append);
+
+// Modify PHP's include path to add the Flyspray directory
+set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+
+// This line was used in testing
+//echo get_include_path();
+
 // Define the path to the config file.  Change this line if you move flyspray.conf.php elsewhere
-$conf_file = realpath('./'.$path_append) . $slash . 'flyspray.conf.php';
+$conf_file = 'flyspray.conf.php';
 
 // Load the config file
-$conf_array = @parse_ini_file($conf_file, true);
+$conf_array = parse_ini_file($conf_file, true);
 
 
 // Set values from the config file. Once these settings are loaded a connection
@@ -53,8 +60,8 @@ include ( "$basedir/includes/regexp.php" );
 include_once ( "$basedir/includes/markdown.php" );
 
 
-// Check PHP Version (Must Be > 4.2)
-if (PHP_VERSION  < '4.2.0') {
+// Check PHP Version (Must Be at least 4.3)
+if (PHP_VERSION  < '4.3.0') {
 	die('Your version of PHP is not compatable with Flyspray, please upgrade to the latest version of PHP.  Flyspray requires at least PHP version 4.3.0');
 };
 
@@ -75,8 +82,6 @@ if (!$res) {
 // Retrieve the global application preferences
 $flyspray_prefs = $fs->getGlobalPrefs();
 
-//$project_id = 0;
-
 // If we've gone directly to a task, we want to override the project_id set in the function below
 if (($_GET['do'] == 'details') && ($_GET['id'])) {
   list($project_id) = $fs->dbFetchArray($fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
@@ -95,10 +100,7 @@ if (!$project_id) {
   };
 };
 
-// This was only used for upgrading from 0.9.4 to 0.9.5
-// Should not be necessary in later versions of Flyspray.  
-//if (!(ereg("upgrade", $_SERVER['PHP_SELF']))) {
-  $project_prefs = $fs->getProjectPrefs($project_id);
-//};
+// Get the preferences for the currently selected project
+$project_prefs = $fs->getProjectPrefs($project_id);
 
 ?>
