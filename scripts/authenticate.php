@@ -32,16 +32,16 @@ if ($_GET['action'] == "logout") {
   {
     $message = $authenticate_text['loginsuccessful'];
 
-    // Generate an extra hash of the already hashed password... for added security
-    //$pass_double_hash = crypt("{$auth_details['user_pass']}", $cookiesalt);
+    // Determine if the user should be remembered on this machine
+    if ($_POST['remember_login']) {
+      $cookie_time = time() + (60 * 60 * 24 * 30); // Set cookies for 30 days
+    } else {
+      $cookie_time = 0; // Set cookies to expire when session ends (browser closes)
+    };
 
-    //session_start();
-    //$_SESSION['userid'] = $auth_details['user_id'];
-    //$_SESSION['username'] = $auth_details['user_name'];
-
-    setcookie('flyspray_userid', $auth_details['user_id'], time()+60*60*24*30, "/");
-    setcookie('flyspray_passhash', crypt("{$auth_details['user_pass']}", "$cookiesalt"), time()+60*60*24*30, "/");
-
+    setcookie('flyspray_userid', $auth_details['user_id'], $cookie_time, "/");
+    setcookie('flyspray_passhash', crypt("{$auth_details['user_pass']}", "$cookiesalt"), $cookie_time, "/");
+    
   } else {
     $message = $authenticate_text['loginfailed'];
   };

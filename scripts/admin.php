@@ -808,7 +808,7 @@ if ($_GET['show'] == 'prefs') { ?>
     };
     ?>
       <tr>
-        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+        <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
       </tr>	
     </table>
     </form>
@@ -819,10 +819,10 @@ if ($_GET['show'] == 'prefs') { ?>
     <form action="index.php" method="post">
     <table class="list">
      <tr>
-      <td>
         <input type="hidden" name="do" value="modify">
         <input type="hidden" name="action" value="add_category">
         <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+      <td>
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
         <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name">
       </td>
@@ -834,17 +834,15 @@ if ($_GET['show'] == 'prefs') { ?>
         <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
       </td>
-      <td title="<?php echo $admin_text['categoryownertip'];?>">
+      <td title="<?php echo $admin_text['categoryownertip'];?>" colspan="2">
         <label for="categoryownernew" ><?php echo $admin_text['owner'];?></label>
-      <select id="categoryownernew" name="category_owner">
-        <option value=""><?php echo $admin_text['selectowner'];?></option>
-        <?php
-        $fs->listUsers();
-        ?>
-      </select>
+        <select id="categoryownernew" name="category_owner">
+          <option value=""><?php echo $admin_text['selectowner'];?></option>
+          <?php
+          $fs->listUsers();
+          ?>
+        </select>
       </td>
-    </tr>
-    <tr>
       <td colspan="2" title="<?php echo $admin_text['categoryparenttip'];?>">
       <label for="categoryparentnew"><?php echo $admin_text['subcategoryof'];?></label>
       <select name="parent_id">
@@ -865,7 +863,7 @@ if ($_GET['show'] == 'prefs') { ?>
         ?>
       </select>
       </td>
-      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+      <td class="buttons"><br /><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
     </tr>
   </table>
     </form>
@@ -923,12 +921,12 @@ if ($_GET['show'] == 'prefs') { ?>
     <form action="index.php" method="post">
     <table class="list">
     <tr>
-      <td>
         <input type="hidden" name="do" value="modify">
         <input type="hidden" name="action" value="add_to_list">
         <input type="hidden" name="list_type" value="os">
         <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
         <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
+      <td>
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
         <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
       </td>
@@ -995,7 +993,7 @@ if ($_GET['show'] == 'prefs') { ?>
     };
     ?>
       <tr>
-        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+        <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
       </tr>
     </table>
     </form>
@@ -1055,9 +1053,7 @@ if ($_GET['show'] == 'prefs') { ?>
       list($user_name) = $fs->dbFetchArray($getusername);
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
-
-      $comment_text = str_replace("<br>", "\n", "{$row['comment_text']}");
-      $comment_text = stripslashes($comment_text);
+      $comment_text = htmlspecialchars($row['comment_text']);
     };
 ?>
 <h3><?php echo $admin_text['editcomment'];?></h3>

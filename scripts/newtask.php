@@ -113,8 +113,8 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
         <?php
         echo "<option value=\"\">Undecided</option>\n";
 
-        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? ORDER BY list_position",
-				    array($project_id, '1'));
+        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
+				    array($project_id, '1', '3'));
         while ($row = $fs->dbFetchArray($get_version)) {
           echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
         };

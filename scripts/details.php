@@ -8,10 +8,12 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
  if ($fs->dbCountRows($task_exists) && $task_details['project_is_active'] == '1') {
 
 $item_summary = htmlspecialchars($task_details['item_summary']);
+$item_summary = str_replace("\\", "&#92;", $item_summary);
 $item_summary = stripslashes($item_summary);
 
 $detailed_desc = htmlspecialchars($task_details['detailed_desc']);
-$detailed_desc = stripslashes($detailed_desc);
+$detailed_desc = str_replace("\\", "&#92;", $detailed_desc);
+//$detailed_desc = stripslashes($detailed_desc);
 
 // Check if the user has rights to modify tasks
 if (($_SESSION['can_modify_jobs'] == '1'
@@ -430,10 +432,11 @@ if (($_SESSION['can_modify_jobs'] == '1'
         <th><?php echo $details_text['details'];?></th>
         <td class="details" colspan="3">
         <?php 
-        $detailed_desc = str_replace("\n", "<br>", $detailed_desc);
+        // Change URLs to hyperlinks
         $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
-        $detailed_desc = preg_replace("/ (FS#)(\d+) /", "<a href=\"?do=details&amp;id=$2\">$0</a>", $detailed_desc);
-        echo $detailed_desc; ?>
+        // Change FS#123 into hyperlinks to tasks
+        $detailed_desc = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $detailed_desc);
+        echo nl2br($detailed_desc); ?>
         </td>
       </tr>
     </table>
@@ -457,7 +460,8 @@ if (($_SESSION['can_modify_jobs'] == '1'
       <?php
       if ($task_details['closure_comment'] != '') {
        echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
-       echo nl2br(stripslashes($task_details['closure_comment']));
+       $closure_comment = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $task_details['closure_comment']);
+       echo nl2br(stripslashes($closure_comment));
       };
      ?>
     </p>
@@ -589,8 +593,11 @@ if ($area == 'comments') { ?>
 
       $comment_text = htmlspecialchars($row['comment_text']);
       $comment_text = nl2br($comment_text);
+      // Change URLs into hyperlinks
       $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $comment_text);
-      $comment_text = preg_replace("/ (FS#)(\d+) /", "<a href=\"?do=details&amp;id=$2\">$0</a>", $comment_text);
+      // Change FS#123 into hyperlinks to tasks
+      $comment_text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $comment_text);
+      $comment_text = str_replace("\\", "&#92", $comment_text);
       $comment_text = stripslashes($comment_text);
 
     ?>

@@ -9,6 +9,9 @@
     <td><label><?php echo $loginbox_text['password'];?>
       <input type="password" name="password" size="20" maxlength="20"></label>
     </td>
+    <td><label><input type="checkbox" name="remember_login">
+        <?php echo $loginbox_text['rememberme'];?></label>
+    </td> 
     <td>
           <?php
           if ($_GET['do']) {
