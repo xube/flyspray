@@ -41,7 +41,7 @@ if ($_GET['action'] == "logout") {
     //$_SESSION['username'] = $auth_details['user_name'];
 
     setcookie('flyspray_userid', $auth_details['user_id'], time()+60*60*24*30, "/");
-    setcookie('flyspray_passhash', crypt("{$auth_details['user_pass']}", "4t6dcHiefIkeYcn48B"), time()+60*60*24*30, "/");
+    setcookie('flyspray_passhash', crypt("{$auth_details['user_pass']}", "$cookiesalt"), time()+60*60*24*30, "/");
 
   } else {
     $message = $authenticate_text['loginfailed'];

@@ -144,7 +144,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
   $group_details = $fs->dbFetchArray($result);
 
   // Check that the user hasn't spoofed the cookie contents somehow
-  if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], "4t6dcHiefIkeYcn48B")
+  if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], "$cookiesalt")
     // And that their account is enabled
     && $current_user['account_enabled'] == "1"
     // And that their group is open
@@ -201,11 +201,13 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
 };
 
-      if ($_GET['do']) {
+      /*if ($_GET['do']) {
         $do = $_GET['do'];
       } elseif ($_POST['do']) {
         $do = $_POST['do'];
       };
+      */
+      $do = $_REQUEST['do'];
 
       // This is to only allow people to request valid pages, instead of things like config.inc.php or /etc/passwd 
       if (preg_match ("/^(admin|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|register)$/", $do)
