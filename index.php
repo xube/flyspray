@@ -207,7 +207,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // If the user has used the search box, store their search for later on
    if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order']))
    {
-      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project'] . $lastindex;
+      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project'];
    }
 ?>
 
@@ -325,7 +325,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
       echo '<a id="lastsearchlink" href="' . $_SESSION['lastindexfilter'] . '" accesskey="m">' . $language['lastsearch'] . "</a>\n";
    } else
    {
-      echo '<a id="lastsearchlink" href="">' . $language['lastsearch'] . "</a>\n";
+      echo '<a id="lastsearchlink" href="index.php">' . $language['lastsearch'] . "</a>\n";
    }
 
    // Administrator's Toolbox link
@@ -422,6 +422,7 @@ if (isset($_SESSION['SUCCESS']))
       <select name="project">
       <option value="0"<?php if (isset($_GET['project']) && $_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
       <?php
+
       // If the user has permission to view all projects
       if (isset($permissions['global_view']) && $permissions['global_view'] == '1')
       {
@@ -431,9 +432,8 @@ if (isset($_SESSION['SUCCESS']))
       // or, if the user is logged in
       } elseif (isset($_COOKIE['flyspray_userid']))
       {
-         // This query needs fixing.  It returns double results if a project has the 'others view' option turned on
-         // This means I had to make it strip duplicate results when cycling through projects a bit further down...
-         $get_projects = $db->Query("SELECT p.*
+
+         $get_projects = $db->Query("SELECT DISTINCT p.*
                                        FROM flyspray_projects p
                                        LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
                                        LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
@@ -443,9 +443,9 @@ if (isset($_SESSION['SUCCESS']))
                                        AND p.project_is_active = '1'",
                                        array($current_user['user_id'])
                                      );
+      // Anonymous users
       } else
       {
-         // Anonymous users
          $get_projects = $db->Query("SELECT * FROM flyspray_projects
                                      WHERE project_is_active = '1'
                                      AND others_view = '1'
@@ -454,14 +454,14 @@ if (isset($_SESSION['SUCCESS']))
 
       // Cycle through the results from whichever query above
       // The query above is dodgy, and returns duplicate results... so I add each result to an array and filter dupes - FIXME
-      $project_list = array();
+      //$project_list = array();
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'] && !isset($_GET['project']) && !in_array($row['project_id'], $project_list))
+         if ($project_id == $row['project_id'] && !isset($_GET['project']))
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];
-         } elseif (!in_array($row['project_id'], $project_list))
+         } else
          {
             echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];
