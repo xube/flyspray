@@ -331,7 +331,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
     OR $_SESSION['userid'] == $task_details['assigned_to'])
     && $task_details['is_closed'] != '1') {
     ?>
-    <span id="linkedittask"><?php echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;edit=yep\"><img src=\"themes/{$project_prefs['theme_style']}/menu/edit.png\" />&nbsp;{$details_text['edittask']}</a>";?></span>
+    <span id="linkedittask"><?php echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;edit=yep\">" . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/edit.png") . "&nbsp;{$details_text['edittask']}</a>";?></span>
     <?php };
     echo "{$details_text['attachedtoproject']} &mdash; <a href=\"?project={$task_details['attached_to_project']}\">{$task_details['project_title']}</a>";
     ?>
@@ -613,8 +613,8 @@ if ($area == 'comments') { ?>
 
     ?>
      <div class="tabentry"><a name="<?php echo $row['comment_id'];?>"></a>
-      <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">
-      <img src=\"themes/{$project_prefs['theme_style']}/menu/comment.png\" alt=\"\" /></a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
+      <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">" .
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png") . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
       <?php
         // If the user is an admin, show the edit button
         if ($_SESSION['admin'] == '1') { ?>

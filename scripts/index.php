@@ -218,7 +218,7 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
       ?>
     </select>
 
-    <select name="due">
+    <select name="due" <?php if($_GET['project'] == '0') { echo 'DISABLED';};?>>
       <option value=""><?php echo $index_text['dueanyversion'];?></option>
       <?php
       $ver_list = $fs->dbQuery("SELECT version_id, version_name
@@ -245,7 +245,7 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
       ?>
     </select>
 
-    <select name="cat">
+    <select name="cat" <?php if($_GET['project'] == '0') { echo 'DISABLED';};?>>
       <option value=""><?php echo $index_text['allcategories'];?></option>
       <?php
       $cat_list = $fs->dbQuery('SELECT category_id, category_name
@@ -289,7 +289,7 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
         };
       };
       ?>
-	  <option value="closed" <?php if($_GET['status'] == "closed") { echo "SELECTED";};?>><?php echo $index_text['closed'];?></option>
+      <option value="closed" <?php if($_GET['status'] == "closed") { echo "SELECTED";};?>><?php echo $index_text['closed'];?></option>
     </select>
 
     <select name="perpage">
@@ -560,11 +560,7 @@ ORDER BY
     
     // Start displaying the cells for this row
     echo "<tr class=\"severity{$task_details['task_severity']}\"
-    onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'
-    onmouseover=\"this.className = 'severity{$task_details['task_severity']}_over';
-    this.style.cursor = 'hand'\"
-    onmouseout=\"this.className = 'severity{$task_details['task_severity']}';
-    this.style.cursor = 'default'\">\n";
+    onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'>\n";
 
     list_cell("id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
     list_cell("project",$task_details['project_title'],1);

@@ -474,6 +474,14 @@ if (!($totalcount / $perpage <= 1)) {
 	    return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";	
 	}
 
+	// To stop some browsers showing a blank box when an image doesn't exist
+	function ShowImg($path)
+	{
+		if(file_exists($path))
+		{
+			echo '<img src="' . $path . '" alt="" />';
+		}
+	}
 // End of Flyspray class
 }
 

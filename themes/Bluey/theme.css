@@ -91,6 +91,14 @@ input, textarea, select, button {
   font-size           : 100%;
 }
 
+/*input:hover, textarea:hover {
+  background-color    : #dde9f4;
+  color               : #03008f;
+  border              : 1px ridge #000000;
+  margin              : 2px;
+  font-size           : 100%;
+}
+*/
 /* labels are used nearly in every form */
 label {
   text-align          : right;
@@ -352,6 +360,15 @@ input.adminbutton, input.mainbutton, button {
   font-weight         : bold;
 }
 
+input.adminbutton:hover, input.mainbutton:hover, button:hover {
+  background-color    : #838ab5;
+  color               : #ffffff !important;
+  background-image    : url(button-over.png);
+  background-repeat   : repeat-x;
+  border              : 1px ridge #000000;
+  font-weight         : bold;
+}
+
 /* The acknowledgement/refusal of login information is displayed in
    div#loginmessage */
 div#loginmessage {
@@ -471,14 +488,13 @@ p.unregistered {
 }
 
 /* Some generic classes; severity classes are used for colour
-   indication of severities. severityx_over classes are used
-   for hover effects (JavaScript) */
+   indication of severities */
 .severity1 {
   background-color     : #fff5dd;
   color                : #000000;
 }
 
-.severity1_over {
+.severity1:hover {
   background-color     : #ffe9b4;
   color                : #000000;
 }
@@ -488,7 +504,7 @@ p.unregistered {
   color                : #000000;
 }
 
-.severity2_over {
+.severity2:hover {
   background-color     : #efca80;
   color                : #000000;
 }
@@ -498,7 +514,7 @@ p.unregistered {
   color                : #000000;
 }
 
-.severity3_over {
+.severity3:hover {
   background-color     : #edb98a;
   color                : #000000;
 }
@@ -508,7 +524,7 @@ p.unregistered {
   color                : #000000;
 }
 
-.severity4_over {
+.severity4:hover {
   background-color     : #ffb2ac;
   color                : #000000;
 }
@@ -518,9 +534,9 @@ p.unregistered {
   color                : #000000;
 }
 
-.severity5_over {
-  background-color: #f3867e;
-  color: #000000;
+.severity5:hover {
+  background-color     : #f3867e;
+  color                : #000000;
 }
 
 /* .fineprint is merely used for the details about when a task has
@@ -548,6 +564,14 @@ table#history td {
 table#history td.taskid {
   text-align           : center;
   padding              : 2px 1ex;
+}
+
+.intromessage {
+  margin               : -1em 0px 1em 0px;
+}
+
+map#formselecttasks {
+  margin               : 0em 0px 0em 0px;
 }
 
 }

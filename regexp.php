@@ -75,17 +75,10 @@ if ($_GET['page']) {
     };
 };
 
-if ($_GET['action'] || $_POST['action']) {
-
-    // Store input
-    if ($_POST['action']) {
-        $tmp_action = $_POST['action'];
-    } else {
-        $tmp_action = $_GET['action'];
-    };
+if ($_REQUEST['action']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(logout|newtask|update|close|reopen|addcomment|chpass|registeruser|newuser|newgroup|globaloptions|newproject|updateproject|addattachment|edituser|editgroup|update_list|add_to_list|update_category|add_category|add_related|remove_related|add_notification|remove_notification|editcomment|deletecomment|deleteattachment|addreminder|deletereminder|update_version_list|add_to_version_list)$/", $tmp_action)) {
+    if (preg_match ("/^(logout|newtask|update|close|reopen|addcomment|chpass|registeruser|newuser|newgroup|globaloptions|newproject|updateproject|addattachment|edituser|editgroup|update_list|add_to_list|update_category|add_category|add_related|remove_related|add_notification|remove_notification|editcomment|deletecomment|deleteattachment|addreminder|deletereminder|update_version_list|add_to_version_list)$/", $_REQUEST['action'])) {
 
        // continue;
 
@@ -96,17 +89,10 @@ if ($_GET['action'] || $_POST['action']) {
 };
 
 
-if ($_GET['do'] || $_POST['do']) {
-
-    // Store input
-    if ($_POST['do']) {
-        $tmp_action = $_POST['do'];
-    } else {
-        $tmp_action = $_GET['do'];
-    };
+if ($_REQUEST['do']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(admin|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report)$/", $tmp_action)) {
+    if (preg_match ("/^(admin|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report)$/", $_REQUEST['do'])) {
 
        // continue;
 
@@ -117,17 +103,29 @@ if ($_GET['do'] || $_POST['do']) {
 };
 
 if ($_REQUEST['id']) {
-
-    // Yes. Now check its regex format for safety -- Numbers only
-    if (preg_match ("/^\d+$/", $_REQUEST['id'])) {
-
-      // continue;
-
+ 
+     // Yes. Now check its regex format for safety -- Numbers only
+    if (is_array($_REQUEST['id'])) {
+        foreach($_REQUEST['id'] as $id) {
+            if (!preg_match ("/^\d+$/", $id)) {
+                die("ID request is invalid.");
+            };
+        };
     } else {
+        if (preg_match ("/^\d+$/", $_REQUEST['id'])) {
+ 
 
-        print "ID request is invalid."; exit;
-    };
-};
+        // continue;
+ 
+
+        } else {
+ 
+
+            print "ID request is invalid."; exit;
+        };
+     };
+ };
+
 
 if ($_REQUEST['user_name']) {
 

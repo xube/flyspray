@@ -139,18 +139,21 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
 
     // Show the user menu
-    echo "<p id=\"menu\">";
+    echo "<p id=\"menu\">\n";
     echo "<em>{$language['loggedinas']} - {$current_user['user_name']}</em>";
-    echo "<span id=\"mainmenu\">";
+    echo "<span id=\"mainmenu\">\n";
     
-    echo '<small> | </small><a href="?do=newtask&amp;project=' . $project_id . '">
-    <img src="themes/' . $project_prefs['theme_style'] . '/menu/newtask.png" />&nbsp;' . $language['addnewtask'] . '</a>' . "\n";
+    echo '<small> | </small>';
+    echo '<a href="?do=newtask&amp;project=' . $project_id . '">' .
+    $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/newtask.png") . '&nbsp;' . $language['addnewtask'] . '</a>' . "\n";
     
-    echo '<small> | </small><a href="index.php?do=reports">
-    <img src="themes/' . $project_prefs['theme_style'] . '/menu/reports.png" />&nbsp;' . $language['reports'] . '</a>' . "\n";
+    echo '<small> | </small>';
+    echo '<a href="index.php?do=reports">' .
+    $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/reports.png"). '&nbsp;' . $language['reports'] . '</a>' . "\n";
     
-    echo '<small> | </small><a href="?do=admin&amp;area=users&amp;id=' . $_SESSION['userid'] . '">
-    <img src="themes/' . $project_prefs['theme_style'] . '/menu/editmydetails.png" />&nbsp;' . $language['editmydetails'] . '</a>' . "\n";
+    echo '<small> | </small>';
+    echo '<a href="?do=admin&amp;area=users&amp;id=' . $_SESSION['userid'] . '">' .
+    $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/editmydetails.png") . '&nbsp;' . $language['editmydetails'] . '</a>' . "\n";
     /*
     echo '<small> | </small><a href="index.php?do=chpass">
     <img src="themes/' . $project_prefs['theme_style'] . '/menu/password.png" />&nbsp;' . $language['changepassword'] . '</a>' . "\n";
@@ -158,15 +161,17 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     
     // If the user has conducted a search, then show a link to the most recent task list filter
     if(isset($_SESSION['lastindexfilter'])) {
-      echo '<small> | </small><a href="' . $_SESSION['lastindexfilter'] . '">
-      <img src="themes/' . $project_prefs['theme_style'] . '/menu/search.png" />&nbsp;' . $language['lastsearch'] . '</a>';
+      echo '<small> | </small>';
+      echo '<a href="' . $_SESSION['lastindexfilter'] . '">' .
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png"). '&nbsp;' . $language['lastsearch'] . '</a>';
     } else {
-      echo '<small> | </small>
-      <img src="themes/' . $project_prefs['theme_style'] . '/menu/search.png" />&nbsp;' . $language['lastsearch'];
+      echo '<small> | </small>';
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png") . '&nbsp;' . $language['lastsearch'];
     };
       
-    echo '<small> | </small><a href="scripts/authenticate.php?action=logout">
-    <img src="themes/' . $project_prefs['theme_style'] . '/menu/logout.png" />&nbsp;' . $language['logout'] . '</a></span>' . "\n";
+    echo '<small> | </small>';
+    echo '<a href="scripts/authenticate.php?action=logout">' .
+    $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/logout.png"). '&nbsp;' . $language['logout'] . '</a></span>' . "\n";
 
     $isgroupadmin = $fs->dbQuery("SELECT is_admin FROM flyspray_groups WHERE group_id = ?", array($current_user['group_in']));
     $is_admin = $fs->dbFetchArray($isgroupadmin);
@@ -174,27 +179,32 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
     // Show the Admin menu
     if ($_SESSION['admin'] == "1") {
-    ?>
 
-    <span id="adminmenu">
-     <em><?php echo $language['adminmenu'];?></em>
+
+      echo '<span id="adminmenu">';
+      echo '<em>' . $language['adminmenu']. '</em>';
      
-     <small> | </small><a href="?do=admin&amp;area=options">
-     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/options.png" />&nbsp;' . $language['options'];?></a>
+      echo '<small> | </small>';
+      echo '<a href="?do=admin&amp;area=options">' .
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/options.png") . '&nbsp;' . $language['options'] . '</a>';
      
-     <small> | </small><a href="?do=admin&amp;area=projects">
-     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/projectprefs.png" />&nbsp;' . $language['projects'];?></a>
+      echo '<small> | </small>';
+      echo '<a href="?do=admin&amp;area=projects">' .
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/projectprefs.png") . '&nbsp;' . $language['projects'] . '</a>';
      
-     <small> | </small><a href="?do=admin&amp;area=users">
-     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/usersandgroups.png" />&nbsp;' . $language['usersandgroups'];?></a>
+     echo '<small> | </small>';
+     echo '<a href="?do=admin&amp;area=users">' .
+     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/usersandgroups.png") . '&nbsp;' . $language['usersandgroups'] . '</a>';
      
-     <small> | </small><a href="?do=admin&amp;area=tasktype">
-     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/lists.png" />&nbsp;' . $language['tasktypes'];?></a>
+     echo '<small> | </small>';
+     echo '<a href="?do=admin&amp;area=tasktype">' .
+     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['tasktypes'] . '</a>';
      
-     <small> | </small><a href="?do=admin&amp;area=resolution">
-     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/lists.png" />&nbsp;' . $language['resolutions'];?></a>
-    </span>
-    <?php
+     echo '<small> | </small>';
+     echo '<a href="?do=admin&amp;area=resolution">' .
+     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['resolutions'] . '</a>';
+     echo '</span>';
+
     };
     echo "</p>";
 
