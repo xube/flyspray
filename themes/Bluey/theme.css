@@ -230,7 +230,7 @@ table#tasklist td.taskid, table#tasklist th.taskid {
 }
 
 table#tasklist td.taskdate {
-  text-align          : center;
+  text-align          : left;
   white-space         : nowrap;
 }
 

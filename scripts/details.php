@@ -1,7 +1,5 @@
 
 <?php
-// Time to try a super funky mysql query to get everything in one go
-// Thanks to Lance Conry for this.  http://www.rhinosw.com/
 
 require("lang/$lang/details.php");
 

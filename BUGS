@@ -1,8 +1,1 @@
-Generally none that I know of.  Feel free to report some.
-
-Small issues:
-
-- Konqueror 3.1 doesn't highlight the index rows unless you mouseover the hyperlink
-to the task.
-- The cursor doesn't change to a hand on Konqueror 3.1 or Mozilla Firebird 0.6. 
-It works on Internet Explorer 6 and Opera 7.
+Reported bugs are at http://flyspray.rocks.cc/bts/

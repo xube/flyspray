@@ -1,3 +1,15 @@
+0.9.5 - 19 February 2004
+
+NEW: Multiple projects with different lists for each
+NEW: Multiple database support through ADODB
+NEW: Protection from user-submitted data through regular expression filtering
+NEW: Attachment deleting
+NEW: Changing cookie 'salt' for protection against authentication spoofing
+
+FIXED: No more popup windows!
+FIXED: Sort columns by Task Type
+FIXED: Registration without confirmation code
+
 0.9.4 - 20 August 2003
 
 NEW: Each task can now have unlimited related tasks,

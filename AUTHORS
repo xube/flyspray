@@ -3,10 +3,11 @@ Primary Developer:
     Tony Collins
     Brisbane, Australia
 
-Email: Flyspray@rocks.cc
-
 Flyspray logo designed by Robert Martinez 
 http://www.mray.de/
+
+ADODB conversion and Postgres port by Konrad Roziewski
+http://www.suwalki.com.pl/~konrad/
 
 Some HTML rendering cleanups by Stefan Huber
 http://stefan.huberdoc.at/
@@ -14,22 +15,18 @@ http://stefan.huberdoc.at/
 Tricky SQL queries and Jabber notification function by Lance Conry
 http://www.rhinosw.com/
 
-Database access functions by Jamin Collins
+Some database access functions by Jamin Collins
 http://asgardsrealm.net/
 
 Funky page numbering by Nathan Fritz
 http://www.netflint.net/
 
+Regular expression filtering by Zeeshan Muhummad
+http://www.new-frontier.info/
+
 Translations
              German:  Stefan Huber
              French:  Antoine Jactout
              Dutch:   Ben Branders
+	     Italian: Gian Paolo Ciceri
 
-Thanks to suggestions and bug reports from:
-
-    Nathan Fritz
-    Hal Rottenberg
-    Jamin Collins
-    Kevin Smith
-
-Send patches or suggestions and your name could be here!
