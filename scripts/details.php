@@ -7,16 +7,13 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
 // Only load this page if a valid task was actually requested
  if ($fs->dbCountRows($task_exists) && $task_details['project_is_active'] == '1') {
 
-$item_summary = str_replace("&", "&amp;", $task_details['item_summary']);
-$item_summary = str_replace("<", "&lt;", $item_summary);
-$item_summary = str_replace("\"", "&quot;", $item_summary);
+$item_summary = htmlentities($task_details['item_summary']);
 $item_summary = stripslashes($item_summary);
 
-$detailed_desc = str_replace("&", "&amp;", $task_details['detailed_desc']);
-$detailed_desc = str_replace("<br>", "\n", $detailed_desc);
+$detailed_desc = htmlentities($task_details['detailed_desc']);
+$detailed_desc = str_replace("\n", "<br>", $detailed_desc);
+$detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
 $detailed_desc = stripslashes($detailed_desc);
-
-
 
 // Check if the user has rights to modify tasks
 if (($_SESSION['can_modify_jobs'] == '1'
@@ -433,13 +430,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
       <tr>
         <th><?php echo $details_text['details'];?></th>
         <td class="details" colspan="3">
-        <?php
-        $detailed_desc = str_replace("&", "&amp;", $task_details['detailed_desc']);
-        $detailed_desc = str_replace("<", "&lt;", "$detailed_desc");
-        $detailed_desc = str_replace("\n", "<br>", $detailed_desc);
-        $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
-        echo stripslashes($detailed_desc);
-        ?>
+        <?php echo $detailed_desc; ?>
         </td>
       </tr>
     </table>
@@ -592,8 +583,7 @@ if ($area == 'comments') { ?>
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
 
-      $comment_text = str_replace("&", "&amp;", "{$row['comment_text']}");
-      $comment_text = str_replace("<", "&lt;", "$comment_text");
+      $comment_text = htmlentities($row['comment_text']);
       $comment_text = str_replace("\n", "<br>", "$comment_text");
       $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $comment_text);
       $comment_text = stripslashes($comment_text);
