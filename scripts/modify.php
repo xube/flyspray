@@ -250,7 +250,7 @@ if ($_POST['action'] == 'newtask'
 
       if ($send_me == 'YES')
       {
-         $to  = $notify->Address($new_details['task_id']);
+         $to = $notify->Address($new_details['task_id']);
          $msg = $notify->Create('2', $new_details['task_id']);
          $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
          $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
@@ -308,7 +308,7 @@ if ($_POST['action'] == 'newtask'
       list($item_summary) = $db->FetchArray($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
       $item_summary = stripslashes($item_summary);
 
-      $to  = $notify->Address($get_task_info['task_id']);
+      $to = $notify->Address($get_task_info['task_id']);
       $msg = $notify->Create('3', $get_task_info['task_id']);
       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
       $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
@@ -354,7 +354,7 @@ if ($_POST['action'] == 'newtask'
 
    $item_summary = stripslashes($item_summary);
 
-   $to  = $notify->Address($get_task_info['task_id']);
+   $to = $notify->Address($get_task_info['task_id']);
    $msg = $notify->Create('4', $get_task_info['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
