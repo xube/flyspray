@@ -18,3 +18,9 @@ UPDATE flyspray_tasks SET is_closed = '1' WHERE item_status = '8';
 ALTER TABLE `flyspray_projects` ADD `inline_images` MEDIUMINT( 1 ) NOT NULL AFTER `show_logo` ;
 
 ALTER TABLE `flyspray_tasks` ADD `closure_comment` LONGTEXT NOT NULL AFTER `closed_by` ;
+
+ALTER TABLE flyspray_users ADD dateformat varchar(30) NOT NULL default '';
+ALTER TABLE flyspray_users ADD dateformat_extended varchar(30) NOT NULL default '';
+
+INSERT INTO flyspray_prefs VALUES (18, 'dateformat', '', 'Default date format for new users and guests used in the task list');
+INSERT INTO flyspray_prefs VALUES (19, 'dateformat_extended', '', 'Default date format for new users and guests used in task details');

@@ -499,14 +499,15 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
           $pass_hash = crypt("{$_POST['user_pass']}", '4t6dcHiefIkeYcn48B');
 
-          $add_user = $fs->dbQuery("INSERT INTO flyspray_users
-                                      (user_name, user_pass, real_name,
-                                      group_in, jabber_id, email_address,
-                                      notify_type, account_enabled)
-                                      VALUES( ?, ?, ?, ?, ?, ?, ?, ?)",
-                array($_POST['user_name'], $pass_hash, $_POST['real_name'],
-                $flyspray_prefs['anon_group'], $_POST['jabber_id'],
-                $_POST['email_address'], $_POST['notify_type'], '1'));
+          $add_user = $fs->dbQuery("INSERT INTO flyspray_users 
+				      (user_name, user_pass, real_name,
+				      group_in, jabber_id, email_address,
+				      notify_type, account_enabled, dateformat, dateformat_extended)
+				      VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+		array($_POST['user_name'], $pass_hash, $_POST['real_name'],
+		$flyspray_prefs['anon_group'], $_POST['jabber_id'],
+		$_POST['email_address'], $_POST['notify_type'], '1',
+		$flyspray_prefs['dateformat'], $flyspray_prefs['dateformat_extended']));
           echo "<div class=\"redirectmessage\"><p><em>{$modify_text['accountcreated']}</em></p>";
           echo "<p>{$modify_text['loginbelow']}</p>";
           echo "<p>{$modify_text['newuserwarning']}</p></div>";
@@ -647,6 +648,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'spam_proof'", array($_POST['spam_proof']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_view'", array($_POST['anon_view']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_project'", array($_POST['default_project']));
+  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
+  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));
+
   // This is an overly complex way to ensure that we always get the right amount of posted
   // results from the assigned_groups preference
   $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups ORDER BY group_id ASC");
@@ -848,11 +852,13 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                   real_name = ?,
                   email_address = ?,
                   jabber_id = ?,
-                  notify_type = ?
+                  notify_type = ?,
+                  dateformat = ?,
+                  dateformat_extended = ?
 
       WHERE user_id = ?",
       array($_POST['real_name'], $_POST['email_address'],
-      $_POST['jabber_id'], $_POST['notify_type'], $_POST['user_id']));
+      $_POST['jabber_id'], $_POST['notify_type'], $_POST['dateformat'], $_POST['dateformat_extended'], $_POST['user_id']));
 
     if ($_SESSION['admin'] == '1') {
       $update = $fs->dbQuery("UPDATE flyspray_users SET

@@ -75,6 +75,14 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       </td>
     </tr>
     <tr>
+		<td><label for="dateformat"><?php echo $admin_text['dateformat'];?></label></td>
+		<td><input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat'];?>">	</td>
+	</tr>	
+	<tr>
+		<td><label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label></td>
+		<td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat_extended'];?>"></td>
+	</tr>	
+    <tr>
       <td><label for="accountenabled"><?php echo $admin_text['accountenabled'];?></label></td>
       <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?>></td>
     </tr>
@@ -479,6 +487,22 @@ $group_details = $fs->dbFetchArray($get_group_details);
     </select>
     </td>
   </tr>
+  <tr>
+    <td>
+      <label for="dateformat"><?php echo $admin_text['dateformat'];?></label>
+    </td>
+    <td>
+      <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat'];?>">
+    </td>
+  </tr>	
+  <tr>
+    <td>
+      <label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label>
+    </td>
+    <td>
+      <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>">
+    </td>
+  </tr>	
 
   <tr>
     <th colspan="2"><hr>
@@ -913,7 +937,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
       $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
       list($user_name) = $fs->dbFetchArray($getusername);
 
-      $formatted_date = date("l, j M Y, g:ia", $row['date_added']);
+      $formatted_date = $fs->formatDate($row['date_added'], true);
 
       $comment_text = str_replace("<br>", "\n", "{$row['comment_text']}");
       $comment_text = stripslashes($comment_text);

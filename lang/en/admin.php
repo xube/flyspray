@@ -95,6 +95,8 @@ $admin_text = array (
 
 'nopermission'		=>  'You do not have permission to use this page.',
 'showinlineimages'	=>  'Show image attachments inline',
+'dateformat'		=>	'Date format',
+'dateformat_extended' => 'Detailed date format',
 
 
 );

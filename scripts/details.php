@@ -67,7 +67,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
       //$real_name = "Anonymous";
     };
 
-    $date_opened = date("j M Y", $task_details['date_opened']);
+    $date_opened = $fs->formatDate($task_details['date_opened'], true);
 
     echo "{$details_text['openedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['opened_by']}\">$real_name ($user_name)</a> - $date_opened";
 
@@ -77,7 +77,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
       $get_user_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['last_edited_by']));
       list($user_name, $real_name) = $fs->dbFetchArray($get_user_name);
 
-      $date_edited = date("j M Y", $task_details['last_edited_time']);
+      $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
 
       echo "<br>{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
 
@@ -336,7 +336,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
     };
 
     $date_opened = $task_details['date_opened'];
-    $date_opened = date("j M Y", $date_opened);
+    $date_opened = $fs->formatDate($date_opened, true);
 
     echo "{$details_text['openedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['opened_by']}\">$real_name ($user_name)</a> - $date_opened";
 
@@ -346,7 +346,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
       list($user_name, $real_name) = $fs->dbFetchArray($get_user_name);
 
       $date_edited = $task_details['last_edited_time'];
-      $date_edited = date("j M Y", $date_edited);
+      $date_edited = $fs->formatDate($date_edited, true);
 
       echo "<br>{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
 
@@ -435,7 +435,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
       $get_closedby_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['closed_by']));
       list($closedby_username, $closedby_realname) = $fs->dbFetchArray($get_closedby_name);
       $date_closed = $task_details['date_closed'];
-      $date_closed = date("j M Y", $date_closed);
+      $date_closed = $fs->formatDate($date_closed, true);
       echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br>";
 	  echo "{$details_text['date']}&nbsp;&nbsp;$date_closed.";
       ?>
@@ -573,7 +573,7 @@ if ($area == 'comments') { ?>
       $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
       list($user_name) = $fs->dbFetchArray($getusername);
 
-      $formatted_date = date("l, j M Y, g:ia", $row['date_added']);
+      $formatted_date = $fs->formatDate($row['date_added'], true);
 
       $comment_text = str_replace("&", "&amp;", "{$row['comment_text']}");
       $comment_text = str_replace("<", "&lt;", "$comment_text");
@@ -661,7 +661,7 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
       $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['added_by']));
       list($user_name) = $fs->dbFetchArray($getusername);
 
-      $formatted_date = date("l, j M Y, g:ia", $row['date_added']);
+      $formatted_date = $fs->formatDate($row['date_added'], true);
 
       $file_desc = stripslashes($row['file_desc']);
 

@@ -317,7 +317,7 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     echo "<a href=\"?do=details&amp;id={$task_details['task_id']}\">$item_summary</a>\n</td>\n";
 
     $date_opened = $task_details['date_opened'];
-    $date_opened = date("Y-m-j", $date_opened);
+    $date_opened = $fs->formatDate($date_opened, false);
     echo "<td class=\"taskdate\">\n";
     echo "$date_opened\n</td>\n";
 

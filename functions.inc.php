@@ -458,6 +458,31 @@ if (!($totalcount / $perpage <= 1)) {
     return $output;
 }
 }
+
+	function formatDate($timestamp, $extended)
+	{	
+		$dateformat = '';
+		$format_id = $extended ? "dateformat_extended" : "dateformat";
+
+		if(isset($_SESSION['userid']))
+		{
+			$get_user_details = $this->dbQuery("SELECT {$format_id} FROM flyspray_users WHERE user_id = " . $_SESSION['userid']);
+			$user_details = $this->dbFetchArray($get_user_details);
+			$dateformat = $user_details[$format_id];
+		}
+		
+		if($dateformat == '')
+		{
+			$flyspray_prefs = $this->GetGlobalPrefs();
+			$dateformat = $flyspray_prefs[$format_id];
+		}
+
+		if($dateformat == '')		
+			$dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-j";
+
+		return date($dateformat, $timestamp);
+	}
+
 // End of Flyspray class
 }
 
