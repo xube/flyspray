@@ -72,6 +72,7 @@ if (isset($_REQUEST['type'])) {
     echo '<title>' . $item_summary . '</title>' . "\n";
     echo '<link>' . $flyspray_prefs['base_url'] . '?do=details&amp;do=details&amp;id=' . $row['task_id'] . '</link>' . "\n";
     echo '<description>' . $detailed_desc . '</description>' . "\n";
+    echo '</item>';
   };
 };
 
