@@ -139,6 +139,8 @@ $details_text = array (
 'watchtask'             =>    'Watch this task',
 'stopwatching'          =>    'Stop watching this task',
 'commentlink'           =>    'Link to this comment',
+'submitreq'             =>    'Submit request',
+'givereason'            =>    'Reason for this request',
 
 );
 ?>

@@ -21,8 +21,8 @@ $list_id = addslashes($_POST['list_type'])."_id";
 
 $now = date(U);
 
-if (!empty($_POST['task_id'])) {
-  $old_details = $fs->GetTaskDetails($_POST['task_id']);
+if (!empty($_REQUEST['task_id'])) {
+  $old_details = $fs->GetTaskDetails($_REQUEST['task_id']);
 }
 
 ////////////////////////////////
@@ -82,21 +82,6 @@ if ($_POST['action'] == 'newtask'
                                                 ORDER BY task_id DESC",
                                                 array($item_summary, $detailed_desc), 1));
 
-   // If the reporter wanted to be added to the notification list
-   if ($_POST['notifyme'] == '1')
-   {
-      $insert = $db->Query("INSERT INTO flyspray_notifications
-                              (task_id, user_id)
-                               VALUES(?,?)",
-                               array($task_details['task_id'],
-                                      $current_user['user_id'])
-                          );
-
-      // Log to the history that we added the user to the notification list
-      $fs->logEvent($get_task_info['task_id'], 9, $current_user['user_id']);
-   }
-
-
    $cat_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_list_category
                                               WHERE category_id = ?",
                                               array($_POST['product_category'])
@@ -140,10 +125,24 @@ if ($_POST['action'] == 'newtask'
       // Create the Notification
       $to = $notify->Address($task_details['task_id']);
       $msg = $notify->Create('1', $task_details['task_id']);
-      $mail = $notify->SendEmail($to, $msg[0], $msg[1]);
-      $jabb = $notify->SendJabber($to, $msg[0], $msg[1]);
+      $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+      $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
    // End of checking if there's a category owner set, and notifying them.
+   }
+
+   // If the reporter wanted to be added to the notification list
+   if ($_POST['notifyme'] == '1' && ($_COOKIE['flyspray_userid'] != $owner))
+   {
+      $insert = $db->Query("INSERT INTO flyspray_notifications
+                              (task_id, user_id)
+                               VALUES(?,?)",
+                               array($task_details['task_id'],
+                                      $current_user['user_id'])
+                          );
+
+      // Log to the history that we added the user to the notification list
+      $fs->logEvent($get_task_info['task_id'], 9, $current_user['user_id']);
    }
 
    // Log that the task was opened
@@ -444,7 +443,7 @@ if ($_POST['action'] == 'newtask'
       };
 
       $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
-			$fs->redirect("index.php?do=details&id=" . $_POST['task_id']);
+                        $fs->redirect("index.php?do=details&id=" . $_POST['task_id']);
 
    // If the user didn't select a closure reason
    } else
@@ -459,7 +458,7 @@ if ($_POST['action'] == 'newtask'
 // Start of re-opening an task //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "reopen"
+} elseif ($_GET['action'] == "reopen"
           && $permissions['manage_project'] == "1") {
 
     $add_item = $db->Query("UPDATE flyspray_tasks SET
@@ -469,27 +468,28 @@ if ($_POST['action'] == 'newtask'
                               last_edited_by = ?,
                               is_closed = '0'
                               WHERE task_id = ?",
-                              array($now, $current_user['user_id'], $_POST['task_id']));
+                              array($now, $current_user['user_id'], $_GET['task_id']));
 
    $item_summary = stripslashes($item_summary);
 
-   $to = $notify->Address($get_task_info['task_id']);
-   $msg = $notify->Create('4', $get_task_info['task_id']);
+   $to = $notify->Address($old_task_info['task_id']);
+   $msg = $notify->Create('4', $old_task_info['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
    // If there's an admin request related to this, close it
-   if ($fs->AdminRequestCheck(2, $_POST['task_id']) == '1') {
-       $db->Query("UPDATE flyspray_admin_requests
-                    SET resolved_by = ?, time_resolved = ?
-                    WHERE task_id = ? AND request_type = ?",
-                    array($current_user['user_id'], date(U), $_POST['task_id'], 2));
-   };
+   if ($fs->AdminRequestCheck(2, $_GET['task_id']) == '1')
+   {
+      $db->Query("UPDATE flyspray_admin_requests
+                  SET resolved_by = ?, time_resolved = ?
+                  WHERE task_id = ? AND request_type = ?",
+                  array($current_user['user_id'], date(U), $_GET['task_id'], 2));
+   }
 
-   $fs->logEvent($_POST['task_id'], 13);
+   $fs->logEvent($_GET['task_id'], 13);
 
    $_SESSION['SUCCESS'] = $modify_text['taskreopened'];
-   $fs->redirect("index.php?do=details&id=" . $_POST['task_id']);
+   $fs->redirect("index.php?do=details&id=" . $_GET['task_id']);
 
 // End of re-opening an task
 
@@ -1930,7 +1930,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 ///////////////////////////////
 
 } elseif ($_GET['action'] == 'takeownership'
-          && (($permissions['assign_to_self'] == '1' && $old_details['assigned_to'] == '0')
+          && (($permissions['assign_to_self'] == '1' && empty($old_details['assigned_to']))
                OR $permissions['assign_others_to_self'] == '1'))
 {
 
@@ -1945,7 +1945,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
    // Log this event to the task history
-   $fs->logEvent($_POST['task_id'], 19, $current_user['user_id'], $old_details['assigned_to']);
+   $fs->logEvent($old_details['task_id'], 19, $current_user['user_id'], $old_details['assigned_to']);
 
    $_SESSION['SUCCESS'] = $modify_text['takenownership'];
    $fs->redirect("?do=details&id=" . $_GET['task_id']);
@@ -1960,13 +1960,13 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == 'requestclose') {
 
   // Log the admin request
-  $fs->AdminRequest(1, $project_id, $_POST['task_id'], $current_user['user_id']);
+  $fs->AdminRequest(1, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
 
   // Log this event to the task history
   $fs->logEvent($_POST['task_id'], 20, $current_user['user_id']);
 
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['adminrequestmade']}</em></p>";
-  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+   $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
+   $fs->redirect("?do=details&id=" . $_POST['task_id']);
 
 // End of requesting task closure
 
@@ -1978,7 +1978,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == 'requestreopen') {
 
   // Log the admin request
-  $fs->AdminRequest(2, $project_id, $_POST['task_id'], $current_user['user_id']);
+  $fs->AdminRequest(2, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
 
   // Log this event to the task history
   $fs->logEvent($_POST['task_id'], 21, $current_user['user_id']);
@@ -1990,7 +1990,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                 array($_POST['task_id'], $current_user['user_id'])
                               );
 
-  if (!$db->CountRows($check_notify)) {
+  if (!$db->CountRows($check_notify))
+  {
     // Add the requestor to the task notification list, so that they know when it has been re-opened
     $insert = $db->Query("INSERT INTO flyspray_notifications (task_id, user_id) VALUES(?,?)",
     array($_POST['task_id'], $current_user['user_id']));
@@ -1998,8 +1999,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     $fs->logEvent($_POST['task_id'], 9, $current_user['user_id']);
   };
 
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['adminrequestmade']}</em></p>";
-  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+   $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
+   $fs->redirect("?do=details&id=" . $_POST['task_id']);
 
 // End of requesting task re-opening
 

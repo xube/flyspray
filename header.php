@@ -15,9 +15,13 @@
 strstr( PHP_OS, "WIN") ? $slash = "\\" : $slash = "/";
 
 // Check if we're upgrading, modify the path to the config file accordingly
-if (ereg("sql|scripts", $_SERVER['PHP_SELF'])) {
-       $path_append = '..';
-};
+if (ereg("sql|scripts", $_SERVER['PHP_SELF']))
+{
+   $path_append = '..';
+} else
+{
+   $path_append = '';
+}
 
 // Get the path to the Flyspray directory
 $path = realpath('./' . $path_append);
@@ -39,7 +43,7 @@ $conf_array = @parse_ini_file($conf_file, true);
 // is made to the database to retrieve all the other preferences.
 $basedir     = $conf_array['general']['basedir'];
 $adodbpath   = $conf_array['general']['adodbpath'];
-$jpgraphpath = $conf_array['general']['jpgraphpath'];
+//$jpgraphpath = $conf_array['general']['jpgraphpath'];
 $cookiesalt  = $conf_array['general']['cookiesalt'];
 $dbtype      = $conf_array['database']['dbtype'];
 $dbhost      = $conf_array['database']['dbhost'];
@@ -85,7 +89,7 @@ if (!$res) {
 $flyspray_prefs = $fs->getGlobalPrefs();
 
 // If we've gone directly to a task, we want to override the project_id set in the function below
-if (($_GET['do'] == 'details') && (isset($_GET['id'])))
+if ((isset($_GET['do']) && $_GET['do'] == 'details') && (isset($_GET['id'])))
 {
    list($project_id) = $db->FetchArray($db->Query("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = ?", array($_GET['id'])));
    setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");

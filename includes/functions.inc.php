@@ -175,13 +175,15 @@ function GetTaskDetails($task_id) {
 
 
    // This function generates a query of users for the "Assigned To" list
-   function listUsers($current, $in_project) {
-
+   function listUsers($current, $in_project)
+   {
       global $db;
+      global $flyspray_prefs;
 
-      $flyspray_prefs = $this->getGlobalPrefs();
+      //$flyspray_prefs = $this->getGlobalPrefs();
 
       $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
+
       while (list($key, $val) = each($these_groups))
       {
          if (empty($val))
@@ -260,9 +262,8 @@ function GetTaskDetails($task_id) {
 
   // This provides funky page numbering
   // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-  function pagenums($pagenum, $perpage, $totalcount, $extraurl)
-  {
-
+   function pagenums($pagenum, $perpage, $totalcount, $extraurl)
+   {
       global $db;
       global $lang;
 
@@ -275,120 +276,128 @@ function GetTaskDetails($task_id) {
 
       if (!($totalcount / $perpage <= 1))
       {
-
          $output .= " &nbsp;&nbsp;--&nbsp;&nbsp; ";
 
          $start = max(1, $pagenum - 3);
          $finish = min($pages, $pagenum + 3);
 
-         if ($start > 1) $output .= "<a href=\"?pagenum=1" . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
-         if ($pagenum > 1) $output .= "<a href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
+         if ($start > 1)
+            $output .= "<a href=\"?pagenum=1" . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
+
+         if ($pagenum > 1)
+            $output .= "<a href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
 
          for ($pagelink = $start; $pagelink <= $finish;  $pagelink++)
          {
-
-            if ($pagelink != $start) $output .= " - ";
+            if ($pagelink != $start)
+               $output .= " - ";
 
             if ($pagelink == $pagenum)
             {
                $output .= "<strong>" . $pagelink . "</strong>";
-            } else {
+            } else
+            {
                $output .= "<a href=\"?pagenum=" . $pagelink . $extraurl . "\">" . $pagelink . "</a>";
-            };
-         };
+            }
+         }
 
-         if ($pagenum < $pages) $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a> ";
-         if ($finish < $pages) $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
-      };
+         if ($pagenum < $pages)
+            $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a> ";
+         if ($finish < $pages)
+            $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
+      }
+
       return $output;
+   // End of pagenums function
    }
 
 
-  function formatDate($timestamp, $extended)
-  {
-
+   function formatDate($timestamp, $extended)
+   {
       global $db;
 
-    $dateformat = '';
-    $format_id = $extended ? "dateformat_extended" : "dateformat";
+      $dateformat = '';
+      $format_id = $extended ? "dateformat_extended" : "dateformat";
 
-    if(isset($_SESSION['userid']))
+      if(isset($_SESSION['userid']))
       {
-      $get_user_details = $db->Query("SELECT {$format_id} FROM flyspray_users WHERE user_id = " . $_SESSION['userid']);
-      $user_details = $db->FetchArray($get_user_details);
-      $dateformat = $user_details[$format_id];
+         $get_user_details = $db->Query("SELECT {$format_id} FROM flyspray_users WHERE user_id = " . $_SESSION['userid']);
+         $user_details = $db->FetchArray($get_user_details);
+         $dateformat = $user_details[$format_id];
       }
 
-    if($dateformat == '')
-    {
-      $flyspray_prefs = $this->GetGlobalPrefs();
-      $dateformat = $flyspray_prefs[$format_id];
-    }
+      if($dateformat == '')
+      {
+         $flyspray_prefs = $this->GetGlobalPrefs();
+         $dateformat = $flyspray_prefs[$format_id];
+      }
 
-    if($dateformat == '')
-      $dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-d";
+      if($dateformat == '')
+         $dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-d";
 
-    return date($dateformat, $timestamp);
-  }
+      return date($dateformat, $timestamp);
+   }
 
 
-  function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
-  {
-
+   function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
+   {
       global $db;
 
-  // This function creates entries in the history table.  These are the event types:
-  //  0: Fields changed in a task
-  //  1: New task created
-  //  2: Task closed
-  //  3: Task edited (for backwards compatibility with events prior to the history system)
-  //  4: Comment added
-  //  5: Comment edited
-  //  6: Comment deleted
-  //  7: Attachment added
-  //  8: Attachment deleted
-  //  9: User added to notification list
-  // 10: User removed from notification list
-  // 11: Related task added to this task
-  // 12: Related task removed from this task
-  // 13: Task re-opened
-  // 14: Task assigned to user / re-assigned to different user / Unassigned
-  // 15: This task was added to another task's related list
-  // 16: This task was removed from another task's related list
-  // 17: Reminder added
-  // 18: Reminder deleted
-  // 19: User took ownership
-  // 20: Closure request made
-  // 21: Re-opening request made
-  // 22: Adding a new dependency
-  // 23: This task added as a dependency of another task
-  // 24: Removing a dependency
-  // 25: This task removed from another task's dependency list
-  // 26: Task was made private
-  // 27: Task was made public
+      // This function creates entries in the history table.  These are the event types:
+      //  0: Fields changed in a task
+      //  1: New task created
+      //  2: Task closed
+      //  3: Task edited (for backwards compatibility with events prior to the history system)
+      //  4: Comment added
+      //  5: Comment edited
+      //  6: Comment deleted
+      //  7: Attachment added
+      //  8: Attachment deleted
+      //  9: User added to notification list
+      // 10: User removed from notification list
+      // 11: Related task added to this task
+      // 12: Related task removed from this task
+      // 13: Task re-opened
+      // 14: Task assigned to user / re-assigned to different user / Unassigned
+      // 15: This task was added to another task's related list
+      // 16: This task was removed from another task's related list
+      // 17: Reminder added
+      // 18: Reminder deleted
+      // 19: User took ownership
+      // 20: Closure request made
+      // 21: Re-opening request made
+      // 22: Adding a new dependency
+      // 23: This task added as a dependency of another task
+      // 24: Removing a dependency
+      // 25: This task removed from another task's dependency list
+      // 26: Task was made private
+      // 27: Task was made public
 
 
-  $db->Query("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
+      $db->Query("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                   VALUES(?, ?, ?, ?, ?, ?, ?)",
                   array($task, $db->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
-  }
+   // End of logEvent function
+   }
 
 
-  function LinkedUsername($user_id)
-  {
-
+   function LinkedUsername($user_id)
+   {
       global $db;
 
-    $result = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($user_id));
-    if ($db->CountRows($result) == 0) return '';
-    $result = $db->FetchRow($result);
-    return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";
-  }
+      $result = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($user_id));
+      if ($db->CountRows($result) == 0)
+         return '';
 
-  // To stop some browsers showing a blank box when an image doesn't exist
-  function ShowImg($path, $alt_text)
-  {
+      $result = $db->FetchRow($result);
 
+      return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";
+   }
+
+
+   // To stop some browsers showing a blank box when an image doesn't exist
+   function ShowImg($path, $alt_text)
+   {
       global $db;
 
       if(file_exists($path))
@@ -396,46 +405,46 @@ function GetTaskDetails($task_id) {
          list($width, $height, $type, $attr) = getimagesize($path);
          return "<img src=\"$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
       }
+   // End of ShowImg function
    }
 
-  // Log a request for an admin/project manager to do something
-  // Types are:
-  //  1: Task close
-  //  2: Task re-open
-  //  3: Application for project membership
 
-  function AdminRequest($type, $project, $task, $submitter)
-  {
-
+   // Log a request for an admin/project manager to do something
+   // Types are:
+   //  1: Task close
+   //  2: Task re-open
+   //  3: Application for project membership
+   function AdminRequest($type, $project, $task, $submitter, $reason)
+   {
       global $db;
 
-    $db->Query("INSERT INTO flyspray_admin_requests (project_id, task_id, submitted_by, request_type, time_submitted)
-                    VALUES(?, ?, ?, ?, ?)",
-                    array($project, $task, $submitter, $type, date(U)));
+      $db->Query("INSERT INTO flyspray_admin_requests (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
+                    VALUES(?, ?, ?, ?, ?, ?)",
+                    array($project, $task, $submitter, $type, $reason, date(U)));
+   // End of AdminRequest function
+   }
 
-  }
 
-
-  // Check for an existing admin request for a task and event type
-  function AdminRequestCheck($type, $task)
-  {
-
+   // Check for an existing admin request for a task and event type
+   function AdminRequestCheck($type, $task)
+   {
       global $db;
 
-    $check = $db->Query("SELECT * FROM flyspray_admin_requests
+      $check = $db->Query("SELECT * FROM flyspray_admin_requests
                              WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
                              array($type, $task));
-    if ($db->CountRows($check)) {
-      return true;
-    } else {
-      return false;
-    };
-  }
+      if ($db->CountRows($check))
+      {
+         return true;
+      } else
+      {
+         return false;
+      }
+   }
 
    // Get the current user's details
    function getUserDetails($user_id)
    {
-
       global $db;
 
 
@@ -452,14 +461,13 @@ function GetTaskDetails($task_id) {
    // Get the permissions for the current user
    function checkPermissions($user_id, $project_id)
    {
-
       global $db;
 
 
-   $current_user = $this->getUserDetails($user_id);
+      $current_user = $this->getUserDetails($user_id);
 
-  // Get the global group permissions for the current user
-  $global_permissions = $db->FetchArray($db->Query("SELECT *
+      // Get the global group permissions for the current user
+      $global_permissions = $db->FetchArray($db->Query("SELECT *
                                                         FROM flyspray_groups g
                                                         LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
                                                         WHERE uig.user_id = ? and g.belongs_to_project = '0'",
@@ -467,17 +475,20 @@ function GetTaskDetails($task_id) {
                                                        ));
 
 
-  // Get the project-level group for this user, and put the permissions into an array
-  $search_project_group = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
-  while ($row = $db->FetchRow($search_project_group)) {
-    $check_in = $db->Query("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($user_id, $row['group_id']));
-    if ($db->CountRows($check_in) > '0') {
-      $project_permissions = $row;
-    };
-  };
+      // Get the project-level group for this user, and put the permissions into an array
+      $search_project_group = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
 
-  // Define which fields we care about from the groups information
-  $field = array(
+      while ($row = $db->FetchRow($search_project_group))
+      {
+         $check_in = $db->Query("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($user_id, $row['group_id']));
+         if ($db->CountRows($check_in) > '0')
+         {
+            $project_permissions = $row;
+         }
+      }
+
+      // Define which fields we care about from the groups information
+      $field = array(
                   '1'  => 'is_admin',
                   '2'  => 'manage_project',
                   '3'  => 'view_tasks',
@@ -499,25 +510,27 @@ function GetTaskDetails($task_id) {
                   '19' => 'view_reports',
                  );
 
-  // Now, merge the two arrays, making the highest permission active (basically, use a boolean OR)
-  $permissions = array();
+      // Now, merge the two arrays, making the highest permission active (basically, use a boolean OR)
+      $permissions = array();
 
-  while (list($key, $val) = each($field)) {
-    if ($global_permissions[$val] == '1' OR $project_permissions[$val] == '1') {
-      $permissions[$val] = '1';
-    } else {
-      $permissions[$val] = '0';
+      while (list($key, $val) = each($field))
+      {
+         if ($global_permissions[$val] == '1' OR $project_permissions[$val] == '1')
+         {
+            $permissions[$val] = '1';
+         } else
+         {
+            $permissions[$val] = '0';
+         }
 
-    };
+      }
 
-  };
+      $permissions['account_enabled']  = $current_user['account_enabled'];
+      $permissions['user_pass']        = $current_user['user_pass'];
+      $permissions['group_open']       = $global_permissions['group_open'];
+      $permissions['global_view']      = $global_permissions['view_tasks'];
 
-   $permissions['account_enabled']  = $current_user['account_enabled'];
-   $permissions['user_pass']        = $current_user['user_pass'];
-   $permissions['group_open']       = $global_permissions['group_open'];
-   $permissions['global_view']      = $global_permissions['view_tasks'];
-
-   return $permissions;
+      return $permissions;
 
    // End of checkPermissions() function
    }
@@ -527,7 +540,6 @@ function GetTaskDetails($task_id) {
    // This function removes html, slashes and other nasties
    function formatText($text)
    {
-
       global $db;
 
       $text = htmlspecialchars($text);
@@ -539,9 +551,9 @@ function GetTaskDetails($task_id) {
       // Change FS#123 into hyperlinks to tasks
       $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $text);
 
-      if (!get_magic_quotes_gpc()) {
-        $text = str_replace("\\", "&#92", $text);
-      };
+      if (!get_magic_quotes_gpc())
+         $text = str_replace("\\", "&#92", $text);
+
       $text = stripslashes($text);
 
       return $text;
@@ -550,23 +562,27 @@ function GetTaskDetails($task_id) {
    }
 
    // Crypt a password with the method set in the configfile
-   function cryptPassword($password){
-       global $conf_array;
-       $pwcrypt = $conf_array['general']['passwdcrypt'];
+   function cryptPassword($password)
+   {
+      global $conf_array;
+      $pwcrypt = $conf_array['general']['passwdcrypt'];
 
-       if(strtolower($pwcrypt) == 'sha1'){
-           return sha1($password);
-       }elseif(strtolower($pwcrypt) == 'md5'){
-           return md5($password);
-       }
-       // use random salted crypt by default
-       return crypt($password, chr(rand(21,255)).chr(rand(21,255)) );
+      if(strtolower($pwcrypt) == 'sha1')
+      {
+         return sha1($password);
+      } elseif(strtolower($pwcrypt) == 'md5')
+      {
+         return md5($password);
+      }
+      // use random salted crypt by default
+      return crypt($password, chr(rand(21,255)).chr(rand(21,255)) );
+   // End of cryptPassword function
    }
+
 
    // This function checks if a user provided the right credentials
    function checkLogin($username, $password)
    {
-
       global $db;
 
       $result = $db->Query("SELECT uig.*, g.group_open, u.account_enabled, u.user_pass FROM flyspray_users_in_groups uig
@@ -579,17 +595,18 @@ function GetTaskDetails($task_id) {
       $auth_details = $db->FetchArray($result);
 
       //encrypt the password with the method used in the db
-      switch (strlen($auth_details['user_pass'])) {
-        case 40:
-          $password = sha1($password);
-          break;
-        case 32:
-          $password = md5($password);
-          break;
-        case 13;
-          $password = crypt($password, $auth_details['user_pass']); //using the salt from db
-          break;
-        default:
+      switch (strlen($auth_details['user_pass']))
+      {
+         case 40:
+            $password = sha1($password);
+            break;
+         case 32:
+            $password = md5($password);
+            break;
+         case 13;
+            $password = crypt($password, $auth_details['user_pass']); //using the salt from db
+            break;
+         default:
           //unknown encryption!?
           return false;
       }
@@ -611,32 +628,33 @@ function GetTaskDetails($task_id) {
 
    function startReminderDaemon()
    {
-        $script  = 'scripts/daemon.php';
-        $include = 'schedule.php';
-        $runfile = 'running';
-        $timeout = 600;
+      $script  = 'scripts/daemon.php';
+      $include = 'schedule.php';
+      $runfile = 'running';
+      $timeout = 600;
 
-        if (!file_exists($runfile) or filemtime($runfile) < time() - ($timeout * 2))
-        {
-            // Starting runner...
-            $php = '';
-            foreach (array('/usr/local/bin/php', '/usr/bin/php') as $path)
+      if (!file_exists($runfile) or filemtime($runfile) < time() - ($timeout * 2))
+      {
+         // Starting runner...
+         $php = '';
+         foreach (array('/usr/local/bin/php', '/usr/bin/php') as $path)
+         {
+            if (file_exists($path) and is_executable($path))
             {
-                if (file_exists($path) and is_executable($path))
-                {
-                    $php = $path;
-                    break;
-                }
+               $php = $path;
+               break;
             }
+         }
 
-            if (!$php)
-            {
-                // No PHP executable found... sorry!";
-                return;
-            }
+         if (!$php)
+         {
+            // No PHP executable found... sorry!";
+            return;
+         }
 
-            exec("$php $script $include $timeout ../$runfile >/dev/null &");
-        }
+         exec("$php $script $include $timeout ../$runfile >/dev/null &");
+      }
+   // End of startReminderDaemon function
    }
 
 

@@ -1027,6 +1027,15 @@ div#fileupload {
    margin               : 20px 0px 20px 3px;
 }
 
+p#menu a#attention {
+   position             : absolute;
+   top                  : 0px;
+   right                : 210px;
+   color                : #fff000;
+   background-color     : #f30000;
+}
+
+
 /* End of screen section */
 }
 

@@ -45,14 +45,14 @@ $language = array (
 'lastsearch'               =>    'My last search',
 
 // Added in version 0.9.7
-'adminreqwaiting'          =>    'Admin requests',
-
+//'adminreqwaiting'          =>    'Admin requests',            Not used from 0.9.8
 
 // Added in version 0.9.8
 'admintoolbox'             =>    'Admin Toolbox',
 'manageproject'            =>    'Manage Project',
 'permissions'              =>    'Permissions: ',
 'hide'                     =>    'Hide',
+'pendingreq'               =>    'PM requests waiting',
 
 );
 ?>

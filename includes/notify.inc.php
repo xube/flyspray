@@ -82,7 +82,7 @@ class Notifications {
          return;
 
       // Get the new email class
-      require("class.phpmailer.php");
+      require_once("class.phpmailer.php");
 
       // Define the class
       $mail = new PHPMailer();

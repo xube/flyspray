@@ -35,6 +35,7 @@ if ($permissions['manage_project'] == '1')
    echo '<small>|</small><a id="projcatlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=cat">' . $admin_text['categories'] . '</a>';
    echo '<small>|</small><a id="projoslink" href="?do=pm&amp;project=' . $project_id . '&amp;area=os">' . $admin_text['operatingsystems'] . '</a>';
    echo '<small>|</small><a id="projverlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=ver">' . $admin_text['versions'] . '</a>';
+   echo '<small>|</small><a id="projreqlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=pendingreq">' . $pm_text['pendingreq'] . '</a>';
 
    // End of the toolboxmenu
    echo '</div>';
@@ -351,6 +352,9 @@ if ($permissions['manage_project'] == '1')
       }
       ?>
 
+      <fieldset class="admin">
+      <legend><?php echo $admin_text['editgroup'];?></legend>
+
       <form action="index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
       <table class="admin">
          <tr>
@@ -444,6 +448,8 @@ if ($permissions['manage_project'] == '1')
          </tr>
       </table>
       </form>
+
+      </fieldset>
 
    <?php
    //////////////////////////////////
@@ -1018,6 +1024,67 @@ if ($permissions['manage_project'] == '1')
 
 
    <?php
+   /////////////////////////////////////
+   // Start of pending admin requests //
+   /////////////////////////////////////
+
+   } elseif ($_GET['area'] == 'pendingreq'
+       && $permissions['manage_project'] == '1')
+   {
+
+      echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $pm_text['pendingreq'] . '</h3>';
+
+
+      // Get a list of pending admin requests for this project
+      $get_pending = $db->Query("SELECT * FROM flyspray_admin_requests ar
+                               LEFT JOIN flyspray_tasks t ON ar.task_id = t.task_id
+                               LEFT JOIN flyspray_users u ON ar.submitted_by = u.user_id
+                               WHERE project_id = ? AND resolved_by = '0'
+                               ORDER BY ar.time_submitted ASC",
+                               array($project_id));
+
+      if (!$db->CountRows($get_pending))
+      {
+         echo $pm_text['nopendingreq'];
+
+      } else
+      {
+
+      echo '<fieldset class="admin">';
+      echo '<legend>' . $pm_text['pendingreq'] . '</legend>';
+      echo '<table class="admin" border="1"><tr>';
+      echo '<th>' . $admin_text['eventdesc'] . '</th>';
+      echo '<th>' . $admin_text['requestedby'] . '</th>';
+      echo '<th>' . $admin_text['daterequested'] . '</th>';
+      echo '<th>' . $pm_text['reasongiven'] . '</th>';
+      echo '</tr>';
+
+      // ...and cycle through them
+      while($pending_req = $db->FetchRow($get_pending))
+      {
+         // Change the numerical request type into a readable value
+         switch($pending_req['request_type'])
+         {
+            case "1": $request_type = $admin_text['closetask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
+            break;
+            case "2": $request_type = $admin_text['reopentask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
+            break;
+            case "3": $request_type = $admin_text['applymember'];
+            break;
+         }
+
+         echo '<tr>';
+         echo "<td>$request_type</td>";
+         echo '<td><a href="?do=admin&amp;area=users&amp;id=' . $pending_req['user_id'] . '">' . $pending_req['real_name'] . '(' . $pending_req['user_name'] . ')</a></td>';
+         echo '<td>' . $fs->formatDate($pending_req['time_submitted'], true) . '</td>';
+         echo '<td>' . stripslashes($pending_req['reason_given']) . '</td>';
+      }
+
+      echo '</table>';
+
+   }
+// End of pending admin requests
+
    // End of areas
    }
 

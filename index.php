@@ -8,13 +8,17 @@
 
 include_once('header.php');
 
+// Send this header for i18n support
+// Note that server admins can override this, breaking Flyspray.
+header("Content-type: text/html; charset=utf-8");
+
 // Check that we're using 0.9.6, and start the upgrade script if we're not.
 if (isset($flyspray_prefs['dateformat']) && !isset($flyspray_prefs['fs_ver']))
 {
    Header("Location: sql/upgrade_0.9.6_to_0.9.7.php");
 };
 
-session_start();
+//session_start();
 
 // Background daemon that does scheduled reminders
 $fs->startReminderDaemon();
@@ -101,10 +105,6 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 // If no file was requested, show the page as per normal
 } else
 {
-   // Send this header for i18n support
-   // Note that server admins can override this, breaking Flyspray.
-   header("Content-type: text/html; charset=utf-8");
-
    // Start Output Buffering and gzip encoding if setting is present.
    // This functionality provided Mariano D'Arcangelo
    if ($conf_array['general']['output_buffering']=='gzip')
@@ -119,10 +119,52 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // at the end of script execution by PHP itself when output buffering is turned on
    // either in the php.ini or by calling ob_start().
 
+   // Define a bunch of stuff for the last search line
+   $lastindex = '';
+
+   if (isset($_GET['string']) && !empty($_GET['string']))
+      $lastindex .= '&amp;string=' . $_GET['string'];
+
+   if (isset($_GET['type']) && !empty($_GET['type']))
+      $lastindex .= '&amp;type=' . $_GET['type'];
+
+   if (isset($_GET['sev']) && !empty($_GET['sev']))
+      $lastindex .= '&amp;sev=' . $_GET['sev'];
+
+   if (isset($_GET['dev']) && !empty($_GET['dev']))
+      $lastindex .= '&amp;dev=' . $_GET['dev'];
+
+   if (isset($_GET['due']) && !empty($_GET['due']))
+      $lastindex .= '&amp;due=' . $_GET['due'];
+
+   if (isset($_GET['cat']) && !empty($_GET['cat']))
+      $lastindex .= '&amp;cat=' . $_GET['cat'];
+
+   if (isset($_GET['status']) && !empty($_GET['status']))
+      $lastindex .= '&amp;status=' . $_GET['status'];
+
+   if (isset($_GET['perpage']) && !empty($_GET['perpage']))
+      $lastindex .= '&amp;perpage=' . $_GET['perpage'];
+
+   if (isset($_GET['pagenum']) && !empty($_GET['pagenum']))
+      $lastindex .= '&amp;pagenum=' . $_GET['pagenum'];
+
+   if (isset($_GET['order']) && !empty($_GET['order']))
+      $lastindex .= '&amp;order=' . $_GET['order'];
+
+   if (isset($_GET['order2']) && !empty($_GET['order2']))
+      $lastindex .= '&amp;order2=' . $_GET['order2'];
+
+   if (isset($_GET['sort']) && !empty($_GET['sort']))
+      $lastindex .= '&amp;sort=' . $_GET['sort'];
+
+   if (isset($_GET['sort2']) && !empty($_GET['sort2']))
+      $lastindex .= '&amp;sort2=' . $_GET['sort2'];
+
    // If the user has used the search box, store their search for later on
    if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order']))
    {
-      $_SESSION['lastindexfilter'] = "index.php?tasks={$_GET['tasks']}&amp;project={$_GET['project']}&amp;string={$_GET['string']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;due={$_GET['due']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;perpage={$_GET['perpage']}&amp;pagenum={$_GET['pagenum']}&amp;order={$_GET['order']}&amp;order2=" . $_GET['order2'] . "&amp;sort={$_GET['sort']}&amp;sort2=" . $_GET['sort2'];
+      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . $_GET['project'] . $lastindex;
    }
 ?>
 
@@ -133,6 +175,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
   <link rel="icon" href="./favicon.ico" type="image/png" />
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
   <link href="themes/<?php echo $themestyle;?>/theme.css" rel="stylesheet" type="text/css" />
+  <link rel="alternate" type="text/xml" title="rss" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php" />
   <script type="text/javascript" src="includes/functions.js"></script>
   <script type="text/javascript" src="includes/styleswitcher.js"></script>
   <script type="text/javascript" src="includes/tabs.js"></script>
@@ -171,16 +214,11 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 // People might like to define their own header files for their theme
 $headerfile = "$basedir/themes/".$project_prefs['theme_style']."/header.inc.php";
 if(file_exists("$headerfile"))
-{
    include("$headerfile");
-}
-
 
 // If the admin wanted the Flyspray logo shown at the top of the page...
 if ($project_prefs['show_logo'] == '1')
-{
    echo '<h1 id="title"><span>' . $project_prefs['project_title'] . '</span></h1>';
-}
 
 // if no-one's logged in, show the login box
 if(!isset($_COOKIE['flyspray_userid']))
@@ -267,44 +305,30 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
 
    // End of mainmenu area
 
-   /*
-      /////////////////////////
-     // Show the Admin menu //                F I X  M E ! !
-    /////////////////////////
 
-    if ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
+      //////////////////////////////////
+     // Show the pending PM requests //
+    //////////////////////////////////
 
-    // Find out if there are any PM requests wanting attention
-    $get_req = $db->Query("SELECT * FROM flyspray_admin_requests
+    if ($permissions['manage_project'] == '1')
+    {
+      // Find out if there are any PM requests wanting attention
+      $get_req = $db->Query("SELECT * FROM flyspray_admin_requests
                              WHERE project_id = ? AND resolved_by = '0'",
                              array($project_id));
-    $num_req = $db->CountRows($get_req);
 
-    // Check for admin requests too
-    if ($permissions['is_admin'] == '1') {
-      $get_admin_req = $db->Query("SELECT * FROM flyspray_admin_requests
-                                     WHERE project_id = '0' AND resolved_by = '0'");
-      $num_req = $num_req + $db->CountRows($get_admin_req);
-    };
-
-
-      echo '<span id="adminmenu">';
+      $num_req = $db->CountRows($get_req);
 
       // Show the amount of admin requests waiting
-      if (($permissions['manage_project'] == '1'
-          OR $permissions['is_admin'] == '1')
-          && $num_req > '0') {
+      if ($num_req > '0')
+      {
          echo '<small> | </small>';
-         echo '<a id="attention" href="?do=admin&amp;area=pendingreq">' . $num_req . ' ' . $language['adminreqwaiting'] . '</a>';
+         echo '<a id="attention" href="?do=pm&amp;area=pendingreq">' . $num_req . ' ' . $language['pendingreq'] . '</a>';
+      }
 
-      };
-
-      // End of admin menu span
-      echo "</span>\n";
-
-    // End of checking if the admin menu should be displayed
+    // End of checking if the pending PM requests should be displayed
    }
-   */
+
 
    echo "</p>";
 
@@ -422,7 +446,7 @@ if (isset($_SESSION['SUCCESS']))
 // Show the project blurb if the project manager defined one
 if ($project_prefs['project_is_active'] == '1'
     && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
-    && $project_prefs['intro_message'] != ''
+    && !empty($project_prefs['intro_message'])
     && ($do == 'details' OR $do == 'index' OR $do == 'newtask' OR $do == 'reports')
     OR (isset($_GET['project']) && $_GET['project'] == '0'))
 {

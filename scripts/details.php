@@ -36,7 +36,7 @@ if ($db->CountRows($task_exists)
    }
 
    // Check if the user can take ownership of this task
-   if (($permissions['assign_to_self'] == '1' && $task_details['assigned_to'] == '0')
+   if (($permissions['assign_to_self'] == '1' && empty($task_details['assigned_to']))
     OR $permissions['assign_others_to_self'] == '1'
     && $task_details['assigned_to'] != $current_user['user_id'])
    {
@@ -44,7 +44,7 @@ if ($db->CountRows($task_exists)
    }
 
    // Check if the user can close this task
-   if (($permissions['close_own_tasks'] == '1' && $task_details['assigned_to'] == $current_user['user_id'])
+   if (($permissions['close_own_tasks'] == '1' && ($task_details['assigned_to'] == $current_user['user_id']))
     OR $permissions['close_other_tasks'] == '1')
    {
       $effective_permissions['can_close'] = '1';
@@ -683,7 +683,6 @@ if ($db->CountRows($task_exists)
          echo '</div>';
 
          echo "\n\n";
-         echo '<div id="actionbuttons">';
 
          // If the task is closed, show the closure reason
          if ($task_details['is_closed'] == '1')
@@ -709,41 +708,37 @@ if ($db->CountRows($task_exists)
          // End of showing task closure reason
          }
 
-         // Check permissions and task status, then show the "re-open task" button
+         echo '<div id="actionbuttons">';
+
+         // Check permissions and task status, then show the " task" button
          if ($effective_permissions['can_close'] == '1' && $task_details['is_closed'] == '1')
          {
+            echo '<a href="?do=modify&amp;action=reopen&amp;task_id=' . $_GET['id'] . '">' . $details_text['reopenthistask'] . '</a>';
+
+            // If they can't  this, show a button to request a PM  it
+         } elseif ($effective_permissions['can_close'] != '1'
+           && $task_details['is_closed'] == '1'
+           && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
+           && isset($current_user['user_id']))
+         {
          ?>
-
-            <form name="form2" action="index.php" method="post" id="formreopentask">
-               <p>
-               <input type="hidden" name="do" value="modify" />
-               <input type="hidden" name="action" value="reopen" />
-               <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-               <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['reopenthistask'];?>" onclick="Disable2()" />
-               </p>
-            </form>
-
-            <?php
-            // If they can't re-open this, show a button to request a PM re-open it
-            } elseif ($effective_permissions['can_close'] != '1'
-              && $task_details['is_closed'] == '1'
-              && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
-              && isset($current_user['user_id']))
-            {
-            ?>
-
-               <form name="form2" action="index.php" method="post" id="formreopenrequesttask">
-                  <p>
-                  <input type="hidden" name="do" value="modify" />
-                  <input type="hidden" name="action" value="requestreopen" />
-                  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-                  <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['reopenrequest'];?>" onclick="Disable2()" />
-                  </p>
-               </form>
-
-    <?php
-    // End of the "re-open task" form
-    };
+               <a href="#close" id="reqclose" class="button" onclick="showstuff('closeform');">
+               <?php echo $details_text['reopenrequest']; ?>
+               </a>
+               <div id="closeform">
+                  <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a>
+                  <form name="form3" action="index.php" method="post" id="formclosetask">
+                     <input type="hidden" name="do" value="modify" />
+                     <input type="hidden" name="action" value="requestclose" />
+                     <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+                     <label for="reason"><?php echo $details_text['givereason'];?></label>
+                     <textarea id="reason" name="reason_given"></textarea><br />
+                     <input class="adminbutton" type="submit" value="<?php echo $details_text['submitreq'];?>" />
+                  </form>
+               </div>
+         <?php
+         // End of re-opening a task
+         }
 
     // Get info on the dependencies again
     $check_deps = $db->Query("SELECT * FROM flyspray_dependencies d
@@ -760,7 +755,7 @@ if ($db->CountRows($task_exists)
     // Check permissions and task status, then show the "close task" form
    if ($effective_permissions['can_close'] == '1'
        && $task_details['is_closed'] != '1'
-       && !isset($deps_open))
+       && $deps_open != 'yes')
    {
    ?>
       <a href="#close" id="closetask" class="button" onclick="showstuff('closeform');">
@@ -802,13 +797,30 @@ if ($db->CountRows($task_exists)
 
 
    <?php
-   // If the user owns this task but can't close it, show a button to request closure
+   // If the user is assigned this task but can't close it, show a button to request closure
    } elseif ($effective_permissions['can_close'] != '1'
-             && $open_deps != 'yes'
-             && $task_details['assigned_to'] == $current_user['user_id']
-             && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1')
+       && $open_deps != 'yes'
+       && $task_details['assigned_to'] == $current_user['user_id']
+       && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1')
    {
-      echo '<a id="reqclose" class="button" href="?do=modify&amp;action=requestclose&amp;task_id=' . $_GET['id'] . '">' . $details_text['requestclose'] . '</a> ';
+   ?>
+      <a href="#close" id="reqclose" class="button" onclick="showstuff('closeform');">
+      <?php echo $details_text['requestclose']; ?>
+      </a>
+      <div id="closeform">
+         <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a>
+         <form name="form3" action="index.php" method="post" id="formclosetask">
+            <input type="hidden" name="do" value="modify" />
+            <input type="hidden" name="action" value="requestclose" />
+            <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+            <label for="reason"><?php echo $details_text['givereason'];?></label>
+            <textarea id="reason" name="reason_given"></textarea><br />
+            <input class="adminbutton" type="submit" value="<?php echo $details_text['submitreq'];?>" />
+         </form>
+      </div>
+
+
+   <?php
    }
 
    // Check permissions and task status, then show the "take ownership" button
@@ -883,7 +895,7 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
    <?php
    if ($permissions['view_comments'] == '1' OR $permissions['add_comments'] == '1')
    {
-      echo '<li id=commentstab"><a href="#comments">'. $details_text['comments'] . "($num_comments)" . '</a></li>';
+      echo '<li id="commentstab"><a href="#comments">'. $details_text['comments'] . "($num_comments)" . '</a></li>';
    }
 
    if ($permissions['view_attachments'] == '1')
@@ -1037,7 +1049,7 @@ if($pos===0 && $project_prefs['inline_images'] == '1')
       $new_height = round(($height*$v_fraction),0);
 
       // Display the resized image, with a link to the fullsized one
-      echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\" /></a>";
+      echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"$new_height\" alt=\"\" /></a>";
    } else
    {
       // If the image is already small, just display it.
@@ -1057,7 +1069,7 @@ if($pos===0 && $project_prefs['inline_images'] == '1')
    echo "</p></td><td>";
    echo "<table>";
    echo "<tr><td><em>{$details_text['filename']}</em></td><td><a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a></td></tr>";
-   echo "<tr><td><em>{$details_text['description']}</em></td><td>$file_desc</a></td></tr>";
+   echo "<tr><td><em>{$details_text['description']}</em></td><td>$file_desc</td></tr>";
    echo "<tr><td><em>{$details_text['fileuploadedby']}</em></td><td><a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a></td></tr>";
    echo "<tr><td><em>{$details_text['date']}</em></td><td>$formatted_date</td></tr>";
    $size = $row['file_size'];
@@ -1690,7 +1702,7 @@ if ($permissions['view_history'] == '1')
             {
                echo $details_text['closerequestmade'];
 
-            } elseif ($history['event_type'] == '21')   //User requested task re-open
+            } elseif ($history['event_type'] == '21')   //User requested task
             {
                echo $details_text['reopenrequestmade'];
 

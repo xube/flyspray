@@ -9,13 +9,19 @@
 // First, set a whole bunch of DEFAULT variables if they're not
 // already set. This is a whole convoluted bunch of crap, but it works.
 
+// First, the obligatory language packs
 $fs->get_language_pack($lang, 'index');
 $fs->get_language_pack($lang, 'details');
 
 $orderby = array();
 
-//if (isset($_GET['order']) && !empty($_GET['order']))
+if (isset($_GET['order']) && !empty($_GET['order']))
+{
    $orderby[] = $_GET['order'];
+} else
+{
+   $orderby[] = 'cat';
+}
 
 if (isset($_GET['order2']) && !empty($_GET['order2'])) {
   $orderby[] = $_GET['order2'];
@@ -77,16 +83,18 @@ $sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, t.task_id ASC"
 // Check that what was submitted is a numerical value; most of them should be
 
 // page we're on
-if (is_numeric($_GET['pagenum'])) {
-  $pagenum = $_GET['pagenum'];
+if (isset($_GET['pagenum']) && is_numeric($_GET['pagenum']))
+{
+   $pagenum = $_GET['pagenum'];
 } else {
-  $pagenum = "1";
+   $pagenum = "1";
 }
 // number of results per page
-if (is_numeric($_GET['perpage'])) {
-  $perpage = $_GET['perpage'];
+if (isset($_GET['perpage']) && is_numeric($_GET['perpage']))
+{
+   $perpage = $_GET['perpage'];
 } else {
-  $perpage = "20";
+   $perpage = "20";
 }
 
 // the mysql query offset is a combination of the num results per page and the page num
@@ -158,7 +166,8 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
 }
 
 // Check for special tasks to display
-$dev = $_GET['dev'];
+if (isset($_GET['dev']))
+   $dev = $_GET['dev'];
 
 if ($_GET['tasks'] == 'assigned') {
     $dev = $current_user['user_id'];
@@ -167,15 +176,15 @@ if ($_GET['tasks'] == 'assigned') {
     $sql_params[] = $current_user['user_id'];
 }
 
-
 // developer whose bugs to show
-if (isset($dev) && is_numeric($dev)) {
-  $where[] = "assigned_to = ?";
-  $sql_params[] = $dev;
-} elseif ($dev == "notassigned") {
-  $where[] = "assigned_to = '0'";
+if (isset($dev) && is_numeric($dev))
+{
+   $where[] = "assigned_to = ?";
+   $sql_params[] = $dev;
+} elseif (isset($dev) && $dev == "notassigned")
+{
+   $where[] = "assigned_to = '0'";
 }
-
 
 // The default task type
 if (isset($_GET['type']) && is_numeric($_GET['type'])) {
@@ -237,14 +246,15 @@ if (isset($_GET['string']) && $_GET['string']) {
 }
 
 // Do this to hide private tasks from the list
-if ($permissions['manage_project'] == '1') {
-        // Don't add any parameters
-} elseif ($permissions['manage_project'] != '1'
-     && isset($_COOKIE['flyspray_userid'])) {
-  $where[] = "(t.mark_private <> '1' OR t.assigned_to = ?)";
-  $sql_params[] = $current_user['user_id'];
-} elseif (!isset($_COOKIE['user_id'])) {
-  $where[] = "t.mark_private <> '1'";
+if ($permissions['manage_project'] != '1'
+     && isset($_COOKIE['flyspray_userid']))
+{
+   $where[] = "(t.mark_private <> '1' OR t.assigned_to = ?)";
+   $sql_params[] = $current_user['user_id'];
+
+} elseif (!isset($_COOKIE['user_id']))
+{
+   $where[] = "t.mark_private <> '1'";
 }
 
 if (isset($_GET['project']) && $_GET['project'] == '0') {
@@ -253,12 +263,12 @@ if (isset($_GET['project']) && $_GET['project'] == '0') {
     $get = "&amp;project={$project_id}";
 }
 // for page numbering
-$extraurl = $get . "&amp;tasks={$_GET['tasks']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$dev}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;due={$_GET['due']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
+$extraurl = $get . '&amp;tasks=' . $_GET['tasks'] . '&amp;project=' . $_GET['project'] . $lastindex;
 // for 'sort by this column' links
-$get = $extraurl . "&amp;pagenum=$pagenum";
-$extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
-$extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
-
+// $get = $extraurl . "&amp;pagenum=$pagenum";
+// $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
+// $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
+$get = $extraurl;
 ?>
 
 <?php
@@ -464,56 +474,57 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
       $visible = $project_prefs['visible_columns'];
    }
 
-  if(ereg("$colname", $visible))
+  if(ereg($colname, $visible))
   {
-    if($orderkey)
-    {
-      if(isset($_GET['order']) && $_GET['order'] == "$orderkey")
+      if($orderkey)
       {
-        $class = 'class="orderby"';
+         if(isset($_GET['order']) && $_GET['order'] == "$orderkey")
+         {
+            $class = 'class="orderby"';
 
-        $order2 = $_GET['order2'];
-        $sort2 = $_GET['sort2'];
+            $order2 = $_GET['order2'];
+            $sort2 = $_GET['sort2'];
 
-        if (isset($_GET['sort']) && $_GET['sort'] == 'desc')
-        {
-          $sort1 = "asc";
-        }
-        else
-        {
-          $sort1 = "desc";
-        }
-      }
-      else
+            if (isset($_GET['sort']) && $_GET['sort'] == 'desc')
+            {
+               $sort1 = "asc";
+            } else
+            {
+               $sort1 = "desc";
+            }
+         } else
+         {
+            $sort1 = $defaultsort;
+
+            //if (isset($_GET['order']))
+               $order2 = $_GET['order'];
+            //if (isset($_GET['sort']))
+               $sort2 = $_GET['sort'];
+         }
+
+         $sort1 = ( $sort1 == 'asc' ? 'asc' : 'desc' );
+         $sort2 = ( $sort2 == 'asc' ? 'asc' : 'desc' );
+
+         echo "<th $class>";
+         $title = $index_text['sortthiscolumn'];
+         $link = "?order=$orderkey$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
+         echo "<a title=\"$title\" href=\"$link\">";
+         echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" />\n";
+
+         // Sort indicator arrows
+         if(isset($_GET['order']) && $_GET['order'] == $orderkey)
+         {
+            echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png" />';
+         }
+
+         echo "</a></th>\n";
+      } else
       {
-        $sort1 = $defaultsort;
-        $order2 = $_GET['order'];
-        $sort2 = $_GET['sort'];
+         echo "<th>";
+         echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\" />";
+         echo "</th>\n";
       }
-
-      $sort1 = ( $sort1 == 'asc' ? 'asc' : 'desc' );
-      $sort2 = ( $sort2 == 'asc' ? 'asc' : 'desc' );
-
-      echo "<th $class>";
-      $title = $index_text['sortthiscolumn'];
-      $link = "?order=$orderkey$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
-      echo "<a title=\"$title\" href=\"$link\">";
-      echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" />\n";
-
-      // Sort indicator arrows
-      if(isset($_GET['order']) && $_GET['order'] == $orderkey) {
-        echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png" />';
-      }
-
-      echo "</a></th>\n";
-    }
-    else
-    {
-      echo "<th>";
-      echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\" />";
-      echo "</th>\n";
-    }
-  }
+   }
 }
 
 /**
