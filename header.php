@@ -29,7 +29,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 //echo get_include_path();
 
 // Define the path to the config file.  Change this line if you move flyspray.conf.php elsewhere
-$conf_file = 'flyspray.conf.php';
+$conf_file = $path . $slash . "flyspray.conf.php";
 
 // Load the config file
 $conf_array = parse_ini_file($conf_file, true);
