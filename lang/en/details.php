@@ -145,6 +145,7 @@ $details_text = array (
 'taskpendingreq'        =>    'Project Manager action pending.  See the History tab for details.',
 'previoustask'          =>    'Previous task',
 'nexttask'              =>    'Next task',
+'duedate'               =>    'Due Date',
 
 );
 ?>

@@ -30,48 +30,54 @@ if ( !empty($_REQUEST['task_id']) )
 ////////////////////////////////
 
 if ($_POST['action'] == 'newtask'
-    && ($permissions['open_new_tasks'] == '1'
-    OR $project_prefs['anon_open'] == "1"))
+    && (@$permissions['open_new_tasks'] == '1'
+    OR $project_prefs['anon_open'] == '1'))
 {
+   // If they entered something in both the summary and detailed description
+   if (!empty($_POST['item_summary']) && !empty($_POST['detailed_desc']))
+   {
+      $item_summary = $_POST['item_summary'];
+      $detailed_desc = $_POST['detailed_desc'];
 
-  // If they entered something in both the summary and detailed description
-  if ($_POST['item_summary'] != ''
-    && $_POST['detailed_desc'] != '')
-  {
-
-    $item_summary = $_POST['item_summary'];
-    $detailed_desc = $_POST['detailed_desc'];
-
-    $param_names = array('task_type', 'item_status',
+      $param_names = array('task_type', 'item_status',
         'assigned_to', 'product_category', 'product_version',
         'closedby_version', 'operating_system', 'task_severity',
-        'task_priority', 'closure_comment');
-    $sql_values = array($_POST['project_id'], $now, $now, $item_summary,
+        'task_priority');
+
+      $sql_values = array($_POST['project_id'], $now, $now, $item_summary,
                 $detailed_desc,
                 $db->emptyToZero($_COOKIE['flyspray_userid']),
                 '0');
-    $_POST['closure_comment'] = ' ';
-    $sql_params = array();
-    foreach ($param_names as $param_name) {
-        if (!empty($_POST[$param_name])) {
+
+      $sql_params = array();
+      foreach ($param_names as $param_name)
+      {
+         if (!empty($_POST[$param_name]))
+         {
             array_push($sql_params, $param_name);
             array_push($sql_values, $_POST[$param_name]);
-        }
-    }
-    $sql_params = join(', ', $sql_params);
-    $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
+         }
+      }
 
-    $add_item = $db->Query("INSERT INTO flyspray_tasks
-                           (attached_to_project,
-                            date_opened,
-                            last_edited_time,
-                            item_summary,
-                            detailed_desc,
-                            opened_by,
-                            percent_complete,
-                            $sql_params)
-                            VALUES ($sql_placeholder)",
-                                    $sql_values);
+      // Process the due_date
+      $due_date = strtotime("{$_POST['due_date']} +23 hours 59 minutes 59 seconds");
+      array_push($sql_params, 'due_date');
+      array_push($sql_values, $due_date);
+
+      $sql_params = join(', ', $sql_params);
+      $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
+
+      $add_item = $db->Query("INSERT INTO flyspray_tasks
+                              (attached_to_project,
+                              date_opened,
+                              last_edited_time,
+                              item_summary,
+                              detailed_desc,
+                              opened_by,
+                              percent_complete,
+                              $sql_params)
+                              VALUES ($sql_placeholder)",
+                                      $sql_values);
 
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
@@ -126,10 +132,7 @@ if ($_POST['action'] == 'newtask'
       $fs->logEvent($task_details['task_id'], 9, $owner);
 
       // Create the Notification
-      $to = $notify->Address($task_details['task_id']);
-      $msg = $notify->Create('1', $task_details['task_id']);
-      $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-      $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+      $notify->Create('1', $task_details['task_id']);
 
    // End of checking if there's a category owner set, and notifying them.
    }
@@ -245,6 +248,7 @@ if ($_POST['action'] == 'newtask'
          <input type="hidden" name="assigned_to" value="<?php echo $_POST['assigned_to'];?>">
          <input type="hidden" name="product_category" value="<?php echo $_POST['product_category'];?>">
          <input type="hidden" name="closedby_version" value="<?php echo $_POST['closedby_version'];?>">
+         <input type="hidden" name="due_date" value="<?php echo $_POST['due_date'];?>">
          <input type="hidden" name="operating_system" value="<?php echo $_POST['operating_system'];?>">
          <input type="hidden" name="task_severity" value="<?php echo $_POST['task_severity'];?>">
          <input type="hidden" name="task_priority" value="<?php echo $_POST['task_priority'];?>">
@@ -290,6 +294,7 @@ if ($_POST['action'] == 'newtask'
                               task_priority = ?,
                               last_edited_by = ?,
                               last_edited_time = ?,
+                              due_date = ?,
                               percent_complete = ?
 
                               WHERE task_id = ?",
@@ -300,6 +305,7 @@ if ($_POST['action'] == 'newtask'
                               $_POST['operating_system'], $_POST['task_severity'],
                               $_POST['task_priority'], $_COOKIE['flyspray_userid'],
                               $now,
+                              strtotime("{$_POST['due_date']} +23 hours 59 minutes 59 seconds"),
                               $_POST['percent_complete'],
                               $_POST['task_id'])
                            );
@@ -323,6 +329,7 @@ if ($_POST['action'] == 'newtask'
             "{$modify_text['dueinversion']}"     =>  'due_in_version_name',
             "{$modify_text['percentcomplete']}"  =>  'percent_complete',
             "{$modify_text['details']}"          =>  'detailed_desc',
+            "{$modify_text['duedate']}"          =>  'due_date',
             );
 
       while (list($key, $val) = each($field))
@@ -345,15 +352,18 @@ if ($_POST['action'] == 'newtask'
 
       if ($send_me == 'YES')
       {
-         $to = $notify->Address($new_details['task_id']);
-         $msg = $notify->Create('2', $new_details['task_id']);
-         $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+         $notify->Create('2', $new_details['task_id']);
       }
 
       // Check to see if the assignment has changed
       if ($_POST['old_assigned'] != $_POST['assigned_to'])
+      {
+         // Log to task history
          $fs->logEvent($_POST['task_id'], 14, $_POST['assigned_to'], $_POST['old_assigned']);
+
+         // Notify the new assignee what happened
+         $notify->Create('14', $new_details['task_id']);
+      }
 
       $_SESSION['SUCCESS'] = $modify_text['taskupdated'];
       $fs->redirect("index.php?do=details&id=" . $_POST['task_id']);
@@ -412,10 +422,13 @@ if ($_POST['action'] == 'newtask'
       list($item_summary) = $db->FetchArray($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
       $item_summary = stripslashes($item_summary);
 
-      $to = $notify->Address($_POST['task_id']);
-      $msg = $notify->Create('3', $_POST['task_id']);
-      $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-      $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+      // Create notification
+      $notify->Create('3', $_POST['task_id']);
+
+//       $to = $notify->Address($_POST['task_id']);
+//       $msg = $notify->Create('3', $_POST['task_id']);
+//       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//       $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
       // Log this to the task's history
       $fs->logEvent($_POST['task_id'], 2, $_POST['resolution_reason'], $_POST['closure_comment']);
@@ -425,7 +438,7 @@ if ($_POST['action'] == 'newtask'
          $db->Query("UPDATE flyspray_admin_requests
                     SET resolved_by = ?, time_resolved = ?
                     WHERE task_id = ? AND request_type = ?",
-                    array($current_user['user_id'], date(U), $_POST['task_id'], 1));
+                    array($current_user['user_id'], date('U'), $_POST['task_id'], 1));
       };
 
       $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
@@ -458,10 +471,12 @@ if ($_POST['action'] == 'newtask'
 
    $item_summary = stripslashes($item_summary);
 
-   $to = $notify->Address($old_task_info['task_id']);
-   $msg = $notify->Create('4', $old_task_info['task_id']);
-   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+   $notify->Create('4', $task_details['task_id']);
+
+//    $to = $notify->Address($old_task_info['task_id']);
+//    $msg = $notify->Create('4', $old_task_info['task_id']);
+//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // If there's an admin request related to this, close it
    if ($fs->AdminRequestCheck(2, $_GET['task_id']) == '1')
@@ -469,7 +484,7 @@ if ($_POST['action'] == 'newtask'
       $db->Query("UPDATE flyspray_admin_requests
                   SET resolved_by = ?, time_resolved = ?
                   WHERE task_id = ? AND request_type = ?",
-                  array($current_user['user_id'], date(U), $_GET['task_id'], 2));
+                  array($current_user['user_id'], date('U'), $_GET['task_id'], 2));
    }
 
    $fs->logEvent($_GET['task_id'], 13);
@@ -491,16 +506,14 @@ if ($_POST['action'] == 'newtask'
    {
       $comment = $_POST['comment_text'];
 
-      $insert = $db->Query("INSERT INTO flyspray_comments
-                           (task_id, date_added, user_id, comment_text) VALUES
-                           ( ?, ?, ?, ? )",
-                           array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
+      $db->Query("INSERT INTO flyspray_comments
+                  (task_id, date_added, user_id, comment_text)
+                  VALUES ( ?, ?, ?, ? )",
+                  array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
 
+      // Send the notification
+      $notify->Create('7', $_POST['task_id']);
 
-      $to  = $notify->Address($_POST['task_id']);
-      $msg = $notify->Create('7', $_POST['task_id']);
-      $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-      $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
       $row = $db->FetchRow($db->Query("SELECT comment_id FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));
       $fs->logEvent($_POST['task_id'], 4, $row['comment_id']);
@@ -547,7 +560,7 @@ if ($_POST['action'] == 'newtask'
       } else
       {
          // Delete registration codes older than 24 hours
-         $now = date(U);
+         $now = date('U');
          $yesterday = $now - '86400';
          $remove = $db->Query("DELETE FROM flyspray_registrations WHERE reg_time < ?",
                                 array($yesterday));
@@ -914,39 +927,18 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'smtp_server'", array($_POST['smtp_server']));
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'smtp_user'", array($_POST['smtp_user']));
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'smtp_pass'", array($_POST['smtp_pass']));
-   // This is an overly complex way to ensure that we always get the right amount of posted
-   // results from the assigned_groups preference
-   $get_groups = $db->Query("SELECT * FROM flyspray_groups ORDER BY group_id ASC");
-   $group_number = '1';
 
-   while ($row = $db->FetchArray($get_groups))
-   {
-      $posted_group = "assigned_groups" . $group_number;
-
-      if (!isset($first_done))
-      {
-         $assigned_groups = $_POST[$posted_group];
-      } else
-      {
-         $assigned_groups = $assigned_groups . " $_POST[$posted_group]";
-      }
-      $first_done = '1';
-      $group_number ++;
-   }
+   // Process the list of groups into a format we can store
+   foreach ($_POST['assigned_groups'] as $group_id => $val)
+      $assigned_groups .= $group_id . ' ';
 
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
 
 
-   // Process the list of visible columns
-   $columnnames = array('id','project','category','tasktype','severity','priority','summary','dateopened','status','openedby','assignedto','lastedit','reportedin','dueversion','comments','attachments','progress');
-   foreach ($columnnames AS $column)
-   {
-      $colname = "visible_columns".$column;
-      if($_POST[$colname])
-      {
-         $columnlist .= "$column ";
-      }
-   }
+   // Process the list of visible columns into format we can store
+   foreach ($_POST['visible_columns'] as $column => $val)
+      $columnlist .= $column . ' ';
+
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'visible_columns'", array($columnlist));
 
 
@@ -1111,17 +1103,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['emptytitle']}</em></p></div>";
    }
 
-   // Process the list of visible columns
-   $columnnames = array('id','project','category','tasktype','severity','priority','summary','dateopened','status','openedby','assignedto','lastedit','reportedin','dueversion','comments','attachments','progress');
-   foreach ($columnnames AS $column)
-   {
-      $colname = "visible_columns".$column;
-
-      if($_POST[$colname])
-      {
-         $columnlist .= "$column ";
-      }
-   }
+   // Process the list of visible columns into a format we can store
+   foreach ($_POST['visible_columns'] as $column => $val)
+      $columnlist .= $column . ' ';
 
    $update = $db->Query("UPDATE flyspray_projects SET visible_columns = ? WHERE project_id = ?", array($columnlist, $_POST['project_id']));
 
@@ -1171,10 +1155,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                        $now)
                                  );
 
-         $to  = $notify->Address($_POST['task_id']);
-         $msg = $notify->Create('8', $_POST['task_id']);
-         $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+         $notify->Create('8', $_POST['task_id']);
+
+//          $to  = $notify->Address($_POST['task_id']);
+//          $msg = $notify->Create('8', $_POST['task_id']);
+//          $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//          $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
          $row = $db->FetchRow($db->Query("SELECT attachment_id FROM flyspray_attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
          $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
@@ -1831,7 +1817,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           && ($permissions['manage_project'] == '1'
               OR $permissions['is_admin'] == '1')) {
 
-  $now = date(U);
+  $now = date('U');
 
   $how_often = $_POST['timeamount1'] * $_POST['timetype1'];
   //echo "how often = $how_often<br>";
@@ -2000,7 +1986,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
    // Call the functions to create the address arrays, and send notifications
    $to  = $notify->SpecificAddresses($pms);
-   $msg = $notify->Create('12', $_POST['task_id']);
+   $msg = $notify->GenerateMsg('12', $_POST['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
@@ -2057,7 +2043,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
    // Call the functions to create the address arrays, and send notifications
    $to  = $notify->SpecificAddresses($pms);
-   $msg = $notify->Create('12', $_POST['task_id']);
+   $msg = $notify->GenerateMsg('12', $_POST['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
@@ -2086,17 +2072,19 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $db->Query("UPDATE flyspray_admin_requests
                SET resolved_by = ?, time_resolved = ?
                WHERE request_id = ?",
-               array($current_user['user_id'], date(U), $_GET['req_id']));
+               array($current_user['user_id'], date('U'), $_GET['req_id']));
 
 
    // Log this event to the task's history
    $fs->logEvent($req_details['task_id'], 28, $current_user['user_id']);
 
    // Send notifications
-   $to  = $notify->Address($req_details['task_id']);
-   $msg = $notify->Create('13', $req_details['task_id']);
-   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+   $notify->Create('13', $req_details['task_id']);
+
+//    $to  = $notify->Address($req_details['task_id']);
+//    $msg = $notify->Create('13', $req_details['task_id']);
+//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // Redirect
    $_SESSION['SUCCESS'] = $modify_text['pmreqdenied'];
@@ -2130,11 +2118,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                               array($_POST['dep_task_id'])
                             );
 
+   $notify->Create('5', $_POST['task_id']);
 
-   $to  = $notify->Address($_POST['task_id']);
-   $msg = $notify->Create('5', $_POST['task_id']);
-   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+//    $to  = $notify->Address($_POST['task_id']);
+//    $msg = $notify->Create('5', $_POST['task_id']);
+//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
 
    if (!$db->CountRows($check_dep)
@@ -2187,10 +2176,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                           WHERE depend_id = ?",
                                           array($_GET['depend_id'])));
 
-   $to  = $notify->Address($dep_info['task_id']);
-   $msg = $notify->Create('6', $dep_info['task_id']);
-   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+   $notify->Create('6', $dep_info['task_id']);
+
+//    $to  = $notify->Address($dep_info['task_id']);
+//    $msg = $notify->Create('6', $dep_info['task_id']);
+//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // Log this event to the task's history
    $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
@@ -2267,44 +2258,44 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Change the user's password //
 ////////////////////////////////
 
-} elseif ($_POST['action'] == 'chpass') {
-
-  // Check that the user submitted both the fields, and they are the same
-  if ($_POST['pass1'] != ''
-      && $_POST['pass2'] != ''
-      && $_POST['magic_url'] != ''
-      && $_POST['pass2'] == $_POST['pass2']) {
-
-  // Get the user's details from the magic url
-  $user_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_users
+} elseif ($_POST['action'] == 'chpass')
+{
+   // Check that the user submitted both the fields, and they are the same
+   if ($_POST['pass1'] != ''
+     && $_POST['pass2'] != ''
+     && $_POST['magic_url'] != ''
+     && $_POST['pass2'] == $_POST['pass2'])
+   {
+      // Get the user's details from the magic url
+      $user_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_users
                                                   WHERE magic_url = ?",
                                                   array($_POST['magic_url'])
                                                 )
-                                    );
+                                     );
 
-  // Encrypt the new password
-  $new_pass_hash = $fs->cryptPassword($_POST['pass1']);
+      // Encrypt the new password
+      $new_pass_hash = $fs->cryptPassword($_POST['pass1']);
 
-  // Change the password and clear the magic_url field
-  $update = $db->Query("UPDATE flyspray_users SET
-                          user_pass = ?,
-                          magic_url = ''
-                          WHERE magic_url = ?",
-                          array($new_pass_hash, $_POST['magic_url'])
-                        );
+      // Change the password and clear the magic_url field
+      $update = $db->Query("UPDATE flyspray_users SET
+                            user_pass = ?,
+                            magic_url = ''
+                            WHERE magic_url = ?",
+                            array($new_pass_hash, $_POST['magic_url'])
+                          );
 
-  // Let the user know what just happened
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
-    echo "<p>{$modify_text['loginbelow']}</p></div>";
+      // Let the user know what just happened
+      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
+      echo "<p>{$modify_text['loginbelow']}</p></div>";
 
-  // If the fields were submitted incorrectly, show an error
-  } else {
+   // If the fields were submitted incorrectly, show an error
+   } else
+   {
+      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['erroronform']}</em></p>";
+      echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['erroronform']}</em></p>";
-    echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
-
-  // End of checking fields were submitted correctly
-  };
+   // End of checking fields were submitted correctly
+   }
 
 // End of changing the user's password
 
@@ -2314,14 +2305,15 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 ////////////////////////////////////
 
 } elseif ($_GET['action'] == 'makeprivate'
-  && $permissions['manage_project'] == '1') {
+  && $permissions['manage_project'] == '1')
+{
+   $update = $db->Query("UPDATE flyspray_tasks
+                         SET mark_private = '1'
+                         WHERE task_id = ?",
+                         array($_GET['id'])
+                       );
 
-  $update = $db->Query("UPDATE flyspray_tasks
-                          SET mark_private = '1'
-                          WHERE task_id = ?",
-                          array($_GET['id'])
-                         );
-
+   // Log to task history
    $fs->logEvent($_GET['id'], 26);
 
    $_SESSION['SUCCESS'] = $modify_text['taskmadeprivate'];
@@ -2335,14 +2327,15 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 ///////////////////////////////////
 
 } elseif ($_GET['action'] == 'makepublic'
-  && $permissions['manage_project'] == '1') {
+  && $permissions['manage_project'] == '1')
+{
+   $update = $db->Query("UPDATE flyspray_tasks
+                         SET mark_private = '0'
+                         WHERE task_id = ?",
+                         array($_GET['id'])
+                       );
 
-  $update = $db->Query("UPDATE flyspray_tasks
-                          SET mark_private = '0'
-                          WHERE task_id = ?",
-                          array($_GET['id'])
-                         );
-
+   // Log to task history
    $fs->logEvent($_GET['id'], 27);
 
    $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];

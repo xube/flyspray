@@ -182,12 +182,12 @@ if ($permissions['manage_project'] == '1')
                <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
                <td class="admintext">
                <?php // Set the selectable column names
-               $columnnames = array('id','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
+               $columnnames = array('id','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','duedate','comments','attachments','progress');
                foreach ($columnnames AS $column) {
                   if (ereg($column, $project_prefs['visible_columns']) ) {
-                     echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\" />$index_text[$column]<br />\n";
+                     echo "<input type=\"checkbox\" name=\"visible_columns[{$column}]\" value=\"1\" checked=\"checked\" />$index_text[$column]<br />\n";
                   } else {
-                     echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" />$index_text[$column]<br />\n";
+                     echo "<input type=\"checkbox\" name=\"visible_columns[{$column}]\" value=\"1\" />$index_text[$column]<br />\n";
                   };
                };
                   ?>

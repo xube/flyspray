@@ -49,3 +49,7 @@ VALUES
 ('', 'smtp_server', '', 'Remote mail server'),
 ('', 'smtp_user', '', 'Username to access the remote mail server'),
 ('', 'smtp_pass', '', 'Password to access the remote mail server');
+
+# Added 5 April 05
+
+ALTER TABLE `flyspray_tasks` ADD `due_date` VARCHAR( 10 ) NOT NULL ;

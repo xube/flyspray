@@ -404,6 +404,21 @@ if ($task_details['project_is_active'] == '1'
                   </td>
                </tr>
                <tr>
+                  <td><label for="duedate"><?php echo $details_text['duedate'];?></label></td>
+                  <td id="duedate">
+                  <input id="due_date" type="text" name="due_date" size="10" value="<?php if (!empty($task_details['due_date']))echo date("d-M-Y", $task_details['due_date']);?>" readonly="1" />
+                  <script type="text/javascript">
+                  Calendar.setup(
+                  {
+                     inputField  : "due_date",        // ID of the input field
+                     ifFormat    : "%d-%b-%Y",        // the date format
+                     button      : "due_date"         // ID of the button
+                  }
+                  );
+                  </script>
+                  </td>
+               </tr>
+               <tr>
                   <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
                   <td>
                   <select id="percent" name="percent_complete">
@@ -519,7 +534,7 @@ if ($task_details['project_is_active'] == '1'
          <div id="fineprint">
          <?php
          echo $details_text['attachedtoproject'] . '&mdash; <a href="?project=' .  $task_details['attached_to_project'] . '">' . stripslashes($task_details['project_title']) . '</a><br />';
-         // Get the user details of the person who opened this item
+         // Get the user details of the person who opened this task
          if ($task_details['opened_by'])
          {
             $get_user_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
@@ -597,10 +612,6 @@ if ($task_details['project_is_active'] == '1'
                      echo $details_text['noone'];
                   } else
                   {
-                     // find out the username
-//                      $getusername = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
-//                      list ($user_name, $real_name) = $db->FetchArray($getusername);
-//                      echo "$real_name ($user_name)";
                      echo stripslashes($task_details['assigned_to_name']);
                   }
                   ?>
@@ -638,6 +649,20 @@ if ($task_details['project_is_active'] == '1'
                   if (isset($task_details['due_in_version_name']))
                   {
                      echo $task_details['due_in_version_name'];
+                  } else
+                  {
+                     echo $details_text['undecided'];
+                  }
+                  ?>
+                  </td>
+               </tr>
+               <tr>
+                  <td><label for="duedate"><?php echo $details_text['duedate'];?></label></td>
+                  <td id="duedate">
+                  <?php
+                  if (!empty($task_details['due_date']))
+                  {
+                     echo $fs->formatDate($task_details['due_date'], false);
                   } else
                   {
                      echo $details_text['undecided'];
@@ -1334,7 +1359,7 @@ if (@$permissions['manage_project'] == '1')
 
          <?php
          }
-         echo "<p><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['real_name']} ({$row['user_name']})</a></p>";
+         echo '<p><a href="?do=admin&amp;area=users&amp;id=' . $row['user_id'] . '">' . stripslashes($row['real_name']) . ' ' . '(' . $row['user_name'] . ')</a></p>';
       }
 
       if (@$permissions['manage_project'] == '1')
@@ -1624,6 +1649,23 @@ if (@$permissions['view_history'] == '1')
                         WHERE version_id = ?", array($db->emptyToZero($newvalue))));
                     };
                     break;
+                 case 'due_date':
+                     $field = $details_text['duedate'];
+                     if (empty($oldvalue))
+                     {
+                        $oldvalue = $details_text['undecided'];
+                     } else
+                     {
+                        $oldvalue = $fs->FormatDate($oldvalue, false);
+                     }
+                     if (empty($newvalue))
+                     {
+                        $newvalue = $details_text['undecided'];
+                     } else
+                     {
+                        $newvalue = $fs->FormatDate($newvalue, false);
+                     }
+                     break;
                 case 'percent_complete':
                     $field = $details_text['percentcomplete'];
                     $oldvalue .= '%';

@@ -192,10 +192,10 @@ if ($permissions['is_admin'] == '1')
             {
                if (ereg($row['group_id'], $flyspray_prefs['assigned_groups']) )
                {
-                  echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" checked=\"checked\" />{$row['group_name']}<br />\n";
+                  echo "<input type=\"checkbox\" name=\"assigned_groups[{$row['group_id']}]\" value=\"1\" checked=\"checked\" />{$row['group_name']}<br />\n";
                } else
                {
-                  echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" />{$row['group_name']}<br />\n";
+                  echo "<input type=\"checkbox\" name=\"assigned_groups[{$row['group_id']}]\" value=\"1\" />{$row['group_name']}<br />\n";
                }
             }
             ?>
@@ -344,15 +344,15 @@ if ($permissions['is_admin'] == '1')
             <td><label id="viscollabel"><?php echo $admin_text['visiblecolumns'];?></label></td>
             <td class="admintext">
             <?php // Set the selectable column names
-            $columnnames = array('id','project','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
+            $columnnames = array('id','project','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','duedate','comments','attachments','progress');
             foreach ($columnnames AS $column)
             {
                if (ereg($column, $flyspray_prefs['visible_columns']) )
                {
-                  echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\" />$index_text[$column]<br />\n";
+                  echo "<input type=\"checkbox\" name=\"visible_columns[{$column}]\" value=\"1\" checked=\"checked\" />$index_text[$column]<br />\n";
                } else
                {
-                  echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" />$index_text[$column]<br />\n";
+                  echo "<input type=\"checkbox\" name=\"visible_columns[{$column}]\" value=\"1\" />$index_text[$column]<br />\n";
                }
             }
             ?>

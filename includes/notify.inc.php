@@ -27,6 +27,20 @@ function debug_print($message){
 // Start of the Notifications class
 class Notifications {
 
+   // This function is the wrapper for the others in this class
+   // It addresses, creates and stores/sends the notifications
+   function Create ( $type, $task_id )
+   {
+      $to = $this->Address($task_id);
+      $msg = $this->GenerateMsg($type, $task_id);
+      $this->SendEmail($to[0], $msg[0], $msg[1]);
+      $this->StoreJabber($to[1], $msg[0], $msg[1]);
+
+   // End of Create() function
+   }
+
+   // This function stores pending jabber notifications in the database
+   // They are sent by SendJabber(), below
    function StoreJabber( $to, $subject, $body )
    {
       // not sure all of these are needed any longer
@@ -82,6 +96,9 @@ class Notifications {
       return TRUE;
    }
 
+   // This function is called by scripts/schedule.php to periodically
+   // send pending Jabber notifications out using class.jabber.php,
+   // which is too slow to be called inline to Flyspray's scripts.
    function SendJabber()
    {
       global $db;
@@ -303,7 +320,7 @@ class Notifications {
    }
 
 
-   function Create($type, $task_id)
+   function GenerateMsg($type, $task_id)
    {
       global $db;
       global $fs;
@@ -333,6 +350,7 @@ class Notifications {
          |11. Confirmation code        |
          |12. PM request               |
          |13. PM denied request        |
+         |14. New assignee             |
          -------------------------------
       */
       ///////////////////////////////////////////////////////////////
@@ -386,6 +404,7 @@ class Notifications {
          $body .= $details_text['priority'] . ' - ' . $task_details['priority_name'] . "\n";
          $body .= $details_text['reportedversion'] . ' - ' . $task_details['reported_version_name'] . "\n";
          $body .= $details_text['dueinversion'] . ' - ' . $task_details['due_in_version_name'] . "\n";
+         $body .= $details_text['duedate'] . ' - ' . $fs->FormatDate($task_details['due_date'], false) . "\n";
          $body .= $details_text['percentcomplete'] . ' - ' . $task_details['percent_complete'] . "\n";
          $body .= $details_text['details'] . ' - ' . stripslashes($task_details['detailed_desc']) . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
@@ -550,7 +569,7 @@ class Notifications {
          $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
-         $body .= $task_details['assigned_to_name'] . $notify_text['takenownership'] . "\n\n";
+         $body .= $task_details['assigned_to_name'] . ' ' . $notify_text['takenownership'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
@@ -603,6 +622,24 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pmdeny'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
+         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['moreinfo'] . "\n";
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $notify_text['disclaimer'];
+
+         return array($subject, $body);
+      }
+
+      //////////////////
+      // New assignee //
+      //////////////////
+      if ($type == '14')
+      {
+         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['assignedtoyou'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";

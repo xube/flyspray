@@ -256,6 +256,21 @@ if ($permissions['open_new_tasks'] == '1'
             </select>
             </td>
          </tr>
+         <tr>
+            <td><label for="duedate"><?php echo $newtask_text['duedate'];?></label></td>
+            <td id="duedate">
+            <input id="due_date" type="text" name="due_date" size="10" value="" readonly="1" <?php if ($permissions['modify_all_tasks'] != "1") { echo " disabled=\"disabled\"";};?> />
+            <script type="text/javascript">
+            Calendar.setup(
+            {
+               inputField  : "due_date",         // ID of the input field
+               ifFormat    : "%d-%b-%Y",    // the date format
+               button      : "due_date"       // ID of the button
+            }
+            );
+            </script>
+            </td>
+         </tr>
       </table>
    </div>
 

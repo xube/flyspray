@@ -215,7 +215,7 @@ function GetTaskDetails($task_id)
             continue;
          } else
          {
-            echo "<optgroup label=\"{$group_details['group_name']}\">\n";
+            echo '<optgroup label="' . stripslashes($group_details['group_name']) . "\">\n";
 
             $user_query = $db->Query("SELECT * FROM flyspray_users_in_groups uig
                                         LEFT JOIN flyspray_users u on uig.user_id = u.user_id
@@ -228,10 +228,10 @@ function GetTaskDetails($task_id)
             {
                if ($current == $row['user_id'])
                {
-                  echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
+                  echo '<option value="' . $row['user_id'] . '" SELECTED>' . stripslashes($row['real_name']) . "</option>\n";
                } else
                {
-                  echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
+                  echo '<option value="' . $row['user_id'] . '">' . stripslashes($row['real_name']) . "</option>\n";
                }
             }
 
@@ -264,10 +264,10 @@ function GetTaskDetails($task_id)
             {
                if ($current == $row['user_id'])
                {
-                  echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
+                  echo '<option value="' . $row['user_id'] . '" SELECTED>' . stripslashes($row['real_name']) . "</option>\n";
                } else
                {
-                  echo "<option value=\"{$row['user_id']}\">{$row['real_name']}</option>\n";
+                  echo '<option value="' . $row['user_id'] . '">' . stripslashes($row['real_name']) . "</option>\n";
                }
             }
 

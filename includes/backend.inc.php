@@ -117,10 +117,12 @@ class Backend {
             $fs->logEvent($task_details['task_id'], 19, $user_id, $task_details['assigned_to']);
 
             // Get the notifications going
-            $to  = $notify->Address($task_id);
-            $msg = $notify->Create('10', $task_id);
-            $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-            $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+            $notify->Create('10', $task_id);
+
+//             $to  = $notify->Address($task_id);
+//             $msg = $notify->Create('10', $task_id);
+//             $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//             $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
          // End of permission check
          }

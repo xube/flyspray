@@ -31,7 +31,7 @@ $index_text = array (
 // Added in version 0.9.6
 'closed'                   =>    'Closed',
 'dueanyversion'            =>    'Due In Any Version',
-'dueversion'               =>    'Due In',
+'dueversion'               =>    'Due In Version',          // Changed in version 0.9.8
 'project'                  =>    'Project',
 'category'                 =>    'Category',
 'lastedit'                 =>    'Last Edited',
@@ -51,6 +51,8 @@ $index_text = array (
 'watchtasks'               =>    'Watch selected tasks',
 'stopwatching'             =>    'Stop watching selected tasks',
 'assigntome'               =>    'Assign selected tasks to me',
+'dueby'                    =>    'Due by',
+'duedate'                  =>    'Due Date',
 
 
 );

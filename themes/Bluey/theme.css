@@ -319,10 +319,22 @@ div#search p {
    margin            : 0px;
 }
 
+div#search span#date_d {
+   min-width            : 20px;
+   margin               : 0px 5px 0px 5px;
+   padding              : 0px 5px 0px 5px;
+   display              : inline;
+   background-color     : #eef7ff;
+   color                : #03008f;
+   border               : 1px ridge #000000;
+   margin               : 2px;
+   font-size            : 100%;
+}
+
 div#search select {
    background-color     : #eef7ff;
    color                : #03008f;
-   border               : 1px rigde black;
+   border               : 1px ridge black;
 }
 
 div#search em {

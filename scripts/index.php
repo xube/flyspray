@@ -54,6 +54,8 @@ foreach ( $orderby as $key => $val )
       break;
       case "due": $orderby[$key] = 'lvc.list_position';
       break;
+      case "duedate": $orderby[$key] = 'due_date';
+      break;
       case "prog": $orderby[$key] = 'percent_complete';
       break;
       case "lastedit": $orderby[$key] = 'last_edited_time';
@@ -231,9 +233,16 @@ if (isset($_GET['status']) && $_GET['status'] == "all") {
   $sql_params[] = '1';
 }
 // The default due in version
-if (isset($_GET['due']) && is_numeric($_GET['due'])) {
-  $where[] = "closedby_version = ?";
-  $sql_params[] = $_GET['due'];
+if (isset($_GET['due']) && is_numeric($_GET['due']))
+{
+   $where[] = "closedby_version = ?";
+   $sql_params[] = $_GET['due'];
+}
+// The due by date
+if (isset($_GET['date']) && !empty($_GET['date']))
+{
+   $where[] = "(due_date < ? AND due_date <> '0' AND due_date <> '')";
+   $sql_params[] = strtotime("{$_GET['date']} +24 hours");
 }
 // The default search string
 if (isset($_GET['string']) && $_GET['string']) {
@@ -431,6 +440,20 @@ if ($project_prefs['project_is_active'] == '1'
       <option value="closed" <?php if(isset($_GET['status']) && $_GET['status'] == "closed") { echo "SELECTED";}?>><?php echo $index_text['closed'];?></option>
     </select>
 
+   <span id="date_d"><?php echo $index_text['dueby'] . ' ';if (!empty($_GET['date']))echo $_GET['date']?></span>
+   <input id="due_date" type="hidden" name="date" size="16" value="<?php if (!empty($_GET['date']))echo $_GET['date'];?>" />
+   <script type="text/javascript">
+   Calendar.setup(
+   {
+      inputField  : "due_date",         // ID of the input field
+      ifFormat    : "%d-%b-%Y",    // the date format
+      displayArea : "date_d",       // The display field
+      daFormat    : "Due by %d-%b-%Y",
+      button      : "date_d"       // ID of the button
+   }
+   );
+   </script>
+
     <select name="perpage">
       <option value="10" <?php if ($perpage == "10") { echo "selected=\"selected\"";}?>>10</option>
       <option value="20" <?php if ($perpage == "20") { echo "selected=\"selected\"";}?>>20</option>
@@ -549,6 +572,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
 {
    global $column_visible;
+   global $fs;
 
    if($column_visible[$colname])
    {
@@ -558,6 +582,17 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
          $cellvalue = str_replace("&", "&amp;", $cellvalue);
          $cellvalue = str_replace("<", "&lt;", $cellvalue);
          $cellvalue = stripslashes($cellvalue);
+      }
+
+      if ($colname == 'duedate')
+      {
+         if (!empty($cellvalue))
+         {
+            $cellvalue = $fs->FormatDate($cellvalue, false);
+         } else
+         {
+            $cellvalue = '';
+         }
       }
 
        // Check if we're meant to force this cell not to wrap
@@ -612,6 +647,7 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
       list_heading('lastedit', 'lastedit');
       list_heading('reportedin','reportedin');
       list_heading('dueversion','due');
+      list_heading('duedate','duedate');
       list_heading('comments','','', "themes/{$project_prefs['theme_style']}/comment.png");
       list_heading('attachments','','', "themes/{$project_prefs['theme_style']}/attachment.png");
       list_heading('progress','prog');
@@ -761,6 +797,7 @@ ORDER BY
       list_cell($task_details['task_id'], "lastedit",$last_edited_time);
       list_cell($task_details['task_id'], "reportedin",$task_details['product_version']);
       list_cell($task_details['task_id'], "dueversion",$task_details['closedby_version'],1);
+      list_cell($task_details['task_id'], "duedate",$task_details['due_date'],1);
       list_cell($task_details['task_id'], "comments",$comments);
       list_cell($task_details['task_id'], "attachments",$attachments);
       list_cell($task_details['task_id'], "progress",$fs->ShowImg("themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png", $task_details['percent_complete'] . '% ' . $index_text['complete']));

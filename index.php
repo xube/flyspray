@@ -131,7 +131,8 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
       $extraurl = '&amp;string=' . $_GET['string'] . '&amp;type=' . $_GET['type'] . '&amp;sev=' . $_GET['sev'] . '&amp;dev=' . $_GET['dev']
                   . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status']
                   . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort']
-                  . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage'];
+                  . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage']
+                  . '&amp;date=' . $_GET['date'];
 
       $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project']
                                      . '&amp;pagenum=' . $_GET['pagenum'] . $extraurl;
