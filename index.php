@@ -142,12 +142,13 @@ if ($project_prefs['show_logo'] == '1') {
 ////////////////////////////////////////////////
 
 // If the user has the right name cookies
-if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
-
-    // Check to see if the user has been trying to hack their cookies to perform sql-injection
-    if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project']))) {
+if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
+{
+   // Check to see if the user has been trying to hack their cookies to perform sql-injection
+   if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project'])))
+   {
       die("Stop hacking your cookies, you naughty fellow!");
-    };
+   }
 
    // Fetch info on the current user
    $current_user = $fs->getUserDetails($_COOKIE['flyspray_userid']);

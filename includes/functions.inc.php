@@ -524,6 +524,20 @@ function GetTaskDetails($task_id) {
    // End of formatText function
    }
 
+   // Crypt a password with the method set in the configfile
+   function cryptPassword($password){
+       global $conf_array;
+       $pwcrypt = $conf_array['general']['passwdcrypt'];
+
+       if(strtolower($pwcrypt) == 'sha1'){
+           return sha1($password);
+       }elseif(strtolower($pwcrypt) == 'md5'){
+           return md5($password);
+       }
+       // use random salted crypt by default
+       return crypt($password, chr(rand(21,255)).chr(rand(21,255)) );
+   }
+
    // This function checks if a user provided the right credentials
    function checkLogin($username, $password)
    {
@@ -539,8 +553,24 @@ function GetTaskDetails($task_id) {
 
       $auth_details = $db->FetchArray($result);
 
-      // Encrypt the password, and compare it to the one in the database
-      if (crypt($password, '4t6dcHiefIkeYcn48B') == $auth_details['user_pass']
+      //encrypt the password with the method used in the db
+      switch (strlen($auth_details['user_pass'])) {
+        case 40:
+          $password = sha1($password);
+          break;
+        case 32:
+          $password = md5($password);
+          break;
+        case 13;
+          $password = crypt($password, $auth_details['user_pass']); //using the salt from db
+          break;
+        default:
+          //unknown encryption!?
+          return false;
+      }
+
+      // Compare the crypted password to the one in the database
+      if ($password == $auth_details['user_pass']
          && $auth_details['account_enabled'] == '1'
          && $auth_details['group_open'] == '1')
       {

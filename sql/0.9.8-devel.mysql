@@ -1,0 +1,1 @@
+alter table flyspray_users change user_pass user_pass varchar(40);

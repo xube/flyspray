@@ -597,7 +597,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
          if ($reg_details['confirm_code'] == $_POST['confirmation_code'])
          {
             // Encrypt their password
-            $pass_hash = crypt("{$_POST['user_pass']}", '4t6dcHiefIkeYcn48B');
+            $pass_hash = $fs->cryptPassword($_POST['user_pass']);
 
             // Add the user to the database
             $add_user = $db->Query("INSERT INTO flyspray_users
@@ -684,7 +684,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       // If the passwords matched, add the user
       if (($_POST['user_pass'] == $_POST['user_pass2']) && $_POST['user_pass'] != '') {
 
-        $pass_hash = crypt("{$_POST['user_pass']}", '4t6dcHiefIkeYcn48B');
+        $pass_hash = $fs->cryptPassword($_POST['user_pass']);
 
         if ($permissions['is_admin'] == '1') {
           $group_in = $_POST['group_in'];
@@ -1122,7 +1122,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           //check that the entered passwords match
           if ($_POST['changepass'] == $_POST['confirmpass']) {
             $new_pass = $_POST['changepass'];
-            $new_pass_hash = crypt("$new_pass", '4t6dcHiefIkeYcn48B');
+            $new_pass_hash = $fs->cryptPassword($new_pass);
             $update_pass = $db->Query("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_POST['user_id']));
 
             // If the user is changing their password, better update their cookie hash
@@ -2081,7 +2081,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                     );
 
   // Encrypt the new password
-  $new_pass_hash = crypt($_POST['pass1'], '4t6dcHiefIkeYcn48B');
+  $new_pass_hash = $fs->cryptPassword($_POST['pass1']);
 
   // Change the password and clear the magic_url field
   $update = $db->Query("UPDATE flyspray_users SET

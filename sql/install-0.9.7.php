@@ -218,6 +218,7 @@ basedir = "' . $_SESSION['basedir'] . '"      ; Location of your Flyspray instal
 cookiesalt = "' . $cookiesalt . '"            ; Randomisation value for cookie encoding
 adodbpath = "' . $_SESSION['adodbpath']. '"   ; Path to the main ADODB include file
 output_buffering = "on"                       ; Available options: "on" or "gzip"
+passwdcrypt = "md5"                           ; Available options: "crypt", "md5", "sha1"
 
 [database]
 dbtype = "' . $_SESSION['dbtype'] . '"        ; Type of database ("mysql" or "pgsql" are currently supported)
