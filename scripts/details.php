@@ -871,7 +871,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
   <?php
     $get_reminders = $fs->dbQuery("SELECT * FROM flyspray_reminders WHERE task_id = ?", array($_GET['id']));
     while ($row = $fs->dbFetchArray($get_reminders)) {
-      $get_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
+      $get_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($row['to_user_id']));
       while ($subrow = $fs->dbFetchArray($get_username)) {
 
 // If the user can modify jobs, then show them a form to remove a notified user
@@ -910,7 +910,7 @@ if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
   <input type="hidden" name="action" value="addreminder">
   <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
   <em><?php echo $details_text['remindthisuser'];?></em>
-  <select class="adminlist" name="user_id">
+  <select class="adminlist" name="to_user_id">
     <?php
     // Get list of users
     $fs->listUsers();
@@ -921,7 +921,8 @@ if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
 
    <em><?php echo $details_text['thisoften'];?></em>
    <input type="admintext" name="timeamount1" size="3" maxlength="3">
-   <select class="adminlist" name="timeamount1">
+   
+   <select class="adminlist" name="timetype1">
      <option value="3600"><?php echo $details_text['hours'];?></option>
      <option value="86400"><?php echo $details_text['days'];?></option>
      <option value="604800"><?php echo $details_text['weeks'];?></option>
@@ -931,11 +932,13 @@ if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
 
   <em><?php echo $details_text['startafter'];?></em>
   <input type="admintext" name="timeamount2" size="3" maxlength="3">
+  
   <select class="adminlist" name="timetype2">
      <option value="3600"><?php echo $details_text['hours'];?></option>
      <option value="86400"><?php echo $details_text['days'];?></option>
      <option value="604800"><?php echo $details_text['weeks'];?></option>
   </select>
+  
   <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>">
   </div>
   </form>
