@@ -17,6 +17,32 @@ function get_language_pack($lang, $module) {
     $$new_var_name = array_merge($new_var['en'], $new_var[$lang]);
 }
 
+/** Test to see if user resubmitted a form.
+  Checks only newtask and addcomment actions.
+  @return   true if user has submitted the same action within less than
+	    6 hours, false otherwise
+*/
+function requestDuplicated() {
+  // garbage collection -- clean entries older than 6 hrs
+  $now = time();
+  if (!empty($_SESSION['requests_hash'])) {
+    foreach ($_SESSION['requests_hash'] as $key => $val) {
+      if ($val < $now-6*60*60) {
+	unset($_SESSION['requests_hash'][$key]);
+      }
+    }
+  }
+  $requestarray = array_merge(array_keys($_POST), array_values($_POST));
+  if ($_POST['do']=='modify'
+	and preg_match('/^newtask|addcomment$/',$_POST['action'])) {
+    $currentrequest = md5(join(':', $requestarray));
+    if (!empty($_SESSION['requests_hash'][$currentrequest])) {
+      return true;
+    }
+  }
+  $_SESSION['requests_hash'][$currentrequest] = time();
+  return false;
+}
 
 class Flyspray {
     var $version = '0.9.6 (devel)';
