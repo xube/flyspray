@@ -76,7 +76,6 @@ if ($_GET['getfile']) {
   <link rel="icon" href="./favicon.ico" type="image/png" />
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
   <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
-  <link href="calendar/styles/calendar.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="functions.js"></script>
   <script type="text/javascript" src="styleswitcher.js"></script>
   <style type="text/css">@import url(jscalendar/calendar-win2k-1.css);</style>

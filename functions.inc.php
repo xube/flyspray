@@ -263,8 +263,11 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
    // This function sends out basic messages at specified times.
    function SendBasicNotification($to, $subject, $message) {
 
-        if (empty($to))
+        if (empty($to) OR $to == $_COOKIE['flyspray_userid'])
             return;
+
+     // Check that we're not trying to send a notification to the user who triggered it
+     //if ($to != $current_user['user_id']) {
 
        $flyspray_prefs = $this->GetGlobalPrefs();
 
@@ -307,6 +310,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
                         $to = $email_address;
                         $this->SendEmail($to, $subject, $message);
                 };
+                
         // End of basic notification function
    }
 
@@ -329,7 +333,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
         while ($row = $this->dbFetchArray($get_users)) {
            
            // Check for current user
-           if ($row['user_id'] != $_COOKIE['flyspray_userid'] &&  $row['user_id'] != $this_task['assigned_to']) {
+           if ($row['user_id'] != $current_user['user_id'] &&  $row['user_id'] != $this_task['assigned_to']) {
            
               $get_details = $this->dbQuery("SELECT notify_type, jabber_id, email_address
                       FROM flyspray_users

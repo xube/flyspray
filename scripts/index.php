@@ -175,7 +175,7 @@ if ($_GET['status'] == "all") {
   $where[] = "is_closed = ?";
   $sql_params[] = "1";
 } elseif (is_numeric($_GET['status'])) {
-  $where[]	= "item_status = ?";
+  $where[]	= "item_status = ? AND is_closed <> '1'";
   $sql_params[] = $_GET['status'];
 } else {
   $where[] = "is_closed != ?";

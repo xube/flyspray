@@ -362,10 +362,12 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
 
     };
     
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}\">";
+    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskupdated']}</em></p>";
     echo "<p>{$modify_text['waitwhiletransfer']}</p></div>";
-
+    sleep(2);
+    header("Location: index.php?do=details&id=" . $_POST['task_id']);
+    
     // End of checking if this task was modified while we were editing it.
     };
 
@@ -544,15 +546,9 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     (task_id, date_added, user_id, comment_text) VALUES
     ( ?, ?, ?, ? )",
     array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
-
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-
+    
     $getdetails = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id']));
     $task_details = $fs->dbFetchArray($getdetails);
-
-    //$get_jabber_id = $fs->dbQuery("SELECT jabber_id FROM flyspray_users WHERE user_id = '{$task_details['assigned_to']}'") or die ($fs->dbQuery());
-    //list($jabber_id) = $fs->dbFetchArray($get_jabber_id);
 
     $item_summary = stripslashes($task_details['item_summary']);
 
@@ -588,10 +584,18 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       
       $row = $fs->dbFetchRow($fs->dbQuery("SELECT comment_id FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));        
       $fs->logEvent($_POST['task_id'], 4, $row['comment_id']);
+      
+      
+    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
+    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+    sleep(2);
+    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
 
   // If they pressed submit without actually typing anything
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['nocommententered']}</em></p></table>";
+    sleep(2);
+    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
   };
 
 
@@ -743,7 +747,6 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 				      (user_name,
 				       user_pass,
 				       real_name,
-				       group_in,
 				       jabber_id,
 				       email_address,
 				       notify_type,
@@ -752,7 +755,6 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                        array($reg_details['user_name'],
                                              $pass_hash,
                                              $reg_details['real_name'],
-                                             $flyspray_prefs['anon_group'],
                                              $reg_details['jabber_id'],
                                              $reg_details['email_address'],
                                              $reg_details['notify_type'],
@@ -864,7 +866,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           echo "<p>{$modify_text['loginbelow']}</p>";
           echo "<p>{$modify_text['newuserwarning']}</p></div>";
         } else {
-          echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
+          header("Location: index.php?do=admin&area=users");
+          //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
         };
 
 
@@ -944,8 +947,10 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                 $fs->emptyToZero($_POST['group_open'])
                 ));
 
-        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$_GET['project']}\">";
+        //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$_GET['project']}\">";
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newgroupadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+        sleep(2);
+        header("Location: index.php?do=admin&area=users&project=" . $project_id);
     };
 
   } else {
@@ -978,7 +983,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_project'", array($_POST['default_project']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));
-    $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_reg'", array($_POST['anon_reg']));
+  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_reg'", array($_POST['anon_reg']));
 
   // This is an overly complex way to ensure that we always get the right amount of posted
   // results from the assigned_groups preference
@@ -998,8 +1003,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   };
 
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
+  
   echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=options\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['optionssaved']}</em></p></div>";
+  sleep(2);
+  header("Location: index.php?do=admin&area=options");
   
 // End of updating application preferences
 
@@ -1145,9 +1153,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                     $fs->emptyToZero($_POST['anon_open']),
                                     $_POST['project_id']));
 
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=prefs\">";
+    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=prefs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectupdated']}</em></p></div>";
-
+    sleep(2);
+    header("Location: index.php?do=admin&area=projects&id=" . $project_id . "&show=prefs");
+    
   } else {
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['emptytitle']}</em></p></div>";
@@ -1246,9 +1256,11 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
         $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
 
       // Success message!
-      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
+      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileuploaded']}</em></p?<p>{$modify_text['waitwhiletransfer']}</p></div>";
-
+      sleep(2);
+      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
+      
     // If the file didn't actually get saved, better show an error to that effect
     } else {
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileerror']}</em></p><p>{$modify_text['contactadmin']}</p></div>";
@@ -1320,8 +1332,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                               WHERE record_id = ?",
                               array($_POST['group_in'], $_POST['record_id']));
 
-      echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
+      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
+      sleep(2);
+      header("Location: index.php");
     };
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['realandemail']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
@@ -1388,8 +1402,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     // Get the group definition that this group belongs to
     $group_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_POST['group_id'])));
 
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$group_details['belongs_to_project']}\">";
+    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$group_details['belongs_to_project']}\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
+    sleep(2);
+    header("Location: index.php?do=admin&area=users&project=" . $group_details['belongs_to_project']);
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupanddesc']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
   };
@@ -1429,9 +1445,11 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       };
   };
   if($_POST['project_id'] != '') {
-      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+      header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=" . $_POST['list_type']);
+      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
   } else {
-      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+      header("Location: index.php?do=admin&area=" . $_POST['list_type']);
+      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
   };
   echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
 
@@ -1455,7 +1473,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                         VALUES (?, ?, ?, ?)",
                 array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1'));
 
-        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+        header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+        //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
 
           } else {
 
@@ -1464,7 +1483,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                                 VALUES (?, ?, ?)",
                 array($_POST['list_name'], $_POST['list_position'], '1'));
 
-        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+        header("Location: index.php?do=admin&area=" . $_POST['list_type']);
+        //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
 
       };
 
@@ -1512,8 +1532,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       };
   };
 
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
   echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
+  sleep(2);
+  header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
 
 // End of updating the version list
 
@@ -1534,9 +1556,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                         VALUES (?, ?, ?, ?, ?)",
                 array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1', $_POST['version_tense']));
 
-      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
-
+      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
+      sleep(2);
+      header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
 
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
@@ -1584,8 +1607,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       };
   };
   
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
   echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
+  sleep(1);
+  header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=category");
 
 // End of updating the category list
 
@@ -1608,8 +1633,11 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                         $_POST['list_position'], '1',
                         $_POST['category_owner'], 
 			$fs->emptyToZero($_POST['parent_id'])));
-      echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
+      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
+      sleep(1);
+      header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=category");
+
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
   };
@@ -1633,11 +1661,15 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
         array($_POST['related_task']));
         
     if ($fs->dbCountRows($check) > 0) {
-        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+        //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatederror']}</em></p></div>";
+        sleep(2);
+        header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
     } elseif (!$fs->dbCountRows($check2)) {
-        echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+        //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
+        sleep(2);
+        header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
     } else {
         list($relatedproject) = $fs->dbFetchRow($check2);
         if ($project_id == $relatedproject || isset($_POST['allprojects'])) {
@@ -1646,8 +1678,11 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
             $fs->logEvent($_POST['this_task'], 11, $_POST['related_task']);
             $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
             
-            echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+            //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
             echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedadded']}</em></p></div>";
+            sleep(2);
+            header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
+            
         } else {
             ?>
             <div class="redirectmessage">
@@ -1671,8 +1706,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
         };
     };
   } else {
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
+    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedinvalid']}</em></p></div>";
+    sleep(2);
+    header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
   };
 
 // End of adding a related task entry
@@ -1690,8 +1727,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $fs->logEvent($_POST['id'], 12, $_POST['related_task']);
   $fs->logEvent($_POST['related_task'], 16, $_POST['id']);
   
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['id']}&amp;area=related#tabs\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['id']}&amp;area=related#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedremoved']}</em></p></div>";
+  sleep(2);
+  header("Location: index.php?do=details&id=" . $_POST['id'] . "&area=related#tabs");
 
 // End of removing a related task entry
 
@@ -1712,11 +1751,15 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     
     $fs->logEvent($_POST['task_id'], 9, $_POST['user_id']);
 
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
+    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyadded']}</em></p></div>";
+    sleep(2);
+    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
   } else {
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
+    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyerror']}</em></p></div>";
+    sleep(2);
+    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
   };
 
 // End of adding a user to the notification list
@@ -1733,8 +1776,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     
   $fs->logEvent($_POST['task_id'], 10, $_POST['user_id']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyremoved']}</em></p></div>";
+  sleep(2);
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
 
 // End of removing a notification entry
 
@@ -1751,8 +1796,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
               
   $fs->logEvent($_POST['task_id'], 5, $_POST['comment_text'], $_POST['previous_text'], $_POST['comment_id']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['editcommentsaved']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  sleep(2);
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
 
 // End of editing a comment
 
@@ -1768,8 +1815,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   
   $fs->logEvent($_POST['task_id'], 6, $row['user_id'], $row['comment_text'], $row['date_added']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  sleep(2);
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
 
 // End of deleting a comment
 
@@ -1793,8 +1842,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   
   $fs->logEvent($_POST['task_id'], 8, $row['orig_name']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['attachmentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  sleep(2);
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
 
 // End of deleting an attachment
 
@@ -1819,8 +1870,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   
   $fs->logEvent($_POST['task_id'], 17, $_POST['to_user_id']);
 
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  sleep(2);
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=remind#tabs");
 
 // End of adding a reminder
 
@@ -1837,8 +1890,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                     
   $fs->logEvent($_POST['task_id'], 18, $reminder['to_user_id']);
   
-  echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
+  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
+  sleep(2);
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=remind#tabs");
 
 // End of removing a reminder
 
