@@ -391,8 +391,9 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 
           $user_query = $this->dbQuery("SELECT * FROM flyspray_users_in_groups uig
                                         LEFT JOIN flyspray_users u on uig.user_id = u.user_id
-                                        WHERE group_id = ?",
-                                        array($group_details['group_id']));
+                                        WHERE group_id = ? AND u.account_enabled = ?
+                                        ORDER BY u.real_name ASC",
+                                        array($group_details['group_id'], '1'));
 
           while ($row = $this->dbFetchArray($user_query)) {
             if ($current == $row['user_id']) {

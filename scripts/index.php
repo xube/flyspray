@@ -22,7 +22,7 @@ foreach ( $orderby as $key => $val ) {
     break;
     case "status": $orderby[$key] = 'item_status';
     break;
-    case "due": $orderby[$key] = 't.closedby_version';
+    case "due": $orderby[$key] = 'lvc.list_position';
     break;
     case "prog": $orderby[$key] = 'percent_complete';
     break;
@@ -251,7 +251,7 @@ if ($getproject['project_is_active'] == 1
       <option value=""><?php echo $index_text['alldevelopers'];?></option>
       <option value="notassigned" <?php if ($dev == "notassigned") { echo "SELECTED";};?>><?php echo $index_text['notyetassigned'];?></option>
       <?php
-      $fs->ListUsers($dev);
+      $fs->ListUsers($dev, $project_id);
       ?>
     </select>
 

@@ -625,9 +625,10 @@ if ($area == 'comments') { ?>
       <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">" .
       $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png") . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
       <?php
-        // If the user is an admin, show the edit button
+         echo '<div class="modifycomment">';
+        // If the user has permission, show the edit button
         if ($permissions['edit_comments'] == '1') { ?>
-        <div class="modifycomment">
+        <span class="modifycomment">
         <form action="index.php" method="get">
         <p>
           <input type="hidden" name="do" value="admin" />
@@ -656,8 +657,8 @@ if ($area == 'comments') { ?>
           <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>" />
         </p>
         </form>
-        </div>
         <?php }; ?>
+        </div>
       <p>
       <?php echo $comment_text;?>
       </p>

@@ -892,27 +892,27 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                                       view_reports,
                                       group_open)
                                       VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                array('Project Managers', 'Project Managers' ,
-                $fs->emptyToZero($newproject['project_id']),
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1',
-                '1')
-                );
+                                      array('Project Managers', 'Project Managers' ,
+                                            $fs->emptyToZero($newproject['project_id']),
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1',
+                                            '1')
+                                     );
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_list_category
                              (project_id, category_name, list_position,
@@ -1152,59 +1152,65 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   };
 // End of modifying user details
 
-/////////////////////////////////////////
-// Start of updating group definition //
-/////////////////////////////////////////
+//////////////////////////////////////////
+// Start of updating a group definition //
+//////////////////////////////////////////
 
-} elseif ($_POST['action'] == "editgroup" && $permissions['is_admin'] == '1') {
+} elseif ($_POST['action'] == "editgroup" && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')) {
 
   if ($_POST['group_name'] != ''
     && $_POST['group_desc'] != ''
     ) {
       $update = $fs->dbQuery("UPDATE flyspray_groups SET
-                  group_name = ?,
-                  group_desc = ?,
-                  manage_project = ?,
-                  view_tasks = ?,
-                  open_new_tasks = ?,
-                  modify_own_tasks = ?,
-                  modify_all_tasks = ?,
-                  view_comments = ?,
-                  add_comments = ?,
-                  edit_comments = ?,
-                  delete_comments = ?,
-                  create_attachments = ?,
-                  delete_attachments = ?,
-                  view_history = ?,
-                  close_own_tasks = ?,
-                  close_other_tasks = ?,
-                  assign_to_self = ?,
-                  assign_others_to_self = ?,
-                  view_reports = ?,
-                  group_open = ?
-      WHERE group_id = ?",
-      array($_POST['group_name'], $_POST['group_desc'],
-              $fs->emptyToZero($_POST['manage_project']),
-              $fs->emptyToZero($_POST['view_tasks']),
-              $fs->emptyToZero($_POST['open_new_tasks']),
-              $fs->emptyToZero($_POST['modify_own_tasks']),
-              $fs->emptyToZero($_POST['modify_all_tasks']),
-              $fs->emptyToZero($_POST['view_comments']),
-              $fs->emptyToZero($_POST['add_comments']),
-              $fs->emptyToZero($_POST['edit_comments']),
-              $fs->emptyToZero($_POST['delete_comments']),
-              $fs->emptyToZero($_POST['create_attachments']),
-              $fs->emptyToZero($_POST['delete_attachments']),
-              $fs->emptyToZero($_POST['view_history']),
-              $fs->emptyToZero($_POST['close_own_tasks']),
-              $fs->emptyToZero($_POST['close_other_tasks']),
-              $fs->emptyToZero($_POST['assign_to_self']),
-              $fs->emptyToZero($_POST['assign_others_to_self']),
-              $fs->emptyToZero($_POST['view_reports']),
-              $fs->emptyToZero($_POST['group_open']),
-              $_POST['group_id']));
+                             group_name = ?,
+                             group_desc = ?,
+                             manage_project = ?,
+                             view_tasks = ?,
+                             open_new_tasks = ?,
+                             modify_own_tasks = ?,
+                             modify_all_tasks = ?,
+                             view_comments = ?,
+                             add_comments = ?,
+                             edit_comments = ?,
+                             delete_comments = ?,
+                             create_attachments = ?,
+                             delete_attachments = ?,
+                             view_history = ?,
+                             close_own_tasks = ?,
+                             close_other_tasks = ?,
+                             assign_to_self = ?,
+                             assign_others_to_self = ?,
+                             view_reports = ?,
+                             group_open = ?
+                             WHERE group_id = ?",
+                             array($_POST['group_name'], $_POST['group_desc'],
+                                   $fs->emptyToZero($_POST['manage_project']),
+                                   $fs->emptyToZero($_POST['view_tasks']),
+                                   $fs->emptyToZero($_POST['open_new_tasks']),
+                                   $fs->emptyToZero($_POST['modify_own_tasks']),
+                                   $fs->emptyToZero($_POST['modify_all_tasks']),
+                                   $fs->emptyToZero($_POST['view_comments']),
+                                   $fs->emptyToZero($_POST['add_comments']),
+                                   $fs->emptyToZero($_POST['edit_comments']),
+                                   $fs->emptyToZero($_POST['delete_comments']),
+                                   $fs->emptyToZero($_POST['create_attachments']),
+                                   $fs->emptyToZero($_POST['delete_attachments']),
+                                   $fs->emptyToZero($_POST['view_history']),
+                                   $fs->emptyToZero($_POST['close_own_tasks']),
+                                   $fs->emptyToZero($_POST['close_other_tasks']),
+                                   $fs->emptyToZero($_POST['assign_to_self']),
+                                   $fs->emptyToZero($_POST['assign_others_to_self']),
+                                   $fs->emptyToZero($_POST['view_reports']),
+                                   $fs->emptyToZero($_POST['group_open']),
+                                   $_POST['group_id']
+                                  )
+                            );
 
-    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project=$project_id\">";
+
+    // Get the group definition that this group belongs to
+    $group_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_POST['group_id'])));
+
+    echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$group_details['belongs_to_project']}\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupanddesc']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";

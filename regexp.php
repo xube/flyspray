@@ -154,8 +154,10 @@ if ($_GET['real_name']) {
 if ($_GET['email_address']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    // Credit: http://xrl.us/9x3
-    if (preg_match ("/^[A-Za-z0-9\._-]+@([A-Za-z][A-Za-z0-9-]{1,62})(\.[A-Za-z][A-Za-z0-9-]{1,62})+$/", $_GET['email_address'])) {
+    //if (preg_match ("/^[A-Za-z0-9\._-]+@([A-Za-z][A-Za-z0-9-]{1,62})(\.[A-Za-z][A-Za-z0-9-]{1,62})+$/", $_GET['email_address'])) {
+    
+    // New regexp from FS#382 - I suck at regexps; someone tell me if it's safe.
+    if (preg_match ("/^[a-zA-Z0-9._%-]+@[a-zA-Z0-9._%-]+\.[a-zA-Z]{2,4}+$/", $_GET['email_address'])) {
 
       // continue;
     } else {

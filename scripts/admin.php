@@ -164,7 +164,7 @@ $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_proje
 while ($group = $fs->dbFetchArray($get_groups)) {
 
   echo "<h4><a href=\"?do=admin&amp;area=groups&amp;id={$group['group_id']}\">{$group['group_name']}</a></h4>\n";
-  echo "<p>{$group['group_desc']}</p>\n";
+  echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
   echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
     $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
@@ -226,7 +226,7 @@ if ($project_id != '0') {
   echo '<form action="index.php" method="post">' . "\n";
   echo '<input type="hidden" name="do" value="modify">'. "\n";
   echo '<input type="hidden" name="action" value="addtogroup">'. "\n";
-
+  echo '<br />';
   echo '<select class="adminlist" name="user_list[]" multiple="multiple" size="10">'. "\n";
   
   // Get a list of the users not in any groups for this project
@@ -234,7 +234,8 @@ if ($project_id != '0') {
   $user_query = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
                               LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                               LEFT JOIN flyspray_groups g on uig.group_id = g.group_id
-                              WHERE g.belongs_to_project <> ? AND u.account_enabled = ?",
+                              WHERE g.belongs_to_project <> ? AND u.account_enabled = ?
+                              ORDER BY user_name ASC",
                               array($project_id, '1'));
 
   
@@ -242,7 +243,7 @@ if ($project_id != '0') {
     // Check if the user is in the checklist of shown users...
     if (!in_array($row['user_id'], $user_checklist)) {
       // ...if not, we display them, and add them to the array so that they don't get shown again!
-      echo "<option value=\"{$row['user_id']}\">{$row['real_name']} ({$row['user_name']})</option>\n";
+      echo "<option value=\"{$row['user_id']}\">{$row['user_name']} ({$row['real_name']})</option>\n";
       array_push($user_checklist, $row['user_id']);
     };
   };
@@ -1208,7 +1209,7 @@ if ($_GET['show'] == 'prefs') { ?>
 // Start of editing a comment //
 ////////////////////////////////
 
-} elseif ($_GET['area'] == "editcomment" && $permission['edit_comment'] == '1') {
+} elseif ($_GET['area'] == "editcomment" && $permissions['edit_comments'] == '1') {
 
 // Get the comment details
     $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE comment_id = ?", array($_GET['id']));

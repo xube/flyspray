@@ -4,6 +4,12 @@ include('header.php');
 $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'main');
 
+      $do = $_REQUEST['do'];
+
+if (!isset($_REQUEST['do'])) {
+  $do = "index";
+}
+
 // If a file was requested, deliver it
 if ($_GET['getfile']) {
 
@@ -175,8 +181,8 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
   if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], "$cookiesalt")
     // And that their account is enabled
     && $current_user['account_enabled'] == "1")
-    // And that their group is open
-//    && $group_details['group_open'] == '1')
+    // And that their group is open   FIX ME
+//    && $group_details['group_open'] == '1')  FIX ME
     {
 
 
@@ -311,7 +317,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 <?php
 
 // Show the project blurb if the project manager defined one
-if ($project_prefs['intro_message'] != '') {
+if ($project_prefs['intro_message'] != ''  && $do != 'admin' && $do != 'modify') {
   $intro_message = nl2br(stripslashes($project_prefs['intro_message'])); 
   echo "<p class=\"intromessage\">$intro_message</p>";
 };
@@ -329,12 +335,6 @@ if (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '1') {
 } elseif (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '0') {
   echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a></p>";
 };
-
-      $do = $_REQUEST['do'];
-
-      if (!isset($_REQUEST['do'])) {
-        $do = "index";
-      }
 
     if (requestDuplicated()) {
       printf('<meta http-equiv="refresh" content="2; URL=?id=%s">', $project_id);
