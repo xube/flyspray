@@ -1,5 +1,6 @@
 <?php
 
+global $modify_text;
 $modify_text = array (
 
 'modify'			=>	'Modify',
@@ -121,5 +122,6 @@ $modify_text = array (
 'emptytitle'		=>	'You left the Project Title field blank.  Go back and fix it.',
 'loginbelow'		=>	'You may now attempt to login using the form below.',
 'attachmentdeleted' => 'The attachment has been deleted',
+
 );
 ?>

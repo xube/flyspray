@@ -4,7 +4,7 @@ include('../header.php');
 $flyspray_prefs = $fs->GetGlobalPrefs();
 
 $lang = $flyspray_prefs['lang_code'];
-require("../lang/$lang/authenticate.php");
+get_language_pack($lang, 'authenticate');
 
 // If logout was requested, log the user out.
 if ($_GET['action'] == "logout") {

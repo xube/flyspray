@@ -1,8 +1,7 @@
 <?php
 
+get_language_pack($lang, 'newtask');
 // Check if the user is an admin
-
-require("lang/$lang/newtask.php");
 
 if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
 ?>

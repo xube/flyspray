@@ -1,5 +1,6 @@
 <?php
 
+global $newtask_text;
 $newtask_text = array (
 
 'createnewtask'		=>	'Create a new task',

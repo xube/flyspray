@@ -2,7 +2,7 @@
 // This script is the admin interface for users, groups, lists and anything else I think of.
 
 $lang = $flyspray_prefs['lang_code'];
-require("lang/$lang/admin.php");
+get_language_pack($lang, 'admin');
 
 // fill missing variables
 

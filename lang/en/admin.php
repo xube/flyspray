@@ -1,5 +1,6 @@
 <?php
 
+global $admin_text;
 $admin_text = array (
 
 'edituser'			=>	'Edit user',

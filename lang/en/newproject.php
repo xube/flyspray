@@ -1,5 +1,6 @@
 <?php
 
+global $newproject_text;
 $newproject_text = array (
 
 'createnewproject'	=>	'Create a new Project',

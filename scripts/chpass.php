@@ -1,5 +1,5 @@
 <?php
-require("lang/$lang/chpass.php");
+get_language_pack($lang, 'chpass');
 
 if ($_SESSION['userid']) {
 

@@ -3,7 +3,7 @@
 $flyspray_prefs = $fs->getGlobalPrefs();
 
 $lang = $flyspray_prefs['lang_code'];
-require("lang/$lang/newproject.php");
+get_language_pack($lang, 'newproject');
 
 // Make sure that only admins are using this page
 if ($_SESSION['admin'] == '1') {

@@ -1,5 +1,23 @@
 <?php
 
+/** Get translation for specified language and page.  It loads default
+language (en) and then merges with requested one. Thus it makes English
+messages available even if translation is not present.
+*/
+function get_language_pack($lang, $module) {
+    $before = get_defined_vars();
+    require_once("lang/en/$module.php");
+    $after_en = get_defined_vars();
+    $new_var = array_keys(array_diff($after_en, $before));
+    $new_var_name = $new_var[1];
+    $new_var['en'] = $$new_var_name;
+    require_once("lang/$lang/$module.php");
+    $new_var[$lang] = $$new_var_name;
+
+    $$new_var_name = array_merge($new_var['en'], $new_var[$lang]);
+}
+
+
 class Flyspray {
     var $version = '0.9.5';
 

@@ -1,7 +1,5 @@
-
 <?php
-
-require("lang/$lang/details.php");
+get_language_pack($lang, 'details');
 
 $task_exists = $fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_GET['id']));
 $task_details = $fs->GetTaskDetails($_GET['id']);

@@ -1,5 +1,6 @@
 <?php
 
+global $index_text;
 $index_text = array (
 
 'search'			=>	'Search',

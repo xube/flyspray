@@ -1,5 +1,5 @@
 <?php
-require("lang/$lang/newgroup.php");
+get_language_pack($lang, 'newgroup');
 
 // Make sure that only admins are using this page
 if ($_SESSION['admin'] == '1') {

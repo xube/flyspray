@@ -1,6 +1,4 @@
-<?php
-require("lang/$lang/loginbox.php");
-?>
+<?php get_language_pack($lang, 'loginbox'); ?>
 
 <form action="scripts/authenticate.php" method="post">
 <table class="login">

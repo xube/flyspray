@@ -1,5 +1,6 @@
 <?php
 
+global $loginbox_text;
 $loginbox_text = array (
 
 'username'				=>	'Username',

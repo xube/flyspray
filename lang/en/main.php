@@ -1,5 +1,6 @@
 <?php
 
+global $language;
 $language = array (
 
 'filenotexist'		=>	'File does not exist.  Contact the Flyspray administrator for this project.',
@@ -30,6 +31,10 @@ $language = array (
 'show'				=>	'Show',
 'projects'			=>	'Projects',
 'adminmenu'			=>	'Admin Menu',
+
+// Added in version 0.9.6
+'duplicated'		=>	'Repeated action. Redirecting to main page.',
+
 
 );
 ?>

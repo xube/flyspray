@@ -1,5 +1,5 @@
 <?php
-require("lang/$lang/register.php");
+get_language_pack($lang, 'register');
 
 // The application preferences allow anonymous signups
 if ($flyspray_prefs['anon_open'] != "0" && !$_SESSION['userid']) {

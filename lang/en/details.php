@@ -1,5 +1,6 @@
 <?php
 
+global $details_text;
 $details_text = array (
 
 'task'				=>	'Task',

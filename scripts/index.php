@@ -2,7 +2,7 @@
 // set a whole bunch of DEFAULT variables if they're not already set
 //  this is a whole convoluted bunch of crap, but it works.
 
-require("lang/$lang/index.php");
+get_language_pack($lang, 'index');
 
 switch ($_GET['order']) {
   case "id": $orderby = 'task_id';

@@ -1,7 +1,7 @@
 <?php
 // This script performs all database modifications
 
-require("lang/$lang/modify.php");
+get_language_pack($lang, 'modify');
 
 // FIXME: only temporary workaround
 $_POST['default_cat_owner'] = $fs->emptyToZero($_POST['default_cat_owner']);
@@ -1078,7 +1078,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // Start of deleting a comment
 } elseif ($_POST['action'] == "deletecomment" && $_SESSION['admin'] == '1') {
-  $delete = $fs->dbQuery("DELETE FROM flyspray_comments WHERE comment_id = ?", array($_POST['comment_id']));
+  $delete = $fs->dbQuery('DELETE FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id']));
 
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
@@ -1089,10 +1089,13 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 //  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
 } elseif ($_POST['action'] == "deleteattachment" && $_SESSION['admin'] == '1') {
 // if an attachment needs to be deleted do it right now
-  $delete = $fs->dbQuery("SELECT file_name FROM flyspray_attachments WHERE attachment_id = '{$_POST['attachment_id']}'");
+  $delete = $fs->dbQuery('SELECT file_name FROM flyspray_attachments 
+			    WHERE attachment_id = ?', 
+			    array($_POST['attachment_id']));
   if ($row = $fs->dbFetchArray($delete)) {
     @unlink("attachments/".$row['file_name']);
-    $fs->dbQuery("DELETE FROM flyspray_attachments WHERE attachment_id = '{$_POST['attachment_id']}'");
+    $fs->dbQuery('DELETE FROM flyspray_attachments WHERE attachment_id = ?',
+		    array($_POST['attachment_id']));
   }
 
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";

@@ -1,5 +1,6 @@
 <?php
 
+global $status_list;
 $status_list = array (
 
 '1'	=>	'Unconfirmed',
