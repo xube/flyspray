@@ -13,16 +13,16 @@
     </td>
     <td><label><input type="checkbox" name="remember_login" />
         <?php echo $loginbox_text['rememberme'];?></label>
-    </td> 
+    </td>
     <td>
-    
+
     <?php
-    // This generates an URL to take us back to the previous page
-    $page = sprintf("%s",$_SERVER["REQUEST_URI"]);
-    $page = str_replace('&', '&amp;', $page);
-    echo '<input type="hidden" name="prev_page" value="' . $page . '" />';
+    // This generates an URL so that the action script takes us back to the previous page
+    $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
+    $this_page = str_replace('&', '&amp;', $this_page);
+    echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />';
     ?>
-    
+
     <input class="adminbutton" type="submit" value="<?php echo $loginbox_text['login'];?>" />
     </td>
   </tr>
@@ -34,18 +34,18 @@
     if (!$_COOKIE['flyspray_userid']
         && $flyspray_prefs['spam_proof'] == '1'
         && $flyspray_prefs['anon_reg'] == '1' ) {
-    	
+
       echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
 
     // ...and if we don't care about them
     } elseif (!$_COOKIE['flyspray_userid']
               && $flyspray_prefs['spam_proof'] != '1'
               && $flyspray_prefs['anon_reg'] == '1') {
-    
+
       echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
 
     };
-    
+
 
     echo '<a href="?do=admin&amp;area=lostpw">' . $loginbox_text['lostpassword'] . '</a></p>';
     ?>

@@ -35,11 +35,11 @@ echo '<h3>Flyspray 0.9.7 Setup</h3>';
 // Page one, the intro page //
 //////////////////////////////
 if ($page == '1') {
-   
+
    if (file_exists('../flyspray.conf.php')) {
       die('Setup has already been completed.  If you really want to run it again, remove flyspray.conf.php');
    };
-   
+
    echo 'Flyspray does not appear to be set up on this server.  Click the button below to start the configuration process.';
    echo '<br /><br />';
    echo 'You might like to read the <a href="http://flyspray.rocks.cc/?p=Installation" target="_blank">installation instructions</a> to help you through Setup.';
@@ -52,8 +52,8 @@ if ($page == '1') {
    echo '<input class="adminbutton" type="submit" value="Continue to next page" />';
    echo "\n";
    echo '</form>';
-   
-   
+
+
 //////////////////////////////////////////////////////////
 // Page two, where the user enters their config details //
 //////////////////////////////////////////////////////////
@@ -190,37 +190,37 @@ if (!isset($_SESSION['basedir'])) {
       && $_POST['dbuser'] != ''
       && $_POST['dbpass'] != ''
       ) {
-         
+
          // Now, check for the correct path to the adodb.inc.php file
          if (!file_exists($_SESSION['adodbpath']))
          {
             die('The path to adodb.inc.php wasn\'t set correctly.  <a href="?p=2">Go back and fix it up.</a>');
-         
-         }         
+
+         }
 
 // Save flyspray.conf.php
 
          // If the adodbpath is correct, continue to saving flyspray.conf.php
-         $filename = '../flyspray.conf.php';         
-         
+         $filename = '../flyspray.conf.php';
+
          // Create a random cookie salt
          $cookiesalt = substr(md5(microtime()), 0, 2);
-         
-         // Copy the skeleton config file to the Flyspray directory         
+
+         // Copy the skeleton config file to the Flyspray directory
          if (!@copy("flyspray.conf.skel", "../flyspray.conf.php")) {
             die ('Cannot create flyspray.conf.php in the Flyspray directory.  Perhaps we do not have write permission?  Check the directory permissions, then  <a href="?p=2">go back and try again</a>.');
          };
-         
+
          $somecontent = '
-         
+
 [general]
 basedir = "' . $_SESSION['basedir'] . '"      ; Location of your Flyspray installation
 cookiesalt = "' . $cookiesalt . '"            ; Randomisation value for cookie encoding
 adodbpath = "' . $_SESSION['adodbpath']. '"   ; Path to the main ADODB include file
-output_buffering = "on"                       ; Available options: "off", "on" and "gzip"
+output_buffering = "on"                       ; Available options: "on" or "gzip"
 
 [database]
-dbtype = "' . $_SESSION['dbtype'] . '"        ; Type of database ("mysql" or "pgsql" are currently supported) 
+dbtype = "' . $_SESSION['dbtype'] . '"        ; Type of database ("mysql" or "pgsql" are currently supported)
 dbhost = "' . $_SESSION['dbhost'] . '"        ; Name or IP of your database server
 dbname = "' . $_SESSION['dbname'] . '"        ; The name of the database
 dbuser = "' . $_SESSION['dbuser'] . '"        ; The user to access the database
@@ -243,13 +243,13 @@ if (is_writable($filename)) {
        echo "Cannot write to file ($filename)";
        exit;
    };
-   
+
    fclose($handle);
-  // End of saving flyspray.conf.php  
+  // End of saving flyspray.conf.php
 
 
    // Tell the user what just happened
-     
+
    echo 'Your config settings were successfully saved to flyspray.conf.php';
    echo '<br /><br />';
    echo 'Next, we are going to try setting up your database using the settings you just provided.  ';
@@ -273,9 +273,9 @@ if (is_writable($filename)) {
 
    // If the user hasn't filled in all the fields
    } else {
-      
+
       echo 'You need to fill in all the fields.  <a href="install-0.9.7.php?p=2">Go back and finish it.</a>';
-      
+
    };
 
 
@@ -289,7 +289,7 @@ if (is_writable($filename)) {
    };
 
 
-// Activate adodb   
+// Activate adodb
 include_once ($_SESSION['adodbpath']);
 
 // Define our functions class

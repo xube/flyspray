@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
    This script is used to check that all user-inputted data is safe to pass to the
    rest of Flyspray, including the sql database.  We don't want Flyspray to end
    up on BugTraq!
@@ -95,7 +95,7 @@ if ($_REQUEST['action']) {
 if ($_REQUEST['do']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(admin|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report)$/", $_REQUEST['do'])) {
+    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report)$/", $_REQUEST['do'])) {
 
        // continue;
 
@@ -106,7 +106,7 @@ if ($_REQUEST['do']) {
 };
 
 if ($_REQUEST['id']) {
- 
+
      // Yes. Now check its regex format for safety -- Numbers only
     if (is_array($_REQUEST['id'])) {
         foreach($_REQUEST['id'] as $id) {
@@ -157,7 +157,7 @@ if ($_GET['email_address']) {
 
     // Yes. Now check its regex format for safety -- Limited range
     //if (preg_match ("/^[A-Za-z0-9\._-]+@([A-Za-z][A-Za-z0-9-]{1,62})(\.[A-Za-z][A-Za-z0-9-]{1,62})+$/", $_GET['email_address'])) {
-    
+
     // New regexp from FS#382 - I suck at regexps; someone tell me if it's safe.
     if (preg_match ("/^[a-z0-9._-']+(?:\+[a-z0-9._-]+)?[a-z0-9.-]+\.[a-z]{2,4}+$/i", $_GET['email_address'])) {
 
@@ -185,7 +185,7 @@ if ($_GET['jabber_id']) {
     // Yes. Now check its regex format for safety -- Limited range
     // Credit: http://xrl.us/9x3
     //if (preg_match ("/^[A-Za-z0-9\._-]+@([A-Za-z][A-Za-z0-9-]{1,62})(\.[A-Za-z][A-Za-z0-9-]{1,62})+$/", $_GET['jabber_id'])) {
-   
+
    // New regexp from FS#382 - I suck at regexps; someone tell me if it's safe.
    if (preg_match ("/^[a-z0-9._-']+(?:\+[a-z0-9._-]+)?[a-z0-9.-]+\.[a-z]{2,4}+$/i", $_GET['jabber_id'])) {
        // continue;
@@ -198,7 +198,7 @@ if ($_GET['jabber_id']) {
 if ($_GET['area']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(editcomment|comments|attachments|related|notify|options|projects|users|tasktype|resolution|groups|remind|system|history|pendingreq|lostpw)$/", $_GET['area'])) {
+    if (preg_match ("/^(editcomment|comments|attachments|related|notify|users|tt|res|groups|remind|system|history|pendingreq|lostpw|prefs|cat|os|ver|editgroup)$/", $_GET['area'])) {
 
        // continue;
     } else {

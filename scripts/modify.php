@@ -1165,10 +1165,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                     $fs->emptyToZero($_POST['anon_open']),
                                     $_POST['project_id']));
 
-    //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=prefs\">";
-    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectupdated']}</em></p></div>";
     $_SESSION['SUCCESS'] = $modify_text['projectupdated'];
-    header("Location: index.php?do=admin&area=projects&project=" . $project_id . "&show=prefs");
+    header("Location: index.php?do=pm&area=prefs&project=" . $project_id);
 
   } else {
 
@@ -1427,7 +1425,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users&amp;project={$group_details['belongs_to_project']}\">";
     //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
     $_SESSION['SUCCESS'] = $modify_text['groupupdated'];
-    header("Location: index.php?do=admin&area=users&project=" . $group_details['belongs_to_project']);
+    header("Location: " . $_POST['prev_page']);
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupanddesc']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
   };
@@ -1470,8 +1468,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=" . $_POST['list_type']);
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
   } else {
-      header("Location: index.php?do=admin&area=" . $_POST['list_type']);
-      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+      header("Location: " . $_POST['prev_page']);
+
   };
   $_SESSION['SUCCESS'] = $redirectmessage;
   //echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
@@ -1498,9 +1496,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                 array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1'));
 
         $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
-        header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
-
-        //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+        header("Location: " . $_POST['prev_page']);
 
      // If the user is requesting a global list update
      } else {
@@ -1511,7 +1507,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                 array($_POST['list_name'], $_POST['list_position'], '1'));
 
          $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
-         header("Location: index.php?do=admin&area=" . $_POST['list_type']);
+         header("Location: " . $_POST['prev_page']);
 
          //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
 
@@ -1525,7 +1521,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       if ($_POST['project_id'] == '') {
          header("Location: index.php?do=admin&area=" . $_POST['list_type']);
       } else {
-         header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+         header("Location: " . $_POST['prev_page']);
       };
 
       //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
@@ -1569,10 +1565,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       };
   };
 
-  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
-  //echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
   $_SESSION['SUCCESS'] = $redirectmessage;
-  header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+  header("Location: " . $_POST['prev_page']);
 
 // End of updating the version list
 
@@ -1600,9 +1594,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
 
 } else {
     $_SESSION['ERROR'] = $modify_text['fillallfields'];
-    header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
-    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
-  };
+   header("Location: " . $_POST['prev_page']);
+};
 // End of adding a version list item
 
 
@@ -1646,10 +1639,8 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       };
   };
 
-  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
-  //echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
   $_SESSION['SUCCESS'] = $redirectmessage;
-  header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=category");
+  header("Location: " . $_POST['prev_page']);
 
 // End of updating the category list
 
@@ -1669,19 +1660,18 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                                 show_in_list, category_owner, parent_id)
                                 VALUES (?, ?, ?, ?, ?, ?)",
                         array($_POST['project_id'], $_POST['list_name'],
-                        $_POST['list_position'], '1',
+                        $_POST['list_position'],
+                        '1',
                         $_POST['category_owner'],
                         $fs->emptyToZero($_POST['parent_id'])));
-      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
-      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
+
       $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
       header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=category");
 
 } else {
     $_SESSION['ERROR'] = $modify_text['fillallfields'];
-    header("Location: index.php?do=admin&area=projects&show=category&id=" . $_POST['project_id']);
-    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
-  };
+    header("Location: " . $_POST['prev_page']);
+};
 // End of adding a category list item
 
 //////////////////////////////////////////
@@ -1964,7 +1954,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   };
 
   $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
-  header("Location: index.php?do=admin&area=users&project=" . $_POST['project_id']);
+  header("Location: " . $_POST['prev_page']);
   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupswitchupdated']}</em></p>";
   //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
@@ -2006,14 +1996,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   };
 
   $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
-  if ($_POST['project_id'] != '') {
-    header("Location: index.php?do=admin&area=users&project=" . $_POST['project_id']);
-  } else {
-    header("Location: index.php?do=admin&area=users");
-  };
-
-  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupswitchupdated']}</em></p>";
-  //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+  header("Location: " . $_POST['prev_page']);
 
   // End of changing a bunch of users' groups
 

@@ -195,6 +195,18 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       echo '<a id="lastsearchlink">' . $language['lastsearch'] . "</a>\n";
    };
 
+   // Global Options link
+   if ($permissions['is_admin'] == '1') {
+      echo '<small> | </small>';
+      echo '<a id="optionslink" href="?do=admin&amp;area=prefs">' . $language['admintoolbox'] . "</a>\n";
+   };
+
+   if ($permissions['manage_project'] == '1')
+   {
+      echo '<small> | </small>';
+      echo '<a id="projectslink" href="?do=pm&amp;area=prefs&ampproject=' . $project_id . '">' . $language['manageproject'] . "</a>\n";
+   }
+
    // Display Logout link
    echo '<small> | </small>';
    echo '<a id="logoutlink" href="index.php?do=authenticate&amp;action=logout" accesskey="l">' . $language['logout'] . "</a>\n";
@@ -222,45 +234,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     };
 
 
-      echo '<span id="adminmenu">';
-
-      echo '<em>' . $language['adminmenu'] . '</em>';
-
-      // Global Options link
-      if ($permissions['is_admin'] == '1') {
-         echo '<small> | </small>';
-         echo '<a id="optionslink" href="?do=admin&amp;area=options">' . $language['options'] . "</a>\n";
-       };
-
-      // Project options link
-      if ($permissions['manage_project'] == '1') {
-         echo '<small> | </small>';
-         echo '<a id="projectslink" href="?do=admin&amp;area=projects&amp;show=prefs&amp;project=' . $project_id . '">' . $language['projects'] . "</a>\n";
-
-        // Get a list of projects so that we can cycle through them for the submenu
-        /*$get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
-        echo '<ul>';
-        while ($this_project = $fs->dbFetchArray($get_projects)) {
-           echo '<li>';
-           echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;project=' . $this_project['project_id'] . '">' . stripslashes($this_project['project_title']) . "</a>\n";
-           echo '</li>';
-        };
-        echo '</ul>';*/
-
-      };
-
-      // Manage users link
-      if ($permissions['is_admin'] == '1') {
-         echo '<small> | </small>';
-         echo '<a id="usersandgroupslink" href="?do=admin&amp;area=users">' . $language['usersandgroups'] . "</a>\n";
-      };
-
-      if ($permissions['is_admin'] == '1') {
-         echo '<small> | </small>';
-         echo '<a id="listslink" href="?do=admin&amp;area=tasktype">' . $language['tasktypes'] . "</a>\n";
-         echo '<small> | </small>';
-         echo '<a id="listslink" href="?do=admin&amp;area=resolution">' . $language['resolutions'] . "</a>\n";
-      };
+      /*echo '<span id="adminmenu">';
 
       // Show the amount of admin requests waiting
       if (($permissions['manage_project'] == '1'
@@ -272,7 +246,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       };
 
       // End of admin menu span
-      echo "</span>\n";
+      echo "</span>\n";*/
 
     // End of checking if the admin menu should be displayed
     };
@@ -349,7 +323,7 @@ if (isset($_SESSION['SUCCESS'])) {
 if ($project_prefs['project_is_active'] == '1'
     && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
     && $project_prefs['intro_message'] != ''
-    && $do != 'admin'
+    && ($do == 'details' OR $do == 'index')
     OR $_GET['project'] == '0'
 ) {
    $intro_message = Markdown(stripslashes($project_prefs['intro_message']));
