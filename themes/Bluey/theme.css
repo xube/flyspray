@@ -144,7 +144,7 @@ table.head {
 /* p#showtask contains the form to search for a specific task number */
 p#showtask {
   text-align          : right;
-  width               : 50%;
+  width               : 40%;
   margin-left         : auto;
   position            : relative;
   top                 : -2em;
