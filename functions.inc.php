@@ -66,10 +66,15 @@ class Flyspray {
       } else {
 	  $result =  $this->dblink->Execute($sql, $inputarr);
       }
-      if (!$result)
+      if (!$result) {
+	  echo "<pre>";
+	  var_dump(debug_backtrace());
+	  echo "<pre>";
+	  
 	  die (sprintf("Query {%s} with params {%s} Failed! (%s)", 
 		    $sql, implode(', ', $inputarr), 
 		    $this->dblink->ErrorMsg()));
+      }
       return $result;
    }
 
@@ -152,6 +157,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
        && $sPort != ''
        && $sUsername != ''
        && $sPassword != ''
+       && !empty($vTo)
       ) {
 
    $socket = fsockopen ( $sHost, $sPort, $errno, $errstr, 30 );
@@ -185,6 +191,9 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 }
 
    function SendEmail($to, $message) {
+
+       if (empty($to))
+	   return;
 
    $flyspray_prefs = $this->GetGlobalPrefs();
 
@@ -245,6 +254,9 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
    // This function sends out basic messages at specified times.
    function SendBasicNotification($to, $message) {
 
+	if (empty($to))
+	    return;
+
        $flyspray_prefs = $this->GetGlobalPrefs();
 
        $lang = $flyspray_prefs['lang_code'];
@@ -288,59 +300,59 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
    }
 
 
-   // Detailed notification function - generates and passes arrays of recipients
-   // These are the additional people who want to be notified of a task changing
-   function SendDetailedNotification($task_id, $message) {
+    // Detailed notification function - generates and passes arrays of recipients
+    // These are the additional people who want to be notified of a task changing
+    function SendDetailedNotification($task_id, $message) {
 
-   $flyspray_prefs = $this->GetGlobalPrefs();
+	$flyspray_prefs = $this->GetGlobalPrefs();
 
-   $lang = $flyspray_prefs['lang_code'];
-   require("lang/$lang/functions.inc.php");
+	$lang = $flyspray_prefs['lang_code'];
+	require("lang/$lang/functions.inc.php");
 
-   $jabber_users = array();
-   $email_users = array();
+	$jabber_users = array();
+	$email_users = array();
 
-   $get_users = $this->dbQuery("SELECT user_id FROM flyspray_notifications WHERE task_id = ?", array($task_id));
+	$get_users = $this->dbQuery("SELECT user_id FROM flyspray_notifications WHERE task_id = ?", array($task_id));
 
-   while ($row = $this->dbFetchArray($get_users)) {
+	while ($row = $this->dbFetchArray($get_users)) {
 
-      $get_details = $this->dbQuery("SELECT notify_type, jabber_id, email_address
-	  								FROM flyspray_users
-									WHERE user_id = ?",
-									array($row['user_id']));
-      while ($subrow = $this->dbFetchArray($get_details)) {
+	    $get_details = $this->dbQuery("SELECT notify_type, jabber_id, email_address
+		    FROM flyspray_users
+		    WHERE user_id = ?",
+		    array($row['user_id']));
+	    while ($subrow = $this->dbFetchArray($get_details)) {
 
 		if (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
 			OR ($flyspray_prefs['user_notify'] == '2')) {
-			array_push($email_users, $subrow['email_address']);
+		    array_push($email_users, $subrow['email_address']);
 		} elseif (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '2')
 			OR ($flyspray_prefs['user_notify'] == '3')) {
-			array_push($jabber_users, $subrow['jabber_id']);
+		    array_push($jabber_users, $subrow['jabber_id']);
 		};
-	  };
-   };
+	    };
+	};
 
-	    $message = stripslashes($message);
+	$message = stripslashes($message);
 
-			// Pass the recipients and message onto the Jabber Message function
-			$this->JabberMessage(
-		  					$flyspray_prefs['jabber_server'],
-							$flyspray_prefs['jabber_port'],
-							$flyspray_prefs['jabber_username'],
-							$flyspray_prefs['jabber_password'],
-							$jabber_users,
-							"{$functions_text['notifyfrom']} {$flyspray_prefs['project_title']}",
-							$message,
-							"Flyspray"
-							);
+	// Pass the recipients and message onto the Jabber Message function
+	$this->JabberMessage(
+		$flyspray_prefs['jabber_server'],
+		$flyspray_prefs['jabber_port'],
+		$flyspray_prefs['jabber_username'],
+		$flyspray_prefs['jabber_password'],
+		$jabber_users,
+		"{$functions_text['notifyfrom']} {$flyspray_prefs['project_title']}",
+		$message,
+		"Flyspray"
+		);
 
-		
-			// Pass the recipients and message onto the mass email function
-			$this->SendEmail($email_users, $message);
 
-    //return TRUE;
-   // End of detailed notification function
-   }
+	// Pass the recipients and message onto the mass email function
+	$this->SendEmail($email_users, $message);
+
+	//return TRUE;
+	// End of detailed notification function
+    }
 
 
 
