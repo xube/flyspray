@@ -4,7 +4,7 @@
 -- If you don't have DB and/or user set for Flyspray yet, you can create
 -- them manually with following commands:
 --     $ psql -h your_db_host template1
---     template1=# CREATE DATABASE flyspray;
+--     template1=# CREATE DATABASE flyspray ENCODING 'UNICODE';
 --     CREATE DATABASE
 --     template1=# CREATE USER flyspray with password 'flyspray';
 --     CREATE USER
