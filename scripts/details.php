@@ -8,12 +8,12 @@
 
 get_language_pack($lang, 'details');
 
-$task_exists = $fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_GET['id']));
+$task_exists = $db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_GET['id']));
 $task_details = $fs->GetTaskDetails($_GET['id']);
 
 // Only load this page if a valid task was actually requested
 // and the user has permission to view it
- if ($fs->dbCountRows($task_exists)
+ if ($db->CountRows($task_exists)
      && $task_details['project_is_active'] == '1'
      && ($project_prefs['others_view'] == '1'
          OR $permissions['view_tasks'] == '1')
@@ -85,8 +85,8 @@ if ($effective_permissions['can_edit'] == '1'
   <?php echo $details_text['attachedtoproject'] . ' &mdash; ';?>
   <select name="attached_to_project">
   <?php
-  $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
-  while ($row = $fs->dbFetchArray($get_projects)) {
+  $get_projects = $db->Query("SELECT * FROM flyspray_projects");
+  while ($row = $db->FetchArray($get_projects)) {
     if ($task_details['attached_to_project'] == $row['project_id']) {
       echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
     } else {
@@ -100,8 +100,8 @@ if ($effective_permissions['can_edit'] == '1'
     <?php
     // Get the user details of the person who opened this item
     if ($task_details['opened_by']) {
-      $get_user_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
-      list($user_name, $real_name) = $fs->dbFetchArray($get_user_name);
+      $get_user_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
+      list($user_name, $real_name) = $db->FetchArray($get_user_name);
     } else {
       $user_name = $details_text['anonymous'];
     };
@@ -113,8 +113,8 @@ if ($effective_permissions['can_edit'] == '1'
 
     // If it's been edited, get the details
     if ($task_details['last_edited_by']) {
-      $get_user_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['last_edited_by']));
-      list($user_name, $real_name) = $fs->dbFetchArray($get_user_name);
+      $get_user_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['last_edited_by']));
+      list($user_name, $real_name) = $db->FetchArray($get_user_name);
 
       $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
 
@@ -132,8 +132,8 @@ if ($effective_permissions['can_edit'] == '1'
         <select id="tasktype" name="task_type">
         <?php
         // Get list of task types
-        $get_severity = $fs->dbQuery("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype WHERE show_in_list = ? ORDER BY list_position", array('1'));
-        while ($row = $fs->dbFetchArray($get_severity)) {
+        $get_severity = $db->Query("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype WHERE show_in_list = ? ORDER BY list_position", array('1'));
+        while ($row = $db->FetchArray($get_severity)) {
           if ($row['tasktype_id'] == $task_details['task_type']) {
             echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>";
           } else {
@@ -149,11 +149,11 @@ if ($effective_permissions['can_edit'] == '1'
         <td>
         <select id="category" name="product_category">
         <?php
-        $cat_list = $fs->dbQuery('SELECT category_id, category_name
+        $cat_list = $db->Query('SELECT category_id, category_name
                                     FROM flyspray_list_category
                                     WHERE project_id=? AND show_in_list=? AND parent_id < ?
                                     ORDER BY list_position', array($project_id, '1', '1'));
-        while ($row = $fs->dbFetchArray($cat_list)) {
+        while ($row = $db->FetchArray($cat_list)) {
           $category_name = stripslashes($row['category_name']);
           if ($task_details['product_category'] == $row['category_id']) {
             echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
@@ -161,11 +161,11 @@ if ($effective_permissions['can_edit'] == '1'
             echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
           };
 
-          $subcat_list = $fs->dbQuery('SELECT category_id, category_name
+          $subcat_list = $db->Query('SELECT category_id, category_name
                                     FROM flyspray_list_category
                                     WHERE project_id=? AND show_in_list=? AND parent_id = ?
                                     ORDER BY list_position', array($project_id, '1', $row['category_id']));
-          while ($subrow = $fs->dbFetchArray($subcat_list)) {
+          while ($subrow = $db->FetchArray($subcat_list)) {
             $subcategory_name = stripslashes($subrow['category_name']);
             if ($task_details['product_category'] == $subrow['category_id']) {
               echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
@@ -204,7 +204,7 @@ if ($effective_permissions['can_edit'] == '1'
         <select id="assignedto" name="assigned_to">
         <?php
         // Get list of users
-        //$get_users = $fs->dbQuery($fs->listUserQuery());
+        //$get_users = $db->Query($fs->listUserQuery());
 
         // see if it's been assigned
         if ($task_details['assigned_to'] == "0") {
@@ -225,8 +225,8 @@ if ($effective_permissions['can_edit'] == '1'
         <select id="os" name="operating_system">
         <?php
         // Get list of operating systems
-        $get_os = $fs->dbQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
-        while ($row = $fs->dbFetchArray($get_os)) {
+        $get_os = $db->Query("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
+        while ($row = $db->FetchArray($get_os)) {
           if ($row['os_id'] == $task_details['operating_system']) {
             echo "<option value=\"{$row['os_id']}\" selected=\"selected\">{$row['os_name']}</option>";
           } else {
@@ -299,8 +299,8 @@ if ($effective_permissions['can_edit'] == '1'
         } else {
           echo "<option value=\"\" selected=\"selected\">{$details_text['undecided']}</option>\n";
         };
-        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
-        while ($row = $fs->dbFetchArray($get_version)) {
+        $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
+        while ($row = $db->FetchArray($get_version)) {
           if ($row['version_id'] == $task_details['closedby_version']) {
             echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
           } else {
@@ -374,7 +374,7 @@ if ($effective_permissions['can_edit'] == '1'
 <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
 
     <h2 class="severity<?php echo $task_details['task_severity'];?>">
-    <?php echo $details_text['task'] . '#' . $task_details['task_id'] . ' &mdash ' . $fs->formatText($task_details['item_summary']);?>
+    <?php echo $details_text['task'] . '#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
     </h2>
     <?php
     echo $details_text['attachedtoproject'] . '&mdash; <a href="?project=' .  $task_details['attached_to_project'] . '">' . stripslashes($task_details['project_title']) . '</a>';
@@ -384,8 +384,8 @@ if ($effective_permissions['can_edit'] == '1'
     <?php
     // Get the user details of the person who opened this item
     if ($task_details['opened_by']) {
-      $get_user_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
-      list($user_name, $real_name) = $fs->dbFetchArray($get_user_name);
+      $get_user_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
+      list($user_name, $real_name) = $db->FetchArray($get_user_name);
     } else {
       $user_name = $details_text['anonymous'];
     };
@@ -397,8 +397,8 @@ if ($effective_permissions['can_edit'] == '1'
 
     // If it's been edited, get the details
     if ($task_details['last_edited_by']) {
-      $get_user_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['last_edited_by']));
-      list($user_name, $real_name) = $fs->dbFetchArray($get_user_name);
+      $get_user_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['last_edited_by']));
+      list($user_name, $real_name) = $db->FetchArray($get_user_name);
 
       $date_edited = $task_details['last_edited_time'];
       $date_edited = $fs->formatDate($date_edited, true);
@@ -421,7 +421,7 @@ if ($effective_permissions['can_edit'] == '1'
         <td id="category">
         <?php
         if ($task_details['parent_id'] > '0') {
-          $get_parent_cat = $fs->dbFetchArray($fs->dbQuery('SELECT category_name
+          $get_parent_cat = $db->FetchArray($db->Query('SELECT category_name
                                           FROM flyspray_list_category
                                           WHERE category_id = ?',
                                           array($task_details['parent_id'])));
@@ -451,8 +451,8 @@ if ($effective_permissions['can_edit'] == '1'
           echo $details_text['noone'];
         } else {
           // find out the username
-          $getusername = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
-          list ($user_name, $real_name) = $fs->dbFetchArray($getusername);
+          $getusername = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
+          list ($user_name, $real_name) = $db->FetchArray($getusername);
           echo "$real_name ($user_name)";
         };
         ?>
@@ -528,13 +528,13 @@ if ($effective_permissions['can_edit'] == '1'
 
   <?php
     // Check for task dependencies that block closing this task
-    $check_deps = $fs->dbQuery("SELECT * FROM flyspray_dependencies d
+    $check_deps = $db->Query("SELECT * FROM flyspray_dependencies d
                                 LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
                                 WHERE d.task_id = ?",
                                 array($_GET['id']));
 
     // Check for tasks that this task blocks
-    $check_blocks = $fs->dbQuery("SELECT * FROM flyspray_dependencies d
+    $check_blocks = $db->Query("SELECT * FROM flyspray_dependencies d
                                 LEFT JOIN flyspray_tasks t on d.task_id = t.task_id
                                 WHERE d.dep_task_id = ?",
                                 array($_GET['id']));
@@ -543,7 +543,7 @@ if ($effective_permissions['can_edit'] == '1'
     // Show tasks that this task depends upon
     echo '<div id="taskdeps">';
     echo '<b>' . $details_text['taskdependson'] . '</b><br />';
-    while ($dependency = $fs->dbFetchArray($check_deps)) {
+    while ($dependency = $db->FetchArray($check_deps)) {
       if ($dependency['is_closed'] == '1') {
         echo '<a class="closedtasklink" href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
       } else {
@@ -575,7 +575,7 @@ if ($effective_permissions['can_edit'] == '1'
     echo '<div id="taskblocks">';
     // Show tasks that this task blocks
     echo '<b>' . $details_text['taskblocks'] . '</b><br />';
-    while ($block = $fs->dbFetchArray($check_blocks)) {
+    while ($block = $db->FetchArray($check_blocks)) {
       echo '<a href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
     };
 
@@ -588,8 +588,8 @@ echo '<div id="actionbuttons">';
   // If the task is closed, show the closure reason
   if ($task_details['is_closed'] == '1') {
 
-    $get_closedby_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['closed_by']));
-    list($closedby_username, $closedby_realname) = $fs->dbFetchArray($get_closedby_name);
+    $get_closedby_name = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['closed_by']));
+    list($closedby_username, $closedby_realname) = $db->FetchArray($get_closedby_name);
     $date_closed = $task_details['date_closed'];
     $date_closed = $fs->formatDate($date_closed, true);
     echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br />";
@@ -641,12 +641,12 @@ echo '<div id="actionbuttons">';
     };
 
     // Get info on the dependencies again
-    $check_deps = $fs->dbQuery("SELECT * FROM flyspray_dependencies d
+    $check_deps = $db->Query("SELECT * FROM flyspray_dependencies d
                                 LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
                                 WHERE d.task_id = ?",
                                 array($_GET['id']));
     // Cycle through the dependencies, checking if any are still open
-    while ($deps_details = $fs->dbFetchArray($check_deps)) {
+    while ($deps_details = $db->FetchArray($check_deps)) {
       if ($deps_details['is_closed'] != '1') {
         $deps_open = 'yes';
       };
@@ -667,8 +667,8 @@ echo '<div id="actionbuttons">';
         <select class="adminlist" name="resolution_reason">
           <option value="0"><?php echo $details_text['selectareason']; ?></option>
         <?php
-        $get_resolution = $fs->dbQuery("SELECT resolution_id, resolution_name FROM flyspray_list_resolution ORDER BY list_position");
-        while ($row = $fs->dbFetchArray($get_resolution)) {
+        $get_resolution = $db->Query("SELECT resolution_id, resolution_name FROM flyspray_list_resolution ORDER BY list_position");
+        while ($row = $db->FetchArray($get_resolution)) {
           //if ($row['resolution_id'] == $task_details['resolution_reason']) {
             //echo "<option value=\"{$row['resolution_id']}\" selected=\"selected\">{$row['resolution_name']}</option>\n";
           //} else {
@@ -766,12 +766,12 @@ if ($_GET['area']) {
 } else {
   $area = 'comments';
 };
-$num_comments = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id'])));
-$num_attachments = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id'])));
-$num_related = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_related WHERE this_task = ?", array($task_details['task_id'])));
-$num_related_to = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_related WHERE related_task = ?", array($task_details['task_id'])));
-$num_notifications = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id'])));
-$num_reminders = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_reminders WHERE task_id = ?", array($_GET['id'])));
+$num_comments = $db->CountRows($db->Query("SELECT * FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id'])));
+$num_attachments = $db->CountRows($db->Query("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id'])));
+$num_related = $db->CountRows($db->Query("SELECT * FROM flyspray_related WHERE this_task = ?", array($task_details['task_id'])));
+$num_related_to = $db->CountRows($db->Query("SELECT * FROM flyspray_related WHERE related_task = ?", array($task_details['task_id'])));
+$num_notifications = $db->CountRows($db->Query("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id'])));
+$num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHERE task_id = ?", array($_GET['id'])));
 ?>
 
 <p id="tabs">
@@ -792,8 +792,8 @@ if ($area == 'comments') { ?>
   <div class="tabentries">
     <?php
     // if there are comments, show them
-    $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id", array($task_details['task_id']));
-    while ($row = $fs->dbFetchArray($getcomments)) {
+    $getcomments = $db->Query("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id", array($task_details['task_id']));
+    while ($row = $db->FetchArray($getcomments)) {
 
       $user_info        = $fs->getUserDetails($row['user_id']);
 
@@ -882,10 +882,10 @@ if ($permissions['add_comments'] == "1" && $task_details['is_closed'] != '1') {
 <div class="tabentries">
     <?php
     // if there are attachments, show them
-    $getattachments = $fs->dbQuery("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
-    while ($row = $fs->dbFetchArray($getattachments)) {
-      $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['added_by']));
-      list($user_name) = $fs->dbFetchArray($getusername);
+    $getattachments = $db->Query("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
+    while ($row = $db->FetchArray($getattachments)) {
+      $getusername = $db->Query("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['added_by']));
+      list($user_name) = $db->FetchArray($getusername);
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
 
@@ -1018,10 +1018,10 @@ if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '
 
 
     <?php
-    $get_related = $fs->dbQuery("SELECT * FROM flyspray_related WHERE this_task = ?", array($_GET['id']));
-    while ($row = $fs->dbFetchArray($get_related)) {
-      $get_summary = $fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($row['related_task']));
-      while ($subrow = $fs->dbFetchArray($get_summary)) {
+    $get_related = $db->Query("SELECT * FROM flyspray_related WHERE this_task = ?", array($_GET['id']));
+    while ($row = $db->FetchArray($get_related)) {
+      $get_summary = $db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($row['related_task']));
+      while ($subrow = $db->FetchArray($get_summary)) {
         $summary = stripslashes($subrow['item_summary']);
         ?>
       <div class="tabentry">
@@ -1071,10 +1071,10 @@ if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '
   <p><em><?php echo $details_text['otherrelated'];?></em></p>
   <p>
     <?php
-    $get_related = $fs->dbQuery("SELECT * FROM flyspray_related WHERE related_task = ?", array($_GET['id']));
-    while ($row = $fs->dbFetchArray($get_related)) {
-      $get_summary = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($row['this_task']));
-      while ($subrow = $fs->dbFetchArray($get_summary)) {
+    $get_related = $db->Query("SELECT * FROM flyspray_related WHERE related_task = ?", array($_GET['id']));
+    while ($row = $db->FetchArray($get_related)) {
+      $get_summary = $db->Query("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($row['this_task']));
+      while ($subrow = $db->FetchArray($get_summary)) {
         $summary = stripslashes($subrow['item_summary']);
         echo "<a href=\"?do=details&amp;id={$row['this_task']}\">FS#{$row['this_task']} &mdash; $summary</a><br />";
       };
@@ -1089,10 +1089,10 @@ if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '
 <p><em><?php echo $details_text['theseusersnotify'];?></em></p>
 
     <?php
-    $get_user_ids = $fs->dbQuery("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id']));
-    while ($row = $fs->dbFetchArray($get_user_ids)) {
-      $get_user = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
-      while ($subrow = $fs->dbFetchArray($get_user)) {
+    $get_user_ids = $db->Query("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id']));
+    while ($row = $db->FetchArray($get_user_ids)) {
+      $get_user = $db->Query("SELECT * FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
+      while ($subrow = $db->FetchArray($get_user)) {
       ?>
       <div class="tabentry">
       <?php
@@ -1146,11 +1146,11 @@ if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '
   <?php
   };
   if ($current_user['user_id']) {
-    $result = $fs->dbQuery("SELECT * FROM flyspray_notifications
+    $result = $db->Query("SELECT * FROM flyspray_notifications
               WHERE task_id = ?
               AND user_id = ?
               ", array($_GET['id'], $current_user['user_id']));
-    if (!$fs->dbCountRows($result)) {
+    if (!$db->CountRows($result)) {
   ?>
   <form action="index.php" method="post" id="addmyself">
     <p>
@@ -1186,10 +1186,10 @@ if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '
 <div class="tabentries">
 
   <?php
-    $get_reminders = $fs->dbQuery("SELECT * FROM flyspray_reminders WHERE task_id = ? ORDER BY reminder_id", array($_GET['id']));
-    while ($row = $fs->dbFetchArray($get_reminders)) {
-      $get_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($row['to_user_id']));
-      while ($subrow = $fs->dbFetchArray($get_username)) {
+    $get_reminders = $db->Query("SELECT * FROM flyspray_reminders WHERE task_id = ? ORDER BY reminder_id", array($_GET['id']));
+    while ($row = $db->FetchArray($get_reminders)) {
+      $get_username = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($row['to_user_id']));
+      while ($subrow = $db->FetchArray($get_username)) {
 
 // If the user has permission, then show them a form to remove a reminder
         if (($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') && $task_details['is_closed'] != '1') {
@@ -1308,14 +1308,14 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
             $details = '';
         };
 
-        $query_history = $fs->dbQuery("SELECT h.*, u.user_name, u.real_name
+        $query_history = $db->Query("SELECT h.*, u.user_name, u.real_name
                                          FROM flyspray_history h
                                          LEFT JOIN flyspray_users u ON h.user_id = u.user_id
                                          WHERE h.task_id = ? {$details}
                                          ORDER BY h.event_date ASC, h.event_type ASC",
                                          array($_GET['id']));
 
-        if ($fs->dbCountRows($query_history) == 0) {
+        if ($db->CountRows($query_history) == 0) {
             ?>
         <tr>
             <td colspan="3"><?php echo $details_text['nohistory'];?></td>
@@ -1323,7 +1323,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
             <?php
         };
 
-        while ($history = $fs->dbFetchRow($query_history)) {
+        while ($history = $db->FetchRow($query_history)) {
             ?>
         <tr>
             <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
@@ -1355,20 +1355,20 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     break;
                 case 'attached_to_project':
                     $field = $details_text['attachedtoproject'];
-                    list($oldprojecttitle) = $fs->dbFetchRow($fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id = ?", array($oldvalue)));
-                    list($newprojecttitle) = $fs->dbFetchRow($fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id = ?", array($newvalue)));
+                    list($oldprojecttitle) = $db->FetchRow($db->Query("SELECT project_title FROM flyspray_projects WHERE project_id = ?", array($oldvalue)));
+                    list($newprojecttitle) = $db->FetchRow($db->Query("SELECT project_title FROM flyspray_projects WHERE project_id = ?", array($newvalue)));
                     $oldvalue = "<a href=\"?project={$oldvalue}\">{$oldprojecttitle}</a>";
                     $newvalue = "<a href=\"?project={$newvalue}\">{$newprojecttitle}</a>";
                     break;
                 case 'task_type':
                     $field = $details_text['tasktype'];
-                    list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id = ?", array($oldvalue)));
-                    list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id = ?", array($newvalue)));
+                    list($oldvalue) = $db->FetchRow($db->Query("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id = ?", array($oldvalue)));
+                    list($newvalue) = $db->FetchRow($db->Query("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id = ?", array($newvalue)));
                     break;
                 case 'product_category':
                     $field = $details_text['category'];
-                    list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT category_name FROM flyspray_list_category WHERE category_id = ?", array($oldvalue)));
-                    list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT category_name FROM flyspray_list_category WHERE category_id = ?", array($newvalue)));
+                    list($oldvalue) = $db->FetchRow($db->Query("SELECT category_name FROM flyspray_list_category WHERE category_id = ?", array($oldvalue)));
+                    list($newvalue) = $db->FetchRow($db->Query("SELECT category_name FROM flyspray_list_category WHERE category_id = ?", array($newvalue)));
                     break;
                 case 'item_status':
                     $field = $details_text['status'];
@@ -1382,8 +1382,8 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     break;
                 case 'operating_system':
                     $field = $details_text['operatingsystem'];
-                    list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT os_name FROM flyspray_list_os WHERE os_id = ?", array($oldvalue)));
-                    list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT os_name FROM flyspray_list_os WHERE os_id = ?", array($newvalue)));
+                    list($oldvalue) = $db->FetchRow($db->Query("SELECT os_name FROM flyspray_list_os WHERE os_id = ?", array($oldvalue)));
+                    list($newvalue) = $db->FetchRow($db->Query("SELECT os_name FROM flyspray_list_os WHERE os_id = ?", array($newvalue)));
                     break;
                 case 'task_severity':
                     $field = $details_text['severity'];
@@ -1392,22 +1392,22 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     break;
                 case 'product_version':
                     $field = $details_text['reportedversion'];
-                    list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($oldvalue)));
-                    list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($newvalue)));
+                    list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($oldvalue)));
+                    list($newvalue) = $db->FetchRow($db->Query("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($newvalue)));
                     break;
                 case 'closedby_version':
                     $field = $details_text['dueinversion'];
                     if ($oldvalue == '0') {
                         $oldvalue = $details_text['undecided'];
                     } else {
-                        list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name
+                        list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name
                         FROM flyspray_list_version
                         WHERE version_id = ?", array($fs->emptyToZero($oldvalue))));
                     };
                     if ($newvalue == '0') {
                         $newvalue = $details_text['undecided'];
                     } else {
-                        list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name
+                        list($newvalue) = $db->FetchRow($db->Query("SELECT version_name
                         FROM flyspray_list_version
                         WHERE version_id = ?", array($fs->emptyToZero($newvalue))));
                     };
@@ -1444,7 +1444,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
 
             } elseif ($history['event_type'] == '2') {      //Task closed
                 echo $details_text['taskclosed'];
-                $res_name = $fs->dbFetchRow($fs->dbQuery("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($newvalue)));
+                $res_name = $db->FetchRow($db->Query("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($newvalue)));
                 echo " ({$res_name['resolution_name']}";
                 if ($oldvalue != '') {
                     echo ": {$oldvalue}";
@@ -1459,9 +1459,9 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
 
             } elseif ($history['event_type'] == '5') {      //Comment edited
                 echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['commentedited']}</a>";
-                $comment = $fs->dbQuery("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($history['field_changed']));
-                if ($fs->dbCountRows($comment) != 0) {
-                    $comment = $fs->dbFetchRow($comment);
+                $comment = $db->Query("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($history['field_changed']));
+                if ($db->CountRows($comment) != 0) {
+                    $comment = $db->FetchRow($comment);
                     echo " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
                 };
                 if ($details != '') {
@@ -1491,9 +1491,9 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
 
             } elseif ($history['event_type'] == '7') {      //Attachment added
                 echo $details_text['attachmentadded'];
-                $attachment = $fs->dbQuery("SELECT orig_name, file_desc FROM flyspray_attachments WHERE attachment_id = ?", array($newvalue));
-                if ($fs->dbCountRows($attachment) != 0) {
-                    $attachment = $fs->dbFetchRow($attachment);
+                $attachment = $db->Query("SELECT orig_name, file_desc FROM flyspray_attachments WHERE attachment_id = ?", array($newvalue));
+                if ($db->CountRows($attachment) != 0) {
+                    $attachment = $db->FetchRow($attachment);
                     echo ": <a href=\"?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
                     if ($attachment['file_desc'] != '') {
                         echo " ({$attachment['file_desc']})";
@@ -1510,11 +1510,11 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                 echo "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
 
             } elseif ($history['event_type'] == '11') {      //Related task added
-                list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '12') {      //Related task deleted
-                list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '13') {      //Task reopened
@@ -1529,11 +1529,11 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     echo "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
                 };
             } elseif ($history['event_type'] == '15') {      //Task added to related list of another task
-                list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['addedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '16') {      //Task deleted from related list of another task
-                list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['deletedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '17') {      //Reminder added
@@ -1552,19 +1552,19 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                 echo $details_text['reopenrequestmade'];
 
             } elseif ($history['event_type'] == '22') {      // Dependency added
-                list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['depadded']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
             } elseif ($history['event_type'] == '23') {      // Dependency added to other task
-                list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['depaddedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
             } elseif ($history['event_type'] == '24') {      // Dependency removed
-                list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['depremoved']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
             } elseif ($history['event_type'] == '25') {      // Dependency removed from other task
-                list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['depremovedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
             } elseif ($history['event_type'] == '26') {      // Task marked private

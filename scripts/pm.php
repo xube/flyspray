@@ -218,8 +218,8 @@ if ($permissions['manage_project'] == '1')
       $user_checklist = array();
 
       // Cycle through the groups that belong to this project
-      $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
-      while ($group = $fs->dbFetchArray($get_groups)) {
+      $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+      while ($group = $db->FetchArray($get_groups)) {
 
          echo '<h4><a href="?do=pm&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
          echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
@@ -229,7 +229,7 @@ if ($permissions['manage_project'] == '1')
 
          echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
-         $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+         $get_user_list = $db->Query("SELECT * FROM flyspray_users_in_groups uig
                                        LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                                        WHERE uig.group_id = ? ORDER BY u.user_name ASC",
                                        array($group['group_id']));
@@ -242,7 +242,7 @@ if ($permissions['manage_project'] == '1')
          echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
 
          $userincrement = 0;
-         while ($row = $fs->dbFetchArray($get_user_list)) {
+         while ($row = $db->FetchArray($get_user_list)) {
             // Next line to ensure we only display each user once on this page
             array_push($user_checklist, $row['user_id']);
             // Now, assign each user a number for submission
@@ -270,8 +270,8 @@ if ($permissions['manage_project'] == '1')
 
 
          // Get the list of groups to choose from
-         $groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
-         while ($group = $fs->dbFetchArray($groups)) {
+         $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+         while ($group = $db->FetchArray($groups)) {
             echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
          };
 
@@ -293,7 +293,7 @@ if ($permissions['manage_project'] == '1')
       echo '<select class="adminlist" name="user_list[]" multiple="multiple" size="15">'. "\n";
 
       // Get a list of the users not in any groups for this project
-      $user_query = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+      $user_query = $db->Query("SELECT * FROM flyspray_users_in_groups uig
                                  LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                                  LEFT JOIN flyspray_groups g on uig.group_id = g.group_id
                                  WHERE g.belongs_to_project <> ? AND u.account_enabled = ?
@@ -301,7 +301,7 @@ if ($permissions['manage_project'] == '1')
                                  array($project_id, '1'));
 
 
-      while ($row = $fs->dbFetchArray($user_query)) {
+      while ($row = $db->FetchArray($user_query)) {
          // Check if the user is in the checklist of shown users...
          if (!in_array($row['user_id'], $user_checklist)) {
             // ...if not, we display them, and add them to the array so that they don't get shown again!
@@ -315,8 +315,8 @@ if ($permissions['manage_project'] == '1')
       echo '<select class="adminbutton" name="add_to_group">'. "\n";
 
       // Get the list of groups to choose from
-      $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
-      while ($group = $fs->dbFetchArray($get_groups)) {
+      $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+      while ($group = $db->FetchArray($get_groups)) {
       echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
       };
 
@@ -334,8 +334,8 @@ if ($permissions['manage_project'] == '1')
    {
       echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $project_prefs['project_title'] . ': ' . $admin_text['editgroup'] . '</h3>';
 
-      $get_group_details = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_GET['id']));
-      $group_details = $fs->dbFetchArray($get_group_details);
+      $get_group_details = $db->Query("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_GET['id']));
+      $group_details = $db->FetchArray($get_group_details);
 
       // PMs are only allowed to edit groups in their project
       if ($group_details['belongs_to_project'] != $project_id)
@@ -474,9 +474,9 @@ if ($permissions['manage_project'] == '1')
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
       <table class="list">
          <?php
-         $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($project_id, '1'));
+         $get_categories = $db->Query("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($project_id, '1'));
          $countlines = 0;
-         while ($row = $fs->dbFetchArray($get_categories)) {
+         while ($row = $db->FetchArray($get_categories)) {
          ?>
             <tr>
                <td>
@@ -505,8 +505,8 @@ if ($permissions['manage_project'] == '1')
             <?php
             $countlines++;
             // Now we have to cycle through the subcategories
-            $get_subcategories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id = ? ORDER BY list_position", array($project_id, $row['category_id']));
-            while ($subrow = $fs->dbFetchArray($get_subcategories)) {
+            $get_subcategories = $db->Query("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id = ? ORDER BY list_position", array($project_id, $row['category_id']));
+            while ($subrow = $db->FetchArray($get_subcategories)) {
             ?>
             <tr>
                <td>
@@ -577,11 +577,11 @@ if ($permissions['manage_project'] == '1')
             <select name="parent_id">
             <option value=""><?php echo $admin_text['notsubcategory'];?></option>
             <?php
-            $cat_list = $fs->dbQuery('SELECT category_id, category_name
+            $cat_list = $db->Query('SELECT category_id, category_name
                                        FROM flyspray_list_category
                                        WHERE project_id=? AND show_in_list=? AND parent_id < ?
                                        ORDER BY list_position', array($project_id, '1', '1'));
-            while ($row = $fs->dbFetchArray($cat_list)) {
+            while ($row = $db->FetchArray($cat_list)) {
                $category_name = stripslashes($row['category_name']);
                if ($_GET['cat'] == $row['category_id']) {
                   echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
@@ -625,9 +625,9 @@ if ($permissions['manage_project'] == '1')
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
       <table class="list">
          <?php
-         $get_os = $fs->dbQuery("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($project_id));
+         $get_os = $db->Query("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($project_id));
          $countlines = 0;
-         while ($row = $fs->dbFetchArray($get_os)) {
+         while ($row = $db->FetchArray($get_os)) {
          ?>
          <tr>
             <td>
@@ -708,9 +708,9 @@ if ($permissions['manage_project'] == '1')
          <table class="list">
 
          <?php
-         $get_version = $fs->dbQuery("SELECT * FROM flyspray_list_version WHERE project_id = ? ORDER BY list_position", array($project_id));
+         $get_version = $db->Query("SELECT * FROM flyspray_list_version WHERE project_id = ? ORDER BY list_position", array($project_id));
          $countlines = 0;
-         while ($row = $fs->dbFetchArray($get_version)) {
+         while ($row = $db->FetchArray($get_version)) {
          ?>
          <tr>
             <td>

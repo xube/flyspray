@@ -42,8 +42,8 @@ if ($permissions['open_new_tasks'] == "1"
     <td><select name="task_type" id="tasktype">
         <?php
         // Get list of task types
-        $get_severity = $fs->dbQuery("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype WHERE show_in_list = ? ORDER BY list_position", array('1'));
-        while ($row = $fs->dbFetchArray($get_severity)) {
+        $get_severity = $db->Query("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype WHERE show_in_list = ? ORDER BY list_position", array('1'));
+        while ($row = $db->FetchArray($get_severity)) {
             echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>";
         };
         ?>
@@ -57,19 +57,19 @@ if ($permissions['open_new_tasks'] == "1"
       <select class="adminlist" name="product_category" id="productcategory">
        <?php
        // Get list of categories
-      $cat_list = $fs->dbQuery('SELECT category_id, category_name
+      $cat_list = $db->Query('SELECT category_id, category_name
                                 FROM flyspray_list_category
                                 WHERE project_id=? AND show_in_list=? AND parent_id < ?
                                 ORDER BY list_position', array($project_id, '1', '1'));
-     while ($row = $fs->dbFetchArray($cat_list)) {
+     while ($row = $db->FetchArray($cat_list)) {
        $category_name = stripslashes($row['category_name']);
          echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
 
-         $subcat_list = $fs->dbQuery('SELECT category_id, category_name
+         $subcat_list = $db->Query('SELECT category_id, category_name
                                  FROM flyspray_list_category
                                  WHERE project_id=? AND show_in_list=? AND parent_id = ?
                                  ORDER BY list_position', array($project_id, '1', $row['category_id']));
-         while ($subrow = $fs->dbFetchArray($subcat_list)) {
+         while ($subrow = $db->FetchArray($subcat_list)) {
            $subcategory_name = stripslashes($subrow['category_name']);
 
            echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
@@ -124,9 +124,9 @@ if ($permissions['open_new_tasks'] == "1"
      <td><select id="operatingsystem" name="operating_system">
         <?php
         // Get list of operating systems
-        $get_os = $fs->dbQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = ? ORDER BY list_position",
+        $get_os = $db->Query("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = ? ORDER BY list_position",
                                 array($project_id, '1'));
-        while ($row = $fs->dbFetchArray($get_os)) {
+        while ($row = $db->FetchArray($get_os)) {
           echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
         };
         ?>
@@ -183,9 +183,9 @@ if ($permissions['open_new_tasks'] == "1"
        <select class="adminlist" name="product_version" id="productversion">
         <?php
         // Get list of versions
-        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
+        $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
                                     array($project_id, '1', '2'));
-        while ($row = $fs->dbFetchArray($get_version)) {
+        while ($row = $db->FetchArray($get_version)) {
           echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
         };
         ?>
@@ -198,9 +198,9 @@ if ($permissions['open_new_tasks'] == "1"
         <?php
         echo "<option value=\"\">{$newtask_text['undecided']}</option>\n";
 
-        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
+        $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
                                     array($project_id, '1', '3'));
-        while ($row = $fs->dbFetchArray($get_version)) {
+        while ($row = $db->FetchArray($get_version)) {
           echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
         };
         ?>

@@ -46,7 +46,7 @@ if ($_GET['action'] == "logout") {
       setcookie('flyspray_passhash', crypt($user['user_pass'], $cookiesalt), $cookie_time, "/");
 
       // If the user had previously requested a password change, remove the magic url
-      $remove_magic = $fs->dbQuery("UPDATE flyspray_users SET
+      $remove_magic = $db->Query("UPDATE flyspray_users SET
                                   magic_url = ''
                                   WHERE user_id = ?",
                                   array($user['user_id'])

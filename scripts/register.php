@@ -11,12 +11,12 @@ if ($flyspray_prefs['spam_proof'] == '1'
 if ($_GET['magic']) {
 
     // Check that the magic url is valid
-    $check_magic = $fs->dbQuery("SELECT * FROM flyspray_registrations
+    $check_magic = $db->Query("SELECT * FROM flyspray_registrations
                                  WHERE magic_url = ?",
                                  array($_GET['magic'])
                                );
 
-    if (!$fs->dbCountRows($check_magic)) {
+    if (!$db->CountRows($check_magic)) {
       echo "<div class=\"redirectmessage\"><p><em>{$register_text['badmagic']}</em></p></div>";
       echo '<meta http-equiv="refresh" content="2; URL=index.php">';
 
@@ -52,14 +52,14 @@ if ($_GET['magic']) {
       </td>
     </tr>
   </table>
-   
+
    </form>
 
 
   <?php
   // End of checking that the magic url is valid
   };
-  
+
 // If there was no magic url specified
 } else {
 ?>

@@ -103,14 +103,14 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    // If the user has the global 'view tasks' permission, view all projects unrestricted
    if ($permissions['global_view'] == '1')
    {
-      $check_projects = $fs->dbQuery("SELECT p.project_id
+      $check_projects = $db->Query("SELECT p.project_id
                                        FROM flyspray_projects p"
                                     );
 
    // Those who aren't super users get this more restrictive query
    } elseif (isset($_COOKIE['flyspray_userid']) && $permission['global_view'] != '1')
    {
-      $check_projects = $fs->dbQuery("SELECT p.project_id
+      $check_projects = $db->Query("SELECT p.project_id
                                        FROM flyspray_projects p
                                        LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
                                        LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
@@ -122,7 +122,7 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    // Anonymous users also need a query here
    } else
    {
-      $check_projects = $fs->dbQuery("SELECT p.project_id
+      $check_projects = $db->Query("SELECT p.project_id
                                        FROM flyspray_projects p
                                        WHERE p.others_view = '1'"
                                     );
@@ -134,7 +134,7 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    $sql_params[] = '0';
 
    // Cycle through the projects, selecting the ones that the user is allowed to view
-   while ($this_project = $fs->dbFetchArray($check_projects)) {
+   while ($this_project = $db->FetchArray($check_projects)) {
       $temp_where = $temp_where . " OR attached_to_project = ?";
       $sql_params[] = $this_project['project_id'];
       //echo $temp_where . ' - ' . $this_project['project_id'] . '<br />';
@@ -187,11 +187,11 @@ if (is_numeric($_GET['cat'])) {
   $sql_params[] = $_GET['cat'];
 
   // Do some weird stuff to add the subcategories to the query
-  $get_subs = $fs->dbQuery('SELECT category_id
+  $get_subs = $db->Query('SELECT category_id
                             FROM flyspray_list_category
                             WHERE parent_id = ?',
                             array($_GET['cat']));
-  while ($row = $fs->dbFetchArray($get_subs)) {
+  while ($row = $db->FetchArray($get_subs)) {
     $temp_where = $temp_where . " OR product_category =?";
     $sql_params[] = $row['category_id'];
   };
@@ -255,7 +255,7 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
 
 <?php
 // Check that the requested project is active
-//$getproject = $fs->dbFetchArray($fs->dbQuery('SELECT * FROM flyspray_projects WHERE project_id = ?', array($project_id)));
+//$getproject = $db->FetchArray($db->Query('SELECT * FROM flyspray_projects WHERE project_id = ?', array($project_id)));
 
 if ($project_prefs['project_is_active'] == '1'
     && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
@@ -277,10 +277,10 @@ if ($project_prefs['project_is_active'] == '1'
     <select name="type">
       <option value=""><?php echo $index_text['alltasktypes'];?></option>
       <?php
-      $tasktype_list = $fs->dbQuery('SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
+      $tasktype_list = $db->Query('SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
                                        WHERE show_in_list = 1
                                        ORDER BY list_position');
-      while ($row = $fs->dbFetchArray($tasktype_list)) {
+      while ($row = $db->FetchArray($tasktype_list)) {
         if ($_GET['type'] == $row['tasktype_id']) {
           echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>\n";
         } else {
@@ -307,11 +307,11 @@ if ($project_prefs['project_is_active'] == '1'
     <select name="due" <?php if($_GET['project'] == '0') { echo 'DISABLED';};?>>
       <option value=""><?php echo $index_text['dueanyversion'];?></option>
       <?php
-      $ver_list = $fs->dbQuery("SELECT version_id, version_name
+      $ver_list = $db->Query("SELECT version_id, version_name
                                   FROM flyspray_list_version
                                   WHERE project_id=? AND show_in_list=? AND version_tense=?
                                   ORDER BY list_position", array($project_id, '1', '3'));
-      while ($row = $fs->dbFetchArray($ver_list)) {
+      while ($row = $db->FetchArray($ver_list)) {
         if ($_GET['due'] == $row['version_id']) {
           echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
         } else {
@@ -334,11 +334,11 @@ if ($project_prefs['project_is_active'] == '1'
     <select name="cat" <?php if($_GET['project'] == '0') { echo 'DISABLED';};?>>
       <option value=""><?php echo $index_text['allcategories'];?></option>
       <?php
-      $cat_list = $fs->dbQuery('SELECT category_id, category_name
+      $cat_list = $db->Query('SELECT category_id, category_name
                                   FROM flyspray_list_category
                                   WHERE project_id=? AND show_in_list=? AND parent_id < ?
                                   ORDER BY list_position', array($project_id, '1', '1'));
-      while ($row = $fs->dbFetchArray($cat_list)) {
+      while ($row = $db->FetchArray($cat_list)) {
         $category_name = stripslashes($row['category_name']);
         if ($_GET['cat'] == $row['category_id']) {
           echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
@@ -346,11 +346,11 @@ if ($project_prefs['project_is_active'] == '1'
           echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
         };
 
-        $subcat_list = $fs->dbQuery('SELECT category_id, category_name
+        $subcat_list = $db->Query('SELECT category_id, category_name
                                   FROM flyspray_list_category
                                   WHERE project_id=? AND show_in_list=? AND parent_id = ?
                                   ORDER BY list_position', array($project_id, '1', $row['category_id']));
-        while ($subrow = $fs->dbFetchArray($subcat_list)) {
+        while ($subrow = $db->FetchArray($subcat_list)) {
           $subcategory_name = stripslashes($subrow['category_name']);
           if ($_GET['cat'] == $subrow['category_id']) {
             echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
@@ -565,11 +565,11 @@ $from .= '
 
 //$where[] = 't.attached_to_project = flyspray_projects.project_id';
 $where = join(' AND ', $where);
-$get_total = $fs->dbQuery("SELECT * FROM $from
+$get_total = $db->Query("SELECT * FROM $from
           WHERE $where
           ORDER BY $sortorder", $sql_params);
 
-$total = $fs->dbCountRows($get_total);
+$total = $db->CountRows($get_total);
 print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
 
@@ -581,7 +581,7 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 <!--<tbody>-->
 <?php
 // Parts of his SQL courtesy of Lance Conry http://www.rhinosw.com/
-$get_details = $fs->dbQuery("
+$get_details = $db->Query("
 SELECT
         t.*,
         p.project_title,
@@ -600,7 +600,7 @@ ORDER BY
         $sortorder", $sql_params, $perpage, $offset);
 
 
-  while ($task_details = $fs->dbFetchArray($get_details)) {
+  while ($task_details = $db->FetchArray($get_details)) {
 
     // Set the status text to 'closed' if this task is closed
     if ($task_details['is_closed'] == "1")
@@ -641,11 +641,11 @@ ORDER BY
     };
 
     // get the number of comments and attachments
-    $getcomments = $fs->dbQuery("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
-    list($comments) = $fs->dbFetchRow($getcomments);
+    $getcomments = $db->Query("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
+    list($comments) = $db->FetchRow($getcomments);
 
-    $getattachments = $fs->dbQuery("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
-    list($attachments) = $fs->dbFetchRow($getattachments);
+    $getattachments = $db->Query("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
+    list($attachments) = $db->FetchRow($getattachments);
 
     // Start displaying the cells for this row
     echo "<tr class=\"severity{$task_details['task_severity']}\"

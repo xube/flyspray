@@ -29,19 +29,19 @@ if (isset($_REQUEST['do'])) {
 }
 
 // Check that the requested project actually exists
-$check_proj_exists = $fs->dbQuery("SELECT * FROM flyspray_projects
+$check_proj_exists = $db->Query("SELECT * FROM flyspray_projects
                                    WHERE project_id = ?",
                                    array($project_id)
                                  );
-if (!$fs->dbCountRows($check_proj_exists)) {
+if (!$db->CountRows($check_proj_exists)) {
   die("<meta http-equiv=\"refresh\" content=\"0; URL=index.php?project={$flyspray_prefs['default_project']}\">");
 };
 
 // If a file was requested, deliver it
 if ($_GET['getfile']) {
 
-  list($orig_name, $file_name, $file_type) = $fs->dbFetchArray(
-                                $fs->dbQuery("SELECT orig_name,
+  list($orig_name, $file_name, $file_type) = $db->FetchArray(
+                                $db->Query("SELECT orig_name,
                                               file_name,
                                               file_type
                                               FROM flyspray_attachments
@@ -221,16 +221,16 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     if ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
 
     // Find out if there are any PM requests wanting attention
-    $get_req = $fs->dbQuery("SELECT * FROM flyspray_admin_requests
+    $get_req = $db->Query("SELECT * FROM flyspray_admin_requests
                              WHERE project_id = ? AND resolved_by = '0'",
                              array($project_id));
-    $num_req = $fs->dbCountRows($get_req);
+    $num_req = $db->CountRows($get_req);
 
     // Check for admin requests too
     if ($permissions['is_admin'] == '1') {
-      $get_admin_req = $fs->dbQuery("SELECT * FROM flyspray_admin_requests
+      $get_admin_req = $db->Query("SELECT * FROM flyspray_admin_requests
                                      WHERE project_id = '0' AND resolved_by = '0'");
-      $num_req = $num_req + $fs->dbCountRows($get_admin_req);
+      $num_req = $num_req + $db->CountRows($get_admin_req);
     };
 
 
@@ -294,8 +294,8 @@ if (isset($_SESSION['SUCCESS'])) {
       <select name="project">
       <option value="0"<?php if ($_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
       <?php
-      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
-      while ($row = $fs->dbFetchArray($get_projects)) {
+      $get_projects = $db->Query("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
+      while ($row = $db->FetchArray($get_projects)) {
         if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
           echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
         } else {

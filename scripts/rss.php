@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Include the header to set up database access etc
 include('../header.php');
 
@@ -22,26 +22,26 @@ if (isset($_REQUEST['num'])) {
 // Determine which type the user wants
 if ($_REQUEST['type'] == 'new') {
 
-  $task_details = $fs->dbQuery("SELECT task_id, item_summary, detailed_desc
+  $task_details = $db->Query("SELECT task_id, item_summary, detailed_desc
                                  FROM flyspray_tasks
                                  WHERE is_closed != '1' ORDER BY date_opened DESC", false, $limit);
 
 } elseif ($_REQUEST['type'] == 'clo') {
 
-  $task_details = $fs->dbQuery("SELECT task_id, item_summary, detailed_desc
+  $task_details = $db->Query("SELECT task_id, item_summary, detailed_desc
                                  FROM flyspray_tasks
                                  WHERE is_closed = '1' ORDER BY date_closed DESC", false, $limit);
-  
+
 } elseif ($_REQUEST['type'] == 'sev') {
 
-  $task_details = $fs->dbQuery("SELECT task_id, item_summary, detailed_desc
+  $task_details = $db->Query("SELECT task_id, item_summary, detailed_desc
                                  FROM flyspray_tasks
                                  WHERE is_closed != '1' ORDER BY task_severity DESC", false, $limit);
 
 
 } elseif ($_REQUEST['type'] == 'pri') {
 
-  $task_details = $fs->dbQuery("SELECT task_id, item_summary, detailed_desc
+  $task_details = $db->Query("SELECT task_id, item_summary, detailed_desc
                                  FROM flyspray_tasks
                                  WHERE is_closed != '1' ORDER BY task_priority DESC", false, $limit);
 
@@ -55,8 +55,8 @@ if ($_REQUEST['type'] == 'new') {
 // If the user actually requested a type
 if (isset($_REQUEST['type'])) {
   // Now, let's loop the results
-  while ($row = $fs->dbFetchArray($task_details)) {
-  
+  while ($row = $db->FetchArray($task_details)) {
+
     $item_summary = htmlspecialchars($row['item_summary']);
     $detailed_desc = htmlspecialchars($row['detailed_desc']);
 
@@ -67,7 +67,7 @@ if (isset($_REQUEST['type'])) {
 
     $item_summary = stripslashes($item_summary);
     $detailed_desc = stripslashes($detailed_desc);
-  
+
     echo '<item rdf:about="This is an item for a Flyspray RSS feed">' . "\n";
     echo '<title>' . $item_summary . '</title>' . "\n";
     echo '<link>' . $flyspray_prefs['base_url'] . '?do=details&amp;do=details&amp;id=' . $row['task_id'] . '</link>' . "\n";

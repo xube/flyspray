@@ -8,7 +8,7 @@ if (($permissions['admin'] == '1' && $_GET['project'] == '0')
 if ($_GET['project'] == '0') {
    $forproject = $newgroup_text['globalgroups'];
 } else {
-   $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
+   $project_details = $db->FetchArray($db->Query("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
    $forproject = $project_details['project_title'];
 };
 ?>

@@ -47,7 +47,7 @@ function getTask($args) {
    // Get the task details
    $task_details = @$fs->getTaskDetails($task_id);
 
-   // Get the user's permissions for this task
+   // Get the user's permissions for the project this task belongs to
    $permissions = $fs->checkPermissions($user_id, $task_details['attached_to_project']);
 
    // If the task doesn't exist, stop.

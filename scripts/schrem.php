@@ -1,19 +1,19 @@
-﻿<?php
+<?php
 // This script checks for pending scheduled notifications
 // and sends them at the right time.
 include('../header.php');
 
 $now = date(U);
 
-$get_reminders = $fs->dbQuery("SELECT * FROM flyspray_reminders ORDER BY reminder_id");
+$get_reminders = $db->Query("SELECT * FROM flyspray_reminders ORDER BY reminder_id");
 
 // Cycle through all reminders in the database table
-while ($row = $fs->dbFetchRow($get_reminders)) {
+while ($row = $db->FetchRow($get_reminders)) {
 
-	// Check to see if it's time to send a reminder
-	if (($row['start_time'] < $now) && (($row['last_sent'] + $row['how_often']) < $now)) {
+        // Check to see if it's time to send a reminder
+        if (($row['start_time'] < $now) && (($row['last_sent'] + $row['how_often']) < $now)) {
 
-		// Send the reminder
+                // Send the reminder
 
         $lang = $flyspray_prefs['lang_code'];
         require("../lang/$lang/functions.inc.php");
@@ -21,13 +21,13 @@ while ($row = $fs->dbFetchRow($get_reminders)) {
         $jabber_users = array();
         $email_users = array();
 
-		// Get the user's notification type and address
-        $get_details = $fs->dbQuery("SELECT notify_type, jabber_id, email_address
+                // Get the user's notification type and address
+        $get_details = $db->Query("SELECT notify_type, jabber_id, email_address
                 FROM flyspray_users
                 WHERE user_id = ?",
                 array($row['to_user_id']));
 
-        while ($subrow = $fs->dbFetchArray($get_details)) {
+        while ($subrow = $db->FetchArray($get_details)) {
 
             if (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
                     OR ($flyspray_prefs['user_notify'] == '2')) {
@@ -56,14 +56,14 @@ while ($row = $fs->dbFetchRow($get_reminders)) {
 
         // Pass the recipients and message onto the mass email function
         $fs->SendEmail($email_users, $subject, $message);
-		
-		// Update the database with the time sent
-		$update_db = $fs->dbQuery("UPDATE flyspray_reminders SET last_sent = ? WHERE reminder_id = ?", array($now, $row['reminder_id']));
 
-		// Debug
-		echo "Reminder Sent!<br>";
+                // Update the database with the time sent
+                $update_db = $db->Query("UPDATE flyspray_reminders SET last_sent = ? WHERE reminder_id = ?", array($now, $row['reminder_id']));
 
-	};
+                // Debug
+                echo "Reminder Sent!<br>";
+
+        };
 };
 
 

@@ -56,7 +56,8 @@ if (!isset($basedir)
 
 include_once ( "$adodbpath" );
 include ( "$basedir/includes/functions.inc.php" );
-include ( "$basedir/includes/regexp.php" );
+include_once ( "$basedir/includes/regexp.php" );
+include_once ( "$basedir/includes/db.inc.php" );
 include_once ( "$basedir/includes/markdown.php" );
 
 
@@ -72,9 +73,10 @@ if (isset($_COOKIE['flyspray_userid']))
 
 // Define our functions class
 $fs = new Flyspray;
+$db = new Database;
 
 // Open a connection to the database
-$res = $fs->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);
+$res = $db->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);
 if (!$res) {
   die("Flyspray was unable to connect to the database.  Check your settings in flyspray.conf.php");
 }
@@ -85,7 +87,7 @@ $flyspray_prefs = $fs->getGlobalPrefs();
 // If we've gone directly to a task, we want to override the project_id set in the function below
 if (($_GET['do'] == 'details') && (isset($_GET['id'])))
 {
-   list($project_id) = $fs->dbFetchArray($fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
+   list($project_id) = $db->FetchArray($db->Query("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
    //setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
 };
 

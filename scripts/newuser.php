@@ -4,7 +4,7 @@ get_language_pack($lang, 'newuser');
 // Make sure that only admins are using this page, unless
 // The application preferences allow anonymous signups
 if ($permissions['is_admin'] == "1"
-    OR ($flyspray_prefs['spam_proof'] != '1' 
+    OR ($flyspray_prefs['spam_proof'] != '1'
     && $flyspray_prefs['anon_reg'] == '1'
     && !$_COOKIE['flyspray_userid'])) {
 ?>
@@ -72,8 +72,8 @@ if ($permissions['is_admin'] == "1"
       <td>
       <select id="groupin" class="adminlist" name="group_in">
       <?php // Get the group names
-      $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
-      while ($row = $fs->dbFetchArray($get_group_details)) {
+      $get_group_details = $db->Query("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
+      while ($row = $db->FetchArray($get_group_details)) {
         echo "<option value=\"{$row['group_id']}\">{$row['group_name']}</option>";
       };
       ?>
