@@ -207,44 +207,15 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
         $do = $_POST['do'];
       };
 
-switch ($do) {
-  case "admin": $thepage = 'scripts/admin.php';
-  break;
-  case "authenticate": $thepage = 'scripts/authenticate.php';
-  break;
-  case "chpass": $thepage = 'scripts/chpass.php';
-  break;
-  case "chproject": $thepage = 'scripts/chproject.php';
-  break;
-  case "details": $thepage = 'scripts/details.php';
-  break;
-  case "loginbox": $thepage = 'scripts/loginbox.php';
-  break;
-  case "modify": $thepage = 'scripts/modify.php';
-  break;
-  case "newgroup": $thepage = 'scripts/newgroup.php';
-  break;
-  case "newproject": $thepage = 'scripts/newproject.php';
-  break;
-  case "newtask": $thepage = 'scripts/newtask.php';
-  break;
-  case "newuser": $thepage = 'scripts/newuser.php';
-  break;
-  case "register": $thepage = 'scripts/register.php';
-  break;
-  default: $thepage = 'scripts/index.php';
-  break;
-};
-
-      if (file_exists($thepage) && ($flyspray_prefs['anon_view'] == '1' OR $_SESSION['userid'])) {
-        require($thepage);
-     // } elseif ($flyspray_prefs['anon_view'] == '1' OR $_SESSION['userid']) {
-       // require($thepage);
+      // This is to only allow people to request valid pages, instead of things like config.inc.php or /etc/passwd 
+      if (preg_match ("/^(admin|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|register)$/", $do)
+         && ($flyspray_prefs['anon_view'] == '1' OR $_SESSION['userid'])) {
+         
+         require("scripts/$do.php");
+      } else {
+        require("scripts/index.php");
       };
-      ?>
 
-
-      <?php
       // if no-one's logged in, show the login box
       if(!$_COOKIE['flyspray_userid']) {
         require('scripts/loginbox.php');
