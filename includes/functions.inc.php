@@ -320,7 +320,7 @@ function GetTaskDetails($task_id) {
 
   $db->Query("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                   VALUES(?, ?, ?, ?, ?, ?, ?)",
-                  array($task, $this->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
+                  array($task, $db->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
   }
 
 

@@ -1402,14 +1402,14 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                     } else {
                         list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name
                         FROM flyspray_list_version
-                        WHERE version_id = ?", array($fs->emptyToZero($oldvalue))));
+                        WHERE version_id = ?", array($db->emptyToZero($oldvalue))));
                     };
                     if ($newvalue == '0') {
                         $newvalue = $details_text['undecided'];
                     } else {
                         list($newvalue) = $db->FetchRow($db->Query("SELECT version_name
                         FROM flyspray_list_version
-                        WHERE version_id = ?", array($fs->emptyToZero($newvalue))));
+                        WHERE version_id = ?", array($db->emptyToZero($newvalue))));
                     };
                     break;
                 case 'percent_complete':

@@ -582,7 +582,7 @@ $basic_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']}
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs";
 
 
-      $result = $notify->Basic($task_details['assigned_to'], $subject, $basic_message);
+      //$result = $notify->Basic($task_details['assigned_to'], $subject, $basic_message);
       echo $result;
 
     };
@@ -692,14 +692,14 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       // Check how they want to receive their code
       if ($_POST['notify_type'] == '1') {
 
-      $fs->SendEmail(
+      $notify->SendEmail(
                       $_POST['email_address'],
                       "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}",
                       $message
                       );
 
       } elseif ($_POST['notify_type'] == '2') {
-        $fs->JabberMessage(
+        $notify->JabberMessage(
                              $flyspray_prefs['jabber_server'],
                              $flyspray_prefs['jabber_port'],
                              $flyspray_prefs['jabber_username'],
