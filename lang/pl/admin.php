@@ -117,8 +117,8 @@ $admin_text = array (
 'past'			=>  'Przeszłe',
 'present'		=>  'Obecne',
 'future'		=>  'Przyszłe',
-'adminchangepass'	=>  'Zmień hasło',
-'adminconfirmpass'	=>  'Potwierdź hasło',
+'changepass'		=>  'Zmień hasło',
+'confirmpass'		=>  'Potwierdź hasło',
 
 );
 // vim:fenc=utf-8:enc=utf-8

@@ -44,7 +44,6 @@ $reports_text = array (
 'duein'         =>      'Due in',
 
 'changelog'     =>      'Changelog',
-'events'        =>      'Events',
 
 );
 ?>

@@ -111,6 +111,8 @@ $details_text = array (
 'reminderadded'     =>   'Przypomnienie dodane',
 'reminderdeleted'   =>   'Przypomnienie usunięte',
 'priority'          =>   'Priorytet',
+'previousvalue'     =>   'Poprzednia wartość',
+'newvalue'          =>   'Nowa wartość',
 
 );
 // vim:fenc=utf-8:enc=utf-8

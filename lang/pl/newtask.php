@@ -31,6 +31,7 @@ $newtask_text = array (
 
 'notifyme'	=>	'Powiadom mnie, gdy zgłoszenie zostanie zmienione',
 'priority'	=>	'Priorytet',
+'undecided'	=>	'Nie zdecydowano',
 
 );
 // vim:fenc=utf-8:enc=utf-8

@@ -50,6 +50,7 @@ $language = array (
 'tasksassigned'     =>  'Przydzielone mi',
 'tasksreported'     =>  'Zgłoszone przeze mnie',
 'taskswatched'      =>  'Obserwowane przeze mnie',
+'lastsearch'	    =>  'Ostatnio wyszukiwane',
 
 
 );

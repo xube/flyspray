@@ -20,5 +20,30 @@ $reports_text = array (
 'age'		=>	'Wiek',
 'agerep'	=>	'Raport wieku',
 
+'eventsrep'     =>      'Raport zdarzeñ',
+'events'        =>      'Zdarzeniadd',
+'tasks'         =>      'Zg³oszenia',
+'opened'        =>      'Otwarte',
+'closed'        =>      'Zamkniête',
+'edited'        =>      'Przydzielone',
+'assigned'      =>      'Przydzielone',
+'comments'      =>      'Komentarze',
+'attachments'   =>      'Za³±czniki',
+'relatedtasks'  =>      'Powi±zane zg³oszenia',
+'notifications' =>      'Powiadomienia',
+'reminders'     =>      'Przypomnienia',
+'within'        =>      'w ci±gu',
+
+'pastday'       =>      'Miniony dzieñ',
+'pastweek'      =>      'Zesz³y tydzieñ',
+'pastmonth'     =>      'Zesz³y miesi±c',
+'pastyear'      =>      'Zesz³y rok',
+'nolimit'       =>      'Bez ograniczeñ',
+
+'from'          =>      'Od',
+'duein'         =>      'Do wersji',
+
+'changelog'     =>      'Changelog',
+
 );
 ?>
