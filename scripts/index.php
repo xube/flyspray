@@ -179,13 +179,14 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
 ?>
 
 <!-- Query line -->
+<map id="projectsearchform" name="projectsearchform">
 <form action="index.php" method="get">
-<input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>">
-<input type="hidden" name="project" value="<?php echo $_GET['project'] == '0' ? '0' : $project_id;?>">
 <p id="search">
+<input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>" />
+<input type="hidden" name="project" value="<?php echo $_GET['project'] == '0' ? '0' : $project_id;?>" />
   <label for="searchtext"><?php echo $index_text['searchthisproject'];?>:</label>
     <input id="searchtext" name="string" type="text" size="20"
-    maxlength="100" value="<?php echo $_GET['string'];?>" accesskey="q">
+    maxlength="100" value="<?php echo $_GET['string'];?>" accesskey="q" />
 
     <select name="type">
       <option value=""><?php echo $index_text['alltasktypes'];?></option>
@@ -234,7 +235,7 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
       ?>
     </select>
 
-    <br>
+    <br />
     
     <select name="dev">
       <option value=""><?php echo $index_text['alldevelopers'];?></option>
@@ -301,9 +302,10 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
       <option value="100" <?php if ($perpage == "100") { echo "selected=\"selected\"";};?>>100</option>
     </select>
 
-    <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>">
+    <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />
 </p>
 </form>
+</map>
 
 <?php
 /**
@@ -348,15 +350,15 @@ function list_heading($colname, $orderkey, $image = '')
       $sort1 = ( $sort1 == 'asc' ? 'asc' : 'desc' );
       $sort2 = ( $sort2 == 'asc' ? 'asc' : 'desc' );
       
-      echo "<th $class nowrap>";
+      echo "<th $class>";
       $title = $index_text['sortthiscolumn'];
       $link = "?order=$orderkey$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
       echo "<a title=\"$title\" href=\"$link\">";
-      echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\">";
+      echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" />\n";
       
       // Sort indicator arrows
       if($_GET['order'] == $orderkey) {
-        echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png">';
+        echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png" />';
       };
       
       echo "</a></th>";
@@ -364,7 +366,7 @@ function list_heading($colname, $orderkey, $image = '')
     else
     {
       echo "<th>";
-      echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\">";
+      echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\" />";
       echo "</th>";
     }
   } 
@@ -401,7 +403,7 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
     echo "<td class=\"project_$colname\">";
     if($url)
     {
-      echo "<a href=\"$url\">$cellvalue";
+      echo "<a href=\"$url\">$cellvalue</a>";
     }
     else
     {
@@ -580,7 +582,7 @@ ORDER BY
     list_cell("dueversion",$task_details['closedby_version'],1);
     list_cell("comments",$comments);
     list_cell("attachments",$attachments);
-    list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\">\n");
+    list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\" />\n");
     
     // The end of this row
     echo "</tr>\n";

@@ -1,15 +1,16 @@
 <?php get_language_pack($lang, 'loginbox'); ?>
 
+<map id="loginboxform" name="loginboxform">
 <form action="scripts/authenticate.php" method="post">
 <table class="login">
   <tr>
     <td><label><?php echo $loginbox_text['username'];?>
-      <input type="text" name="username" size="20" maxlength="20"></label>
+      <input type="text" name="username" size="20" maxlength="20" /></label>
     </td>
     <td><label><?php echo $loginbox_text['password'];?>
-      <input type="password" name="password" size="20" maxlength="20"></label>
+      <input type="password" name="password" size="20" maxlength="20" /></label>
     </td>
-    <td><label><input type="checkbox" name="remember_login">
+    <td><label><input type="checkbox" name="remember_login" />
         <?php echo $loginbox_text['rememberme'];?></label>
     </td> 
     <td>
@@ -18,8 +19,9 @@
             echo "<input type=\"hidden\" name=\"task\" value=\"{$_GET['id']}\">";
           };
           ?>
-    <input class="adminbutton" type="submit" value="<?php echo $loginbox_text['login'];?>">
+    <input class="adminbutton" type="submit" value="<?php echo $loginbox_text['login'];?>" />
     </td>
   </tr>
 </table>
 </form>
+</map>

@@ -45,17 +45,17 @@ if ($_GET['sort']) {
 };*/
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
 <title><?php echo stripslashes($project_prefs['project_title']);?></title>
-  <link rel="icon" href="./favicon.ico" type="image/png">
-  <meta name="description" content="Flyspray, a Bug Tracking System written in PHP.">
+  <link rel="icon" href="./favicon.ico" type="image/png" />
+  <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
+  <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
+  <link href="calendar/styles/calendar.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="functions.js"></script>
   <script type="text/javascript" src="styleswitcher.js"></script>
   <script type="text/javascript" src="calendar/javascript/simplecalendar.js"></script>
-  <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
-  <link href="calendar/styles/calendar.css" rel="stylesheet" type="text/css">
   <?php
       // open the themes directory
       if ($handle = opendir('themes/')) {
@@ -72,7 +72,7 @@ if ($_GET['sort']) {
     sort($theme_array);
     // Then display them
     while (list($key, $val) = each($theme_array)) {
-      echo "<link href=\"themes/$val/theme.css\" title=\"$val\" rel=\"alternate stylesheet\" type=\"text/css\">\n";
+      echo "<link href=\"themes/$val/theme.css\" title=\"$val\" rel=\"alternate stylesheet\" type=\"text/css\" />\n";
     };
     ?>
 </head>
@@ -91,38 +91,42 @@ if ($project_prefs['show_logo'] == '1') {
 ?>
 
 <div id="content">
+<map id="formselecttasks" name="formselecttasks">
 <form action="index.php" method="get">
+      <p>
       <select name="tasks">
         <option value="all"><?php echo $language['tasksall'];?></option>
       <?php if ($_COOKIE['flyspray_userid']) { ?>
-        <option value="assigned" <?php if($_GET['tasks'] == 'assigned') echo 'SELECTED'; ?>><?php echo $language['tasksassigned']; ?></option>
-        <option value="reported" <?php if($_GET['tasks'] == 'reported') echo 'SELECTED'; ?>><?php echo $language['tasksreported']; ?></option>
-        <option value="watched" <?php if($_GET['tasks'] == 'watched') echo 'SELECTED'; ?>><?php echo $language['taskswatched']; ?></option>
+        <option value="assigned" <?php if($_GET['tasks'] == 'assigned') echo 'selected="selected"'; ?>><?php echo $language['tasksassigned']; ?></option>
+        <option value="reported" <?php if($_GET['tasks'] == 'reported') echo 'selected="selected"'; ?>><?php echo $language['tasksreported']; ?></option>
+        <option value="watched" <?php if($_GET['tasks'] == 'watched') echo 'selected="selected"'; ?>><?php echo $language['taskswatched']; ?></option>
       <?php }; ?> 
       </select>
       <?php echo $language['selectproject'];?>
       <select name="project">
-      <option value="0"<?php if ($_GET['project'] == '0') echo ' SELECTED';?>><?php echo $language['allprojects'];?></option>
+      <option value="0"<?php if ($_GET['project'] == '0') echo ' selected="selected"';?>><?php echo $language['allprojects'];?></option>
       <?php
       $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
       while ($row = $fs->dbFetchArray($get_projects)) {
         if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
-          echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
+          echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
         } else {
           echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
         };
       };
       ?>
       </select>
-      <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>">
+      <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>" />
+      </p>
 </form>
+</map>
 <!--<a href="<?php echo $flyspray_prefs['base_url'];?>"><?php echo $flyspray_prefs['project_title'];?></a></h2>-->
 <form action="index.php" method="get">
     <p id="showtask">
       <label><?php echo $language['showtask'];?> #
-      <input name="id" type="text" size="10" maxlength="10" accesskey="t"></label>
-      <input type="hidden" name="do" value="details">
-      <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>">
+      <input name="id" type="text" size="10" maxlength="10" accesskey="t" /></label>
+      <input type="hidden" name="do" value="details" />
+      <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>" />
     </p>
 </form>
 
@@ -228,7 +232,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo "</p>";
 
     } else {
-      echo "<br>{$language['disabledaccount']}";
+      echo "<br />{$language['disabledaccount']}";
       echo "<meta http-equiv=\"refresh\" content=\"0; URL=scripts/authenticate.php?action=logout\">";
     };
 
@@ -248,9 +252,8 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     }
 
       // This is to only allow people to request valid pages, instead of things like config.inc.php or /etc/passwd 
-      if (preg_match ("/^(admin|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register)$/", $do)
-         && ($flyspray_prefs['anon_view'] == '1' OR $_COOKIE['flyspray_userid'])) {
-         
+//      if (preg_match ("/^(admin|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register)$/", $do)
+      if ($flyspray_prefs['anon_view'] == '1' OR $_COOKIE['flyspray_userid']) {
          require("scripts/$do.php");
       };
 

@@ -76,7 +76,7 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
     };
 
     // Check if the new task was assigned to anyone
-    if ($_POST['assigned_to'] != "0") {
+    if ($_POST['assigned_to'] != '' && $_POST['assigned_to'] != '0') {
         $fs->logEvent($get_task_info['task_id'], 14, $_POST['assigned_to'], '0');
         if ($_POST['assigned_to'] != $_COOKIE['flyspray_userid']) {
 
@@ -95,6 +95,7 @@ $current_realname ($current_username) {$modify_text['hasopened']}\n
 
     // OK, we also need to notify the category owner
     // First, see if there's an owner for this category
+    $send_to = '';
     $cat_details = $fs->dbFetchArray($fs->dbQuery("SELECT category_name, category_owner, parent_id
                                        FROM flyspray_list_category
                                        WHERE category_id = ?",
@@ -103,20 +104,22 @@ $current_realname ($current_username) {$modify_text['hasopened']}\n
     // If this category has an owner, address the notification to them
     if ($cat_details['category_owner'] != '0') {
       $send_to = $cat_details['category_owner'];
+    } elseif ($cat_details['parent_id'] != '0') {
+      // If not, see if we can get the parent category owner
+      $parent_cat_details = $fs->dbFetchArray($fs->dbQuery('SELECT category_owner
+                                                   FROM flyspray_list_category
+                                                   WHERE category_id = ?',
+                                                   array($cat_details['parent_id'])));
 
-    // If not, see if we can get the parent category owner
-    $parent_cat_details = $fs->dbFetchArray($fs->dbQuery('SELECT category_owner
-                                                 FROM flyspray_list_category
-                                                 WHERE category_id = ?',
-                                                 array($cat_details['parent_id'])));
-
-    // If there's a parent category owner, send to them
-    } elseif ($parent_cat_details['category_owner'] != '0') {
-      $send_to = $parent_cat_details['category_owner'];
-
+      // If there's a parent category owner, send to them
+      if ($parent_cat_details['category_owner'] != '0') {
+        $send_to = $parent_cat_details['category_owner'];
+      };
+    };
+    
     // Otherwise send it to the default category owner
-    } else {
-      $send_to = $project_prefs['default_cat_owner'];
+    if ($send_to == '') {
+        $send_to = $project_prefs['default_cat_owner'];
     };
 
     // Create the notification message
@@ -128,7 +131,9 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['moreinfonew']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$get_task_info['task_id']}";
 
       // ...And send it off to the category owner or default owner
-      $result = $fs->SendBasicNotification($send_to, $subject, $message);
+      if (is_numeric($send_to)) {
+        $result = $fs->SendBasicNotification($send_to, $subject, $message);
+      };
       //echo $result;
       
       $fs->logEvent($get_task_info['task_id'], 1);
