@@ -107,7 +107,7 @@ if ($effective_permissions['can_edit'] == '1'
     ?>
     </div>
 
-   <div id="taskfieldsleftedit">
+   <div id="taskfields1">
     <table class="taskdetails">
       <tr>
         <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
@@ -224,7 +224,7 @@ if ($effective_permissions['can_edit'] == '1'
   </div>
 
 
-  <div id="taskfieldsrightedit">
+  <div id="taskfields2">
      <table class="taskdetails">
        <tr>
         <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
@@ -393,7 +393,7 @@ if ($effective_permissions['can_edit'] == '1'
     ?>
     </div>
 
-    <div id="taskfieldsleft">
+    <div id="taskfields1">
 
     <table class="taskdetails">
       <tr>
@@ -451,7 +451,7 @@ if ($effective_permissions['can_edit'] == '1'
     </div>
 
 
-   <div id="taskfieldsright">
+   <div id="taskfields2">
 
      <table class="taskdetails">
        <tr>
@@ -487,7 +487,7 @@ if ($effective_permissions['can_edit'] == '1'
      </table>
 
    </div>
-      
+
 
    <div id="taskdetailsfull">
 

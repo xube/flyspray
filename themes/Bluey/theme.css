@@ -588,6 +588,7 @@ map#formselecttasks {
 }
 
 div#actionbuttons {
+  clear                : both;
   margin-top           : 15px;
   margin-left          : 5px;
 }
@@ -666,82 +667,64 @@ div#actionbuttons {
 
 /* End of Admin menu stuff */
 
-div#deps {
-  border-top: 1px solid #cccccc;
-  border-bottom: 1px solid #cccccc;
-  padding-top: 10px;
-  width: 100%
-}
-
-div#taskdeps {
-/*  width: 50%;
-  border: 1px dotted #000000;*/
-  min-height: 50px;
-  margin-bottom: 10px;
-}
-
-div#taskblocks {
-/*  width: 50%;
-  border: 1px dotted #000000;*/
-  min-height: 50px;
-}
-
 a.closedtasklink {
   text-decoration: line-through;
 }
 
-div#taskfieldsleft {
-  width: 50%;
+div#taskfields1 {
+  float: left;
+  width: 49%;
   border-right: 1px solid #cccccc;
+  margin-bottom: 8px;
 }
 
-div#taskfieldsleft table td {
+div#taskfields2 {
+  float: left;
+  width: 49%;
+  margin-bottom: 8px;
+}
+
+div#taskfields1 table td {
   width: 50%;
 }
 
-div#taskfieldsright {
-  width: 50%;
-  float: right; 
-  position: relative;
-  margin-left: auto; 
-  margin-top: -98px;
-}
-
-div#taskfieldsleft table td {
+div#taskfields2 table td {
   width: 50%;
 }
 
 div#taskdetailsfull {
+  clear: both;
   width: 98%;
   margin-top: 15px;
-  margin-bottom: 15px;
   padding-top: 15px;
+  padding-bottom: 15px;
   border-top: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
 
 }
 
-div#taskfieldsleftedit {
+div#deps {
+  padding: 8px;
+  width: 80%
+  border-top: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
+  min-height: 50px;
+}
+
+div#taskdeps {
+  float: left;
+  width: 45%;
+  min-height: 50px;
+  margin-bottom: 8px;
+}
+
+div#taskblocks {
+  float: left
   width: 50%;
-  border-right: 1px solid #cccccc;
-}
-
-div#taskfieldsleftedit table td {
-  width: 50%;
-}
-
-div#taskfieldsrightedit {
-  width: 50%;
-  float: right; 
-  position: relative;
-  margin-left: auto; 
-  margin-top: -145px;
-}
-
-div#taskfieldsleftedit table td {
-  width: 50%;
 }
 
 
+/* End of the @screen section */
 }
 
 @media print {
