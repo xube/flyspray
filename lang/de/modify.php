@@ -111,9 +111,7 @@ $modify_text = array (
 'commentdeleted'  =>  'Kommentar wurde gelöscht.',
 
 
-
 // Added in version 0.9.5
-
 'project'           =>  'Projekt:',
 'gotonewtask'       =>  'Zu den Details der soeben erstellten Aufgabe',
 'addanother'        =>  'Weitere Aufgabe zu diesem Projekt hinzufügen',
@@ -126,18 +124,39 @@ $modify_text = array (
 
 
 // Added in 0.9.6
+'reminderadded'     =>  'Ihre Erinnerung wurde erstellt.',
+'reminderdeleted'   =>  'Die gewählte Erinnerung wurde gelöscht.',
+'flyspraytask'      =>  'Flyspray-Aufgabe',
+'fieldsmissing'     =>  'Felder ohne oder mit ungültigen Werten wurden ignoriert.',
+'relatedinvalid'    =>  'Aufgabe nicht vorhanden.',
+'relatedproject'    =>  'Die gewählte Aufgabe gehört zu einem anderen Projekt.',
+'addanyway'         =>  'Trotzdem hinzufügen',
+'cancel'            =>  'Abbrechen',
+'alreadyedited'     =>  'Die Aufgabe wurde von einem anderen Benutzer bearbeitet, während Sie Ihre Änderungen vorgenommen haben.',
+'saveanyway'        =>  'Meine Änderungen speichern',
+'priority'          =>  'Priorität',
 
-'reminderadded'     =>   'Ihre Erinnerung wurde erstellt.',
-'reminderdeleted'   =>   'Die gewählte Erinnerung wurde gelöscht.',
-'flyspraytask'      =>   'Flyspray-Aufgabe',
-'fieldsmissing'     =>   'Felder ohne oder mit ungültigen Werten wurden ignoriert.',
-'relatedinvalid'    =>   'Aufgabe nicht vorhanden.',
-'relatedproject'    =>   'Die gewählte Aufgabe gehört zu einem anderen Projekt.',
-'addanyway'         =>   'Trotzdem hinzufügen',
-'cancel'            =>   'Abbrechen',
-'alreadyedited'     =>   'Die Aufgabe wurde von einem anderen Benutzer bearbeitet, während Sie Ihre Änderungen vorgenommen haben.',
-'saveanyway'        =>   'Meine Änderungen speichern',
-'priority'          =>   'Priorität',
+// Added in version 0.9.7
+'nouserselected'    =>  'Keinen Bneutzer ausgewählt. Markieren Sie mindestens einen Benutzer und versuchen Sie es erneut.',
+'groupswitchupdated'=>  'Benutzergruppen erfolgreich geändert.',
+'takenownership'    =>  'Diese Aufgabe ist nun Ihnen zugeteilt.',
+'adminrequestmade'  =>  'Ein Projektmanager wurde über Ihre Anfrage informiert.',
+'newdepnotify'      =>  'Eine neue Abhängigkeit wurde zur folgenden Aufgabe hinzugefügt:',
+'dependadded'       =>  'Abhängigkeit wurde hinzugefügt',
+'dependaddfailed'   =>  'Sie können diese Aufgabe im Moment nicht als Abhängigkeit hinzufügen',
+'depremoved'        =>  'Abhängigkeit wurde entfernt',
+'newdepis'          =>  'Die neue Abhängigkeit ist',
+'magicurlsent'      =>  'Eine Nachricht mit einem Link zum Abschließen des Vorganges wurde an Ihre Benachrichtigungsadresse geschickt.',
+'changefspass'      =>  'Flyspray-Passwort ändern',
+'magicurlmessage'   =>  'Bitte folgen Sie diesem Link, um Ihr Passwort zu ändern:',
+'erroronform'       =>  'Bei der Verarbeitung der Formulareingaben ist ein Problem aufgetreten',
+'addressused'       =>  'Diese Adresse wurde verwendet, um ein Flyspray-Benutzerkonto anzulegen. Wenn Sie diese Nachricht nicht erwartet haben, ignorieren und löschen Sie sie bitte. Rufen Sie die folgende Seite auf, um Ihre Anmeldung abzuschließen:',
+'confirmcodeis'     =>  'Ihr Bestätigungscode:',
+'codesent'          =>  'Ihr Bestätigungscode wurde abgeschickt. Bitte folgen Sie den in der Nachricht enthaltenen Anweisungen.',
+'taskmadeprivate'   =>  'Diese Aufgabe wurde versteckt',
+'taskmadepublic'    =>  'Diese Aufgabe wurde wieder öffentlich gemacht',
+'realandnotify'     =>  'Sie müssen Ihren Namen angeben und entweder das Feld für die E-Mail-Adresse oder die Jabber-ID ausfüllen.',
+
 
 );
 ?>

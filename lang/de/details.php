@@ -105,5 +105,25 @@ $details_text = array (
 'previousvalue'     =>   'Voriger Wert',
 'newvalue'          =>   'Neuer Wert',
 
+// Added in version 0.9.7
+'selectareason'     =>  'Wählen Sie eine Begründung',
+'assigntome'        =>  'Mir zuteilen',
+'reopenrequest'     =>  'Wiedereröffnung anfordern',
+'requestclose'      =>  'Schließung anfordern',
+'ownershiptaken'    =>  'Benutzer hat sich die Aufgabe zugeteilt',
+'closerequestmade'  =>  'Schließung einer Aufgabe angefordert',
+'reopenrequestmade' =>  'Wiedereröffnung einer Aufgabe angefordert',
+'taskdependson'     =>  'Diese Aufgabe hängt ab von',
+'taskblocks'        =>  'Diese Aufgabe verhindert die Schließung von',
+'addnew'            =>  'Neue hinzufügen',
+'depadded'          =>  'Abhängigkeit hinzugefügt:',
+'depaddedother'     =>  'Diese Aufgabe als Abhängigkeit hinzugefügt:',
+'depremoved'        =>  'Abhängigkeit entfernt:',
+'depremovedother'   =>  'Entfernt von der Abhängigkeitsliste von:',
+'showdetailserror'  =>  'Diese Aufgabe existiert nicht oder Sie haben keine Berechtigung, sie anzuzeigen.',
+'makeprivate'       =>  'Verstecken',
+'makepublic'        =>  'Öffentlich machen',
+'taskmadeprivate'   =>  'Aufgabe versteckt',
+'taskmadepublic'    =>  'Aufgabe öffentlich gemacht',
 );
 ?>

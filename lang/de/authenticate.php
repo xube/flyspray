@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 global $authenticate_text;
 $authenticate_text = array (
@@ -9,6 +9,9 @@ $authenticate_text = array (
 'youareloggedout'  =>  'Sie wurden ausgeloggt.',
 'waitwhiletransfer'=>  'Sie werden weitergeleitet...',
 'clicknowait'      =>  'Weiter',
+
+// Added in 0.9.7
+'accountdisabled'  =>  'Ihr Benutzerkonto wurde deaktiviert. Wenden Sie sich an den Flyspray-Administrator.',
 
 );
 ?>

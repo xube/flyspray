@@ -24,8 +24,10 @@ $register_text = array (
 'usernametaken'   =>  'Dieser Benutzername wurde bereits vergeben. Wählen Sie bitte einen anderen Namen.',
 'goback'          =>  'Zurück',
 'noticefrom'      =>  'Nachricht von',
-'addressused'     =>  'Diese Adresse wurde verwendet, um ein Flyspray-Benutzerkonto anzulegen. Wenn Sie diese Nachricht nicht erwartet haben, ignorieren und löschen Sie sie bitte. Ihr Bestätigungscode lautet: '
+'addressused'     =>  'Diese Adresse wurde verwendet, um ein Flyspray-Benutzerkonto anzulegen. Wenn Sie diese Nachricht nicht erwartet haben, ignorieren und löschen Sie sie bitte. Ihr Bestätigungscode lautet: ',
 
+// Added in version 0.9.7
+'badmagic'        =>  'Der Bestätigungscode ist ungültig. Stellen Sie sicher, dass Sie den Code richtig aus der Benachrichtigung kopiert haben.',
 
 );
 ?>

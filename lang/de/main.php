@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /*
  *
@@ -38,7 +38,6 @@ $language = array(
 'poweredby'         =>  'Powered by Flyspray',
 
 // Added in version 0.9.5
-
 'show'              =>  'Zeigen',
 'projects'          =>  'Projekte',
 'adminmenu'         =>  'Admin Menü',
@@ -52,6 +51,9 @@ $language = array(
 'tasksreported'     =>  'Aufgaben, die ich geöffnet habe',
 'taskswatched'      =>  'Aufgaben, die ich beobachte',
 'lastsearch'        =>  'Meine letzte Suche',
+
+// Added in version 0.9.7
+'adminreqwaiting'   =>   'Administrationsaufgaben',
 
 );
 ?>

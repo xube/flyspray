@@ -22,5 +22,9 @@ $newproject_text = array (
 // Added in version 0.9.6
 'inlineimages'		=>	'Angehängte Bilder als Vorschau anzeigen',
 
+// Added in version 0.9.7
+'othersview'        =>  'Jeder darf die Aufgaben dieses Projektes anzeigen',
+'allowanonopentask' =>  'Jeder darf neue Aufgaben zu diesem Projekt hinzufügen',
+
 );
 ?>
