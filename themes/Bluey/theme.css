@@ -361,12 +361,12 @@ input.adminbutton, input.mainbutton, button {
 }
 
 input.adminbutton:hover, input.mainbutton:hover, button:hover {
-  background-color    : #838ab5;
+/*  background-color    : #838ab5;
   color               : #ffffff !important;
   background-image    : url(button-over.png);
   background-repeat   : repeat-x;
   border              : 1px ridge #000000;
-  font-weight         : bold;
+  font-weight         : bold;*/
   cursor              : pointer;
 }
 

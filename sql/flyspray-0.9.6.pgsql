@@ -203,29 +203,17 @@ INSERT INTO flyspray_groups (group_id, group_name, group_desc, is_admin, can_ope
 INSERT INTO flyspray_groups (group_id, group_name, group_desc, is_admin, can_open_jobs, can_modify_jobs, can_add_comments, can_attach_files, can_vote, group_open) VALUES (4, 'Reporters', 'These people can open new jobs only', 0, 1, 0, 0, 0, 0, 1);
 INSERT INTO flyspray_groups (group_id, group_name, group_desc, is_admin, can_open_jobs, can_modify_jobs, can_add_comments, can_attach_files, can_vote, group_open) VALUES (5, 'Pending', 'Users who are awaiting approval of their accounts.', 0, 0, 0, 0, 0, 0, 0);
 
-INSERT INTO flyspray_users (user_id, user_name, user_pass, real_name, group_in, jabber_id, email_address, notify_type, account_enabled) VALUES (1, 'super', '4tuKHcjxpFYag', 'Mr Super User', 1, 'id@jabber.server.com', 'address@server.com', 2, 1);
-INSERT INTO flyspray_users (user_id, user_name, user_pass, real_name, group_in, jabber_id, email_address, notify_type, account_enabled) VALUES (0, 'no-one', '4tuKHcjxpFYag', 'No-one', 1, 'id@jabber.server.com', 'address@server.com', 2, 0);
+INSERT INTO flyspray_users (user_id, user_name, user_pass, real_name, group_in, jabber_id, email_address, notify_type, account_enabled) VALUES (1, 'super', '4tuKHcjxpFYag', 'Mr Super User', 1, 'id@jabber.example.com', 'address@example.com', 2, 1);
 
 INSERT INTO flyspray_projects (project_id, project_title, theme_style, show_logo, default_cat_owner, intro_message, project_is_active, visible_columns) VALUES (1, 'Flyspray - The Bug Killer!', 'Bluey', 1, 1, 'Please ensure that your browser has cookies enabled if you want this software to work properly...', 1, 'id category tasktype severity summary dateopened status progress');
-INSERT INTO flyspray_projects (project_id, project_title, theme_style, show_logo, default_cat_owner, intro_message, project_is_active, visible_columns) VALUES (2, 'Fake Project', 'Woodgrain', 1, NULL, 'This is my intro.  There are many like it, but this one is mine.', 1, 'id category tasktype severity summary dateopened status progress');
 
 INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner) VALUES (1, 1, 'Backend / Core', 4, 1, NULL);
 INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner) VALUES (2, 1, 'User Interface', 2, 1, NULL);
-INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner) VALUES (3, 1, 'Translation', 3, 1, NULL);
-INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner) VALUES (4, 1, 'Scripting', 4, 1, NULL);
-INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner) VALUES (5, 1, 'Javascript', 5, 1, NULL);
-INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner) VALUES (6, 1, 'Notifications', 6, 1, NULL);
-INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner) VALUES (7, 2, 'Backend / Core', 1, 1, NULL);
 
 INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (1, 1, 'All', 1, 1);
 INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (2, 1, 'Windows', 2, 1);
-INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (3, 1, 'Linux variant', 3, 1);
-INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (4, 1, 'Mac OS', 4, 1);
-INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (5, 1, 'UNIX', 4, 1);
-INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (6, 1, 'BeOS', 6, 1);
-INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (7, 2, 'DOS', 2, 1);
-INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (8, 1, 'QNX', 8, 1);
-INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (9, 2, 'Windows', 1, 1);
+INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (3, 1, 'Mac OS', 3, 1);
+INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (4, 1, 'UNIX', 4, 1);
 
 INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list) VALUES (1, 'None', 1, 1);
 INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list) VALUES (2, 'Not a bug', 2, 1);
@@ -239,28 +227,25 @@ INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_posit
 
 INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list) VALUES (1, 1, 'CVS', 1, 1);
 INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list) VALUES (2, 1, '1.0', 3, 1);
-INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list) VALUES (3, 1, '0.99', 2, 1);
-INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list) VALUES (4, 2, '1.0', 1, 1);
 
 INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list) VALUES (1, 'Bug Report', 1, 1);
 INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list) VALUES (2, 'Feature Request', 2, 1);
 INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list) VALUES (3, 'Support Request', 3, 1);
-INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list) VALUES (4, 'TODO', 4, 1);
 
 INSERT INTO flyspray_tasks (task_id, attached_to_project, task_type, date_opened, opened_by, date_closed, closed_by, item_summary, detailed_desc, item_status, assigned_to, resolution_reason, product_category, product_version, closedby_version, operating_system, task_severity, last_edited_by, last_edited_time, percent_complete) VALUES (1, 1, 1, '1030802400', 1, '1060837949', 1, 'Test bug report', 'This isn''t a real task.  You should close it and report some real ones.', 2, 1, 1, 2, 1, NULL, 1, 5, 1, '1061298567', 40);
 INSERT INTO flyspray_tasks (task_id, attached_to_project, task_type, date_opened, opened_by, date_closed, closed_by, item_summary, detailed_desc, item_status, assigned_to, resolution_reason, product_category, product_version, closedby_version, operating_system, task_severity, last_edited_by, last_edited_time, percent_complete) VALUES (2, 2, 1, '1030802400', 1, '1060837949', 1, 'Another bug report', 'First task for the fake project', 2, 1, 1, 2, 1, NULL, 1, 5, 1, '1061298567', 40);
 
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (1, 'anon_open', '2', 'Allow anonymous users to open new tasks');
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (2, 'theme_style', 'Minimalistic2', 'Theme / Style');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (2, 'theme_style', 'Bluey', 'Theme / Style');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (3, 'jabber_server', '', 'Jabber server');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (4, 'jabber_port', '5222', 'Jabber server port');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (5, 'jabber_username', '', 'Jabber username');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (6, 'jabber_password', '', 'Jabber password');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (7, 'project_title', 'Flyspray - The bug killer!', 'Project title');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (8, 'anon_group', '4', 'Group for anonymous registrations');
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (9, 'base_url', 'http://domainnamegoeshere.com/flyspray/', 'Base URL for this installation');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (9, 'base_url', 'http://example.com/flyspray/', 'Base URL for this installation');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (10, 'user_notify', '1', 'Force task notifications as');
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (11, 'admin_email', 'flyspray@yourdomain', 'Reply email address for notifications');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (11, 'admin_email', 'flyspray@example.com', 'Reply email address for notifications');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (12, 'assigned_groups', '1 2 3  ', 'Members of these groups can be assigned tasks');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (13, 'default_cat_owner', '0', 'Default category owner');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (14, 'lang_code', 'en', 'Language');
