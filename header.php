@@ -47,7 +47,7 @@ if (!$res) {
 $flyspray_prefs = $fs->getGlobalPrefs();
 
 $project_id = 0;
-if ($_GET['do'] == 'details') {
+if (($_GET['do'] == 'details') && ($_GET['id'])) {
   list($project_id) = $fs->dbFetchArray($fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
 };
 if (!$project_id) {

@@ -570,7 +570,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
       <h4><?php echo $admin_text['projectprefs'];?> -
       <select name="id">
       <?php
-      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
+      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects ORDER BY ?", array('project_title'));
       while ($row = $fs->dbFetchArray($get_projects)) {
         if ($_GET['id'] == $row['project_id']) {
           echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";

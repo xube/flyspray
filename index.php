@@ -76,8 +76,13 @@ if ($_GET['sort']) {
 </head>
 <body>
 
-
 <?php
+
+$headerfile = "$basedir/themes/".$project_prefs['theme_style']."/header.inc.php"; 
+if(file_exists("$headerfile")) { 
+ include("$headerfile"); 
+};
+
 if ($project_prefs['show_logo'] == '1') {
   echo "<h1 id=\"title\"><span>{$project_prefs['project_title']}</span></h1>";
 };
@@ -97,7 +102,7 @@ if ($project_prefs['show_logo'] == '1') {
       <select name="project">
       <option value="0"<?php if ($_GET['project'] == '0') echo ' SELECTED';?>><?php echo $language['allprojects'];?></option>
       <?php
-      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = '1' ORDER BY project_title");
+      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY ?", array('1', 'project_title'));
       while ($row = $fs->dbFetchArray($get_projects)) {
         if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
           echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";
@@ -121,7 +126,7 @@ if ($project_prefs['show_logo'] == '1') {
 
 <?php
 if ($project_prefs['intro_message'] != '') {
-  $intro_message = stripslashes($project_prefs['intro_message']);
+  $intro_message = nl2br(stripslashes($project_prefs['intro_message'])); 
   echo "<p class=\"intromessage\">$intro_message</p>";
 };
 
@@ -142,11 +147,11 @@ if ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flys
 if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
   // Get current user details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = '{$_COOKIE['flyspray_userid']}'");
+  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
   $current_user = $fs->dbFetchArray($result);
 
   // Get the group information for this user
-  $result = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = '{$current_user['group_in']}'");
+  $result = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($current_user['group_in']));
   $group_details = $fs->dbFetchArray($result);
 
   // Check that the user hasn't spoofed the cookie contents somehow
@@ -158,7 +163,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     {
 
     // Get the group information for this user
-    $isgroupadmin = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = '{$current_user['group_in']}'");
+    $isgroupadmin = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($current_user['group_in']));
     $permissions = $fs->dbFetchArray($isgroupadmin);
     $_SESSION['userid'] = $current_user['user_id'];
     //$_SESSION['account_enabled'] = $current_user['account_enabled'];
@@ -179,7 +184,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo "<small> | </small><a href=\"index.php?do=chpass\">{$language['changepassword']}</a>";
     echo "<small> | </small><a href=\"scripts/authenticate.php?action=logout\">{$language['logout']}</a></span>\n";
 
-    $isgroupadmin = $fs->dbQuery("SELECT is_admin FROM flyspray_groups WHERE group_id = '{$current_user['group_in']}'");
+    $isgroupadmin = $fs->dbQuery("SELECT is_admin FROM flyspray_groups WHERE group_id = ?", array($current_user['group_in']));
     $is_admin = $fs->dbFetchArray($isgroupadmin);
     $_SESSION['admin'] = $is_admin['is_admin'];
 
@@ -235,6 +240,14 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 <p id="footer">
 <a href="http://flyspray.rocks.cc/" class="offsite"><?php printf("%s %s", $language['poweredby'], $fs->version);?></a>
 </p>
+
+<?php 
+$footerfile = "$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php"; 
+if(file_exists("$footerfile")) { 
+ include("$footerfile"); 
+} 
+?> 
+
 </body>
 </html>
 <?php

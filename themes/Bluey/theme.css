@@ -216,7 +216,7 @@ table#tasklist {
 table#tasklist th {
   text-align          : left;
   padding             : 2px 1em 2px 2px;
-  border-bototm              : 1px solid #cccccc;
+  border-bottom              : 1px solid #cccccc;
 }
 
 table#tasklist td {
