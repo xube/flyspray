@@ -44,6 +44,11 @@ $cookiesalt = '4t6dcHiefIkeYcn48B';
 //  DO NOT EDIT BELOW THIS LINE! //
 //////////////////////////////////////////////////////////
 
+// Check PHP Version (Must Be > 4.2)
+if (PHP_VERSION  < '4.2.0') {
+	die('Your version of PHP is not compatable with FlySpray, please upgrade to the latest version of PHP.  Flyspray requires at least PHP version 4.2.0');
+};
+
 session_start();
 
 $fs = new Flyspray;
