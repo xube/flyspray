@@ -181,11 +181,21 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo "<p id=\"menu\">";
     echo "<em>{$language['loggedinas']} - {$current_user['user_name']}</em>";
     echo "<span id=\"mainmenu\">";
-    echo "<small> | </small><a href=\"?do=newtask&amp;project=$project_id\">{$language['addnewtask']}</a>";
-    echo "<small> | </small><a href=\"index.php?do=reports\">{$language['reports']}</a>";
-    echo "<small> | </small><a href=\"?do=admin&amp;area=users&amp;id={$_SESSION['userid']}\">{$language['editmydetails']}</a>";
-    echo "<small> | </small><a href=\"index.php?do=chpass\">{$language['changepassword']}</a>";
-    echo "<small> | </small><a href=\"scripts/authenticate.php?action=logout\">{$language['logout']}</a></span>\n";
+    
+    echo '<small> | </small><a href="?do=newtask&amp;project=' . $project_id . '">
+    <img src="themes/' . $project_prefs['theme_style'] . '/menu/newtask.png" />&nbsp;' . $language['addnewtask'] . '</a>' . "\n";
+    
+    echo '<small> | </small><a href="index.php?do=reports">
+    <img src="themes/' . $project_prefs['theme_style'] . '/menu/reports.png" />&nbsp;' . $language['reports'] . '</a>' . "\n";
+    
+    echo '<small> | </small><a href="?do=admin&amp;area=users&amp;id=' . $_SESSION['userid'] . '">
+    <img src="themes/' . $project_prefs['theme_style'] . '/menu/editmydetails.png" />&nbsp;' . $language['editmydetails'] . '</a>' . "\n";
+    
+    echo '<small> | </small><a href="index.php?do=chpass">
+    <img src="themes/' . $project_prefs['theme_style'] . '/menu/password.png" />&nbsp;' . $language['changepassword'] . '</a>' . "\n";
+    
+    echo '<small> | </small><a href="scripts/authenticate.php?action=logout">
+    <img src="themes/' . $project_prefs['theme_style'] . '/menu/logout.png" />&nbsp;' . $language['logout'] . '</a></span>' . "\n";
 
     $isgroupadmin = $fs->dbQuery("SELECT is_admin FROM flyspray_groups WHERE group_id = ?", array($current_user['group_in']));
     $is_admin = $fs->dbFetchArray($isgroupadmin);
@@ -197,11 +207,21 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
     <span id="adminmenu">
      <em><?php echo $language['adminmenu'];?></em>
-     <small> | </small><a href="?do=admin&amp;area=options"><?php echo $language['options'];?></a>
-     <small> | </small><a href="?do=admin&amp;area=projects"><?php echo $language['projects'];?></a>
-     <small> | </small><a href="?do=admin&amp;area=users"><?php echo $language['usersandgroups'];?></a>
-     <small> | </small><a href="?do=admin&amp;area=tasktype"><?php echo $language['tasktypes'];?></a>
-     <small> | </small><a href="?do=admin&amp;area=resolution"><?php echo $language['resolutions'];?></a>
+     
+     <small> | </small><a href="?do=admin&amp;area=options">
+     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/options.png" />&nbsp;' . $language['options'];?></a>
+     
+     <small> | </small><a href="?do=admin&amp;area=projects">
+     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/projectprefs.png" />&nbsp;' . $language['projects'];?></a>
+     
+     <small> | </small><a href="?do=admin&amp;area=users">
+     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/usersandgroups.png" />&nbsp;' . $language['usersandgroups'];?></a>
+     
+     <small> | </small><a href="?do=admin&amp;area=tasktype">
+     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/lists.png" />&nbsp;' . $language['tasktypes'];?></a>
+     
+     <small> | </small><a href="?do=admin&amp;area=resolution">
+     <?php echo '<img src="themes/' . $project_prefs['theme_style'] . '/menu/lists.png" />&nbsp;' . $language['resolutions'];?></a>
     </span>
     <?php
     };
