@@ -310,6 +310,9 @@ class Notifications {
 
       }
 
+      //////////////////////
+      // Attachment added //
+      //////////////////////
       if ($type == '8')
       {
          $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
@@ -325,6 +328,9 @@ class Notifications {
          return array($subject, $body);
       }
 
+      ////////////////////////
+      // Related task added //
+      ////////////////////////
       if ($type == '9')
       {
          $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
@@ -340,6 +346,9 @@ class Notifications {
          return array($subject, $body);
       }
 
+      /////////////////////
+      // Ownership taken //
+      /////////////////////
       if ($type == '10')
       {
 
@@ -355,6 +364,9 @@ class Notifications {
          return array($subject, $body);
       }
 
+      ///////////////////////
+      // Confirmation code //
+      ///////////////////////
       if ($type == '11')
       {
          // We need to work out how to move the confirmation code message generation
@@ -369,6 +381,9 @@ class Notifications {
          return array($subject, $body);
       }
 
+      ////////////////////////
+      // Pending PM request //
+      ////////////////////////
       if ($type == '12')
       {
          $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
@@ -384,6 +399,9 @@ class Notifications {
          return array($subject, $body);
       }
 
+      ///////////////////////
+      // PM request denied //
+      ///////////////////////
       if ($type == '13')
       {
          $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];

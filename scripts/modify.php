@@ -1939,8 +1939,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                           WHERE task_id = ?",
                           array($current_user['user_id'], $_GET['task_id']));
 
-   $to  = $notify->Address($_POST['task_id']);
-   $msg = $notify->Create('10', $_POST['task_id']);
+   $to  = $notify->Address($_GET['task_id']);
+   $msg = $notify->Create('10', $_GET['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
