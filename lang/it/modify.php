@@ -1,16 +1,17 @@
 <?php
 
+global $modify_text;
 $modify_text = array (
 
 'modify'			=>	'Modifica',
 'noticefrom'		=>	'Informazione da',
 'hasopened'			=>	'ha APERTO UN NUOVO TASK su Flyspray, e l\'ha assegnato a te:',
 'newtask'			=>	'Nuovo Task:',
-'moreinfonew'		=>	'Puoi trovare più informazioni su questo bug alla pagina Flyspray:',
-'newtaskcategory'	=>	'Un nuovo task è stato aperto in questa categoria',
+'moreinfonew'		=>	'Puoi trovare piu\' informazioni su questo bug alla pagina Flyspray:',
+'newtaskcategory'	=>	'Un nuovo task e\' stato aperto in questa categoria',
 'categoryowner'		=>	'Stai ricevendo questo messaggio perch&eacute; sei il gestore della categoria.',
 'tasksummary'		=>	'Riassunto del task:',
-'newtaskadded'		=>	'Il tuo nuovo task è stato aggiunto.',
+'newtaskadded'		=>	'Il tuo nuovo task e\' stato aggiunto.',
 'waitwhiletransfer'	=>	'Aspetta mentre vieni trasferito...',
 'clicknowait'		=>	'Clicca qui se non vuoi aspettare.',
 'summaryanddetails'	=>	'Devi riempire sia il riassunto che i dettagli.',
@@ -21,59 +22,59 @@ $modify_text = array (
 'category'			=>	'Categoria:',
 'status'			=>	'Status:',
 'operatingsystem'	=>	'Sistema operativo:',
-'severity'			=>	'Gravità:',
+'severity'			=>	'Gravita\':',
 'reportedversion'	=>	'Riportato nella Versione:',
 'dueinversion'		=>	'Dovuto per la Versione:',
 'percentcomplete'	=>	'Percentuale di completamento:',
 'summary'			=>	'Riassunto:',
 'details'			=>	'Dettagli:',
 
-'messagefrom'		=>	'Questo è un messaggio del sistema di bug tracking Flyspray a',
+'messagefrom'		=>	'Questo e\' un messaggio del sistema di bug tracking Flyspray a',
 'hasjustmodified'	=>	'ha appena modificato il seguente task.',
 'changedfields'		=>	'I campi modificati sono indiviruati con due asterischi (**)',
 'moreinfomodify'	=>	'Puoi avere maggiori informazioni su questo task all\' URL seguente:',
 
 'task'				=>	'Task',
-'nolongerassigned'	=>	'Il task seguente non è più assegnato a te.  Ora è assegnato a',
+'nolongerassigned'	=>	'Il task seguente non e\' piu\' assegnato a te.  Ora e\' assegnato a',
 'hasassigned'		=>	'ti ha assegnato il seguente task Flyspray:',
 
-'taskupdated'		=>	'Il task è stato aggiornato.',
+'taskupdated'		=>	'Il task e\' stato aggiornato.',
 
 'hasclosedassigned'	=>	'ha chiuso il seguente task Flyspray che ti era stato assegnato:',
-'reasonforclosing'	=>	'Il motivo della chiusura è:',
+'reasonforclosing'	=>	'Il motivo della chiusura e\':',
 'noone'				=>	'Nessuno',
 'unassigned'		=>	'Non assegnato',
 
 'hasclosed'			=>	'ha chiuso il seguente task.',
-'youonnotify'		=>	'Ricevi questo messaggio perchè sei sulla lista di notifica.',
-'taskclosed'		=>	'Il task è stato chiuso.',
+'youonnotify'		=>	'Ricevi questo messaggio perche\' sei sulla lista di notifica.',
+'taskclosed'		=>	'Il task e\' stato chiuso.',
 'returntotask'		=>	'Ritorna ai dettagli del task',
 'backtoindex'		=>	'Torna indietro alla lista dei task',
 'noclosereason'		=>	'Non hai selezionalto un motivo per chiudere questo task.',
 'hasreopened'		=>	'ha riaperto il seguente task Flyspray che avevi chiuso:',
-'taskreopened'		=>	'Il task è stato riaperto.',
+'taskreopened'		=>	'Il task e\' stato riaperto.',
 'backtotask'		=>	'Torna indietro al task.',
 
-'commentadded'		=>	'Il Commento è stato aggiunto.',
+'commentadded'		=>	'Il Commento e\' stato aggiunto.',
 'commenttoassigned'	=>	'ha aggiunto un commento a un task che era stato assegnato:',
 'commenttotask'		=>	'ha aggiunto il seguente commento a questo task.',
 'nocommententered'	=>	'Tu non dovresti davvero inserire un commento prima di avere cliccato il pulsante di submit.',
 
 'fillinfields'		=>	'Non hai riempito tutti i campi.',
-'notcurrentpass'	=>	'Non è la tua password attuale!',
-'passchanged'		=>	'La tua password è cambiata.',
+'notcurrentpass'	=>	'Non e\' la tua password attuale!',
+'passchanged'		=>	'La tua password e\' cambiata.',
 'closewindow'		=>	'Adesso puoi chiudere la finestra.',
 'passnomatch'		=>	'Le tue nuove password non coincidono!',
 
-'usernametaken'		=>	'Questo username è gia stato scelto.',
-'newusercreated'	=>	'Un nuovo account utente è stato creato.',
-'accountcreated'	=>	'I tuo account utente è stato creato.',
+'usernametaken'		=>	'Questo username e\' gia stato scelto.',
+'newusercreated'	=>	'Un nuovo account utente e\' stato creato.',
+'accountcreated'	=>	'I tuo account utente e\' stato creato.',
 'newuserwarning'	=>	'Tieni presente che l\'impostazione dell\'applicazione potrebbe richiedere che il tuo account venga approvato da un amministratore.  Se non riesci a collegarti, questa potrebbe essere la causa.',
 'nomatchpass'		=>	'Le password non corrispondono.',
-'confirmwrong'		=>	'In codice di conferma non è corretto!',
+'confirmwrong'		=>	'In codice di conferma non e\' corretto!',
 'formnotcomplete'	=>	'La form non &eacute stata completata.',
 
-'groupnametaken'	=>	'Questo nome di gruppo è gia stato scelto.',
+'groupnametaken'	=>	'Questo nome di gruppo e\' gia stato scelto.',
 'newgroupadded'		=>	'Aggiunto nuovo gruppo.',
 
 'optionssaved'		=>	'Ozioni Flyspray salvate.',
@@ -83,9 +84,9 @@ $modify_text = array (
 'filename'			=>	'Nome file:',
 'description'		=>	'Descrizione:',
 'fileuploaded'		=>	'Il file &eacute; stato caricato.',
-'fileerror'			=>	'C\'è stato un errore nel caricamento del file.  Forse i permessi sulla directory degli <i>attachment/</i> sono sbagliati.',
+'fileerror'			=>	'C\'e\' stato un errore nel caricamento del file.  Forse i permessi sulla directory degli <i>attachment/</i> sono sbagliati.',
 'contactadmin'		=>	'Contatta l\'Administrator di questo progetto.',
-'selectfileerror'	=>	'Non hai selezionato un file e/o inserito una decrizione.',
+'selectfileerror'	=>	'Non hai selezionato un file.',
 
 'userupdated'		=>	'I dettagli utente sono stati aggiornati',
 'realandemail'		=>	'Non hai riempito i campi Nome Vero e Indirizzo e-mail.',
@@ -94,37 +95,49 @@ $modify_text = array (
 'groupanddesc'		=>	'Non hai riempito i campi Nome gruppo e descrizione.',
 
 'fillallfields'	=>	'Prego riempire tutti i campi.',
-'listupdated'		=>	'La Lista è stata modificata.',
+'listupdated'		=>	'La Lista e\' stata modificata.',
 'listitemadded'		=>	'Nuovo elemento aggiunto alla lista.',
 
 'relatedadded'		=>	'Task correlato aggiunto alla lista.',
-'relatederror'		=>	'Questo task è gia nella lista dei task correlati.',
+'relatederror'		=>	'Questo task e\' gia nella lista dei task correlati.',
 
 'relatedremoved'	=>	'Task correlato rimosso dalla lista.',
 
 'notifyadded'		=>	'Utente aggiunto alla lista di notifica.',
-'notifyerror'		=>	'L\'utente è gia nella lista di notifica di questo task.',
+'notifyerror'		=>	'L\'utente e\' gia nella lista di notifica di questo task.',
 
 'notifyremoved'		=>	'Utente rimosso dalla lista di notifica.',
 
-'editcommentsaved'	=>	'Il commento modificato è stato salvato.',
-'commentdeleted'	=>	'Il commento è stato cancellato.',
+'editcommentsaved'	=>	'Il commento modificato e\' stato salvato.',
+'commentdeleted'	=>	'Il commento e\' stato cancellato.',
 
 // Added in version 0.9.5
 
 'project'			=>	'Progetto:',
 'gotonewtask'		=>	'Vai al nuovo task appena creato',
 'addanother'		=>	'Aggiungi un altro task al progetto',
-'projectcreated'	=>	'Il tuo nuovo progetto è stato creato. Segui il link sotto per definire le
-liste di categorie, versioni e sistema operativo',
+'projectcreated'	=>	'Il tuo nuovo progetto e\' stato creato. Segui il link sotto per definire le liste di categorie, versioni e sistema operativo',
 'customiseproject'	=>	'Personalizza questo progetto',
 'projectupdated'	=>	'Le preferenze del progetto sono state aggiornate',
 'emptytitle'		=>	'Hai lasciato vuto il titolo del progetto.  torna
 indietro e completa.',
 'loginbelow'		=>	'Non dovresti tentare di collegarti usando la forma
 sotto.',
-'attachmentdeleted' => 'L\'allegato è stato rimosso',
+'attachmentdeleted' => 'L\'allegato e\' stato rimosso',
 
+// Added in 0.9.6
+
+'reminderadded'     =>   'Il tuo promemoria e\' stato aggiunto.',
+'reminderdeleted'   =>   'Il promemoria selezionato � stato eliminato.',
+'flyspraytask'		=>   'Task Flyspray',
+'fieldsmissing'     =>   'Alcuni campi contenevano dati errati o mancanti.',
+'relatedinvalid'    =>   'Non c\'e\' questo task.',
+'relatedproject'    =>   'Il Task appartiene ad un progetto differente.',
+'addanyway'         =>   'Aggiungi comunque',
+'cancel'            =>   'Cancella',
+'alreadyedited'     =>   'Il task e\' stato modificato da qualcun altro prima che lo salvassi.',
+'saveanyway'        =>   'Salva comunque le mie modifichey',
+'priority'          =>   'Priorita\'',
 
 );
 ?>

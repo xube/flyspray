@@ -1,5 +1,6 @@
 <?php
 
+global $admin_text;
 $admin_text = array (
 
 'edituser'			=>	'Modifica utente',
@@ -11,7 +12,7 @@ $admin_text = array (
 'group'				=>	'Gruppo',
 'accountenabled'	=>	'Utenza abilitata',
 'updatedetails'		=>	'Aggiorna le informazioni',
-'setglobally'		=>	'Questa opzione è stata impostata a livello globale.',
+'setglobally'		=>	'Questa opzione e\' stata impostata a livello globale.',
 
 'usergroupmanage'	=>	'Gestione Utenti e Gruppi',
 'newuser'			=>	'Registra un nuovo utente',
@@ -35,8 +36,8 @@ $admin_text = array (
 'oslist'			=>	'Lista dei sistemi operativi',
 'resolutionlist'	=>	'Lista delle soluzioni',
 'versionlist'		=>	'Lista delle versioni',
-'severitylist'		=>	'Lista delle gravità',
-'listnote'			=>	'Nota:  Disabilitando il box "mostra" potrebbe alterare alcuni task quando in modalità modifica.  La modifica del campo "Nome" cambierà tutti i task con quel nome.',
+'severitylist'		=>	'Lista delle gravita\'',
+'listnote'			=>	'Nota:  Disabilitando il box "mostra" potrebbe alterare alcuni task quando in modalita\' modifica.  La modifica del campo "Nome" cambiera\' tutti i task con quel nome.',
 'name'				=>	'Nome',
 'order'				=>	'Ordinamento',
 'back'				=>	'Sfondo',
@@ -87,8 +88,28 @@ $admin_text = array (
 'projectlists'		=>	'Lista di progetti',
 'showlogo'			=>	'Mostra titolo logo immagine',
 'intromessage'		=>	'Messaggio di introduzione',
-'isactive'			=>	'Il progetto è attivo',
+'isactive'			=>	'Il progetto e\' attivo',
 'createproject'		=>	'Crea un nuovo progetto',
 
+// Added in version 0.9.6
+
+'nopermission'		=>  'Non hai il permesso di usare questa pagina.',
+'listordertip'		=>  'L\'ordine con cui questi dati appariranno nella lista',
+'listshowtip'		=>	'Mostra questo dato nella lista',
+'categoryownertip'	=>  'Questa persona ricevera\' una notifica quando verra\' aperto un task in questa categoria',
+'categoryparenttip'	=>	'La categoria padre sotto cui cadra\' questa nuova',
+'notsubcategory'	=>	'Nessuna - e\'una categoria primaria',
+'showinlineimages'	=>  'Mostra gli allegati immagine inline',
+'dateformat'		=>	'Formato date',
+'dateformat_extended' => 'Formato date esteso',
+'subcategoryof'		=>	'Sottocategoria di',
+'visiblecolumns'	=>	'Colonne mostrate nella lista task',
+'tense'			=>	'Tempo',
+'listtensetip'		=>	'Passato, presente o futuro',
+'past'			=>	'Passato',
+'present'		=>	'Presente',
+'future'		=>	'Futuro',
+'changepass'	=>      'Cambia password',
+'confirmpass'	=>      'Conferma password',
 );
 ?>

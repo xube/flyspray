@@ -1,5 +1,6 @@
 <?php
 
+global $status_list;
 $status_list = array (
 
 '1'	=>	'Non Confermato',
@@ -9,7 +10,7 @@ $status_list = array (
 '5'	=>	'In attesa di risposta dall\' utente',
 '6'	=>	'Richiede test',
 '7'	=>	'Riaperto',
-'8'	=>	'Chiuso',
+//'8'	=>	'Chiuso',
 
 );
 ?>

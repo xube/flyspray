@@ -1,5 +1,6 @@
 <?php
 
+global $newproject_text;
 $newproject_text = array (
 
 'createnewproject'	=>	'Crea un nuovo progetto',
@@ -17,6 +18,9 @@ $newproject_text = array (
 'defaultcatowner'	=>	'Gestore predefinito della categoria',
 'createthisproject'	=>	'Crea questo progetto',
 'nopermission'		=>	'Non hai il permesso di usare questa pagina',
+
+// Added in version 0.9.6
+'inlineimages'		=>	'Mostra le immagini allegate inline',
 
 );
 ?>

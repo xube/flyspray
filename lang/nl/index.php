@@ -8,7 +8,7 @@ $index_text = array (
 'allseverities'		=>	'Alle ernstigheden',
 'alldevelopers'		=>	'Alle ontwikkelaars',
 'notyetassigned'	=>	'Nog niet toegekend',
-'allcategories'		=>	'Alle categoriën',
+'allcategories'		=>	'Alle categori&euml;n',
 'allstatuses'		=>	'Alle statusen',
 'allopentasks'		=>	'Alle open taken',
 'sortthiscolumn'	=>	'Sorteer op deze kolom',
@@ -30,8 +30,8 @@ $index_text = array (
 
 // Added in version 0.9.6
 'closed'			=>	'Gesloten',
-'dueanyversion'		=>	'Due In Any Version',
-'dueversion'		=>	'Due In',
+'dueanyversion'		=>	'Iedere versie',
+'dueversion'		=>	'Toe te schrijven aan',
 'project'		=>	'Project',
 'category'		=>	'Categorie',
 'lastedit'		=>	'Laatst gewijzigd',

@@ -1,5 +1,6 @@
 <?php
 
+global $newtask_text;
 $newtask_text = array (
 
 'createnewtask'		=>	'Crea un nuovo task',
@@ -21,6 +22,8 @@ $newtask_text = array (
 // Added in version 0.9.5
 
 'notifyme'			=>	'Avvisami quando questo task cambia',
+'priority'			=>	'Priorita\'',
+'undecided'			=>	'Non precisata',
 
 );
 ?>

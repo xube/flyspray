@@ -1,5 +1,6 @@
 <?php
 
+global $functions_text;
 $functions_text = array (
 
 'notifyfrom'			=>	'Form di notifica',

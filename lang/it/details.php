@@ -1,5 +1,6 @@
 <?php
 
+global $details_text;
 $details_text = array (
 
 'task'				=>	'Task',
@@ -12,7 +13,7 @@ $details_text = array (
 'assignedto'		=>	'Assegnato a',
 'noone'				=>	'Nessuno',
 'operatingsystem'	=>	'Sistema operativo',
-'severity'			=>	'Gravità',
+'severity'			=>	'Gravita\'',
 'reportedversion'	=>	'Riportato nella Versione',
 'dueinversion'		=>	'Dovuto per la Versione',
 'undecided'			=>	'Non deciso',
@@ -48,12 +49,62 @@ $details_text = array (
 'addtolist'			=>	'Aggiungi alla lista',
 'addmyself'			=>	'Aggiungi il sottoscritto a questa lista',
 'removemyself'		=>	'Rimuovi il sottoscritto da questa lista',
-'invalidtaskid'		=>	'Non c\'è alcun task con questo identificativo',
+'invalidtaskid'		=>	'Non c\'e\' alcun task con questo identificativo',
 'theseusersnotify'	=>	'Questi utenti riceveranno una notifica dettagliata quando questo task ha variazioni.',
 
 // Added in version 0.9.5
 
 'attachedtoproject'	=>	'Allegato al progetto',
+
+// Added in version 0.9.6
+
+'reminders'         =>   'Promemoria',
+'system'            =>   'Sistema',
+'remindthisuser'    =>   'Manda un promemoria a questo utente',
+'thisoften'         =>   'Quanto spesso',
+'startafter'        =>   'Aspetta prima di inviare promemoria',
+'hours'             =>   'Ora(e)',
+'days'              =>   'Giorno(i)',
+'weeks'             =>   'Settimana(e)',
+'addreminder'       =>   'Aggiungi promemoria',
+'defaultreminder'   =>   'Questo e\' un promemoria di controllare il seguente task di flyspray:',
+'message'           =>   'Messaggio',
+'closed'			=>   'Chiuso',
+'filename'			=>   'Nome file:',
+'date'				=>   'Data:',
+'filesize'			=>   'Dimensione File:',
+'closurecomment'	=>   'Commenti addizionali sulla chiusura:',
+
+'history'           =>   'Storico',
+'nohistory'         =>   'Non c\'e\' storico disponibile',
+'eventdate'         =>   'Data',
+'user'              =>   'Utente',
+'event'             =>   'Evento',
+'fieldchanged'      =>   'Campo cambiato',
+'taskopened'        =>   'Task aperto',
+'taskreopened'      =>   'Task riaperto',
+'taskclosed'        =>   'Task chiuso',
+'commentadded'      =>   'Aggiunto commento',
+'commentedited'     =>   'Modificato commento',
+'commentdeleted'    =>   'Cancellato commento',
+'attachmentadded'   =>   'Aggiunto attachment',
+'attachmentdeleted' =>   'Cancellato attachment',
+'taskedited'        =>   'Modificati i dettagli del Task',
+'notificationadded' =>   'Aggiunto utente alla lista di notifica',
+'notificationdeleted' => 'Rimosso utente dalla lista di notifica',
+'relatedadded'      =>   'Aggiunto task correlato',
+'relateddeleted'    =>   'Rimosso task correlato',
+'taskassigned'      =>   'Task assegnato a',
+'taskreassigned'    =>   'Task riassegnato a',
+'assignmentremoved' =>   'Assegnazione rimossa',
+'summary'           =>   'Sommario',
+'addedasrelated'    =>   'Aggiunto task alla lista correlata a',
+'deletedasrelated'  =>   'Rimosso task dalla lista correlata a',
+'reminderadded'     =>   'Aggiunto promemoria',
+'reminderdeleted'   =>   'Rimosso promemoria',
+'priority'          =>   'Priorita\'',
+'previousvalue'     =>   'Valore precedente',
+'newvalue'          =>   'Nuovo valore',
 
 );
 ?>

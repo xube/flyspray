@@ -1,5 +1,6 @@
 <?php
 
+global $language;
 $language = array (
 
 'filenotexist'		=>	'Il file non esiste.  Contatta l\'amministratore di Flyspray per questo progetto.',
@@ -20,8 +21,8 @@ $language = array (
 'operatingsystems'	=>	'Sistemi Operativi',
 'resolutions'		=>	'Soluzioni',
 'versions'			=>	'Versioni',
-'severities'		=>	'Gravità',
-'disabledaccount'	=>	'La tua utenza è stato disabilitato!<br>Disconnessione immediata...',
+'severities'		=>	'Gravita\'',
+'disabledaccount'	=>	'La tua utenza e\' stato disabilitato!<br>Disconnessione immediata...',
 'poweredby'			=>	'Powered by Flyspray',
 
 // Added in version 0.9.5
@@ -30,6 +31,16 @@ $language = array (
 'show'				=>	'Mostra',
 'projects'			=>	'Progetti',
 'adminmenu'			=>	'Menu di amministrazione',
+
+// Added in version 0.9.6
+'duplicated'		=>	'Azione ripetuta. Redirect alla pagina principale.',
+'allprojects'       =>	'Tutti i progetti',
+'selectproject'		=>	'per il progettot:',
+'tasksall'          =>  'Tutti i task',
+'tasksassigned'     =>  'Tasks a me assegnati',
+'tasksreported'     =>  'Tasks da me riportati',
+'taskswatched'      =>  'Tasks che controllo',
+'lastsearch'   =>  'Ultima ricerca'
 
 );
 ?>

@@ -1,5 +1,6 @@
 <?php
 
+global $newgroup_text;
 $newgroup_text = array (
 
 'createnewgroup'	=>	'Crea un nuovo gruppo',
