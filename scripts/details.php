@@ -651,9 +651,32 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['item_status'] != '8')
       <?php
       };
 
-      echo "<p>";
-      echo "<a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']} - $file_desc</a>";
-      echo "</p>";
+	  // Detect if the attachment is an image
+	  $pos = strpos($row['file_type'], "image/");
+      if($pos===0) {
+
+         // Find out the size of the image
+		 $image_details = getimagesize("attachments/{$row['file_name']}");
+         list($width, $height, $type, $string) = $image_details;
+
+         // If the image is too wide, let's scale it down so that it doesn't destroy the page layout
+         if ($width > "200") {
+            $v_fraction = 200/$width;
+            $new_height = round(($height*$v_fraction),0);
+
+			// Display the resized image, with a link to the fullsized one
+            echo "<br><a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\"></a>";
+         } else {
+			 // If the image is already small, just display it.
+             echo "<br><img src=\"?getfile={$row['attachment_id']}\">";
+         };
+
+      // If the attachment isn't an image, just show a link to download it.
+      } else {
+         echo "<p>";
+         echo "<a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']} - $file_desc</a>";
+         echo "</p>";
+      };
 
   echo "</div>";
  };

@@ -32,7 +32,7 @@ $dbpass = 'PASSWORD';   // The password to go with that username above.
 // It is recommended that you change this immediately after installation to make
 // it harder for people to hack their cookies and try to take over someone else's 
 // account.  Changing it will log out all users, but there are no other consequences.
-$cookiesalt = '4t6dcHiefIkeYcn48B';  
+$cookiesalt = '4t';  
 
 // You might like to uncomment the next line if you are receiving lots of
 // PPHP NOTICE errors
