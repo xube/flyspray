@@ -7,7 +7,7 @@ $chpass_text = array (
 'new'				=>	'Nouveau',
 'confirm'			=>	'Confirmer',
 'savepass'			=>	'Enregistrer le nouveau mot de passe',
-'nopermission'		=>	'Vous n\'avez pas la permission d\'utiliser cette page',
+'nopermission'		=>	'Vous n\'avez pas la permission d\'accéder à cette page',
 
 );
 ?>

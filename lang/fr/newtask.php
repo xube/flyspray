@@ -2,21 +2,23 @@
 
 $newtask_text = array (
 
-'createnewtask'		=>	'Cr&eacute;er une nouvelle t&acirc;che',
-'summary'			=>	'R&eacute;sum&eacute;',
-'tasktype'			=>	'Type de t&acirc;che',
-'category'			=>	'Cat&eacute;gorie',
+'createnewtask'		=>	'Créer une nouvelle tâche',
+'summary'			=>	'Résumé',
+'tasktype'			=>	'Type',
+'category'			=>	'Catégorie',
 'status'			=>	'Statut',
-'assignedto'		=>	'Assign&eacute;e &agrave;',
+'assignedto'		=>	'Assignée à',
 'noone'				=>	'Personne',
-'operatingsystem'	=>	'Syst&egrave;me d\'exploitation',
-'severity'			=>	'S&eacute;v&eacute;rit&eacute;',
-'reportedversion'	=>	'Version convern&eacute;e',
-'dueinversion'		=>	'R&eacute;solu dans la version',
-'details'			=>	'D&eacute;tails',
-'addanother'		=>	'Ajouter une nouvelle t&acirc;che apr&egrave;s celle-ci',
-'addthistask'		=>	'Ajouter cette t&acirc;che',
-'nopermission'		=>	'Vous n\'avez pas l\&egrave;autorisation d\'utiliser cette page',
+'operatingsystem'	=>	'Système d\'exploitation',
+'severity'			=>	'Sévérité',
+'reportedversion'	=>	'Version convernée',
+'dueinversion'		=>	'Résolu dans la version',
+'details'			=>	'Détails',
+'addanother'		=>	'Ajouter une nouvelle tâche après celle-ci',
+'addthistask'		=>	'Ajouter cette tâche',
+'nopermission'		=>	'Vous n\'avez pas l\'autorisation d\'accéder à cette page',
+
+'notifyme'			=>	'Me notifier lorsque cette tâche est modifiée',
 
 );
 ?>
