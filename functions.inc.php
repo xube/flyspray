@@ -150,17 +150,6 @@ function GetTaskDetails($task_id) {
 // Thank you to Mr Lance Conry for this awesome, FAST Jabber message function
 // Check out his company at http://www.rhinosw.com/
 function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject, $sBody, $sClient='Flyspray' ) {
-   
-   /*$flyspray_prefs = $this->GetGlobalPrefs();
-
-   // We can only send jabber messages if the jabber setup is done
-   if ($flyspray_prefs['jabber_server'] != ''
-     && $flyspray_prefs['jabber_port'] != ''
-     && $flyspray_prefs['jabber_username'] != ''
-     && $flyspray_prefs['jabber_password'] != ''
-     && ($flyspray_prefs['user_notify'] == '1'
-         OR $flyspray_prefs['user_notify'] == '3')
-   ) {*/
 
    if ($sHost != ''
        && $sPort != ''
@@ -168,6 +157,8 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
        && $sPassword != ''
        && !empty($vTo)
       ) {
+
+   $sBody = str_replace('&amp;', '&', $sBody);
 
    $socket = fsockopen ( $sHost, $sPort, $errno, $errstr, 30 );
    if ( !$socket ) {
