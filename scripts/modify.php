@@ -61,13 +61,13 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
                                                 AND detailed_desc = ?
                                                 ORDER BY task_id DESC LIMIT 1
                                 ", array($item_summary, $detailed_desc)));
-    //$task_id = $get_task_id['task_id'];
+    //$task_id = $get_task_info['task_id'];
 
     // If the reporter wanted to be added to the notification list
     if ($_POST['notifyme'] == '1') {
       $insert = $fs->dbQuery("INSERT INTO flyspray_notifications
       (task_id, user_id)
-      VALUES('{$get_task_details['task_id']}, '{$_COOKIE['flyspray_userid']}')");
+      VALUES('{$get_task_info['task_id']}, '{$_COOKIE['flyspray_userid']}')");
     };
 
     // Check if the new task was assigned to anyone
@@ -360,7 +360,7 @@ if($_POST['closure_comment'] != '') {
 };
 $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']} \n";
 
-      $result = $fs->SendDetailedNotification($_POST['task_id'], $detailed_message);
+      $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskclosed']}</em></p>";
@@ -1005,29 +1005,38 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 } elseif ($_POST['action'] == "update_list" && $_SESSION['admin'] == '1') {
 
-  if ($_POST['list_name'] != ''
-    && $_POST['list_position'] != ''
-    ) {
+  $listname = $_POST['list_name'];
+  $listposition = $_POST['list_position'];
+  $listshow = $_POST['show_in_list'];
+  $listid = $_POST['id'];
+  
+  $redirectmessage = $modify_text['listupdated'];
 
-      $update = $fs->dbQuery("UPDATE $list_table_name SET
-                                $list_column_name = ?,
-                                list_position = ?,
-                                show_in_list = ?
-      WHERE $list_id = '{$_POST['id']}'",
-      array($_POST['list_name'], $_POST['list_position'],
-            $fs->emptyToZero($_POST['show_in_list'])
-            ));
-
-      if ($_POST['project_id'] != '') {
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
-      } else {
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+  for($i = 0; $i < count($listname); $i++) {
+      $listname[$i] = stripslashes($listname[$i]);
+      if($listname[$i] != ''
+          && is_numeric($listposition[$i])
+          ) {
+          $update = $fs->dbQuery("UPDATE $list_table_name SET
+                                    $list_column_name = ?,
+                                    list_position = ?,
+                                    show_in_list = ?
+          WHERE $list_id = '{$listid[$i]}'",
+          array($listname[$i], $listposition[$i],
+                $fs->emptyToZero($listshow[$i])
+                ));
+      }
+      else {
+          $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
       };
-
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listupdated']}</em></p></div>";
-  } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillbothfields']}</em></p></div>";
   };
+  if($_POST['project_id'] != '') {
+      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
+  } else {
+      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+  };
+  echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
+
 // End of updating a list
 
 /////////////////////////////////
@@ -1074,24 +1083,38 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 } elseif ($_POST['action'] == "update_category" && $_SESSION['admin'] == '1') {
 
-  if ($_POST['list_name'] != ''
-    && $_POST['list_position'] != ''
-    ) {
-      $update = $fs->dbQuery("UPDATE flyspray_list_category SET
-                                category_name = ?,
-                                list_position = ?,
-                                show_in_list = ?,
-                                category_owner = ?
-                        WHERE category_id = ?",
-                        array($_POST['list_name'], $_POST['list_position'],
-                        $fs->emptyToZero($_POST['show_in_list']),
-                        $_POST['category_owner'],
-                        $_POST['id']));
-      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listupdated']}</em></p></div>";
-  } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
+  $listname = $_POST['list_name'];
+  $listposition = $_POST['list_position'];
+  $listshow = $_POST['show_in_list'];
+  $listid = $_POST['id'];
+  $listowner = $_POST['category_owner'];
+  
+  $redirectmessage = $modify_text['listupdated'];
+
+  for($i = 0; $i < count($listname); $i++) {
+      $listname[$i] = stripslashes($listname[$i]);
+      if ($listname[$i] != ''
+          && is_numeric($listposition[$i])
+          ) {
+          $update = $fs->dbQuery("UPDATE flyspray_list_category SET
+                                    category_name = ?,
+                                    list_position = ?,
+                                    show_in_list = ?,
+                                    category_owner = ?
+                              WHERE category_id = ?",
+                              array($listname[$i], $listposition[$i],
+                              $fs->emptyToZero($listshow[$i]),
+                              $listowner[$i],
+                              $listid[$i]));
+      }
+      else {
+          $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
+      };
   };
+  
+  echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
+  echo "<div class=\"redirectmessage\"><p><em>{$redirectmessage}</em></p></div>";
+
 // End of updating the category list
 
 //////////////////////////////////////////

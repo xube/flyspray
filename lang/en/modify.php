@@ -128,6 +128,7 @@ $modify_text = array (
 'reminderadded'     =>   'Your reminder has been added.',
 'reminderdeleted'   =>   'The selected reminder has been deleted.',
 'flyspraytask'		=>   'Flyspray task',
+'fieldsmissing'     =>   'Some fields contained no or invalid data.',
 
 );
 ?>

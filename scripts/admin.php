@@ -197,37 +197,39 @@ $group_details = $fs->dbFetchArray($get_group_details);
   <h3><?php echo $admin_text['tasktypelist'];?></h3>
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
+  <form action="index.php" method="post">
+  <input type="hidden" name="do" value="modify">
+  <input type="hidden" name="action" value="update_list">
+  <input type="hidden" name="list_type" value="tasktype">
+  <table class="list">
     <?php
     $get_tasktypes = $fs->dbQuery("SELECT * FROM flyspray_list_tasktype ORDER BY list_position");
     $countlines = 0;
     while ($row = $fs->dbFetchArray($get_tasktypes)) {
     ?>
-    <form action="index.php" method="post">
-    <table class="list">
     <tr>
       <td>
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="update_list">
-      <input type="hidden" name="list_type" value="tasktype">
-      <input type="hidden" name="id" value="<?php echo $row['tasktype_id'];?>">
+      <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>">
       <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
-      <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['tasktype_name'];?>"></td>
+      <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo $row['tasktype_name'];?>"></td>
       <td title="The order these items will appear in the TaskType list">
         <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
-        <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+        <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
       </td>
       <td title="Show this item in the TaskType list">
         <label for="showinlist<?php echo $countlines?>"><?php echo $admin_text['show'];?></label>
-        <input id="showinlist<?php echo $countlines?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        <input id="showinlist<?php echo $countlines?>" type="checkbox" name="show_in_list[<?php echo $countlines?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
       </td>
-      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
     </tr>
-    </table>
-    </form>
     <?php
       $countlines++;
     };
     ?>
+      <tr>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+      </tr>
+    </table>
+    </form>
     <hr>
     <form action="index.php" method="post">
     <table class="list">
@@ -259,38 +261,40 @@ $group_details = $fs->dbFetchArray($get_group_details);
   <h3><?php echo $admin_text['resolutionlist'];?></h3>
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
+  <form action="index.php" method="post">
+  <input type="hidden" name="do" value="modify">
+  <input type="hidden" name="action" value="update_list">
+  <input type="hidden" name="list_type" value="resolution">
+  <table class="list">
     <?php
     $get_resolution = $fs->dbQuery("SELECT * FROM flyspray_list_resolution ORDER BY list_position");
     $countlines=0;
     while ($row = $fs->dbFetchArray($get_resolution)) {
     ?>
-    <form action="index.php" method="post">
-    <table class="list">
       <tr>
         <td>
-          <input type="hidden" name="do" value="modify">
-          <input type="hidden" name="action" value="update_list">
-          <input type="hidden" name="list_type" value="resolution">
-          <input type="hidden" name="id" value="<?php echo $row['resolution_id'];?>">
+          <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>">
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['resolution_name'];?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo $row['resolution_name'];?>">
         </td>
         <td title="The order these items will be shown in the Resolution list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
-          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
         </td>
         <td title="Show this item in the Resolution list">
           <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
-          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
         </td>
-        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
       </tr>
-    </table>
-    </form>
     <?php
       $countlines++;
     };
     ?>
+      <tr>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+      </tr>
+    </table>
+    </form>
     <hr>
     <form action="index.php" method="post">
     <table class="list">
@@ -712,89 +716,84 @@ if ($_GET['show'] == 'prefs') { ?>
   <h3><?php echo $admin_text['categorylist'];?></h3>
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
+  <form action="index.php" method="post">
+  <input type="hidden" name="do" value="modify">
+  <input type="hidden" name="action" value="update_category">
+  <input type="hidden" name="list_type" value="category">
+  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+  <table class="list">
     <?php
     $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($_GET['id'], '1'));
     $countlines = 0;
     while ($row = $fs->dbFetchArray($get_categories)) {
     ?>
-    <form action="index.php" method="post">
-    <table class="list">
      <tr>
       <td>
-        <input type="hidden" name="do" value="modify">
-        <input type="hidden" name="action" value="update_category">
-        <input type="hidden" name="list_type" value="category">
-        <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
-        <input type="hidden" name="id" value="<?php echo $row['category_id'];?>">
+        <input type="hidden" name="id[]" value="<?php echo $row['category_id'];?>">
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name" value="<?php echo stripslashes($row['category_name']);?>">
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name[]" value="<?php echo stripslashes($row['category_name']);?>">
       </td>
       <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
-        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
       </td>
       <td title="<?php echo $admin_text['listshowtip'];?>">
         <label for="showinlist<?php echo $countlines; ?>"><?php echo $admin_text['show'];?></label>
-        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list[<?php echo $countlines; ?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
       </td>
       <td title="<?php echo $admin_text['categoryownertip'];?>">
         <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
-        <select id="categoryowner<?php echo $countlines; ?>" name="category_owner">
+        <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
         $fs->listUsers($row['category_owner']);
         ?>
       </select>
       </td>
-      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
      </tr>
-    </table>
-    </form>
     <?php
       $countlines++;
       // Now we have to cycle through the subcategories
     $get_subcategories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id = ? ORDER BY list_position", array($_GET['id'], $row['category_id']));
     while ($subrow = $fs->dbFetchArray($get_subcategories)) {
     ?>
-        <form action="index.php" method="post">
-    <table class="list">
      <tr>
       <td>
-        <input type="hidden" name="do" value="modify">
-        <input type="hidden" name="action" value="update_category">
-        <input type="hidden" name="list_type" value="category">
-        <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
-        <input type="hidden" name="id" value="<?php echo $subrow['category_id'];?>">
+        <input type="hidden" name="id[]" value="<?php echo $subrow['category_id'];?>">
         &rarr;
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name" value="<?php echo stripslashes($subrow['category_name']);?>">
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name[]" value="<?php echo stripslashes($subrow['category_name']);?>">
       </td>
       <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
-        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $subrow['list_position'];?>">
+        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $subrow['list_position'];?>">
       </td>
       <td title="<?php echo $admin_text['listshowtip'];?>">
         <label for="showinlist<?php echo $countlines; ?>"><?php echo $admin_text['show'];?></label>
-        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list" value="1" <?php if ($subrow['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list[<?php echo $countlines; ?>]" value="1" <?php if ($subrow['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
       </td>
       <td title="<?php echo $admin_text['categoryownertip'];?>">
         <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
-        <select id="categoryowner<?php echo $countlines; ?>" name="category_owner">
+        <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
         $fs->listUsers($subrow['category_owner']);
         ?>
       </select>
       </td>
-      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
      </tr>
-    </table>
-    </form>
     <?php
       $countlines++;
      // End of cycling through subcategories
      };
     };
+    ?>
+      <tr>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+      </tr>	
+    </table>
+    </form>
+    <?php
     // Form to add a new category to the list
     ?>
     <hr>
@@ -863,41 +862,45 @@ if ($_GET['show'] == 'prefs') { ?>
   <h3><?php echo $admin_text['oslist'];?></h3>
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
+  <form action="index.php" method="post">
+  <input type="hidden" name="do" value="modify">
+  <input type="hidden" name="action" value="update_list">
+  <input type="hidden" name="list_type" value="os">
+  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+  <table class="list">
     <?php
     $get_os = $fs->dbQuery("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($_GET['id']));
     $countlines = 0;
     while ($row = $fs->dbFetchArray($get_os)) {
     ?>
-    <form action="index.php" method="post">
-    <table class="list">
       <tr>
         <td>
-          <input type="hidden" name="do" value="modify">
-          <input type="hidden" name="action" value="update_list">
-          <input type="hidden" name="list_type" value="os">
-          <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
-          <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+          <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>">
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo stripslashes($row['os_name']);?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo stripslashes($row['os_name']);?>">
         </td>
         <td title="The order these items will appear in the Operating System list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
-          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
         </td>
         <td title="Show this item in the Operating System list">
           <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
-          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
         </td>
-        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
       </tr>
-    </table>
-    </form>
     <?php
       $countlines++;
     };
-    // Form to add a new Operating System to the list
     ?>
+      <tr>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+      </tr>	
+    </table>
+    </form>
     <hr>
+    <?php     
+    // Form to add a new Operating System to the list		
+    ?>
     <form action="index.php" method="post">
     <table class="list">
     <tr>
@@ -933,42 +936,46 @@ if ($_GET['show'] == 'prefs') { ?>
   <h3><?php echo $admin_text['versionlist'];?></h3>
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
+  <form action="index.php" method="post">
+  <input type="hidden" name="do" value="modify">
+  <input type="hidden" name="action" value="update_list">
+  <input type="hidden" name="list_type" value="version">
+  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+  <table class="list">
 
     <?php
     $get_version = $fs->dbQuery("SELECT * FROM flyspray_list_version WHERE project_id = ? ORDER BY list_position", array($_GET['id']));
     $countlines = 0;
     while ($row = $fs->dbFetchArray($get_version)) {
     ?>
-    <form action="index.php" method="post">
-    <table class="list">
       <tr>
         <td>
-          <input type="hidden" name="do" value="modify">
-          <input type="hidden" name="action" value="update_list">
-          <input type="hidden" name="list_type" value="version">
-          <input type="hidden" name="id" value="<?php echo $row['version_id'];?>">
-          <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+          <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>">
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo stripslashes($row['version_name']);?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo stripslashes($row['version_name']);?>">
         </td>
         <td title="The order the items are shown in the Version list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
-          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
         </td>
         <td title="Show this item in the Version list">
           <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
-          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
         </td>
-        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
       </tr>
-    </table>
-    </form>
     <?php
       $countlines++;
     };
+    ?>
+      <tr>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+      </tr>
+    </table>
+    </form>
+    <hr>
+    <?php 
     // Form to add a new Version to the list
     ?>
-    <hr>
     <form action="index.php" method="post">
     <table class="list">
       <tr>
