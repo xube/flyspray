@@ -476,7 +476,7 @@ if ($permissions['is_admin'] == '1')
          $get_groups = $db->Query("SELECT * FROM flyspray_groups
                                    WHERE belongs_to_project = ?
                                    ORDER BY group_id ASC",
-                                   array($project)
+                                   array($project_id)
                                  );
 
          while ($group = $db->FetchArray($get_groups))

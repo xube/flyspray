@@ -28,10 +28,11 @@ $lang = $flyspray_prefs['lang_code'];
 $fs->get_language_pack($lang, 'main');
 
 // Get user permissions
+$permissions = array();
 if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
 {
    // Check to see if the user has been trying to hack their cookies to perform sql-injection
-   if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project'])))
+   if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", @$_COOKIE['flyspray_project'])))
    {
       die("Stop hacking your cookies, you naughty fellow!");
    }
@@ -164,7 +165,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // If the user has used the search box, store their search for later on
    if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order']))
    {
-      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . $_GET['project'] . $lastindex;
+      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project'] . $lastindex;
    }
 ?>
 

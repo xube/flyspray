@@ -10,7 +10,6 @@
 
 //error_reporting(E_ALL & -E_NOTICE);
 
-
 // This line gets the operating system so that we know which way to put slashes in the path
 strstr( PHP_OS, "WIN") ? $slash = "\\" : $slash = "/";
 
@@ -58,7 +57,7 @@ if (!isset($basedir)
       Header("Location: sql/install-0.9.7.php");
 };
 
-include_once ( "$adodbpath" );
+include_once ( $adodbpath );
 include_once ( "$basedir/includes/functions.inc.php" );
 include_once ( "$basedir/includes/regexp.php" );
 include_once ( "$basedir/includes/db.inc.php" );
@@ -88,10 +87,12 @@ if (!$res) {
 // Retrieve the global application preferences
 $flyspray_prefs = $fs->getGlobalPrefs();
 
+$fs->fixMissingIndices();
+
 // If we've gone directly to a task, we want to override the project_id set in the function below
 if ((isset($_GET['do']) && $_GET['do'] == 'details') && (isset($_GET['id'])))
 {
-   list($project_id) = $db->FetchArray($db->Query("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = ?", array($_GET['id'])));
+   $project_id = $db->FetchOne($db->Query("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = ?", array($_GET['id'])));
    setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
 };
 

@@ -657,6 +657,18 @@ function GetTaskDetails($task_id) {
    // End of startReminderDaemon function
    }
 
+  // set empty values for $_GET[...] variables
+  function fixMissingIndices() {
+    $indexes = 'index date order class sort sort2 tasks permissions';
+    $indexes = split(' ', $indexes);
+    foreach ($indexes as $index) {
+      if (!isset($_GET[$index]))
+	$_GET[$index] = '';
+      if (!isset($_REQUEST[$index]))
+	$_REQUEST[$index] = '';
+    }
+  }
+
 
 ///////////////////////////
 // End of Flyspray class //

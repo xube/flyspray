@@ -14,6 +14,7 @@ $fs->get_language_pack($lang, 'index');
 $fs->get_language_pack($lang, 'details');
 
 $orderby = array();
+$dev = null;
 
 if (isset($_GET['order']) && !empty($_GET['order']))
 {
@@ -246,7 +247,7 @@ if (isset($_GET['string']) && $_GET['string']) {
 }
 
 // Do this to hide private tasks from the list
-if ($permissions['manage_project'] != '1'
+if (@$permissions['manage_project'] != '1'	    // $permissions empty unless user logged in
      && isset($_COOKIE['flyspray_userid']))
 {
    $where[] = "(t.mark_private <> '1' OR t.assigned_to = ?)";
@@ -478,6 +479,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
   {
       if($orderkey)
       {
+         $class = '';
          if(isset($_GET['order']) && $_GET['order'] == "$orderkey")
          {
             $class = 'class="orderby"';
@@ -544,6 +546,7 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
    global $project;
    global $flyspray_prefs;
    global $project_prefs;
+   $dev = null;
 
    if ($project == '0')
    {

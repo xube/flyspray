@@ -106,6 +106,11 @@ class Database {
       return $row;
    }
 
+   function FetchOne(&$result) {
+     $row = $this->FetchArray($result);
+     return (count($row) > 0 ? $row[0] : null);
+   }
+
 // End of Database Class
 }
 

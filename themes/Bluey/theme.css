@@ -430,6 +430,7 @@ p#footer {
   color                : #ffffff;
   text-align           : center;
   margin-top            :  15px;
+  clear			: both;
 }
 
 p#footer a:link {

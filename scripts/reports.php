@@ -37,7 +37,7 @@ function changelog_report()
    global $fs;
    global $flyspray_prefs;
    global $reports_text;
-
+   
         echo "<div class=\"tabentries\">";
         echo "<p><em>$reports_text[changeloggen]</em></p>";
         echo "<div class=\"tabentry\">";
@@ -274,6 +274,10 @@ function events_report()
    global $reports_text;
    global $details_text;
    global $project_id;
+   // declare variables used in this function
+   $date       = null;
+   $search     = null;
+   $index_text = null;
 
 
 switch ($_REQUEST['sort']) {

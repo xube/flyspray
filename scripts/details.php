@@ -11,15 +11,18 @@ $fs->get_language_pack($lang, 'details');
 $task_exists = $db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_GET['id']));
 $task_details = $fs->GetTaskDetails($_GET['id']);
 
+// declare variables
+$deps_open = null;
+
 // Only load this page if a valid task was actually requested
 // and the user has permission to view it
 if ($db->CountRows($task_exists)
      && $task_details['project_is_active'] == '1'
      && ($project_prefs['others_view'] == '1'
-         OR $permissions['view_tasks'] == '1')
+         OR @$permissions['view_tasks'] == '1')
      && (($task_details['mark_private'] == '1'
          && $task_details['assigned_to'] == $current_user['user_id'])
-         OR $permissions['manage_project'] == '1'
+         OR @$permissions['manage_project'] == '1'
          OR $task_details['mark_private'] != '1')
      )
 {
@@ -29,23 +32,23 @@ if ($db->CountRows($task_exists)
    $effective_permissions = array();
 
    // Confirm that the user can modify this task or not
-   if ($permissions['modify_all_tasks'] == '1'
-      OR ($permissions['modify_own_tasks'] == '1' && $task_details['assigned_to'] == $current_user['user_id']))
+   if (@$permissions['modify_all_tasks'] == '1'
+      OR (@$permissions['modify_own_tasks'] == '1' && $task_details['assigned_to'] == $current_user['user_id']))
    {
       $effective_permissions['can_edit'] = '1';
    }
 
    // Check if the user can take ownership of this task
-   if (($permissions['assign_to_self'] == '1' && empty($task_details['assigned_to']))
-    OR $permissions['assign_others_to_self'] == '1'
+   if ((@$permissions['assign_to_self'] == '1' && empty($task_details['assigned_to']))
+    OR @$permissions['assign_others_to_self'] == '1'
     && $task_details['assigned_to'] != $current_user['user_id'])
    {
       $effective_permissions['can_take_ownership'] = '1';
    }
 
    // Check if the user can close this task
-   if (($permissions['close_own_tasks'] == '1' && ($task_details['assigned_to'] == $current_user['user_id']))
-    OR $permissions['close_other_tasks'] == '1')
+   if ((@$permissions['close_own_tasks'] == '1' && ($task_details['assigned_to'] == $current_user['user_id']))
+    OR @$permissions['close_other_tasks'] == '1')
    {
       $effective_permissions['can_close'] = '1';
    }
@@ -58,7 +61,7 @@ if ($db->CountRows($task_exists)
    // then use this section.        //
    ///////////////////////////////////
 
-   if ($effective_permissions['can_edit'] == '1'
+   if (@$effective_permissions['can_edit'] == '1'
     && $task_details['is_closed'] != '1'
     && isset($_GET['edit']) && $_GET['edit'] == 'yep')
    {
@@ -81,7 +84,7 @@ if ($db->CountRows($task_exists)
          <select name="attached_to_project">
          <?php
          // If the user has permission to view all projects
-         if ($permissions['global_view'] == '1')
+         if (@$permissions['global_view'] == '1')
          {
             $get_projects = $db->Query("SELECT * FROM flyspray_projects
                                         WHERE project_is_active = '1'
@@ -448,11 +451,11 @@ if ($db->CountRows($task_exists)
 
    <?php
    } elseif (($task_details['is_closed'] == '1'
-      OR $effective_permissions['can_edit'] == '0'
+      OR @$effective_permissions['can_edit'] == '0'
       OR !isset($GET['edit']))
       && (($task_details['mark_private'] == '1'
             && $task_details['assigned_to'] == $current_user['user_id'])
-          OR $permissions['manage_project'] == '1'
+          OR @$permissions['manage_project'] == '1'
          OR $task_details['mark_private'] != '1'))
    {
    //////////////////////////////////////
@@ -644,7 +647,7 @@ if ($db->CountRows($task_exists)
             }
 
             // If the user has permission, show a link to remove a dependency
-            if ($effective_permissions['can_edit'] == '1'
+            if (@$effective_permissions['can_edit'] == '1'
              && $task_details['is_closed'] != '1')
             {
                echo '&nbsp;&mdash;&nbsp;<a class="removedeplink" href="?do=modify&amp;action=removedep&amp;depend_id=' . $dependency['depend_id'] . '">' . $details_text['remove'] . "</a>\n";
@@ -654,7 +657,7 @@ if ($db->CountRows($task_exists)
          }
          echo "<br />\n";
          // If the user has permission, show a form to add a new dependency
-         if ($effective_permissions['can_edit'] == '1'
+         if (@$effective_permissions['can_edit'] == '1'
           && $task_details['is_closed'] != '1')
          {
          ?>
@@ -711,12 +714,12 @@ if ($db->CountRows($task_exists)
          echo '<div id="actionbuttons">';
 
          // Check permissions and task status, then show the " task" button
-         if ($effective_permissions['can_close'] == '1' && $task_details['is_closed'] == '1')
+         if (@$effective_permissions['can_close'] == '1' && $task_details['is_closed'] == '1')
          {
             echo '<a href="?do=modify&amp;action=reopen&amp;task_id=' . $_GET['id'] . '">' . $details_text['reopenthistask'] . '</a>';
 
             // If they can't  this, show a button to request a PM  it
-         } elseif ($effective_permissions['can_close'] != '1'
+         } elseif (@$effective_permissions['can_close'] != '1'
            && $task_details['is_closed'] == '1'
            && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
            && isset($current_user['user_id']))
@@ -753,7 +756,7 @@ if ($db->CountRows($task_exists)
     };
 
     // Check permissions and task status, then show the "close task" form
-   if ($effective_permissions['can_close'] == '1'
+   if (@$effective_permissions['can_close'] == '1'
        && $task_details['is_closed'] != '1'
        && $deps_open != 'yes')
    {
@@ -798,8 +801,9 @@ if ($db->CountRows($task_exists)
 
    <?php
    // If the user is assigned this task but can't close it, show a button to request closure
-   } elseif ($effective_permissions['can_close'] != '1'
-       && $open_deps != 'yes'
+   } elseif (@$effective_permissions['can_close'] != '1'
+       && @$open_deps != 'yes'	    // FIXME: where does $open_deps come from?
+       && @defined($current_user)
        && $task_details['assigned_to'] == $current_user['user_id']
        && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1')
    {
@@ -824,26 +828,26 @@ if ($db->CountRows($task_exists)
    }
 
    // Check permissions and task status, then show the "take ownership" button
-   if ($effective_permissions['can_take_ownership'] == '1' && $task_details['is_closed'] != '1')
+   if (@$effective_permissions['can_take_ownership'] == '1' && $task_details['is_closed'] != '1')
    {
       echo '<a id="own" class="button" href="?do=modify&amp;action=takeownership&amp;task_id=' . $_GET['id'] . '">' . $details_text['assigntome'] . '</a> ';
    }
 
    // Check permissions, then show the "edit task" button
-   if ($effective_permissions['can_edit'] == '1'
+   if (@$effective_permissions['can_edit'] == '1'
    && $task_details['is_closed'] != '1')
    {
       echo '<a id="edittask" class="button" href="?do=details&amp;id=' . $_GET['id'] . '&amp;edit=yep">' . $details_text['edittask'] . '</a> ';
    }
 
    // Start of marking private/public
-   if ($permissions['manage_project'] == '1'
+   if (@$permissions['manage_project'] == '1'
         && $task_details['is_closed'] != '1'
         && $task_details['mark_private'] != '1')
    {
       echo '<a id="private" class="button" href="?do=modify&amp;action=makeprivate&amp;id=' . $_GET['id'] . '">' . $details_text['makeprivate'] . '</a> ';
 
-   } elseif ($permissions['manage_project'] == '1'
+   } elseif (@$permissions['manage_project'] == '1'
         && $task_details['is_closed'] != '1'
         && $task_details['mark_private'] == '1')
    {
@@ -893,12 +897,12 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
 <ul id="submenu">
 
    <?php
-   if ($permissions['view_comments'] == '1' OR $permissions['add_comments'] == '1')
+   if (@$permissions['view_comments'] == '1' OR @$permissions['add_comments'] == '1')
    {
       echo '<li id="commentstab"><a href="#comments">'. $details_text['comments'] . "($num_comments)" . '</a></li>';
    }
 
-   if ($permissions['view_attachments'] == '1')
+   if (@$permissions['view_attachments'] == '1')
    {
       echo '<li id="attachtab"><a href="#attach">' . $details_text['attachments'] . "($num_attachments)" . '</a></li>';
    }
@@ -906,13 +910,13 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
 
    echo '<li id="relatedtab"><a href="#related">' . $details_text['relatedtasks'] . "($num_related/$num_related_to)" . '</a></li>';
 
-   if ($permissions['manage_project'] == '1')
+   if (@$permissions['manage_project'] == '1')
    {
       echo '<li id="notifytab"><a href="#notify">' . $details_text['notifications'] . "($num_notifications)" . '</a></li>';
       echo '<li id="remindtab"><a href="#remind">' . $details_text['reminders'] . "($num_reminders)" . '</a></li>';
    }
 
-   if ($permissions['view_history'] == '1')
+   if (@$permissions['view_history'] == '1')
    {
       echo '<li id="historytab"><a href="#history">' . $details_text['history'] . '</a></li>';
    }
@@ -938,19 +942,19 @@ while ($row = $db->FetchArray($getcomments))
    $comment_text     = $fs->formatText($row['comment_text']);
 
    // If the user has permissions, show the comments already added
-   if ($permissions['view_comments'] == '1')
+   if (@$permissions['view_comments'] == '1')
    {
       echo '<a name="' . $row['comment_id'] . '"></a>';
       echo "<em><a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">\n" .
       $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$user_info['real_name']} ({$user_info['user_name']})</a> - $formatted_date</em>\n";
 
       // If the user has permission, show the edit button
-      if ($permissions['edit_comments'] == '1')
+      if (@$permissions['edit_comments'] == '1')
       {
          echo '&nbsp; - <a href="?do=editcomment&amp;task_id=' . $_GET['id'] . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
       }
       // If the user has permission, show the delete button
-      if ($permissions['delete_comments'] == '1')
+      if (@$permissions['delete_comments'] == '1')
       {
          ?>
          &nbsp;-&nbsp;<a href="?do=modify&amp;action=deletecomment&amp;task_id=<?php echo $_GET['id'];?>&amp;comment_id=<?php echo $row['comment_id'];?>"
@@ -973,7 +977,7 @@ while ($row = $db->FetchArray($getcomments))
 
 // Now, show a form to add a comment (but only if the user has the rights!)
 
-if ($permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
+if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
 {
 ?>
    <form action="index.php" method="post">
@@ -1000,7 +1004,7 @@ echo '</div>';
 // Start of file attachments area //
 ////////////////////////////////////
 
-if ($permissions['view_attachments'] == '1')
+if (@$permissions['view_attachments'] == '1')
 {
    echo '<div id="attach" class="tab">';
 
@@ -1015,7 +1019,7 @@ if ($permissions['view_attachments'] == '1')
       $file_desc = stripslashes($row['file_desc']);
 
    //  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
-   if ($permissions['delete_attachments'] == '1')
+   if (@$permissions['delete_attachments'] == '1')
    {
    ?>
       <div class="modifycomment">
@@ -1088,7 +1092,7 @@ if($pos===0 && $project_prefs['inline_images'] == '1')
 };
 
 // Now, show a form to attach a file (but only if the user has the rights!)
-if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '1')
+if (@$permissions['create_attachments'] == "1" && $task_details['is_closed'] != '1')
 { ?>
 
    <form enctype="multipart/form-data" action="index.php" method="post" id="formupload">
@@ -1147,7 +1151,7 @@ echo '</div>';
       ?>
       <?php
       // If the user can modify jobs, then show them a form to remove related tasks
-      if ($effective_permissions['can_edit'] == '1' && $task_details['is_closed'] != '1')
+      if (@$effective_permissions['can_edit'] == '1' && $task_details['is_closed'] != '1')
       {
       ?>
          <div class="modifycomment">
@@ -1173,7 +1177,7 @@ echo '</div>';
    // End of cycling through related tasks
    }
 
-   if ($effective_permissions['can_edit'] == "1" && $task_details['is_closed'] != '1')
+   if (@$effective_permissions['can_edit'] == "1" && $task_details['is_closed'] != '1')
    {
    ?>
       <form action="index.php" method="post" id="formaddrelatedtask">
@@ -1216,7 +1220,7 @@ echo '</div>';
 // Start of notifications area //
 /////////////////////////////////
 
-if ($permissions['manage_project'] == '1')
+if (@$permissions['manage_project'] == '1')
 {
 ?>
 
@@ -1236,7 +1240,7 @@ if ($permissions['manage_project'] == '1')
 
          <?php
          // If the user can modify jobs, then show them a form to remove a notified user
-         if ($permissions['manage_project'] == '1' && $task_details['is_closed'] != '1')
+         if (@$permissions['manage_project'] == '1' && $task_details['is_closed'] != '1')
          {
          ?>
             <div class="modifycomment">
@@ -1256,7 +1260,7 @@ if ($permissions['manage_project'] == '1')
          echo "<p><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['real_name']} ({$row['user_name']})</a></p>";
       }
 
-      if ($permissions['manage_project'] == '1')
+      if (@$permissions['manage_project'] == '1')
       {
       ?>
          <form action="index.php" method="get">
@@ -1303,7 +1307,7 @@ if ($permissions['manage_project'] == '1')
    while ($row = $db->FetchArray($get_reminders))
    {
       // If the user has permission, then show them a form to remove a reminder
-      if (($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') && $task_details['is_closed'] != '1')
+      if ((@$permissions['is_admin'] == '1' OR @$permissions['manage_project'] == '1') && $task_details['is_closed'] != '1')
       {
       ?>
          <div class="modifycomment">
@@ -1344,7 +1348,7 @@ if ($permissions['manage_project'] == '1')
    // End of cycling through reminders
    }
 
-   if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1')
+   if (@$permissions['is_admin'] == '1' && $task_details['is_closed'] != '1')
    {
    ?>
       <form action="index.php" method="post" id="formaddreminder">
@@ -1406,7 +1410,7 @@ echo '</div>';
 // Start of History Tab //
 //////////////////////////
 
-if ($permissions['view_history'] == '1')
+if (@$permissions['view_history'] == '1')
 {
 ?>
 
