@@ -1,48 +1,32 @@
 <?php
+// As of 24 July 2004, all editable config is stored in flyspray.conf.php
+// There should be no reason to edit this file anymore, except if you 
+// move flyspray.conf.php to a directory where a browser can't access it.
+// (RECOMMENDED)
 
-// Directory with Flyspray scripts. It's the directory where this file is
-// located.
-$basedir = '/var/www/flyspray';
+// Load the config file
+$conf_array = parse_ini_file("flyspray.conf.php", true);
 
-// Flyspray uses ADODB for database access.  You will need to install
-// it somewhere on your server for Flyspray to function.  It can be installed
-// inside the Flyspray directory if you wish. The next line needs to be the
-// correct path to your adodb.inc.php file.
-include_once ( "/usr/share/adodb/adodb.inc.php" );
+// Set values from the config file. Once these settings are loaded a connection
+// is made to the database to retrieve all the other preferences.
+$basedir    = $conf_array['general']['basedir'];
+$adodbpath    = $conf_array['general']['adodbpath'];
+$cookiesalt = $conf_array['general']['cookiesalt'];
+$dbtype     = $conf_array['database']['dbtype'];
+$dbhost     = $conf_array['database']['dbhost'];
+$dbname     = $conf_array['database']['dbname'];
+$dbuser     = $conf_array['database']['dbuser'];
+$dbpass     = $conf_array['database']['dbpass'];
 
-//  Modify this next line to reflect the correct path to your Flyspray
-//  functions.inc.php file.
+include_once ( "$adodbpath" );
+
 include ( "$basedir/functions.inc.php" );
-
-//  Modify this next line to reflect the correct path to your Flyspray
-//  regexp.php file
 include ( "$basedir/regexp.php" );
-
-// The dbtype must be a valid adodb database type
-// See the ADODB homepage for a list of supported database types. 
-$dbtype = 'mysql';  
-
-$dbhost = 'localhost';  // Name or IP of Database Server
-$dbname = 'flyspray';  // The name of the database.
-$dbuser = 'USERNAME';   // The user to access the database.
-$dbpass = 'PASSWORD';   // The password to go with that username above.
-
-
-// This is the key that your cookies are encrypted against.
-// It is recommended that you change this immediately after installation to make
-// it harder for people to hack their cookies and try to take over someone else's 
-// account.  Changing it will log out all users, but there are no other consequences.
-$cookiesalt = '4t';  
 
 // You might like to uncomment the next line if you are receiving lots of
 // PPHP NOTICE errors
 
 //error_reporting(E_ALL & -E_NOTICE);
-
-
-///////////////////////////////////////////////////////////
-//  DO NOT EDIT BELOW THIS LINE! //
-//////////////////////////////////////////////////////////
 
 // Check PHP Version (Must Be > 4.2)
 if (PHP_VERSION  < '4.2.0') {
