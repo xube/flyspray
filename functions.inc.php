@@ -463,7 +463,7 @@ if (!($totalcount / $perpage <= 1)) {
 	{
 	    $this->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value) 
 	                      VALUES(?, ?, ?, ?, ?, ?, ?)",
-	                      array($task, $this->emptyToZero($_SESSION['userid']), date(U), $type, $field, $oldvalue, $newvalue));
+	                      array($task, $this->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
 	}
 	
 	function LinkedUsername($user_id)

@@ -27,14 +27,13 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 }
 
   if ($upgraded == 'yes') {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database has already been upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
+    echo "<table class=\"admin\"><tr><td class=\"admintext\">Your MYSQL Flyspray database has already been upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
 	echo "<a href=\"../\">Take me to Flyspray 0.9.6 now!</a></td></tr><table>";
 
   } else {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">This script will upgrade your database for use with Flyspray 0.9.6.";
-    echo " You should ensure that your database settings are correct in header.php before continuing.";
+    echo "<table class=\"admin\"><tr><td class=\"admintext\">This script will upgrade your MYSQL database for use with Flyspray 0.9.6.";
+    echo " You should ensure that your database settings are correct in <b>flyspray.conf.php</b> before continuing.";
     echo "<br><br><a href=\"" . $_SERVER['PHP_SELF'] . "?page=2\">Perform upgrade now!</a></td></tr></table>";
-    //echo $_SERVER['PHP_SELF'];
   };
 
 } elseif ($page == '2') {
@@ -50,7 +49,7 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 }
 
   if ($upgraded == 'yes') {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database has already been upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
+    echo "<table class=\"admin\"><tr><td class=\"admintext\">Your MYSQL Flyspray database has already been upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
 	echo "<a href=\"../\">Take me to Flyspray 0.9.6 now!</a></td></tr><table>";
 
   } else {
@@ -95,10 +94,6 @@ $upgrade = $fs->dbQuery("ALTER TABLE `flyspray_tasks` ADD `task_priority` MEDIUM
 $upgrade = $fs->dbQuery("UPDATE flyspray_tasks SET task_priority = '2';");
 $upgrade = $fs->dbQuery("UPDATE flyspray_tasks SET last_edited_time=date_opened WHERE last_edited_time=0 OR last_edited_time='' OR last_edited_time IS NULL;");
 
-  
-  echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database is now upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
-  echo "<a href=\"../\">Take me to Flyspray 0.9.6 now!</a></td></tr><table>";
-
 // Initialise the history table with basic information we 
 // Gather from the existing tables.
 
@@ -130,8 +125,14 @@ $init_history = $fs->dbQuery("INSERT INTO flyspray_history (task_id, user_id, ev
                     SELECT t.task_id, a.added_by AS user_id, a.date_added AS event_date, 7 AS event_type, a.attachment_id AS new_value
                     FROM flyspray_tasks t
                     RIGHT JOIN flyspray_attachments a ON t.task_id = a.task_id");
+
+  
+echo "<table class=\"admin\"><tr><td class=\"admintext\">Your MYSQL Flyspray database is now upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
+echo "<a href=\"../\">Take me to Flyspray 0.9.6 now!</a></td></tr><table>";
+
 // End of checking if upgrade is already done
 };
+
 // End of pages
 };
 ?>

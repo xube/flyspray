@@ -9,7 +9,6 @@
 basedir = "/var/www/flyspray/"                ; Location of your Flyspray installation
 cookiesalt = "4t"                             ; Randomisation value for cookie encoding
 adodbpath = "/usr/share/adodb/adodb.inc.php"  ; Path to the main ADODB include file
-jpgraphpath = "/usr/share/jpgraph"            ; Path to the main JPGraph DIRECTORY
 output_buffering = "on"                     ; Available options: "off", "on" and "gzip"
 
 [database]
@@ -18,3 +17,6 @@ dbhost = "localhost"             ; Name or IP of your database server
 dbname = "flyspray"              ; The name of the database
 dbuser = "USERNAME"              ; The user to access the database
 dbpass = "PASSWORD"              ; The password to go with that username above
+
+[notusedyet]
+jpgraphpath = "/usr/share/jpgraph"            ; Path to the main JPGraph DIRECTORY
