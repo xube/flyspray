@@ -28,13 +28,13 @@ if ($permissions['manage_project'] == '1')
    // Show the menu that stays visible, regardless of which area we're in
    echo '<div id="toolboxmenu">';
 
-   echo '<small>|</small> <a id="projprefslink" href="?do=pm&amp;project=' . $project_id . '&amp;area=prefs">' . $admin_text['preferences'] . '</a> ';
-   echo '<small>|</small> <a id="projuglink" href="?do=pm&amp;project=' . $project_id . '&amp;area=groups">' . $pm_text['usergroups'] . '</a> ';
-   echo '<small>|</small> <a id="projttlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=tt">' . $admin_text['tasktypes'] . '</a> ';
-   echo '<small>|</small> <a id="projreslink" href="?do=pm&amp;project=' . $project_id . '&amp;area=res">' . $admin_text['resolutions'] . '</a> ';
-   echo '<small>|</small> <a id="projcatlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=cat">' . $admin_text['categories'] . '</a> ';
-   echo '<small>|</small> <a id="projoslink" href="?do=pm&amp;project=' . $project_id . '&amp;area=os">' . $admin_text['operatingsystems'] . '</a> ';
-   echo '<small>|</small> <a id="projverlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=ver">' . $admin_text['versions'] . '</a> ';
+   echo '<small>|</small><a id="projprefslink" href="?do=pm&amp;project=' . $project_id . '&amp;area=prefs">' . $admin_text['preferences'] . '</a>';
+   echo '<small>|</small><a id="projuglink" href="?do=pm&amp;project=' . $project_id . '&amp;area=groups">' . $pm_text['usergroups'] . '</a>';
+   echo '<small>|</small><a id="projttlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=tt">' . $admin_text['tasktypes'] . '</a>';
+   echo '<small>|</small><a id="projreslink" href="?do=pm&amp;project=' . $project_id . '&amp;area=res">' . $admin_text['resolutions'] . '</a>';
+   echo '<small>|</small><a id="projcatlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=cat">' . $admin_text['categories'] . '</a>';
+   echo '<small>|</small><a id="projoslink" href="?do=pm&amp;project=' . $project_id . '&amp;area=os">' . $admin_text['operatingsystems'] . '</a>';
+   echo '<small>|</small><a id="projverlink" href="?do=pm&amp;project=' . $project_id . '&amp;area=ver">' . $admin_text['versions'] . '</a>';
 
    // End of the toolboxmenu
    echo '</div>';

@@ -13,7 +13,7 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
 
 // Only load this page if a valid task was actually requested
 // and the user has permission to view it
- if ($db->CountRows($task_exists)
+if ($db->CountRows($task_exists)
      && $task_details['project_is_active'] == '1'
      && ($project_prefs['others_view'] == '1'
          OR $permissions['view_tasks'] == '1')
@@ -21,15 +21,9 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
          && $task_details['assigned_to'] == $current_user['user_id'])
          OR $permissions['manage_project'] == '1'
          OR $task_details['mark_private'] != '1')
-     ) {
+     )
+{
 
-//$item_summary = htmlspecialchars($task_details['item_summary']);
-//$detailed_desc = htmlspecialchars($task_details['detailed_desc']);
-
-//if (!get_magic_quotes_gpc()) {
-//  $item_summary = str_replace("\\", "&#92;", $item_summary);
-// $detailed_desc = str_replace("\\", "&#92;", $detailed_desc);
-//};
 
 // Create an array with effective permissions for this user on this task
 $effective_permissions = array();
@@ -96,7 +90,7 @@ if ($effective_permissions['can_edit'] == '1'
   ?>
   </select>
 
-  <div class="fineprint">
+  <div id="fineprint">
     <?php
     // Get the user details of the person who opened this item
     if ($task_details['opened_by']) {
@@ -542,7 +536,7 @@ if ($effective_permissions['can_edit'] == '1'
          </tr>
          <tr>
             <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
-            <td id="percent"><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?> /></td>
+            <td id="percent"><?php echo "<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?> /></td>
          </tr>
       </table>
 
@@ -706,102 +700,77 @@ if ($effective_permissions['can_edit'] == '1'
     };
 
     // Check permissions and task status, then show the "close task" form
-    if ($effective_permissions['can_close'] == '1'
-        && $task_details['is_closed'] != '1'
-        && $deps_open != 'yes') {
-        ?>
+   if ($effective_permissions['can_close'] == '1'
+       && $task_details['is_closed'] != '1'
+       && $deps_open != 'yes')
+   {
+   ?>
+      <a href="#close" class="button" onclick="showstuff('closeform');">
+      <?php
+      echo $details_text['closetask'] . '</a>';
+      ?></a>
+      <div id="closeform">
+         <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a>
+         <form name="form2" action="index.php" method="post" id="formclosetask">
+            <input type="hidden" name="do" value="modify" />
+            <input type="hidden" name="action" value="close" />
+            <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>" />
+            <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+            <select class="adminlist" name="resolution_reason">
+               <option value="0"><?php echo $details_text['selectareason']; ?></option>
+               <?php
+               $get_resolution = $db->Query("SELECT resolution_id, resolution_name FROM flyspray_list_resolution ORDER BY list_position");
+               while ($row = $db->FetchArray($get_resolution))
+               {
+                  echo "<option value=\"{$row['resolution_id']}\">{$row['resolution_name']}</option>\n";
+               }
+               ?>
+            </select>
+            <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" onclick="Disable2()" />
+            <br />
+            <?php echo $details_text['closurecomment'];?>
+            <br />
+            <textarea class="admintext" name="closure_comment" rows="2" cols="30"></textarea>
+         </form>
+      </div>
 
-      <form name="form2" action="index.php" method="post" id="formclosetask">
-        <input type="hidden" name="do" value="modify" />
-        <input type="hidden" name="action" value="close" />
-        <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>" />
-        <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-        <?php echo $details_text['closetask'];?>
-        <select class="adminlist" name="resolution_reason">
-          <option value="0"><?php echo $details_text['selectareason']; ?></option>
-        <?php
-        $get_resolution = $db->Query("SELECT resolution_id, resolution_name FROM flyspray_list_resolution ORDER BY list_position");
-        while ($row = $db->FetchArray($get_resolution)) {
-          //if ($row['resolution_id'] == $task_details['resolution_reason']) {
-            //echo "<option value=\"{$row['resolution_id']}\" selected=\"selected\">{$row['resolution_name']}</option>\n";
-          //} else {
-            echo "<option value=\"{$row['resolution_id']}\">{$row['resolution_name']}</option>\n";
-          //};
-        };
-        ?>
-        </select>
-        <br />
-        <?php echo $details_text['closurecomment'];?>
-        <br />
-        <textarea class="admintext" name="closure_comment" rows="2" cols="30"></textarea>
-        <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" onclick="Disable2()" />
-     </form>
-
-
-    <?php
-    // If the user owns this task but can't close it, show a button to request closure
-    } elseif ($effective_permissions['can_close'] != '1'
-              && $open_deps != 'yes'
-              && $task_details['assigned_to'] == $current_user['user_id']
-              && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1') { ?>
-
-                <form name-"form2" action="index.php" method="post" id="formrequestclose">
-                  <input type="hidden" name="do" value="modify" />
-                  <input type="hidden" name="action" value="requestclose" />
-                  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-                  <input type="submit" class="adminbutton" value="<?php echo $details_text['requestclose'];?>" />
-                 </form>
-
-    <?php
-    // End of "close task" forms
-    };
-
-    // Check permissions and task status, then show the "take ownership" button
-    if ($effective_permissions['can_take_ownership'] == '1' && $task_details['is_closed'] != '1') { ?>
-
-          <form id="takeownershipform" action="index.php" method="post">
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="takeownership" />
-          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-          <input type="hidden" name="user_id" value="<?php echo $current_user['user_id'];?>" />
-          <input type="submit" class="adminbutton" value="<?php echo $details_text['assigntome'];?>" />
-          </form>
-
-    <?php
-    // End of "take ownership" form
-    };
-
-    // Check permissions, then show the "edit task" button
-    if ($effective_permissions['can_edit'] == '1'
-    && $task_details['is_closed'] != '1') {
-    ?>
-    <form action="?do=details&id=<?php echo $_GET['id'];?>&edit=yep" method="post">
-      <input class="adminbutton" type="submit" accesskey="e" value="<?php echo $details_text['edittask'];?>" />
-    </form>
 
    <?php
-   // End of showing the "edit task" button
-   };
+   // If the user owns this task but can't close it, show a button to request closure
+   } elseif ($effective_permissions['can_close'] != '1'
+             && $open_deps != 'yes'
+             && $task_details['assigned_to'] == $current_user['user_id']
+             && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1')
+   {
+      echo '<a class="button" href="?do=modify&amp;action=requestclose&amp;task_id=' . $_GET['id'] . '">' . $details_text['requestclose'] . '</a> ';
+   }
+
+   // Check permissions and task status, then show the "take ownership" button
+   if ($effective_permissions['can_take_ownership'] == '1' && $task_details['is_closed'] != '1')
+   {
+      echo '<a class="button" href="?do=modify&amp;action=takeownership&amp;task_id=' . $_GET['id'] . '">' . $details_text['assigntome'] . '</a> ';
+   }
+
+   // Check permissions, then show the "edit task" button
+   if ($effective_permissions['can_edit'] == '1'
+   && $task_details['is_closed'] != '1')
+   {
+      echo '<a class="button" href="?do=details&amp;id=' . $_GET['id'] . '&amp;edit=yep">' . $details_text['edittask'] . '</a> ';
+   }
 
    // Start of marking private/public
    if ($permissions['manage_project'] == '1'
         && $task_details['is_closed'] != '1'
-        && $task_details['mark_private'] != '1') {
-
-    echo '<form action="?do=modify&action=makeprivate&id=' . $_GET['id'] . '" method="post">';
-    echo '<input class="adminbutton" type="submit" value="' . $details_text['makeprivate'] . '" />';
-    echo '</form>';
+        && $task_details['mark_private'] != '1')
+   {
+      echo '<a class="button" href="?do=modify&amp;action=makeprivate&amp;id=' . $_GET['id'] . '">' . $details_text['makeprivate'] . '</a> ';
 
    } elseif ($permissions['manage_project'] == '1'
         && $task_details['is_closed'] != '1'
-        && $task_details['mark_private'] == '1') {
-
-   echo '<form action="?do=modify&action=makepublic&id=' . $_GET['id'] . '" method="post">';
-   echo '<input class="adminbutton" type="submit" value="' . $details_text['makepublic'] . '" />';
-   echo '</form>';
-
-   // End of marking private/public
-   };
+        && $task_details['mark_private'] == '1')
+   {
+      echo '<a class="button" href="?do=modify&amp;action=makepublic&amp;id=' . $_GET['id'] . '">' . $details_text['makepublic'] . '</a> ';
+   }
 
    echo '</div>';
    echo '</div>';
@@ -814,11 +783,10 @@ if ($effective_permissions['can_edit'] == '1'
 
 
 <?php
-if ($_GET['area']) {
-  $area = $_GET['area'];
-} else {
-  $area = 'comments';
-};
+////////////////////////////
+// Start the tabbed areas //
+////////////////////////////
+
 $num_comments = $db->CountRows($db->Query("SELECT * FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id'])));
 $num_attachments = $db->CountRows($db->Query("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id'])));
 $num_related = $db->CountRows($db->Query("SELECT * FROM flyspray_related WHERE this_task = ?", array($task_details['task_id'])));
@@ -836,16 +804,6 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
    <li><a href="#history"><?php echo $details_text['history'];?></a></li>
 </ul>
 
-<!--
-<p id="tabs">
-  <a <?php if ($area == 'comments') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=comments#tabs"><?php echo "{$details_text['comments']} ($num_comments)";?></a><small> | </small>
-  <a <?php if ($area == 'attachments') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=attachments#tabs"><?php echo "{$details_text['attachments']} ($num_attachments)";?></a><small> | </small>
-  <a <?php if ($area == 'related') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=related#tabs"><?php echo "{$details_text['relatedtasks']} ($num_related/$num_related_to)";?></a><small> | </small>
-  <a <?php if ($area == 'notify') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=notify#tabs"><?php echo "{$details_text['notifications']} ($num_notifications)";?></a><small> | </small>
-  <a <?php if ($area == 'remind') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=remind#tabs"><?php echo "{$details_text['reminders']} ($num_reminders)";?></a><small> | </small>
-  <a <?php if ($area == 'history') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=history#tabs"><?php echo "{$details_text['history']}";?></a><small> | </small>
-</p>
--->
 
 <?php
 ////////////////////////////
@@ -865,51 +823,30 @@ while ($row = $db->FetchArray($getcomments))
    ?>
    <a name="<?php echo $row['comment_id'];?>"></a>
    <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">" .
-   $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png") . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$user_info['real_name']} ({$user_info['user_name']})</a> - $formatted_date";?></em>
-   <?php
-   echo '<div class="modifycomment">';
+   $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png") . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$user_info['real_name']} ({$user_info['user_name']})</a> - $formatted_date</em>";
+
    // If the user has permission, show the edit button
    if ($permissions['edit_comments'] == '1')
-   { ?>
-      <span class="modifycomment">
-      <form action="index.php" method="get">
-      <p>
-         <input type="hidden" name="do" value="admin" />
-         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-         <input type="hidden" name="area" value="editcomment" />
-         <input type="hidden" name="id" value="<?php echo $row['comment_id'];?>" />
-         <input class="adminbutton" type="submit" value="<?php echo $details_text['edit'];?>" />
-      </p>
-      </form>
-      <?php
-   };
+   {
+      echo '&nbsp; - <a href="?do=editcomment&amp;task_id=' . $_GET['id'] . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
+   }
+   // If the user has permission, show the delete button
    if ($permissions['delete_comments'] == '1')
    {
       ?>
-      <form action="index.php" method="post"
-      onSubmit="
-      if(confirm('Really delete this comment?')) {
+      &nbsp;-&nbsp;<a href="?do=modify&amp;action=deletecomment&amp;task_id=<?php echo $_GET['id'];?>&amp;comment_id=<?php echo $row['comment_id'];?>"
+      onClick="if(confirm('<?php echo $details_text['confirmdelete'];?>')) {
         return true
       } else {
         return false }
       ">
-      <p>
-         <input type="hidden" name="do" value="modify" />
-         <input type="hidden" name="action" value="deletecomment" />
-         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-         <input type="hidden" name="comment_id" value="<?php echo $row['comment_id'];?>" />
-         <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>" />
-      </p>
-      </form>
-   <?php
+      <?php
+      echo $details_text['delete'] . '</a>';
    }
-   ?>
-   </div>
-   <p>
-   <?php echo $comment_text;?>
-   </p>
+   echo '<p class="comment">';
+   echo $comment_text;
+   echo '</p>';
 
-<?php
 // End of cycling through the comments for display
 };
 
@@ -1123,7 +1060,7 @@ echo '</div>';
    {
    ?>
       <form action="index.php" method="post" id="formaddrelatedtask">
-         <p>
+         <p class="admin">
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="add_related" />
          <input type="hidden" name="this_task" value="<?php echo $_GET['id'];?>" />
@@ -1202,7 +1139,7 @@ echo '</div>';
       if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')
       { ?>
          <form action="index.php" method="post">
-            <p>
+            <p class="admin">
             <?php echo $details_text['addusertolist'];?>
             <select class="adminlist" name="user_id">
                <?php
@@ -1230,7 +1167,7 @@ echo '</div>';
          {
          ?>
             <form action="index.php" method="post" id="addmyself">
-               <p>
+               <p class="admin">
                <input type="hidden" name="do" value="modify" />
                <input type="hidden" name="action" value="add_notification" />
                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
@@ -1242,7 +1179,7 @@ echo '</div>';
          } else
          { ?>
             <form action="index.php" method="post" id="removemyself">
-               <p>
+               <p class="admin">
                <input type="hidden" name="do" value="modify" />
                <input type="hidden" name="action" value="remove_notification" />
                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
@@ -1314,7 +1251,7 @@ echo '</div>';
       echo "<em>{$details_text['thisoften']}:</em> $how_often";
       echo "<br />";
       echo '<em>' . $details_text['message'] . ':</em>' . nl2br($row['reminder_message']);
-      echo "<br /><br /></div>";
+      echo "<br /><br />";
 
    // End of cycling through reminders
    }
@@ -1323,6 +1260,7 @@ echo '</div>';
    {
    ?>
       <form action="index.php" method="post" id="formaddreminder">
+         <p class="admin">
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="addreminder" />
          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
@@ -1367,6 +1305,7 @@ echo '</div>';
          <br />
 
          <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>" />
+         </p>
       </form>
 
 <?php
@@ -1375,7 +1314,9 @@ echo '</div>';
 // End of scheduled reminders area
 echo '</div>';
 
-// Start of History Tab
+//////////////////////////
+// Start of History Tab //
+//////////////////////////
 ?>
 
 <div id="history" class="tab">
@@ -1390,9 +1331,9 @@ echo '</div>';
       if (is_numeric($_GET['details']))
       {
          $details = " AND h.history_id = {$_GET['details']}";
-      } else
-      {
-         $details = '';
+
+         echo '<b>' . $details_text['selectedhistory'] . '</b>';
+         echo '&nbsp;&mdash;&nbsp;<a href="?do=details&amp;id=' . $_GET['id'] . '#history">' . $details_text['showallhistory'] . '</a>';
       }
 
       $query_history = $db->Query("SELECT h.*, u.user_name, u.real_name
@@ -1411,15 +1352,22 @@ echo '</div>';
       <?php
       }
 
-        while ($history = $db->FetchRow($query_history)) {
-            ?>
-        <tr>
-            <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
-            <td><?php if ($history['user_id'] == 0) {
-                          echo $details_text['anonymous'];
-                      } else {
-                          echo "<a href=\"?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
-                      }?></td>
+      while ($history = $db->FetchRow($query_history))
+      {
+      ?>
+      <tr>
+         <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
+         <td>
+         <?php
+         if ($history['user_id'] == 0)
+         {
+            echo $details_text['anonymous'];
+         } else
+         {
+            echo "<a href=\"?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
+         }
+         ?>
+         </td>
             <td><?php
             $newvalue = $history['new_value'];
             $oldvalue = $history['old_value'];
@@ -1506,17 +1454,19 @@ echo '</div>';
                     $newvalue .= '%';
                     break;
                 case 'detailed_desc':
-                    $field = "<a href=\"index.php?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['details']}</a>";
-                    if ($details != '') {
-                        $details_previous = htmlspecialchars($oldvalue);
-                        $details_new = htmlspecialchars($newvalue);
-                        if (!get_magic_quotes_gpc()) {
+                    $field = "<a href=\"index.php?do=details&amp;id={$history['task_id']}amp;details={$history['history_id']}#history\">{$details_text['details']}</a>";
+                    if (!empty($details))
+                    {
+                       $details_previous = htmlspecialchars($oldvalue);
+                       $details_new = htmlspecialchars($newvalue);
+                       if (!get_magic_quotes_gpc())
+                       {
                           $details_previous = str_replace("\\", "&#92;", $details_previous);
                           $details_new = str_replace("\\", "&#92;", $details_new);
-                        };
-                        $details_previous = nl2br(stripslashes($details_previous));
-                        $details_new = nl2br(stripslashes($details_new));
-                    };
+                       }
+                       $details_previous = nl2br(stripslashes($details_previous));
+                       $details_new = nl2br(stripslashes($details_new));
+                    }
                     $oldvalue = '';
                     $newvalue = '';
                     break;
@@ -1534,8 +1484,9 @@ echo '</div>';
                 echo $details_text['taskclosed'];
                 $res_name = $db->FetchRow($db->Query("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($newvalue)));
                 echo " ({$res_name['resolution_name']}";
-                if ($oldvalue != '') {
-                    echo ": {$oldvalue}";
+                if (!empty($oldvalue))
+                {
+                  echo ': ' . $fs->formatText($oldvalue);
                 }
                 echo ')';
 
@@ -1543,10 +1494,10 @@ echo '</div>';
                 echo $details_text['taskedited'];
 
             } elseif ($history['event_type'] == '4') {      //Comment added
-                echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=comments#{$newvalue}\">{$details_text['commentadded']}</a>";
+                echo '<a href="#comments">' . $details_text['commentadded'] . '</a>';
 
             } elseif ($history['event_type'] == '5') {      //Comment edited
-                echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['commentedited']}</a>";
+                echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}#history\">{$details_text['commentedited']}</a>";
                 $comment = $db->Query("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($history['field_changed']));
                 if ($db->CountRows($comment) != 0) {
                     $comment = $db->FetchRow($comment);
@@ -1563,126 +1514,161 @@ echo '</div>';
                     $details_new = nl2br(stripslashes($details_new));
                 };
 
-            } elseif ($history['event_type'] == '6') {      //Comment deleted
-                echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=history&amp;details={$history['history_id']}#tabs\">{$details_text['commentdeleted']}</a>";
-                if ($newvalue != '' && $history['field_changed'] != '') {
-                    echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($history['field_changed'], true) . ")";
-                };
-                if ($details != '') {
-                    $details_previous = htmlspecialchars($oldvalue);
-                    if (!get_magic_quotes_gpc()) {
-                      $details_previous = str_replace("\\", "&#92;", $details_previous);
-                    };
-                    $details_previous = nl2br(stripslashes($details_previous));
-                    $details_new = '';
-                };
+            } elseif ($history['event_type'] == '6') //Comment deleted
+            {
+               echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}#history\">{$details_text['commentdeleted']}</a>";
+               if ($newvalue != '' && $history['field_changed'] != '')
+               {
+                  echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($history['field_changed'], true) . ")";
+               }
+               if (!empty($details))
+               {
+                  $details_previous = htmlspecialchars($oldvalue);
+                  if (!get_magic_quotes_gpc())
+                  {
+                     $details_previous = str_replace("\\", "&#92;", $details_previous);
+                  }
+                  $details_previous = nl2br(stripslashes($details_previous));
+                  $details_new = '';
+               }
 
-            } elseif ($history['event_type'] == '7') {      //Attachment added
-                echo $details_text['attachmentadded'];
-                $attachment = $db->Query("SELECT orig_name, file_desc FROM flyspray_attachments WHERE attachment_id = ?", array($newvalue));
-                if ($db->CountRows($attachment) != 0) {
-                    $attachment = $db->FetchRow($attachment);
-                    echo ": <a href=\"?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
-                    if ($attachment['file_desc'] != '') {
-                        echo " ({$attachment['file_desc']})";
-                    };
-                };
+            } elseif ($history['event_type'] == '7')      //Attachment added
+            {
+               echo $details_text['attachmentadded'];
+               $attachment = $db->Query("SELECT orig_name, file_desc FROM flyspray_attachments WHERE attachment_id = ?", array($newvalue));
+               if ($db->CountRows($attachment) != 0)
+               {
+                  $attachment = $db->FetchRow($attachment);
+                  echo ": <a href=\"?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
+                  if ($attachment['file_desc'] != '')
+                  {
+                     echo " ({$attachment['file_desc']})";
+                  }
+               }
 
-            } elseif ($history['event_type'] == '8') {      //Attachment deleted
-                echo "{$details_text['attachmentdeleted']}: {$newvalue}";
+            } elseif ($history['event_type'] == '8')      //Attachment deleted
+            {
+               echo "{$details_text['attachmentdeleted']}: {$newvalue}";
 
-            } elseif ($history['event_type'] == '9') {      //Notification added
-                echo "{$details_text['notificationadded']}: " . $fs->LinkedUsername($newvalue);
+            } elseif ($history['event_type'] == '9')      //Notification added
+            {
+               echo "{$details_text['notificationadded']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == '10') {      //Notification deleted
-                echo "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
+            } elseif ($history['event_type'] == '10')    //Notification deleted
+            {
+               echo "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == '11') {      //Related task added
+            } elseif ($history['event_type'] == '11')    //Related task added
+            {
                 list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
-            } elseif ($history['event_type'] == '12') {      //Related task deleted
-                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+            } elseif ($history['event_type'] == '12')    //Related task deleted
+            {
+               list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+               echo "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
-            } elseif ($history['event_type'] == '13') {      //Task reopened
-                echo $details_text['taskreopened'];
+            } elseif ($history['event_type'] == '13')   //Task reopened
+            {
+               echo $details_text['taskreopened'];
 
-            } elseif ($history['event_type'] == '14') {      //Task assigned
-                if ($oldvalue == '0') {
-                    echo "{$details_text['taskassigned']} " . $fs->LinkedUsername($newvalue);
-                } elseif ($newvalue == '0') {
-                    echo $details_text['assignmentremoved'];
-                } else {
-                    echo "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
-                };
-            } elseif ($history['event_type'] == '15') {      //Task added to related list of another task
-                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['addedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+            } elseif ($history['event_type'] == '14')   //Task assigned
+            {
+               if ($oldvalue == '0')
+               {
+                  echo "{$details_text['taskassigned']} " . $fs->LinkedUsername($newvalue);
+               } elseif ($newvalue == '0')
+               {
+                  echo $details_text['assignmentremoved'];
+               } else
+               {
+                  echo "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
+               }
 
-            } elseif ($history['event_type'] == '16') {      //Task deleted from related list of another task
-                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['deletedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+            } elseif ($history['event_type'] == '15')   //Task added to related list of another task
+            {
+               list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+               echo "{$details_text['addedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
-            } elseif ($history['event_type'] == '17') {      //Reminder added
-                echo "{$details_text['reminderadded']}: " . $fs->LinkedUsername($newvalue);
+            } elseif ($history['event_type'] == '16')   //Task deleted from related list of another task
+            {
+               list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+               echo "{$details_text['deletedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
-            } elseif ($history['event_type'] == '18') {      //Reminder deleted
-                echo "{$details_text['reminderdeleted']}: " . $fs->LinkedUsername($newvalue);
+            } elseif ($history['event_type'] == '17')   //Reminder added
+            {
+               echo "{$details_text['reminderadded']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == '19') {      //User took ownership
-                echo "{$details_text['ownershiptaken']}: " . $fs->LinkedUsername($newvalue);
+            } elseif ($history['event_type'] == '18')   //Reminder deleted
+            {
+               echo "{$details_text['reminderdeleted']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == '20') {      //User requested task closure
-                echo $details_text['closerequestmade'];
+            } elseif ($history['event_type'] == '19')   //User took ownership
+            {
+               echo "{$details_text['ownershiptaken']}: " . $fs->LinkedUsername($newvalue);
 
-            } elseif ($history['event_type'] == '21') {      //User requested task re-open
-                echo $details_text['reopenrequestmade'];
+            } elseif ($history['event_type'] == '20')   //User requested task closure
+            {
+               echo $details_text['closerequestmade'];
 
-            } elseif ($history['event_type'] == '22') {      // Dependency added
-                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['depadded']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
+            } elseif ($history['event_type'] == '21')   //User requested task re-open
+            {
+               echo $details_text['reopenrequestmade'];
 
-            } elseif ($history['event_type'] == '23') {      // Dependency added to other task
-                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['depaddedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
+            } elseif ($history['event_type'] == '22')   // Dependency added
+            {
+               list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+               echo "{$details_text['depadded']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
-            } elseif ($history['event_type'] == '24') {      // Dependency removed
-                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['depremoved']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
+            } elseif ($history['event_type'] == '23')   // Dependency added to other task
+            {
+               list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+               echo "{$details_text['depaddedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
-            } elseif ($history['event_type'] == '25') {      // Dependency removed from other task
-                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['depremovedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
+            } elseif ($history['event_type'] == '24')   // Dependency removed
+            {
+               list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+               echo "{$details_text['depremoved']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
-            } elseif ($history['event_type'] == '26') {      // Task marked private
-                echo $details_text['taskmadeprivate'];
+            } elseif ($history['event_type'] == '25')   // Dependency removed from other task
+            {
+               list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+               echo "{$details_text['depremovedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
-            } elseif ($history['event_type'] == '27') {      // Task privacy removed - task made public
-                echo $details_text['taskmadepublic'];
+            } elseif ($history['event_type'] == '26')   // Task marked private
+            {
+               echo $details_text['taskmadeprivate'];
 
-            };
+            } elseif ($history['event_type'] == '27')   // Task privacy removed - task made public
+            {
+               echo $details_text['taskmadepublic'];
+            }
 
-            ?></td>
-        </tr>
+            ?>
+            </td>
+         </tr>
+
+      <?php
+      // End of cycling through history entries for this task
+      }
+      echo '</table>';
+
+      if (isset($_GET['details']) && !empty($_GET['details']))
+      {
+      ?>
+         <table id="history">
+            <tr>
+               <th><?php echo $details_text['previousvalue'];?></th>
+               <th><?php echo $details_text['newvalue'];?></th>
+            </tr>
+            <tr>
+               <td><?php echo $details_previous;?></td>
+               <td><?php echo $details_new;?></td>
+            </tr>
             <?php
-        };
-    if ($details != '') {
-        ?>
-        </table>
-        <table id="history">
-            <tr>
-                <th><?php echo $details_text['previousvalue'];?></th>
-                <th><?php echo $details_text['newvalue'];?></th>
-            </tr>
-            <tr>
-                <td><?php echo $details_previous;?></td>
-                <td><?php echo $details_new;?></td>
-            </tr>
-        <?php
-    };
-    ?>
-    </table>
+      }
+      ?>
+      </table>
 
 <?php
 // End of History Tab

@@ -433,7 +433,7 @@ div#actionbuttons {
 
 /* .fineprint is merely used for the details about when a task has
    been created and changed (in the details pages) */
-.fineprint {
+#fineprint {
   font-size            : smaller;
 }
 

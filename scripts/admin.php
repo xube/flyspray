@@ -933,7 +933,9 @@ if ($permissions['is_admin'] == '1')
 </fieldset>
 
 <?php
-// Show the list of Operating Systems
+////////////////////////////////////////
+// Show the list of Operating Systems //
+////////////////////////////////////////
 } elseif (isset($_GET['area']) && $_GET['area'] == 'os')
 {
    echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['operatingsystems'] . '</h3>';
@@ -1028,7 +1030,9 @@ if ($permissions['is_admin'] == '1')
 
    </fieldset>
 <?php
-// Show the list of Versions
+///////////////////////////////
+// Show the list of Versions //
+///////////////////////////////
 } elseif (isset($_GET['area']) && $_GET['area'] == 'ver')
 {
    echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['versions'] . '</h3>';
@@ -1143,45 +1147,6 @@ if ($permissions['is_admin'] == '1')
    </fieldset>
 
 <?php
-////////////////////////////////
-// Start of editing a comment //
-////////////////////////////////
-
-} elseif ($_GET['area'] == "editcomment" && $permissions['edit_comments'] == '1') {
-
-// Get the comment details
-    $getcomments = $db->Query("SELECT * FROM flyspray_comments WHERE comment_id = ?", array($_GET['id']));
-    while ($row = $db->FetchArray($getcomments)) {
-      $getusername = $db->Query("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
-      list($user_name) = $db->FetchArray($getusername);
-
-      $formatted_date = $fs->formatDate($row['date_added'], true);
-      $comment_text = stripslashes(htmlspecialchars($row['comment_text']));
-
-    };
-?>
-<h3><?php echo $admin_text['editcomment'];?></h3>
-<form action="index.php" method="post">
-<div class="admin">
-  <p><?php echo "{$admin_text['commentby']} $user_name - $formatted_date";?></p>
-  <p>
-    <textarea cols="72" rows="10" name="comment_text"><?php echo $comment_text;?></textarea>
-  </p>
-  <p class="buttons">
-    <input type="hidden" name="do" value="modify" />
-    <input type="hidden" name="action" value="editcomment" />
-    <input type="hidden" name="task_id" value="<?php echo $_GET['task_id'];?>" />
-    <input type="hidden" name="comment_id" value="<?php echo $_GET['id'];?>" />
-    <input type="hidden" name="previous_text" value="<?php echo $comment_text;?>" />
-    <input class="adminbutton" type="submit" value="<?php echo $admin_text['saveeditedcomment'];?>" />
-  </p>
-</div>
-</form>
-
-<?php
-
-// End of editing a comment
-
 
 /////////////////////////////////////
 // Start of pending admin requests //

@@ -62,9 +62,16 @@ if ($_POST['action'] == 'newtask'
     $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
 
     $add_item = $db->Query("INSERT INTO flyspray_tasks
-    (attached_to_project, date_opened, last_edited_time, item_summary,
-    detailed_desc, opened_by, percent_complete, $sql_params)
-    VALUES ($sql_placeholder)", $sql_values);
+                           (attached_to_project,
+                            date_opened,
+                            last_edited_time,
+                            item_summary,
+                            detailed_desc,
+                            opened_by,
+                            percent_complete,
+                            $sql_params)
+                            VALUES ($sql_placeholder)",
+                                    $sql_values);
 
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
@@ -80,8 +87,11 @@ if ($_POST['action'] == 'newtask'
    {
       $insert = $db->Query("INSERT INTO flyspray_notifications
                               (task_id, user_id)
-                               VALUES('{$get_task_info['task_id']}',
-                                      '{$current_user['user_id']}')");
+                               VALUES(?,?)",
+                               array($task_details['task_id'],
+                                      $current_user['user_id'])
+                          );
+
       $fs->logEvent($get_task_info['task_id'], 9, $current_user['user_id']);
    }
 
@@ -385,7 +395,7 @@ if ($_POST['action'] == 'newtask'
     $add_item = $db->Query("UPDATE flyspray_tasks SET
                               resolution_reason = '0',
                               closure_comment = '0',
-                              lasted_edited_time = ?,
+                              last_edited_time = ?,
                               last_edited_by = ?,
                               is_closed = '0'
                               WHERE task_id = ?",
@@ -1652,18 +1662,25 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of deleting a comment //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "deletecomment"
-          && $permissions['delete_comments'] == '1') {
+} elseif ($_GET['action'] == "deletecomment"
+&& $permissions['delete_comments'] == '1')
+{
+   $row = $db->FetchRow($db->Query("SELECT comment_text, user_id, date_added
+                                    FROM flyspray_comments
+                                    WHERE comment_id = ?",
+                                    array($_GET['comment_id'])
+                                  )
+                       );
 
-  $row = $db->FetchRow($db->Query('SELECT comment_text, user_id, date_added FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id'])));
-  $delete = $db->Query('DELETE FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id']));
+   $delete = $db->Query("DELETE FROM flyspray_comments
+                         WHERE comment_id = ?",
+                         array($_GET['comment_id'])
+                       );
 
-  $fs->logEvent($_POST['task_id'], 6, $row['user_id'], $row['comment_text'], $row['date_added']);
+   $fs->logEvent($_POST['task_id'], 6, $row['user_id'], $row['comment_text'], $row['date_added']);
 
-  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
-  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
-  $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
-  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#comments");
+   $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
+   header("Location: index.php?do=details&id=" . $_GET['task_id'] . "#comments");
 
 // End of deleting a comment
 
@@ -1818,26 +1835,26 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of taking ownership //
 ///////////////////////////////
 
-} elseif ($_POST['action'] == 'takeownership'
+} elseif ($_GET['action'] == 'takeownership'
           && (($permissions['assign_to_self'] == '1' && $old_details['assigned_to'] == '0')
-               OR $permissions['assign_others_to_self'] == '1')) {
+               OR $permissions['assign_others_to_self'] == '1'))
+{
 
-  $update = $db->Query("UPDATE flyspray_tasks
+   $update = $db->Query("UPDATE flyspray_tasks
                           SET assigned_to = ?, item_status = '3'
                           WHERE task_id = ?",
-                          array($current_user['user_id'], $_POST['task_id']));
-  // Add code for notifications
+                          array($current_user['user_id'], $_GET['task_id']));
 
    $to  = $notify->Address($_POST['task_id']);
    $msg = $notify->Create('10', $_POST['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
-  // Log this event to the task history
-  $fs->logEvent($_POST['task_id'], 19, $current_user['user_id'], $old_details['assigned_to']);
+   // Log this event to the task history
+   $fs->logEvent($_POST['task_id'], 19, $current_user['user_id'], $old_details['assigned_to']);
 
-  $_SESSION['SUCCESS'] = $modify_text['takenownership'];
-  header("Location: ?do=details&id=" . $_POST['task_id']);
+   $_SESSION['SUCCESS'] = $modify_text['takenownership'];
+   header("Location: ?do=details&id=" . $_GET['task_id']);
 
 // End of taking ownership
 
@@ -1972,21 +1989,22 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
   // We need some info about this dep for the task history
   $dep_info = $db->FetchArray($db->Query("SELECT * FROM flyspray_dependencies
-                                              WHERE depend_id = ?",
-                                              array($_GET['depend_id'])));
+                                          WHERE depend_id = ?",
+                                          array($_GET['depend_id'])));
 
-  $remove = $db->Query("DELETE FROM flyspray_dependencies
-                           WHERE depend_id = ?",
-                           array($_GET['depend_id']));
-
-   $to  = $notify->Address($_POST['task_id']);
-   $msg = $notify->Create('6', $_POST['task_id']);
+   $to  = $notify->Address($dep_info['task_id']);
+   $msg = $notify->Create('6', $dep_info['task_id']);
    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
-  // Log this event to the task's history
-  $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
-  $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
+   // Log this event to the task's history
+   $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
+   $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
+
+   // Do the removal
+   $remove = $db->Query("DELETE FROM flyspray_dependencies
+                         WHERE depend_id = ?",
+                         array($_GET['depend_id']));
 
    // Generate status message and redirect
    $_SESSION['SUCCESS'] = $modify_text['depremoved'];

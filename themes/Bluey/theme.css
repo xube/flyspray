@@ -655,11 +655,11 @@ div#taskdetailsfull {
 }
 
 div#deps {
-  padding: 8px;
-  width: 98%;
-  border-bottom: 1px solid #cccccc;
-  min-height: 50px;
-  float: left;
+   padding                 : 8px;
+   width                   : 98%;
+   border-bottom           : 1px solid #cccccc;
+   min-height              : 50px;
+   float                   : left;
 }
 
 div#taskdeps {
@@ -674,9 +674,55 @@ div#taskblocks {
 }
 
 div#actionbuttons {
-  clear                : both;
-  margin-top           : 15px;
-  margin-left          : 5px;
+   clear                   : both;
+   padding                 : 5px;
+}
+
+div#actionbuttons a.button {
+   background-image        : url(button.png);
+   background-repeat       : repeat-x;
+   color                   : #ffffff;
+   background-color        : transparent;
+   border                  : 1px solid #000000;
+   margin                  : 0px 3px 0px 3px;
+   /* padding values: top, right, bottom, left */
+   padding                 : 0px 5px 3px 5px;
+}
+
+div#actionbuttons a#hideclosetask {
+   position                : absolute;
+   top                     : 3px;
+   right                   : 3px;
+   width                   : 16px;
+   height                  : 16px;
+   background-image        : url(cancel.png);
+   background-repeat       : no-repeat;
+   color                   : #000000;
+   background-color        : transparent;
+   border                  : none;
+}
+
+div#actionbuttons a#hideclosetask:hover {
+   position                : absolute;
+   top                     : 3px;
+   right                   : 3px;
+   width                   : 16px;
+   height                  : 16px;
+   background-image        : url(cancel-over.png);
+   background-repeat       : no-repeat;
+   color                   : #000000;
+   background-color        : transparent;
+   border                  : none;
+}
+
+div#closeform {
+   visibility              : hidden;
+   position                : absolute;
+   background-color        : #e6eef6;
+   color                   : #000000;
+   border                  : 3px ridge #000000;
+   padding                 : 5px 30px 5px 5px;
+   margin-top              : 5px;
 }
 
 fieldset.admin {

@@ -16,18 +16,18 @@ function addEvent(elm, evType, fn, useCapture)
   } else {
     alert("Handler could not be removed");
   }
-} 
+}
 
 var _TAB_DIVS;
 
 // cookies {{{
 function createCookie(name,value,days) {
     if (days) {
-	var date = new Date();
-	date.setTime(date.getTime()+(days*24*60*60*1000));
-	var expires = "; expires="+date.toGMTString();
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
     } else {
-	expires = "";
+        expires = "";
     }
     document.cookie = name+"="+value+expires+"; path=/";
 }
@@ -36,9 +36,9 @@ function readCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
     for(var i=0;i < ca.length;i++) {
-	var c = ca[i];
-	while (c.charAt(0)==' ') c = c.substring(1,c.length);
-	if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
     return null;
 }
@@ -64,29 +64,29 @@ function showTabById(tabid) { // {{{
     // ustaw klasę 'active' dla wywojącego elementu
     if (submenu) {
       links = submenu.getElementsByTagName('a');
-      for (i=0; i<links.length; i++) { 
-	if (links[i].href.match('^.*#'+tabid+'$')) {
-	  links[i].className = 'active'; 
-	} else { links[i].className = ''; }
+      for (i=0; i<links.length; i++) {
+        if (links[i].href.match('^.*#'+tabid+'$')) {
+          links[i].className = 'active';
+        } else { links[i].className = ''; }
       }
     }
   }
-  if (window.scrollTo(0,0)) {
-      window.scrollTo(0,0);
-  }
+  //if (window.scrollTo(0,0)) {
+  //    window.scrollTo(0,0);
+  //}
 } // }}}
 
 // create JavaScript calls to switch tabs
 function makeTabLinks() { // {{{
   var submenu = document.getElementById('submenu');
   var links, i, target;
- 
+
   if (submenu) {
     links = submenu.getElementsByTagName('a');
     for (i=0; i<links.length; i++) {
       var href = links[i].getAttribute('href');
       target = href.substring(href.indexOf('#')+1);
-      links[i]['onclick'] = new Function("showTabById('"+target+"'); return true;");
+      links[i]['onclick'] = new Function("showTabById('"+target+"'); return false;");
     }
   }
 } // }}}
@@ -103,7 +103,7 @@ function showTabByNumber(number) { // {{{
     }
   }
   if (number >= targets.length) {
-    number = targets.length-1;      
+    number = targets.length-1;
   }
   showTabById(targets[number]);
 } // }}}
@@ -111,14 +111,14 @@ function showTabByNumber(number) { // {{{
 // get list of all DIVs that contain tabs
 function getTabDivs() {/*{{{*/
     if (_TAB_DIVS == null) {
-	_TAB_DIVS = new Array();
-	var divs = document.getElementsByTagName('div');
-	var i;
-	for (i=0; i<divs.length; i++) {
-	    if (divs[i].className && (divs[i].className.indexOf('tab') > -1)) {
-		_TAB_DIVS.push(divs[i]);
-	    }
-	}
+        _TAB_DIVS = new Array();
+        var divs = document.getElementsByTagName('div');
+        var i;
+        for (i=0; i<divs.length; i++) {
+            if (divs[i].className && (divs[i].className.indexOf('tab') > -1)) {
+                _TAB_DIVS.push(divs[i]);
+            }
+        }
     }
     return _TAB_DIVS;
 }/*}}}*/

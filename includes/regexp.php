@@ -95,7 +95,7 @@ if ($_REQUEST['action']) {
 if ($_REQUEST['do']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw)$/", $_REQUEST['do'])) {
+    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment)$/", $_REQUEST['do'])) {
 
        // continue;
 
