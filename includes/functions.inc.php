@@ -129,8 +129,8 @@ class Flyspray {
 function GetTaskDetails($task_id) {
 
       global $db;
+      global $flyspray_prefs;
 
-      $flyspray_prefs = $this->GetGlobalPrefs();
       $lang = $flyspray_prefs['lang_code'];
 
         $get_details = $db->Query("SELECT t.*,
@@ -193,8 +193,6 @@ function GetTaskDetails($task_id) {
    {
       global $db;
       global $flyspray_prefs;
-
-      //$flyspray_prefs = $this->getGlobalPrefs();
 
       $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
 
@@ -281,8 +279,6 @@ function GetTaskDetails($task_id) {
       global $db;
       global $lang;
 
-      //$flyspray_prefs = $this->GetGlobalPrefs();
-
       require("lang/$lang/functions.inc.php");
 
       $pages = ceil($totalcount / $perpage);
@@ -329,6 +325,7 @@ function GetTaskDetails($task_id) {
    function formatDate($timestamp, $extended)
    {
       global $db;
+      global $flyspray_prefs;
 
       $dateformat = '';
       $format_id = $extended ? "dateformat_extended" : "dateformat";
@@ -342,7 +339,6 @@ function GetTaskDetails($task_id) {
 
       if($dateformat == '')
       {
-         $flyspray_prefs = $this->GetGlobalPrefs();
          $dateformat = $flyspray_prefs[$format_id];
       }
 

@@ -445,6 +445,25 @@ if ($project_prefs['project_is_active'] == '1'
 </map>
 
 <?php
+// Get the visibility state of all columns
+$column_visible = array();
+$columns = array('id', 'project', 'tasktype', 'category', 'severity', 'priority',
+                 'summary', 'dateopened', 'status', 'openedby', 'assignedto', 'lastedit',
+                 'reportedin', 'dueversion', 'comments', 'attachments', 'progress');
+
+foreach ($columns as $column)
+{
+    $column_visible[$column] = false;
+}
+
+$project = isset($_GET['project']) ? $_GET['project'] : $project_id;
+$visible = explode(' ', $project == '0' ? $flyspray_prefs['visible_columns'] : $project_prefs['visible_columns']);
+
+foreach ($visible as $column)
+{
+    $column_visible[$column] = true;
+}
+
 /**
  * Displays header cell for report list
  *
@@ -454,33 +473,15 @@ if ($project_prefs['project_is_active'] == '1'
  * @param string $image    An image to display instead of the column name
  */
 
-// Setting this for the functions below
-if (isset($_GET['project']))
-{
-   $project = $_GET['project'];
-} else
-{
-   $project = $project_id;
-}
-
 //function list_heading($colname, $orderkey, $image = '')
 function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 {
-   global $project;
-   global $flyspray_prefs;
+   global $column_visible;
    global $project_prefs;
    global $index_text;
    global $get;
 
-   if ($project == '0')
-   {
-      $visible = $flyspray_prefs['visible_columns'];
-   } else
-   {
-      $visible = $project_prefs['visible_columns'];
-   }
-
-  if(ereg($colname, $visible))
+  if($column_visible[$colname])
   {
       if($orderkey)
       {
@@ -545,20 +546,9 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 
 function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
 {
-   global $project;
-   global $flyspray_prefs;
-   global $project_prefs;
-   $dev = null;
-
-   if ($project == '0')
-   {
-      $visible = $flyspray_prefs['visible_columns'];
-   } else
-   {
-      $visible = $project_prefs['visible_columns'];
-   }
-
-   if(ereg("$colname", $visible))
+   global $column_visible;
+   
+   if($column_visible[$colname])
    {
       // We have a problem with these conversions applied to the progress cell
       if($colname != "progress")
@@ -652,16 +642,20 @@ $from .= '
 
 //$where[] = 't.attached_to_project = flyspray_projects.project_id';
 $where = join(' AND ', $where);
-$get_total = $db->Query("SELECT * FROM $from
+$get_total = $db->Query("SELECT t.task_id FROM $from
           WHERE $where
           ORDER BY $sortorder", $sql_params);
 
 $total = $db->CountRows($get_total);
 
-?>
+// Store the order of the tasks returned for the next/previous links in the task details
+$id_list = array();
+while ($row = $db->FetchRow($get_total))
+{
+    $id_list[] = $row['task_id'];
+}
+$_SESSION['tasklist'] = $id_list;
 
-<!--<tbody>-->
-<?php
 // Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
 $get_details = $db->Query("
 SELECT
@@ -680,14 +674,12 @@ WHERE
         $where
 ORDER BY
         $sortorder", $sql_params, $perpage, $offset);
-
-   // Store the order of the tasks returned for the next/previous links in the task details
-   $id_list = array();
+        
+   $comments = 0;
+   $attachments = 0;
 
    while ($task_details = $db->FetchArray($get_details))
    {
-      $id_list[] = $task_details['task_id'];
-
       // Set the status text to 'closed' if this task is closed
       if ($task_details['is_closed'] == "1")
       {
@@ -732,11 +724,17 @@ ORDER BY
       }
 
       // get the number of comments and attachments
-      $getcomments = $db->Query("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
-      list($comments) = $db->FetchRow($getcomments);
+      if ($column_visible['comments'])
+      {
+         $getcomments = $db->Query("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
+         list($comments) = $db->FetchRow($getcomments);
+      }
 
-      $getattachments = $db->Query("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
-      list($attachments) = $db->FetchRow($getattachments);
+      if ($column_visible['attachments'])
+      {
+         $getattachments = $db->Query("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
+         list($attachments) = $db->FetchRow($getattachments);
+      }
 
       // Start displaying the cells for this row
       echo "<tr class=\"severity{$task_details['task_severity']}\">\n";
@@ -754,7 +752,7 @@ ORDER BY
       list_cell($task_details['task_id'], "dateopened",$date_opened);
       list_cell($task_details['task_id'], "status",$status,1);
       list_cell($task_details['task_id'], "openedby",$task_details['opened_by'],0);
-      list_cell($task_details['task_id'], "assigned",$task_details['assigned_to'],0);
+      list_cell($task_details['task_id'], "assignedto",$task_details['assigned_to'],0);
       list_cell($task_details['task_id'], "lastedit",$last_edited_time);
       list_cell($task_details['task_id'], "reportedin",$task_details['product_version']);
       list_cell($task_details['task_id'], "dueversion",$task_details['closedby_version'],1);
@@ -765,8 +763,6 @@ ORDER BY
       // The end of this row
       echo "</tr>\n";
    }
-
-   $_SESSION['tasklist'] = $id_list;
    ?>
    <!--</tbody>-->
    </table>
