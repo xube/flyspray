@@ -7,7 +7,7 @@
 // tomash@fidonet.org.pl, tomash@4net.pl
 
 $loginbox_text = array (
-'username'	=>	'Nazwa',
+'username'	=>	'Nazwa użytkownika',
 'password'	=>	'Hasło',
 'login'		=>	'Zaloguj!',
 

@@ -12,7 +12,7 @@
 $admin_text = array (
 
 'edituser'	=>	'Edycja użytkownika',
-'username'	=>	'Nazwa',
+'username'	=>	'Nazwa użytkownika',
 'realname'	=>	'Imię i nazwisko',
 'emailaddress'	=>	'Adres e-mail',
 'jabberid'	=>	'Jabber ID',
