@@ -19,9 +19,11 @@ header("Content-type: text/html; charset=utf-8");
 if (isset($flyspray_prefs['dateformat']) && !isset($flyspray_prefs['fs_ver']))
 {
    Header("Location: sql/upgrade_0.9.6_to_0.9.7.php");
-};
+}
 
-//session_start();
+// This generates an URL so that action scripts can take us back to the previous page
+$this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
+$this_page = str_replace('&', '&amp;', $this_page);
 
 // Background daemon that does scheduled reminders
 $fs->startReminderDaemon();
@@ -75,7 +77,7 @@ $check_proj_exists = $db->Query("SELECT * FROM flyspray_projects
 
 if (!$db->CountRows($check_proj_exists))
 {
-   die("<meta http-equiv=\"refresh\" content=\"0; URL=index.php?project={$flyspray_prefs['default_project']}\">");
+   $fs->redirect("index.php?project=" . $flyspray_prefs['default_project']);
 }
 
 // If a file was requested, deliver it
@@ -123,7 +125,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // at the end of script execution by PHP itself when output buffering is turned on
    // either in the php.ini or by calling ob_start().
 
-
+   $extraurl = '';
    // When viewing the task list, take down each value that the search form may have passed
    if ($do == 'index')
    $extraurl = '&amp;string=' . $_GET['string'] . '&amp;type=' . $_GET['type'] . '&amp;sev=' . $_GET['sev'] . '&amp;dev=' . $_GET['dev']
@@ -133,11 +135,9 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 
    // If the user has used the search box, store their search for later on
    if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order']))
-   {
       $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project']
                                      . '&amp;pagenum=' . $_GET['pagenum'] . $extraurl;
 
-   }
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

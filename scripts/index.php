@@ -551,7 +551,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
 {
    global $column_visible;
-   
+
    if($column_visible[$colname])
    {
       // We have a problem with these conversions applied to the progress cell
@@ -680,7 +680,7 @@ WHERE
         $where
 ORDER BY
         $sortorder", $sql_params, $perpage, $offset);
-        
+
    $comments = 0;
    $attachments = 0;
 
@@ -794,9 +794,9 @@ ORDER BY
    <div id="actionbuttons">
       <a href="javascript:void();" onclick="ToggleSelectedTasks()">Toggle selected</a>
       <select name="action">
-         <option value="massaddnotify"><?php echo $index_text['watchtasks'];?></option>
-         <option value="massremovenotify"><?php echo $index_text['stopwatching'];?></option>
-         <option value="masstakeownership"><?php echo $index_text['assigntome'];?></option>
+         <option value="add_notification"><?php echo $index_text['watchtasks'];?></option>
+         <option value="remove_notification"><?php echo $index_text['stopwatching'];?></option>
+         <option value="takeownership"><?php echo $index_text['assigntome'];?></option>
       </select>
 
       <input class="mainbutton" type="submit" value="<?php echo $index_text['takeaction'];?>" />

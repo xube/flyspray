@@ -7,6 +7,7 @@
 */
 
 $fs->get_language_pack($lang, 'details');
+$fs->get_language_pack($lang, 'newtask');
 
 $task_exists = $db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_GET['id']));
 $task_details = $fs->GetTaskDetails($_GET['id']);
@@ -497,7 +498,7 @@ if ($db->CountRows($task_exists)
 
                 while ($row = $db->FetchRow($get_summary))
                 {
-                    $summary[$row['task_id']] = $fs->formatText($row['item_summary']);
+                    $summary[$row['task_id']] = htmlentities(stripslashes($row['item_summary']));
                 }
 
                 echo "<span id=\"navigation\">";
@@ -891,7 +892,7 @@ if ($db->CountRows($task_exists)
    // Check permissions and task status, then show the "take ownership" button
    if (@$effective_permissions['can_take_ownership'] == '1' && $task_details['is_closed'] != '1')
    {
-      echo '<a id="own" class="button" href="?do=modify&amp;action=takeownership&amp;task_id=' . $_GET['id'] . '">' . $details_text['assigntome'] . '</a> ';
+      echo '<a id="own" class="button" href="?do=modify&amp;action=takeownership&amp;ids=' . $_GET['id'] . '">' . $details_text['assigntome'] . '</a> ';
    }
 
    // Check permissions, then show the "edit task" button
@@ -924,11 +925,11 @@ if ($db->CountRows($task_exists)
                           );
       if (!$db->CountRows($result))
       {
-         echo '<a id="addnotif" class="button" href="?do=modify&amp;action=add_notification&amp;task_id=' . $_GET['id'] . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['watchtask'] . '</a>';
+         echo '<a id="addnotif" class="button" href="?do=modify&amp;action=add_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['watchtask'] . '</a>';
 
       } else
       {
-         echo '<a id="removenotif" class="button" href="?do=modify&amp;action=remove_notification&amp;task_id=' . $_GET['id'] . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['stopwatching'] . '</a>';
+         echo '<a id="removenotif" class="button" href="?do=modify&amp;action=remove_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['stopwatching'] . '</a>';
       }
    }
 
@@ -1052,6 +1053,16 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
       <textarea id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
       <br />
       <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />
+      <?php
+      $check_watch = $db->Query("SELECT user_id
+                                 FROM flyspray_notifications
+                                 WHERE user_id = ?
+                                 AND task_id = ?",
+                                 array($current_user['user_id'], $task_details['task_id'])
+                               );
+      if ( !$db->CountRows($check_watch) )
+         echo "<input name=\"notifyme\" type=\"checkbox\" value=\"1\" checked=\"checked\" />{$newtask_text['notifyme']}";
+      ?>
    </p>
    </form>
 
@@ -1311,8 +1322,9 @@ if (@$permissions['manage_project'] == '1')
                   <p>
                   <input type="hidden" name="do" value="modify" />
                   <input type="hidden" name="action" value="remove_notification" />
-                  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+                  <input type="hidden" name="ids" value="<?php echo $_GET['id'];?>" />
                   <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>" />
+                  <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
                   <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
                   </p>
                </form>
@@ -1337,7 +1349,8 @@ if (@$permissions['manage_project'] == '1')
             </select>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_notification" />
-            <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+            <input type="hidden" name="ids" value="<?php echo $_GET['id'];?>" />
+            <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
             <input class="adminbutton" type="submit" value="<?php echo $details_text['addtolist'];?>" />
             </p>
          </form>

@@ -266,9 +266,13 @@ if ($permissions['manage_project'] == '1')
       $user_checklist = array();
 
       // Cycle through the groups that belong to this project
-      $get_groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
-      while ($group = $db->FetchArray($get_groups)) {
+      $get_groups = $db->Query("SELECT * FROM flyspray_groups
+                                WHERE belongs_to_project = ?
+                                ORDER BY group_id ASC",
+                                array($project_id));
 
+      while ($group = $db->FetchArray($get_groups))
+      {
          echo '<a class="grouptitle" href="?do=pm&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
          echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
@@ -288,13 +292,12 @@ if ($permissions['manage_project'] == '1')
                                        WHERE uig.group_id = ? ORDER BY u.user_name ASC",
                                        array($group['group_id']));
 
-         $userincrement = 0;
-         while ($row = $db->FetchArray($get_user_list)) {
+         while ($row = $db->FetchArray($get_user_list))
+         {
             // Next line to ensure we only display each user once on this page
             array_push($user_checklist, $row['user_id']);
-            // Now, assign each user a number for submission
-            $userincrement ++;
-            echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\" /></td>\n";
+
+            echo "<tr><td><input type=\"checkbox\" name=\"users[{$row['user_id']}]\" value=\"1\" /></td>\n";
             echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
             echo "<td>{$row['real_name']}</td>\n";
             if ($row['account_enabled'] == "1") {
@@ -306,7 +309,6 @@ if ($permissions['manage_project'] == '1')
          };
 
          echo '<tr><td colspan="4">';
-         echo '<input type="hidden" name="num_users" value="' . $userincrement . "\" />\n";
          echo '<input class="adminbutton" type="submit" value="' . $admin_text['moveuserstogroup'] . '" />' . "\n";
 
          // Show a list of groups to switch these users to
@@ -317,10 +319,15 @@ if ($permissions['manage_project'] == '1')
 
 
          // Get the list of groups to choose from
-         $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
-         while ($group = $db->FetchArray($groups)) {
+         $groups = $db->Query("SELECT * FROM flyspray_groups
+                               WHERE belongs_to_project = ?
+                               ORDER BY group_id ASC",
+                               array($project_id));
+
+         while ($group = $db->FetchArray($groups))
+         {
             echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
-         };
+         }
 
          echo '</select>';
 
@@ -348,14 +355,16 @@ if ($permissions['manage_project'] == '1')
                                  array($project_id, '1'));
 
 
-      while ($row = $db->FetchArray($user_query)) {
+      while ($row = $db->FetchArray($user_query))
+      {
          // Check if the user is in the checklist of shown users...
-         if (!in_array($row['user_id'], $user_checklist)) {
+         if (!in_array($row['user_id'], $user_checklist))
+         {
             // ...if not, we display them, and add them to the array so that they don't get shown again!
             echo "<option value=\"{$row['user_id']}\">{$row['user_name']} ({$row['real_name']})</option>\n";
             array_push($user_checklist, $row['user_id']);
-         };
-      };
+         }
+      }
 
       echo '</select><br />';
       echo '<input class="adminbutton" type="submit" value="' . $admin_text['addtogroup'] . '" />'. "\n";

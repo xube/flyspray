@@ -761,6 +761,11 @@ div#actionbuttons a#hideclosetask:hover {
    border                  : none;
 }
 
+div#actionbuttons input.mainbutton {
+   padding                 : 3px;
+   height                  : 25px;
+}
+
 div#closeform {
    visibility              : hidden;
    position                : absolute;
@@ -770,7 +775,7 @@ div#closeform {
    padding                 : 5px 30px 5px 5px;
    margin-top              : 5px;
    display                 : block;
-   width                   : 250px;
+   width                   : 300px;
    height                  : auto;
 }
 

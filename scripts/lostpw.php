@@ -32,20 +32,23 @@ $fs->get_language_pack($lang, 'admin');
 
   // Step Two: user enters new password
 } elseif (isset($_GET['magic'])
-          && !isset($_COOKIE['flyspray_userid'])) {
+          && !isset($_COOKIE['flyspray_userid']))
+{
+   // Check that the magic url is valid
+   $check_magic = $db->Query("SELECT * FROM flyspray_users
+                              WHERE magic_url = ?",
+                              array($_GET['magic'])
+                            );
 
-    // Check that the magic url is valid
-    $check_magic = $db->Query("SELECT * FROM flyspray_users
-                                 WHERE magic_url = ?",
-                                 array($_GET['magic'])
-                               );
+   if (!$db->CountRows($check_magic))
+   {
+//       echo "<div class=\"redirectmessage\"><p><em>{$admin_text['badmagic']}</em></p></div>";
+//       echo '<meta http-equiv="refresh" content="2; URL=index.php">';
+      $_SESSION['ERROR'] = $admin_text['badmagic'];
+      $fs->redirect("./");
 
-    if (!$db->CountRows($check_magic)) {
-      echo "<div class=\"redirectmessage\"><p><em>{$admin_text['badmagic']}</em></p></div>";
-      echo '<meta http-equiv="refresh" content="2; URL=index.php">';
-
-    } else {
-
+   } else
+   {
       echo '<h3>' . $admin_text['changepass'] . '</h3>' . "\n";
 
       echo '<br />' . "\n";
@@ -65,10 +68,9 @@ $fs->get_language_pack($lang, 'admin');
       echo '</form>' . "\n";
       echo '</div>' . "\n";
 
-    // End of checking magic url validity
-    };
+   // End of checking magic url validity
+   }
 
-  // End of checking for magic url
-  };
-
+// End of checking for magic url
+}
 ?>

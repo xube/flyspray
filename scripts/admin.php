@@ -474,11 +474,8 @@ if ($permissions['is_admin'] == '1')
          echo '<p><a href="index.php?do=newuser">' . $admin_text['newuser'] . '</a> | ';
          echo '<a href="index.php?do=newgroup&amp;project=0">' . $admin_text['newgroup'] . '</a></p>';
 
-         // We have to make sure that a user isn't displayed in the user list at the bottom of the page
-         // if they're in a group from another project... so we set up an array...
-         $user_checklist = array();
 
-         // Cycle through the groups that belong to this project
+         // Cycle through the global groups
          $get_groups = $db->Query("SELECT * FROM flyspray_groups
                                    WHERE belongs_to_project = '0'
                                    ORDER BY group_id ASC"
@@ -506,14 +503,10 @@ if ($permissions['is_admin'] == '1')
                                           array($group['group_id']));
 
 
-            $userincrement = 0;
+            //$userincrement = 0;
             while ($row = $db->FetchArray($get_user_list))
             {
-               // Next line to ensure we only display each user once on this page
-               array_push($user_checklist, $row['user_id']);
-               // Now, assign each user a number for submission
-               $userincrement ++;
-               echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\" /></td>\n";
+               echo "<tr><td><input type=\"checkbox\" name=\"users[{$row['user_id']}]\" value=\"1\" /></td>\n";
                echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
                echo "<td>{$row['real_name']}</td>\n";
                if ($row['account_enabled'] == "1") {
@@ -526,7 +519,6 @@ if ($permissions['is_admin'] == '1')
             }
 
             echo '<tr><td colspan="4">';
-            echo '<input type="hidden" name="num_users" value="' . $userincrement . "\" />\n";
             echo '<input class="adminbutton" type="submit" value="' . $admin_text['moveuserstogroup'] . '" />' . "\n";
 
             // Show a list of groups to switch these users to
