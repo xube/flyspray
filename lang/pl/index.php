@@ -40,6 +40,12 @@ $index_text = array (
 'project'		=>	'Projekt',
 'category'		=>	'Kategoria',
 'lastedit'		=>	'Data ostatniej edycji',
+'assignedto'		=>	'Przydzielone do',
+'os'			=>	'System operacyjny',
+'reportedin'		=>	'Dotyczy wersji',
+'openedby'		=>	'Zgłoszone przez',
+'comments'          	=>	'Komentarze',
+'attachments'		=>	'Załączniki',
 
 );
 // vim:fenc=utf-8:enc=utf-8
