@@ -8,8 +8,8 @@ get_language_pack($lang, 'authenticate');
 
 // If logout was requested, log the user out.
 if ($_GET['action'] == "logout") {
-  session_start();
-  session_destroy();
+//  session_start();
+//  session_destroy();
   setcookie('flyspray_userid', '', time()-60, '/');
   setcookie('flyspray_passhash', '', time()-60, '/');
 

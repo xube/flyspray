@@ -3,7 +3,7 @@
 global $newtask_text;
 $newtask_text = array (
 
-'createnewtask'		=>	'Create a new task',
+'createnewtask'		=>	'Create a new task in project:',  // Changed in 0.9.6
 'summary'			=>	'Summary',
 'tasktype'			=>	'Task Type',
 'category'			=>	'Category',

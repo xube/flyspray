@@ -1073,9 +1073,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
       };
 
       if  ($_SESSION['admin'] == '1') {
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=users\">";
+        echo "<meta http-equiv=\"refresh\" content=\"1; URL=index.php?do=admin&amp;area=users\">";
       } else {
-        echo "<meta http-equiv=\"refresh\" content=\"1; URL={$flyspray_prefs['base_url']}\">";
+        echo "<meta http-equiv=\"refresh\" content=\"1; URL=index.php\">";
       };
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
     };

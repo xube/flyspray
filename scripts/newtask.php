@@ -6,7 +6,7 @@ get_language_pack($lang, 'newtask');
 if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
 ?>
 
-<h3><?php echo $newtask_text['createnewtask'];?></h3>
+<h3><?php echo $newtask_text['createnewtask'] ." ". $project_prefs['project_title'];?></h3>
 
 <div id="taskdetails">
 
@@ -42,7 +42,11 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
         // Get list of severities
       require("lang/$lang/severity.php");
       foreach($severity_list as $key => $val) {
+        if ($key == '2') {
+          echo "<option value=\"$key\" SELECTED>$val</option>\n";
+        } else {
           echo "<option value=\"$key\">$val</option>\n";
+        };
       };
         ?>
         </select>
@@ -88,7 +92,7 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
         // Get list of statuses
         require("lang/$lang/priority.php");
         foreach($priority_list as $key => $val) {
-          if ($key == '2') {
+        if ($key == '2') {
             echo "<option value=\"$key\" SELECTED>$val</option>\n";
           } else {
             echo "<option value=\"$key\">$val</option>\n";
@@ -106,7 +110,11 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
         // Get list of statuses
         require("lang/$lang/status.php");
         foreach($status_list as $key => $val) {
-          echo "<option value=\"$key\">$val</option>\n";
+          if ($key == '2') {
+            echo "<option value=\"$key\" SELECTED>$val</option>\n";
+          } else {
+            echo "<option value=\"$key\">$val</option>\n";
+          };
         };
         ?>
         </select>
@@ -128,9 +136,10 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
    <tr>
      <td>
       <?php
-      // If the user can't modify jobs, we will have to set a hidden field for the status
+      // If the user can't modify jobs, we will have to set a hidden field for the status and priority
       if ($_SESSION['can_modify_jobs'] != "1") {
         echo "<input type=\"hidden\" name=\"item_status\" value=\"1\">";
+        echo "<input type=\"hidden\" name=\"task_priority\" value=\"2\">";
       };
       ?>
         <label for="assignedto"><?php echo $newtask_text['assignedto'];?></label></td>
@@ -182,8 +191,8 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
   <tr>
     <?php
     if ($_SESSION['userid'] != '') {
-      echo "<td colspan=\"3\"><label>";
-      echo "{$newtask_text['notifyme']}&nbsp;&nbsp;<input class=\"admintext\" type=\"checkbox\" name=\"notifyme\" value=\"1\" CHECKED></label>";
+      echo "<td>";
+      echo "{$newtask_text['notifyme']}&nbsp;&nbsp;<input class=\"admintext\" type=\"checkbox\" name=\"notifyme\" value=\"1\" CHECKED>";
       echo "</td>";
     };
     ?>

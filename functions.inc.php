@@ -367,7 +367,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
             // if app preferences say to use email, or if the user can (and has) selected email
                 } elseif (($flyspray_prefs['user_notify'] == '2') OR ($flyspray_prefs['user_notify'] == '1' && $notify_type == '1')) {
 
-                        $to = "$real_name <$email_address>";
+                        $to = $email_address;
                         $this->SendEmail($to, $subject, $message);
                 };
         // End of basic notification function

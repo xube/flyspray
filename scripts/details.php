@@ -59,7 +59,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
   ?>
   </select>
 
-  <p class="fineprint">
+  <div class="fineprint">
     <?php
     // Get the user details of the person who opened this item
     if ($task_details['opened_by']) {
@@ -85,7 +85,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
 
     };
     ?>
-    </p>
+    </div>
     <table class="taskdetails">
       <tr>
         <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
@@ -331,22 +331,12 @@ if (($_SESSION['can_modify_jobs'] == '1'
     OR $_SESSION['userid'] == $task_details['assigned_to'])
     && $task_details['is_closed'] != '1') {
     ?>
-    <form action="index.php" method="get" id="formedittask">
-    <p>
-      <input type="hidden" name="do" value="details">
-      <input type="hidden" name="id" value="<?php echo $_GET['id'];?>">
-      <input type="hidden" name="edit" value="yep">
-      <input class="adminbutton" type="submit" value="<?php echo $details_text['edittask'];?>">
-    </p>
-    </form>
+    <span id="linkedittask"><?php echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;edit=yep\">{$details_text['edittask']}</a>";?></span>
     <?php };
-
     echo "{$details_text['attachedtoproject']} &mdash; <a href=\"?project={$task_details['attached_to_project']}\">{$task_details['project_title']}</a>";
-
     ?>
 
-
-    <p class="fineprint">
+    <div class="fineprint">
     <?php
     // Get the user details of the person who opened this item
     if ($task_details['opened_by']) {
@@ -354,7 +344,6 @@ if (($_SESSION['can_modify_jobs'] == '1'
       list($user_name, $real_name) = $fs->dbFetchArray($get_user_name);
     } else {
       $user_name = $details_text['anonymous'];
-      //$real_name = "Anonymous";
     };
 
     $date_opened = $task_details['date_opened'];
@@ -374,7 +363,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
 
     };
     ?>
-    </p>
+    </div>
     <table class="taskdetails">
       <tr>
         <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
@@ -1090,7 +1079,7 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
   
   <br>
   
-  <textarea class="admintext" name="reminder_message" rows="7" cols="50"><?php echo "{$details_text['defaultreminder']}\n\n{$flyspray_prefs['base_url']}?do=details&amp;id={$_GET['id']}";?></textarea>
+  <textarea class="admintext" name="reminder_message" rows="10" cols="72"><?php echo "{$details_text['defaultreminder']}\n\n{$flyspray_prefs['base_url']}?do=details&amp;id={$_GET['id']}";?></textarea>
   
   <br>
   
