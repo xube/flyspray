@@ -11,15 +11,15 @@
 
 $newtask_text = array (
 
-'createnewtask'	=>	'Utwórz nowe zgłoszenie',
-'summary'	=>	'W skrócie',
+'createnewtask'	=>	'Utwórz nowe zgłoszenie dla projektu',
+'summary'	=>	'Skrócony opis',
 'tasktype'	=>	'Typ zgłoszenia',
 'category'	=>	'Kategoria',
 'status'	=>	'Status',
 'assignedto'	=>	'Przydzielone dla',
 'noone'		=>	'Nikogo',
 'operatingsystem'	=>	'System operacyjny',
-'severity'	=>	'Dotkliwość',
+'severity'	=>	'Ważność',
 'reportedversion'	=>	'Dotyczy wersji',
 'dueinversion'	=>	'Obecne do wersji',
 'details'	=>	'Szczegóły',

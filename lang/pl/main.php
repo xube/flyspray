@@ -31,8 +31,8 @@ $language = array (
 'operatingsystems'	=>	'Systemy operacyjne',
 'resolutions'	=>	'Decyzje',
 'versions'	=>	'Wersje',
-'severities'	=>	'Dotkliwość',
-'disabledaccount'	=>	'Twoje konto jest nieaktywne!<br>Wylogowano...',
+'severities'	=>	'Ważność',
+'disabledaccount'	=>	'Twoje konto jest nieaktywne!<br/>Wylogowuję...',
 'poweredby'	=>	'Napędzane przez Flyspray',
 
 // Added in version 0.9.5
@@ -44,8 +44,8 @@ $language = array (
 
 // Added in version 0.9.6
 'duplicated'	    =>	'Akcja powtórzona. Nastąpi przekierowanie na stronę główną.',
-'allprojects'       =>	'Wszystkie projekty',
-'selectproject'		=>	'dla projektu:',
+'allprojects'       =>	'dowolnego',
+'selectproject'	      =>	'dla projektu:',
 'tasksall'          =>  'Wszystkie zgłoszenia',
 'tasksassigned'     =>  'Przydzielone mi',
 'tasksreported'     =>  'Zgłoszone przeze mnie',

@@ -3,7 +3,7 @@
 global $reports_text;
 $reports_text = array (
 
-'summary'	=>	'W skrócie',
+'summary'	=>	'Skrócony opis',
 
 'changelog'	=>	'Lista zmian',
 'changeloggen'	=>	'Generator listy zmian',
@@ -13,7 +13,7 @@ $reports_text = array (
 'oldestfirst'	=>	'Sortuj od najstarszych',
 'recentfirst'	=>	'Sortuj od najnowszych',
 
-'severity'	=>	'Dotkliwość',
+'severity'	=>	'Ważność',
 'severityrep'	=>	'Raport dotkliwości',
 'totalopen'	=>	'Całkowita liczba otwartych',
 

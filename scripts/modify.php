@@ -37,10 +37,13 @@ if ($_POST['action'] == 'newtask'
 
     $param_names = array('task_type', 'item_status',
         'assigned_to', 'product_category', 'product_version',
-        'closedby_version', 'operating_system', 'task_severity', 'task_priority');
+        'closedby_version', 'operating_system', 'task_severity',
+	'task_priority', 'closure_comment');
     $sql_values = array($_POST['project_id'], $now, $now, $item_summary,
                 $detailed_desc, 
-		$fs->emptyToZero($_COOKIE['flyspray_userid']), '0');
+		$fs->emptyToZero($_COOKIE['flyspray_userid']), 
+		'0');
+    $_POST['closure_comment'] = ' ';
     $sql_params = array();
     foreach ($param_names as $param_name) {
         if (!empty($_POST[$param_name])) {
@@ -402,7 +405,7 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
                                 WHERE task_id = ?
                                 ", array($now, 
                                          $_COOKIE['flyspray_userid'],
-                                         $_POST['closure_comment'],
+                                         $fs->emptyToZero($_POST['closure_comment']),
                                          $_POST['resolution_reason'],
                                          $_POST['task_id']
                                         )
@@ -1981,19 +1984,21 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   
     $foo = 'user' . $num_users;
 
-    if ($_POST['switch_to_group'] == '0') {
-    
-      $remove = $fs->dbQuery("DELETE FROM flyspray_users_in_groups
-                              WHERE user_id = ? AND group_id = ?",
-                              array($_POST[$foo], $_POST['old_group']));
-     
-    } else {
-    
-      $update = $fs->dbQuery("UPDATE flyspray_users_in_groups
-                              SET group_id = ?
-                              WHERE user_id = ? AND group_id = ?",
-                              array($_POST['switch_to_group'], $_POST[$foo], $_POST['old_group']));
-    };
+    if (!empty($_POST[$foo])) {
+      if ($_POST['switch_to_group'] == '0') {
+
+	$remove = $fs->dbQuery("DELETE FROM flyspray_users_in_groups
+	    WHERE user_id = ? AND group_id = ?",
+	    array($_POST[$foo], $_POST['old_group']));
+
+      } else {
+
+	$update = $fs->dbQuery("UPDATE flyspray_users_in_groups
+	    SET group_id = ?
+	    WHERE user_id = ? AND group_id = ?",
+	    array($_POST['switch_to_group'], $_POST[$foo], $_POST['old_group']));
+      }
+    }
     
     $num_users --;
   };

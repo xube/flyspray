@@ -18,23 +18,22 @@ $modify_text = array (
 'moreinfonew'       =>        'Więcej informacji o zgłoszeniu znajdziesz na stronie:',
 'newtaskcategory'   =>        'Dodano nowe zgłoszenie w tej kategorii',
 'categoryowner'     =>        'Otrzymałeś wiadomość bo jesteś wymieniony jako opiekun kategorii.',
-'tasksummary'       =>        'W skrócie:',
+'tasksummary'       =>        'Skrócony opis:',
 'newtaskadded'      =>        'Twoje nowe zgłoszenie zostało dodane.',
 'waitwhiletransfer' =>        'Proszę czekać, przekierowanie...',
 'clicknowait'       =>        'Kliknij tu, jeśli nie chcesz czekać.',
-'summaryanddetails' =>        'Musisz wypełnić pola skrótu i pełnego opisu.',
-'goback'            =>        'Wracaj.',
+'summaryanddetails' =>        'Musisz wypełnić pola skróconego i pełnego opisu.',
+'goback'            =>        'Wróć.',
 
-'summary'           =>        'W skrócie:',
+'summary'           =>        'Skrócony opis:',
 'tasktype'          =>        'Typ zgłoszenia:',
 'category'          =>        'Kategoria:',
 'status'            =>        'Status:',
 'operatingsystem'   =>        'System operacyjny:',
-'severity'          =>        'Dotkliwość:',
+'severity'          =>        'Ważność:',
 'reportedversion'   =>        'Dotyczy wersji:',
 'dueinversion'      =>        'Obecne do wersji:',
 'percentcomplete'   =>        'Procent zaawansowania:',
-'summary'           =>        'W skrócie:',
 'details'           =>        'Szczegóły:',
 
 'messagefrom'       =>        'Wiadomość z systemu śledzenia usterek Flyspray na ',
@@ -46,9 +45,9 @@ $modify_text = array (
 'nolongerassigned'  =>        'Wskazane zgłoszenie nie jest już przydzielone tobie. Teraz jest przydzielone dla',
 'hasassigned'       =>        'przydzielił ci następujące zgłoszenie:',
 
-'taskupdated'       =>        'Zgłoszenie zaktualizowano.',
+'taskupdated'       =>        'Zgłoszenie zostało zaktualizowane.',
 
-'hasclosedassigned' =>      'zamknął zgłoszenie które było do ciebie przypisane:',
+'hasclosedassigned' =>	      'zamknął zgłoszenie które było do ciebie przypisane:',
 'reasonforclosing'  =>        'Powód zamknięcia:',
 'noone'             =>        'Nikt',
 'unassigned'        =>        'Nieprzydzielone',
@@ -60,8 +59,8 @@ $modify_text = array (
 'backtoindex'       =>        'Wróć do listy zgłoszeń',
 'noclosereason'     =>        'Nie wybrałeś powodu zamknięcia zgłoszenia.',
 'hasreopened'       =>        'ponownie otworzył zgłoszenie, które zamknąłeś:',
-'taskreopened'      =>        'Zgłoszenie otworzono ponownie.',
-'backtotask'        =>        'Wracaj do zgłoszenia.',
+'taskreopened'      =>        'Zgłoszenie zostało ponownie otworzone.',
+'backtotask'        =>        'Wróć do zgłoszenia.',
 
 'commentadded'      =>        'Komentarz został dodany.',
 'commenttoassigned' =>        'dodał następujący komentarz do przypisanego zgłoszenia:',
@@ -72,7 +71,7 @@ $modify_text = array (
 'notcurrentpass'    =>        'To nie jest twoje bieżące hasło!',
 'passchanged'       =>        'Twoje hasło zostało zmienione.',
 'closewindow'       =>        'Możesz już zamknąć to okno.',
-'passnomatch'       =>        'Źle powtórzono nowe hasło!',
+'passnomatch'       =>        'Źle powtórzyłeś(-aś) nowe hasło!',
 
 'usernametaken'     =>        'Ta nazwa jest już zajęta.',
 'newusercreated'    =>        'Nowe konto zostało utworzone.',
@@ -80,12 +79,12 @@ $modify_text = array (
 'newuserwarning'    =>        'Ustawienia systemu mogą wymagać, by konto zostało zatwierdzone przez administratora. Jeśli nie możesz się zalogować, prawdopodobnie tak jest.',
 'nomatchpass'       =>        'Źle powtórzono hasło.',
 'confirmwrong'      =>        'Kod potwierdzający jest nieprawidłowy!',
-'formnotcomplete'   =>        'Nie wypełniono całego formularza.',
+'formnotcomplete'   =>        'Nie wypełniłeś(-aś) całego formularza.',
 
-'groupnametaken'    =>        'Ta nazwa grupy już istnieje.',
-'newgroupadded'     =>        'Dodano nową grupę.',
+'groupnametaken'    =>        'Ta nazwa grupy jest już zajęta.',
+'newgroupadded'     =>        'Grupa została dodana.',
 
-'optionssaved'      =>        'Opcje programu zapisano.',
+'optionssaved'      =>        'Opcje programu zostały zapisane.',
 
 'hasuploaded'       =>        'dołączył plik do przypisanego zgłoszenia:',
 'hasattached'       =>        'dołączył plik do następującego zgłoszenia.',
@@ -96,15 +95,15 @@ $modify_text = array (
 'contactadmin'      =>        'Skontaktuj się z administratorem tego projektu.',
 'selectfileerror'   =>        'Nie podałeś pliku i/lub opisu.',
 
-'userupdated'       =>        'Dane użytkownika zaktualizowano',
+'userupdated'       =>        'Dane użytkownika zostały zaktualizowane',
 'realandemail'      =>        'Nie podałeś nazwiska oraz adresu e-mail.',
 
-'groupupdated'      =>        'Ustawienia grupy zaktualizowano.',
+'groupupdated'      =>        'Ustawienia grupy zostały zaktualizowane.',
 'groupanddesc'      =>        'Nie podałeś nazwy i opisu grupy.',
 
 'fillallfields'     =>        'Wypełnij wszystkie pola.',
-'listupdated'       =>        'Listę zaktualizowano.',
-'listitemadded'     =>        'Dodano element listy.',
+'listupdated'       =>        'Lista została zaktualizowana.',
+'listitemadded'     =>        'Element listy został dodany.',
 
 'relatedadded'      =>        'Do listy dodano powiązane zgłoszenie.',
 'relatederror'      =>        'To zgłoszenie jest już na liście zgłoszeń powiązanych.',
@@ -116,7 +115,7 @@ $modify_text = array (
 
 'notifyremoved'     =>        'Użytkownik został usunięty z listy powiadomień.',
 
-'editcommentsaved'  =>        'Zmieniony komentarz zachowano.',
+'editcommentsaved'  =>        'Zmieniony komentarz został zachowany.',
 'commentdeleted'    =>        'Komentarz został usunięty.',
 
 // Added in version 0.9.5
@@ -126,7 +125,7 @@ $modify_text = array (
 'addanother'	    =>	'Dodaj kolejne zgłoszenie do tego projektu',
 'projectcreated'    =>	'Twój nowy projekt został stworzony. Wybierz poniższy link, aby ustawić kategorie, systemy operacyjne oraz listę wersji.',
 'customiseproject'  =>	'Dostosuj projekt',
-'projectupdated'    =>	'Ustawienia projektu zaktualizowane',
+'projectupdated'    =>	'Ustawienia projektu zostały zaktualizowane.',
 'emptytitle'	    =>	'Pusty tytuł projektu. Wróć i popraw.',
 'loginbelow'	    =>	'Teraz możesz zalogować się, korzystając z poniższego formularza.',
 'attachmentdeleted' =>	'Załącznik został usunięty',
@@ -136,12 +135,12 @@ $modify_text = array (
 'reminderadded'     =>   'Przypomnienie zostało dodane.',
 'reminderdeleted'   =>   'Przypomnienie zostało usunięte.',
 'flyspraytask'	    =>   'Zgłoszenie',
-'fieldsmissing'     =>   'Niektóre pola pozostały puste lub zawierały błędne dane.',
+'fieldsmissing'     =>   'Niektóre pola były puste lub zawierały błędne dane.',
 'relatedinvalid'    =>   'Zgłoszenie nie istnieje.',
 'relatedproject'    =>   'Zgłoszenie przypisane do innego projektu.',
 'addanyway'         =>   'Dodaj mimo wszystko',
 'cancel'            =>   'Rezygnuj',
-'alreadyedited'     =>   'Zgłoszenie zostało w międzyczasie zmienione przez inną osobę w czasie.',
+'alreadyedited'     =>   'Zgłoszenie zostało w międzyczasie zmienione przez inną osobę.',
 'saveanyway'        =>   'Mimo tego zapisz moje zmiany.',
 'priority'          =>   'Priorytet',
 
@@ -150,9 +149,9 @@ $modify_text = array (
 'nouserselected'        =>        'Żaden użytkownik nie został wybrany.  Wybierz użytkownika i spróbuj ponownie.',
 'groupswitchupdated'    =>        'Grupy zostały zmodyfikowane.',
 'takenownership'        =>        'Zgłoszenie jest od tej pory przydzielone tobie.',
-'adminrequestmade'      =>        'Twoja prośba została przesłana Menedżerowi projektu.',
+'adminrequestmade'      =>        'Twoja prośba została przesłana osobie zarządzającej projektem.',
 'newdepnotify'          =>        'Nowa zależność została dodana do poniższego zgłoszenia:',
-'dependadded'           =>        'Zależność dodana',
+'dependadded'           =>        'Zależność dodana.',
 'dependaddfailed'       =>        'Nie możesz w tej chwili dodać zgłoszenia jako zależności',
 'depremoved'            =>        'Zależność została usunięta',
 'newdepis'              =>        'Nowa zależność',

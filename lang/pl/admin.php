@@ -6,7 +6,7 @@
 // Tomek 'TomasH' Zielinski
 // tomash@fidonet.org.pl, tomash@4net.pl
 // 
-// Uzupełnienie od wersji 0.9.5:
+// Uzupełnienia od wersji 0.9.5:
 // Konrad Roziewski <konrad#suwalki-com-pl>
 
 $admin_text = array (
@@ -18,8 +18,8 @@ $admin_text = array (
 'jabberid'	=>	'Jabber ID',
 'notifytype'	=>	'Rodzaj powiadomienia',
 'group'		=>	'Grupa',
-'accountenabled'=>	'Konto aktywne',
-'updatedetails'	=>	'Zachowaj zmiany',
+'accountenabled'=>	'Konto aktywne?',
+'updatedetails'	=>	'Zapisz zmiany',
 'setglobally'	=>	'Właściwość zdefiniowana globalnie.',
 
 'usergroupmanage'=>	'Zarządzanie użytkownikami i grupami',
@@ -45,7 +45,7 @@ $admin_text = array (
 'resolutionlist'=>	'Lista decyzji',
 'versionlist'	=>	'Lista wersji',
 'severitylist'	=>	'Lista priorytetów',
-'listnote'	=>	'Uwaga:	Odznaczenie opcji "pokaż" może zmienić niektóre edytowane obecnie zgłoszenia. Zmiana pola "Nazwa" zmieni wszystkie zgłoszenia tego typu.',
+'listnote'	=>	'Uwaga:	Odznaczenie opcji "Pokaż" może zmienić niektóre edytowane obecnie zgłoszenia. Zmiana pola "Nazwa" spowoduje zmianę we wszystkich zgłoszeniach, w których dana nazwa występuje.',
 'name'		=>	'Nazwa',
 'order'		=>	'Nr',
 'back'		=>	'Wróć',
@@ -54,12 +54,12 @@ $admin_text = array (
 'show'		=>	'Pokaż',
 'owner'		=>	'Właściciel',
 'selectowner'	=>	'brak',
-'update'	=>	'Zachowaj',
+'update'	=>	'Zapisz',
 'addnew'	=>	'Dodaj',
 
 'flysprayprefs'	=>	'Ustawienia Flyspray',
 'projecttitle'	=>	'Nagłówek strony',
-'baseurl'	=>	'Bazowy URL dla tej instalacji',
+'baseurl'	=>	'Adres bazowy Flyspray\'a',
 'replyaddress'	=>	'Adres zwrotny dla powiadomień',
 'themestyle'	=>	'"Skóra"',
 'language'	=>	'Język',
@@ -70,8 +70,8 @@ $admin_text = array (
 'afterregister'	=>	'Tylko po rejestracji',
 'spamproof'	=>	'Użyj kodu potwierdzającego przy rejestracji',
 'anongroup'	=>	'Grupa dla nowo zarejestrowanych',
-'groupassigned'	=>	'Tym grupom można przydzielać prace',
-'forcenotify'	=>	'Zmuś do powiadamiania przez',
+'groupassigned'	=>	'Grupy, którym można przydzielać prace',
+'forcenotify'	=>	'Powiadamiaj poprzez',
 'none'		=>	'Brak powiadomień',
 'userchoose'	=>	'Pozwól użytkownikowi wybrać',
 'email'		=>	'E-mail',
@@ -87,7 +87,7 @@ $admin_text = array (
 
 'editcomment'	=>	'Edytuj komentarz',
 'commentby'	=>	'Komentarz wysłał',
-'saveeditedcomment'	=>	'Zachowaj edytowany komentarz',
+'saveeditedcomment'	=>	'Zapisz edytowany komentarz',
 
 // Added in version 0.9.5
 
@@ -96,8 +96,8 @@ $admin_text = array (
 'projectlists'		=>	'Lista projektów',
 'showlogo'		=>	'Pokazuj logo tytułowe',
 'intromessage'		=>	'Komunikat powitalny',
-'isactive'		=>	'Projekt aktywny',
-'createproject'		=>	'Utwórz projekt',
+'isactive'		=>	'Projekt jest aktywny',
+'createproject'		=>	'Utwórz nowy projekt',
 
 // Added in version 0.9.6
 
@@ -122,7 +122,7 @@ $admin_text = array (
 
 // Added in version 0.9.7
 
-'projectmanager'	=>	'Menedżer projektu',
+'projectmanager'	=>	'Zarządzanie projektem',
 'viewtasks'		=>	'Podgląd zgłoszeń',
 'opennewtasks'		=>	'Otwieranie nowych zgłoszeń',
 'modifyowntasks'	=>	'Modyfikacja własnych zgłoszeń',
@@ -145,7 +145,7 @@ $admin_text = array (
 'globalgroups'		=>	'Grupy globalne', // Plural
 'defaultglobalgroup'    =>      'Domyślna grupa globalna dla nowych użytkowników',
 'addtogroup'		=>	'Dodaj do grupy',
-'moveuserstogroup'	=>	'Przenieś użytkowników do grupy',
+'moveuserstogroup'	=>	'Przenieś zaznaczonych do grupy',
 'nogroup'		=>	'Brak - usuń z projektu',
 'pendingrequests'       =>      'Oczekujące zgłoszenia administratorów',
 'eventdesc'             =>      'Opis zdarzenia',
@@ -165,7 +165,7 @@ $admin_text = array (
 'editglobalgroup'       =>      'Edytuj grupę globalną',
 'editgroupforproj'      =>      'Edytuj grupę bieżącego projektu',
 'notshownforadmin'      =>      'Uprawnienia grupy administratorów nie są pokazywane. Nie ma potrzeby wprowadzania zmian w tej grupie.',
-'general'               =>      'General',
+'general'               =>      'Ustawienia podstawowe',
 'userregistration'      =>      'Rejestracja użytkowników',
 'notifications'         =>      'Powiadomienia',
 'resetoptions'          =>      'Przywróć ustawienia',

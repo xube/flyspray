@@ -28,7 +28,7 @@ $newgroup_text = array (
 'groupenabled'	=>	'Członkowie mogą się logować',
 
 // Added in version 0.9.7
-'projectmanager'	=>	'Manedżer projektu',
+'projectmanager'	=>	'Zarządzanie projektem',
 'viewtasks'		=>	'Podgląd zgłoszeń',
 'opennewtasks'		=>	'Otwieranie nowych zgłoszeń',
 'modifyowntasks'	=>	'Modyfikacja własnych zgłoszeń',

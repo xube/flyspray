@@ -182,11 +182,12 @@ while ($group = $fs->dbFetchArray($get_groups)) {
   echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
   echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
   echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
-  
+ 
+  $userincrement = 0;
   while ($row = $fs->dbFetchArray($get_user_list)) {
     // Next line to ensure we only display each user once on this page
     array_push($user_checklist, $row['user_id']);
-    // Now, to assigned each user a number for submission
+    // Now, assign each user a number for submission
     $userincrement ++;    
     echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\" /></td>\n";
     echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
