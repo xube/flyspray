@@ -184,7 +184,7 @@ $extraurl .= "&amp;order={$_GET['order2']}&amp;sort={$_GET['sort2']}";
 <input type="hidden" name="project" value="<?php echo $_GET['project'] == '0' ? '0' : $project_id;?>">
 <p id="search">
   <label for="searchtext"><?php echo $index_text['searchthisproject'];?>:</label>
-    <input id="searchtext" name="string" type="text" size="40"
+    <input id="searchtext" name="string" type="text" size="20"
     maxlength="100" value="<?php echo $_GET['string'];?>" accesskey="q">
 
     <select name="type">
@@ -353,6 +353,12 @@ function list_heading($colname, $orderkey, $image = '')
       $link = "?order=$orderkey$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
       echo "<a title=\"$title\" href=\"$link\">";
       echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\">";
+      
+      // Sort indicator arrows
+      if($_GET['order'] == $orderkey) {
+        echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png">';
+      };
+      
       echo "</a></th>";
     }
     else
@@ -537,10 +543,10 @@ ORDER BY
     $date_opened = $fs->formatDate($task_details['date_opened'], false);
         
     // Convert the last_edited_time to a human-readable format
-    if ($task_details['last_edited_time'] != '0') {
+    if ($task_details['last_edited_time'] > 0) {
       $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
     } else {
-      $last_edited_time = $date_opened;
+      $last_edited_time = '';
     };
      
     // get the number of comments and attachments

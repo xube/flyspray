@@ -581,9 +581,9 @@ $group_details = $fs->dbFetchArray($get_group_details);
       $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects ORDER BY project_title");
       while ($row = $fs->dbFetchArray($get_projects)) {
         if ($_GET['id'] == $row['project_id']) {
-          echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";
+          echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
         } else {
-          echo "<option value=\"{$row['project_id']}\">{$row['project_title']}</option>";
+          echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
         };
       };
       ?>

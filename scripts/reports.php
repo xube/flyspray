@@ -71,18 +71,7 @@ function changelog_report()
 		AND t.date_closed >= ?
 		AND t.date_closed <= ?
 		ORDER BY t.date_closed $sort", array($_COOKIE['flyspray_project'],$ustartdate,$uenddate));
-		
-/*	$get_changes = $fs->dbQuery("SELECT h.*, t.*, u.*, r.*
-		FROM flyspray_history h
-		LEFT JOIN flyspray_tasks t ON h.task_id = t.task_id
-		LEFT JOIN flyspray_users u ON h.user_id = u.user_id
-		LEFT JOIN flyspray_list_resolution r on h.new_value = r.resolution_id
-		WHERE h.event_type = 2
-		AND t.attached_to_project = ?
-		AND h.event_date >= ?
-		AND h.event_date <= ?
-		ORDER BY h.event_date $sort", array($_COOKIE['flyspray_project'],$ustartdate,$uenddate));
-*/	
+
 	echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\">";
 	while ($row = $fs->dbFetchArray($get_changes))
 	{
@@ -91,7 +80,7 @@ function changelog_report()
 		$item_summary    = $row['item_summary'];
 		$closure_comment = $row['closure_comment'];
 		$real_name       = $row['real_name'];
-		$event_date      = $fs->formatDate($row['event_date'], false);
+		$event_date      = $fs->formatDate($row['date_closed'], false);
 		if (!get_magic_quotes_gpc()) {
 			$item_summary = str_replace("\\", "&#92;", $item_summary);
 			$closure_comment = str_replace("\\", "&#92;", $closure_comment);

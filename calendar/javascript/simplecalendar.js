@@ -442,7 +442,7 @@
 	  if (document.NSfix.initWidth!=window.innerWidth || document.NSfix.initHeight!=window.innerHeight) window.location.reload(false);
 	} // ns4 resize bug workaround
 	window.document.onclick=handleDocumentClick;
-    window.onerror = function(msg,url,line){
+/*    window.onerror = function(msg,url,line){
 	  alert('******* an error has occurred ********' +
 	  '\n\nPlease check that' + 
 	  '\n\n1)You have not added any code to the body onload event,'
@@ -454,3 +454,4 @@
 	  + '\nError details'
 	  + '\nText:' + msg + '\nurl:' + url + '\nline:' + line);
 	}
+*/

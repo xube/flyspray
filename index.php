@@ -48,7 +48,7 @@ if ($_GET['sort']) {
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title><?php echo "{$project_prefs['project_title']}";?></title>
+<title><?php echo stripslashes($project_prefs['project_title']);?></title>
   <link rel="icon" href="./favicon.ico" type="image/png">
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP.">
   <script type="text/javascript" src="functions.js"></script>
@@ -107,9 +107,9 @@ if ($project_prefs['show_logo'] == '1') {
       $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
       while ($row = $fs->dbFetchArray($get_projects)) {
         if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
-          echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";
+          echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
         } else {
-          echo "<option value=\"{$row['project_id']}\">{$row['project_title']}</option>";
+          echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
         };
       };
       ?>
