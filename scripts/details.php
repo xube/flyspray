@@ -488,7 +488,7 @@ $num_attachments = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_attachm
 $num_related = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_related WHERE this_task = ?", array($task_details['task_id'])));
 $num_related_to = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_related WHERE related_task = ?", array($task_details['task_id'])));
 $num_notifications = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id'])));
-
+$num_reminders = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_reminders WHERE task_id = ?", array($_GET['id'])));
 ?>
 
 <p id="tabs">
@@ -521,7 +521,7 @@ $num_notifications = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_notif
     } else {
       echo "<a class=\"tabnotactive\"";
     };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=remind#tabs"><?php echo "{$details_text['reminders']} ($num_reminderss)";?></a><small> | </small>
+    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=remind#tabs"><?php echo "{$details_text['reminders']} ($num_reminders)";?></a><small> | </small>
   <?php if ($area == 'system') {
       echo "<a class=\"tabactive\"";
     } else {
@@ -725,13 +725,13 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
             </p>
           </form>
          </div>
+      </div>
         <?php
         };
         echo "<p><a href=\"?do=details&amp;id={$row['related_task']}\">#{$row['related_task']} &mdash; $summary</a></p>";
-      };
-      echo "</div>";
     };
-    echo "</div>";
+   };
+
     if ($_SESSION['can_modify_jobs'] == "1" && $task_details['item_status'] != '8') {
     ?>
 
@@ -745,10 +745,11 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
     <input class="adminbutton" type="submit" value="<?php echo $details_text['add'];?>">
     </p>
   </form>
+
     <?php
     };
     ?>
-</div>
+ </div>
 <div class="tabentries">
   <p><em><?php echo $details_text['otherrelated'];?></em></p>
   <p>
@@ -866,16 +867,48 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
 // Start of scheduled reminders area
 } elseif ($area == 'remind') { ?>
 <div class="tabentries">
+  <div class="tabentry">
+  <?php
+    $get_reminders = $fs->dbQuery("SELECT * FROM flyspray_reminders WHERE task_id = ?", array($_GET['id']));
+    while ($row = $fs->dbFetchArray($get_reminders)) {
+      $get_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
+      while ($subrow = $fs->dbFetchArray($get_username)) {
 
+// If the user can modify jobs, then show them a form to remove a notified user
+        if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
+        ?>
+          <div class="modifycomment">
+          <form action="index.php" method="post">
+              <p>
+                <input type="hidden" name="do" value="modify">
+                <input type="hidden" name="action" value="deletereminder">
+                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
+                <input type="hidden" name="reminder_id" value="<?php echo $row['reminder_id'];?>">
+                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
+              </p>
+          </form>
+          </div>
+
+        <?php
+        }
+        echo "{$subrow['real_name']} ( {$subrow['user_name']})<br>";
+        echo "How often (in seconds): {$row['how_often']}<br>";
+
+      };
+    };
+  ?>
+  </div>
 </div>
-
+<?php
+if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
+?>
 <div class="tabentries">
 
 <div class="tabentry">
- <form action="index.php" method="post" id="formaddreminder>
+ <form action="index.php" method="post" id="formaddreminder">
   <input type="hidden" name="do" value="modify">
   <input type="hidden" name="action" value="addreminder">
-  <input type="hidden" name="thistask" value="<?php echo $_GET['id'];?>">
+  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
   <em><?php echo $details_text['remindthisuser'];?></em>
   <select class="adminlist" name="user_id">
     <?php
@@ -903,11 +936,14 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
      <option value="86400"><?php echo $details_text['days'];?></option>
      <option value="604800"><?php echo $details_text['weeks'];?></option>
   </select>
+  <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>">
   </div>
-
+  </form>
 </div>
 
 <?php
+// End of checking if a user can modify tasks
+};
 // End of scheduled reminders area
 
 

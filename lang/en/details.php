@@ -60,6 +60,14 @@ $details_text = array (
 
 'reminders'         =>   'Reminders',
 'system'            =>   'System',
+'remindthisuser'    =>   'Remind this user',
+'thisoften'         =>   'This often',
+'startafter'        =>   'Wait before starting reminders',
+'hours'             =>   'Hour(s)',
+'days'              =>   'Day(s)',
+'weeks'             =>   'Week(s)',
+'addreminder'       =>   'Add Reminder',
+
 
 );
 ?>
