@@ -324,7 +324,7 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
 
 
     // Get the item summary for the norifications
-    list($item_summary) = $fs->dbFetchArray($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?". array($_POST['task_id'])));
+    list($item_summary) = $fs->dbFetchArray($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
     $item_summary = stripslashes($item_summary);
 
     if ($_COOKIE['flyspray_userid'] != $_POST['assigned_to']) {

@@ -270,13 +270,6 @@ if ($_SESSION['can_modify_jobs'] == '1'
         <td colspan="2"></td>
 
       </tr>
-      <!--<tr>
-        <td class="adminlabel">Related Task:</td>
-        <td>
-        <input class="admintext" type="text" name="related_task_id" size="10" maxlength="10" value="<?php if ($task_details['related_task_id'] != "0") { echo $task_details['related_task_id'];};?>">
-        </td>
-      </tr>-->
-
       <tr>
         <th><?php echo $details_text['details'];?></th>
         <td colspan="3">
@@ -290,19 +283,10 @@ if ($_SESSION['can_modify_jobs'] == '1'
     <input class="adminbutton" type="submit"  name="buSubmit" value="<?php echo $details_text['savedetails'];?>" onclick="Disable1()">
     <input class="adminbutton" type="reset" name="buReset">
     </td>
-
-<!--    <form action="index.php" method="get">
-    <td>
-      <input type="hidden" name="do" value="details">
-      <input type="hidden" name="id" value="<?php echo $_GET['id'];?>">
-      <input class="adminbutton" type="submit" value="<?php echo $details_text['canceledit'];?>">
-    </td>
-    </form> -->
   </tr>
 </table>
 </form>
 </div>
-
 
 
 <?php
@@ -450,7 +434,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
         $detailed_desc = str_replace("&", "&amp;", $task_details['detailed_desc']);
         $detailed_desc = str_replace("<", "&lt;", "$detailed_desc");
         $detailed_desc = str_replace("\n", "<br>", $detailed_desc);
-        $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $detailed_desc);
+        $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
         echo stripslashes($detailed_desc);
         ?>
         </td>
@@ -608,7 +592,7 @@ if ($area == 'comments') { ?>
       $comment_text = str_replace("&", "&amp;", "{$row['comment_text']}");
       $comment_text = str_replace("<", "&lt;", "$comment_text");
       $comment_text = str_replace("\n", "<br>", "$comment_text");
-      $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $comment_text);
+      $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $comment_text);
       $comment_text = stripslashes($comment_text);
 
     ?>
