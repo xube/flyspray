@@ -95,43 +95,47 @@ if(file_exists("$headerfile")) {
  include("$headerfile"); 
 };
 
+
 // If the admin wanted the Flyspray logo shown at the top of the page...
 if ($project_prefs['show_logo'] == '1') {
   echo "<h1 id=\"title\"><span>{$project_prefs['project_title']}</span></h1>";
 };
 
+////////////////////////////////////////////////
+// OK, now we start the new permissions stuff //
+////////////////////////////////////////////////
 
-  // Get current user details
+// If the user has the right name cookies
+if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
+
+    // Check to see if the user has been trying to hack their cookies to perform sql-injection
+    if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project']))) {
+      die("Stop hacking your cookies, you naughty fellow!");
+    };
+
+  // Get current user details.  We need this to see if their account is enabled or disabled
   $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
   $current_user = $fs->dbFetchArray($result);
-  
-  // Get the global group for this user
+
+  // Get the global group for this user, and put the permissions into an array
   $search_global_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array('0'));
   while ($row = $fs->dbFetchRow($search_global_group)) {
     $check_in = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($_COOKIE['flyspray_userid'], $row['group_id']));
     if ($fs->dbCountRows($check_in) > '0') {
-      //echo "YAY!<br />";
-     $global_permissions = $row;
+      $global_permissions = $row;
     };
   };
 
-  //echo 'project id = ' . $project_id . '<br />';
-  
-  // Get the project-level group for this user
+  // Get the project-level group for this user, and put the permissions into an array
   $search_project_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
   while ($row = $fs->dbFetchRow($search_project_group)) {
     $check_in = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE user_id = ? AND group_id = ?", array($_COOKIE['flyspray_userid'], $row['group_id']));
     if ($fs->dbCountRows($check_in) > '0') {
-      //echo "YAY!<br />";
-     $project_permissions = $row;
+      $project_permissions = $row;
     };
   };
   
-  // Check if our arrays have been populated correctly
-  echo 'global = ' . $global_permissions['open_new_tasks'] . '<br />';
-  echo 'project = ' . $project_permissions['open_new_tasks'] . '<br />';
-  
-  // Now, merge the arrays, keeping the highest permission (basically, use a boolean OR)
+  // Define which fields we care about from the groups information
   $field = array(
                   '1'  => 'is_admin',
 		  '2'  => 'manage_project',
@@ -151,52 +155,32 @@ if ($project_prefs['show_logo'] == '1') {
 		  '16' => 'close_other_tasks',
 		  '17' => 'assign_to_self',
 		  '18' => 'assign_others_to_self',
+		  '19' => 'view_reports',
 		 );
+
+  // Now, merge the two arrays, making the highest permission active (basically, use a boolean OR)
+  $permissions = array();
 
   while (list($key, $val) = each($field)) {
     if ($global_permissions[$val] == '1' OR $project_permissions[$val] == '1') {
-      $_SESSION[$val] = '1';
+      //$_SESSION[$val] = '1';
+      $permissions[$val] = '1';
     } else {
-      $_SESSION[$val] = '0';
+      //$_SESSION[$val] = '0';
+      $permissions[$val] = '0';
+      
     };
-      echo $val . ' = ' . $_SESSION[$val] . '<br />';      
+//       echo $val . ' = ' . $_SESSION[$val] . '<br />';
+         echo $val . ' = ' . $permissions[$val] . '<br />';
   };
-/*
-// If the user has the right name cookies
-if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
-
-    // Check to see if the user has been trying to hack their cookies to perform sql-injection
-    if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project']))) {
-      die("Stop hacking your cookies, you naughty fellow!");
-    };
-
-  // Get current user details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
-  $current_user = $fs->dbFetchArray($result);
-
-  // Get the group information for this user
-  $result = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($current_user['group_in']));
-  $group_details = $fs->dbFetchArray($result);
 
   // Check that the user hasn't spoofed the cookie contents somehow
   if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], "$cookiesalt")
     // And that their account is enabled
-    && $current_user['account_enabled'] == "1"
+    && $current_user['account_enabled'] == "1")
     // And that their group is open
-    && $group_details['group_open'] == '1')
+//    && $group_details['group_open'] == '1')
     {
-
-    // Get the group information for this user
-    $isgroupadmin = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($current_user['group_in']));
-    $permissions = $fs->dbFetchArray($isgroupadmin);
-    $_SESSION['userid'] = $current_user['user_id'];
-    //$_SESSION['account_enabled'] = $current_user['account_enabled'];
-    $_SESSION['admin'] = $permissions['is_admin'];
-    $_SESSION['can_open_jobs'] = $permissions['can_open_jobs'];
-    $_SESSION['can_modify_jobs'] = $permissions['can_modify_jobs'];
-    $_SESSION['can_add_comments'] = $permissions['can_add_comments'];
-    $_SESSION['can_attach_files'] = $permissions['can_attach_files'];
-    $_SESSION['can_vote'] = $permissions['can_vote'];
 
 
     // Show the user menu
@@ -204,24 +188,28 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo "<em>{$language['loggedinas']} - {$current_user['user_name']}</em>";
     echo "<span id=\"mainmenu\">\n";
     
-    echo '<small> | </small>';
-    echo '<a href="?do=newtask&amp;project=' . $project_id . '">' .
-    $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/newtask.png") . '&nbsp;' . $language['addnewtask'] . "</a>\n";
+    if ($permissions['open_new_tasks'] == '1') {
+      echo '<small> | </small>';
+      echo '<a href="?do=newtask&amp;project=' . $project_id . '">' .
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/newtask.png") . '&nbsp;' . $language['addnewtask'] . "</a>\n";
+    };
     
-    echo '<small> | </small>';
-    echo '<a href="index.php?do=reports">' .
-    $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/reports.png"). '&nbsp;' . $language['reports'] . "</a>\n";
+    if ($permissions['view_reports'] == '1') {
+      echo '<small> | </small>';
+      echo '<a href="index.php?do=reports">' .
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/reports.png"). '&nbsp;' . $language['reports'] . "</a>\n";
+    };
     
     echo '<small> | </small>';
     echo '<a href="?do=admin&amp;area=users&amp;id=' . $_SESSION['userid'] . '">' .
     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/editmydetails.png") . '&nbsp;' . $language['editmydetails'] . "</a>\n";
-    /*
+
     echo '<small> | </small><a href="index.php?do=chpass">
     <img src="themes/' . $project_prefs['theme_style'] . '/menu/password.png" />&nbsp;' . $language['changepassword'] . "</a>\n";;
-*/
+
     
     // If the user has conducted a search, then show a link to the most recent task list filter
-/*    echo '<small> | </small>';
+    echo '<small> | </small>';
     if(isset($_SESSION['lastindexfilter'])) {
       echo '<a href="' . $_SESSION['lastindexfilter'] . '">' .
       $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png"). '&nbsp;' . $language['lastsearch'] . "</a>\n";
@@ -239,42 +227,53 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     $_SESSION['admin'] = $is_admin['is_admin'];
 
     // Show the Admin menu
-    if ($_SESSION['admin'] == "1") {
-
-
+    if ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
       echo '<span id="adminmenu">';
       echo '<em>' . $language['adminmenu']. '</em>';
+      
+      if ($permissions['is_admin'] == '1') {
+        echo '<small> | </small>';
+        echo '<a href="?do=admin&amp;area=options">' .
+        $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/options.png") . '&nbsp;' . $language['options'] . "</a>\n";
+      };
+      
+      if ($permissions['manage_project'] == '1') {
+        echo '<small> | </small>';
+        echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;id=' . $project_id . '">' .
+        $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/projectprefs.png") . '&nbsp;' . $language['projects'] . "</a>\n";
+      };
+      
+      if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') {
+      // There will need to be logic in admin.php to seperate the management of 
+      // global users/groups and project-level users/groups
+        echo '<small> | </small>';
+        echo '<a href="?do=admin&amp;area=users">' .
+        $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/usersandgroups.png") . '&nbsp;' . $language['usersandgroups'] . "</a>\n";
+      };
      
-      echo '<small> | </small>';
-      echo '<a href="?do=admin&amp;area=options">' .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/options.png") . '&nbsp;' . $language['options'] . "</a>\n";
-     
-      echo '<small> | </small>';
-      echo '<a href="?do=admin&amp;area=projects">' .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/projectprefs.png") . '&nbsp;' . $language['projects'] . "</a>\n";
-     
-     echo '<small> | </small>';
-     echo '<a href="?do=admin&amp;area=users">' .
-     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/usersandgroups.png") . '&nbsp;' . $language['usersandgroups'] . "</a>\n";
-     
-     echo '<small> | </small>';
-     echo '<a href="?do=admin&amp;area=tasktype">' .
-     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['tasktypes'] . "</a>\n";
-     
-     echo '<small> | </small>';
-     echo '<a href="?do=admin&amp;area=resolution">' .
-     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['resolutions'] . "</a>\n";
-     echo "</span>\n";
-
+      if ($permissions['is_admin'] == '1') {
+        echo '<small> | </small>';
+        echo '<a href="?do=admin&amp;area=tasktype">' .
+        $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['tasktypes'] . "</a>\n";
+      
+        echo '<small> | </small>';
+        echo '<a href="?do=admin&amp;area=resolution">' .
+        $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['resolutions'] . "</a>\n";
+        echo "</span>\n";
+      };
+    // End of checking if the admin menu should be displayed
     };
     echo "</p>";
 
+    // If the user's account is closed
     } else {
       echo "<br />{$language['disabledaccount']}";
       echo "<meta http-equiv=\"refresh\" content=\"0; URL=scripts/authenticate.php?action=logout\">\n";
+    // End of checking if the user's account is open
     };
 
-};*/
+// End of checking if the user has the right cookies
+};
 ?>
 
 

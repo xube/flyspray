@@ -178,6 +178,16 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
 
 ?>
 
+<?php
+// Check that the requested project is active
+$getproject = $fs->dbFetchArray($fs->dbQuery('SELECT * FROM flyspray_projects WHERE project_id = ?', array($project_id)));
+
+if ($getproject['project_is_active'] == 1
+    && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
+    ) {
+?>
+
+
 <!-- Query line -->
 <map id="projectsearchform" name="projectsearchform">
 <form action="index.php" method="get">
@@ -415,13 +425,6 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 
 ?>
 
-
-<?php
-// Check that the requested project is active
-$getproject = $fs->dbFetchArray($fs->dbQuery('SELECT * FROM flyspray_projects WHERE project_id = ?', array($project_id)));
-if ($getproject['project_is_active'] == 1) {
-?>
-
 <!--  Summary headings, followed by the query results -->
 <table id="tasklist">
 <thead>
@@ -588,6 +591,7 @@ ORDER BY
 </table>
 
 <?php
-// End of checking if the reqeusted project is active
+// End of checking if the reqeusted project is active,
+// and that the user has permission to view it
 };
 ?>
