@@ -117,7 +117,8 @@ if ($_GET['string']) {
 <form action="index.php" method="get">
 <p id="search">
   <label for="searchtext"><?php echo $index_text['searchthisproject'];?>:</label>
-    <input id="searchtext" name="string" type="text" size="40" maxlength="100" value="<?php echo $_GET['string'];?>">
+    <input id="searchtext" name="string" type="text" size="40"
+    maxlength="100" value="<?php echo $_GET['string'];?>" accesskey="q">
 
     <select name="type">
       <option value=""><?php echo $index_text['alltasktypes'];?></option>

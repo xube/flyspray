@@ -108,7 +108,7 @@ if ($project_prefs['show_logo'] == '1') {
 <form action="index.php" method="get">
     <p id="showtask">
       <label><?php echo $language['showtask'];?> #
-      <input name="id" type="text" size="10" maxlength="10"></label>
+      <input name="id" type="text" size="10" maxlength="10" accesskey="t"></label>
       <input type="hidden" name="do" value="details">
       <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>">
     </p>
