@@ -21,10 +21,7 @@ if ($_GET['magic']) {
       echo '<meta http-equiv="refresh" content="2; URL=index.php">';
 
     } else {
-      
-
-	
-?>
+    ?>
 
 <h1><?php echo $register_text['registernewuser'];?></h1>
 <form action="index.php" name="form2" method="post" id="registernewuser">

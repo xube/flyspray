@@ -10,8 +10,8 @@
 
 // Load the config file
 $conf_array = @parse_ini_file("flyspray.conf.php", true);
-$conf_array = array_merge($conf_array, 
-	      @parse_ini_file("../flyspray.conf.php", true));
+$conf_array = array_merge($conf_array,                         // This is dodgy. FIXME!
+	      @parse_ini_file("../flyspray.conf.php", true));  // Only used because authenticate.php is called directly
 
 // Set values from the config file. Once these settings are loaded a connection
 // is made to the database to retrieve all the other preferences.
@@ -45,10 +45,12 @@ if (!$res) {
 
 $flyspray_prefs = $fs->getGlobalPrefs();
 
-$project_id = 0;
+//$project_id = 0;
+
 if (($_GET['do'] == 'details') && ($_GET['id'])) {
   list($project_id) = $fs->dbFetchArray($fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
 };
+
 if (!$project_id) {
   if ($_GET['project']) {
     $project_id = $_GET['project'];

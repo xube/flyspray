@@ -1,14 +1,26 @@
 <?php
 include('header.php');
 
+// Get the translation for the wrapper page (this page)
 $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'main');
 
-      $do = $_REQUEST['do'];
+// Fetch the page to include below
+$do = $_REQUEST['do'];
 
+// Default page is the task list
 if (!isset($_REQUEST['do'])) {
   $do = "index";
 }
+
+// Check that the requested project actually exists
+$check_proj_exists = $fs->dbQuery("SELECT * FROM flyspray_projects
+                                   WHERE project_id = ?",
+                                   array($project_id)
+                                 );
+if (!$fs->dbCountRows($check_proj_exists)) {
+  die("<meta http-equiv=\"refresh\" content=\"0; URL=index.php?project={$flyspray_prefs['default_project']}\">");
+};
 
 // If a file was requested, deliver it
 if ($_GET['getfile']) {
