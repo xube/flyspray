@@ -102,6 +102,20 @@ $admin_text = array (
 'isactive'		=>	'Projekt aktywny',
 'createproject'		=>	'Utwórz projekt',
 
+// Added in version 0.9.6
+'nopermission'		=>  'Nie masz uprawnień do oglądania tej strony.',
+'listordertip'		=>  'Kolejność, w jakiej pozycje pojawią się na liście',
+'listshowtip'		=>  'Pokazuj pozycję na liście',
+'categoryownertip'	=>  'Ten użytkownik otrzyma powiadomienie o otwarciu zgłoszenie w tej kategorii',
+'categoryparenttip'	=>  'Kategoria nadrzędna w stosunku do tej kategorii',
+'notsubcategory'	=>	'Brak - kategoria pierwszego poziomu',
+'showinlineimages'	=>  'Pokazuj załączniki graficzne na stronie',
+'dateformat'		=>	'Format daty',
+'dateformat_extended' => 'Rozszerzony format daty',
+'subcategoryof'		=>	'Podkategoria',
+'visiblecolumns'	=>	'Kolumny wyświetlana na liście zgłoszeń',
+
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>

@@ -33,6 +33,14 @@ $index_text = array (
 // Added in version 0.9.5
 'searchthisproject'	=>	'Szukaj w bieżącym projekcie',
 
+// Added in version 0.9.6
+'closed'		=>	'Zamknięte',
+'dueanyversion'		=>	'Obecne do dowolnej wersji',
+'dueversion'		=>	'Obecne do wersji',
+'project'		=>	'Projekt',
+'category'		=>	'Kategoria',
+'lastedit'		=>	'Data ostatniej edycji',
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>

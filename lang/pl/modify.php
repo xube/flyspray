@@ -136,6 +136,14 @@ $modify_text = array (
 // Added in 0.9.6
 'reminderadded'     =>   'Przypomnienie zostało dodane.',
 'reminderdeleted'   =>   'Przypomnienie zostało usunięte.',
+'flyspraytask'	    =>   'Zgłoszenie',
+'fieldsmissing'     =>   'Niektóre pola pozostały puste lub zawierały błędne dane.',
+'relatedinvalid'    =>   'Zgłoszenie nie istnieje.',
+'relatedproject'    =>   'Zgłoszenie przypisane do innego projektu.',
+'addanyway'         =>   'Dodaj mimo wszystko',
+'cancel'            =>   'Rezygnuj',
+'alreadyedited'     =>   'Zgłoszenie zostało w międzyczasie zmienione przez inną osobę w czasie.',
+'saveanyway'        =>   'Mimo tego zapisz moje zmiany.',
 
 );
 // vim:fenc=utf-8:enc=utf-8:nowrap

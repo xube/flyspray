@@ -43,8 +43,14 @@ $language = array (
 'adminmenu'	=>	'Menu Administratora',
 
 // Added in version 0.9.6
-'duplicated'		=>	'Akcja powtórzona. Przekierowuję na stronę główną.',
-'mytasksallprojects'	=>	'wszystkie projekty',
+'duplicated'	    =>	'Akcja powtórzona. Nastąpi przekierowanie na stronę główną.',
+'allprojects'       =>	'Wszystkie projekty',
+'selectproject'		=>	'dla projektu:',
+'tasksall'          =>  'Wszystkie zgłoszenia',
+'tasksassigned'     =>  'Przydzielone mi',
+'tasksreported'     =>  'Zgłoszone przeze mnie',
+'taskswatched'      =>  'Obserwowane przeze mnie',
+
 
 );
 // vim:fenc=utf-8:enc=utf-8
