@@ -207,10 +207,39 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
         $do = $_POST['do'];
       };
 
-      if (isset($do) && file_exists("scripts/$do.php") && ($flyspray_prefs['anon_view'] == '1' OR $_SESSION['userid'])) {
-        require("scripts/$do.php");
-      } elseif ($flyspray_prefs['anon_view'] == '1' OR $_SESSION['userid']) {
-        require("scripts/index.php");
+switch ($_GET['do']) {
+  case "admin": $thepage = 'scripts/admin.php';
+  break;
+  case "authenticate": $thepage = 'scripts/authenticate.php';
+  break;
+  case "chpass": $thepage = 'scripts/chpass.php';
+  break;
+  case "chproject": $thepage = 'scripts/chproject.php';
+  break;
+  case "details": $thepage = 'scripts/details.php';
+  break;
+  case "loginbox": $thepage = 'scripts/loginbox.php';
+  break;
+  case "modify": $thepage = 'scripts/modify.php';
+  break;
+  case "newgroup": $thepage = 'scripts/newgroup.php';
+  break;
+  case "newproject": $thepage = 'scripts/newproject.php';
+  break;
+  case "newtask": $thepage = 'scripts/newtask.php';
+  break;
+  case "newuser": $thepage = 'scripts/newuser.php';
+  break;
+  case "register": $thepage = 'scripts/register.php';
+  break;
+  default: $thepage = 'scripts/index.php';
+  break;
+};
+
+      if (file_exists($thepage) && ($flyspray_prefs['anon_view'] == '1' OR $_SESSION['userid'])) {
+        require($thepage);
+     // } elseif ($flyspray_prefs['anon_view'] == '1' OR $_SESSION['userid']) {
+       // require($thepage);
       };
       ?>
 
