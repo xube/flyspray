@@ -16,8 +16,14 @@ if ($permissions['open_new_tasks'] == "1"
 <div id="taskdetails">
 
 <table>
+<form name="form1" action="index.php" method="post">
+
   <tr>
     <td>
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="newtask" />
+      <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+      
       <label for="itemsummary"><?php echo $newtask_text['summary'];?></label>
     </td>
     <td>
@@ -27,11 +33,7 @@ if ($permissions['open_new_tasks'] == "1"
 </table>
 
 <map id="formnewtask" name="formnewtask">
-<form name="form1" action="index.php" method="post">
-      <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="newtask" />
-      <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
-      
+
 <div id="taskfields1">
 
 <table>

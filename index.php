@@ -430,7 +430,7 @@ if(file_exists("$footerfile")) {
 } 
 
 // Print out permissions stuff for debugging
-if (isset($_COOKIE['flyspray_userid'])) {
+/*if (isset($_COOKIE['flyspray_userid'])) {
   echo '<br /><h3>Debugging for the new permissions system</h3>';
   echo '<table border="1">';
   while (list($key, $val) = each($permissions)) {
@@ -444,7 +444,7 @@ if (isset($_COOKIE['flyspray_userid'])) {
      echo '</tr>';
   };
   echo '</table>';
-};
+};*/
 ?> 
 
 </body>
