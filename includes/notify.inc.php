@@ -115,7 +115,8 @@ class Notifications {
          $desired = join(",", $ids);
 
          $notifications = $db->Query("SELECT * FROM flyspray_notification_messages
-                                      WHERE id in (?)",
+                                      WHERE id in (?)
+                                      ORDER BY created ASC",
                                       array($desired)
                                     );
 

@@ -37,13 +37,27 @@ class Flyspray {
    */
    function redirect($url)
    {
-      $flyspray_prefs = $this->GetGlobalPrefs();
-      $server_prefix = $flyspray_prefs['base_url'];
       // Redirect via an HTML form for PITA webservers
       if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
       {
+         $server_prefix = 'http';                                                    //Start building prefix
+
+         if ($_SERVER['HTTPS'] == 'on') {       $server_prefix = $server_prefix . 's';  }  //If secure, use https://
+         $server_prefix = $server_prefix . '://';                                    //|User:Pass@Host not supported.Bug?
+         $server_prefix = $server_prefix . $_SERVER['HTTP_HOST'];                    //|Or never required with FS?
+
+         if (!empty($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] != '80'))
+         {
+            $server_prefix = $server_prefix . ':' . $_SERVER['SERVER_PORT'];         //If nonstandard port, append port
+         }
+         $server_prefix = $server_prefix . dirname($_SERVER['SCRIPT_NAME']);         //Throw away 'index.php' part
+         if (substr($server_prefix, -1, 1) != '/')
+         {
+            $server_prefix = $server_prefix . '/';                                   //Make sure prefix ends with '/'
+         }
          header('Refresh: 0; URL=' . $server_prefix . $url);
          echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_prefix . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_prefix . $url . '">HERE</a> to be redirected</div></body></html>';
+
       } else
       {
          // Behave as per HTTP/1.1 spec for others

@@ -99,7 +99,7 @@ function showTabByNumber(number) { // {{{
 
   for (i=0; i<divs.length; i++) {
     if (divs[i].className == 'tab') {
-      targets.push(divs[i].id);
+      targets[targets.length] = divs[i].id;             //array[array.length]= same as .push, but IE-compatible.
     }
   }
   if (number >= targets.length) {
@@ -116,7 +116,7 @@ function getTabDivs() {/*{{{*/
         var i;
         for (i=0; i<divs.length; i++) {
             if (divs[i].className && (divs[i].className.indexOf('tab') > -1)) {
-                _TAB_DIVS.push(divs[i]);
+                _TAB_DIVS[_TAB_DIVS.length] = divs[i];  //array[array.length]= same as .push, but IE-compatible.
             }
         }
     }
