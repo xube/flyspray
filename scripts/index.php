@@ -17,6 +17,8 @@ switch ($_GET['order']) {
   break;
   case "status": $orderby = 'item_status';
   break;
+  case "due": $orderby = 'closedby_version';
+  break;
   case "prog": $orderby = 'percent_complete';
   break;
   default: $orderby = 'task_severity';
@@ -111,7 +113,11 @@ if ($_GET['status'] == "all") {
 } else {
   $where[] = "is_closed != '1'";
 };
-
+// The default due in version
+if (is_numeric($_GET['due'])) {
+  $where[] = "closedby_version = ?";
+  $sql_params[] = $_GET['due'];
+};
 // The default search string
 if ($_GET['string']) {
   $string = $_GET['string'];
@@ -159,6 +165,23 @@ if ($_GET['string']) {
           echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
         } else {
           echo "<option value=\"$key\">$val</option>\n";
+        };
+      };
+      ?>
+    </select>
+
+    <select name="due">
+      <option value=""><?php echo $index_text['dueanyversion'];?></option>
+      <?php
+      $ver_list = $fs->dbQuery("SELECT version_id, version_name
+                                  FROM flyspray_list_version
+                                  WHERE project_id=? AND show_in_list=?
+                                  ORDER BY list_position", array($project_id, '1'));
+      while ($row = $fs->dbFetchArray($ver_list)) {
+        if ($_GET['due'] == $row['version_id']) {
+          echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
+        } else {
+          echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>";
         };
       };
       ?>
@@ -263,11 +286,14 @@ if ($getproject['project_is_active'] == 1) {
   <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=status<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "status") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['status'];?></a>
   </th>
   <th>
+  <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=due<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "due") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['dueversion'];?></a>
+  </th>
+  <th>
   <a title="<?php echo $index_text['sortthiscolumn'];?>"  href="?order=prog<?php echo "&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage&amp;pagenum=$pagenum";?>&amp;sort=<?php if ($_GET['sort'] == "desc" && $_GET['order'] == "prog") { echo "asc"; } else { echo "desc";};?>"><?php echo $index_text['progress'];?></a>
   </th>
   </tr>
 </thead>
-<tfoot><tr><td colspan="7">
+<tfoot><tr><td colspan="8">
 <?php
  
 // SQL JOIN condition
@@ -278,7 +304,7 @@ $get_total = $fs->dbQuery("SELECT * FROM flyspray_tasks, flyspray_projects
           ORDER BY $orderby $sort", $sql_params);
 
 $total = $fs->dbCountRows($get_total);
-$extraurl = "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
+$extraurl = "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$_GET['dev']}&amp;cat={$_GET['cat']}&amp;due={$_GET['due']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
 print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
 
@@ -315,6 +341,10 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     $severity_id = $task_details['task_severity'];
     require("lang/$lang/severity.php");
     $severity = $severity_list[$severity_id];
+
+    // Get the full due-in version name
+    $get_due_name = $fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id=?", array($task_details['closedby_version']));
+    list($due) = $fs->dbFetchArray($get_due_name);
 
     echo "<tr class=\"severity{$task_details['task_severity']}\"
     onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'
@@ -353,6 +383,11 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 	} else {
 		echo "$status\n</td>\n";
 	};
+
+    $due = str_replace(" ", "&nbsp;", $due);
+    echo "<td class=\"version\">\n";
+    echo "$due\n</td>\n";
+
     echo "<td class=\"progress\">\n";
     echo "<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\">\n</td>\n";
 

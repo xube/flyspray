@@ -19,9 +19,9 @@ if (!empty($_COOKIE['flyspray_userid'])) {
 
 $now = date(U);
 
-///////////////////////
-// Adding a new task //
-///////////////////////
+////////////////////////////////
+// Start of adding a new task //
+////////////////////////////////
 
 if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1")) {
 
@@ -56,18 +56,18 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
 
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
-    $get_task_id = $fs->dbFetchArray($fs->dbQuery("SELECT task_id FROM flyspray_tasks
+    $get_task_info = $fs->dbFetchArray($fs->dbQuery("SELECT task_id, item_summary FROM flyspray_tasks
                                                 WHERE item_summary = ?
                                                 AND detailed_desc = ?
                                                 ORDER BY task_id DESC LIMIT 1
                                 ", array($item_summary, $detailed_desc)));
-    $task_id = $get_task_id['task_id'];
+    //$task_id = $get_task_id['task_id'];
 
     // If the reporter wanted to be added to the notification list
     if ($_POST['notifyme'] == '1') {
       $insert = $fs->dbQuery("INSERT INTO flyspray_notifications
       (task_id, user_id)
-      VALUES('$task_id', '{$_COOKIE['flyspray_userid']}')");
+      VALUES('{$get_task_details['task_id'']}, '{$_COOKIE['flyspray_userid']}')");
     };
 
     // Check if the new task was assigned to anyone
@@ -76,13 +76,14 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
     {
 
 // Create the brief notification message
+$subject = "{$modify_text['flyspraytask']} #{$get_task_info['task_id']} - {$get_task_info['item_summary']}";
 $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasopened']}\n
 {$modify_text['newtask']}: {$_POST['item_summary']} \n
 {$modify_text['moreinfonew']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id=$task_id";
 
       // ...And send it off to let the person know about their task
-      $result = $fs->SendBasicNotification($_POST['assigned_to'], $message);
+      $result = $fs->SendBasicNotification($_POST['assigned_to'], $subject, $message);
       echo $result;
 
     };
@@ -114,6 +115,7 @@ $current_realname ($current_username) {$modify_text['hasopened']}\n
     };
 
     // Create the notification message
+$subject = "{$modify_text['flyspraytask']} #{$get_task_info['task_id']} - {$get_task_info['item_summary']}";
 $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['newtaskcategory']} - \"{$cat_details['category_name']}\"
 {$modify_text['categoryowner']}\n
@@ -121,7 +123,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['moreinfonew']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id=$task_id";
 
       // ...And send it off to the category owner or default owner
-      $result = $fs->SendBasicNotification($send_to, $message);
+      $result = $fs->SendBasicNotification($send_to, $subject, $message);
       //echo $result;
 
 ?>
@@ -217,6 +219,8 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
     };
 
 // Complete the modification notification
+$item_summary = stripslashes($_POST['item_summary']);
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']}\n
 $current_realname ($current_username) {$modify_text['hasjustmodified']} {$modify_text['youonnotify']}
 {$modify_text['changedfields']}\n-----\n"
@@ -225,7 +229,7 @@ $current_realname ($current_username) {$modify_text['hasjustmodified']} {$modify
 
       if ($send_me == "YES") {
         // Send the detailed notification message
-        $result = $fs->SendDetailedNotification($_POST['task_id'], $message);
+        $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $message);
         echo $result;
       };
 
@@ -252,6 +256,8 @@ $current_realname ($current_username) {$modify_text['hasjustmodified']} {$modify
           $new_username = "No-one";
         };
 
+$item_summary = stripslashes($_POST['item_summary']);
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['nolongerassigned']} {$get_new['real_name']} ($new_username).\n
 {$modify_text['task']} #{$_POST['task_id']} - {$_POST['item_summary']}\n
@@ -259,7 +265,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
         // End of generating a message
 
         // Send the brief notification message
-        $result = $fs->SendBasicNotification($_POST['old_assigned'], $message);
+        $result = $fs->SendBasicNotification($_POST['old_assigned'], $subject, $message);
         echo $result;
       };
 
@@ -267,13 +273,14 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
       if ($_POST['assigned_to'] != "0") {
 
         // Get the brief notification message to send
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - {$_POST['item_summary']}";
 $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasassigned']}\n
 {$modify_text['task']} #{$_POST['task_id']}: {$_POST['item_summary']} \n
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}";
 
         // Send the brief notification message
-        $result = $fs->SendBasicNotification($_POST['assigned_to'], $message);
+        $result = $fs->SendBasicNotification($_POST['assigned_to'], $subject, $message);
         echo $result;
 
       };
@@ -314,10 +321,16 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
 
     // Get the resolution name for the notifications
     $get_res = $fs->dbFetchArray($fs->dbQuery("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason'])));
-    $item_summary = stripslashes($_POST['item_summary']);
+
+
+    // Get the item summary for the norifications
+    list($item_summary) = $fs->dbFetchArray($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?". array($_POST['task_id'])));
+    $item_summary = stripslashes($item_summary);
 
     if ($_COOKIE['flyspray_userid'] != $_POST['assigned_to']) {
 
+// Create a basic notification message
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $brief_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasclosedassigned']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
@@ -331,11 +344,12 @@ $brief_message = $brief_message . "\n{$flyspray_prefs['base_url']}index.php?do=d
 
 
 
-      $result = $fs->SendBasicNotification($_POST['assigned_to'], $brief_message);
+      $result = $fs->SendBasicNotification($_POST['assigned_to'], $subject, $brief_message);
       echo $result;
 
     };
-      // The detailed notification
+// Create a detailed notification message
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasclosed']} {$modify_text['youonnotify']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
@@ -359,7 +373,10 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
 
 // End of closing a task
 
-// Start of re-opening an task
+/////////////////////////////////
+// Start of re-opening an task //
+/////////////////////////////////
+
 } elseif ($_POST['action'] == "reopen" && $_SESSION['can_modify_jobs'] == "1") {
 
     $add_item = $fs->dbQuery("UPDATE flyspray_tasks SET
@@ -374,40 +391,43 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
     ", array($_POST['task_id']));
 
     // Find out the user who closed this
-    $get_closedby = $fs->dbQuery("SELECT item_summary, closed_by FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id']));
-    list($item_summary, $closed_by) = $fs->dbFetchArray($get_closedby);
+    list($item_summary, $closed_by) = $fs->dbFetchArray($fs->dbQuery("SELECT item_summary, closed_by FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
 
     $item_summary = stripslashes($item_summary);
 
     if ($closed_by != $_COOKIE['flyspray_userid']) {
 
       // Generate basic notification message to send
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $brief_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasreopened']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}";
 
 
-      $result = $fs->SendBasicNotification($closed_by, $brief_message);
+      $result = $fs->SendBasicNotification($closed_by, $subject, $brief_message);
       echo $result;
 
     };
 
-      // Generate detailed notification message to send
+// Generate detailed notification message to send
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_text['youonnotify']} \n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
 {$modify_text['moreinfomodify']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}";
 
 
-      $result = $fs->SendDetailedNotification($_POST['task_id'], $detailed_message);
+      $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskreopened']}</em></p><p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['backtotask']}</a></p></div>";
 
 // End of re-opening an item
 
-// Start of adding a comment
+///////////////////////////////
+// Start of adding a comment //
+///////////////////////////////
 
 } elseif ($_POST['action'] == "addcomment" && $_SESSION['can_add_comments'] == "1") {
 
@@ -436,6 +456,7 @@ $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_tex
        ) {
 
       // Generate the basic notification message to send
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $basic_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['commenttoassigned']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
@@ -443,12 +464,13 @@ $current_realname ($current_username) {$modify_text['commenttoassigned']}\n
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs";
 
 
-      $result = $fs->SendBasicNotification($bug_details['assigned_to'], $basic_message);
+      $result = $fs->SendBasicNotification($bug_details['assigned_to'], $subject, $basic_message);
       echo $result;
 
     };
 
       // Generate the detailed notification message to send
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_text['youonnotify']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
@@ -456,7 +478,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs";
 
 
-      $result = $fs->SendDetailedNotification($_POST['task_id'], $detailed_message);
+      $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
 
   // If they pressed submit without actually typing anything
@@ -467,7 +489,10 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
 // End of adding a comment
 
-// Start of changing a user's password
+/////////////////////////////////////////
+// Start of changing a user's password //
+/////////////////////////////////////////
+
 } elseif ($_POST['action'] == "chpass" && $_COOKIE['flyspray_userid'] && $_SESSION['userid']) {
 
   // get the password hash out of the db and hash the new one
@@ -511,7 +536,10 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   };
 // End of changing a user's password
 
-// Start of new user registration
+////////////////////////////////////
+// Start of new user registration //
+////////////////////////////////////
+
 } elseif ($_POST['action'] == "registeruser" && $flyspray_prefs['anon_open'] != '0') {
 
   // If they filled in all the required fields
@@ -559,9 +587,13 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   } else {
     echo "<div class=\"redirectessage\"><p><em>{$modify_text['formnotcomplete']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
   };
+
 // End of registering a new user
 
-// Start of adding a new user by an admin
+////////////////////////////////////////////
+// Start of adding a new user by an admin //
+////////////////////////////////////////////
+
 } elseif ($_POST['action'] == "newuser") {
 
   // If they filled in all the required fields
@@ -619,9 +651,13 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['formnotcomplete']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
   };
+
 // End of adding a new user by an admin
 
-// Start of adding a new group
+/////////////////////////////////
+// Start of adding a new group //
+/////////////////////////////////
+
 } elseif ($_POST['action'] == "newgroup" && ($_SESSION['admin'] == '1' OR $flyspray_prefs['anon_open'] == '2')) {
 
   // If they filled in all the required fields
@@ -660,7 +696,10 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   };
 // End of adding a new group
 
-// Update the application preferences
+///////////////////////////////////////////////
+// Update the global application preferences //
+///////////////////////////////////////////////
+
 } elseif ($_POST['action'] == "globaloptions" && $_SESSION['admin'] == '1') {
 
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_open'", array($_POST['anon_open']));
@@ -674,7 +713,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'base_url'", array($_POST['base_url']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'user_notify'", array($_POST['user_notify']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'admin_email'", array($_POST['admin_email']));
-  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_cat_owner'", array($_POST['default_cat_owner']));
+//  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_cat_owner'", array($_POST['default_cat_owner']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'lang_code'", array($_POST['lang_code']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'spam_proof'", array($_POST['spam_proof']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_view'", array($_POST['anon_view']));
@@ -705,7 +744,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
 // End of updating application preferences
 
-// Start of adding a new project
+///////////////////////////////////
+// Start of adding a new project //
+///////////////////////////////////
 
 } elseif ($_POST['action'] == "newproject" && $_SESSION['admin'] == '1') {
 
@@ -788,9 +829,13 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['emptytitle']}</em></p></div>";
 
   };
+
 // End of updating project preferences
 
-// Start of uploading an attachment
+//////////////////////////////////////
+// Start of uploading an attachment //
+//////////////////////////////////////
+
 } elseif ($_POST['action'] == "addattachment" && $_SESSION['can_attach_files'] == '1') {
 
      // This function came from ZenTracker http://zentrack.phpzen.net/
@@ -835,17 +880,19 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
          && ($bug_details['assigned_to'] != $_COOKIE['flyspray_userid'])
          ) {
 
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $basic_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasuploaded']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs";
 
 
-        $result = $fs->SendBasicNotification($bug_details['assigned_to'], $basic_message);
+        $result = $fs->SendBasicNotification($bug_details['assigned_to'], $subject, $basic_message);
         echo $result;
 
       };
 
+$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasattached']} {$modify_text['youonnotify']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
@@ -854,7 +901,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs";
 
 
-        $result = $fs->SendDetailedNotification($_POST['task_id'], $detailed_message);
+        $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
         echo $result;
 
       // Success message!
@@ -872,7 +919,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   };
 // End of uploading an attachment
 
-// Start of modifying user details
+/////////////////////////////////////
+// Start of modifying user details //
+/////////////////////////////////////
+
 } elseif ($_POST['action'] == "edituser" && ($_SESSION['admin'] == '1' OR ($_COOKIE['flyspray_userid'] == $_POST['user_id']))) {
 
   // If they filled in all the required fields
@@ -913,7 +963,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   };
 // End of modifying user details
 
-// Start of modifying group definition
+/////////////////////////////////////////
+// Start of modifying group definition //
+/////////////////////////////////////////
+
 } elseif ($_POST['action'] == "editgroup" && $_SESSION['admin'] == '1') {
 
   if ($_POST['group_name'] != ''
@@ -946,7 +999,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   };
 // End of updating group definition
 
-// Start of updating a list
+//////////////////////////////
+// Start of updating a list //
+//////////////////////////////
+
 } elseif ($_POST['action'] == "update_list" && $_SESSION['admin'] == '1') {
 
   if ($_POST['list_name'] != ''
@@ -974,7 +1030,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   };
 // End of updating a list
 
-// Start of adding a list item
+/////////////////////////////////
+// Start of adding a list item //
+/////////////////////////////////
+
 } elseif ($_POST['action'] == "add_to_list" && $_SESSION['admin'] == '1') {
 
   if ($_POST['list_name'] != ''
@@ -1007,8 +1066,12 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   };
 // End of adding a list item
 
-// Start of updating the category list
-// Category lists are slightly different, requiring their own update section
+////////////////////////////////////////////
+// Start of updating the category list    //
+// Category lists are slightly different, //
+// requiring their own update section     //
+////////////////////////////////////////////
+
 } elseif ($_POST['action'] == "update_category" && $_SESSION['admin'] == '1') {
 
   if ($_POST['list_name'] != ''
@@ -1031,7 +1094,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   };
 // End of updating the category list
 
-// Start of adding a category list item
+//////////////////////////////////////////
+// Start of adding a category list item //
+//////////////////////////////////////////
+
 } elseif ($_POST['action'] == "add_category" && $_SESSION['admin'] == '1') {
 
   if ($_POST['list_name'] != ''
@@ -1051,8 +1117,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   };
 // End of adding a category list item
 
+//////////////////////////////////////////
+// Start of adding a related task entry //
+//////////////////////////////////////////
 
-// Start of adding a related task entry
 } elseif ($_POST['action'] == "add_related" && $_SESSION['can_modify_jobs'] == '1') {
 
   $check = $fs->dbQuery("SELECT * FROM flyspray_related
@@ -1072,7 +1140,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of adding a related task entry
 
-// Removing a related task entry
+///////////////////////////////////
+// Removing a related task entry //
+///////////////////////////////////
+
 } elseif ($_POST['action'] == "remove_related" && $_SESSION['can_modify_jobs'] == '1') {
 
   $remove = $fs->dbQuery("DELETE FROM flyspray_related WHERE related_id = ?", array($_POST['related_id']));
@@ -1082,7 +1153,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of removing a related task entry
 
-// Start of adding a user to the notification list
+/////////////////////////////////////////////////////
+// Start of adding a user to the notification list //
+/////////////////////////////////////////////////////
+
 } elseif ($_POST['action'] == "add_notification" && $_SESSION['userid']) {
 
   $check = $fs->dbQuery("SELECT * FROM flyspray_notifications
@@ -1102,8 +1176,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of adding a user to the notification list
 
+////////////////////////////////////////////
+// Start of removing a notification entry //
+////////////////////////////////////////////
 
-// Start of removing a notification entry
 } elseif ($_POST['action'] == "remove_notification" && $_SESSION['userid']) {
 
   $remove = $fs->dbQuery("DELETE FROM flyspray_notifications WHERE task_id = ? AND user_id = ?",
@@ -1114,7 +1190,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of removing a notification entry
 
-// Start of editing a comment
+////////////////////////////////
+// Start of editing a comment //
+////////////////////////////////
+
 } elseif ($_POST['action'] == "editcomment" && $_SESSION['admin'] == '1') {
 
   $update = $fs->dbQuery("UPDATE flyspray_comments
@@ -1126,7 +1205,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of editing a comment
 
-// Start of deleting a comment
+/////////////////////////////////
+// Start of deleting a comment //
+/////////////////////////////////
+
 } elseif ($_POST['action'] == "deletecomment" && $_SESSION['admin'] == '1') {
   $delete = $fs->dbQuery('DELETE FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id']));
 
@@ -1135,7 +1217,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of deleting a comment
 
-// Start of deleting an attachment
+/////////////////////////////////////
+// Start of deleting an attachment //
+/////////////////////////////////////
+
 //  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
 } elseif ($_POST['action'] == "deleteattachment" && $_SESSION['admin'] == '1') {
 // if an attachment needs to be deleted do it right now
@@ -1153,7 +1238,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of deleting an attachment
 
-// Start of adding a reminder
+////////////////////////////////
+// Start of adding a reminder //
+////////////////////////////////
+
 } elseif ($_POST['action'] == "addreminder" && $_SESSION['can_modify_jobs'] == '1') {
   
   $now = date(U);
@@ -1172,8 +1260,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
 // End of adding a reminder
 
-
-// Start of removing a reminder
+//////////////////////////////////
+// Start of removing a reminder //
+//////////////////////////////////
 } elseif ($_POST['action'] == "deletereminder" && $_SESSION['can_modify_jobs'] == '1') {
   
   $fs->dbQuery('DELETE FROM flyspray_reminders WHERE reminder_id = ?',
@@ -1188,7 +1277,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 };
 
 // Finish off the html we started earlier
-if (!$_POST['do']) {
-  echo "</body></html>";
-};
+// if (!$_POST['do']) {
+//   echo "</body></html>";
+// };
 ?>

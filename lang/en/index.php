@@ -28,6 +28,8 @@ $index_text = array (
 
 // Added in version 0.9.6
 'closed'			=>	'Closed',
+'dueanyversion'		=>	'Due In Any Version',
+'dueversion'		=>	'Due In',
 
 );
 ?>
