@@ -45,7 +45,7 @@ function requestDuplicated() {
 }
 
 class Flyspray {
-    var $version = '0.9.6 (devel)';
+    var $version = '0.9.7 (devel)';
 
    function getGlobalPrefs() {
       $get_prefs = $this->dbQuery("SELECT pref_name, pref_value FROM flyspray_prefs");
