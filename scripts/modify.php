@@ -19,6 +19,8 @@ if (!empty($_COOKIE['flyspray_userid'])) {
 
 $now = date(U);
 
+$old_details = $fs->GetTaskDetails($_POST['task_id']);
+
 ////////////////////////////////
 // Start of adding a new task //
 ////////////////////////////////
@@ -150,7 +152,9 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 // Start of modifying an existing task //
 /////////////////////////////////////////
 
-} elseif ($_POST['action'] == "update" && $_SESSION['can_modify_jobs'] == "1") {
+} elseif ($_POST['action'] == "update" 
+          && ($_SESSION['can_modify_jobs'] == "1" 
+                OR $_SESSION['userid'] == $old_details['assigned_to'])) {
 
   // If they entered something in both the summary and detailed description
   if ($_POST['item_summary'] != ''

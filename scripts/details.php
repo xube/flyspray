@@ -19,7 +19,8 @@ $detailed_desc = stripslashes($detailed_desc);
 
 
 // Check if the user has rights to modify tasks
-if ($_SESSION['can_modify_jobs'] == '1'
+if (($_SESSION['can_modify_jobs'] == '1'
+  OR $task_details['assigned_to'] == $_SESSION['userid'])
   && $task_details['is_closed'] != '1'
   && $_GET['edit'] == 'yep') {
 
@@ -565,12 +566,6 @@ $num_reminders = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_reminders
       echo "<a class=\"tabnotactive\"";
     };
     ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=remind#tabs"><?php echo "{$details_text['reminders']} ($num_reminders)";?></a><small> | </small>
-  <?php if ($area == 'system') {
-      echo "<a class=\"tabactive\"";
-    } else {
-      echo "<a class=\"tabnotactive\"";
-    };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=system#tabs"><?php echo "{$details_text['system']}";?></a><small> | </small>
    <?php if ($area == 'history') {
       echo "<a class=\"tabactive\"";
     } else {
