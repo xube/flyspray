@@ -672,15 +672,14 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
       };
 
       // Divide the attachments area into two columns for display
-      echo "<table><tr><td>";
+      echo "<table><tr><td><p>";
 
 	  // Detect if the attachment is an image
 	  $pos = strpos($row['file_type'], "image/");
       if($pos===0 && $project_prefs['inline_images'] == '1') {
 
          // Find out the size of the image
-		 $image_details = getimagesize("attachments/{$row['file_name']}");
-         list($width, $height, $type, $string) = $image_details;
+         list($width, $height, $type, $string) = getimagesize("attachments/{$row['file_name']}");
 
          // If the image is too wide, let's scale it down so that it doesn't destroy the page layout
          if ($width > "200") {
@@ -688,25 +687,36 @@ if ($_SESSION['can_add_comments'] == "1" && $task_details['is_closed'] != '1') {
             $new_height = round(($height*$v_fraction),0);
 
 			// Display the resized image, with a link to the fullsized one
-            echo "<br><a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\"></a>";
+            echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\"></a>";
          } else {
 			 // If the image is already small, just display it.
              echo "<br><img src=\"?getfile={$row['attachment_id']}\">";
          };
 
-      // If the attachment isn't an image, just show a link to download it.
+      // If the attachment isn't an image, or the inline images is OFF,
+	  // show a mimetype icon instead of a thumbnail
       } else {
 
+         // Let's strip the mimetype to get the image name
+		 list($main, $specific) = split('[/]', $row['file_type']);
+		 if(file_exists("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png")) {
+            list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png");
+	        echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png\" width=\"$width\" height=\"$height\"></a>";
+         } elseif (file_exists("themes/{$project_prefs['theme_style']}/mime/$main.png")) {
+            list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/$main.png");
+	        echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/$main.png\" width=\"$width\" height=\"$height\"></a>";
+		 };
       };
 
       // The second column, for the descriptions
       echo "</td><td>";
       echo "<p>";
+      echo "<em>{$details_text['filename']}</em> <a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a><br>";
+	  echo "<em>{$details_text['description']}</em> $file_desc</a><br>";
 	  echo "<em>{$details_text['fileuploadedby']}</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a><br>";
 	  echo "<em>{$details_text['date']}</em> $formatted_date<br>";
-      echo "<em>{$details_text['originalfilename']}</em> <a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a><br>";
-	  echo "<em>{$details_text['description']}</em> $file_desc</a>";
-      echo "</p>";
+	  echo "<em>{$details_text['filetype']}</em> {$row['file_type']}";
+      //echo "</p>";
       echo "</td></tr></table>";
 
   echo "</div>";

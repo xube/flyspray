@@ -20,17 +20,6 @@ $now = date(U);
 // Adding a new task
 if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1")) {
 
-  // Check to see if this task has previously been entered, 
-  // and the silly user didn't just press backspace and make a DUPE
-  // I realise that this is yet another expensive query, 
-  // but it's the best way I've though of so far...
-  $check_for_dupes = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE item_summary = ? AND detailed_desc = ?", array($_POST['item_summary'], $_POST['detailed_desc']));
-  // If there was a result from our dupe check, STOP.
-  if($fs->dbCountRows($check_for_dupes) > 0) {
-	  die($modify_text['nodupes']);
-  };
-  
-
   // If they entered something in both the summary and detailed description
   if ($_POST['item_summary'] != ''
     && $_POST['detailed_desc'] != '')

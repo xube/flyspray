@@ -56,7 +56,7 @@ $modify_text = array (
 'backtotask'                =>        'Go back to the task.',
 
 'commentadded'                =>        'Comment has been added.',
-'commenttoassigned'        =>        'has added a comment to a task that have been assigned:',
+'commenttoassigned'        =>        'has added a comment to a task that you have been assigned:',
 'commenttotask'                =>        'has added the following comment to this task.',
 'nocommententered'        =>        'You really should enter a comment before clicking the submit button.',
 
@@ -127,6 +127,6 @@ $modify_text = array (
 
 'reminderadded'     =>   'Your reminder has been added.',
 'reminderdeleted'   =>   'The selected reminder has been deleted.',
-'nodupes'			=>   'That task is already in the database.  There is no need to put it in again.',
+
 );
 ?>
