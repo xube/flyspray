@@ -441,13 +441,13 @@ if ($_POST['action'] == 'newtask'
 
 
       $_SESSION['SUCCESS'] = $modify_text['commentadded'];
-      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
+      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#comments");
 
    // If they pressed submit without actually typing anything
    } else
    {
       $_SESSION['ERROR'] = $modify_text['nocommententered'];
-      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
+      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#comments");
    }
 
 
@@ -709,8 +709,6 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                           group_id)
                                           VALUES( ?, ?)",
                                           array($user_details['user_id'], $group_in));
-
-        //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newusercreated']}</em></p>";
 
         if ($permissions['is_admin'] != '1') {
           echo "<p>{$modify_text['loginbelow']}</p>";
@@ -1076,18 +1074,18 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
       // Success message!
       $_SESSION['SUCCESS'] = $modify_text['fileuploaded'];
-      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
+      header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#attach");
 
     // If the file didn't actually get saved, better show an error to that effect
     } else {
       $_SESSION['ERROR'] = $modify_text['fileerror'];
-      header("Location: ?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
+      header("Location: ?do=details&id=" . $_POST['task_id'] . "#attach");
     };
 
   // If there wasn't a file uploaded with a description, show an error
   } else {
     $_SESSION['ERROR'] = $modify_text['selectfileerror'];
-    header("Location: ?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
+    header("Location: ?do=details&id=" . $_POST['task_id'] . "#attach");
   };
 // End of uploading an attachment
 
@@ -1518,12 +1516,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     if ($db->CountRows($check) > 0)
     {
         $_SESSION['ERROR'] = $modify_text['relatederror'];
-        header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
+        header("Location: index.php?do=details&id=" . $_POST['this_task'] . "#related");
 
     } elseif (!$db->CountRows($check2))
     {
         $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
-        header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
+        header("Location: index.php?do=details&id=" . $_POST['this_task'] . "#related");
     } else
     {
         list($relatedproject) = $db->FetchRow($check2);
@@ -1539,7 +1537,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
             $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
             $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
-            header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
+            header("Location: index.php?do=details&id=" . $_POST['this_task'] . "#related");
 
         } else {
             ?>
@@ -1565,7 +1563,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     };
   } else {
     $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
-    header("Location: index.php?do=details&id=" . $_POST['this_task'] . "&area=related#tabs");
+    header("Location: index.php?do=details&id=" . $_POST['this_task'] . "#related");
   };
 
 // End of adding a related task entry
@@ -1586,7 +1584,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['id']}&amp;area=related#tabs\">";
   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedremoved']}</em></p></div>";
   $_SESSION['SUCCESS'] = $modify_text['relatedremoved'];
-  header("Location: index.php?do=details&id=" . $_POST['id'] . "&area=related#tabs");
+  header("Location: index.php?do=details&id=" . $_POST['id'] . "#related");
 
 // End of removing a related task entry
 
@@ -1610,12 +1608,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
     //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyadded']}</em></p></div>";
     $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
-    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
+    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#notify");
   } else {
     //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
     //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyerror']}</em></p></div>";
     $_SESSION['ERROR'] = $modify_text['notifyerror'];
-    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
+    header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#notify");
   };
 
 // End of adding a user to the notification list
@@ -1635,7 +1633,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyremoved']}</em></p></div>";
   $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
-  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=notify#tabs");
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#notify");
 
 // End of removing a notification entry
 
@@ -1652,10 +1650,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
   $fs->logEvent($_POST['task_id'], 5, $_POST['comment_text'], $_POST['previous_text'], $_POST['comment_id']);
 
-  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
-  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['editcommentsaved']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
   $_SESSION['SUCCESS'] = $modify_text['editcommentsaved'];
-  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#comments");
 
 // End of editing a comment
 
@@ -1674,7 +1670,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
   $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
-  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=comments#tabs");
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#comments");
 
 // End of deleting a comment
 
@@ -1701,7 +1697,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['attachmentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
   $_SESSION['SUCCESS'] = $modify_text['attachmentdeleted'];
-  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#attach");
 
 // End of deleting an attachment
 
@@ -1729,7 +1725,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
   $_SESSION['SUCCESS'] = $modify_text['reminderadded'];
-  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=remind#tabs");
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#remind");
 
 // End of adding a reminder
 
@@ -1749,7 +1745,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
   $_SESSION['SUCCESS'] = $modify_text['reminderdeleted'];
-  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "&area=remind#tabs");
+  header("Location: index.php?do=details&id=" . $_POST['task_id'] . "#remind");
 
 // End of removing a reminder
 

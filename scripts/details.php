@@ -774,6 +774,16 @@ $num_notifications = $db->CountRows($db->Query("SELECT * FROM flyspray_notificat
 $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHERE task_id = ?", array($_GET['id'])));
 ?>
 
+<ul id="submenu">
+   <li><a href="#comments"><?php echo $details_text['comments'] . "($num_comments)";?></a></li>
+   <li><a href="#attach"><?php echo $details_text['attachments'] . "($num_attachments)";?></a></li>
+   <li><a href="#related"><?php echo $details_text['relatedtasks'] . "($num_related/$num_related_to)";?></a></li>
+   <li><a href="#notify"><?php echo $details_text['notifications'] . "($num_notifications)";?></a></li>
+   <li><a href="#remind"><?php echo $details_text['reminders'] .  "($num_reminders)";?></a></li>
+   <li><a href="#history"><?php echo $details_text['history'];?></a></li>
+</ul>
+
+<!--
 <p id="tabs">
   <a <?php if ($area == 'comments') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=comments#tabs"><?php echo "{$details_text['comments']} ($num_comments)";?></a><small> | </small>
   <a <?php if ($area == 'attachments') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=attachments#tabs"><?php echo "{$details_text['attachments']} ($num_attachments)";?></a><small> | </small>
@@ -782,546 +792,571 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
   <a <?php if ($area == 'remind') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=remind#tabs"><?php echo "{$details_text['reminders']} ($num_reminders)";?></a><small> | </small>
   <a <?php if ($area == 'history') { echo ' class="tabactive"';}; ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=history#tabs"><?php echo "{$details_text['history']}";?></a><small> | </small>
 </p>
+-->
 
 <?php
 ////////////////////////////
 // Start of comments area //
 ////////////////////////////
+?>
 
-if ($area == 'comments') { ?>
-  <div class="tabentries">
-    <?php
-    // if there are comments, show them
-    $getcomments = $db->Query("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id", array($task_details['task_id']));
-    while ($row = $db->FetchArray($getcomments)) {
-
-      $user_info        = $fs->getUserDetails($row['user_id']);
-
-      $formatted_date   = $fs->formatDate($row['date_added'], true);
-
-      $comment_text     = $fs->formatText($row['comment_text']);
-
-    ?>
-     <div class="tabentry"><a name="<?php echo $row['comment_id'];?>"></a>
-      <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">" .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png") . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$user_info['real_name']} ({$user_info['user_name']})</a> - $formatted_date";?></em>
-      <?php
-         echo '<div class="modifycomment">';
-        // If the user has permission, show the edit button
-        if ($permissions['edit_comments'] == '1') { ?>
-        <span class="modifycomment">
-        <form action="index.php" method="get">
-        <p>
-          <input type="hidden" name="do" value="admin" />
-          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-          <input type="hidden" name="area" value="editcomment" />
-          <input type="hidden" name="id" value="<?php echo $row['comment_id'];?>" />
-          <input class="adminbutton" type="submit" value="<?php echo $details_text['edit'];?>" />
-        </p>
-        </form>
-        <?php
-        };
-        if ($permissions['delete_comments'] == '1') {
-        ?>
-        <form action="index.php" method="post"
-        onSubmit="
-        if(confirm('Really delete this comment?')) {
-          return true
-        } else {
-          return false }
-        ">
-          <p>
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="deletecomment" />
-          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-          <input type="hidden" name="comment_id" value="<?php echo $row['comment_id'];?>" />
-          <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>" />
-        </p>
-        </form>
-        <?php }; ?>
-        </div>
+<div id="comments" class="tab">
+<?php
+// if there are comments, show them
+$getcomments = $db->Query("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id", array($task_details['task_id']));
+while ($row = $db->FetchArray($getcomments))
+{
+   $user_info        = $fs->getUserDetails($row['user_id']);
+   $formatted_date   = $fs->formatDate($row['date_added'], true);
+   $comment_text     = $fs->formatText($row['comment_text']);
+   ?>
+   <a name="<?php echo $row['comment_id'];?>"></a>
+   <em><?php echo "<a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">" .
+   $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png") . "</a> {$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$user_info['real_name']} ({$user_info['user_name']})</a> - $formatted_date";?></em>
+   <?php
+   echo '<div class="modifycomment">';
+   // If the user has permission, show the edit button
+   if ($permissions['edit_comments'] == '1')
+   { ?>
+      <span class="modifycomment">
+      <form action="index.php" method="get">
       <p>
-      <?php echo $comment_text;?>
+         <input type="hidden" name="do" value="admin" />
+         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+         <input type="hidden" name="area" value="editcomment" />
+         <input type="hidden" name="id" value="<?php echo $row['comment_id'];?>" />
+         <input class="adminbutton" type="submit" value="<?php echo $details_text['edit'];?>" />
       </p>
-    </div>
+      </form>
+      <?php
+   };
+   if ($permissions['delete_comments'] == '1')
+   {
+      ?>
+      <form action="index.php" method="post"
+      onSubmit="
+      if(confirm('Really delete this comment?')) {
+        return true
+      } else {
+        return false }
+      ">
+      <p>
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="deletecomment" />
+         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+         <input type="hidden" name="comment_id" value="<?php echo $row['comment_id'];?>" />
+         <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>" />
+      </p>
+      </form>
+   <?php
+   }
+   ?>
+   </div>
+   <p>
+   <?php echo $comment_text;?>
+   </p>
 
-
-    <?php
-    };
-    echo "</div>";
+<?php
+// End of cycling through the comments for display
+};
 
 // Now, show a form to add a comment (but only if the user has the rights!)
 
-if ($permissions['add_comments'] == "1" && $task_details['is_closed'] != '1') {
+if ($permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
+{
 ?>
-
-<form action="index.php" method="post">
-<p class="admin">
-    <input type="hidden" name="do" value="modify" />
-    <input type="hidden" name="action" value="addcomment" />
-    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-    <label><?php echo $details_text['addcomment'];?><br />
-    <textarea name="comment_text" cols="72" rows="10"></textarea></label>
-    <br />
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />
-</p>
-</form>
+   <form action="index.php" method="post">
+   <p class="admin">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="addcomment" />
+      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+      <label><?php echo $details_text['addcomment'];?><br />
+      <textarea name="comment_text" cols="72" rows="10"></textarea></label>
+      <br />
+      <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />
+   </p>
+   </form>
 
 <?php
 // End of checking if the comments form should be displayed
 };
+
+echo '</div>';
 
 // End of comments area
 
 ////////////////////////////////////
 // Start of file attachments area //
 ////////////////////////////////////
-
-} elseif ($area == 'attachments') {
 ?>
-<div class="tabentries">
-    <?php
-    // if there are attachments, show them
-    $getattachments = $db->Query("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
-    while ($row = $db->FetchArray($getattachments)) {
-      $getusername = $db->Query("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['added_by']));
-      list($user_name) = $db->FetchArray($getusername);
 
-      $formatted_date = $fs->formatDate($row['date_added'], true);
-
-      $file_desc = stripslashes($row['file_desc']);
-
-    ?>
-    <div class="tabentry">
+<div id="attach" class="tab">
 
 <?php
+// if there are attachments, show them
+$getattachments = $db->Query("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
+while ($row = $db->FetchArray($getattachments))
+{
+   $getusername = $db->Query("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['added_by']));
+   list($user_name) = $db->FetchArray($getusername);
+   $formatted_date = $fs->formatDate($row['date_added'], true);
+   $file_desc = stripslashes($row['file_desc']);
+
 //  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
-        if ($permissions['delete_attachments'] == '1') { ?>
-        <div class="modifycomment">
-        <form action="index.php" method="post" onSubmit="if(confirm('Really delete this attachment?')) {return true} else {return false }">
-          <p>
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="deleteattachment" />
-          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-          <input type="hidden" name="attachment_id" value="<?php echo $row['attachment_id'];?>" />
-          <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>" />
-         </p>
-        </form>
-        </div>
-      <?php
-      };
+if ($permissions['delete_attachments'] == '1')
+{ ?>
 
-      // Divide the attachments area into two columns for display
-      echo "<table><tr><td><p>";
-
-          // Detect if the attachment is an image
-          $pos = strpos($row['file_type'], "image/");
-      if($pos===0 && $project_prefs['inline_images'] == '1') {
-
-         // Find out the size of the image
-         list($width, $height, $type, $string) = getimagesize("attachments/{$row['file_name']}");
-
-         // If the image is too wide, let's scale it down so that it doesn't destroy the page layout
-         if ($width > "200") {
-            $v_fraction = 200/$width;
-            $new_height = round(($height*$v_fraction),0);
-
-                        // Display the resized image, with a link to the fullsized one
-            echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\" /></a>";
-         } else {
-                         // If the image is already small, just display it.
-             echo "<br /><img src=\"?getfile={$row['attachment_id']}\" />";
-         };
-
-      // If the attachment isn't an image, or the inline images is OFF,
-          // show a mimetype icon instead of a thumbnail
-      } else {
-
-         // Let's strip the mimetype to get the image name
-                 list($main, $specific) = split('[/]', $row['file_type']);
-                 if(file_exists("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png")) {
-            list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png");
-                echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png\" width=\"$width\" height=\"$height\" /></a>";
-         } elseif (file_exists("themes/{$project_prefs['theme_style']}/mime/$main.png")) {
-            list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/$main.png");
-                echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/$main.png\" width=\"$width\" height=\"$height\" /></a>";
-                 };
-      };
-
-      // The second column, for the descriptions
-      echo "</p></td><td>";
-      echo "<table>";
-      echo "<tr><td><em>{$details_text['filename']}</em></td><td><a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a></td></tr>";
-      echo "<tr><td><em>{$details_text['description']}</em></td><td>$file_desc</a></td></tr>";
-      echo "<tr><td><em>{$details_text['fileuploadedby']}</em></td><td><a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a></td></tr>";
-      echo "<tr><td><em>{$details_text['date']}</em></td><td>$formatted_date</td></tr>";
-      $size = $row['file_size'];
-      $sizes = Array(' B', ' KB', ' MB');
-      $size_ext = $sizes[0];
-      for ($i = 1; (($i < count($sizes)) && ($size >= 1024)); $i++)
-      {
-        $size = $size / 1024;
-        $size_ext  = $sizes[$i];
-      }
-      echo "<tr><td><em>{$details_text['filesize']}</em></td><td>" . round($size, 2) . $size_ext . "</td></tr>";
-      echo "</table>";
-      echo "</td></tr></table>";
-
-  echo "</div>";
- };
-echo "</div>";
-//};
-// Now, show a form to attach a file (but only if the user has the rights!)
-
-if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '1') {
-?>
-
-<form enctype="multipart/form-data" action="index.php" method="post" id="formupload">
-<table class="admin">
-  <tr>
-    <td>
+   <div class="modifycomment">
+   <form action="index.php" method="post" onSubmit="if(confirm('Really delete this attachment?')) {return true} else {return false }">
+   <p>
       <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="addattachment" />
+      <input type="hidden" name="action" value="deleteattachment" />
       <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-      <label><?php echo $details_text['uploadafile'];?></label>
-    </td>
-    <td>
-      <input type="file" size="55" name="userfile" />
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <label><?php echo $details_text['description'];?></label>
-    </td>
-    <td>
-      <input class="admintext" type="text" name="file_desc" size="70" maxlength="100" />
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $details_text['uploadnow'];?>" /></td>
-  </tr>
-</table>
-</form>
+      <input type="hidden" name="attachment_id" value="<?php echo $row['attachment_id'];?>" />
+      <input class="adminbutton" type="submit" value="<?php echo $details_text['delete'];?>" />
+   </p>
+   </form>
+   </div>
+<?php
+};
+
+// Divide the attachments area into two columns for display
+echo "<table><tr><td><p>";
+
+// Detect if the attachment is an image
+$pos = strpos($row['file_type'], "image/");
+if($pos===0 && $project_prefs['inline_images'] == '1')
+{
+   // Find out the size of the image
+   list($width, $height, $type, $string) = getimagesize("attachments/{$row['file_name']}");
+
+   // If the image is too wide, let's scale it down so that it doesn't destroy the page layout
+   if ($width > "200")
+   {
+      $v_fraction = 200/$width;
+      $new_height = round(($height*$v_fraction),0);
+
+      // Display the resized image, with a link to the fullsized one
+      echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"200\" width=\"$new_height\" alt=\"\" /></a>";
+   } else
+   {
+      // If the image is already small, just display it.
+      echo "<br /><img src=\"?getfile={$row['attachment_id']}\" />";
+   }
+
+   // If the attachment isn't an image, or the inline images is OFF,
+   // show a mimetype icon instead of a thumbnail
+   } else
+   {
+      // Let's strip the mimetype to get the image name
+      list($main, $specific) = split('[/]', $row['file_type']);
+      if(file_exists("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png"))
+      {
+         list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png");
+         echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/{$row['file_type']}.png\" width=\"$width\" height=\"$height\" /></a>";
+      } elseif (file_exists("themes/{$project_prefs['theme_style']}/mime/$main.png"))
+      {
+         list($width, $height, $type, $string) = getimagesize("themes/{$project_prefs['theme_style']}/mime/$main.png");
+         echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"themes/{$project_prefs['theme_style']}/mime/$main.png\" width=\"$width\" height=\"$height\" /></a>";
+      }
+   }
+
+   // The second column, for the descriptions
+   echo "</p></td><td>";
+   echo "<table>";
+   echo "<tr><td><em>{$details_text['filename']}</em></td><td><a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a></td></tr>";
+   echo "<tr><td><em>{$details_text['description']}</em></td><td>$file_desc</a></td></tr>";
+   echo "<tr><td><em>{$details_text['fileuploadedby']}</em></td><td><a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a></td></tr>";
+   echo "<tr><td><em>{$details_text['date']}</em></td><td>$formatted_date</td></tr>";
+   $size = $row['file_size'];
+   $sizes = Array(' B', ' KB', ' MB');
+   $size_ext = $sizes[0];
+   for ($i = 1; (($i < count($sizes)) && ($size >= 1024)); $i++)
+   {
+      $size = $size / 1024;
+      $size_ext  = $sizes[$i];
+   }
+   echo "<tr><td><em>{$details_text['filesize']}</em></td><td>" . round($size, 2) . $size_ext . "</td></tr>";
+   echo "</table>";
+   echo "</td></tr></table>";
+
+// End of cycling through the attachments for display
+};
+
+// Now, show a form to attach a file (but only if the user has the rights!)
+if ($permissions['create_attachments'] == "1" && $task_details['is_closed'] != '1')
+{ ?>
+
+   <form enctype="multipart/form-data" action="index.php" method="post" id="formupload">
+   <table class="admin">
+      <tr>
+         <td>
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="addattachment" />
+         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+         <label><?php echo $details_text['uploadafile'];?></label>
+         </td>
+         <td>
+         <input type="file" size="55" name="userfile" />
+         </td>
+      </tr>
+      <tr>
+         <td>
+         <label><?php echo $details_text['description'];?></label>
+         </td>
+         <td>
+         <input class="admintext" type="text" name="file_desc" size="70" maxlength="100" />
+         </td>
+      </tr>
+      <tr>
+         <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $details_text['uploadnow'];?>" /></td>
+      </tr>
+   </table>
+   </form>
 
 <?php
-// End of admin checking
+// End of checking permissions to upload a new attachment
 };
 // End of attachments area
+echo '</div>';
 
 /////////////////////////////////
 // Start of related tasks area //
 /////////////////////////////////
+?>
 
-} elseif ($area == 'related') { ?>
-<div class="tabentries">
-  <p><em><?php echo $details_text['thesearerelated'];?></em></p>
+<div id="related" class="tab">
 
+   <p><em><?php echo $details_text['thesearerelated'];?></em></p>
+   <?php
+   $get_related = $db->Query("SELECT *
+                              FROM flyspray_related r
+                              LEFT JOIN flyspray_tasks t ON r.this_task = t.task_id
+                              WHERE r.this_task = ?",
+                              array($_GET['id'])
+                             );
 
-    <?php
-    $get_related = $db->Query("SELECT * FROM flyspray_related WHERE this_task = ?", array($_GET['id']));
-    while ($row = $db->FetchArray($get_related)) {
-      $get_summary = $db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($row['related_task']));
-      while ($subrow = $db->FetchArray($get_summary)) {
-        $summary = stripslashes($subrow['item_summary']);
-        ?>
-      <div class="tabentry">
-       <?php
-        // If the user can modify jobs, then show them a form to remove related tasks
-        if ($effective_permissions['can_edit'] == '1' && $task_details['is_closed'] != '1') {
-          ?>
+   while ($row = $db->FetchArray($get_related))
+   {
+      $summary = stripslashes($row['item_summary']);
+      ?>
+      <?php
+      // If the user can modify jobs, then show them a form to remove related tasks
+      if ($effective_permissions['can_edit'] == '1' && $task_details['is_closed'] != '1')
+      {
+      ?>
          <div class="modifycomment">
-          <form action="index.php" method="post">
+            <form action="index.php" method="post">
             <p>
-            <input type="hidden" name="do" value="modify" />
-            <input type="hidden" name="action" value="remove_related" />
-            <input type="hidden" name="id" value="<?php echo $_GET['id'];?>" />
-            <input type="hidden" name="related_id" value="<?php echo $row['related_id'];?>" />
-            <input type="hidden" name="related_task" value="<?php echo $row['related_task'];?>" />
-            <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
-            </p>
-          </form>
+               <input type="hidden" name="do" value="modify" />
+               <input type="hidden" name="action" value="remove_related" />
+               <input type="hidden" name="id" value="<?php echo $_GET['id'];?>" />
+               <input type="hidden" name="related_id" value="<?php echo $row['related_id'];?>" />
+               <input type="hidden" name="related_task" value="<?php echo $row['related_task'];?>" />
+               <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
+               </p>
+            </form>
          </div>
 
-        <?php
-        };
-        echo "<p><a href=\"?do=details&amp;id={$row['related_task']}\">FS#{$row['related_task']} &mdash; $summary</a></p>";
-        echo '</div>';
-    };
+      <?php
+      // End of checking for permission to remove a related task
+      }
+      echo "<p><a href=\"?do=details&amp;id={$row['related_task']}\">FS#{$row['related_task']} &mdash; $summary</a></p>";
+
+   // End of cycling through related tasks
+   }
+
+   if ($effective_permissions['can_edit'] == "1" && $task_details['is_closed'] != '1')
+   {
+   ?>
+      <form action="index.php" method="post" id="formaddrelatedtask">
+         <p>
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="add_related" />
+         <input type="hidden" name="this_task" value="<?php echo $_GET['id'];?>" />
+         <label><?php echo $details_text['addnewrelated'];?>
+         <input name="related_task" size="10" maxlength="10" /></label>
+         <input class="adminbutton" type="submit" value="<?php echo $details_text['add'];?>" />
+         </p>
+      </form>
+
+   <?php
    };
+   ?>
 
-    if ($effective_permissions['can_edit'] == "1" && $task_details['is_closed'] != '1') {
-    ?>
 
-  <form action="index.php" method="post" id="formaddrelatedtask">
-    <p>
-    <input type="hidden" name="do" value="modify" />
-    <input type="hidden" name="action" value="add_related" />
-    <input type="hidden" name="this_task" value="<?php echo $_GET['id'];?>" />
-    <label><?php echo $details_text['addnewrelated'];?>
-    <input name="related_task" size="10" maxlength="10" /></label>
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['add'];?>" />
-    </p>
-  </form>
+   <p><em><?php echo $details_text['otherrelated'];?></em></p>
+   <p>
+   <?php
+   $get_related = $db->Query("SELECT *
+                              FROM flyspray_related r
+                              LEFT JOIN flyspray_tasks t ON r.related_task = t.task_id
+                              WHERE r.related_task = ?",
+                              array($_GET['id'])
+                            );
 
-    <?php
-    };
-    ?>
- </div>
-<div class="tabentries">
-  <p><em><?php echo $details_text['otherrelated'];?></em></p>
-  <p>
-    <?php
-    $get_related = $db->Query("SELECT * FROM flyspray_related WHERE related_task = ?", array($_GET['id']));
-    while ($row = $db->FetchArray($get_related)) {
-      $get_summary = $db->Query("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($row['this_task']));
-      while ($subrow = $db->FetchArray($get_summary)) {
-        $summary = stripslashes($subrow['item_summary']);
-        echo "<a href=\"?do=details&amp;id={$row['this_task']}\">FS#{$row['this_task']} &mdash; $summary</a><br />";
-      };
-    };
-    echo "</p></div>";
-
+   while ($row = $db->FetchArray($get_related))
+   {
+      $summary = stripslashes($subrow['item_summary']);
+      echo "<a href=\"?do=details&amp;id={$row['this_task']}\">FS#{$row['this_task']} &mdash; $summary</a><br />";
+   }
+   echo '</p>';
 // End of related area
+echo '</div>';
 
 // Start of notifications area
-} elseif ($area == 'notify') { ?>
-<div class="tabentries">
-<p><em><?php echo $details_text['theseusersnotify'];?></em></p>
+?>
 
-    <?php
-    $get_user_ids = $db->Query("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id']));
-    while ($row = $db->FetchArray($get_user_ids)) {
-      $get_user = $db->Query("SELECT * FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
-      while ($subrow = $db->FetchArray($get_user)) {
-      ?>
-      <div class="tabentry">
+<div id="notify" class="tab">
+   <p><em><?php echo $details_text['theseusersnotify'];?></em></p>
+
+   <?php
+   $get_user_ids = $db->Query("SELECT * FROM flyspray_notifications n
+                               LEFT JOIN flyspray_users u ON n.user_id = u.user_id
+                               WHERE n.task_id = ?",
+                               array($_GET['id'])
+                             );
+
+   while ($row = $db->FetchArray($get_user_ids))
+   {
+   ?>
+
       <?php
-        // If the user can modify jobs, then show them a form to remove a notified user
-        if ($permissions['manage_project'] == '1' && $task_details['is_closed'] != '1') {
-          ?>
-          <div class="modifycomment">
-          <form action="index.php" method="post">
-              <p>
-                <input type="hidden" name="do" value="modify" />
-                <input type="hidden" name="action" value="remove_notification" />
-                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-                <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>" />
-                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
-              </p>
-          </form>
-          </div>
+      // If the user can modify jobs, then show them a form to remove a notified user
+      if ($permissions['manage_project'] == '1' && $task_details['is_closed'] != '1')
+      {
+      ?>
+         <div class="modifycomment">
+            <form action="index.php" method="post">
+               <p>
+               <input type="hidden" name="do" value="modify" />
+               <input type="hidden" name="action" value="remove_notification" />
+               <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+               <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>" />
+               <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
+               </p>
+            </form>
+         </div>
 
-        <?php
+      <?php
+      }
+      echo "<p><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['real_name']} ({$row['user_name']})</a></p>";
+   };
+   if ($task_details['is_closed'] != '1')
+   {
+   ?>
+      <?php
+      if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')
+      { ?>
+         <form action="index.php" method="post">
+            <p>
+            <?php echo $details_text['addusertolist'];?>
+            <select class="adminlist" name="user_id">
+               <?php
+               // Get list of users
+               $fs->listUsers($novar, $project_id);
+            ?>
+            </select>
+            <input type="hidden" name="do" value="modify" />
+            <input type="hidden" name="action" value="add_notification" />
+            <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+            <input class="adminbutton" type="submit" value="<?php echo $details_text['addtolist'];?>" />
+            </p>
+         </form>
 
-        };
-                echo "<p><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$subrow['real_name']} ({$subrow['user_name']})</a></p>";
-      echo "</div>";
-      };
-    };
-    if ($task_details['is_closed'] != '1') {
-    ?>
+      <?php
+      }
+      if ($current_user['user_id'])
+      {
+         $result = $db->Query("SELECT * FROM flyspray_notifications
+                               WHERE task_id = ?
+                               AND user_id = ?",
+                               array($_GET['id'], $current_user['user_id'])
+                             );
+         if (!$db->CountRows($result))
+         {
+         ?>
+            <form action="index.php" method="post" id="addmyself">
+               <p>
+               <input type="hidden" name="do" value="modify" />
+               <input type="hidden" name="action" value="add_notification" />
+               <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+               <input type="hidden" name="user_id" value="<?php echo $current_user['user_id'];?>" />
+               <input class="adminbutton" type="submit" value="<?php echo $details_text['addmyself'];?>" />
+               </p>
+            </form>
+         <?php
+         } else
+         { ?>
+            <form action="index.php" method="post" id="removemyself">
+               <p>
+               <input type="hidden" name="do" value="modify" />
+               <input type="hidden" name="action" value="remove_notification" />
+               <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+               <input type="hidden" name="user_id" value="<?php echo $current_user['user_id'];?>" />
+               <input class="adminbutton" type="submit" value="<?php echo $details_text['removemyself'];?>" />
+               </p>
+            </form>
+         <?php
+         }
+      } ?>
 
-</div>
-<div class="tabentries">
-  <?php if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') { ?>
-  <div class="tabentry">
-  <form action="index.php" method="post">
-  <p>
-    <?php echo $details_text['addusertolist'];?>
-    <select class="adminlist" name="user_id">
-    <?php
-    // Get list of users
-    $fs->listUsers($novar, $project_id);
-    ?>
-    </select>
-    <input type="hidden" name="do" value="modify" />
-    <input type="hidden" name="action" value="add_notification" />
-    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['addtolist'];?>" />
-  </p>
-  </form>
-  </div>
-
-  <div class="tabentry">
-  <?php
-  };
-  if ($current_user['user_id']) {
-    $result = $db->Query("SELECT * FROM flyspray_notifications
-              WHERE task_id = ?
-              AND user_id = ?
-              ", array($_GET['id'], $current_user['user_id']));
-    if (!$db->CountRows($result)) {
-  ?>
-  <form action="index.php" method="post" id="addmyself">
-    <p>
-    <input type="hidden" name="do" value="modify" />
-    <input type="hidden" name="action" value="add_notification" />
-    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-    <input type="hidden" name="user_id" value="<?php echo $current_user['user_id'];?>" />
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['addmyself'];?>" />
-    </p>
-  </form>
-  <?php } else { ?>
-  <form action="index.php" method="post" id="removemyself">
-    <p>
-    <input type="hidden" name="do" value="modify" />
-    <input type="hidden" name="action" value="remove_notification" />
-    <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-    <input type="hidden" name="user_id" value="<?php echo $current_user['user_id'];?>" />
-    <input class="adminbutton" type="submit" value="<?php echo $details_text['removemyself'];?>" />
-    </p>
-  </form>
-  <?php
-    };
-  };?>
-  </div>
-    <?php
-    };
-    echo "</div>";
+   <?php
+   // End of checking if task is closed
+   };
+   echo "</div>";
 
 // End of notifications area
 
 // Start of scheduled reminders area
-} elseif ($area == 'remind') { ?>
-<div class="tabentries">
+?>
+
+<div id="remind" class="tab">
 
   <?php
-    $get_reminders = $db->Query("SELECT * FROM flyspray_reminders WHERE task_id = ? ORDER BY reminder_id", array($_GET['id']));
-    while ($row = $db->FetchArray($get_reminders)) {
-      $get_username = $db->Query("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($row['to_user_id']));
-      while ($subrow = $db->FetchArray($get_username)) {
+    $get_reminders = $db->Query("SELECT *
+                                 FROM flyspray_reminders r
+                                 LEFT JOIN flyspray_users u ON r.to_user_id = u.user_id
+                                 WHERE task_id = ?
+                                 ORDER BY reminder_id",
+                                 array($_GET['id'])
+                               );
 
-// If the user has permission, then show them a form to remove a reminder
-        if (($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') && $task_details['is_closed'] != '1') {
-        ?>
-          <div class="modifycomment">
-          <form action="index.php" method="post">
-              <p>
-                <input type="hidden" name="do" value="modify" />
-                <input type="hidden" name="action" value="deletereminder" />
-                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-                <input type="hidden" name="reminder_id" value="<?php echo $row['reminder_id'];?>" />
-                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
-              </p>
-          </form>
-          </div>
-
-
-        <?php
-        }
-                echo "<div class=\"tabentry\">";
-        echo "<em>{$details_text['remindthisuser']}:</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['to_user_id']}\">{$subrow['real_name']} ( {$subrow['user_name']})</a><br />";
-
-                // Work out the unit of time to display
-                if ($row['how_often'] < 86400) {
-                        $how_often = $row['how_often'] / 3600 . " " . $details_text['hours'];
-                } elseif ($row['how_often'] < 604800) {
-                        $how_often = $row['how_often'] / 86400 . " " . $details_text['days'];
-                } else {
-                        $how_often = $row['how_often'] / 604800 . " " . $details_text['weeks'];
-                };
-
-                echo "<em>{$details_text['thisoften']}:</em> $how_often";
-
-                echo "<br />";
-
-                echo '<em>' . $details_text['message'] . ':</em>' . nl2br($row['reminder_message']);
-
-                echo "<br /><br /></div>";
-      };
-    };
-  ?>
+   while ($row = $db->FetchArray($get_reminders))
+   {
+      // If the user has permission, then show them a form to remove a reminder
+      if (($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') && $task_details['is_closed'] != '1')
+      {
+      ?>
+         <div class="modifycomment">
+         <form action="index.php" method="post">
+            <p>
+            <input type="hidden" name="do" value="modify" />
+            <input type="hidden" name="action" value="deletereminder" />
+            <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+            <input type="hidden" name="reminder_id" value="<?php echo $row['reminder_id'];?>" />
+            <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
+            </p>
+         </form>
+         </div>
 
 
-</div>
-<?php
-if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
-?>
-<div class="tabentries">
+      <?php
+      // End of checking permissions to remove a reminder
+      }
+      echo "<em>{$details_text['remindthisuser']}:</em> <a href=\"?do=admin&amp;area=users&amp;id={$row['to_user_id']}\">{$subrow['real_name']} ( {$subrow['user_name']})</a><br />";
 
-<div class="tabentry">
- <form action="index.php" method="post" id="formaddreminder">
-  <input type="hidden" name="do" value="modify" />
-  <input type="hidden" name="action" value="addreminder" />
-  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-  <em><?php echo $details_text['remindthisuser'];?></em>
-  <select class="adminlist" name="to_user_id">
-    <?php
-    // Get list of users
-    $fs->listUsers($novar, $project_id);
-    ?>
-    </select>
+      // Work out the unit of time to display
+      if ($row['how_often'] < 86400)
+      {
+         $how_often = $row['how_often'] / 3600 . " " . $details_text['hours'];
+      } elseif ($row['how_often'] < 604800)
+      {
+         $how_often = $row['how_often'] / 86400 . " " . $details_text['days'];
+      } else
+      {
+         $how_often = $row['how_often'] / 604800 . " " . $details_text['weeks'];
+      }
 
-   <br />
+      echo "<em>{$details_text['thisoften']}:</em> $how_often";
+      echo "<br />";
+      echo '<em>' . $details_text['message'] . ':</em>' . nl2br($row['reminder_message']);
+      echo "<br /><br /></div>";
 
-   <em><?php echo $details_text['thisoften'];?></em>
-   <input type="admintext" name="timeamount1" size="3" maxlength="3" />
+   // End of cycling through reminders
+   }
 
-   <select class="adminlist" name="timetype1">
-     <option value="3600"><?php echo $details_text['hours'];?></option>
-     <option value="86400"><?php echo $details_text['days'];?></option>
-     <option value="604800"><?php echo $details_text['weeks'];?></option>
-   </select>
+   if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1')
+   {
+   ?>
+      <form action="index.php" method="post" id="formaddreminder">
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="addreminder" />
+         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
 
-  <br />
+         <em><?php echo $details_text['remindthisuser'];?></em>
 
-  <em><?php echo $details_text['startafter'];?></em>
-  <input type="admintext" name="timeamount2" size="3" maxlength="3" />
+         <select class="adminlist" name="to_user_id">
+            <?php
+            // Get list of users
+            $fs->listUsers($novar, $project_id);
+            ?>
+         </select>
 
-  <select class="adminlist" name="timetype2">
-     <option value="3600"><?php echo $details_text['hours'];?></option>
-     <option value="86400"><?php echo $details_text['days'];?></option>
-     <option value="604800"><?php echo $details_text['weeks'];?></option>
-  </select>
+         <br />
 
-  <br />
+         <em><?php echo $details_text['thisoften'];?></em>
 
-  <textarea class="admintext" name="reminder_message" rows="10" cols="72"><?php echo "{$details_text['defaultreminder']}\n\n{$flyspray_prefs['base_url']}?do=details&amp;id={$_GET['id']}";?></textarea>
+         <input type="admintext" name="timeamount1" size="3" maxlength="3" />
 
-  <br />
+         <select class="adminlist" name="timetype1">
+            <option value="3600"><?php echo $details_text['hours'];?></option>
+            <option value="86400"><?php echo $details_text['days'];?></option>
+            <option value="604800"><?php echo $details_text['weeks'];?></option>
+         </select>
 
-  <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>" />
-  </div>
-  </form>
-</div>
+         <br />
+
+         <em><?php echo $details_text['startafter'];?></em>
+
+         <input type="admintext" name="timeamount2" size="3" maxlength="3" />
+
+         <select class="adminlist" name="timetype2">
+            <option value="3600"><?php echo $details_text['hours'];?></option>
+            <option value="86400"><?php echo $details_text['days'];?></option>
+            <option value="604800"><?php echo $details_text['weeks'];?></option>
+         </select>
+
+         <br />
+
+         <textarea class="admintext" name="reminder_message" rows="10" cols="72"><?php echo "{$details_text['defaultreminder']}\n\n{$flyspray_prefs['base_url']}?do=details&amp;id={$_GET['id']}";?></textarea>
+
+         <br />
+
+         <input class="adminbutton" type="submit" value="<?php echo $details_text['addreminder'];?>" />
+      </form>
 
 <?php
 // End of checking if a user can modify tasks
 };
 // End of scheduled reminders area
-
+echo '</div>';
 
 // Start of History Tab
-} elseif($area == 'history') { ?>
+?>
 
-<div class="tabentries">
-    <table id="history">
-        <tr>
-            <th><?php echo $details_text['eventdate'];?></th>
-            <th><?php echo $details_text['user'];?></th>
-            <th><?php echo $details_text['event'];?></th>
-        </tr>
-     <?php
-        if (is_numeric($_GET['details'])) {
-            $details = " AND h.history_id = {$_GET['details']}";
-        } else {
-            $details = '';
-        };
+<div id="history" class="tab">
 
-        $query_history = $db->Query("SELECT h.*, u.user_name, u.real_name
-                                         FROM flyspray_history h
-                                         LEFT JOIN flyspray_users u ON h.user_id = u.user_id
-                                         WHERE h.task_id = ? {$details}
-                                         ORDER BY h.event_date ASC, h.event_type ASC",
-                                         array($_GET['id']));
+   <table id="history">
+      <tr>
+         <th><?php echo $details_text['eventdate'];?></th>
+         <th><?php echo $details_text['user'];?></th>
+         <th><?php echo $details_text['event'];?></th>
+      </tr>
+      <?php
+      if (is_numeric($_GET['details']))
+      {
+         $details = " AND h.history_id = {$_GET['details']}";
+      } else
+      {
+         $details = '';
+      }
 
-        if ($db->CountRows($query_history) == 0) {
-            ?>
-        <tr>
-            <td colspan="3"><?php echo $details_text['nohistory'];?></td>
-        </tr>
-            <?php
-        };
+      $query_history = $db->Query("SELECT h.*, u.user_name, u.real_name
+                                   FROM flyspray_history h
+                                   LEFT JOIN flyspray_users u ON h.user_id = u.user_id
+                                   WHERE h.task_id = ? {$details}
+                                   ORDER BY h.event_date ASC, h.event_type ASC",
+                                   array($_GET['id'])
+                                 );
+
+      if ($db->CountRows($query_history) == 0)
+      { ?>
+      <tr>
+         <td colspan="3"><?php echo $details_text['nohistory'];?></td>
+      </tr>
+      <?php
+      }
 
         while ($history = $db->FetchRow($query_history)) {
             ?>
@@ -1595,13 +1630,10 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
     };
     ?>
     </table>
-</div>
 
 <?php
 // End of History Tab
-
-// End of tabbed areas
-};
+echo '</div>';
 ?>
 
 <?php

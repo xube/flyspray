@@ -367,10 +367,12 @@ div#taskdetails table th {
 /* div#content is a generic container for anything but the title and
    the footer paragraph */
 div#content {
-  border               : 2px solid #948d94;
-  margin               : 1ex 1em;
-  padding              : 1em;
-  background-color     : #ffffff;
+   border               : 2px solid #948d94;
+   margin               : 10px;
+   padding              : 10px;
+   color                : #000000;
+   background-color     : #ffffff;
+   z-index              : -1;
 }
 
 /* Powered by Flyspray */
@@ -740,6 +742,29 @@ div#toolbox {
    margin-left             : 150px;
    min-height              : 350px;
 }
+
+/* The new tabs stuff */
+/* colors */
+#submenu a, div.tab                 { color: #000000; background-color: #e6eef6; }
+#submenu a.active, #submenu a:hover { color: #000; }
+#submenu a                          { color: #999; }
+#submenu a.active                   { border-bottom-color: #cdc; }
+#submenu a                          { text-decoration: none; }
+
+/* margins */
+#submenu, #submenu *                { margin: 0; padding: 0; }
+#submenu a, div.tab                 { border: solid 1px black; }
+#submenu a                          { margin: auto auto -1px 1ex; padding: 2px 1ex; }
+* html #submenu                     { margin-bottom: -19px; }
+div.tab                             { margin: 0; padding: 1ex; padding-bottom: 1cm; margin-right: 1ex; margin-bottom: 10px;}
+
+/* flow */
+#submenu li                         { display: inline; width: 0; height: 0; }
+#submenu a                          { display: block; float: left; }
+div.tab h2                          { display: none; }
+div.tab                             { clear: left; }
+* html .tab div.clear               { clear: none; height: 14em; }
+
 
 /* End of the @screen section */
 }

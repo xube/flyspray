@@ -564,9 +564,6 @@ $get_total = $db->Query("SELECT * FROM $from
 $total = $db->CountRows($get_total);
 
 ?>
-</td></tr></tfoot>
-
-
 
 <!--<tbody>-->
 <?php

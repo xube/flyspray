@@ -96,6 +96,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile'])) {
   <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="includes/functions.js"></script>
   <script type="text/javascript" src="includes/styleswitcher.js"></script>
+  <script type="text/javascript" src="includes/tabs.js"></script>
   <style type="text/css">@import url(includes/jscalendar/calendar-win2k-1.css);</style>
   <script type="text/javascript" src="includes/jscalendar/calendar_stripped.js"></script>
   <script type="text/javascript" src="includes/jscalendar/lang/calendar-en.js"></script>
