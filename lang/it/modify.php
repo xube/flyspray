@@ -123,7 +123,7 @@ liste di categorie, versioni e sistema operativo',
 indietro e completa.',
 'loginbelow'		=>	'Non dovresti tentare di collegarti usando la forma
 sotto.',
-'attachmentdeleted' => 'L'\allegato è stato rimosso',
+'attachmentdeleted' => 'L\'allegato è stato rimosso',
 
 
 );
