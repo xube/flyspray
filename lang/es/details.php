@@ -13,7 +13,7 @@ $details_text = array (
 'assignedto'		=>	'Asignada a',
 'noone'				=>	'ninguno',
 'operatingsystem'	=>	'Sistema Operativo',
-'severity'			=>	'Severidad',
+'severity'			=>	'Gravedad',
 'reportedversion'	=>	'Versi&oacute;n Reportada',
 'dueinversion'		=>	'Agendado para versi&oacute;n',
 'undecided'			=>	'Sin decidir',
@@ -74,8 +74,8 @@ $details_text = array (
 'filesize'			=>   'Tama&ntilde;o de archivo:',
 'closurecomment'	=>   'Comentarios adicionales sobre el cierre:',
 
-'history'           =>   'Histrial',
-'nohistory'         =>   'No hay disponible un historial para esta tarea.',
+'history'           =>   'Historial',
+'nohistory'         =>   'Historial no disponible.',
 'eventdate'         =>   'Fecha',
 'user'              =>   'Usuario',
 'event'             =>   'Evento',
@@ -101,6 +101,9 @@ $details_text = array (
 'deletedasrelated'  =>   'Tarea eliminada de la lista de relacionadas de',
 'reminderadded'     =>   'Recordatorio agregado',
 'reminderdeleted'   =>   'Recordatorio eliminado',
+'priority'          =>   'Prioridad',
+'previousvalue'     =>   'Valor previo',
+'newvalue'          =>   'Nuevo valor',
 
 );
 ?>

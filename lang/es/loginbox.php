@@ -7,7 +7,7 @@ $loginbox_text = array (
 'password'				=>	'Contrase&ntilde;a',
 'login'					=>	'Login!',
 
-/ Added in 0.9.6
+// Added in 0.9.6
 'rememberme'				=>	'Recu&eacute;rdame', 
 
 

@@ -22,7 +22,7 @@ $modify_text = array (
 'category'			=>	'Categor&iacute;a:',
 'status'			=>	'Estado:',
 'operatingsystem'	=>	'Sistema Operativo:',
-'severity'			=>	'Severidad:',
+'severity'			=>	'Gravedad:',
 'reportedversion'	=>	'Versi&oacute;n Reportada:',
 'dueinversion'		=>	'Agendado para versi&oacute;n:',
 'percentcomplete'	=>	'Porcentaje completo:',
@@ -135,6 +135,6 @@ $modify_text = array (
 'cancel'            =>   'Cancelar',
 'alreadyedited'     =>   'Esta tarea fue editada por alguien mas antes de que Ud. la guarde.',
 'saveanyway'        =>   'Guardar mis cambios de todas formas',
-
+'priority'          =>   'Prioridad'
 );
 ?>

@@ -11,7 +11,7 @@ $newtask_text = array (
 'assignedto'		=>	'Asignada a',
 'noone'				=>	'Ninguno',
 'operatingsystem'	=>	'Sistema Operativo',
-'severity'			=>	'Severidad',
+'severity'			=>	'Gravedad',
 'reportedversion'	=>	'Versi&oacute;n Reportada',
 'dueinversion'		=>	'Agendado para versi&oacute;n',
 'details'			=>	'Detalles',
@@ -22,6 +22,8 @@ $newtask_text = array (
 // added in version 0.9.5
 
 'notifyme'			=>	'Notificarme ni bien esta tarea cambie',
+'priority'			=>	'Prioridad',
+'undecided'			=>	'Sin decidir'
 
 );
 ?>

@@ -3,11 +3,12 @@
 global $severity_list;
 $severity_list = array (
 
-'1'	=>	'Muy baja',
-'2'	=>	'Baja',
-'3'	=>	'Media',
+'5'	=>	'Critica',
 '4'	=>	'Alta',
-'5'	=>	'Crit&iacute;ca',
+'3'	=>	'Media',
+'2'	=>	'Baja',
+'1'	=>	'Muy baja',
+
 
 );
 ?>

@@ -36,7 +36,7 @@ $admin_text = array (
 'oslist'				=>	'Lista de Sistemas Operativos',
 'resolutionlist'	=>	'Lista de resoluciones',
 'versionlist'		=>	'Lista de versiones',
-'severitylist'		=>	'Lista de severidades',
+'severitylist'		=>	'Lista de gravedades',
 'listnote'			=>	'Nota:  Desmarcando la opci&oacute;n "mostrar" puede alterar algunas tareas estando en modo "edici&oacute;n". Al cambiar el campo "Nombre" se actualizar&aacute;n todas las tareas por el nombre especificado.',
 'name'				=>	'Nombre',
 'order'				=>	'Orden',
@@ -108,6 +108,8 @@ $admin_text = array (
 'past'			=>	'Pasado',
 'present'		=>	'Presente',
 'future'		=>	'Futuro',
+'changepass'	=>      'Cambiar Contrase&ntilde;a',
+'confirmpass'	=>      'Confirmar Contrase&ntilde;a',
 
 );
 ?>

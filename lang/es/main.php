@@ -1,15 +1,18 @@
 <?php
 
+global $language;
 $language = array (
 
 'filenotexist'		=>	'El archivo no existe. Contacte al administrador de este proyecto.',
 'showtask'			=>	'Mostrar tarea',
+'now'					=> 'Ahora',
 'go'				=>	'Ir!',
 'opentaskanon'		=>	'Abrir una nueva tarea anonimamente',
 'register'			=>	'Registrarse como usuario nuevo',
 'loggedinas'		=>	'Logueado como',
-'mytasks'			=>	'Mis Tareas',
+//'mytasks'			=>	'Mis Tareas',
 'addnewtask'		=>	'Agregar nueva tarea',
+'reports'			=> 'Reportes',
 'editmydetails'		=>	'Editar mis detalles',
 'changepassword'	=>	'Cambiar contrase&ntilde;a',
 'logout'			=>	'Logout',
@@ -20,7 +23,7 @@ $language = array (
 'operatingsystems'	=>	'Sistemas Operativos',
 'resolutions'		=>	'Resoluciones',
 'versions'			=>	'Versiones',
-'severities'		=>	'Severidades',
+'severities'		=>	'Gravedades',
 'disabledaccount'	=>	'Su cuenta ha sido desactivada.<br>El sistema lo esta desconectando...',
 'poweredby'			=>	'Powered by Flyspray',
 
@@ -39,5 +42,8 @@ $language = array (
 'tasksassigned'     =>  'Tareas asignadas a mi',
 'tasksreported'     =>  'Tareas reportadas por mi',
 'taskswatched'      =>  'Tareas que obvservo',
+'lastsearch'		=>	'Mi ultima busqueda',
+
+
 );
 ?>

@@ -5,7 +5,7 @@ $index_text = array (
 
 'search'			=>	'Buscar',
 'alltasktypes'		=>	'Todos los tipos de tareas',
-'allseverities'		=>	'Todas las severidades',
+'allseverities'		=>	'Todas las gravedades',
 'alldevelopers'		=>	'Todos los desarrolladores',
 'notyetassigned'	=>	'Sin asignar',
 'allcategories'		=>	'Todas las categor&iacute;as',
@@ -14,7 +14,9 @@ $index_text = array (
 'sortthiscolumn'	=>	'Ordenar por esta columna',
 'id'				=>	'ID',
 'tasktype'			=>	'Tarea',
-'severity'			=>	'Severidad',
+'project'			=>	'Proyecto',
+'category'			=>	'Categoria',
+'severity'			=>	'Gravedad',
 'summary'			=>	'Resumen',
 'dateopened'		=>	'Fecha apertura',
 'status'			=>	'Estado',
@@ -35,10 +37,11 @@ $index_text = array (
 'lastedit'		=>	'Ultima edici&oacute;n',
 'assignedto'		=>	'Asignada a',
 'os'			=>	'Sistema Operativo',
-'reportedin'		=>	'Reportada In',
+'reportedin'		=>	'Reportada En',
 'openedby'		=>	'Abierta por',
 'comments'          =>  'Comentarios',
 'attachments'       =>  'Adjuntos',
+'priority'		=>	'Prioridad'
 
 );
 ?>
