@@ -138,6 +138,7 @@ a#newtasklink {
    padding-bottom       : 1px;
    background-image     : url(menu/newtask.png);
    background-repeat    : no-repeat;
+   background-position  : 1px 3px;
 }
 
 a#reportslink {
@@ -146,6 +147,7 @@ a#reportslink {
    padding-bottom       : 1px;
    background-image     : url(menu/reports.png);
    background-repeat    : no-repeat;
+   background-position  : 1px 3px;
 }
 
 a#editmydetailslink {
@@ -154,6 +156,7 @@ a#editmydetailslink {
    padding-bottom       : 1px;
    background-image     : url(menu/editmydetails.png);
    background-repeat    : no-repeat;
+   background-position  : 1px 3px;
 }
 
 a#lastsearchlink {
@@ -162,6 +165,7 @@ a#lastsearchlink {
    padding-bottom       : 1px;
    background-image     : url(menu/search.png);
    background-repeat    : no-repeat;
+   background-position  : 1px 3px;
 }
 
 a#logoutlink {
@@ -170,6 +174,7 @@ a#logoutlink {
    padding-bottom       : 1px;
    background-image     : url(menu/logout.png);
    background-repeat    : no-repeat;
+   background-position  : 1px 3px;
 }
 
 a#optionslink {
@@ -178,6 +183,7 @@ a#optionslink {
    padding-bottom       : 1px;
    background-image     : url(menu/options.png);
    background-repeat    : no-repeat;
+   background-position  : 1px 3px;
 }
 
 a#projectslink {
@@ -186,6 +192,7 @@ a#projectslink {
    padding-bottom       : 1px;
    background-image     : url(menu/projectprefs.png);
    background-repeat    : no-repeat;
+   background-position  : 1px 3px;
 }
 
 a#usersandgroupslink {
@@ -194,14 +201,7 @@ a#usersandgroupslink {
    padding-bottom       : 1px;
    background-image     : url(menu/usersandgroups.png);
    background-repeat    : no-repeat;
-}
-
-a#listslink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
-   background-image     : url(menu/lists.png);
-   background-repeat    : no-repeat;
+   background-position  : 1px 3px;
 }
 
 /* For pending admin requests */
@@ -295,53 +295,63 @@ div#tasklist {
 
 /* The table listing tasks on the main page */
 table#tasklist {
-  width               : 100%;
-  border-spacing      : 0px;
-  border-collapse     : collapse;
+   width                : 100%;
+   border-spacing       : 0px;
+   border-collapse      : collapse;
 }
 
 table#tasklist th {
-  text-align          : left;
-  padding             : 2px 1em 2px 2px;
-  border-bottom       : 1px solid #cccccc;
+   text-align           : left;
+   padding              : 2px 1em 2px 2px;
+   border-bottom        : 1px solid #cccccc;
 }
 
+/*table#tasklist tr:hover a {
+   color                : #6395c8;
+   background-color     : transparent;
+   text-decoration      : none;
+}*/
+
 table#tasklist td {
-  border-bottom       : 1px solid #CCC;
-  padding             : 2px 1ex 2px 2px;
+   border-bottom        : 1px solid #CCC;
+   padding              : 2px 1ex 2px 2px;
 }
 
 table#tasklist td.taskid, table#tasklist th.taskid {
-  text-align          : center;
-  padding             : 2px 1ex;
+   text-align           : center;
+   padding              : 2px 1ex;
 }
 
 table#tasklist td.taskdate {
-  text-align          : left;
-  white-space         : nowrap;
+   text-align           : left;
+   white-space          : nowrap;
 }
 
 table#tasklist td.progress {
-  vertical-align      : middle;
-  text-align          : center;
+   vertical-align       : middle;
+   text-align           : center;
 }
 
-table#tasklist td#taskrange {
-  padding             : 3px 2ex;
+table#pagenumbers {
+   width                : 100%;
+}
+
+table#pagenumbers td#taskrange {
+   padding              : 3px 2ex;
  }
 
-table#tasklist td#pagenumbers {
-  padding             : 3px 2ex;
-  text-align          : right;
+table#pagenumbers td#pagenumbers {
+   padding              : 3px 2ex;
+   text-align           : right;
 }
 
 /* table.list is any table holding lists like resolutions, ... */
 table.list th, table.list td {
-  padding-right       :  2em;
+   padding-right        :  2em;
 }
 
 table.list label, p#showtask label, p.admin label, form#formaddrelatedtask label {
-  display : inline;
+   display              : inline;
 }
 
 /* Area containing all details to a given task */
@@ -728,6 +738,14 @@ div#closeform {
    border                  : 3px ridge #000000;
    padding                 : 5px 30px 5px 5px;
    margin-top              : 5px;
+   display                 : block;
+   width                   : 250px;
+   height                  : auto;
+}
+
+div#closeform textarea {
+   width                   : 100%;
+   height                  : 100px;
 }
 
 fieldset.admin {
@@ -872,6 +890,11 @@ div#permissions table {
    border                  : 2px solid #000000;
 
 }
+
+div#fileupload {
+   margin                  : 20px 0px 20px 0px;
+}
+
 
 /* End of the @screen section */
 }

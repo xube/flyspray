@@ -6,7 +6,7 @@
    to see what they have access to.
 */
 
-include('header.php');
+include_once('header.php');
 
 // Check that we're using 0.9.6, and start the upgrade script if we're not.
 if (isset($flyspray_prefs['dateformat']) && !isset($flyspray_prefs['fs_ver']))
@@ -22,6 +22,32 @@ $fs->startReminderDaemon();
 // Get the translation for the wrapper page (this page)
 $lang = $flyspray_prefs['lang_code'];
 $fs->get_language_pack($lang, 'main');
+
+// Get user permissions
+if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
+{
+   // Check to see if the user has been trying to hack their cookies to perform sql-injection
+   if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project'])))
+   {
+      die("Stop hacking your cookies, you naughty fellow!");
+   }
+
+   // Fetch info on the current user
+   $current_user = $fs->getUserDetails($_COOKIE['flyspray_userid']);
+
+   // Fetch the permissions array for the current user
+   $permissions = $fs->checkPermissions($current_user['user_id'], $project_id);
+// End of getting user permissions
+}
+
+// Set the theme
+if (isset($_GET['project']) && $_GET['project'] == '0')
+{
+   $themestyle = $flyspray_prefs['global_theme'];
+} else
+{
+   $themestyle = $project_prefs['theme_style'];
+}
 
 // Set the page to include
 if (isset($_REQUEST['do']))
@@ -81,8 +107,14 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 
    // Start Output Buffering and gzip encoding if setting is present.
    // This functionality provided Mariano D'Arcangelo
-   if ($conf_array['general']['output_buffering']=='gzip') include 'includes/gzip_compress.php';
-   elseif ($conf_array['general']['output_buffering']=='on') ob_start();
+   if ($conf_array['general']['output_buffering']=='gzip')
+   {
+      include_once( 'includes/gzip_compress.php' );
+
+   } elseif ($conf_array['general']['output_buffering']=='on')
+   {
+      ob_start();
+   }
    // ob_end_flush() isn't needed in MOST cases because it is called automatically
    // at the end of script execution by PHP itself when output buffering is turned on
    // either in the php.ini or by calling ob_start().
@@ -100,7 +132,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 <title>Flyspray::&nbsp;&nbsp;<?php echo stripslashes($project_prefs['project_title']) . ':&nbsp;&nbsp;' ;?></title>
   <link rel="icon" href="./favicon.ico" type="image/png" />
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
-  <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
+  <link href="themes/<?php echo $themestyle;?>/theme.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="includes/functions.js"></script>
   <script type="text/javascript" src="includes/styleswitcher.js"></script>
   <script type="text/javascript" src="includes/tabs.js"></script>
@@ -157,19 +189,6 @@ if ($project_prefs['show_logo'] == '1')
 // If the user has the right name cookies
 if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
 {
-   // Check to see if the user has been trying to hack their cookies to perform sql-injection
-   if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", $_COOKIE['flyspray_project'])))
-   {
-      die("Stop hacking your cookies, you naughty fellow!");
-   }
-
-   // Fetch info on the current user
-   $current_user = $fs->getUserDetails($_COOKIE['flyspray_userid']);
-
-   // Fetch the permissions array for the current user
-   $permissions = $fs->checkPermissions($current_user['user_id'], $project_id);
-
-
    // Check that the user hasn't spoofed the cookie contents somehow
    if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], "$cookiesalt")
       // And that their account is enabled
@@ -189,7 +208,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    echo '<em>' . $language['loggedinas'] . ' - ' . $current_user['user_name'] . '</em>';
 
    // Display Add New Task link
-   if (($permissions['view_tasks'] == '1' OR $project_prefs['others_view'] == '1') && $permissions['open_new_tasks'] == '1')
+   if ($permissions['open_new_tasks'] == '1')
    {
       echo '<small> | </small>';
       echo '<a id="newtasklink" href="?do=newtask&amp;project=' . $project_id . '" accesskey="a">' . $language['addnewtask'] . "</a>\n";
@@ -330,7 +349,6 @@ if (isset($_SESSION['SUCCESS']))
       if ($permissions['global_view'] == '1')
       {
          $get_projects = $db->Query("SELECT * FROM flyspray_projects
-                                     WHERE project_is_active = '1'
                                      ORDER BY project_title");
 
       // or, if the user is logged in
@@ -492,7 +510,7 @@ if (isset($_COOKIE['flyspray_userid']))
 $footerfile = "$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php";
 if(file_exists("$footerfile"))
 {
-   include("$footerfile");
+   include_once("$footerfile");
 }
 
 ?>

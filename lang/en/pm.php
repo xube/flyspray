@@ -17,6 +17,8 @@ $pm_text = array (
 'catlisted'                =>    'Category List Editor',
 'oslisted'                 =>    'Operating System List Editor',
 'verlisted'                =>    'Version List Editor',
+'tasktypeed'               =>    'Task Types List Editor',
+'resed'                    =>    'Resolutions List Editor',
 
 );
 ?>

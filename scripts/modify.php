@@ -145,17 +145,70 @@ if ($_POST['action'] == 'newtask'
 
    // End of checking if there's a category owner set, and notifying them.
    }
-      // Log that the task was opened
-      $fs->logEvent($task_details['task_id'], 1);
+
+   // Log that the task was opened
+   $fs->logEvent($task_details['task_id'], 1);
+
+
+   function make_seed()
+   {
+      list($usec, $sec) = explode(' ', microtime());
+      return (float) $sec + ((float) $usec * 100000);
+   }
+
+   mt_srand(make_seed());
+   $randval = mt_rand();
+   $file_name = $task_details['task_id']."_$randval";
+
+   // If there is a file attachment to be uploaded, upload it
+   if ($_FILES['userfile']['name'])
+   {
+      // Then move the uploaded file into the attachments directory and remove exe permissions
+      @move_uploaded_file($_FILES['userfile']['tmp_name'], "attachments/$file_name");
+      @chmod("attachments/$file_name", 0644);
+
+      // Only add the listing to the database if the file was actually uploaded successfully
+      if (file_exists("attachments/$file_name"))
+      {
+         $file_desc = $_POST['file_desc'];
+         $add_to_db = $db->Query("INSERT INTO flyspray_attachments
+                                 (task_id, orig_name, file_name, file_desc,
+                                 file_type, file_size, added_by, date_added)
+                                 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
+                                 array($task_details['task_id'],
+                                       $_FILES['userfile']['name'],
+                                       $file_name, $file_desc,
+                                       $_FILES['userfile']['type'],
+                                       $_FILES['userfile']['size'],
+                                       $_COOKIE['flyspray_userid'],
+                                       $now)
+                                 );
+
+         $row = $db->FetchRow($db->Query("SELECT attachment_id
+                                          FROM flyspray_attachments
+                                          WHERE task_id = ?
+                                          ORDER BY attachment_id DESC",
+                                          array($task_details['task_id']), 1)
+                             );
+
+         $fs->logEvent($task_details['task_id'], 7, $row['attachment_id']);
+
+      // If the file didn't actually get saved, better show an error to that effect
+      } else
+      {
+         $message = $modify_text['attachnotsaved'];
+      }
+
+   // End of uploading an attachment with a new task
+   }
+
 
 ?>
-      <div class="redirectmessage">
-        <p>
-          <em><?php echo $modify_text['newtaskadded'];?></em>
-        </p>
-        <p><?php echo "<a href=\"?do=details&id={$task_details['task_id']}\">{$modify_text['gotonewtask']}</a>";?></p>
-        <p><?php echo "<a href=\"?do=newtask\">{$modify_text['addanother']}</a>";?></p>
-        <p><?php echo "<a href=\"?\">{$modify_text['backtoindex']}</a>";?></p>
+      <div id="redirectmessage">
+         <em><?php echo $modify_text['newtaskadded'];?></em>
+         <p><?php echo "<a href=\"?do=details&id={$task_details['task_id']}\">{$modify_text['gotonewtask']}</a>";?></p>
+         <p><?php echo "<a href=\"?do=newtask\">{$modify_text['addanother']}</a>";?></p>
+         <p><?php echo "<a href=\"?\">{$modify_text['backtoindex']}</a>";?></p>
       </div>
 <?php
   // If they didn't fill in both the summary and detailed description, show an error
@@ -867,28 +920,46 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_reg'", array($_POST['anon_reg']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'global_theme'", array($_POST['global_theme']));
 
-  // This is an overly complex way to ensure that we always get the right amount of posted
-  // results from the assigned_groups preference
-  $get_groups = $db->Query("SELECT * FROM flyspray_groups ORDER BY group_id ASC");
-  $group_number = '1';
+   // This is an overly complex way to ensure that we always get the right amount of posted
+   // results from the assigned_groups preference
+   $get_groups = $db->Query("SELECT * FROM flyspray_groups ORDER BY group_id ASC");
+   $group_number = '1';
 
-  while ($row = $db->FetchArray($get_groups)) {
-    $posted_group = "assigned_groups" . $group_number;
+   while ($row = $db->FetchArray($get_groups))
+   {
+      $posted_group = "assigned_groups" . $group_number;
 
-    if (!isset($first_done)) {
-      $assigned_groups = $_POST[$posted_group];
-    } else {
-      $assigned_groups = $assigned_groups . " $_POST[$posted_group]";
-    };
-    $first_done = '1';
-    $group_number ++;
-  };
+      if (!isset($first_done))
+      {
+         $assigned_groups = $_POST[$posted_group];
+      } else
+      {
+         $assigned_groups = $assigned_groups . " $_POST[$posted_group]";
+      }
+      $first_done = '1';
+      $group_number ++;
+   }
 
-  $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
 
-  $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
-  header("Location: index.php?do=admin&area=prefs");
+
+   // Process the list of visible columns
+   $columnnames = array('id','project','category','tasktype','severity','priority','summary','dateopened','status','openedby','assignedto','lastedit','reportedin','dueversion','comments','attachments','progress');
+   foreach ($columnnames AS $column)
+   {
+      $colname = "visible_columns".$column;
+      if($_POST[$colname])
+      {
+         $columnlist .= "$column ";
+      }
+   }
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'visible_columns'", array($columnlist));
+
+
+   $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
+   header("Location: index.php?do=admin&area=prefs");
 
 // End of updating application preferences
 
@@ -1333,51 +1404,43 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 /////////////////////////////////
 
 } elseif ($_POST['action'] == "add_to_list"
-          && ($permissions['is_admin'] == '1'
-              OR $permissions['manage_project'] == '1')) {
+   && $permissions['manage_project'] == '1')
+{
 
-  if ($_POST['list_name'] != ''
-    && $_POST['list_position'] != ''
-    ) {
+   if ($_POST['list_name'] != ''
+    && $_POST['list_position'] != '')
+   {
       // If the user is requesting a project-level addition
-      if ($_POST['project_id'] != '') {
+      if (!empty($_POST['project_id']))
+      {
+         $update = $db->Query("INSERT INTO $list_table_name
+                              (project_id, $list_column_name, list_position, show_in_list)
+                              VALUES (?, ?, ?, ?)",
+                              array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1'));
 
-      $update = $db->Query("INSERT INTO $list_table_name
-                        (project_id, $list_column_name, list_position, show_in_list)
-                        VALUES (?, ?, ?, ?)",
-                array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1'));
-
-        $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
-        header("Location: " . $_POST['prev_page']);
-
-     // If the user is requesting a global list update
-     } else {
-
-      $update = $db->Query("INSERT INTO $list_table_name
-                                ($list_column_name, list_position, show_in_list)
-                                VALUES (?, ?, ?)",
-                array($_POST['list_name'], $_POST['list_position'], '1'));
-
+         // Redirect
          $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
          header("Location: " . $_POST['prev_page']);
 
-         //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+      // If the user is requesting a global list update
+      } else
+      {
+         $update = $db->Query("INSERT INTO $list_table_name
+                               ($list_column_name, list_position, show_in_list, project_id)
+                               VALUES (?, ?, ?, ?)",
+                               array($_POST['list_name'], $_POST['list_position'], '1', '1'));
 
-      };
-
-
-    } else {
-
-      $_SESSION['ERROR'] = $modify_text['fillallfields'];
-
-      if ($_POST['project_id'] == '') {
-         header("Location: index.php?do=admin&area=" . $_POST['list_type']);
-      } else {
+         // Redirect
+         $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
          header("Location: " . $_POST['prev_page']);
-      };
+      }
 
-      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
-  };
+
+   } else
+   {
+      $_SESSION['ERROR'] = $modify_text['fillallfields'];
+      header("Location: " . $_POST['prev_page']);
+   }
 // End of adding a list item
 
 ////////////////////////////////////////
@@ -1385,8 +1448,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 ////////////////////////////////////////
 
 } elseif ($_POST['action'] == "update_version_list"
-          && ($permissions['is_admin'] == '1'
-              OR $permissions['manage_project'] == '1')) {
+ && ($permissions['is_admin'] == '1'
+     OR $permissions['manage_project'] == '1'))
+{
 
   $listname = $_POST['list_name'];
   $listposition = $_POST['list_position'];
@@ -1396,26 +1460,27 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
   $redirectmessage = $modify_text['listupdated'];
 
-  for($i = 0; $i < count($listname); $i++) {
+   for($i = 0; $i < count($listname); $i++)
+   {
       $listname[$i] = stripslashes($listname[$i]);
       if($listname[$i] != ''
-          && is_numeric($listposition[$i])
-          ) {
-          $update = $db->Query("UPDATE $list_table_name SET
-                                    $list_column_name = ?,
-                                    list_position = ?,
-                                    show_in_list = ?,
-                                    version_tense = ?
-          WHERE $list_id = '{$listid[$i]}'",
-          array($listname[$i], $listposition[$i],
-                $db->emptyToZero($listshow[$i]),
-                $listtense[$i]
-                ));
-      }
-      else {
+          && is_numeric($listposition[$i]))
+      {
+         $update = $db->Query("UPDATE $list_table_name SET
+                               $list_column_name = ?,
+                               list_position = ?,
+                               show_in_list = ?,
+                               version_tense = ?
+                               WHERE $list_id = '{$listid[$i]}'",
+                               array($listname[$i], $listposition[$i],
+                               $db->emptyToZero($listshow[$i]),
+                               $listtense[$i])
+                             );
+      } else
+      {
           $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
-      };
-  };
+      }
+   }
 
   $_SESSION['SUCCESS'] = $redirectmessage;
   header("Location: " . $_POST['prev_page']);
@@ -1427,26 +1492,24 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 /////////////////////////////////////////
 
 } elseif ($_POST['action'] == "add_to_version_list"
-          && ($permissions['is_admin'] == '1'
-              OR $permissions['manage_project'] == '1')) {
-
-  if ($_POST['list_name'] != ''
-    && $_POST['list_position'] != ''
-    ) {
-
+          && $permissions['manage_project'] == '1')
+{
+   if ($_POST['list_name'] != ''
+    && $_POST['list_position'] != '')
+   {
       $update = $db->Query("INSERT INTO $list_table_name
-                        (project_id, $list_column_name, list_position, show_in_list, version_tense)
-                        VALUES (?, ?, ?, ?, ?)",
-                array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1', $_POST['version_tense']));
-
+                           (project_id, $list_column_name, list_position, show_in_list, version_tense)
+                           VALUES (?, ?, ?, ?, ?)",
+                           array($_POST['project_id'], $_POST['list_name'], $_POST['list_position'], '1', $_POST['version_tense']));
 
       $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
       header("Location: " . $_POST['prev_page']);
 
-} else {
-    $_SESSION['ERROR'] = $modify_text['fillallfields'];
-   header("Location: " . $_POST['prev_page']);
-};
+   } else
+   {
+      $_SESSION['ERROR'] = $modify_text['fillallfields'];
+      header("Location: " . $_POST['prev_page']);
+   }
 // End of adding a version list item
 
 

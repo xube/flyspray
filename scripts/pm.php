@@ -175,7 +175,7 @@ if ($permissions['manage_project'] == '1')
                <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
                <td class="admintext">
                <?php // Set the selectable column names
-               $columnnames = array('id','project','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
+               $columnnames = array('id','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
                foreach ($columnnames AS $column) {
                   if (ereg($column, $project_prefs['visible_columns']) ) {
                      echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\" />$index_text[$column]<br />\n";
@@ -445,16 +445,179 @@ if ($permissions['manage_project'] == '1')
 
    } elseif(isset($_GET['area']) && $_GET['area'] == 'tt')
    {
+   echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $project_prefs['project_title'] . ': ' . $pm_text['tasktypeed'] . '</h3>';
+   ?>
 
+   <p><?php echo $admin_text['listnote'];?></p>
 
+   <fieldset class="admin">
+   <legend><?php echo $admin_text['tasktypes'];?></legend>
+
+   <form action="index.php" method="post">
+   <input type="hidden" name="do" value="modify" />
+   <input type="hidden" name="action" value="update_list" />
+   <input type="hidden" name="list_type" value="tasktype" />
+   <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+   <table class="list">
+   <?php
+   $get_tasktypes = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+                                FROM `flyspray_list_tasktype` tt
+                                LEFT JOIN flyspray_tasks t ON ( t.task_type = tt.tasktype_id )
+                                WHERE tt.project_id = ?
+                                GROUP BY tt.tasktype_id
+                                ORDER BY tt.list_position",
+                                array($project_id)
+                              );
+   $countlines = 0;
+   while ($row = $db->FetchArray($get_tasktypes)) {
+   ?>
+      <tr>
+         <td>
+         <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>" />
+         <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
+         <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']));?>" /></td>
+         <td title="The order these items will appear in the TaskType list">
+         <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
+         <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
+         </td>
+         <td title="Show this item in the TaskType list">
+         <label for="showinlist<?php echo $countlines?>"><?php echo $admin_text['show'];?></label>
+         <input id="showinlist<?php echo $countlines?>" type="checkbox" name="show_in_list[<?php echo $countlines?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
+         </td>
+         <?php if ($row['used_in_tasks'] == 0): ?>
+         <td title="Delete this item from the TaskType list">
+         <label for="delete<?php echo $row['tasktype_id']?>"><?php echo $admin_text['delete'];?></label>
+         <input id="delete<?php echo $row['tasktype_id']?>" type="checkbox" name="delete[<?php echo $row['tasktype_id']?>]" value="1" />
+         <?php else: ?>
+         <td>&nbsp;
+         <?php endif; ?>
+         </td>
+      </tr>
+      <?php
+      $countlines++;
+   };
+   ?>
+      <tr>
+         <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
+      </tr>
+   </table>
+   </form>
+   <hr />
+   <form action="index.php" method="post">
+   <table class="list">
+      <tr>
+         <td>
+         <input type="hidden" name="do" value="modify" />
+         <input type="hidden" name="action" value="add_to_list" />
+         <input type="hidden" name="list_type" value="tasktype" />
+         <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+         <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+         <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" /></td>
+         <td><label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+         <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" /></td>
+         <td><label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" /></td>
+         <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
+      </tr>
+   </table>
+   </form>
+   </fieldset>
+
+   <?php
    ///////////////////////////////////
    // Start of the Resolutions area //
    ///////////////////////////////////
 
    } elseif(isset($_GET['area']) && $_GET['area'] == 'res')
    {
+      echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $project_prefs['project_title'] . ': ' . $pm_text['resed'] . '</h3>';
+   ?>
+   <p><?php echo $admin_text['listnote'];?></p>
 
+   <fieldset class="admin">
+   <legend><?php echo $admin_text['resolutions'];?></legend>
 
+  <form action="index.php" method="post">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="update_list" />
+  <input type="hidden" name="list_type" value="resolution" />
+  <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+  <table class="list">
+    <?php
+   $get_resolution = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+                                 FROM flyspray_list_resolution r
+                                 LEFT JOIN flyspray_tasks t ON ( t.resolution_reason = r.resolution_id )
+                                 WHERE r.project_id = ?
+                                 GROUP BY r.resolution_id
+                                 ORDER BY list_position",
+                                 array($project_id)
+                               );
+
+    $countlines=0;
+    while ($row = $db->FetchArray($get_resolution))
+    {
+    ?>
+      <tr>
+        <td>
+          <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>" />
+          <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']));?>" />
+        </td>
+        <td title="The order these items will be shown in the Resolution list">
+          <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
+        </td>
+        <td title="Show this item in the Resolution list">
+          <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
+        </td>
+        <?php if ($row['used_in_tasks'] == 0): ?>
+        <td title="<?php echo $admin_text['listdeletetip'];?>">
+          <label for="delete<?php echo $row['resolution_id']?>"><?php echo $admin_text['delete'];?></label>
+          <input id="delete<?php echo $row['resolution_id']?>" type="checkbox" name="delete[<?php echo $row['resolution_id']?>]" value="1" />
+         <?php else: ?>
+         <td>&nbsp;
+         <?php endif; ?>
+         </td>
+      </tr>
+    <?php
+      $countlines++;
+    }
+    ?>
+      <tr>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
+      </tr>
+    </table>
+    </form>
+    <hr />
+    <form action="index.php" method="post">
+    <table class="list">
+      <tr>
+        <td>
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="add_to_list" />
+          <input type="hidden" name="list_type" value="resolution" />
+          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+          <label for="listnamenew"><?php echo $admin_text['name'];?></label>
+          <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
+        </td>
+        <td>
+          <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
+          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
+        </td>
+        <td>
+          <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
+          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
+        </td>
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
+      </tr>
+    </table>
+    </form>
+</fieldset>
+
+<?
    //////////////////////////////////
    // Start of the Categories area //
    //////////////////////////////////

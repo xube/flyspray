@@ -27,6 +27,8 @@ $newtask_text = array (
 
 // Added in version 0.9.8
 'newtask'                     =>    'New Task',
+'attachafile'                 =>    'Attach a file',
+'description'                 =>    'Description'
 
 );
 ?>

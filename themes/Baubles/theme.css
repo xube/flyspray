@@ -222,7 +222,7 @@ div#tasklist {
    width                : 77%;
    border               : 1px solid #008000;
    color                : #000000;
-   background-color     : transparent;
+   background-color     : #eeffee;
 }
 
 /* The table listing tasks on the main page */
@@ -246,18 +246,31 @@ table#tasklist td.progress {
    text-align           : center;
 }
 
-table#tasklist td#taskrange {
+table#pagenumbers {
+   width                : 100%;
+   color                : #000000;
+   background-color     : #cfeccf;
+   border-right         : 1px solid #008000;
+}
+
+table#pagenumbers td#taskrange {
    width                : 50%;
    padding              : 3px 2ex;
    text-align           : right;
  }
 
-table#tasklist td#pagenumbers {
-   width                : 50%;
+table#pagenumbers td#pagenumbers {
+   width                : 49%;
    padding              : 3px 2ex;
    text-align           : left;
 }
 
+table#tasklist thead {
+   color                : #000000;
+   background-color     : #cfeccf;
+   border-bottom        : 1px solid #a0a0a0;
+   border-right         : 1px solid #008000;
+}
 
 table#tasklist tfoot td {
    text-align           : center;
@@ -268,7 +281,7 @@ table#tasklist tfoot td {
 
 /* table.list is any table holding lists like resolutions, ... */
 table.list th, table.list td {
-   padding-right        : 2em;
+   padding-right        : 1em;
 }
 
 table.list label, p#showtask label, p.admin label, form#formaddrelatedtask label {
@@ -306,13 +319,20 @@ p#footer a {
 
 /* div.redirectmessage is used in modify.php when you change things and are redirected
    to the index or details page */
-div.redirectmessage {
+div#redirectmessage {
    border               : 1px solid #008000;
-   background-color     : #e6eef6;
-   padding              : 1ex;
+   background-color     : #ffffff;
    text-align           : center;
+   width                : 50%;
+   margin               : 40px, 0px, 0px, 33%;
 }
 
+div#redirectmessage em {
+   color                : #000000;
+   background-color     : #eeffee;
+   width                : 100%;
+   height               : 2ex;
+}
 
 form#registernewuser strong, form#newgroup strong {
    color                : red;
@@ -366,7 +386,7 @@ p#tabs a.tabactive {
 .severity1 {
    color                : #000000;
    background-color     : transparent;
-   border               : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #a0a0a0;
 }
 
 .severity1 td.task_summary a {
@@ -384,7 +404,7 @@ p#tabs a.tabactive {
 .severity2 {
    color                : #000000;
    background-color     : transparent;
-   border               : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #a0a0a0;
 }
 
 .severity2:hover {
@@ -402,7 +422,7 @@ p#tabs a.tabactive {
 .severity3 {
    color                : #000000;
    background-color     : transparent;
-   border               : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #a0a0a0;
 }
 
 .severity3:hover {
@@ -420,7 +440,7 @@ p#tabs a.tabactive {
 .severity4 {
    color                : #000000;
    background-color     : transparent;
-   border               : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #a0a0a0;
 }
 
 .severity4:hover {
@@ -438,7 +458,7 @@ p#tabs a.tabactive {
 .severity5 {
    color                : #000000;
    background-color     : transparent;
-   border               : 1px solid #a0a0a0;
+   border-bottom        : 1px solid #a0a0a0;
 }
 
 .severity5:hover {
@@ -459,18 +479,22 @@ div#taskdetails {
    border               : 1px solid #008000;
    margin-bottom        : 2em;
    min-height           : 450px;
+   color                : #000000;
+   background-color     : #ffffff;
 }
 
 div#taskdetails h2 {
    font-size            : 100%;
    padding              : 0.3ex 5px;
    font-weight          : normal;
+   color                : #000000;
+   background-color     : #eeffee;
 }
 
 /* Task details are listed within a table */
 div#taskdetailsfull table {
    width                : 100%;
-   height               : 280px;
+/*    height               : 280px; */
    margin               : 0px;
 }
 
@@ -494,10 +518,11 @@ div#taskfields1 {
    width                : 30%;
    border-left          : 1px solid #008000;
    border-top           : 1px solid #008000;
-   margin-bottom        : 0px;
-   margin-top           : 15px;
+   margin               : 0px 0px 0px 7px;
    float                : right;
    clear                : both;
+   color                : #000000;
+   background-color     : #eeffee;
 }
 
 div#taskfields1 table {
@@ -508,13 +533,19 @@ div#taskfields1 table td {
   width                 : 50%;
 }
 
+div#taskfields1 select {
+   width                : 98%;
+}
+
 div#taskfields2 {
    width                : 30%;
    border-left          : 1px solid #008000;
    border-bottom        : 1px solid #008000;
-   margin-bottom        : 8px;
+   margin               : 0px 0px 0px 7px;
    float                : right;
    clear                : both;
+   color                : #000000;
+   background-color     : #eeffee;
 }
 
 div#taskfields2 table {
@@ -525,11 +556,16 @@ div#taskfields2 table td {
   width                 : 50%;
 }
 
+div#taskfields2 select {
+   width                : 98%;
+}
+
 div#taskdetailsfull {
    padding              : 0px;
    text-align           : left;
    top                  : -15em;
-   background-color     : white;
+   color                : #000000;
+   background-color     : #ffffff;
    width                : 69%;
    text-align           : left;
    min-height           : 250px;
@@ -592,6 +628,13 @@ div#closeform {
    border               : 2px ridge #008000;
    padding              : 5px 30px 5px 5px;
    margin-top           : 5px;
+   display              : block;
+   width                : 300px;
+}
+
+div#closeform textarea {
+   width                : 100%;
+   height               : 100px;
 }
 
 div#actionbuttons a#hideclosetask {
@@ -671,7 +714,7 @@ div#toolboxmenu a {
 
 div#toolboxmenu a:hover {
    display              : block;
-   width                : 11em;
+   width                : 175px;
    color                : #5b5c5c;
    background-color     : #eeffee;
    text-decoration      : none;
@@ -768,7 +811,7 @@ input.mainbutton {
 
 input.mainbutton:hover {
    color                : #5b5c5c;
-   background-color     : transparent;
+   background-color     : #ffffff;
    background-image     : url(dot-green.png);
    background-repeat    : no-repeat;
    background-position  : 3px 3px;
@@ -788,7 +831,7 @@ input.adminbutton {
 
 input.adminbutton:hover {
    color                : #5b5c5c;
-   background-color     : transparent;
+   background-color     : #ffffff;
    background-image     : url(dot-green.png);
    background-repeat    : no-repeat;
    background-position  : 3px 3px;
@@ -861,6 +904,10 @@ p#search input.mainbutton {
 div#projectselector {
    position             : absolute;
    left                 : 30%;
+}
+
+div#fileupload {
+   margin               : 20px 0px 20px 3px;
 }
 
 /* End of screen section */

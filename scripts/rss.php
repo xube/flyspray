@@ -1,6 +1,6 @@
 <?php
 // Include the header to set up database access etc
-include('../header.php');
+include_once('../header.php');
 
 // Set up the basic XML head
 echo '<?xml version="1.0"?>' . "\n";

@@ -175,6 +175,9 @@ $admin_text = array (
 'newproject'            =>    'New Project',
 'delete'                =>    'Delete',
 'listdeletetip'         =>    'Delete this item from the list',
+'lookandfeel'           =>    'Look and Feel',
+'globaltheme'           =>    'Global Theme',
+
 
 );
 ?>

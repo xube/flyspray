@@ -1,2 +1,17 @@
 alter table flyspray_users change user_pass user_pass varchar(40);
 ALTER TABLE `flyspray_list_category` CHANGE `parent_id` `parent_id` MEDIUMINT( 3 ) DEFAULT '0' NOT NULL;
+
+## Added on 07 March 05
+
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES (
+'', 'global_theme', 'Bluey', 'Theme to use when viewing all projects'
+);
+
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES (
+'', 'visible_columns', 'id project category tasktype severity summary status progress', 'Columns visible when viewing all projects'
+);
+
+ALTER TABLE `flyspray_list_tasktype` ADD `project_id` MEDIUMINT( 3 ) NOT NULL ;
+ALTER TABLE `flyspray_list_resolution` ADD `project_id` MEDIUMINT( 3 ) NOT NULL ;

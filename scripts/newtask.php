@@ -7,8 +7,7 @@
 $fs->get_language_pack($lang, 'newtask');
 // Check if the user has the right to open new tasks
 
-if (($permissions['view_tasks'] == '1'
-    && $permissions['open_new_tasks'] == '1')
+if ($permissions['open_new_tasks'] == '1'
     OR $project_prefs['anon_open'] == '1')
 {
 ?>
@@ -16,7 +15,7 @@ if (($permissions['view_tasks'] == '1'
    <h3><?php echo htmlspecialchars(stripslashes($project_prefs['project_title'])) . ':: ' . $newtask_text['newtask'];?></h3>
 
    <div id="taskdetails">
-   <form name="form1" action="index.php" method="post">
+   <form enctype="multipart/form-data" name="form1" action="index.php" method="post">
    <table>
       <tr>
          <td>
@@ -42,8 +41,15 @@ if (($permissions['view_tasks'] == '1'
             <select name="task_type" id="tasktype">
             <?php
             // Get list of task types
-            $get_severity = $db->Query("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype WHERE show_in_list = ? ORDER BY list_position", array('1'));
-            while ($row = $db->FetchArray($get_severity))
+            $get_tasktype = $db->Query("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
+                                        WHERE show_in_list = '1'
+                                        AND (project_id = '0'
+                                        OR project_id = ?)
+                                        ORDER BY list_position",
+                                        array($project_id)
+                                      );
+
+            while ($row = $db->FetchArray($get_tasktype))
             {
                echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>";
             }
@@ -58,19 +64,26 @@ if (($permissions['view_tasks'] == '1'
             <select class="adminlist" name="product_category" id="productcategory">
             <?php
             // Get list of categories
-            $cat_list = $db->Query('SELECT category_id, category_name
+            $cat_list = $db->Query("SELECT category_id, category_name
                                     FROM flyspray_list_category
-                                    WHERE project_id=? AND show_in_list=? AND parent_id < ?
-                                    ORDER BY list_position', array($project_id, '1', '1'));
+                                    WHERE show_in_list = '1' AND parent_id < '1'
+                                    AND (project_id = '0'
+                                       OR project_id = ?)
+                                    ORDER BY list_position",
+                                    array($project_id)
+                                  );
+
             while ($row = $db->FetchArray($cat_list))
             {
                $category_name = stripslashes($row['category_name']);
                echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
 
-               $subcat_list = $db->Query('SELECT category_id, category_name
+               $subcat_list = $db->Query("SELECT category_id, category_name
                                           FROM flyspray_list_category
-                                          WHERE project_id=? AND show_in_list=? AND parent_id = ?
-                                          ORDER BY list_position', array($project_id, '1', $row['category_id']));
+                                          WHERE show_in_list = '1' AND parent_id = ?
+                                          ORDER BY list_position",
+                                          array($row['category_id'])
+                                        );
 
                while ($subrow = $db->FetchArray($subcat_list))
                {
@@ -134,10 +147,11 @@ if (($permissions['view_tasks'] == '1'
             // Get list of operating systems
             $get_os = $db->Query("SELECT os_id, os_name
                                   FROM flyspray_list_os
-                                  WHERE project_id = ?
-                                  AND show_in_list = ?
+                                  WHERE (project_id = ?
+                                         OR project_id = '0')
+                                  AND show_in_list = '1'
                                   ORDER BY list_position",
-                                  array($project_id, '1')
+                                  array($project_id)
                                 );
 
             while ($row = $db->FetchArray($get_os))
@@ -206,11 +220,12 @@ if (($permissions['view_tasks'] == '1'
             // Get list of versions
             $get_version = $db->Query("SELECT version_id, version_name
                                        FROM flyspray_list_version
-                                       WHERE project_id = ?
-                                       AND show_in_list = '1'
-                                       AND version_tense = '2'
+                                       WHERE show_in_list = '1' AND version_tense = '2'
+                                       AND (project_id = '0'
+                                          OR project_id = ?)
                                        ORDER BY list_position",
-                                       array($project_id));
+                                       array($project_id,)
+                                     );
 
             while ($row = $db->FetchArray($get_version))
             {
@@ -228,11 +243,12 @@ if (($permissions['view_tasks'] == '1'
 
             $get_version = $db->Query("SELECT version_id, version_name
                                        FROM flyspray_list_version
-                                       WHERE project_id = ?
-                                       AND show_in_list = '1'
-                                       AND version_tense = '3'
+                                       WHERE show_in_list = '1' AND version_tense = '3'
+                                       AND (project_id = '0'
+                                          OR project_id = ?)
                                        ORDER BY list_position",
-                                       array($project_id));
+                                       array($project_id,)
+                                     );
 
             while ($row = $db->FetchArray($get_version))
             {
@@ -254,6 +270,34 @@ if (($permissions['view_tasks'] == '1'
    if (isset($_COOKIE['flyspray_userid']))
    {
       echo $newtask_text['notifyme'] . '&nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked />';
+   }
+
+   if ($permissions['create_attachments'] == '1')
+   {
+   ?>
+
+      <div id="fileupload">
+         <table class="main">
+            <tr>
+            <td>
+            <label><?php echo $newtask_text['attachafile'];?></label>
+            </td>
+            <td>
+            <input type="file" size="55" name="userfile" />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <label><?php echo $newtask_text['description'];?></label>
+            </td>
+            <td>
+            <input class="admintext" type="text" name="file_desc" size="70" maxlength="100" />
+            </td>
+         </tr>
+      </table>
+      </div>
+   <?
+   // End of checking 'create attachments' permission
    }
    ?>
 

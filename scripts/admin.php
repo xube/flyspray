@@ -271,6 +271,68 @@ if ($permissions['is_admin'] == '1')
 
       </fieldset>
 
+      <fieldset class="admin">
+
+      <legend><?php echo $admin_text['lookandfeel'];?></legend>
+
+      <table class="admin">
+         <tr>
+            <td>
+            <label for="globaltheme"><?php echo $admin_text['globaltheme'];?></label>
+            </td>
+            <td>
+            <select id="themestyle" name="global_theme">
+               <?php
+               // Let's get a list of the theme names by reading the ./themes/ directory
+               if ($handle = opendir('themes/')) {
+                  $theme_array = array();
+                  while (false !== ($file = readdir($handle))) {
+                     if ($file != "." && $file != ".." && file_exists("themes/$file/theme.css")) {
+                        array_push($theme_array, $file);
+                     }
+                  }
+                  closedir($handle);
+               }
+
+               // Sort the array alphabetically
+               sort($theme_array);
+               // Then display them
+               while (list($key, $val) = each($theme_array)) {
+                  // If the theme is currently being used, pre-select it in the list
+                  if ($val == $flyspray_prefs['global_theme']) {
+                  echo "<option class=\"adminlist\" selected=\"selected\">$val</option>\n";
+                  // If it's not, don't pre-select it
+                  } else {
+                  echo "<option class=\"adminlist\">$val</option>\n";
+                  };
+               };
+               ?>
+            </select>
+            </td>
+         </tr>
+         <tr>
+            <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
+            <td class="admintext">
+            <?php // Set the selectable column names
+            $columnnames = array('id','project','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
+            foreach ($columnnames AS $column)
+            {
+               if (ereg($column, $flyspray_prefs['visible_columns']) )
+               {
+                  echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\" />$index_text[$column]<br />\n";
+               } else
+               {
+                  echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" />$index_text[$column]<br />\n";
+               }
+            }
+            ?>
+            </td>
+         </tr>
+      </table>
+
+      </fieldset>
+
+
       <table>
          <tr>
             <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>" /></td>
@@ -629,6 +691,7 @@ if ($permissions['is_admin'] == '1')
        SELECT *, count(t.task_id) AS used_in_tasks
        FROM `flyspray_list_tasktype` tt
        LEFT JOIN flyspray_tasks t ON ( t.task_type = tt.tasktype_id )
+       WHERE project_id = '0'
        GROUP BY tt.tasktype_id
        ORDER BY list_position");
    $countlines = 0;
@@ -712,6 +775,7 @@ if ($permissions['is_admin'] == '1')
        SELECT *, count(t.task_id) AS used_in_tasks
        FROM flyspray_list_resolution r
        LEFT JOIN flyspray_tasks t ON ( t.resolution_reason = r.resolution_id )
+       WHERE project_id = '0'
        GROUP BY r.resolution_id
        ORDER BY list_position");
     $countlines=0;
@@ -1078,7 +1142,8 @@ if ($permissions['is_admin'] == '1')
       <form action="index.php" method="post">
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update_version_list" />
-         <input type="hidden" name="list_type" value="0>" />
+         <input type="hidden" name="list_type" value="version" />
+         <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
          <table class="list">
 
@@ -1090,6 +1155,7 @@ if ($permissions['is_admin'] == '1')
                                     GROUP BY v.version_id
                                     ORDER BY list_position"
                                   );
+
          $countlines = 0;
          while ($row = $db->FetchArray($get_version)) {
          ?>
@@ -1115,17 +1181,13 @@ if ($permissions['is_admin'] == '1')
                <option value="3" <?php if ($row['version_tense'] == '3') { echo "SELECTED";};?>><?php echo $admin_text['future'];?></option>
             </select>
             </td>
-            <?php
-            if ($row['used_in_tasks'] == 0)
-            { ?>
-               <td title="<?php echo $admin_text['listdeletetip'];?>">
-               <label for="delete<?php echo $row['version_id']?>"><?php echo $admin_text['delete'];?></label>
-               <input id="delete<?php echo $row['version_id']?>" type="checkbox" name="delete[<?php echo $row['version_id']?>]" value="1" />
-            <?php
-            } else
-            {
-               echo '<td>&nbsp;';
-            } ?>
+            <?php if ($row['used_in_tasks'] == 0): ?>
+            <td title="<?php echo $admin_text['listdeletetip'];?>">
+            <label for="delete<?php echo $row['version_id']?>"><?php echo $admin_text['delete'];?></label>
+            <input id="delete<?php echo $row['version_id']?>" type="checkbox" name="delete[<?php echo $row['version_id']?>]" value="1" />
+            <?php else: ?>
+            <td>&nbsp;
+            <?php endif; ?>
             </td>
          </tr>
          <?php

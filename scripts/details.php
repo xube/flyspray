@@ -80,16 +80,52 @@ if ($db->CountRows($task_exists)
          <?php echo $details_text['attachedtoproject'] . ' &mdash; ';?>
          <select name="attached_to_project">
          <?php
-         $get_projects = $db->Query("SELECT * FROM flyspray_projects");
+         // If the user has permission to view all projects
+         if ($permissions['global_view'] == '1')
+         {
+            $get_projects = $db->Query("SELECT * FROM flyspray_projects
+                                        WHERE project_is_active = '1'
+                                        ORDER BY project_title");
+
+         // or, if the user is logged in
+         } elseif (isset($_COOKIE['flyspray_userid']))
+         {
+            // This query needs fixing.  It returns double results if a project has the 'others view' option turned on
+            // This means I had to make it strip duplicate results when cycling through projects a bit further down...
+               $get_projects = $db->Query("SELECT p.*
+                                          FROM flyspray_projects p
+                                          LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
+                                          LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
+                                          WHERE uig.user_id = ?
+                                          AND g.view_tasks = '1'
+                                          OR p.others_view = '1'
+                                          AND p.project_is_active = '1'",
+                                          array($current_user['user_id'])
+                                        );
+         } else
+         {
+            // Anonymous users
+            $get_projects = $db->Query("SELECT * FROM flyspray_projects
+                                        WHERE project_is_active = '1'
+                                        AND others_view = '1'
+                                        ORDER BY project_title");
+         }
+
+         // Cycle through the results from whichever query above
+         // The query above is dodgy, and returns duplicate results... so I add each result to an array and filter dupes - FIXME
+         $project_list = array();
          while ($row = $db->FetchArray($get_projects))
          {
-            if ($task_details['attached_to_project'] == $row['project_id'])
+            if ($project_id == $row['project_id'] && $_GET['project'] != '0' && !in_array($row['project_id'], $project_list))
             {
-               echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
-            } else
+               echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
+               $project_list[] = $row['project_id'];
+            } elseif (!in_array($row['project_id'], $project_list))
             {
                echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
+               $project_list[] = $row['project_id'];
             }
+
          }
          ?>
          </select>
@@ -132,8 +168,15 @@ if ($db->CountRows($task_exists)
                   <select id="tasktype" name="task_type">
                   <?php
                   // Get list of task types
-                  $get_severity = $db->Query("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype WHERE show_in_list = ? ORDER BY list_position", array('1'));
-                  while ($row = $db->FetchArray($get_severity))
+                  $get_tasktypes = $db->Query("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
+                                              WHERE show_in_list = '1'
+                                              AND (project_id = '0'
+                                              OR project_id = ?)
+                                              ORDER BY list_position",
+                                              array($project_id)
+                                            );
+
+                  while ($row = $db->FetchArray($get_tasktypes))
                   {
                      if ($row['tasktype_id'] == $task_details['task_type'])
                      {
@@ -154,7 +197,9 @@ if ($db->CountRows($task_exists)
                   <?php
                   $cat_list = $db->Query("SELECT category_id, category_name
                                           FROM flyspray_list_category
-                                          WHERE project_id= ? AND show_in_list= '1' AND parent_id < '1'
+                                          WHERE show_in_list = '1' AND parent_id < '1'
+                                          AND (project_id = '0'
+                                             OR project_id = ?)
                                           ORDER BY list_position",
                                           array($project_id)
                                         );
@@ -173,9 +218,9 @@ if ($db->CountRows($task_exists)
 
                      $subcat_list = $db->Query("SELECT category_id, category_name
                                                 FROM flyspray_list_category
-                                                WHERE project_id = ? AND show_in_list = '1' AND parent_id = ?
+                                                WHERE show_in_list = '1' AND parent_id = ?
                                                 ORDER BY list_position",
-                                                array($project_id, $row['category_id'])
+                                                array($row['category_id'])
                                               );
 
                      while ($subrow = $db->FetchArray($subcat_list))
@@ -244,10 +289,12 @@ if ($db->CountRows($task_exists)
                   <?php
                   // Get list of operating systems
                   $get_os = $db->Query("SELECT os_id, os_name
-                                       FROM flyspray_list_os
-                                       WHERE project_id = ? AND show_in_list = '1'
-                                       ORDER BY list_position",
-                                       array($project_id)
+                                        FROM flyspray_list_os
+                                        WHERE (project_id = ?
+                                               OR project_id = '0')
+                                        AND show_in_list = '1'
+                                        ORDER BY list_position",
+                                        array($project_id)
                                       );
 
                   while ($row = $db->FetchArray($get_os))
@@ -335,7 +382,14 @@ if ($db->CountRows($task_exists)
                      echo "<option value=\"\" selected=\"selected\">{$details_text['undecided']}</option>\n";
                   }
 
-                  $get_version = $db->Query("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' AND version_tense = '3' ORDER BY list_position", array($project_id));
+                  $get_version = $db->Query("SELECT version_id, version_name
+                                             FROM flyspray_list_version
+                                             WHERE show_in_list = '1' AND version_tense = '3'
+                                             AND (project_id = '0'
+                                                OR project_id = ?)
+                                             ORDER BY list_position",
+                                             array($project_id,)
+                                           );
 
                   while ($row = $db->FetchArray($get_version))
                   {
@@ -726,7 +780,11 @@ if ($db->CountRows($task_exists)
                <?php
                $get_resolution = $db->Query("SELECT resolution_id, resolution_name
                                              FROM flyspray_list_resolution
-                                             ORDER BY list_position");
+                                             WHERE (project_id = '0'
+                                             OR project_id = ?)
+                                             ORDER BY list_position",
+                                             array($project_id)
+                                           );
 
                while ($row = $db->FetchArray($get_resolution))
                {
@@ -736,11 +794,8 @@ if ($db->CountRows($task_exists)
             </select>
 
             <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" onclick="Disable2()" />
-            <br />
             <?php echo $details_text['closurecomment'];?>
-            <br />
             <textarea class="admintext" name="closure_comment" rows="3" cols="30"></textarea>
-            <br />
             <input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;<?php echo $details_text['mark100'];?>
          </form>
       </div>
@@ -914,8 +969,8 @@ if ($permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-      <label><?php echo $details_text['addcomment'];?><br />
-      <textarea name="comment_text" cols="72" rows="10"></textarea></label>
+      <label for="comment_text"><?php echo $details_text['addcomment'];?></label><br />
+      <textarea id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
       <br />
       <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />
    </p>

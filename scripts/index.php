@@ -284,15 +284,22 @@ if ($project_prefs['project_is_active'] == '1'
     <select name="type">
       <option value=""><?php echo $index_text['alltasktypes'];?></option>
       <?php
-      $tasktype_list = $db->Query('SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
-                                       WHERE show_in_list = 1
-                                       ORDER BY list_position');
-      while ($row = $db->FetchArray($tasktype_list)) {
-        if (isset($_GET['type']) && $_GET['type'] == $row['tasktype_id']) {
-          echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>\n";
-        } else {
-          echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>\n";
-        }
+      $tasktype_list = $db->Query("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
+                                   WHERE show_in_list = '1'
+                                   AND (project_id = '0'
+                                   OR project_id = ?)
+                                   ORDER BY list_position",
+                                   array($project_id)
+                                 );
+      while ($row = $db->FetchArray($tasktype_list))
+      {
+         if (isset($_GET['type']) && $_GET['type'] == $row['tasktype_id'])
+         {
+            echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>\n";
+         } else
+         {
+            echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>\n";
+         }
       }
       ?>
     </select>
@@ -301,12 +308,15 @@ if ($project_prefs['project_is_active'] == '1'
       <option value=""><?php echo $index_text['allseverities'];?></option>
       <?php
       require("lang/$lang/severity.php");
-      foreach($severity_list as $key => $val) {
-        if (isset($_GET['sev']) && $_GET['sev'] == $key) {
-          echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-        } else {
-          echo "<option value=\"$key\">$val</option>\n";
-        }
+      foreach($severity_list as $key => $val)
+      {
+         if (isset($_GET['sev']) && $_GET['sev'] == $key)
+         {
+            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+         } else
+         {
+            echo "<option value=\"$key\">$val</option>\n";
+         }
       }
       ?>
     </select>
@@ -315,15 +325,23 @@ if ($project_prefs['project_is_active'] == '1'
       <option value=""><?php echo $index_text['dueanyversion'];?></option>
       <?php
       $ver_list = $db->Query("SELECT version_id, version_name
-                                  FROM flyspray_list_version
-                                  WHERE project_id=? AND show_in_list=? AND version_tense=?
-                                  ORDER BY list_position", array($project_id, '1', '3'));
-      while ($row = $db->FetchArray($ver_list)) {
-        if (isset($_GET['due']) && $_GET['due'] == $row['version_id']) {
-          echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
-        } else {
-          echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>";
-        }
+                              FROM flyspray_list_version
+                              WHERE show_in_list = '1' AND version_tense = '3'
+                              AND (project_id = '0'
+                              OR project_id = ?)
+                              ORDER BY list_position",
+                              array($project_id,)
+                            );
+
+      while ($row = $db->FetchArray($ver_list))
+      {
+         if (isset($_GET['due']) && $_GET['due'] == $row['version_id'])
+         {
+            echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
+         } else
+         {
+            echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>";
+         }
       }
       ?>
     </select>
@@ -339,30 +357,44 @@ if ($project_prefs['project_is_active'] == '1'
     <select name="cat" <?php if(isset($_GET['project']) && $_GET['project'] == '0') echo 'DISABLED';?>>
       <option value=""><?php echo $index_text['allcategories'];?></option>
       <?php
-      $cat_list = $db->Query('SELECT category_id, category_name
-                                  FROM flyspray_list_category
-                                  WHERE project_id=? AND show_in_list=? AND parent_id < ?
-                                  ORDER BY list_position', array($project_id, '1', '1'));
-      while ($row = $db->FetchArray($cat_list)) {
-        $category_name = stripslashes($row['category_name']);
-        if (isset($_GET['cat']) && $_GET['cat'] == $row['category_id']) {
-          echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
-        } else {
-          echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
-        }
+      $cat_list = $db->Query("SELECT category_id, category_name
+                              FROM flyspray_list_category
+                              WHERE show_in_list = '1' AND parent_id < '1'
+                              AND (project_id = '0'
+                                   OR project_id = ?)
+                              ORDER BY list_position",
+                              array($project_id)
+                            );
 
-        $subcat_list = $db->Query('SELECT category_id, category_name
-                                  FROM flyspray_list_category
-                                  WHERE project_id=? AND show_in_list=? AND parent_id = ?
-                                  ORDER BY list_position', array($project_id, '1', $row['category_id']));
-        while ($subrow = $db->FetchArray($subcat_list)) {
-          $subcategory_name = stripslashes($subrow['category_name']);
-          if (isset($_GET['cat']) && $_GET['cat'] == $subrow['category_id']) {
-            echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-          } else {
-            echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-          }
-        }
+      while ($row = $db->FetchArray($cat_list))
+      {
+         $category_name = stripslashes($row['category_name']);
+         if (isset($_GET['cat']) && $_GET['cat'] == $row['category_id'])
+         {
+            echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
+         } else
+         {
+            echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+         }
+
+         $subcat_list = $db->Query("SELECT category_id, category_name
+                                    FROM flyspray_list_category
+                                    WHERE show_in_list = '1' AND parent_id = ?
+                                    ORDER BY list_position",
+                                    array($row['category_id'])
+                                  );
+
+         while ($subrow = $db->FetchArray($subcat_list))
+         {
+            $subcategory_name = stripslashes($subrow['category_name']);
+            if (isset($_GET['cat']) && $_GET['cat'] == $subrow['category_id'])
+            {
+               echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
+            } else
+            {
+               echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
+            }
+         }
       }
       ?>
     </select>
@@ -372,12 +404,15 @@ if ($project_prefs['project_is_active'] == '1'
       <option value="" <?php if ((isset($_GET['status']) && empty($_GET['status'])) OR !isset($_GET['status'])) { echo "selected=\"selected\"";}?>><?php echo $index_text['allopentasks'];?></option>
       <?php
       require("lang/$lang/status.php");
-      foreach($status_list as $key => $val) {
-        if (isset($_GET['status']) && $_GET['status'] == $key) {
-          echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-        } else {
-          echo "<option value=\"$key\">$val</option>\n";
-        }
+      foreach($status_list as $key => $val)
+      {
+         if (isset($_GET['status']) && $_GET['status'] == $key)
+         {
+            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+         } else
+         {
+            echo "<option value=\"$key\">$val</option>\n";
+         }
       }
       ?>
       <option value="closed" <?php if(isset($_GET['status']) && $_GET['status'] == "closed") { echo "SELECTED";}?>><?php echo $index_text['closed'];?></option>
@@ -407,14 +442,28 @@ if ($project_prefs['project_is_active'] == '1'
  * @param string $defaultsort The default sort order
  * @param string $image    An image to display instead of the column name
  */
+
+// Setting this for the function below
+$project = $_GET['project'];
+
 //function list_heading($colname, $orderkey, $image = '')
 function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 {
-  global $project_prefs;
-  global $index_text;
-  global $get;
+   global $project;
+   global $flyspray_prefs;
+   global $project_prefs;
+   global $index_text;
+   global $get;
 
-  if(ereg("$colname", $project_prefs['visible_columns']))
+   if ($project == '0')
+   {
+      $visible = $flyspray_prefs['visible_columns'];
+   } else
+   {
+      $visible = $project_prefs['visible_columns'];
+   }
+
+  if(ereg("$colname", $visible))
   {
     if($orderkey)
     {
@@ -474,37 +523,51 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
  * @param integer $nowrap       Whether to force the cell contents not to wrap
  * @param string $url           A URL to wrap around the cell contents
  */
+
+// Setting this for the function below
+$project = $_GET['project'];
+
 function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 {
-  global $project_prefs;
+   global $project;
+   global $flyspray_prefs;
+   global $project_prefs;
 
-  if(ereg("$colname", $project_prefs['visible_columns']))
-  {
-    // We have a problem with these conversions applied to the progress cell
-    if($colname != "progress")
-    {
-      $cellvalue = str_replace("&", "&amp;", $cellvalue);
-      $cellvalue = str_replace("<", "&lt;", $cellvalue);
-      $cellvalue = stripslashes($cellvalue);
-    }
+   if ($project == '0')
+   {
+      $visible = $flyspray_prefs['visible_columns'];
+   } else
+   {
+      $visible = $project_prefs['visible_columns'];
+   }
 
-    // Check if we're meant to force this cell not to wrap
-    if($nowrap)
-    {
-      $cellvalue = str_replace(" ", "&nbsp;", $cellvalue);
-    }
+   if(ereg("$colname", $visible))
+   {
+      // We have a problem with these conversions applied to the progress cell
+      if($colname != "progress")
+      {
+         $cellvalue = str_replace("&", "&amp;", $cellvalue);
+         $cellvalue = str_replace("<", "&lt;", $cellvalue);
+         $cellvalue = stripslashes($cellvalue);
+      }
 
-    echo "<td class=\"task_$colname\">";
-    if($url)
-    {
-      echo "<a href=\"$url\">$cellvalue</a>";
-    }
-    else
-    {
-      echo "$cellvalue";
-    }
-    echo "</td>\n";
-  }
+       // Check if we're meant to force this cell not to wrap
+       if($nowrap)
+      {
+         $cellvalue = str_replace(" ", "&nbsp;", $cellvalue);
+      }
+
+      echo "<td class=\"task_$colname\">";
+      if($url)
+      {
+         echo "<a href=\"$url\">$cellvalue</a>";
+      }
+      else
+      {
+         echo "$cellvalue";
+      }
+      echo "</td>\n";
+   }
 }
 
 ?>
@@ -595,8 +658,8 @@ ORDER BY
         $sortorder", $sql_params, $perpage, $offset);
 
 
-   while ($task_details = $db->FetchArray($get_details)) {
-
+   while ($task_details = $db->FetchArray($get_details))
+   {
       // Set the status text to 'closed' if this task is closed
       if ($task_details['is_closed'] == "1")
       {
@@ -676,7 +739,7 @@ ORDER BY
    <!--</tbody>-->
    </table>
 
-   <table id="tasklist">
+   <table id="pagenumbers">
       <tr>
       <?php
       if ($total > 0) {

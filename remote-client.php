@@ -19,7 +19,7 @@ $client = new IXR_Client('http://localhost/flyspray-dev/remote.php');
 
 // Request a task details
 // variables: username, password, task_id
-if(!$client->query('fs.getTask', 'super', 'super', '1'))
+if(!$client->query('fs.closeTask', 'super', 'super', '2', '2', 'Foo Bar w00t', '1'))
 {
    die('Something went wrong - '.$client->getErrorCode().' : '.$client->getErrorMessage());
 }
