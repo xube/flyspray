@@ -497,22 +497,37 @@ $num_notifications = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_notif
     } else {
       echo "<a class=\"tabnotactive\"";
     };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=comments#tabs"><?php echo "{$details_text['comments']} ($num_comments)";?></a><small> | </small><?php if ($area == 'attachments') {
+    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=comments#tabs"><?php echo "{$details_text['comments']} ($num_comments)";?></a><small> | </small>
+    <?php if ($area == 'attachments') {
       echo "<a class=\"tabactive\"";
     } else {
       echo "<a class=\"tabnotactive\"";
     };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=attachments#tabs"><?php echo "{$details_text['attachments']} ($num_attachments)";?></a><small> | </small><?php if ($area == 'related') {
+    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=attachments#tabs"><?php echo "{$details_text['attachments']} ($num_attachments)";?></a><small> | </small>
+   <?php if ($area == 'related') {
       echo "<a class=\"tabactive\"";
     } else {
       echo "<a class=\"tabnotactive\"";
     };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=related#tabs"><?php echo "{$details_text['relatedtasks']} ($num_related/$num_related_to)";?></a><small> | </small><?php if ($area == 'notify') {
+    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=related#tabs"><?php echo "{$details_text['relatedtasks']} ($num_related/$num_related_to)";?></a><small> | </small>
+    <?php if ($area == 'notify') {
       echo "<a class=\"tabactive\"";
     } else {
       echo "<a class=\"tabnotactive\"";
     };
-    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=notify#tabs"><?php echo "{$details_text['notifications']} ($num_notifications)";?></a>
+    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=notify#tabs"><?php echo "{$details_text['notifications']} ($num_notifications)";?></a><small> | </small>
+  <?php if ($area == 'remind') {
+      echo "<a class=\"tabactive\"";
+    } else {
+      echo "<a class=\"tabnotactive\"";
+    };
+    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=remind#tabs"><?php echo "{$details_text['reminders']} ($num_reminderss)";?></a><small> | </small>
+  <?php if ($area == 'system') {
+      echo "<a class=\"tabactive\"";
+    } else {
+      echo "<a class=\"tabnotactive\"";
+    };
+    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=system#tabs"><?php echo "{$details_text['system']}";?></a><small> | </small>
 </p>
 
 <?php
@@ -847,6 +862,147 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['item_status'] != '8')
     echo "</div>";
 
 // End of notifications area
+
+// Start of scheduled reminders area
+} elseif ($area == 'remind') { ?>
+<div class="tabentries">
+
+
+    <?php
+    $get_user_ids = $fs->dbQuery("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id']));
+    while ($row = $fs->dbFetchArray($get_user_ids)) {
+      $get_user = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
+      while ($subrow = $fs->dbFetchArray($get_user)) {
+      ?>
+      <div class="tabentry">
+      <?php
+        // If the user can modify jobs, then show them a form to remove a notified user 
+        if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
+          ?>
+          <div class="modifycomment">
+          <form action="index.php" method="post">
+              <p>
+                <input type="hidden" name="do" value="modify">
+                <input type="hidden" name="action" value="remove_notification">
+                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
+                <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>">
+                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
+              </p>
+          </form>
+          </div>
+
+        <?php
+
+        };
+                echo "<p>{$subrow['real_name']} ({$subrow['user_name']})</p>";
+      echo "</div>";
+      };
+    };
+    if ($task_details['item_status'] != '8') {
+    ?>
+
+</div>
+<div class="tabentries">
+  <?php if ($_SESSION['admin'] == '1') { ?>
+
+
+  <div class="tabentry">
+  <?php
+  };
+  if ($_SESSION['userid']) {
+    $result = $fs->dbQuery("SELECT * FROM flyspray_notifications
+              WHERE task_id = ?
+              AND user_id = ?
+              ", array($_GET['id'], $_SESSION['userid']));
+    if (!$fs->dbCountRows($result)) {
+  ?>
+
+  <?php } else { ?>
+
+  <?php
+    };
+  };?>
+  </div>
+
+<div class="tabentry">
+<form>
+Remind <select class="adminlist">
+<option>-Assign Someone-</option>
+<option>MySelf</option>
+<option>Task Assignee</option>
+</select> Every <input type=text> <select class="adminlist"><option>-Time Period-</option>
+<option>Minute(s)</option>
+<option>Hour(s)</option>
+
+<option>Days(s)</option>
+<option>Month(s)</option>
+<option>Year(s)</option>
+</select>
+<br />
+Start Reminders After <input type=text> <select class="adminlist"><option>-Time Period-</option>
+<option>Minute(s)</option>
+<option>Hour(s)</option>
+<option>Days(s)</option>
+
+<option>Month(s)</option>
+<option>Year(s)</option>
+</select> of being assigned.
+</div>
+
+    <?php
+    };
+    ?>
+
+<?
+
+// End of scheduled reminders area
+
+// Start of system log area
+} elseif ($area == 'system') { ?>
+<div class="tabentries">
+
+
+    <?php
+    $get_user_ids = $fs->dbQuery("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id']));
+    while ($row = $fs->dbFetchArray($get_user_ids)) {
+      $get_user = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
+      while ($subrow = $fs->dbFetchArray($get_user)) {
+      ?>
+      <div class="tabentry">
+      <?php
+        // If the user can modify jobs, then show them a form to remove a notified user 
+        if ($_SESSION['admin'] == '1' && $task_details['item_status'] != '8') {
+          ?>
+          <div class="modifycomment">
+          <form action="index.php" method="post">
+              <p>
+                <input type="hidden" name="do" value="modify">
+                <input type="hidden" name="action" value="remove_notification">
+                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>">
+                <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>">
+                <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
+              </p>
+          </form>
+          </div>
+
+        <?php
+
+        };
+                echo "<p>{$subrow['real_name']} ({$subrow['user_name']})</p>";
+      echo "</div>";
+      };
+    };
+
+    ?>
+
+</div>
+
+
+
+<?
+
+// End of system log area
+
 
 // End of tabbed areas
 };

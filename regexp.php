@@ -64,7 +64,7 @@ if ($_GET['page']) {
     // Yes. Now check its' regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['page'])) {
 
-		//continue
+        //continue
 
     } else {
 
@@ -171,7 +171,7 @@ if ($_GET['jabber_id']) {
 if ($_GET['area']) {
     
     // Yes. Now check its' regex format for safety -- Limited range
-    if (preg_match ("/^(editcomment|comments|attachments|related|notify|options|projects|users|tasktype|resolution|groups)$/", $_GET['area'])) {
+    if (preg_match ("/^(editcomment|comments|attachments|related|notify|options|projects|users|tasktype|resolution|groups|remind|system)$/", $_GET['area'])) {
 
        // continue;
     } else {
