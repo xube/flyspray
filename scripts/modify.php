@@ -67,7 +67,7 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
     if ($_POST['notifyme'] == '1') {
       $insert = $fs->dbQuery("INSERT INTO flyspray_notifications
       (task_id, user_id)
-      VALUES('{$get_task_details['task_id'']}, '{$_COOKIE['flyspray_userid']}')");
+      VALUES('{$get_task_details['task_id']}, '{$_COOKIE['flyspray_userid']}')");
     };
 
     // Check if the new task was assigned to anyone
@@ -220,8 +220,8 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 
 // Complete the modification notification
 $item_summary = stripslashes($_POST['item_summary']);
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
-$message = "{$modify_text['messagefrom']} {$project_prefs['project_title']}\n
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
+$message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasjustmodified']} {$modify_text['youonnotify']}
 {$modify_text['changedfields']}\n-----\n"
 . $message .
@@ -257,7 +257,7 @@ $current_realname ($current_username) {$modify_text['hasjustmodified']} {$modify
         };
 
 $item_summary = stripslashes($_POST['item_summary']);
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['nolongerassigned']} {$get_new['real_name']} ($new_username).\n
 {$modify_text['task']} #{$_POST['task_id']} - {$_POST['item_summary']}\n
@@ -273,7 +273,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
       if ($_POST['assigned_to'] != "0") {
 
         // Get the brief notification message to send
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - {$_POST['item_summary']}";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - {$_POST['item_summary']}";
 $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasassigned']}\n
 {$modify_text['task']} #{$_POST['task_id']}: {$_POST['item_summary']} \n
@@ -330,7 +330,7 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
     if ($_COOKIE['flyspray_userid'] != $_POST['assigned_to']) {
 
 // Create a basic notification message
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $brief_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasclosedassigned']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
@@ -349,7 +349,7 @@ $brief_message = $brief_message . "\n{$flyspray_prefs['base_url']}index.php?do=d
 
     };
 // Create a detailed notification message
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasclosed']} {$modify_text['youonnotify']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
@@ -398,7 +398,7 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
     if ($closed_by != $_COOKIE['flyspray_userid']) {
 
       // Generate basic notification message to send
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $brief_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasreopened']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
@@ -411,7 +411,7 @@ $current_realname ($current_username) {$modify_text['hasreopened']}\n
     };
 
 // Generate detailed notification message to send
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_text['youonnotify']} \n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
@@ -456,7 +456,7 @@ $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_tex
        ) {
 
       // Generate the basic notification message to send
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $basic_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['commenttoassigned']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
@@ -470,7 +470,7 @@ $current_realname ($current_username) {$modify_text['commenttoassigned']}\n
     };
 
       // Generate the detailed notification message to send
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_text['youonnotify']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
@@ -880,7 +880,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
          && ($bug_details['assigned_to'] != $_COOKIE['flyspray_userid'])
          ) {
 
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $basic_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasuploaded']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary \n
@@ -892,7 +892,7 @@ $current_realname ($current_username) {$modify_text['hasuploaded']}\n
 
       };
 
-$subject = "{$modify_text['flyspraytask'] #{$_POST['task_id']} - $item_summary";
+$subject = "{$modify_text['flyspraytask']} #{$_POST['task_id']} - $item_summary";
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasattached']} {$modify_text['youonnotify']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
