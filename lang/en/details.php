@@ -106,5 +106,13 @@ $details_text = array (
 'previousvalue'     =>   'Previous value',
 'newvalue'          =>   'New value',
 
+
+// Added in version 0.9.7
+
+'selectareason'     =>   'Select a reason',
+'assigntome'        =>   'Assign to me',
+'reopenrequest'     =>   'Request re-open',
+'requestclose'      =>   'Request closure',
+
 );
 ?>

@@ -580,6 +580,12 @@ map#formselecttasks {
   margin               : 0em 0px 0em 0px;
 }
 
+div#actionbuttons {
+  margin-top           : 15px;
+  margin-left          : 5px;
+}
+
+
 }
 
 @media print {

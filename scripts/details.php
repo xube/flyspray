@@ -15,19 +15,33 @@ if (!get_magic_quotes_gpc()) {
   $detailed_desc = str_replace("\\", "&#92;", $detailed_desc);
 };
 
+// Create an array with effective permissions for this user on this task
+$effective_permissions = array();
+
 // Confirm that the user can modify this task or not
 if ($permissions['modify_all_tasks'] == '1'
     OR ($permissions['modify_own_tasks'] == '1' && $task_details['assigned_to'] == $current_user['user_id'])) {
-  $canedit = "1";
-} else {
-  $canedit = '0';
+      $effective_permissions['can_edit'] = '1';
+};
+
+// Check if the user can take ownership of this task
+if (($permissions['assign_to_self'] == '1' && $task_details['assigned_to'] == '0')
+    OR $permissions['assign_others_to_self'] == '1'
+    && $task_details['assigned_to'] != $current_user['user_id']) {
+      $effective_permissions['can_take_ownership'] = '1';
+};
+
+// Check if the user can close this task
+if (($permissions['close_own_tasks'] == '1' && $task_details['assigned_to'] == $current_user['user_id'])
+    OR $permissions['close_other_tasks'] == '1') {
+      $effective_permissions['can_close'] = '1';
 };
 
 $item_summary = stripslashes($item_summary);
 $detailed_desc = stripslashes($detailed_desc);
 
-// Check if the user has rights to modify this task
-if ($canedit == '1'
+
+if ($effective_permissions['can_edit'] == '1'
   && $task_details['is_closed'] != '1'
   && $_GET['edit'] == 'yep') {
 
@@ -314,7 +328,7 @@ if ($canedit == '1'
 <?php
 //
 } elseif (($task_details['is_closed'] == '1'
-           OR $canedit == '0'
+           OR $effective_permissions['can_edit'] == '0'
            OR !$GET['edit'])
          ) {
 //////////////////////////////////////
@@ -337,11 +351,11 @@ if ($canedit == '1'
     <?php echo "{$details_text['task']} #{$_GET['id']} &mdash; $item_summary";?>
     </h2>
     <?php
-    if ($canedit == '1'
-    && $task_details['is_closed'] != '1') {
+    //if ($effective_permissions['can_edit'] == '1'
+    //&& $task_details['is_closed'] != '1') {
     ?>
-    <span id="linkedittask"><?php echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;edit=yep\">" . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/edit.png") . "&nbsp;{$details_text['edittask']}</a>";?></span>
-    <?php };
+    <!--<span id="linkedittask"><?php echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;edit=yep\">" . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/edit.png") . "&nbsp;{$details_text['edittask']}</a>";?></span>-->
+    <?php //};
     echo "{$details_text['attachedtoproject']} &mdash; <a href=\"?project={$task_details['attached_to_project']}\">{$task_details['project_title']}</a>";
     ?>
 
@@ -459,53 +473,72 @@ if ($canedit == '1'
       </tr>
     </table>
 
+<div id="actionbuttons">
+
   <?php
+  // If the task is closed, show the closure reason
   if ($task_details['is_closed'] == '1') {
-  ?>
-  <p>
-      <?php
-      $get_closedby_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['closed_by']));
-      list($closedby_username, $closedby_realname) = $fs->dbFetchArray($get_closedby_name);
-      $date_closed = $task_details['date_closed'];
-      $date_closed = $fs->formatDate($date_closed, true);
-      echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br />";
-	  echo "{$details_text['date']}&nbsp;&nbsp;$date_closed.";
-      ?>
-      <br />
-      <?php echo $details_text['reasonforclosing'];?>&nbsp;&nbsp;
-      <?php echo $task_details['resolution_name'];?>
-      <br />
-      <?php
-      if ($task_details['closure_comment'] != '') {
-       echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
-       $closure_comment = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $task_details['closure_comment']);
-       echo nl2br(stripslashes($closure_comment));
-      };
-     ?>
-    </p>
-    <?php
+      
+    $get_closedby_name = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['closed_by']));
+    list($closedby_username, $closedby_realname) = $fs->dbFetchArray($get_closedby_name);
+    $date_closed = $task_details['date_closed'];
+    $date_closed = $fs->formatDate($date_closed, true);
+    echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br />";
+    echo "{$details_text['date']}&nbsp;&nbsp;$date_closed.";
+    echo '<br />';
+    echo $details_text['reasonforclosing'] . '&nbsp;&nbsp;';
+    echo $task_details['resolution_name'];
+    echo '<br />';
+      
+    if ($task_details['closure_comment'] != '') {
+     echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
+     $closure_comment = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $task_details['closure_comment']);
+     echo nl2br(stripslashes($closure_comment));
     };
-    if ($canedit == '1' && $task_details['is_closed'] == '1') { ?>
-  <form name="form2" action="index.php" method="post" id="formreopentask">
-  <p>
-      <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="reopen" />
-      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['reopenthistask'];?>" onclick="Disable2()" />
-  </p>
-  </form>
+    
+    // End of checking if a task is closed
+    };
+
+    // Check permissions and task status, then show the "re-open task" button
+    if ($effective_permissions['can_edit'] == '1' && $task_details['is_closed'] == '1') { ?>
+
+      <form name="form2" action="index.php" method="post" id="formreopentask">
+      <p>
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="reopen" />
+          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+          <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['reopenthistask'];?>" onclick="Disable2()" />
+      </p>
+      </form>
+
     <?php
-    // If the user CAN modify tasks, and the task is still open
-    } elseif ($canedit == '1' && $task_details['is_closed'] != '1') {
-    ?>
-    <form name="form2" action="index.php" method="post" id="formclosetask">
-    <p>
-        <?php echo $details_text['closetask'];?>&nbsp;
+    // If they can't re-open this, show a button to request a PM re-open it
+    } elseif ($effective_permissions['can_edit'] != '1' && $task_details['is_closed'] == '1') { ?>
+
+      <form name="form2" action="index.php" method="post" id="formreopenrequesttask">
+      <p>
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="reopenrequest" />
+          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+          <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['reopenrequest'];?>" onclick="Disable2()" />
+      </p>
+      </form>
+
+    <?php
+    // End of the "re-open task" form
+    };
+
+    // Check permissions and task status, then show the "close task" form
+    if ($effective_permissions['can_close'] == '1'
+        && $task_details['is_closed'] != '1') {
+        ?>
+
+      <form name="form2" action="index.php" method="post" id="formclosetask">
         <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="close" />
         <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>" />
-        <!--<input type="hidden" name="item_summary" value="<?php echo $task_details['item_summary'];?>" />-->
         <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+        <?php echo $details_text['closetask'];?>
         <select class="adminlist" name="resolution_reason">
         <?php
         $get_resolution = $fs->dbQuery("SELECT resolution_id, resolution_name FROM flyspray_list_resolution ORDER BY list_position");
@@ -523,16 +556,55 @@ if ($canedit == '1'
         <br />
         <textarea class="admintext" name="closure_comment" rows="2" cols="30"></textarea>
         <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" onclick="Disable2()" />
-    </p>
-    </form>
+     </form>
+
 
     <?php
-    };
-    ?>
+    // If the user owns this task but can't close it, show a button to request closure
+    } elseif ($effective_permissions['can_close'] != '1'
+              && $task_details['assigned_to'] == $current_user['user_id']) { ?>
 
+                <form name-"form2" action="index.php" method="post" id="formrequestclose">
+                  <input type="hidden" name="do" value="modify" />
+                  <input type="hidden" name="action" value="requestclose" />
+                  <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+                  <input type="submit" class="adminbutton" value="<?php echo $details_text['requestclose'];?>" />
+                 </form>
+
+    <?php
+    // End of "close task" forms
+    };
+    
+    // Check permissions and task status, then show the "take ownership" button
+    if ($effective_permissions['can_take_ownership'] == '1' && $task_details['is_closed'] != '1') { ?>
+
+          <form id="takeownershipform" action="index.php" method="post">
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="takeownership" />
+          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
+          <input type="hidden" name="user_id" value="<?php echo $current_user['user_id'];?>" />
+          <input type="submit" class="adminbutton" value="<?php echo $details_text['assigntome'];?>" />
+          </form>
+
+    <?php
+    // End of "take ownership" form
+    };
+
+    // Check permissions, then show the "edit task" button
+    if ($effective_permissions['can_edit'] == '1'
+    && $task_details['is_closed'] != '1') {
+    ?>
+    <form action="?do=details&id=<?php echo $_GET['id'];?>&edit=yep" method="post">
+      <input class="adminbutton" type="submit" value="<?php echo $details_text['edittask'];?>" />
+    </form>
+    </div>
     </div>
 
-<?php
+   <?php
+   // End of showing the "edit task" button
+   };
+
+
 /////////////////////////////////////////////////
 // End of checking if a job should be editable //
 /////////////////////////////////////////////////
@@ -846,7 +918,7 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
       <div class="tabentry">
        <?php
         // If the user can modify jobs, then show them a form to remove related tasks
-        if ($canedit == '1' && $task_details['is_closed'] != '1') {
+        if ($effective_permissions['can_edit'] == '1' && $task_details['is_closed'] != '1') {
           ?>
          <div class="modifycomment">
           <form action="index.php" method="post">
@@ -863,12 +935,12 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
 
         <?php
         };
-        echo "<p><a href=\"?do=details&amp;id={$row['related_task']}\">#{$row['related_task']} &mdash; $summary</a></p>";
+        echo "<p><a href=\"?do=details&amp;id={$row['related_task']}\">FS#{$row['related_task']} &mdash; $summary</a></p>";
 	echo '</div>';
     };
    };
 
-    if ($canedit == "1" && $task_details['is_closed'] != '1') {
+    if ($effective_permissions['can_edit'] == "1" && $task_details['is_closed'] != '1') {
     ?>
 
   <form action="index.php" method="post" id="formaddrelatedtask">
@@ -895,7 +967,7 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
       $get_summary = $fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($row['this_task']));
       while ($subrow = $fs->dbFetchArray($get_summary)) {
         $summary = stripslashes($subrow['item_summary']);
-        echo "<a href=\"?do=details&amp;id={$row['this_task']}\">#{$row['this_task']} &mdash; $summary</a><br />";
+        echo "<a href=\"?do=details&amp;id={$row['this_task']}\">FS#{$row['this_task']} &mdash; $summary</a><br />";
       };
     };
     echo "</p></div>";
@@ -942,7 +1014,7 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
 
 </div>
 <div class="tabentries">
-  <?php if ($permissions['is_admin'] == '1') { ?>
+  <?php if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') { ?>
   <div class="tabentry">
   <form action="index.php" method="post">
   <p>
@@ -1010,8 +1082,8 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
       $get_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($row['to_user_id']));
       while ($subrow = $fs->dbFetchArray($get_username)) {
 
-// If the user has permission, then show them a form to remove a notified user
-        if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
+// If the user has permission, then show them a form to remove a reminder
+        if (($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') && $task_details['is_closed'] != '1') {
         ?>
           <div class="modifycomment">
           <form action="index.php" method="post">
@@ -1044,7 +1116,7 @@ if ($permissions['attach_files'] == "1" && $task_details['is_closed'] != '1') {
 		
 		echo "<br />";
 		
-		echo "<em>{$details_text['message']}:</em> {$row['reminder_message']}";
+		echo '<em>' . $details_text['message'] . ':</em>' . nl2br($row['reminder_message']);
 
 		echo "<br /><br /></div>";
       };

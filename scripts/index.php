@@ -59,7 +59,7 @@ foreach ( $sort as $key => $val ) {
   };
 };
 
-$sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, task_id ASC"; 
+$sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, t.task_id ASC"; 
 
 // Check that what was submitted is a numerical value; most of them should be
 
