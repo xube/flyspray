@@ -28,10 +28,10 @@ class Flyspray {
       $this->dbtype = $dbtype;
 
       $this->dblink = NewADOConnection($dbtype);
-      $this->dblink->Connect($dbhost, $dbuser, $dbpass, $dbname);
+      $res = $this->dblink->Connect($dbhost, $dbuser, $dbpass, $dbname);
       $this->dblink->SetFetchMode(ADODB_FETCH_BOTH);
 
-      return true;
+      return $res;
 
    }
 

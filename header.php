@@ -44,7 +44,10 @@ session_start();
 
 $fs = new Flyspray;
 
-$fs->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);
+$res = $fs->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);
+if (!$res) {
+  die("Database disconnected");
+}
 
 $flyspray_prefs = $fs->getGlobalPrefs();
 
