@@ -439,7 +439,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 
         echo "<optgroup label=\"{$group_details['group_name']}\">\n";
 
-        $user_query = $this->dbQuery("SELECT * FROM flyspray_users WHERE account_enabled = ? AND group_in = ? ORDER BY ?", array('1', $val, 'real_name'));
+        $user_query = $this->dbQuery("SELECT * FROM flyspray_users WHERE account_enabled = ? AND group_in = ? ORDER BY real_name", array('1', $val));
 
         while ($row = $this->dbFetchArray($user_query)) {
           if ($current == $row['user_id']) {

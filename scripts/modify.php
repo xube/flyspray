@@ -21,7 +21,7 @@ $now = date(U);
 
 if (!empty($_POST['task_id'])) {
   $old_details = $fs->GetTaskDetails($_POST['task_id']);
-};
+}
 
 ////////////////////////////////
 // Start of adding a new task //
@@ -1270,7 +1270,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                               WHERE category_id = ?",
                               array($listname[$i], $listposition[$i],
                               $fs->emptyToZero($listshow[$i]),
-                              $listowner[$i],
+                              $fs->emptyToZero($listowner[$i]),
                               $listid[$i]));
       }
       else {
@@ -1298,7 +1298,8 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                                 VALUES (?, ?, ?, ?, ?, ?)",
                         array($_POST['project_id'], $_POST['list_name'],
                         $_POST['list_position'], '1',
-                        $_POST['category_owner'], $_POST['parent_id']));
+                        $_POST['category_owner'], 
+			$fs->emptyToZero($_POST['parent_id'])));
       echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
   } else {

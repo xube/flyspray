@@ -33,7 +33,7 @@ $admin_text = array (
 'editgroup'	=>	'Edytuj grupę',
 'groupname'	=>	'Nazwa grupy',
 'description'	=>	'Opis',
-'admin'		=>	'Admin grupy',
+'admin'		=>	'Grupa administracyjna',
 'opennewtasks'	=>	'Tworzenie nowych zgłoszeń',
 'modifytasks'	=>	'Modyfikowanie zgłoszeń',
 'addcomments'	=>	'Dodawanie komentarzy',
@@ -57,7 +57,7 @@ $admin_text = array (
 'owner'		=>	'Właściciel',
 'selectowner'	=>	'Wybierz właściciela',
 'update'	=>	'Zachowaj',
-'addnew'	=>	'Dodaj nową',
+'addnew'	=>	'Dodaj',
 
 'flysprayprefs'	=>	'Ustawienia Flyspray',
 'projecttitle'	=>	'Nagłówek strony',
@@ -96,25 +96,29 @@ $admin_text = array (
 'projectprefs'		=>	'Ustawienia projektu',
 'defaultproject'	=>	'Projekt domyślny',
 'projectlists'		=>	'Lista projektów',
-'addnewproject'		=>	'Dodaj projekt',
 'showlogo'		=>	'Pokazuj logo tytułowe',
 'intromessage'		=>	'Komunikat powitalny',
 'isactive'		=>	'Projekt aktywny',
 'createproject'		=>	'Utwórz projekt',
 
 // Added in version 0.9.6
+
 'nopermission'		=>  'Nie masz uprawnień do oglądania tej strony.',
 'listordertip'		=>  'Kolejność, w jakiej pozycje pojawią się na liście',
 'listshowtip'		=>  'Pokazuj pozycję na liście',
 'categoryownertip'	=>  'Ten użytkownik otrzyma powiadomienie o otwarciu zgłoszenie w tej kategorii',
 'categoryparenttip'	=>  'Kategoria nadrzędna w stosunku do tej kategorii',
-'notsubcategory'	=>	'Brak - kategoria pierwszego poziomu',
+'notsubcategory'	=>  'Brak - kategoria pierwszego poziomu',
 'showinlineimages'	=>  'Pokazuj załączniki graficzne na stronie',
-'dateformat'		=>	'Format daty',
-'dateformat_extended' => 'Rozszerzony format daty',
-'subcategoryof'		=>	'Podkategoria',
-'visiblecolumns'	=>	'Kolumny wyświetlana na liście zgłoszeń',
-
+'dateformat'		=>  'Format daty',
+'dateformat_extended'	=>  'Rozszerzony format daty',
+'subcategoryof'		=>  'Podkategoria',
+'visiblecolumns'	=>  'Kolumny wyświetlana na liście zadań',
+'tense'			=>  'Czas',
+'listtensetip'		=>  'Przeszłe, obecne, przyszłe',
+'past'			=>  'Przeszłe',
+'present'		=>  'Obecne',
+'future'		=>  'Przyszłe',
 
 );
 // vim:fenc=utf-8:enc=utf-8

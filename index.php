@@ -102,7 +102,7 @@ if ($project_prefs['show_logo'] == '1') {
       <select name="project">
       <option value="0"<?php if ($_GET['project'] == '0') echo ' SELECTED';?>><?php echo $language['allprojects'];?></option>
       <?php
-      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY ?", array('1', 'project_title'));
+      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_is_active = ? ORDER BY project_title", array('1'));
       while ($row = $fs->dbFetchArray($get_projects)) {
         if ($project_id == $row['project_id'] && $_GET['project'] != '0') {
           echo "<option value=\"{$row['project_id']}\" SELECTED>{$row['project_title']}</option>";

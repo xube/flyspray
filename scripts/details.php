@@ -580,7 +580,7 @@ if ($area == 'comments') { ?>
   <div class="tabentries">
     <?php
     // if there are comments, show them
-    $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY ?", array($task_details['task_id'], 'comment_id'));
+    $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id", array($task_details['task_id']));
     while ($row = $fs->dbFetchArray($getcomments)) {
       $getusername = $fs->dbQuery("SELECT real_name FROM flyspray_users WHERE user_id = ?", array($row['user_id']));
       list($user_name) = $fs->dbFetchArray($getusername);
@@ -1210,12 +1210,16 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
                     if ($oldvalue == '0') {
                         $oldvalue = $details_text['undecided'];
                     } else {
-                        list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($oldvalue)));
+                        list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name 
+			FROM flyspray_list_version
+			WHERE version_id = ?", array($fs->emptyToZero($oldvalue))));
                     };
                     if ($newvalue == '0') {
                         $newvalue = $details_text['undecided'];
                     } else {
-                        list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($newvalue)));
+                        list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name
+			FROM flyspray_list_version 
+			WHERE version_id = ?", array($fs->emptyToZero($newvalue))));
                     };
                     break;
                 case 'percent_complete':

@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php -q
 <?php
   /*
   Usage:
@@ -16,10 +16,10 @@
   // ============================================================
  
   /** report variables missing in translation module
-  @param    $lang1  reference directory
-  @param    $lang2  translation directory
-  $param    $module compared module filename 
-		    (without directory path, with .php extension)
+  @param  string $lang1	    reference directory
+  @param  string $lang2	    translation directory
+  $param  string $module    compared module filename 
+			    (without directory path, with .php extension)
   */
   function reportMissingVariablesInModule($lang1, $lang2, $module) {
     if (!file_exists("$lang1/$module") or 
@@ -49,8 +49,8 @@
   }
 
   /** report variables missing in translation
-  @param    $lang1  reference directory
-  @param    $lang2  translation directory
+  @param string $lang1  reference directory
+  @param string $lang2  translation directory
   */
   function reportMissingVariables($lang1, $lang2) {
     foreach (getDirContents($lang2) as $module) {
@@ -59,8 +59,8 @@
   }
   
   /** report files present in first directory, missing from the second
-  @param    $lang1  reference directory
-  @param    $lang2  translation directory
+  @param string $lang1  reference directory
+  @param string $lang2  translation directory
   */
   function reportMissingFiles($lang1, $lang2) {
     $reference	= getDirContents($lang1);
@@ -77,6 +77,7 @@
   }
 
   /** get list of files in the directory
+  @param string $directory  directory location
   */
   function getDirContents($directory) {
     $files = array();

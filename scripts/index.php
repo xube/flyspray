@@ -449,7 +449,7 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
   while ($task_details = $fs->dbFetchArray($getdetails)) {
 
     // Get the full project title
-    $get_project_title = $fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id=?", array($task_details['project']));
+    $get_project_title = $fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id=?", array($task_details['project_id']));
     $project = $fs->dbFetchArray($get_project_title);
 
     // Get the full tasktype name
@@ -475,7 +475,9 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     list($reported_in) = $fs->dbFetchArray($get_reported_name);
     
     // Get the full due-in version name
-    $get_due_name = $fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id=?", array($task_details['closedby_version']));
+    $get_due_name = $fs->dbQuery("SELECT version_name 
+    FROM flyspray_list_version 
+    WHERE version_id=?", array($fs->emptyToZero($task_details['closedby_version'])));
     list($due) = $fs->dbFetchArray($get_due_name);
 
     // Convert the date_opened to a human-readable format
