@@ -104,10 +104,15 @@ class Notifications {
          // we have notifications to process - connect
          $JABBER->Connect() or die("AAAHHHH can't connect!!!!");
          $JABBER->SendAuth() or die("GAHHHH bad auth!!!!");
+         sleep(3);
+         $JABBER->SendPresence("online", null, null,null,5);
+         sleep(3);
 
-         $JABBER->SendPresence("invisible", null, null,null,5);
-
-         $desired = join(",", $result);
+         while ( $row = $db->FetchRow($result) )
+         {
+            $ids[] = $row['notification_id'];
+         }
+         $desired = join(",", $ids);
 
          $notifications = $db->Query("SELECT * FROM flyspray_notification_messages
                                       WHERE id in (?)",
@@ -134,14 +139,12 @@ class Notifications {
                $jid = $recipient['address'];
 
                // send notification
-               $success = $JABBER->SendMessage($jid, "normal", NULL,
-                  array(
-                     "subject"   => $subject,
-                     "body"      => $body
-                  ), $payload);
-
-               if ( $success == true )
-               {
+               if ( $JABBER->connected ) {
+                  $JABBER->SendMessage($jid, NULL, NULL,
+                     array(
+                        "subject"   => $subject,
+                        "body"      => $body
+                     ));
                   // delete entry from notification_recipients
                   $result = $db->Query("DELETE FROM flyspray_notification_recipients
                                         WHERE notification_id=?

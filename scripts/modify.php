@@ -615,7 +615,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
       } elseif ($_POST['notify_type'] == '2')
       {
-         $notify->StoreJabber($_POST['jabber_id'], $subject, $message);
+         $notify->StoreJabber(array($_POST['jabber_id']), $subject,
+            htmlentities($message));
 
       };
 
@@ -2223,15 +2224,21 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                             array($magic_url, $user_details['user_id'])
                           );
 
-    // Create notification message
-    $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
+   // Create notification message
+   $subject = $modify_text['noticefrom'] . ' ' . $project_prefs['project_title'];
+
+   $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['magicurlmessage']} \n
 {$flyspray_prefs['base_url']}index.php?do=lostpw&amp;magic=$magic_url\n";
     // End of generating a message
 
-    // Send the brief notification message
-    $result = $notify->Basic($user_details['user_id'], $modify_text['changefspass'], $message);
-    echo $result;
+   // Send the brief notification message
+   //$result = $notify->Basic($user_details['user_id'], $modify_text['changefspass'], $message);
+   //echo $result;
+
+   $to  = $notify->SpecificAddresses(array($user_details['user_id']));
+   $mail = $notify->SendEmail($to[0], $subject, $message);
+   $jabb = $notify->StoreJabber($to[1], $subject, $message);
 
     // Let the user know what just happened
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['magicurlsent']}</em></p></div>";

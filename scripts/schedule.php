@@ -58,14 +58,15 @@ while ($row = $db->FetchRow($get_reminders))
                                SET last_sent = ?
                                WHERE reminder_id = ?",
                                array($now, $row['reminder_id']));
-                               
-      $notify->SendJabber();
 
       // Debug
       echo "Reminder Sent!<br>";
 
    }
 }
+
+// send those stored notifications
+$notify->SendJabber();
 
 
 ?>
