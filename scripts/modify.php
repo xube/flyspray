@@ -960,21 +960,21 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == "globaloptions"
           && $permissions['is_admin'] == '1') {
 
-  //$update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_open'", array($_POST['anon_open']));
-  //$update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = '{$_POST['theme_style']}' WHERE pref_name = 'theme_style'");
+//  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_open'", array($_POST['anon_open']));
+//  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = '{$_POST['theme_style']}' WHERE pref_name = 'theme_style'");
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_server'", array($_POST['jabber_server']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_port'", array($_POST['jabber_port']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_username'", array($_POST['jabber_username']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'jabber_password'", array($_POST['jabber_password']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_group'", array($_POST['anon_group']));
-  //$update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = '{$_POST['project_title']}' WHERE pref_name = 'project_title'");
+//  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = '{$_POST['project_title']}' WHERE pref_name = 'project_title'");
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'base_url'", array($_POST['base_url']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'user_notify'", array($_POST['user_notify']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'admin_email'", array($_POST['admin_email']));
 //  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_cat_owner'", array($_POST['default_cat_owner']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'lang_code'", array($_POST['lang_code']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'spam_proof'", array($_POST['spam_proof']));
-  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_view'", array($_POST['anon_view']));
+//  $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_view'", array($_POST['anon_view']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'default_project'", array($_POST['default_project']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));

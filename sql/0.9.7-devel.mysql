@@ -142,3 +142,12 @@ VALUES (
 ####################################
 ## The Psi database is up to here ##
 ####################################
+
+
+DELETE FROM `flyspray_prefs` WHERE `pref_id` = '1' LIMIT 1 ;
+DELETE FROM `flyspray_prefs` WHERE `pref_id` = '2' LIMIT 1 ;
+DELETE FROM `flyspray_prefs` WHERE `pref_id` = '7' LIMIT 1 ;
+DELETE FROM `flyspray_prefs` WHERE `pref_id` = '13' LIMIT 1 ;
+DELETE FROM `flyspray_prefs` WHERE `pref_id` = '16' LIMIT 1 ;
+
+ALTER TABLE `flyspray_users` DROP `group_in` ;

@@ -588,14 +588,14 @@ $group_details = $fs->dbFetchArray($get_group_details);
     </select>
     </td>
   </tr>
-  <tr>
+ <!-- <tr>
     <td>
       <label for="anonview"><?php echo $admin_text['anonview']; ?></label>
     </td>
     <td>
       <input id="anonview" type="checkbox" name="anon_view" value="1" <?php if ($flyspray_prefs['anon_view'] == '1') { echo "checked=\"checked\"";};?>>
     </td>
-  </tr>
+  </tr>-->
   <tr>
     <td>
       <label for="allowusersignups"><?php echo $admin_text['anonreg'];?></label>

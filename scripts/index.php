@@ -85,8 +85,37 @@ $where = array();
 $where[] = 'project_is_active = ?';
 $sql_params[] = '1';
 
-// Set the default queries
-if ($_GET['project'] != '0') {
+
+// Set the default projects to show tasks from
+if ($_GET['project'] == '0') {
+
+  // First, check global permissions
+  if ($global_permissions['view_tasks'] == '0') {
+
+    // Find out which projects we are actually allow to view
+    $check_projects = $fs->dbQuery("SELECT p.project_id
+                                    FROM flyspray_projects p
+                                    LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
+                                    LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
+                                    WHERE uig.user_id = ? AND g.view_tasks = ?",
+                                    array($current_user['user_id'], '1')
+                                  );
+
+    $temp_where = "(attached_to_project = ?";
+    $sql_params[] = '0';
+
+    // Cycle through the projects, selecting the ones that the user is allowed to view
+    while ($this_project = $fs->dbFetchArray($check_projects)) {
+      $temp_where = $temp_where . " OR attached_to_project = ?";
+      $sql_params[] = $this_project['project_id'];
+    };
+    
+    $where[] = $temp_where . ")";
+
+  };
+
+// If we're not selecting all projects
+} else {
   $where[]	= "attached_to_project = ?";
   $sql_params[] = $project_id;
 };
