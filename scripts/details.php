@@ -1608,7 +1608,14 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
                 list($dependency) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
                 echo "{$details_text['depremovedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
+            } elseif ($history['event_type'] == '26') {      // Task marked private
+                echo $details_text['taskmadeprivate'];
+                
+            } elseif ($history['event_type'] == '27') {      // Task privacy removed - task made public
+                echo $details_text['taskmadepublic'];
+
             };
+            
             ?></td>
         </tr>
             <?php

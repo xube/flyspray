@@ -79,7 +79,7 @@ if ($_GET['getfile']) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title><?php echo stripslashes($project_prefs['project_title']);?></title>
+<title>Flyspray::&nbsp;&nbsp;<?php echo stripslashes($project_prefs['project_title']) . ':&nbsp;&nbsp;' ;?></title>
   <link rel="icon" href="./favicon.ico" type="image/png" />
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
   <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
@@ -237,7 +237,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     };
       
     echo '<small> | </small>';
-    echo '<a href="scripts/authenticate.php?action=logout">' .
+    echo '<a href="index.php?do=authenticate&amp;action=logout">' .
     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/logout.png"). '&nbsp;' . $language['logout'] . "</a>\n";
     echo "</span>\n";
 

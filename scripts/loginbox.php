@@ -2,7 +2,7 @@
 
 
 <map id="loginboxform" name="loginboxform">
-<form action="scripts/authenticate.php" method="post">
+<form action="index.php?do=authenticate" method="post">
 <table class="login">
   <tr>
     <td><label><?php echo $loginbox_text['username'];?>

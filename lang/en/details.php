@@ -125,6 +125,8 @@ $details_text = array (
 'showdetailserror'    =>   'That task does not exist, or you don\'t have permission to view it.',
 'makeprivate'         =>   'Make Private',
 'makepublic'          =>   'Make Public',
+'taskmadeprivate'    =>    'Task made private',
+'taskmadepublic'     =>    'Privacy removed - task made public',
 
 );
 ?>

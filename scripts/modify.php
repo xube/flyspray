@@ -1078,7 +1078,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                       view_reports,
                                       group_open)
                                       VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                      array('Project Managers', 'Project Managers' ,
+                                      array('Project Managers', 'Permission to do anything related to this project.' ,
                                             $fs->emptyToZero($newproject['project_id']),
                                             '1',
                                             '1',
@@ -1272,12 +1272,16 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       
     // If the file didn't actually get saved, better show an error to that effect
     } else {
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileerror']}</em></p><p>{$modify_text['contactadmin']}</p></div>";
+      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fileerror']}</em></p><p>{$modify_text['contactadmin']}</p></div>";
+      $_SESSION['ERROR'] = $modify_text['fileerror'];
+      header("Location: ?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
     };
 
   // If there wasn't a file uploaded with a description, show an error
   } else {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['selectfileerror']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['selectfileerror']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+    $_SESSION['ERROR'] = $modify_text['selectfileerror'];
+    header("Location: ?do=details&id=" . $_POST['task_id'] . "&area=attachments#tabs");
   };
 // End of uploading an attachment
 
@@ -1480,6 +1484,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   if ($_POST['list_name'] != ''
     && $_POST['list_position'] != ''
     ) {
+      // If the user is requesting a project-level addition
       if ($_POST['project_id'] != '') {
 
       $update = $fs->dbQuery("INSERT INTO $list_table_name
@@ -1492,6 +1497,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
         
         //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
 
+     // If the user is requesting a global list update
      } else {
 
       $update = $fs->dbQuery("INSERT INTO $list_table_name
@@ -1499,19 +1505,24 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                                 VALUES (?, ?, ?)",
                 array($_POST['list_name'], $_POST['list_position'], '1'));
 
-        header("Location: index.php?do=admin&area=" . $_POST['list_type']);
-        //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
+         $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
+         header("Location: index.php?do=admin&area=" . $_POST['list_type']);
+        
+         //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area={$_POST['list_type']}\">";
 
       };
       
-      $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
-      header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
-      //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
-
+      
     } else {
       
       $_SESSION['ERROR'] = $modify_text['fillallfields'];
-      header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+
+      if ($_POST['project_id'] == '') {
+         header("Location: index.php?do=admin&area=" . $_POST['list_type']);
+      } else {
+         header("Location: index.php?do=admin&area=projects&show=" . $_POST['list_type'] . "&id=" . $_POST['project_id']);
+      };
+      
       //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['fillallfields']}</em></p></div>";
   };
 // End of adding a list item
@@ -2159,16 +2170,22 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
     echo $result;
   
     // Redirect
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['dependadded']}</em></p>";
-    echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+   $_SESSION['SUCCESS'] = $modify_text['dependadded'];
+   header("Location: index.php?do=details&id=" . $_POST['task_id']);
+
+    //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['dependadded']}</em></p>";
+    //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
   
   // If the user tried to add the wrong task as a dependency
   } else {
 
     // If the user tried to add the 'wrong' task as a dependency,
     // show error and redirect
-   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['dependaddfailed']}</em></p>";
-   echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+   $_SESSION['ERROR'] = $modify_text['dependaddfailed'];
+   header("Location: index.php?do=details&id=" . $_POST['task_id']);
+   
+   //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['dependaddfailed']}</em></p>";
+   //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
   };
 
@@ -2196,9 +2213,13 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   // Log this event to the task's history
   $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
   $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
+   
+   // Generate status message and redirect
+   $_SESSION['SUCCESS'] = $modify_text['depremoved'];
+   header("Location: index.php?do=details&id=" . $dep_info['task_id']);
 
-  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['depremoved']}</em></p>";
-  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['depremoved']}</em></p>";
+  //echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
 
 // End of removing a dependency
@@ -2311,8 +2332,10 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                           array($_GET['id'])
                          );
 
-  $_SESSION['SUCCESS'] = $modify_text['taskmadeprivate'];
-  header("Location: index.php?do=details&id=" . $_GET['id']);
+   $fs->logEvent($_POST['task_id'], 26);
+
+   $_SESSION['SUCCESS'] = $modify_text['taskmadeprivate'];
+   header("Location: index.php?do=details&id=" . $_GET['id']);
 
 // End of making a task private
 
@@ -2329,9 +2352,11 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
                           WHERE task_id = ?",
                           array($_GET['id'])
                          );
-  
-  $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];
-  header("Location: index.php?do=details&id=" . $_GET['id']);
+                         
+   $fs->logEvent($_POST['task_id'], 27);
+   
+   $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];
+   header("Location: index.php?do=details&id=" . $_GET['id']);
 
 // End of making a task public
 

@@ -14,7 +14,10 @@ if ($_GET['action'] == "logout") {
   setcookie('flyspray_passhash', '', time()-60, '/');
   setcookie('flyspray_project', '', time()-60, '/');
 
-  $message = $authenticate_text['youareloggedout'];
+   $_SESSION['SUCCESS'] = $authenticate_text['youareloggedout'];
+   header("Location: index.php");
+
+   //$message = $authenticate_text['youareloggedout'];
 
 // Otherwise, they requested login.  See if they provided the correct credentials...
 } elseif ($_POST['username'] AND $_POST['password']) {
@@ -25,7 +28,7 @@ if ($_GET['action'] == "logout") {
 			    WHERE user_name = ? AND group_id = group_in", 
 			array($username));*/
 			
-  $result = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
+  $result = $fs->dbQuery("SELECT uig.*, g.group_open, u.account_enabled, u.user_pass FROM flyspray_users_in_groups uig
                           LEFT JOIN flyspray_groups g ON uig.group_id = g.group_id
                           LEFT JOIN flyspray_users u ON uig.user_id = u.user_id
                           WHERE u.user_name = ? AND g.belongs_to_project = ?
@@ -41,8 +44,12 @@ if ($_GET['action'] == "logout") {
     if ($auth_details['account_enabled'] == '1'
        // And that their global group is allowed to login
        && $auth_details['group_open'] == '1') {
-       	
-      $message = $authenticate_text['loginsuccessful'];
+      
+      $_SESSION['SUCCESS'] = $authenticate_text['loginsuccessful'];
+      header("Location: " . $_POST['prev_page']);
+
+      
+      //$message = $authenticate_text['loginsuccessful'];
 
       // Determine if the user should be remembered on this machine
       if ($_POST['remember_login']) {
@@ -64,59 +71,23 @@ if ($_GET['action'] == "logout") {
 
     // If the user's account is disabled, throw an error
     } else {
-       $message = $authenticate_text['loginfailed'] . '<br /><br />' . $authenticate_text['accountdisabled'];
+      $_SESSION['ERROR'] = $authenticate_text['loginfailed'] . ' - ' . $authenticate_text['accountdisabled'];
+      header("Location: " . $_POST['prev_page']);
+
+      //$message = $authenticate_text['loginfailed'] . '<br /><br />' . $authenticate_text['accountdisabled'];
     };
     
   } else {
-    $message = $authenticate_text['loginfailed'];
+    $_SESSION['ERROR'] = $authenticate_text['loginfailed'];
+    header("Location: " . $_POST['prev_page']);
+
+    //$message = $authenticate_text['loginfailed'];
   };
 
 } else {
   // If the user didn't provide both a username and a password, show this error:
-  $message = "{$authenticate_text['loginfailed']}<br>{$authenticate_text['userandpass']}";
+   $_SESSION['ERROR'] = $authenticate_text['loginfailed'] . ' - ' . $authenticate_text['userandpass'];
+   header("Location: " . $_POST['prev_page']);
+
+  //$message = "{$authenticate_text['loginfailed']}<br>{$authenticate_text['userandpass']}";
 };
-
-header('Content-type: text/html; charset=utf-8');
-
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-  <link href="../themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
-  
-  <?php 
-  if ($_GET['action'] == 'logout') {
-    echo '<meta http-equiv="refresh" content="2; URL=../">';
-  } else {
-    echo '<meta http-equiv="refresh" content="2; URL=' . $_POST['prev_page'] . '">';
-  };
-  ?>
-  
-  <title>Are we logged in yet?</title>
-</head>
-<body>
-<div id="loginmessage">
-<h1>
-  <?php echo "$message";?>
-</h1>
-
-<p>
-  <?php
-  echo $authenticate_text['waitwhiletransfer'];
-  echo '<br />';
-
-  if ($_GET['action'] == 'logout') {
-    echo '<a href="../">' . $authenticate_text['clicknowait'] . '</a>';
-  } else {
-    echo '<a href="' . $_POST['prev_page'] . '">' . $authenticate_text['clicknowait'] . '</a>';
-  };
-  
-  echo '<br />';
-  ?>
-
-  <br>
-
-</p>
-</div>
-</body>
-</html>
