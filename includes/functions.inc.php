@@ -26,7 +26,7 @@ function get_language_pack($lang, $module) {
 /** Test to see if user resubmitted a form.
   Checks only newtask and addcomment actions.
   @return   true if user has submitted the same action within less than
-	    6 hours, false otherwise
+            6 hours, false otherwise
 */
 function requestDuplicated() {
   // garbage collection -- clean entries older than 6 hrs
@@ -34,13 +34,13 @@ function requestDuplicated() {
   if (!empty($_SESSION['requests_hash'])) {
     foreach ($_SESSION['requests_hash'] as $key => $val) {
       if ($val < $now-6*60*60) {
-	unset($_SESSION['requests_hash'][$key]);
+        unset($_SESSION['requests_hash'][$key]);
       }
     }
   }
   $requestarray = array_merge(array_keys($_POST), array_values($_POST));
   if ($_POST['do']=='modify'
-	and preg_match('/^newtask|addcomment$/',$_POST['action'])) {
+        and preg_match('/^newtask|addcomment$/',$_POST['action'])) {
     $currentrequest = md5(join(':', $requestarray));
     if (!empty($_SESSION['requests_hash'][$currentrequest])) {
       return true;
@@ -58,7 +58,7 @@ class Flyspray {
 
       $global_prefs = array();
       while ($row = $this->dbFetchRow($get_prefs)) {
-	 $global_prefs[$row['pref_name']] = $row['pref_value'];
+         $global_prefs[$row['pref_name']] = $row['pref_value'];
       }
 
       return $global_prefs;
@@ -194,9 +194,9 @@ function GetTaskDetails($task_id) {
 
                                               WHERE t.task_id = ?
                                               ", array($task_id));
-        
+
         $get_details = $this->dbFetchArray($get_details);
-    
+
     if (empty($get_details))
            $get_details = array();
 
@@ -335,7 +335,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
                         $to = $email_address;
                         $this->SendEmail($to, $subject, $message);
                 };
-                
+
         // End of basic notification function
    }
 
@@ -356,10 +356,10 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
         $get_users = $this->dbQuery("SELECT user_id FROM flyspray_notifications WHERE task_id = ?", array($task_id));
 
         while ($row = $this->dbFetchArray($get_users)) {
-           
+
            // Check for current user
            if ($row['user_id'] != $_COOKIE['flyspray_userid'] &&  $row['user_id'] != $this_task['assigned_to']) {
-           
+
               $get_details = $this->dbQuery("SELECT notify_type, jabber_id, email_address
                       FROM flyspray_users
                       WHERE user_id = ?",
@@ -367,7 +367,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
 
               while ($subrow = $this->dbFetchArray($get_details)) {
 
-                  if (($flyspray_prefs['user_notify'] == '1' 
+                  if (($flyspray_prefs['user_notify'] == '1'
                          && $subrow['notify_type'] == '1')
                           OR ($flyspray_prefs['user_notify'] == '2')
                           ) {
@@ -376,12 +376,12 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
                           OR ($flyspray_prefs['user_notify'] == '3')) {
                       array_push($jabber_users, $subrow['jabber_id']);
                   };
-              
+
               };
-           
+
            // End of checking for current user
            };
-        
+
         };
 
         $subject = stripslashes($subject);
@@ -446,25 +446,25 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
           echo "</optgroup>\n";
         };
       };
-      
+
       // Now, we get the users from groups in the current project
       $get_group_details = $this->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($in_project));
       while ($group_details = $this->dbFetchArray($get_group_details)) {
-        
+
         // Check that there is a user in the selected group prior to display
         $check_group = $this->dbQuery("SELECT * FROM flyspray_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
         if (!$this->dbCountRows($check_group)) {
           continue;
         } else {
 
-        // print the group name 
+        // print the group name
         echo "<optgroup label=\"{$group_details['group_name']}\">\n";
         // Get the users that belong to this group
           $user_query = $this->dbQuery("SELECT * FROM flyspray_users_in_groups uig
                                         LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                                         WHERE group_id = ?",
                                         array($group_details['group_id']));
-          
+
           while ($row = $this->dbFetchArray($user_query)) {
             if ($current == $row['user_id']) {
               echo "<option value=\"{$row['user_id']}\" SELECTED>{$row['real_name']}</option>\n";
@@ -488,7 +488,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
     require("lang/$lang/functions.inc.php");
 
     if (!($totalcount / $perpage <= 1)) {
-  
+
       if ($pagenum - 1000 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 1000) . $extraurl . "\">{$functions_text['back']} 1,000</a> - ";
       if ($pagenum - 100 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 100) . $extraurl . "\">{$functions_text['back']} 100</a> - ";
       if ($pagenum - 10 >= 0) $output .= "<a href=\"?pagenum=" . ($pagenum - 10) . $extraurl . "\">{$functions_text['back']} 10</a> - ";
@@ -515,7 +515,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
   }
 
   function formatDate($timestamp, $extended)
-  {	
+  {
     $dateformat = '';
     $format_id = $extended ? "dateformat_extended" : "dateformat";
 
@@ -525,20 +525,20 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
       $user_details = $this->dbFetchArray($get_user_details);
       $dateformat = $user_details[$format_id];
       }
-		
+
     if($dateformat == '')
     {
       $flyspray_prefs = $this->GetGlobalPrefs();
       $dateformat = $flyspray_prefs[$format_id];
     }
 
-    if($dateformat == '')		
+    if($dateformat == '')
       $dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-d";
 
     return date($dateformat, $timestamp);
   }
 
-	
+
   function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
   {
 
@@ -571,20 +571,20 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
   // 25: This task removed from another task's dependency list
   // 26: Task was made private
   // 27: Task was made public
-  
 
-  $this->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value) 
+
+  $this->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                   VALUES(?, ?, ?, ?, ?, ?, ?)",
                   array($task, $this->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
   }
 
-	
+
   function LinkedUsername($user_id)
   {
     $result = $this->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($user_id));
     if ($this->dbCountRows($result) == 0) return '';
     $result = $this->dbFetchRow($result);
-    return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";	
+    return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";
   }
 
   // To stop some browsers showing a blank box when an image doesn't exist
@@ -609,8 +609,8 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
                     array($project, $task, $submitter, $type, date(U)));
 
   }
-  
-  
+
+
   // Check for an existing admin request for a task and event type
   function AdminRequestCheck($type, $task)
   {
@@ -627,23 +627,23 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
    // Get the current user's details
    function getUserDetails($user_id)
    {
-    
+
       // Get current user details.  We need this to see if their account is enabled or disabled
       $result = $this->dbQuery("SELECT * FROM flyspray_users WHERE user_id = ?", array($user_id));
       $user_details = $this->dbFetchArray($result);
-  
+
       return $user_details;
-   
-   // End of getUserDetails() function      
+
+   // End of getUserDetails() function
    }
 
 
    // Get the permissions for the current user
    function checkPermissions($user_id, $project_id)
    {
-   
+
    $current_user = $this->getUserDetails($user_id);
-   
+
   // Get the global group permissions for the current user
   $global_permissions = $this->dbFetchArray($this->dbQuery("SELECT *
                                                         FROM flyspray_groups g
@@ -651,7 +651,7 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
                                                         WHERE uig.user_id = ? and g.belongs_to_project = '0'",
                                                         array($user_id)
                                                        ));
-  
+
 
   // Get the project-level group for this user, and put the permissions into an array
   $search_project_group = $this->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
@@ -661,29 +661,29 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
       $project_permissions = $row;
     };
   };
-  
+
   // Define which fields we care about from the groups information
   $field = array(
         '1'  => 'is_admin',
-		  '2'  => 'manage_project',
-		  '3'  => 'view_tasks',
-		  '4'  => 'open_new_tasks',
-		  '5'  => 'modify_own_tasks',
-		  '6'  => 'modify_all_tasks',
-		  '7'  => 'view_comments',
-		  '8'  => 'add_comments',
-		  '9'  => 'edit_comments',
-		  '10' => 'delete_comments',
-		  '11' => 'view_attachments',
-		  '12' => 'create_attachments',
-		  '13' => 'delete_attachments',
-		  '14' => 'view_history',
-		  '15' => 'close_own_tasks',
-		  '16' => 'close_other_tasks',
-		  '17' => 'assign_to_self',
-		  '18' => 'assign_others_to_self',
-		  '19' => 'view_reports',
-		 );
+                  '2'  => 'manage_project',
+                  '3'  => 'view_tasks',
+                  '4'  => 'open_new_tasks',
+                  '5'  => 'modify_own_tasks',
+                  '6'  => 'modify_all_tasks',
+                  '7'  => 'view_comments',
+                  '8'  => 'add_comments',
+                  '9'  => 'edit_comments',
+                  '10' => 'delete_comments',
+                  '11' => 'view_attachments',
+                  '12' => 'create_attachments',
+                  '13' => 'delete_attachments',
+                  '14' => 'view_history',
+                  '15' => 'close_own_tasks',
+                  '16' => 'close_other_tasks',
+                  '17' => 'assign_to_self',
+                  '18' => 'assign_others_to_self',
+                  '19' => 'view_reports',
+                 );
 
   // Now, merge the two arrays, making the highest permission active (basically, use a boolean OR)
   $permissions = array();
@@ -693,17 +693,18 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
       $permissions[$val] = '1';
     } else {
       $permissions[$val] = '0';
-      
+
     };
 
   };
-   
-   $permissions['account_enabled'] = $current_user['account_enabled'];
-   $permissions['user_pass'] = $current_user['user_pass'];
-   $permissions['group_open'] = $global_permissions['group_open'];
-   
+
+   $permissions['account_enabled']  = $current_user['account_enabled'];
+   $permissions['user_pass']        = $current_user['user_pass'];
+   $permissions['group_open']       = $global_permissions['group_open'];
+   $permissions['global_view']      = $global_permissions['view_tasks'];
+
    return $permissions;
-   
+
    // End of checkPermissions() function
    }
 

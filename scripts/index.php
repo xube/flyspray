@@ -70,7 +70,7 @@ foreach ( $sort as $key => $val ) {
   };
 };
 
-$sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, t.task_id ASC"; 
+$sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, t.task_id ASC";
 
 // Check that what was submitted is a numerical value; most of them should be
 
@@ -100,15 +100,15 @@ $sql_params[] = '1';
 // Set the default projects to show tasks from
 if (isset($_GET['project']) && $_GET['project'] == '0')
 {
-   // Global Admins get a very loose query, allowing theme to view all projects unrestricted
-   if ($permissions['is_admin'] == '1')
+   // If the user has the global 'view tasks' permission, view all projects unrestricted
+   if ($permissions['global_view'] == '1')
    {
       $check_projects = $fs->dbQuery("SELECT p.project_id
                                        FROM flyspray_projects p"
-                                    );   
-   
+                                    );
+
    // Those who aren't super users get this more restrictive query
-   } else
+   } elseif (isset($_COOKIE['flyspray_userid']) && $permission['global_view'] != '1')
    {
       $check_projects = $fs->dbQuery("SELECT p.project_id
                                        FROM flyspray_projects p
@@ -117,7 +117,16 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
                                        WHERE uig.user_id = ? AND g.view_tasks = '1'",
                                        array($current_user['user_id'])
                                      );
-   
+
+
+   // Anonymous users also need a query here
+   } else
+   {
+      $check_projects = $fs->dbQuery("SELECT p.project_id
+                                       FROM flyspray_projects p
+                                       WHERE p.others_view = '1'"
+                                    );
+
    // End of checking Admin status for the query
    };
 
@@ -195,7 +204,7 @@ if ($_GET['status'] == "all") {
   $where[] = "is_closed = ?";
   $sql_params[] = "1";
 } elseif (is_numeric($_GET['status'])) {
-  $where[]	= "item_status = ? AND is_closed <> '1'";
+  $where[]      = "item_status = ? AND is_closed <> '1'";
   $sql_params[] = $_GET['status'];
 } else {
   $where[] = "is_closed != ?";
@@ -213,7 +222,7 @@ if ($_GET['string']) {
   $string = ereg_replace('\)', " ", $string);
   $string = trim($string);
 
-  $where[]	= "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ?)";
+  $where[]      = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ?)";
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
@@ -221,7 +230,7 @@ if ($_GET['string']) {
 
 // Do this to hide private tasks from the list
 if ($permissions['manage_project'] == '1') {
-	// Don't add any parameters
+        // Don't add any parameters
 } elseif ($permissions['manage_project'] != '1'
      && isset($_COOKIE['flyspray_userid'])) {
   $where[] = "(t.mark_private <> '1' OR t.assigned_to = ?)";
@@ -313,7 +322,7 @@ if ($project_prefs['project_is_active'] == '1'
     </select>
 
     <br />
-    
+
     <select name="dev">
       <option value=""><?php echo $index_text['alldevelopers'];?></option>
       <option value="notassigned" <?php if ($dev == "notassigned") { echo "SELECTED";};?>><?php echo $index_text['notyetassigned'];?></option>
@@ -388,8 +397,8 @@ if ($project_prefs['project_is_active'] == '1'
 /**
  * Displays header cell for report list
  *
- * @param string $colname	The name of the column
- * @param string $orderkey	The actual key to use when ordering the list
+ * @param string $colname       The name of the column
+ * @param string $orderkey      The actual key to use when ordering the list
  * @param string $defaultsort The default sort order
  * @param string $image    An image to display instead of the column name
  */
@@ -399,9 +408,9 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
   global $project_prefs;
   global $index_text;
   global $get;
-  
+
   if(ereg("$colname", $project_prefs['visible_columns']))
-  { 
+  {
     if($orderkey)
     {
       if($_GET['order'] == "$orderkey")
@@ -410,7 +419,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 
         $order2 = $_GET['order2'];
         $sort2 = $_GET['sort2'];
-        
+
         if ($_GET['sort'] == 'desc')
         {
           $sort1 = "asc";
@@ -429,18 +438,18 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 
       $sort1 = ( $sort1 == 'asc' ? 'asc' : 'desc' );
       $sort2 = ( $sort2 == 'asc' ? 'asc' : 'desc' );
-      
+
       echo "<th $class>";
       $title = $index_text['sortthiscolumn'];
       $link = "?order=$orderkey$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
       echo "<a title=\"$title\" href=\"$link\">";
       echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" />\n";
-      
+
       // Sort indicator arrows
       if($_GET['order'] == $orderkey) {
         echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png" />';
       };
-      
+
       echo "</a></th>\n";
     }
     else
@@ -449,16 +458,16 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
       echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\" />";
       echo "</th>\n";
     }
-  } 
+  }
 }
 
 /**
  * Displays data cell for report list
  *
- * @param string $colname	The name of the column
- * @param string $cellvalue	The value to display in the cell
- * @param integer $nowrap	Whether to force the cell contents not to wrap
- * @param string $url		A URL to wrap around the cell contents
+ * @param string $colname       The name of the column
+ * @param string $cellvalue     The value to display in the cell
+ * @param integer $nowrap       Whether to force the cell contents not to wrap
+ * @param string $url           A URL to wrap around the cell contents
  */
 function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 {
@@ -473,13 +482,13 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
       $cellvalue = str_replace("<", "&lt;", $cellvalue);
       $cellvalue = stripslashes($cellvalue);
     }
-    
+
     // Check if we're meant to force this cell not to wrap
     if($nowrap)
     {
       $cellvalue = str_replace(" ", "&nbsp;", $cellvalue);
     }
-    
+
     echo "<td class=\"project_$colname\">";
     if($url)
     {
@@ -503,7 +512,7 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
   <?php
   list_heading('id','id');
   //list_heading('project','proj');
-  //list_heading('tasktype','type');  
+  //list_heading('tasktype','type');
   //list_heading('category','cat');
   list_heading('project','proj','asc');
   list_heading('tasktype','type','asc');
@@ -531,7 +540,7 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 </thead>
 <tfoot><tr><td colspan="20">
 <?php
- 
+
 // SQL JOIN condition
 $from = 'flyspray_tasks t';
 
@@ -543,7 +552,7 @@ if ($_GET['tasks'] == 'watched') {
 };
 
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/
-$from .= ' 
+$from .= '
 
         LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
         LEFT JOIN flyspray_list_tasktype lt ON t.task_type = lt.tasktype_id
@@ -583,13 +592,13 @@ SELECT
         lvc.version_name AS closedby_version,
         u.real_name AS assigned_to,
         uo.real_name AS opened_by
-FROM 
+FROM
         $from
 WHERE
         $where
 ORDER BY
         $sortorder", $sql_params, $perpage, $offset);
-       
+
 
   while ($task_details = $fs->dbFetchArray($get_details)) {
 
@@ -603,7 +612,7 @@ ORDER BY
       require("lang/$lang/status.php");
       $status = $status_list[$status_id];
     }
-    
+
     // Get the full severity name
     $severity_id = $task_details['task_severity'];
     require("lang/$lang/severity.php");
@@ -613,7 +622,7 @@ ORDER BY
     $priority_id = $task_details['task_priority'];
     require("lang/$lang/priority.php");
     $priority = $priority_list[$priority_id];
-    
+
     // see if it's been assigned
     if (!$task_details['assigned_to']) {
       $assigned_to = $details_text['noone'];
@@ -623,21 +632,21 @@ ORDER BY
 
     // Convert the date_opened to a human-readable format
     $date_opened = $fs->formatDate($task_details['date_opened'], false);
-        
+
     // Convert the last_edited_time to a human-readable format
     if ($task_details['last_edited_time'] > 0) {
       $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
     } else {
       $last_edited_time = '';
     };
-     
+
     // get the number of comments and attachments
     $getcomments = $fs->dbQuery("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
     list($comments) = $fs->dbFetchRow($getcomments);
-    
+
     $getattachments = $fs->dbQuery("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
-    list($attachments) = $fs->dbFetchRow($getattachments);    
-    
+    list($attachments) = $fs->dbFetchRow($getattachments);
+
     // Start displaying the cells for this row
     echo "<tr class=\"severity{$task_details['task_severity']}\"
     onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'>\n";
@@ -659,7 +668,7 @@ ORDER BY
     list_cell("comments",$comments);
     list_cell("attachments",$attachments);
     list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\" />\n");
-    
+
     // The end of this row
     echo "</tr>\n";
   };
