@@ -12,8 +12,10 @@ $list_column_name = addslashes($_POST['list_type'])."_name";
 $list_id = addslashes($_POST['list_type'])."_id";
 
 // Find out the current user's name
-$get_current_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
-list($current_username, $current_realname) = $fs->dbFetchArray($get_current_username);
+if (!empty($_COOKIE['flyspray_userid'])) {
+  $get_current_username = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
+  list($current_username, $current_realname) = $fs->dbFetchArray($get_current_username);
+}
 
 $now = date(U);
 
@@ -32,7 +34,8 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
         'assigned_to', 'product_category', 'product_version',
         'closedby_version', 'operating_system', 'task_severity');
     $sql_values = array($_POST['project_id'], $now, $item_summary,
-                $detailed_desc, $_COOKIE['flyspray_userid'], '0');
+                $detailed_desc, 
+		$fs->emptyToZero($_COOKIE['flyspray_userid']), '0');
     $sql_params = array();
     foreach ($param_names as $param_name) {
         if (!empty($_POST[$param_name])) {
@@ -479,7 +482,6 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   if ($_POST['user_pass'] != ''
     && $_POST['user_pass2'] != ''
     ) {
-
       // If the passwords matched
       if (($_POST['user_pass'] == $_POST['user_pass2']) && $_POST['user_pass'] != '') {
         //echo "reg_ref = {$_SESSION['reg_ref']}<br>";
