@@ -26,13 +26,13 @@ $dbpass     = $conf_array['database']['dbpass'];
 
 include_once ( "$adodbpath" );
 
-include ( "$basedir/functions.inc.php" );
-include ( "$basedir/regexp.php" );
 
 // You might like to uncomment the next line if you are receiving lots of
 // PPHP NOTICE errors
-
 //error_reporting(E_ALL & -E_NOTICE);
+
+include ( "$basedir/functions.inc.php" );
+include ( "$basedir/regexp.php" );
 
 // Check PHP Version (Must Be > 4.2)
 if (PHP_VERSION  < '4.2.0') {
