@@ -55,8 +55,8 @@ if (!$_GET['page']) {
 
 <?php
 } elseif ($_GET['page'] == '2') {
-  if (!empty($_GET['user_name'])
-      && !empty($_GET['real_name'])
+  if ($_GET['user_name']
+      && $_GET['real_name']
       && (($_GET['email_address'] != '' && $_GET['notify_type'] == '1')
            OR ($_GET['jabber_id'] != '' && $_GET['notify_type'] == '2'))
   ) {

@@ -576,7 +576,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newusercreated']}</em></p>";
 
-        if ($_SESSION['admin'] == '1') {
+        if ($_SESSION['admin'] != '1') {
           echo "<p>{$modify_text['loginbelow']}</p>";
           echo "<p>{$modify_text['newuserwarning']}</p></div>";
         } else {

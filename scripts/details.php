@@ -18,10 +18,15 @@ $detailed_desc = stripslashes($detailed_desc);
 
 
 
-// Check if the user is an admin
+// Check if the user has rights to modify tasks
 if ($_SESSION['can_modify_jobs'] == '1'
   && $task_details['item_status'] != '8'
   && $_GET['edit'] == 'yep') {
+
+///////////////////////////////////
+// If the user can modify tasks, //
+// then use this section.        //
+///////////////////////////////////
 ?>
 
 <!-- create some columns -->
@@ -62,7 +67,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
 
     $date_opened = date("j M Y", $task_details['date_opened']);
 
-    echo "{$details_text['openedby']} $real_name ($user_name) - $date_opened";
+    echo "{$details_text['openedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['opened_by']}\">$real_name ($user_name)</a> - $date_opened";
 
 
     // If it's been edited, get the details
@@ -72,7 +77,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
 
       $date_edited = date("j M Y", $task_details['last_edited_time']);
 
-      echo "<br>{$details_text['editedby']} $real_name ($user_name) - $date_edited";
+      echo "<br>{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
 
     };
     ?>
@@ -284,11 +289,11 @@ if ($_SESSION['can_modify_jobs'] == '1'
              OR $task_details['item_status'] == '8'
              OR !$GET['edit'])
              ) {
-// ####################################################################################
-// ####################################################################################
-// If the user isn't an admin OR if the task is in VIEW mode, or if the job is closed
-
-
+//////////////////////////////////////
+// If the user isn't an admin,      //
+// OR if the task is in VIEW mode,  //
+// OR if the job is closed          //
+//////////////////////////////////////
 ?>
 
 <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
@@ -331,7 +336,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
     $date_opened = $task_details['date_opened'];
     $date_opened = date("j M Y", $date_opened);
 
-    echo "{$details_text['openedby']} $real_name ($user_name) - $date_opened";
+    echo "{$details_text['openedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['opened_by']}\">$real_name ($user_name)</a> - $date_opened";
 
     // If it's been edited, get the details
     if ($task_details['last_edited_by']) {
@@ -341,7 +346,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
       $date_edited = $task_details['last_edited_time'];
       $date_edited = date("j M Y", $date_edited);
 
-      echo "<br>{$details_text['editedby']} $real_name ($user_name) - $date_edited";
+      echo "<br>{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
 
     };
     ?>

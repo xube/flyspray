@@ -243,26 +243,9 @@ $group_details = $fs->dbFetchArray($get_group_details);
 <?
 // End of task types
 
-/////////////////////////
-// Start of categories //
-/////////////////////////
-
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "category") {
-?>
-
-
-
-<?
-// End of categories
-
-
-// Start of operating systems list
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "os") {
-?>
-<?
-// End of operating systems
-
-// Start of Resolutions
+//////////////////////////
+// Start of Resolutions //
+//////////////////////////
 } elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "resolution") {
 ?>
   <h3><?php echo $admin_text['resolutionlist'];?></h3>
@@ -708,7 +691,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
         <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
         <input type="hidden" name="id" value="<?php echo $row['category_id'];?>">
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name" value="<?php echo $row['category_name'];?>">
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name" value="<?php echo stripslashes($row['category_name']);?>">
       </td>
       <td title="The order these items will appear in the Category list">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -769,6 +752,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
     </form>
   </div>
 
+
 <?php } elseif ($_GET['show'] == 'os') { ?>
 
 <br><br>
@@ -791,7 +775,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
           <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
           <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['os_name'];?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo stripslashes($row['os_name']);?>">
         </td>
         <td title="The order these items will appear in the Operating System list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -859,7 +843,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
           <input type="hidden" name="id" value="<?php echo $row['version_id'];?>">
           <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo $row['version_name'];?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name" value="<?php echo stripslashes($row['version_name']);?>">
         </td>
         <td title="The order the items are shown in the Version list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
