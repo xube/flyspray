@@ -27,14 +27,14 @@ if ($_GET['action'] == "logout") {
   $group_details = $fs->dbFetchArray($result);
 
   // Encrypt the password, and compare it to the one in the database
-  if (crypt("$password", "4t6dcHiefIkeYcn48B") == $auth_details['user_pass']
+  if (crypt($password, $cookiesalt) == $auth_details['user_pass']
     && $auth_details['account_enabled'] == "1"
     && $group_details['group_open'] == '1')
   {
     $message = $authenticate_text['loginsuccessful'];
 
     // Generate an extra hash of the already hashed password... for added security
-    //$pass_double_hash = crypt("{$auth_details['user_pass']}", "4t6dcHiefIkeYcn48B");
+    //$pass_double_hash = crypt("{$auth_details['user_pass']}", $cookiesalt);
 
     //session_start();
     //$_SESSION['userid'] = $auth_details['user_id'];

@@ -88,13 +88,14 @@ if (!$_GET['page']) {
       $randval = mt_rand();
 
       // Convert those numbers to a seemingly random string using crypt
-      $code = crypt("$randval", "4t6dcHiefIkeYcn48B");
+      $code = crypt($randval, $cookiesalt);
 
       // Store the registration reference in the session
       $_SESSION['reg_ref'] = $now;
       // Insert everything into the database
-      $save_code = $fs->dbQuery("INSERT INTO flyspray_registrations VALUES (?,?,?)",
-				array('', $now, $code));
+      $save_code = $fs->dbQuery("INSERT INTO flyspray_registrations
+			          (reg_time, confirm_code) VALUES (?,?)",
+				array($now, $code));
 
     // End of generating a confirmation code and storing it etc
     };

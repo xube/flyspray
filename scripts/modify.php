@@ -437,9 +437,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   $get_pass_hash = $fs->dbQuery("SELECT user_pass FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
   list($db_pass_hash) = $fs->dbFetchArray($get_pass_hash);
   $old_pass = $_POST['old_pass'];
-  $old_pass_hash = crypt("$old_pass", "4t6dcHiefIkeYcn48B");
+  $old_pass_hash = crypt("$old_pass", $cookiesalt);
   $new_pass = $_POST['new_pass'];
-  $new_pass_hash = crypt("$new_pass", "4t6dcHiefIkeYcn48B");
+  $new_pass_hash = crypt("$new_pass", $cookiesalt);
   $confirm_pass = $_POST['confirm_pass'];
 
   // If they didn't fill in all the fields, show an error
@@ -459,7 +459,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
     // If the two new passwords are the same
     if ($new_pass == $confirm_pass) {
       $update_pass = $fs->dbQuery("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
-      //setcookie('flyspray_passhash', crypt("$new_pass_hash", "4t6dcHiefIkeYcn48B"), time()+60*60*24*30, "/");
+      //setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
       echo "<p><a href=\"?\">{$modify_text['backtoindex']}</a></p></div>";
 
@@ -490,7 +490,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
         //echo "posted = {$_POST['confirmation_code']}<br>";
         if ($code_details['confirm_code'] == $_POST['confirmation_code']) {
 
-          $pass_hash = crypt("{$_POST['user_pass']}", "4t6dcHiefIkeYcn48B");
+          $pass_hash = crypt("{$_POST['user_pass']}", $cookiesalt);
 
           $add_user = $fs->dbQuery("INSERT INTO flyspray_users 
 				      (user_name, user_pass, real_name,
@@ -543,7 +543,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
       // If the passwords matched, add the user
       if (($_POST['user_pass'] == $_POST['user_pass2']) && $_POST['user_pass'] != '') {
 
-        $pass_hash = crypt("{$_POST['user_pass']}", "4t6dcHiefIkeYcn48B");
+        $pass_hash = crypt("{$_POST['user_pass']}", $cookiesalt);
 
         if ($_SESSION['admin'] == '1') {
           $group_in = $_POST['group_in'];

@@ -7,7 +7,7 @@ if ($_SESSION['userid']) {
   $current_user = $fs->dbFetchArray($result);
 
   // Check that the user hasn't spoofed the cookie contents somehow
-  if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], "4t6dcHiefIkeYcn48B")) {
+  if ($_COOKIE['flyspray_passhash'] == crypt($current_user['user_pass'], $cookiesalt)) {
   ?>
 
 <form action="index.php" method="post" id="chgpassword">
