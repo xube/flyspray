@@ -19,7 +19,10 @@ if (!empty($_COOKIE['flyspray_userid'])) {
 
 $now = date(U);
 
-// Adding a new task
+///////////////////////
+// Adding a new task //
+///////////////////////
+
 if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1")) {
 
   // If they entered something in both the summary and detailed description
@@ -86,15 +89,26 @@ $current_realname ($current_username) {$modify_text['hasopened']}\n
 
     // OK, we also need to notify the category owner
     // First, see if there's an owner for this category
-    $get_cat_details = $fs->dbQuery("SELECT category_name, category_owner
+    $cat_details = $fs->dbFetchArray($fs->dbQuery("SELECT category_name, category_owner, parent_id
                                        FROM flyspray_list_category
-                                       WHERE category_id = ?", array($_POST['product_category']));
-    $cat_details = $fs->dbFetchArray($get_cat_details);
+                                       WHERE category_id = ?",
+                                       array($_POST['product_category'])));
 
     // If this category has an owner, address the notification to them
     if ($cat_details['category_owner'] != '0') {
       $send_to = $cat_details['category_owner'];
-    // Otherwise address it to the default category owner
+
+    // If not, see if we can get the parent category owner
+    $parent_cat_details = $fs->dbFetchArray($fs->dbQuery('SELECT category_owner
+                                                 FROM flyspray_list_category
+                                                 WHERE category_id = ?',
+                                                 array($cat_details['parent_id'])));
+
+    // If there's a parent category owner, send to them
+    } elseif ($parent_cat_details['category_owner'] != '0') {
+      $send_to = $parent_cat_details['category_owner'];
+
+    // Otherwise send it to the default category owner
     } else {
       $send_to = $project_prefs['default_cat_owner'];
     };
@@ -128,7 +142,10 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 
 // End of adding a new task.
 
-// Start of modifying an existing task
+/////////////////////////////////////////
+// Start of modifying an existing task //
+/////////////////////////////////////////
+
 } elseif ($_POST['action'] == "update" && $_SESSION['can_modify_jobs'] == "1") {
 
   // If they entered something in both the summary and detailed description
@@ -304,7 +321,7 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
 $brief_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasclosedassigned']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
-{$modify_text['reasonforclosing']} {$get_res['resolution_name']} \n
+{$modify_text['reasonforclosing']} {$get_res['resolution_name']} \n";
 
 if($_POST['closure_comment'] != '') {
    $brief_message = $brief_message . "\n {$modify_text['closurecomment']} {$_POST['closure_comment']}\n";
@@ -322,7 +339,7 @@ $brief_message = $brief_message . "\n{$flyspray_prefs['base_url']}index.php?do=d
 $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasclosed']} {$modify_text['youonnotify']}\n
 {$modify_text['task']} #{$_POST['task_id']}: $item_summary
-{$modify_text['reasonforclosing']} {$get_res['resolution_name']} \n
+{$modify_text['reasonforclosing']} {$get_res['resolution_name']} \n";
 
 if($_POST['closure_comment'] != '') {
    $detailed_message = $detailed_message . "{$modify_text['closurecomment']} {$_POST['closure_comment']}\n";
@@ -1022,11 +1039,11 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
     ) {
       $update = $fs->dbQuery("INSERT INTO flyspray_list_category
                                 (project_id, category_name, list_position,
-                                show_in_list, category_owner)
-                                VALUES (?, ?, ?, ?, ?)",
+                                show_in_list, category_owner, parent_id)
+                                VALUES (?, ?, ?, ?, ?, ?)",
                         array($_POST['project_id'], $_POST['list_name'],
                         $_POST['list_position'], '1',
-                        $_POST['category_owner']));
+                        $_POST['category_owner'], $_POST['parent_id']));
       echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listitemadded']}</em></p></div>";
   } else {

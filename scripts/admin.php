@@ -597,7 +597,9 @@ $group_details = $fs->dbFetchArray($get_group_details);
      <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=version"><?php echo $language['versions'];?></a>
     </span>
 
-<?php if ($_GET['show'] == 'prefs') { ?>
+<?php
+// By default, show the project prefs first
+if ($_GET['show'] == 'prefs') { ?>
 
 <form action="index.php" method="post">
   <input type="hidden" name="do" value="modify">
@@ -701,7 +703,9 @@ $group_details = $fs->dbFetchArray($get_group_details);
 </table>
   </form>
 
-<?php } elseif ($_GET['show'] == 'category') { ?>
+<?php
+// Show the list of categories
+} elseif ($_GET['show'] == 'category') { ?>
 
 <br><br>
 
@@ -709,7 +713,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
     <?php
-    $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? ORDER BY list_position", array($_GET['id']));
+    $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($_GET['id'], '1'));
     $countlines = 0;
     while ($row = $fs->dbFetchArray($get_categories)) {
     ?>
@@ -725,15 +729,15 @@ $group_details = $fs->dbFetchArray($get_group_details);
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
         <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name" value="<?php echo stripslashes($row['category_name']);?>">
       </td>
-      <td title="The order these items will appear in the Category list">
+      <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
         <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $row['list_position'];?>">
       </td>
-      <td title="Show this item in the Category list">
+      <td title="<?php echo $admin_text['listshowtip'];?>">
         <label for="showinlist<?php echo $countlines; ?>"><?php echo $admin_text['show'];?></label>
         <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
       </td>
-      <td title="This person will receive notifications when a task in this category is opened">
+      <td title="<?php echo $admin_text['categoryownertip'];?>">
         <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
         <select id="categoryowner<?php echo $countlines; ?>" name="category_owner">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
@@ -748,7 +752,50 @@ $group_details = $fs->dbFetchArray($get_group_details);
     </form>
     <?php
       $countlines++;
+      // Now we have to cycle through the subcategories
+    $get_subcategories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id = ? ORDER BY list_position", array($_GET['id'], $row['category_id']));
+    while ($subrow = $fs->dbFetchArray($get_subcategories)) {
+    ?>
+        <form action="index.php" method="post">
+    <table class="list">
+     <tr>
+      <td>
+        <input type="hidden" name="do" value="modify">
+        <input type="hidden" name="action" value="update_category">
+        <input type="hidden" name="list_type" value="category">
+        <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+        <input type="hidden" name="id" value="<?php echo $subrow['category_id'];?>">
+        &rarr;
+        <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="30" name="list_name" value="<?php echo stripslashes($subrow['category_name']);?>">
+      </td>
+      <td title="<?php echo $admin_text['listordertip'];?>">
+        <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
+        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position" value="<?php echo $subrow['list_position'];?>">
+      </td>
+      <td title="<?php echo $admin_text['listshowtip'];?>">
+        <label for="showinlist<?php echo $countlines; ?>"><?php echo $admin_text['show'];?></label>
+        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list" value="1" <?php if ($subrow['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+      </td>
+      <td title="<?php echo $admin_text['categoryownertip'];?>">
+        <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
+        <select id="categoryowner<?php echo $countlines; ?>" name="category_owner">
+        <option value=""><?php echo $admin_text['selectowner'];?></option>
+        <?php
+        $fs->listUsers($subrow['category_owner']);
+        ?>
+      </select>
+      </td>
+      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+     </tr>
+    </table>
+    </form>
+    <?php
+      $countlines++;
+     // End of cycling through subcategories
+     };
     };
+    // Form to add a new category to the list
     ?>
     <hr>
     <form action="index.php" method="post">
@@ -761,20 +808,42 @@ $group_details = $fs->dbFetchArray($get_group_details);
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
         <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name">
       </td>
-      <td>
+      <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
         <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
       </td>
-      <td>
+      <td title="<?php echo $admin_text['listshowtip'];?>">
         <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
       </td>
-      <td title="This person will receive notifications when a task in this category is opened">
+      <td title="<?php echo $admin_text['categoryownertip'];?>">
         <label for="categoryownernew" ><?php echo $admin_text['owner'];?></label>
       <select id="categoryownernew" name="category_owner">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
         $fs->listUsers();
+        ?>
+      </select>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" title="<?php echo $admin_text['categoryparenttip'];?>">
+      <label for="categoryparentnew"><?php echo $admin_text['subcategoryof'];?></label>
+      <select name="parent_id">
+        <option value=""><?php echo $admin_text['notsubcategory'];?></option>
+        <?php
+        $cat_list = $fs->dbQuery('SELECT category_id, category_name
+                                    FROM flyspray_list_category
+                                    WHERE project_id=? AND show_in_list=? AND parent_id < ?
+                                    ORDER BY list_position', array($project_id, '1', '1'));
+        while ($row = $fs->dbFetchArray($cat_list)) {
+          $category_name = stripslashes($row['category_name']);
+          if ($_GET['cat'] == $row['category_id']) {
+            echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
+          } else {
+            echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+          };
+        };
         ?>
       </select>
       </td>
@@ -785,7 +854,9 @@ $group_details = $fs->dbFetchArray($get_group_details);
   </div>
 
 
-<?php } elseif ($_GET['show'] == 'os') { ?>
+<?php
+// Show the list of Operating Systems
+} elseif ($_GET['show'] == 'os') { ?>
 
 <br><br>
 
@@ -824,6 +895,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
     <?php
       $countlines++;
     };
+    // Form to add a new Operating System to the list
     ?>
     <hr>
     <form action="index.php" method="post">
@@ -852,7 +924,9 @@ $group_details = $fs->dbFetchArray($get_group_details);
    </form>
 </div>
 
-<?php } elseif ($_GET['show'] == 'version') { ?>
+<?php
+// Show the list of Versions
+} elseif ($_GET['show'] == 'version') { ?>
 
 <br><br>
 
@@ -892,6 +966,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
     <?php
       $countlines++;
     };
+    // Form to add a new Version to the list
     ?>
     <hr>
     <form action="index.php" method="post">

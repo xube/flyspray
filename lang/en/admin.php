@@ -94,9 +94,15 @@ $admin_text = array (
 // Added in version 0.9.6
 
 'nopermission'		=>  'You do not have permission to use this page.',
+'listordertip'		=>  'The order these items will appear in the list',
+'listshowtip'		=>	'Show this item in the list',
+'categoryownertip'	=>  'This person will receive notifications when a task in this category is opened',
+'categoryparenttip'	=>	'The parent category this new one will fall under',
+'notsubcategory'	=>	'None - is a top-level category',
 'showinlineimages'	=>  'Show image attachments inline',
 'dateformat'		=>	'Date format',
 'dateformat_extended' => 'Detailed date format',
+'subcategoryof'		=>	'Sub-category of',
 
 
 );

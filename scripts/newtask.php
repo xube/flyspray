@@ -54,10 +54,30 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
        <select class="adminlist" name="product_category" id="productcategory">
         <?php
         // Get list of categories
-        $get_categories = $fs->dbQuery("SELECT category_id, category_name FROM flyspray_list_category WHERE project_id = ? AND show_in_list = ? ORDER BY list_position",
+/*        $get_categories = $fs->dbQuery("SELECT category_id, category_name FROM flyspray_list_category WHERE project_id = ? AND show_in_list = ? ORDER BY list_position",
 			array($project_id, '1'));
         while ($row = $fs->dbFetchArray($get_categories)) {
           echo "<option value=\"{$row['category_id']}\">{$row['category_name']}</option>";
+        };*/
+
+      $cat_list = $fs->dbQuery('SELECT category_id, category_name
+                                  FROM flyspray_list_category
+                                  WHERE project_id=? AND show_in_list=? AND parent_id < ?
+                                  ORDER BY list_position', array($project_id, '1', '1'));
+      while ($row = $fs->dbFetchArray($cat_list)) {
+        $category_name = stripslashes($row['category_name']);
+          echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+
+          $subcat_list = $fs->dbQuery('SELECT category_id, category_name
+                                  FROM flyspray_list_category
+                                  WHERE project_id=? AND show_in_list=? AND parent_id = ?
+                                  ORDER BY list_position', array($project_id, '1', $row['category_id']));
+          while ($subrow = $fs->dbFetchArray($subcat_list)) {
+            $subcategory_name = stripslashes($subrow['category_name']);
+
+            echo "<option value=\"{$subrow['category_id']}\">&rarr;$subcategory_name</option>\n";
+
+          };
         };
         ?></select>
      </td>

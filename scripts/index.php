@@ -85,8 +85,19 @@ if (is_numeric($_GET['sev'])) {
 
 // The default category
 if (is_numeric($_GET['cat'])) {
-  $where[]	= "product_category = ?";
+  $temp_where = "(product_category = ?";
   $sql_params[] = $_GET['cat'];
+
+  // Do some weird stuff to add the subcategories to the query
+  $get_subs = $fs->dbQuery('SELECT category_id
+                            FROM flyspray_list_category
+                            WHERE parent_id = ?',
+                            array($_GET['cat']));
+  while ($row = $fs->dbFetchArray($get_subs)) {
+    $temp_where = $temp_where . " OR product_category =?";
+    $sql_params[] = $row['category_id'];
+  };
+  $where[] = $temp_where . ")";
 };
 
 // The default status
@@ -168,13 +179,27 @@ if ($_GET['string']) {
       <?php
       $cat_list = $fs->dbQuery('SELECT category_id, category_name
                                   FROM flyspray_list_category
-                                  WHERE project_id=? AND show_in_list=?
-                                  ORDER BY list_position', array($project_id, '1'));
+                                  WHERE project_id=? AND show_in_list=? AND parent_id < ?
+                                  ORDER BY list_position', array($project_id, '1', '1'));
       while ($row = $fs->dbFetchArray($cat_list)) {
+        $category_name = stripslashes($row['category_name']);
         if ($_GET['cat'] == $row['category_id']) {
-          echo "<option value=\"{$row['category_id']}\" selected=\"selected\">{$row['category_name']}</option>";
+          echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
         } else {
-          echo "<option value=\"{$row['category_id']}\">{$row['category_name']}</option>";
+          echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+        };
+
+        $subcat_list = $fs->dbQuery('SELECT category_id, category_name
+                                  FROM flyspray_list_category
+                                  WHERE project_id=? AND show_in_list=? AND parent_id = ?
+                                  ORDER BY list_position', array($project_id, '1', $row['category_id']));
+        while ($subrow = $fs->dbFetchArray($subcat_list)) {
+          $subcategory_name = stripslashes($subrow['category_name']);
+          if ($_GET['cat'] == $subrow['category_id']) {
+            echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&rarr;$subcategory_name</option>\n";
+          } else {
+            echo "<option value=\"{$subrow['category_id']}\">&rarr;$subcategory_name</option>\n";
+          };
         };
       };
       ?>

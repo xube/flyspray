@@ -124,13 +124,29 @@ if ($_SESSION['can_modify_jobs'] == '1'
         <td>
         <select name="product_category">
         <?php
-        // Get list of categories
-        $get_categories = $fs->dbQuery("SELECT category_id, category_name FROM flyspray_list_category WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
-        while ($row = $fs->dbFetchArray($get_categories)) {
-          if ($row['category_id'] == $task_details['product_category']) {
-            echo "<option value=\"{$row['category_id']}\" selected=\"selected\">{$row['category_name']}</option>";
+        $cat_list = $fs->dbQuery('SELECT category_id, category_name
+                                    FROM flyspray_list_category
+                                    WHERE project_id=? AND show_in_list=? AND parent_id < ?
+                                    ORDER BY list_position', array($project_id, '1', '1'));
+        while ($row = $fs->dbFetchArray($cat_list)) {
+          $category_name = stripslashes($row['category_name']);
+          if ($task_details['product_category'] == $row['category_id']) {
+            echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
           } else {
-            echo "<option value=\"{$row['category_id']}\">{$row['category_name']}</option>";
+            echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+          };
+
+          $subcat_list = $fs->dbQuery('SELECT category_id, category_name
+                                    FROM flyspray_list_category
+                                    WHERE project_id=? AND show_in_list=? AND parent_id = ?
+                                    ORDER BY list_position', array($project_id, '1', $row['category_id']));
+          while ($subrow = $fs->dbFetchArray($subcat_list)) {
+            $subcategory_name = stripslashes($subrow['category_name']);
+            if ($task_details['product_category'] == $subrow['category_id']) {
+              echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&rarr;$subcategory_name</option>\n";
+            } else {
+              echo "<option value=\"{$subrow['category_id']}\">&rarr;$subcategory_name</option>\n";
+            };
           };
         };
         ?>
@@ -362,7 +378,17 @@ if ($_SESSION['can_modify_jobs'] == '1'
       </tr>
       <tr>
         <th><?php echo $details_text['category'];?></th>
-        <td><?php echo $task_details['category_name'];?></td>
+        <td>
+        <?php
+        if ($task_details['parent_id'] > '0') {
+          $get_parent_cat = $fs->dbFetchArray($fs->dbQuery('SELECT category_name
+                                          FROM flyspray_list_category
+                                          WHERE category_id = ?',
+                                          array($task_details['parent_id'])));
+          echo $get_parent_cat['category_name'] . " &rarr; ";
+        };
+        echo $task_details['category_name'];?>
+        </td>
         <th nowrap=""><?php echo $details_text['reportedversion'];?></th>
         <td><?php echo $task_details['reported_version_name'];?></td>
       </tr>
