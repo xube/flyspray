@@ -4,10 +4,8 @@
 require("lang/$lang/modify.php");
 
 // FIXME: only temporary workaround
-if (empty($_POST['default_cat_owner']))
-    $_POST['default_cat_owner'] = '0';
-if (empty($_POST['category_owner']))
-    $_POST['category_owner'] = '0';
+$_POST['default_cat_owner'] = $fs->emptyToZero($_POST['default_cat_owner']);
+$_POST['category_owner']    = $fs->emptyToZero($_POST['category_owner']);
       
 $list_table_name = "flyspray_list_".addslashes($_POST['list_type']);
 $list_column_name = addslashes($_POST['list_type'])."_name";
@@ -161,9 +159,12 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
                 ", array($_POST['attached_to_project'], $_POST['task_type'],
 		    $item_summary, $detailed_desc, $_POST['item_status'],
 		    $_POST['assigned_to'], $_POST['product_category'],
-		    $_POST['product_version'], $_POST['closedby_version'],
+		    $_POST['product_version'], 
+		    $fs->emptyToZero($_POST['closedby_version']),
 		    $_POST['operating_system'], $_POST['task_severity'],
-		    $_POST['flyspray_userid'], $now, $_POST['percent_complete'],
+		    $_COOKIE['flyspray_userid'], 
+		    $now, 
+		    $_POST['percent_complete'],
 		    $_POST['task_id']
 		));
 
@@ -602,9 +603,14 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 				      can_vote, group_open)
 				      VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		array($_POST['group_name'], $_POST['group_desc'],
-		$_POST['is_admin'], $_POST['can_open_jobs'],
-		$_POST['can_modify_jobs'], $_POST['can_add_comments'],
-		$_POST['can_attach_files'], $_POST['can_vote'], $_POST['group_open']));
+		$fs->emptyToZero($_POST['is_admin']), 
+		$fs->emptyToZero($_POST['can_open_jobs']),
+		$fs->emptyToZero($_POST['can_modify_jobs']),
+		$fs->emptyToZero($_POST['can_add_comments']),
+		$fs->emptyToZero($_POST['can_attach_files']), 
+		$fs->emptyToZero($_POST['can_vote']), 
+		$fs->emptyToZero($_POST['group_open'])
+		));
 
         echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=users\">";
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newgroupadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
@@ -668,7 +674,8 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 			      default_cat_owner, intro_message, project_is_active)
 			      VALUES (?, ?, ?, ?, ?, ?)",
 			    array($_POST['project_title'],
-			      $_POST['theme_style'], $_POST['show_logo'],
+			      $_POST['theme_style'], 
+			      $fs->emptyToZero($_POST['show_logo']),
 			      $_POST['default_cat_owner'],
 			      $_POST['intro_message'], '1'));
 
@@ -839,7 +846,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                   group_in = ?,
                   account_enabled = ?
       WHERE user_id = ?",
-      array($_POST['group_in'], $_POST['account_enabled'], $_POST['user_id']));
+      array($_POST['group_in'], 
+		$fs->emptyToZero($_POST['account_enabled']), 
+		$_POST['user_id']));
     };
 
     if  ($_SESSION['admin'] == '1') {
@@ -872,9 +881,14 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                   group_open = ?
       WHERE group_id = ?",
       array($_POST['group_name'], $_POST['group_desc'],
-      $_POST['is_admin'], $_POST['can_open_jobs'], $_POST['can_modify_jobs'],
-      $_POST['can_add_comments'], $_POST['can_attach_files'],
-      $_POST['can_vote'], $_POST['group_open'], $_POST['group_id']));
+	      $fs->emptyToZero($_POST['is_admin']), 
+	      $fs->emptyToZero($_POST['can_open_jobs']),
+	      $fs->emptyToZero($_POST['can_modify_jobs']),
+	      $fs->emptyToZero($_POST['can_add_comments']),
+	      $fs->emptyToZero($_POST['can_attach_files']), 
+	      $fs->emptyToZero($_POST['can_vote']), 
+	      $fs->emptyToZero($_POST['group_open']),
+	      $_POST['group_id']));
     echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=users\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
   } else {
@@ -895,7 +909,8 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                                 show_in_list = ?
       WHERE $list_id = '{$_POST['id']}'",
       array($_POST['list_name'], $_POST['list_position'], 
-	    (empty($_POST['show_in_list']) ? '0' : $_POST['show_in_list'])));
+	    $fs->emptyToZero($_POST['show_in_list'])
+	    ));
 
       if ($_POST['project_id'] != '') {
         echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
@@ -956,7 +971,8 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                                 category_owner = ?
 			WHERE category_id = ?",
 			array($_POST['list_name'], $_POST['list_position'],
-			$_POST['show_in_list'], $_POST['category_owner'],
+			$fs->emptyToZero($_POST['show_in_list']),
+			$_POST['category_owner'],
 			$_POST['id']));
       echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=category\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['listupdated']}</em></p></div>";

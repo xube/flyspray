@@ -3,6 +3,10 @@
 // rest of Flyspray, including the sql database.  We don't want Flyspray to end
 // up on BugTraq! 
 
+if (($_POST['lang_code']) && (!preg_match ("/^(de|dk|en|fr|it|nl|pl)$/", $_POST['lang_code'])))
+        print "Invalid language code."; exit;
+}
+
 if ($_GET['getfile']) {
 
     // Yes. Now check its' regex format for safety -- Numbers only
