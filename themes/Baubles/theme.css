@@ -1,0 +1,877 @@
+@media screen {
+
+html {
+   margin               : 0px;
+   padding              : 0px;
+}
+
+body {
+   margin               : 0px;
+   padding              : 0px;
+   font-size            : 1em;
+   font-family          : Arial, sans-serif;
+}
+
+h1 {
+   text-align           : center;
+   font-size            : 150%;
+}
+
+input {
+   border               : 2px solid #ebe9e8;
+   padding              : 2px;
+
+}
+
+textarea {
+   width                : 98%;
+   height               : 200px;
+   border               : 2px solid #ebe9e8;
+   margin-left          : 2px;
+   padding              : 2px;
+}
+
+/* the main title; h1 alone is also used in the popup windows. */
+h1#title {
+   text-align           : left;
+   margin               : 0px 0px 0px 0px;
+   padding              : 0.5ex 0px 1ex 0px;
+   background-color     : #ffffff;
+   color                : #757575;
+   background-image     : url("title.png");
+   background-position  : top left;
+   background-repeat    : no-repeat;
+   border-bottom        : 1px solid #008000;
+}
+
+h1#title span {
+   padding-left         : 260px;
+}
+
+h2 {  /* Heading for link to task list and details */
+   margin               : 0px;
+   font-size            : 150%;
+}
+
+h3 {  /* heading for sections (especially the lists: user&groups, ...) */
+   font-size            : 120%;
+   margin               : 0px;
+   padding              : 0px;
+}
+
+h4 {  /* used for the list headings in Flyspay's options */
+   font-size            : 100%;
+   margin               : 1em 0px 0px 0px;
+   padding              : 0px;
+}
+
+h4+p, form p {
+   margin               : 0px;
+   padding              : 0px;
+}
+
+p {
+   margin               : 1ex 0px;
+   padding              : 0.5ex 0.5em;
+}
+
+form {
+   margin               : 0px;
+   padding              : 0px;
+   display              : inline;
+}
+
+td {
+   vertical-align       : top;
+}
+
+th {
+   vertical-align       : top;
+}
+
+
+/* labels are used nearly in every form */
+label {
+   font-family          : serif;
+}
+
+/* div.admin and p.admin is used for areas that only administrators can use
+   p.admin for instance for adding comments
+   table.admin serves the same purpose */
+/* table.login is the framework for the login form at the bottom of a page */
+/* table.userlist is found in the user&groups section */
+div.admin, p.admin, table.admin, table.login, table.userlist {
+   border               : 1px solid #008000;
+   margin               : 1em 0px;
+   padding              : 0px;
+}
+
+/* The paragraph containing the main menu */
+p#menu {
+   border               : 1px solid green;
+   margin               : 80px 0px 1ex 1em;
+   padding              : 0px;
+   text-align           : left;
+   position             : absolute;
+   top                  : -77px;
+   right                : 14px;
+   background-color     : white;
+   width                : 200px;
+   float                : right;
+   z-index              : 5;
+   background-image     : url(flies.jpg);
+   background-repeat    : no-repeat;
+   background-position  : 20px 35px;
+}
+
+p#menu em {
+   display              : block;
+   font-weight          : normal;
+   padding              : 0px;
+   padding-left         : 5px;
+   margin-bottom        : 1ex;
+   border-bottom        : 1px solid green;
+   background-color     : #EFE;
+}
+
+p#menu small {
+   display              : none;
+}
+
+p#menu a {
+   display              : block;
+   width                : 175px;
+   color                : #5b5c5c;
+   background-color     : transparent;
+   padding-left         : 25px;
+   background-image     : url(dot-blue.png);
+   background-position  : 5px 3px;
+   background-repeat    : no-repeat;
+}
+
+p#menu a:hover {
+   display              : block;
+   width                : 175px;
+   color                : #5b5c5c;
+   background-color     : #eeffee;
+   text-decoration      : none;
+   background-image     : url(dot-green.png);
+   background-position  : 5px 3px;
+   background-repeat    : no-repeat;
+}
+
+p#menu span#mainmenu {
+   display              : block;
+   margin-bottom        : 1ex;
+}
+
+p#menu span#adminmenu {
+   display              : block;
+   background-color     : #EFE;
+}
+
+table.userlist td, table.userlist th {
+   border               : 1px solid #008000;
+}
+
+table.login {
+   width                : 80%;
+   margin-left          : auto;
+   margin-right         : auto;
+}
+
+/* table.head is the table containing the task-list-link and the
+   search-bug-number form */
+table.head {
+   width                : 100%;
+}
+
+img {
+   border               : none;
+}
+
+/* used in p#menu for the login information. The rest is really just
+   emphasized text */
+em {
+   font-style           : normal;
+   font-weight          : bold;
+}
+
+a:link {
+   color                : #5b5c5c;
+   background-color     : transparent;
+   font-weight          : bold;
+   text-decoration      : none;
+}
+
+a:visited {
+   color                : #5b5c5c;
+   background-color     : transparent;
+   font-weight          : bold;
+   text-decoration      : none;
+}
+
+a:hover {
+   color                : #7b9c7b;
+   background-color     : transparent;
+   font-weight          : bold;
+   text-decoration      : none;
+}
+
+div#tasklist {
+   width                : 77%;
+   border               : 1px solid #008000;
+   color                : #000000;
+   background-color     : transparent;
+}
+
+/* The table listing tasks on the main page */
+table#tasklist {
+   width                : 100%;
+   border-spacing       : 0px;
+   border-collapse      : collapse;
+}
+
+table#tasklist td {
+   padding              : 2px 1ex 2px 2px;
+}
+
+table#tasklist td.taskdate {
+   text-align           : center;
+   white-space          : nowrap;
+}
+
+table#tasklist td.progress {
+   vertical-align       : middle;
+   text-align           : center;
+}
+
+table#tasklist td#taskrange {
+   width                : 50%;
+   padding              : 3px 2ex;
+   text-align           : right;
+ }
+
+table#tasklist td#pagenumbers {
+   width                : 50%;
+   padding              : 3px 2ex;
+   text-align           : left;
+}
+
+
+table#tasklist tfoot td {
+   text-align           : center;
+   background-color     : white;
+   padding              : 1em 0px;
+   border               : none;
+}
+
+/* table.list is any table holding lists like resolutions, ... */
+table.list th, table.list td {
+   padding-right        : 2em;
+}
+
+table.list label, p#showtask label, p.admin label, form#formaddrelatedtask label {
+   display              : inline;
+}
+
+/* dic#content is a generic container for anything but the title and
+   the footer paragraph */
+div#content {
+   padding              : 14px
+}
+
+/* Powered by Flyspray */
+p#footer {
+   position             : absolute;
+   top                  : 32px;
+   right                : 210px;
+   margin               : 0px;
+   padding              : 0px;
+   text-align           : right;
+   color                : #000000;
+   background-color     : transparent;
+   font-size            : 12px;
+}
+
+p#footer a {
+   color                : #818181;
+   background-color     : transparent;
+   font-weight          : bold;
+   border               : none;
+   padding              : 0px 4px 0px 4px;
+   margin               : 0px 15px 0px 0px;
+}
+
+
+/* div.redirectmessage is used in modify.php when you change things and are redirected
+   to the index or details page */
+div.redirectmessage {
+   border               : 1px solid #008000;
+   background-color     : #e6eef6;
+   padding              : 1ex;
+   text-align           : center;
+}
+
+
+form#registernewuser strong, form#newgroup strong {
+   color                : red;
+}
+
+div.tabentries {
+   margin               : 0px 0px 1em 0px;
+   border               : 1px solid #008000;
+   min-height           : 5em;
+}
+
+.tabentry {
+   margin               : 2px 1em;
+   border-bottom        : 1px dashed #008000;
+}
+
+/* This is the division that keeps the buttons to modify comments
+   (delete, edit) */
+div.modifycomment {
+   float                : right;
+   width                : 20em;
+   text-align           : right;
+}
+
+div.modifycomment p {
+   display              : inline;
+   margin               : 0px;
+   padding              : 0px;
+}
+
+/* The tabs containing the links to comments, attachments, ...
+   in details.php */
+p#tabs a {
+   margin               :  2px 0px;
+   padding              : 0px 1em;
+   white-space          : nowrap;
+}
+
+/* separators between the links in the tabs */
+
+
+p#tabs a.tabactive {
+   font-weight          : bold;
+   background-color     : #008000;
+}
+
+/* Some generic classes; severity classes are used for colour
+   indication of severities. severityx_over classes are used
+   for hover effects */
+
+.severity1 {
+   color                : #000000;
+   background-color     : transparent;
+   border               : 1px solid #a0a0a0;
+}
+
+.severity1 td.task_summary a {
+   background-image     : url(dot-yellow.png);
+   background-repeat    : no-repeat;
+   background-position  : 0px 2px;
+   padding-left         : 22px;
+}
+
+.severity1:hover {
+   color                : #000000;
+   background-color     : #fffff3;
+}
+
+.severity2 {
+   color                : #000000;
+   background-color     : transparent;
+   border               : 1px solid #a0a0a0;
+}
+
+.severity2:hover {
+   color                : #000000;
+   background-color     : #f2f8ff;
+}
+
+.severity2 td.task_summary a {
+   background-image     : url(dot-grey.png);
+   background-repeat    : no-repeat;
+   background-position  : 0px 2px;
+   padding-left         : 22px;
+}
+
+.severity3 {
+   color                : #000000;
+   background-color     : transparent;
+   border               : 1px solid #a0a0a0;
+}
+
+.severity3:hover {
+   color                : #000000;
+   background-color     : #fff2da;
+}
+
+.severity3 td.task_summary a {
+   background-image     : url(dot-orange.png);
+   background-repeat    : no-repeat;
+   background-position  : 1px 2px;
+   padding-left         : 22px;
+}
+
+.severity4 {
+   color                : #000000;
+   background-color     : transparent;
+   border               : 1px solid #a0a0a0;
+}
+
+.severity4:hover {
+   color                : #000000;
+   background-color     : #f8d7fa;
+}
+
+.severity4 td.task_summary a {
+   background-image     : url(dot-purple.png);
+   background-repeat    : no-repeat;
+   background-position  : 1px 2px;
+   padding-left         : 22px;
+}
+
+.severity5 {
+   color                : #000000;
+   background-color     : transparent;
+   border               : 1px solid #a0a0a0;
+}
+
+.severity5:hover {
+   color                : #000000;
+   background-color     : #ec9797;
+}
+
+.severity5 td.task_summary a {
+   background-image     : url(dot-red.png);
+   background-repeat    : no-repeat;
+   background-position  : 0px 2px;
+   padding-left         : 22px;
+}
+
+
+/* Area containing all details to a given task */
+div#taskdetails {
+   border               : 1px solid #008000;
+   margin-bottom        : 2em;
+   min-height           : 450px;
+}
+
+div#taskdetails h2 {
+   font-size            : 100%;
+   padding              : 0.3ex 5px;
+   font-weight          : normal;
+}
+
+/* Task details are listed within a table */
+div#taskdetailsfull table {
+   width                : 100%;
+   height               : 280px;
+   margin               : 0px;
+}
+
+div#taskdetailsfull textarea#details {
+   height               : 260px;
+   width                : 95%;
+}
+
+div#taskdetailsfull label {
+   display              : block;
+   padding-bottom       : 5px;
+}
+
+div#taskdetails table th {
+   text-align           : left;
+   padding-left         : 3em;
+   font-weight          : bold;
+}
+
+div#taskfields1 {
+   width                : 30%;
+   border-left          : 1px solid #008000;
+   border-top           : 1px solid #008000;
+   margin-bottom        : 0px;
+   margin-top           : 15px;
+   float                : right;
+   clear                : both;
+}
+
+div#taskfields1 table {
+   width                : 100%;
+}
+
+div#taskfields1 table td {
+  width                 : 50%;
+}
+
+div#taskfields2 {
+   width                : 30%;
+   border-left          : 1px solid #008000;
+   border-bottom        : 1px solid #008000;
+   margin-bottom        : 8px;
+   float                : right;
+   clear                : both;
+}
+
+div#taskfields2 table {
+   width                : 100%;
+}
+
+div#taskfields2 table td {
+  width                 : 50%;
+}
+
+div#taskdetailsfull {
+   padding              : 0px;
+   text-align           : left;
+   top                  : -15em;
+   background-color     : white;
+   width                : 69%;
+   text-align           : left;
+   min-height           : 250px;
+   margin               : 12px 0px 0px 5px;
+}
+
+div#deps {
+   padding                 : 8px;
+   width                   : 98%;
+   border-bottom           : none;
+   min-height              : 50px;
+   float                   : left;
+}
+
+div#taskdeps {
+  float: left;
+  width: 45%;
+  margin-bottom: 8px;
+}
+
+div#taskblocks {
+  float: left;
+  width: 50%;
+}
+
+div#actionbuttons {
+   margin-top           : 25px;
+   margin-left          : 5px;
+   clear                : bottom;
+   padding-bottom       : 7px;
+}
+
+div#actionbuttons a {
+   padding              : 0px 7px 0px 22px;
+   border               : 1px solid #779977;
+   color                : #c5c5c5;
+   background-color     : #ffffff;
+   background-image     : url(dot-blue.png);
+   background-repeat    : no-repeat;
+   background-position  : 2px 3px;
+   margin               : 3px;
+}
+
+div#actionbuttons a:hover {
+   padding              : 0px 7px 0px 22px;
+   border               : 1px solid #779977;
+   color                : #5b5c5c;
+   background-color     : transparent;
+   text-decoration      : none;
+   background-image     : url(dot-green.png);
+   background-repeat    : no-repeat;
+   background-position  : 2px 3px;
+}
+
+div#closeform {
+   visibility           : hidden;
+   position             : absolute;
+   background-color     : #ffffff;
+   color                : #000000;
+   border               : 2px ridge #008000;
+   padding              : 5px 30px 5px 5px;
+   margin-top           : 5px;
+}
+
+div#actionbuttons a#hideclosetask {
+   position             : absolute;
+   top                  : 3px;
+   right                : 3px;
+   width                : 20px;
+   height               : 20px;
+   color                : #000000;
+   background-color     : transparent;
+   border               : none;
+   background-image     : url(dot-red.png);
+   background-repeat    : no-repeat;
+   background-position  : top right;
+}
+
+div#permslink {
+   position             : absolute;
+   top                  : 32px;
+   left                 : 262px;
+   color                : #757575;
+   background-color     : transparent;
+   font-size            : 12px;
+   font-weight          : normal;
+}
+
+div#permslink a {
+   color                : #757575;
+   background-color     : transparent;
+   font-weight          : normal;
+}
+
+div#permissions {
+   visibility           : hidden;
+   position             : absolute;
+   top                  : 50px;
+   left                 : 262px;
+   background-color     : #ffffff;
+   color                : #000000;
+   width                : auto;
+   height               : 550px;
+   overflow             : none;
+}
+
+div#permissions table {
+   border               : 1px solid black;
+}
+
+div#toolboxmenu {
+   border               : 1px solid green;
+   margin               : 80px 0px 1ex 1em;
+   padding              : 1ex 0 1ex 0;
+   text-align           : left;
+   float                : right;
+   background-color     : white;
+   width                : 200px;
+   float                : right;
+   z-index              : 5;
+   margin-top           : 100px;
+}
+
+div#toolboxmenu small {
+   display              : none;
+   margin               : 2px;
+}
+
+div#toolboxmenu a {
+   display              : block;
+   width                : 11em;
+   color                : #5b5c5c;
+   background-color     : transparent;
+   padding-left         : 25px;
+   background-image     : url(dot-blue.png);
+   background-position  : 5px 3px;
+   background-repeat    : no-repeat;
+}
+
+div#toolboxmenu a:hover {
+   display              : block;
+   width                : 11em;
+   color                : #5b5c5c;
+   background-color     : #eeffee;
+   text-decoration      : none;
+   background-image     : url(dot-green.png);
+   background-position  : 5px 3px;
+   background-repeat    : no-repeat;
+}
+
+div#toolbox table {
+   border-collapse      : collapse;
+}
+
+div#toolbox h3 {
+   margin               : 20px 0px 20px 0px;
+
+}
+
+/* The new tabs stuff */
+/* colors */
+#submenu a, div.tab                 { color: #000000; background-color: #ffffff;}
+
+#submenu a.active {
+   color                : #5b5c5c;
+   background-color     : #eeffee;
+   padding              : 2px 2px 5px 22px;
+   background-image     : url(dot-green.png);
+   background-repeat    : no-repeat;
+   background-position  : 2px 6px;
+}
+
+#submenu a:hover {
+   color                : #5b5c5c;
+   background-color     : #eeffee;
+}
+
+#submenu a                          { color: #c5c5c5; background-color: transparent; text-decoration: none;}
+#submenu a.active                   { border-bottom-color: #008000; }
+
+/* margins */
+#submenu, #submenu *                { margin: 0; padding: 0; }
+#submenu a, div.tab                 { border: solid 1px #008000; }
+#submenu a {
+   margin               : auto auto -1px 1ex;
+   padding              : 2px 2px 5px 5px;
+}
+* html #submenu                     { margin-bottom: -19px; }
+div.tab                             { margin: 0; padding: 1ex; padding-bottom: 1cm; margin-right: 1ex; margin-bottom: 10px;}
+
+/* flow */
+#submenu li                         { display: inline; width: 0; height: 0; }
+#submenu a                          { display: block; float: left; }
+div.tab h2                          { display: none; }
+div.tab                             { clear: left; }
+* html .tab div.clear               { clear: none; height: 14em; }
+
+/* .fineprint is merely used for the details about when a task has
+   been created and changed (in the details pages) */
+#fineprint {
+   font-size            : smaller;
+   margin               : 0px 0px 0px 5px;
+}
+
+table#history
+{
+   width                : 100%;
+   margin               : 1em 0px 1em 0px;
+   padding              : 0px 1em 0px 1em;
+   color                : black;
+   background-color     : transparent;
+   font-family          : Helvetica, Verdana, Sans-Serif;
+}
+
+table#history td {
+  border-bottom        : 1px solid #ccc;
+  border-left          : 1px solid #ccc;
+  padding-left         : 5px;
+}
+
+table#history td.taskid {
+  text-align           : center;
+  padding              : 2px 1ex;
+}
+
+input.mainbutton {
+   color                : #000000;
+   background-color     : #ffffff;
+   padding              : 2px 4px 2px 22px;
+   background-image     : url(dot-blue.png);
+   background-repeat    : no-repeat;
+   background-position  : 3px 3px;
+   border               : 1px solid #008000;
+   font-weight          : bold;
+}
+
+input.mainbutton:hover {
+   color                : #5b5c5c;
+   background-color     : transparent;
+   background-image     : url(dot-green.png);
+   background-repeat    : no-repeat;
+   background-position  : 3px 3px;
+   font-weight          : bold;
+}
+
+input.adminbutton {
+   color                : #000000;
+   background-color     : #ffffff;
+   padding              : 2px 4px 2px 22px;
+   background-image     : url(dot-blue.png);
+   background-repeat    : no-repeat;
+   background-position  : 3px 3px;
+   border               : 1px solid #008000;
+   font-weight          : bold;
+}
+
+input.adminbutton:hover {
+   color                : #5b5c5c;
+   background-color     : transparent;
+   background-image     : url(dot-green.png);
+   background-repeat    : no-repeat;
+   background-position  : 3px 3px;
+   font-weight          : bold;
+}
+
+div#intromessage {
+   margin-right         : 200px;
+}
+
+div#errorbar {
+   width                : 95%;
+   height               : 20px;
+   color                : red;
+   background-color     : #ffd3d3;
+   font-weight          : bold;
+   background-image     : url(dot-red.png);
+   background-repeat    : no-repeat;
+   background-position  : 5px 2px;
+   padding-left         : 26px;
+   border-bottom        : 1px solid #008000;
+}
+
+div#successbar {
+   width                : 95%;
+   height               : 20px;
+   color                : #779977;
+   background-color     : #eeffee;
+   font-weight          : bold;
+   background-image     : url(dot-green.png);
+   background-repeat    : no-repeat;
+   background-position  : 5px 2px;
+   padding-left         : 26px;
+   border-bottom        : 1px solid #008000;
+}
+
+fieldset {
+   margin-bottom        : 20px;
+}
+
+p#search {
+   float                : right;
+   width                : 200px;
+   height               : auto;
+   margin               : 0px 0px 0px 0px;
+   padding              : 0px 0px 0px 0px;
+   border               : 1px solid #008000;
+}
+
+p#search {
+   display              : block;
+}
+
+p#search label {
+   display              : block;
+}
+
+p#search select, p#search button {
+   width                : 100%;
+}
+
+p#search input {
+   width                : 95%;
+}
+
+p#search input.mainbutton {
+   width                : 100%;
+}
+
+div#projectselector {
+   position             : absolute;
+   left                 : 30%;
+}
+
+/* End of screen section */
+}
+
+
+@media print {
+p#menu {
+  display              : none;
+}
+
+
+}
+
