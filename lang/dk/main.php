@@ -24,7 +24,7 @@ $language = array (
 'versions'			=>	'Versioner',
 'severities'		=>	'Grader',
 'disabledaccount'	=>	'Din konto er blevet deaktiveret!<br>Du er omg&aring;ende blevet logget af...',
-'poweredby'			=>	'Powered by Flyspray 0.9.5',
+'poweredby'			=>	'Powered by Flyspray',
 
 // Added in version 0.9.5
 

@@ -30,7 +30,7 @@ $modify_text = array (
 'messagefrom'     =>  'Dies ist eine Nachricht vom Flyspray Bugtracking System auf',
 'hasjustmodified' =>  'hat gerade folgende Aufgabe verändert.',
 'changedfields'   =>  'Veränderte Felder sind mit Sternchen versehen (**)',
-'moreinfomodify'  =>  'Merh Informationen zu dieser Aufgabe auf',
+'moreinfomodify'  =>  'Mehr Informationen zu dieser Aufgabe auf',
 
 'task'            =>  'Aufgabe',
 'nolongerassigned'=>  'Folgende Aufgabe ist Ihnen nicht länger zugeteilt. Stattdessen ist dafür zuständig:',

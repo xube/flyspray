@@ -22,7 +22,7 @@ $language = array (
 'versions'			=>	'Vers&otilde;es',
 'severities'		=>	'Severidades',
 'disabledaccount'	=>	'Sua conta foi desativada!<br>Voc&ecirc; est&aacute; sendo deslogado imediatamente...',
-'poweredby'			=>	'Desenvolvido por Flyspray 0.9.5',
+'poweredby'			=>	'Desenvolvido por Flyspray',
 
 // Adicionado na versão 0.9.5
 

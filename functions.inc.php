@@ -1,6 +1,7 @@
 <?php
 
 class Flyspray {
+    var $version = '0.9.5';
 
    function getGlobalPrefs() {
       $get_prefs = $this->dbQuery("SELECT pref_name, pref_value FROM flyspray_prefs");

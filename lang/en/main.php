@@ -22,7 +22,7 @@ $language = array (
 'versions'			=>	'Versions',
 'severities'		=>	'Severities',
 'disabledaccount'	=>	'Your account has been disabled!<br>Immediately logging you out...',
-'poweredby'			=>	'Powered by Flyspray 0.9.5',
+'poweredby'			=>	'Powered by Flyspray',
 
 // Added in version 0.9.5
 

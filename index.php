@@ -222,7 +222,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       ?>
 </div>
 <p id="footer">
-<a href="http://flyspray.rocks.cc/" class="offsite"><?php echo $language['poweredby'];?></a>
+<a href="http://flyspray.rocks.cc/" class="offsite"><?php printf("%s %s", $language['poweredby'], $fs->version);?></a>
 </p>
 </body>
 </html>

@@ -22,7 +22,7 @@ $language = array (
 'versions'			=>	'Versioni',
 'severities'		=>	'Gravità',
 'disabledaccount'	=>	'La tua utenza è stato disabilitato!<br>Disconnessione immediata...',
-'poweredby'			=>	'Powered by Flyspray 0.9.5',
+'poweredby'			=>	'Powered by Flyspray',
 
 // Added in version 0.9.5
 

@@ -22,7 +22,7 @@ $language = array (
 'versions'			=>	'Versies',
 'severities'		=>	'Ernstigheden',
 'disabledaccount'	=>	'Uw account is uitgeschakeld<br>U wordt onmiddellijk uitgelogd!',
-'poweredby'			=>	'Aangedreven door Flyspray 0.9.4',
+'poweredby'			=>	'Aangedreven door Flyspray',
 
 );
 ?>

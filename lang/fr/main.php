@@ -22,7 +22,7 @@ $language = array (
 'versions'			=>	'Versions',
 'severities'		=>	'Sévérités',
 'disabledaccount'	=>	'Votre compte a été désactivé !<br>Déconnexion immédiate...',
-'poweredby'			=>	'Tourne sous Flyspray 0.9.5',
+'poweredby'			=>	'Tourne sous Flyspray',
 
 'selectproject'		=>	'Sélectionner un projet:',
 'show'				=>	'Voir',

@@ -23,7 +23,7 @@ $language = array (
 'versions'      =>  'Versionen',
 'severities'    =>  'Schweregrade',
 'disabledaccount'  =>  'Ihr Konto wurde abgedreht!<br>Sie werden sofort ausgeloggt...',
-'poweredby'      =>  'Hier läuft Flyspray 0.9.4',
+'poweredby'      =>  'Hier läuft Flyspray',
 
 // Added in version 0.9.5
 

@@ -33,7 +33,7 @@ $language = array (
 'versions'	=>	'Wersje',
 'severities'	=>	'Priorytety',
 'disabledaccount'	=>	'Twoje konto jest nieaktywne!<br>Wylogowano...',
-'poweredby'	=>	'Napędzane przez Flyspray 0.9.5',
+'poweredby'	=>	'Napędzane przez Flyspray',
 
 // Added in version 0.9.5
 

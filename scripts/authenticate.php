@@ -19,17 +19,16 @@ if ($_GET['action'] == "logout") {
 } elseif ($_POST['username'] AND $_POST['password']) {
   $username = $_POST['username'];
   $password = $_POST['password'];
-  // Get the user's account details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_name = ?", array($username));
+  // Get the user's account and group details
+  $result = $fs->dbQuery("SELECT * FROM flyspray_users, flyspray_groups 
+			    WHERE user_name = ? AND group_id = group_in", 
+			array($username));
   $auth_details = $fs->dbFetchArray($result);
-  // Get the user's group details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($auth_details['group_in']));
-  $group_details = $fs->dbFetchArray($result);
 
   // Encrypt the password, and compare it to the one in the database
   if (crypt($password, $cookiesalt) == $auth_details['user_pass']
     && $auth_details['account_enabled'] == "1"
-    && $group_details['group_open'] == '1')
+    && $auth_details['group_open'] == '1')
   {
     $message = $authenticate_text['loginsuccessful'];
 
