@@ -22,5 +22,10 @@ $index_text = array (
 'previous'      =>  'Vorige',
 'next'          =>  'Nächste',
 
+
+// Added in version 0.9.5
+'searchthisproject'	=>	'Dieses Projekt durchsuchen',
+
+
 );
 ?>

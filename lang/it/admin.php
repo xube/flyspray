@@ -86,7 +86,6 @@ modifica.  La modifica del campo "Nome" cambier&agrave; tutti i task con quel no
 'projectprefs'		=>	'Preferenze del progetto',
 'defaultproject'	=>	'Progetto predefinito',
 'projectlists'		=>	'Lista di progetti',
-'addnewproject'		=>	'Aggiungi un nuovo progetto',
 'showlogo'			=>	'Mostra titolo logo immagine',
 'intromessage'		=>	'Messaggio di introduzione',
 'isactive'			=>	'Il progetto &egrave; attivo',

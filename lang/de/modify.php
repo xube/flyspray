@@ -111,5 +111,17 @@ $modify_text = array (
 
 
 
+// Added in version 0.9.5
+
+'project'			=>	'Projekt:',
+'gotonewtask'		=>	'Zur eben erstellten neuen Aufgabe springen',
+'addanother'		=>	'Weitere Aufgabe zu diesem Projekt hinzufügen',
+'projectcreated'	=>	'Ihr neues Projekt wurde erstellt. Folgen sie untenstehendem Link, um Kategorien, Betriebssysteme und Versionslisten zu verwalten',
+'customiseproject'	=>	'Dieses Projekt anpassen',
+'projectupdated'	=>	'Projekteinstellungen gespeichert',
+'emptytitle'		=>	'Sie haben das Projekttitelfeld leer gelassen, beheben Sie das bitte.',
+'loginbelow'		=>	'Sie können nun versuchen, sich in untenstehendem Formular anzumelden.',
+
+
 );
 ?>

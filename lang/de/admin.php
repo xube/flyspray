@@ -80,5 +80,16 @@ $admin_text = array (
 'commentby'        =>  'Kommentar von',
 'saveeditedcomment'=>  'Bearbeiteten Kommentar speichern',
 
+// Added in version 0.9.5
+
+'projectprefs'		=>	'Projekteinstellungen',
+'defaultproject'	=>	'Defaultprojekt',
+'projectlists'		=>	'Proktlisten',
+'showlogo'			=>	'Titellogo anzeigen',
+'intromessage'		=>	'Begrüßungsnachricht',
+'isactive'			=>	'Projekt ist aktiv',
+'createproject'		=>	'Neues Projekt erstellen',
+
+
 );
 ?>

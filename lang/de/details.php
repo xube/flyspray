@@ -51,5 +51,10 @@ $details_text = array (
 'invalidtaskid'     =>  'Es gibt keine Aufgabe mit dieser ID!',
 'theseusersnotify'  =>  'Folgende Benutzer erhalten detaillierte Benachrichtigungen, sobald sich die Aufgabe ändert',
 
+// Added in version 0.9.5
+
+'attachedtoproject'	=>	'gehört zu Projekt',
+
+
 );
 ?>

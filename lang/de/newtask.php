@@ -18,7 +18,7 @@ $newtask_text = array (
 'addthistask'     =>  'Aufgabe hinzufügen',
 'nopermission'    =>  'Sie sind nicht berechtigt, diese Seite zu verwenden',
 
-
+'notifyme'        =>  'Benachrichtige mich, wenn sich diese Aufgabe ändert',
 
 );
 ?>

@@ -25,5 +25,12 @@ $language = array (
 'disabledaccount'  =>  'Ihr Konto wurde abgedreht!<br>Sie werden sofort ausgeloggt...',
 'poweredby'      =>  'Hier läuft Flyspray 0.9.4',
 
+// Added in version 0.9.5
+
+'selectproject'		=>	'Aufgabenliste für Projekt:',
+'show'				=>	'Zeigen',
+'projects'			=>	'Projekte',
+'adminmenu'			=>	'Admin Menü',
+
 );
 ?>

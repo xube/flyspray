@@ -15,5 +15,7 @@ $newgroup_text = array (
 'addthisgroup'    =>  'Gruppe hinzufügen',
 'nopermission'    =>  'Sie sind nicht berechtigt, diese Seite zu verwenden',
 
+'groupenabled'    =>  'Mitglieder können sich einloggen',
+
 );
 ?>

@@ -85,7 +85,6 @@ $admin_text = array (
 'projectprefs'		=>	'Project Preferences',
 'defaultproject'	=>	'Default Project',
 'projectlists'		=>	'Project lists',
-'addnewproject'		=>	'Add New Project',
 'showlogo'			=>	'Show title logo image',
 'intromessage'		=>	'Introductory message',
 'isactive'			=>	'Project is active',
