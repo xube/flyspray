@@ -10,9 +10,9 @@ if ($permissions['is_admin'] == '1') {
 <h3><?php echo $newproject_text['createnewproject'];?></h3>
 
 <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="newproject">
-  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="newproject" />
+  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>" />
 <table class="admin">
   <tr>
     <td>
@@ -20,7 +20,7 @@ if ($permissions['is_admin'] == '1') {
       <label for="projecttitle"><?php echo $newproject_text['projecttitle'];?></label>
     </td>
     <td>
-      <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo $project_details['project_title'];?>">
+      <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo $project_details['project_title'];?>" />
     </td>
   </tr>
 
@@ -63,7 +63,7 @@ if ($permissions['is_admin'] == '1') {
     <label for="showlogo"><?php echo $newproject_text['showlogo'];?></label>
     </td>
     <td>
-    <input type="checkbox" name="show_logo" value="1" CHECKED>
+    <input type="checkbox" name="show_logo" value="1" checked />
     </td>
   </tr>
   <tr>
@@ -71,7 +71,7 @@ if ($permissions['is_admin'] == '1') {
     <label for="inlineimages"><?php echo $newproject_text['inlineimages'];?></label>
     </td>
     <td>
-    <input type="checkbox" name="inline_images" value="1">
+    <input type="checkbox" name="inline_images" value="1" />
     </td>
   </tr>
   <tr>
@@ -87,7 +87,7 @@ if ($permissions['is_admin'] == '1') {
     <label for="othersview"><?php echo $newproject_text['othersview'];?></label>
     </td>
     <td>
-    <input id="othersview" type="checkbox" name="others_view" value="1" checked>
+    <input id="othersview" type="checkbox" name="others_view" value="1" checked />
     </td>
   </tr>
   <tr>
@@ -95,11 +95,11 @@ if ($permissions['is_admin'] == '1') {
     <label for="anonopen"><?php echo $newproject_text['allowanonopentask'];?></label>
     </td>
     <td>
-    <input id="anonopen" type="checkbox" name="anon_open" value="1">
+    <input id="anonopen" type="checkbox" name="anon_open" value="1" />
     </td>
   </tr>
   <tr>
-    <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $newproject_text['createthisproject'];?>"></td>
+    <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $newproject_text['createthisproject'];?>" /></td>
   </tr>
 
 </table>

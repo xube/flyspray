@@ -29,5 +29,8 @@ metodo di notifica preferenziale richiesto.',
 'addressused'		=>	'Questo indirizzo e\' stato usato per registrare un account Flyspray.  Se non stavi aspettando
 questo messaggio, ti prego di ignorarlo e di cancellarlo. Il tuo codice di conferma e\':',
 
+// Added in version 0.9.7
+'badmagic'              =>      'Non è una chiave magica valida! Sei sicuro di averla presa dal tuo messaggio di notifica?',
+
 );
 ?>

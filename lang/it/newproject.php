@@ -22,5 +22,9 @@ $newproject_text = array (
 // Added in version 0.9.6
 'inlineimages'		=>	'Mostra le immagini allegate inline',
 
+// Added in version 0.9.7
+'othersview'		=>	'Permetti a chiunque di visualizzare il progetto',
+'allowanonopentask'     =>      'Permetti ad utenti anonimi di aprire dei task',
+                          
 );
 ?>

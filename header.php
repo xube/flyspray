@@ -43,7 +43,10 @@ if (PHP_VERSION  < '4.2.0') {
 	die('Your version of PHP is not compatable with Flyspray, please upgrade to the latest version of PHP.  Flyspray requires at least PHP version 4.3.0');
 };
 
-session_start();
+if (isset($_COOKIE['flyspray_userid']))
+{
+   session_start();
+};
 
 // Define our functions class
 $fs = new Flyspray;

@@ -139,5 +139,28 @@ sotto.',
 'saveanyway'        =>   'Salva comunque le mie modifichey',
 'priority'          =>   'Priorita\'',
 
+// Added in version 0.9.7
+
+'nouserselected'        =>        'Nessun utente selezionato. Seleziona almeno un utente prima di riprovare.',  // Changed in svn r191
+'groupswitchupdated'    =>        'Gruppi utenti modificati con successo.',
+'takenownership'        =>        'Questo task non ti e\' assegnato.',
+'adminrequestmade'      =>        'La tua richiesta  stata trasmessa ad un progect manager.',
+'newdepnotify'          =>        'Una nuova dipendenza e\' stata aggiunta al seguente task:',
+'dependadded'           =>        'La dipendenza e\'stata aggiunta',
+'dependaddfailed'       =>        'Non puoi aggiungere il task come dipendenza in questo momento',
+'depremoved'            =>        'La dipendenza e\' stata eliminata',
+'newdepis'              =>        'La nuova dipendenza e\'',
+'magicurlsent'          =>        'Un messaggio e\' stato inviato al tuo indirizzo di notifica. Contiene un link che ti portera\' ad una pagina per completare questo task.',
+'changefspass'          =>        'Cambia la password di Flyspray',
+'magicurlmessage'       =>        'Prego csegui questo link per cambiare la tua password Flyspray:',
+'erroronform'           =>        'C\'e\' stato un problema su questa form',
+'addressused'           =>        'Questo indirizzo e\' stato usato per registrare un\'utenza Flyspray.  Se non stavi aspettando questo messaggio, ignoralo ed eliminalo.  Vai alla seguente Url per completare la registrazione:',
+'confirmcodeis'         =>        'Il tuo codice di conferma e\':',
+'codesent'              =>        'Il tuo codice di conferma e\' stato inviato. Prego segui le istruzioni contenute nel messaggio.',
+'taskmadeprivate'       =>        'Questo task e\' stato reso privato',
+'taskmadepublic'        =>        'Questo task e\' stato reso nuovamente pubblico',
+'realandnotify'         =>        'Devi riempire il campo nome vero, ed uno tra icampi indirizzo email o jabber id.',
+
+                      
 );
 ?>

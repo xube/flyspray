@@ -33,37 +33,37 @@ if ($permissions['is_admin'] == "1"
 <table class="admin">
   <tr>
     <td>
-    <input type="hidden" name="do" value="modify">
-    <input type="hidden" name="action" value="newuser">
+    <input type="hidden" name="do" value="modify" />
+    <input type="hidden" name="action" value="newuser" />
       <label for="username"><?php echo $newuser_text['username'];?></label></td>
-    <td><input id="username" name="user_name" type="text" size="20" maxlength="20"><strong>*</strong></td>
+    <td><input id="username" name="user_name" type="text" size="20" maxlength="20" /><strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="userpass"><?php echo $newuser_text['password'];?></label></td>
-      <td><input id="userpass" name="user_pass" type="password" size="20" maxlength="100"><strong>*</strong></td>
+      <td><input id="userpass" name="user_pass" type="password" size="20" maxlength="100" /><strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="userpass2"><?php echo $newuser_text['confirmpass'];?></label></td>
-      <td><input id="userpass2" name="user_pass2" type="password" size="20" maxlength="100"><strong>*</strong></td>
+      <td><input id="userpass2" name="user_pass2" type="password" size="20" maxlength="100" /><strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="realname"><?php echo $newuser_text['realname'];?></label></td>
-      <td><input id="realname" name="real_name" type="text" size="20" maxlength="100"><strong>*</strong></td>
+      <td><input id="realname" name="real_name" type="text" size="20" maxlength="100" /><strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="emailaddress"><?php echo $newuser_text['emailaddress'];?></label></td>
-      <td><input id="emailaddress" name="email_address" type="text" size="20" maxlength="100"><strong>*</strong></td>
+      <td><input id="emailaddress" name="email_address" type="text" size="20" maxlength="100" /><strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="jabberid"><?php echo $newuser_text['jabberid'];?></label></td>
-      <td><input id="jabberid" name="jabber_id" type="text" size="20" maxlength="100"></td>
+      <td><input id="jabberid" name="jabber_id" type="text" size="20" maxlength="100" /></td>
     </tr>
     <tr>
       <td><label><?php echo $newuser_text['notifications'];?></label></td>
       <td>
-      <input type="radio" name="notify_type" value="0" checked="checked"><?php echo $newuser_text['none'];?> <br>
-      <input type="radio" name="notify_type" value="1"><?php echo $newuser_text['email'];?> <br>
-      <input type="radio" name="notify_type" value="2"><?php echo $newuser_text['jabber'];?> <br>
+      <input type="radio" name="notify_type" value="0" checked="checked" /><?php echo $newuser_text['none'];?> <br />
+      <input type="radio" name="notify_type" value="1" /><?php echo $newuser_text['email'];?> <br />
+      <input type="radio" name="notify_type" value="2" /><?php echo $newuser_text['jabber'];?> <br />
       </td>
     </tr>
     <?php if ($permissions['is_admin'] == "1") { ?>
@@ -85,7 +85,7 @@ if ($permissions['is_admin'] == "1"
     ?>
     <tr>
       <td colspan="2" class="buttons">
-      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newuser_text['registeraccount'];?>" onclick="Disable()">
+      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newuser_text['registeraccount'];?>" onclick="Disable()" />
       </td>
     </tr>
   </table>

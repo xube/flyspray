@@ -106,5 +106,28 @@ $details_text = array (
 'previousvalue'     =>   'Valore precedente',
 'newvalue'          =>   'Nuovo valore',
 
+// Added in version 0.9.7
+
+'selectareason'       =>   'Seleziona un motivo',
+'assigntome'          =>   'Assegna a me',
+'reopenrequest'       =>   'Richiedi la riapertura',
+'requestclose'        =>   'Richiedi la chiusura',
+'ownershiptaken'      =>   'L\'utente ha preso possesso',
+'closerequestmade'    =>   'Richiedi la chiusura del task',
+'reopenrequestmade'   =>   'IL task richiesto viene riaperto',
+'taskdependson'       =>   'Questo task dipende da',
+'taskblocks'          =>   'Questo task impedisce di chiudere questi altri',
+'addnew'              =>   'Aggiungi nuovo',
+'depadded'            =>   'Dependency added:',
+'depaddedother'       =>   'Questo tash ha aggiunto dipendenze:',
+'depremoved'          =>   'Dipendenza rimossa:',
+'depremovedother'     =>   'Questo task e\' stato rimosso dalla lista di dipendenze di altri task:',
+'showdetailserror'    =>   'Il task non esiste o non hai i permessi per visualizzarlo.',
+'makeprivate'         =>   'Rendi privato',
+'makepublic'          =>   'Rendi pubblico',
+'taskmadeprivate'    =>    'Task reso privato',
+'taskmadepublic'     =>    'Privacy eliminata - task reso pubblico',
+
+                       
 );
 ?>

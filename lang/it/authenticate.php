@@ -9,6 +9,9 @@ $authenticate_text = array (
 'youareloggedout'	=>	'Sei stato disconnesso.',
 'waitwhiletransfer'	=>	'Aspetta mentre vieni trasferito...',
 'clicknowait'		=>	'Clicca qui se non vuoi aspettare.',
+                            
+// Added in 0.9.7
+'accountdisabled'       =>      'Il tuo account e\' disabilitato, Contatta un full admin.',
 
 );
 ?>

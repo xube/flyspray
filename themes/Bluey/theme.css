@@ -707,7 +707,7 @@ div#taskdeps {
 }
 
 div#taskblocks {
-  float: left
+  float: left;
   width: 50%;
 }
 
@@ -718,7 +718,7 @@ div#actionbuttons {
 }
 
 .attention {
-  text-color           : #ff0000;
+  color           : #ff0000;
   background-color     : #fff000;
 }
 

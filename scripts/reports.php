@@ -65,7 +65,7 @@ function changelog_report()
 	
 	<?php echo $reports_text['listfrom']?> 
 	
-        <input id="startdate" type="text" name="startdate" size="10" value="<?=$startdate?>">
+        <input id="startdate" type="text" name="startdate" size="10" value="<?=$startdate?>" />
 	<button id="triggerstartdate">...</button>
         <script type="text/javascript">
           Calendar.setup(
@@ -77,7 +77,7 @@ function changelog_report()
           );
         </script>
 	
-	<?php echo $reports_text['to']?> <input id="enddate" type="text" name="enddate" size="10" value="<?php echo $enddate?>">
+	<?php echo $reports_text['to']?> <input id="enddate" type="text" name="enddate" size="10" value="<?php echo $enddate?>" />
         <button id="triggerenddate">...</button>
         <script type="text/javascript">
           Calendar.setup(
@@ -95,7 +95,7 @@ function changelog_report()
 		<option value="desc" <?php if($sort == 'desc') { echo "SELECTED";};?>><?php echo $reports_text['recentfirst'];?></option>
 	</select>
 	
-	<input type="submit" class="mainbutton" name="submit" value="<?=$reports_text['show']?>">
+	<input type="submit" class="mainbutton" name="submit" value="<?=$reports_text['show']?>" />
 	
 	</form>
 	
@@ -368,27 +368,27 @@ switch ($_REQUEST['sort']) {
             <td><b><?php echo $reports_text['events'];?></b><br>
                 <table>
                 <tr><td><?php echo $reports_text['tasks'];?></td>
-                    <td><label class="inline"><input type="checkbox" name="open" <?php if (isset($_REQUEST['open'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="open" <?php if (isset($_REQUEST['open'])) echo 'checked';?> />
                     <?php echo $reports_text['opened'];?></label></td>
-                    <td><label class="inline"><input type="checkbox" name="close" <?php if (isset($_REQUEST['close'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="close" <?php if (isset($_REQUEST['close'])) echo 'checked';?> />
                     <?php echo $reports_text['closed'];?></label></td>
-                    <td><label class="inline"><input type="checkbox" name="edit" <?php if (isset($_REQUEST['edit'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="edit" <?php if (isset($_REQUEST['edit'])) echo 'checked';?> />
                     <?php echo $reports_text['edited'];?></label></td>
                 </td></tr>
                 <tr><td></td>
-                    <td><label class="inline"><input type="checkbox" name="assign" <?php if (isset($_REQUEST['assign'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="assign" <?php if (isset($_REQUEST['assign'])) echo 'checked';?> />
                     <?php echo $reports_text['assigned'];?></label></td>
-                    <td><label class="inline"><input type="checkbox" name="comments" <?php if (isset($_REQUEST['comments'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="comments" <?php if (isset($_REQUEST['comments'])) echo 'checked';?> />
                     <?php echo $reports_text['comments'];?></label></td>
-                    <td><label class="inline"><input type="checkbox" name="attachments" <?php if (isset($_REQUEST['attachments'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="attachments" <?php if (isset($_REQUEST['attachments'])) echo 'checked';?> />
                     <?php echo $reports_text['attachments'];?></label></td>
                 </td></tr>
                 <tr><td></td>
-                    <td><label class="inline"><input type="checkbox" name="related" <?php if (isset($_REQUEST['related'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="related" <?php if (isset($_REQUEST['related'])) echo 'checked';?> />
                     <?php echo $reports_text['relatedtasks'];?></label></td>
-                    <td><label class="inline"><input type="checkbox" name="notifications" <?php if (isset($_REQUEST['notifications'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="notifications" <?php if (isset($_REQUEST['notifications'])) echo 'checked';?> />
                     <?php echo $reports_text['notifications'];?></label></td>
-                    <td><label class="inline"><input type="checkbox" name="reminders" <?php if (isset($_REQUEST['reminders'])) echo 'checked';?>>
+                    <td><label class="inline"><input type="checkbox" name="reminders" <?php if (isset($_REQUEST['reminders'])) echo 'checked';?> />
                     <?php echo $reports_text['reminders'];?></label></td>
                 </td></tr>
                 </table>
@@ -397,7 +397,7 @@ switch ($_REQUEST['sort']) {
                 <table border="0">
                 <?php if(!isset($_REQUEST['within'])) { $_REQUEST['within'] = 'year'; } ?>
                 <tr>
-                    <td><label class="inline"><input type="radio" name="date" value="within" <?php if($date == 'within') echo 'checked';?>>
+                    <td><label class="inline"><input type="radio" name="date" value="within" <?php if($date == 'within') echo 'checked';?> />
 		    <?php echo $reports_text['within'];?></label></td>
                         <td colspan="6"><select name="within">
                             <option value="day" <?php if ($_REQUEST['within'] == 'day') echo 'selected';?>><?php echo $reports_text['pastday'];?></option>
@@ -410,10 +410,10 @@ switch ($_REQUEST['sort']) {
                 </tr>
 
                 <tr>
-                    <td><label class="inline"><input type="radio" name="date" value="from" <?php if($date == 'from') echo 'checked';?>>
+                    <td><label class="inline"><input type="radio" name="date" value="from" <?php if($date == 'from') echo 'checked';?> />
                     <?php echo $reports_text['from'];?></label></td>
                     <td>
-                    <input id="fromdate" type="text" name="fromdate" size="10" value="<?php echo $fromdate?>">
+                    <input id="fromdate" type="text" name="fromdate" size="10" value="<?php echo $fromdate?>" />
                     <button id="triggerfromdate">...</button>
                     <script type="text/javascript">
                      Calendar.setup(
@@ -425,7 +425,7 @@ switch ($_REQUEST['sort']) {
                      );
                    </script>
 		   &mdash;
-		   <input id="todate" type="text" name="todate" size="10" value="<?php echo $todate?>">
+		   <input id="todate" type="text" name="todate" size="10" value="<?php echo $todate?>" />
 	           <button id="triggertodate">...</button>
                    <script type="text/javascript">
                      Calendar.setup(
@@ -438,7 +438,7 @@ switch ($_REQUEST['sort']) {
                   </script>
                   </td>
                 <tr>
-                    <td><label class="inline"><input type="radio" name="date" value="duein" <?php if($date == 'duein') echo 'checked';?>>
+                    <td><label class="inline"><input type="radio" name="date" value="duein" <?php if($date == 'duein') echo 'checked';?> />
                     <?php echo $reports_text['duein'];?></label></td>
                     <td colspan="6">
                         <select name="duein">
@@ -461,7 +461,7 @@ switch ($_REQUEST['sort']) {
                 </table>
             </td>
         </tr>
-        <tr><td><input type="submit" class="mainbutton" name="submit" value="<?=$reports_text['show']?>"></td></tr>
+        <tr><td><input type="submit" class="mainbutton" name="submit" value="<?=$reports_text['show']?>" /></td></tr>
         </table>
         </form>
     </div>

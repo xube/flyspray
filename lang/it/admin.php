@@ -111,5 +111,58 @@ $admin_text = array (
 'future'		=>	'Futuro',
 'changepass'	=>      'Cambia password',
 'confirmpass'	=>      'Conferma password',
+
+// Added in version 0.9.7
+                     
+'projectmanager'	=>	'Project Manager',
+'viewtasks'		=>	'Visualizza task',
+'opennewtasks'		=>	'Apri nuovo task',
+'modifyowntasks'	=>	'Modifica un proprio task',
+'modifyalltasks'	=>	'Modifica task che non sono propri dell\'utente',
+'viewcomments'		=>	'Visualizza commenti',
+'editcomments'		=>	'Modifica commenti',
+'deletecomments'	=>	'Cancella commenti',
+'viewattachments'	=>	'Visualizza attachment',
+'createattachments'	=>	'Crea attachment',
+'deleteattachments'	=>	'Cancella attachment',
+'viewhistory'		=>	'Visualizza lo storico',
+'closeowntasks'		=>	'Chiudi un proprio task',
+'closeothertasks'	=>	'Chiudi task che non sono propri dell\'utente',
+'assigntoself'		=>	'Assegnati i task se non sono gia assegnati',
+'assignotherstoself'	=>	'Assegnati i task degli altri',
+'viewreports'		=>	'Visualizza i report',
+'othersview'		=>	'Permetti a chiunque di visualizzare questo progetto',
+'usergroups'		=>	'Utenti e gruppi',
+'globalgroup'		=>	'Gruppo globale',  // Singular 
+'globalgroups'		=>	'Gruppi globali', // Plural
+'defaultglobalgroup'    =>      'Gruppo globale predefinito per i nuovi utenti',
+'addtogroup'		=>	'Aggiungi al gruppo',
+'moveuserstogroup'	=>	'Sposta gli utenti al gruppo',
+'nogroup'		=>	'Nessun gruppo - elimina dal progetto',
+'pendingrequests'       =>      'Richieste amministrative incomplete',
+'eventdesc'             =>      'Descrizione dell\'evento',
+'requestedby'           =>      'Richiesto da',
+'daterequested'         =>      'Data della richiesta',
+'closetask'             =>      'Chiudi Task',
+'reopentask'            =>      'Riapri Task',
+'applymember'           =>      'Richiedi l\'accesso al progetto',
+'forcurrentproj'        =>      'Per il progetto corrente',
+'lostpw'		=>	'Recupero password perse',
+'lostpwexplain'		=>	'Inserisci il nome utente per inviarti un link per il cambio password. Il link sara\' inviato all\'indirizzo di notifica nel tuo profilo.',
+'sendlink'		=>	'Invia link',
+'savenewpass'           =>      'Memorizza la nuova password',
+'badmagic'              =>      'Non è una chiave magica valida! Sei sicuro di averla presa dal tuo messaggio di notifica?',
+'anonreg'               =>      'Permetti la registrazione di nuovi utenti',
+'allowanonopentask'     =>      'Permetti agli utenti anonimi di aprire task',
+'editglobalgroup'       =>      'Modifica i gruppi globali',
+'editgroupforproj'      =>      'Modifica i gruppi per progetto',
+'notshownforadmin'      =>      'I permessi del gruppo admin non vengono mostrati.  Non hai bisogno di modificarli.',
+'general'               =>      'Generale',
+'userregistration'      =>      'User Registrazione utenti',
+'notifications'         =>      'Notifiche',
+'resetoptions'          =>      'Annulla Opzioni',
+
+
+                     
 );
 ?>

@@ -5,12 +5,14 @@ $language = array (
 
 'filenotexist'		=>	'Il file non esiste.  Contatta l\'amministratore di Flyspray per questo progetto.',
 'showtask'			=>	'Mostra il task',
+'now'			=>	'Ora',
 'go'				=>	'Vai!',
 'opentaskanon'		=>	'Apri un nuovo task come anonimo',
 'register'			=>	'Registra come un nuovo utente',
 'loggedinas'		=>	'Connesso come',
 'mytasks'			=>	'I miei task',
 'addnewtask'		=>	'Aggiungi un nuovo task',
+'reports'		=>	'Reports',
 'editmydetails'		=>	'Modifica i miei dati',
 'changepassword'	=>	'Cambia Password',
 'logout'			=>	'Logout',
@@ -40,7 +42,9 @@ $language = array (
 'tasksassigned'     =>  'Tasks a me assegnati',
 'tasksreported'     =>  'Tasks da me riportati',
 'taskswatched'      =>  'Tasks che controllo',
-'lastsearch'   =>  'Ultima ricerca'
+'lastsearch'   =>  'Ultima ricerca',
 
+// Added in version 0.9.7
+'adminreqwaiting'   =>   'Richieste ammininstrative',
 );
 ?>

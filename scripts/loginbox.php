@@ -19,15 +19,13 @@
     <?php
     // This generates an URL to take us back to the previous page
     $page = sprintf("%s",$_SERVER["REQUEST_URI"]);
+    $page = str_replace('&', '&amp;', $page);
     echo '<input type="hidden" name="prev_page" value="' . $page . '" />';
     ?>
     
     <input class="adminbutton" type="submit" value="<?php echo $loginbox_text['login'];?>" />
     </td>
   </tr>
-
-  </form>
-  <br />
 
   <tr>
     <td colspan="4" style="text-align: center;">
@@ -54,5 +52,5 @@
     </td>
   </tr>
 </table>
-
+  </form>
 </map>

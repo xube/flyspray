@@ -36,21 +36,21 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
   <table class="admin">
     <tr>
       <td>
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="edituser">
-      <input type="hidden" name="user_id" value="<?php echo $user_details['user_id'];?>">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="edituser" />
+      <input type="hidden" name="user_id" value="<?php echo $user_details['user_id'];?>" />
       
       <label for="realname"><?php echo $admin_text['realname'];?></label>
       </td>
-      <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo $user_details['real_name'];?>"></td>
+      <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo $user_details['real_name'];?>" /></td>
     </tr>
     <tr>
       <td><label for="emailaddress"><?php echo $admin_text['emailaddress'];?></label></td>
-      <td><input id="emailaddress" type="text" name="email_address" size="50" maxlength="100" value="<?php echo $user_details['email_address'];?>"></td>
+      <td><input id="emailaddress" type="text" name="email_address" size="50" maxlength="100" value="<?php echo $user_details['email_address'];?>" /></td>
     </tr>
     <tr>
       <td><label for="jabberid"><?php echo $admin_text['jabberid'];?></label></td>
-      <td><input id="jabberid" type="text" name="jabber_id" size="50" maxlength="100" value="<?php echo $user_details['jabber_id'];?>"></td>
+      <td><input id="jabberid" type="text" name="jabber_id" size="50" maxlength="100" value="<?php echo $user_details['jabber_id'];?>" /></td>
     </tr>
     <tr>
       <td><label for="notifytype"><?php echo $admin_text['notifytype'];?></label></td>
@@ -69,11 +69,11 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
     </tr>
     <tr>
         <td><label for="dateformat"><?php echo $admin_text['dateformat'];?></label></td>
-        <td><input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat'];?>"></td>
+        <td><input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat'];?>" /></td>
     </tr>
     <tr>
         <td><label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label></td>
-        <td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat_extended'];?>"></td>
+        <td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat_extended'];?>" /></td>
     </tr>
     <?php
     // This is for changing the user's global group ONLY
@@ -104,29 +104,29 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       };
       ?>
       </select>
-      <input type="hidden" name="record_id" value="<?php echo $current_global_group['record_id'];?>">
+      <input type="hidden" name="record_id" value="<?php echo $current_global_group['record_id'];?>" />
       </td>
     </tr>
     <tr>
       <td><label for="accountenabled"><?php echo $admin_text['accountenabled'];?></label></td>
-      <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?>></td>
+      <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?> /></td>
     </tr>
     <?php
     };
     ?>
     <tr>
-      <td colspan="2"><hr></td>
+      <td colspan="2"><hr /></td>
     </tr>
     <tr>
       <td><label for="changepass"><?php echo $admin_text['changepass'];?></label></td>
-      <td><input id="changepass" type="password" name="changepass" size="40" maxlength="100"></td>
+      <td><input id="changepass" type="password" name="changepass" size="40" maxlength="100" /></td>
     </tr>
     <tr>
       <td><label for="confirmpass"><?php echo $admin_text['confirmpass'];?></label></td>
-      <td><input id="confirmpass" type="password" name="confirmpass" size="40" maxlength="100"></td>
+      <td><input id="confirmpass" type="password" name="confirmpass" size="40" maxlength="100" /></td>
     </tr>
     <tr>
-      <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
+      <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>" /></td>
     </tr>
   </table>
 </form>
@@ -166,6 +166,10 @@ while ($group = $fs->dbFetchArray($get_groups)) {
 
   echo '<h4><a href="?do=admin&amp;area=groups&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a></h4>' . "\n";
   echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
+  
+  // Now, start a form to allow use to move multiple users between groups
+  echo '<form action="index.php" method="post">' . "\n";
+  
   echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
     $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
@@ -173,11 +177,10 @@ while ($group = $fs->dbFetchArray($get_groups)) {
                               WHERE uig.group_id = ? ORDER BY u.user_name ASC",
                               array($group['group_id']));
   
-  // Now, start a form to allow use to move multiple users between groups
-  echo '<form action="index.php" method="post">' . "\n";
-  echo '<input type="hidden" name="do" value="modify">' . "\n";
-  echo '<input type="hidden" name="action" value="movetogroup">' . "\n";
-  echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '">' . "\n";
+
+  echo '<input type="hidden" name="do" value="modify" />' . "\n";
+  echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
+  echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
   echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
   
   while ($row = $fs->dbFetchArray($get_user_list)) {
@@ -185,7 +188,7 @@ while ($group = $fs->dbFetchArray($get_groups)) {
     array_push($user_checklist, $row['user_id']);
     // Now, to assigned each user a number for submission
     $userincrement ++;    
-    echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\"></td>\n";
+    echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\" /></td>\n";
     echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
     echo "<td>{$row['real_name']}</td>\n";
     if ($row['account_enabled'] == "1") {
@@ -197,8 +200,8 @@ while ($group = $fs->dbFetchArray($get_groups)) {
   };
   
   echo '<tr><td colspan="4">';
-  echo '<input type="hidden" name="num_users" value="' . $userincrement . "\">\n";
-  echo '<input class="adminbutton" type="submit" value="' . $admin_text['moveuserstogroup'] . '">' . "\n";
+  echo '<input type="hidden" name="num_users" value="' . $userincrement . "\" />\n";
+  echo '<input class="adminbutton" type="submit" value="' . $admin_text['moveuserstogroup'] . '" />' . "\n";
   
   // Show a list of groups to switch these users to
   echo '<select class="adminlist" name="switch_to_group">'. "\n";
@@ -219,8 +222,8 @@ while ($group = $fs->dbFetchArray($get_groups)) {
   echo '</select>';
   
   echo '</td></tr>';
-  echo '</form>';
   echo "</table>\n\n";
+  echo '</form>';
 };
 
 // If this is a project-level edit, we need a method of placing users into a project group
@@ -252,7 +255,7 @@ if ($project_id != '0') {
   };
   
   echo '</select><br />';
-  echo '<input class="adminbutton" type="submit" value="' . $admin_text['addtogroup'] . '">'. "\n";
+  echo '<input class="adminbutton" type="submit" value="' . $admin_text['addtogroup'] . '" />'. "\n";
   echo '<select class="adminbutton" name="add_to_group">'. "\n";
   
   // Get the list of groups to choose from
@@ -293,16 +296,16 @@ if ($group_details['belongs_to_project'] < '1') {
   <table class="admin">
     <tr>
       <td>
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="editgroup">
-      <input type="hidden" name="group_id" value="<?php echo $group_details['group_id'];?>">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="editgroup" />
+      <input type="hidden" name="group_id" value="<?php echo $group_details['group_id'];?>" />
 
       <label for="groupname"><?php echo $admin_text['groupname'];?></label></td>
-      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']));?>"></td>
+      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']));?>" /></td>
     </tr>
     <tr>
       <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
-      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']));?>"></td>
+      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']));?>" /></td>
     </tr>
    
     <?php
@@ -314,80 +317,80 @@ if ($group_details['belongs_to_project'] < '1') {
    
     <tr>
       <td><label for="projectmanager"><?php echo $admin_text['projectmanager'];?></label></td>
-      <td><input id="projectmanager" type="checkbox" name="manage_project" value="1" <?php if ($group_details['manage_project'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="projectmanager" type="checkbox" name="manage_project" value="1" <?php if ($group_details['manage_project'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="viewtasks"><?php echo $admin_text['viewtasks'];?></label></td>
-      <td><input id="viewtasks" type="checkbox" name="view_tasks" value="1" <?php if ($group_details['view_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="viewtasks" type="checkbox" name="view_tasks" value="1" <?php if ($group_details['view_tasks'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="canopenjobs"><?php echo $admin_text['opennewtasks'];?></label></td>
-      <td><input id="canopenjobs" type="checkbox" name="open_new_tasks" value="1" <?php if ($group_details['open_new_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="canopenjobs" type="checkbox" name="open_new_tasks" value="1" <?php if ($group_details['open_new_tasks'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="modifyowntasks"><?php echo $admin_text['modifyowntasks'];?></label></td>
-      <td><input id="modifyowntasks" type="checkbox" name="modify_own_tasks" value="1" <?php if ($group_details['modify_own_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="modifyowntasks" type="checkbox" name="modify_own_tasks" value="1" <?php if ($group_details['modify_own_tasks'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="modifyalltasks"><?php echo $admin_text['modifyalltasks'];?></label></td>
-      <td><input id="modifyalltasks" type="checkbox" name="modify_all_tasks" value="1" <?php if ($group_details['modify_all_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="modifyalltasks" type="checkbox" name="modify_all_tasks" value="1" <?php if ($group_details['modify_all_tasks'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="viewcomments"><?php echo $admin_text['viewcomments'];?></label></td>
-      <td><input id="viewcomments" type="checkbox" name="view_comments" value="1" <?php if ($group_details['view_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="viewcomments" type="checkbox" name="view_comments" value="1" <?php if ($group_details['view_comments'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="canaddcomments"><?php echo $admin_text['addcomments'];?></label></td>
-      <td><input id="canaddcomments" type="checkbox" name="add_comments" value="1" <?php if ($group_details['add_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="canaddcomments" type="checkbox" name="add_comments" value="1" <?php if ($group_details['add_comments'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="editcomments"><?php echo $admin_text['editcomments'];?></label></td>
-      <td><input id="editcomments" type="checkbox" name="edit_comments" value="1" <?php if ($group_details['edit_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="editcomments" type="checkbox" name="edit_comments" value="1" <?php if ($group_details['edit_comments'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="deletecomments"><?php echo $admin_text['deletecomments'];?></label></td>
-      <td><input id="deletecomments" type="checkbox" name="delete_comments" value="1" <?php if ($group_details['delete_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="deletecomments" type="checkbox" name="delete_comments" value="1" <?php if ($group_details['delete_comments'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="createattachments"><?php echo $admin_text['createattachments'];?></label></td>
-      <td><input id="createattachments" type="checkbox" name="create_attachments" value="1" <?php if ($group_details['create_attachments'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="createattachments" type="checkbox" name="create_attachments" value="1" <?php if ($group_details['create_attachments'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="deleteattachments"><?php echo $admin_text['deleteattachments'];?></label></td>
-      <td><input id="deleteattachments" type="checkbox" name="delete_attachments" value="1" <?php if ($group_details['delete_attachments'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="deleteattachments" type="checkbox" name="delete_attachments" value="1" <?php if ($group_details['delete_attachments'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="viewhistory"><?php echo $admin_text['viewhistory'];?></label></td>
-      <td><input id="viewhistory" type="checkbox" name="view_history" value="1" <?php if ($group_details['view_history'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="viewhistory" type="checkbox" name="view_history" value="1" <?php if ($group_details['view_history'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="closeowntasks"><?php echo $admin_text['closeowntasks'];?></label></td>
-      <td><input id="closeowntasks" type="checkbox" name="close_own_tasks" value="1" <?php if ($group_details['close_own_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="closeowntasks" type="checkbox" name="close_own_tasks" value="1" <?php if ($group_details['close_own_tasks'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="closeothertasks"><?php echo $admin_text['closeothertasks'];?></label></td>
-      <td><input id="closeothertasks" type="checkbox" name="close_other_tasks" value="1" <?php if ($group_details['close_other_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="closeothertasks" type="checkbox" name="close_other_tasks" value="1" <?php if ($group_details['close_other_tasks'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="assigntoself"><?php echo $admin_text['assigntoself'];?></label></td>
-      <td><input id="assigntoself" type="checkbox" name="assign_to_self" value="1" <?php if ($group_details['assign_to_self'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="assigntoself" type="checkbox" name="assign_to_self" value="1" <?php if ($group_details['assign_to_self'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="assignotherstoself"><?php echo $admin_text['assignotherstoself'];?></label></td>
-      <td><input id="assignotherstoself" type="checkbox" name="assign_others_to_self" value="1" <?php if ($group_details['assign_others_to_self'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="assignotherstoself" type="checkbox" name="assign_others_to_self" value="1" <?php if ($group_details['assign_others_to_self'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <tr>
       <td><label for="viewreports"><?php echo $admin_text['viewreports'];?></label></td>
-      <td><input id="viewreports" type="checkbox" name="view_reports" value="1" <?php if ($group_details['view_reports'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="viewreports" type="checkbox" name="view_reports" value="1" <?php if ($group_details['view_reports'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <?php if ($group_details['belongs_to_project'] < '1') { ?>
     <tr>
       <td><label for="groupopen"><?php echo $admin_text['groupenabled'];?></label></td>
-      <td><input id="groupopen" type="checkbox" name="group_open" value="1" <?php if ($group_details['group_open'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="groupopen" type="checkbox" name="group_open" value="1" <?php if ($group_details['group_open'] == "1") { echo "checked=\"checked\"";};?> /></td>
     </tr>
     <?php }; ?>
     <tr>
-      <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
+      <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>" /></td>
     </tr>
     
     <?php
@@ -410,9 +413,9 @@ if ($group_details['belongs_to_project'] < '1') {
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
   <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="update_list">
-  <input type="hidden" name="list_type" value="tasktype">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="update_list" />
+  <input type="hidden" name="list_type" value="tasktype" />
   <table class="list">
     <?php
     $get_tasktypes = $fs->dbQuery("SELECT * FROM flyspray_list_tasktype ORDER BY list_position");
@@ -421,16 +424,16 @@ if ($group_details['belongs_to_project'] < '1') {
     ?>
     <tr>
       <td>
-      <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>">
+      <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>" />
       <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
-      <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']));?>"></td>
+      <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']));?>" /></td>
       <td title="The order these items will appear in the TaskType list">
         <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
-        <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
+        <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
       </td>
       <td title="Show this item in the TaskType list">
         <label for="showinlist<?php echo $countlines?>"><?php echo $admin_text['show'];?></label>
-        <input id="showinlist<?php echo $countlines?>" type="checkbox" name="show_in_list[<?php echo $countlines?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        <input id="showinlist<?php echo $countlines?>" type="checkbox" name="show_in_list[<?php echo $countlines?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
       </td>
     </tr>
     <?php
@@ -438,25 +441,25 @@ if ($group_details['belongs_to_project'] < '1') {
     };
     ?>
       <tr>
-        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
       </tr>
     </table>
     </form>
-    <hr>
+    <hr />
     <form action="index.php" method="post">
     <table class="list">
      <tr>
       <td>
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="add_to_list">
-      <input type="hidden" name="list_type" value="tasktype">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="add_to_list" />
+      <input type="hidden" name="list_type" value="tasktype" />
       <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-      <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name"></td>
+      <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" /></td>
       <td><label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position"></td>
+        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" /></td>
       <td><label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled"></td>
-      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" /></td>
+      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
     </tr>
   </table>
     </form>
@@ -474,9 +477,9 @@ if ($group_details['belongs_to_project'] < '1') {
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
   <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="update_list">
-  <input type="hidden" name="list_type" value="resolution">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="update_list" />
+  <input type="hidden" name="list_type" value="resolution" />
   <table class="list">
     <?php
     $get_resolution = $fs->dbQuery("SELECT * FROM flyspray_list_resolution ORDER BY list_position");
@@ -485,17 +488,17 @@ if ($group_details['belongs_to_project'] < '1') {
     ?>
       <tr>
         <td>
-          <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>">
+          <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>" />
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']));?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']));?>" />
         </td>
         <td title="The order these items will be shown in the Resolution list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
-          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
         </td>
         <td title="Show this item in the Resolution list">
           <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
-          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
         </td>
       </tr>
     <?php
@@ -503,30 +506,30 @@ if ($group_details['belongs_to_project'] < '1') {
     };
     ?>
       <tr>
-        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
       </tr>
     </table>
     </form>
-    <hr>
+    <hr />
     <form action="index.php" method="post">
     <table class="list">
       <tr>
         <td>
-          <input type="hidden" name="do" value="modify">
-          <input type="hidden" name="action" value="add_to_list">
-          <input type="hidden" name="list_type" value="resolution">
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="add_to_list" />
+          <input type="hidden" name="list_type" value="resolution" />
           <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-          <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name">
+          <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
         </td>
         <td>
           <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
+          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
         </td>
         <td>
           <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
+          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
         </td>
-        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
       </tr>
     </table>
     </form>
@@ -553,12 +556,12 @@ if ($group_details['belongs_to_project'] < '1') {
 
   <tr>
     <td>
-      <input type="hidden" name="do" value="modify">
-      <input type="hidden" name="action" value="globaloptions">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="globaloptions" />
       <label for="baseurl"><?php echo $admin_text['baseurl'];?></label>
     </td>
     <td>
-      <input id="baseurl" name="base_url" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['base_url'];?>">
+      <input id="baseurl" name="base_url" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['base_url'];?>" />
     </td>
   </tr>
   <tr>
@@ -566,7 +569,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="adminemail"><?php echo $admin_text['replyaddress'];?></label>
     </td>
     <td>
-      <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['admin_email'];?>">
+      <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['admin_email'];?>" />
     </td>
   </tr>
   <tr>
@@ -628,7 +631,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="dateformat"><?php echo $admin_text['dateformat'];?></label>
     </td>
     <td>
-      <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat'];?>">
+      <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat'];?>" />
     </td>
   </tr>	
   <tr>
@@ -636,7 +639,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label>
     </td>
     <td>
-      <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>">
+      <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>" />
     </td>
   </tr>	
 
@@ -649,7 +652,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="anonview"><?php echo $admin_text['anonview']; ?></label>
     </td>
     <td>
-      <input id="anonview" type="checkbox" name="anon_view" value="1" <?php if ($flyspray_prefs['anon_view'] == '1') { echo "checked=\"checked\"";};?>>
+      <input id="anonview" type="checkbox" name="anon_view" value="1" <?php if ($flyspray_prefs['anon_view'] == '1') { echo "checked=\"checked\"";};?> />
     </td>
   </tr>-->
 
@@ -663,7 +666,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="allowusersignups"><?php echo $admin_text['anonreg'];?></label>
     </td>
     <td>
-    <input id="allowusersignups" type="checkbox" name="anon_reg" value="1" <?php if ($flyspray_prefs['anon_reg'] == '1') { echo "checked=\"checked\"";};?>>
+    <input id="allowusersignups" type="checkbox" name="anon_reg" value="1" <?php if ($flyspray_prefs['anon_reg'] == '1') { echo "checked=\"checked\"";};?> />
     </td>
   </tr>
   <tr>
@@ -671,7 +674,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="spamproof"><?php echo $admin_text['spamproof']; ?></label>
     </td>
     <td>
-      <input id="spamproof" type="checkbox" name="spam_proof" value="1" <?php if ($flyspray_prefs['spam_proof'] == '1') { echo "checked=\"checked\"";};?>>
+      <input id="spamproof" type="checkbox" name="spam_proof" value="1" <?php if ($flyspray_prefs['spam_proof'] == '1') { echo "checked=\"checked\"";};?> />
     </td>
   </tr>
   <tr>
@@ -700,9 +703,9 @@ if ($group_details['belongs_to_project'] < '1') {
       $get_group_details = $fs->dbQuery("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
       while ($row = $fs->dbFetchArray($get_group_details)) {
         if (ereg($row['group_id'], $flyspray_prefs['assigned_groups']) ) {
-          echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" checked=\"checked\">{$row['group_name']}<br>\n";
+          echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" checked=\"checked\" />{$row['group_name']}<br />\n";
         } else {
-          echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\">{$row['group_name']}<br>\n";
+          echo "<input type=\"checkbox\" name=\"assigned_groups{$row['group_id']}\" value=\"{$row['group_id']}\" />{$row['group_name']}<br />\n";
         };
       };
       ?>
@@ -732,7 +735,7 @@ if ($group_details['belongs_to_project'] < '1') {
   </tr>
 
   <tr>
-    <th colspan="2"><hr>
+    <th colspan="2"><hr />
     <?php echo $admin_text['jabbernotify'];?>
     </th>
   </tr>
@@ -823,9 +826,9 @@ if ($_GET['show'] == 'prefs') { ?>
 <legend><?php echo $admin_text['general'];?></legend>
 
 <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="updateproject">
-  <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="updateproject" />
+  <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
 <table class="admin">
   <tr>
     <td>
@@ -833,7 +836,7 @@ if ($_GET['show'] == 'prefs') { ?>
       <label for="projecttitle"><?php echo $admin_text['projecttitle'];?></label>
     </td>
     <td>
-      <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo stripslashes($project_details['project_title']);?>">
+      <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo stripslashes($project_details['project_title']);?>" />
     </td>
   </tr>
 
@@ -876,7 +879,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="showlogo"><?php echo $admin_text['showlogo'];?></label>
     </td>
     <td>
-    <input id="showlogo" type="checkbox" name="show_logo" value="1" <?php if ($project_details['show_logo'] == '1') { echo "CHECKED"; }; ?>>
+    <input id="showlogo" type="checkbox" name="show_logo" value="1" <?php if ($project_details['show_logo'] == '1') { echo "CHECKED"; }; ?> />
     </td>
   </tr>
   <tr>
@@ -884,7 +887,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="inlineimages"><?php echo $admin_text['showinlineimages'];?></label>
     </td>
     <td>
-    <input id="inlineimages" type="checkbox" name="inline_images" value="1" <?php if ($project_details['inline_images'] == '1') { echo "CHECKED"; }; ?>>
+    <input id="inlineimages" type="checkbox" name="inline_images" value="1" <?php if ($project_details['inline_images'] == '1') { echo "CHECKED"; }; ?> />
     </td>
   </tr>
   <tr>
@@ -914,7 +917,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="isactive"><?php echo $admin_text['isactive'];?></label>
     </td>
     <td>
-    <input id="isactive" type="checkbox" name="project_is_active" value="1" <?php if ($project_details['project_is_active'] == '1') { echo "CHECKED";};?>>
+    <input id="isactive" type="checkbox" name="project_is_active" value="1" <?php if ($project_details['project_is_active'] == '1') { echo "CHECKED";};?> />
     </td>
   </tr>
   <tr>
@@ -922,7 +925,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="othersview"><?php echo $admin_text['othersview'];?></label>
     </td>
     <td>
-    <input id="othersview" type="checkbox" name="others_view" value="1" <?php if ($project_details['others_view'] == '1') { echo "CHECKED";};?>>
+    <input id="othersview" type="checkbox" name="others_view" value="1" <?php if ($project_details['others_view'] == '1') { echo "CHECKED";};?> />
     </td>
   </tr>
   <tr>
@@ -930,10 +933,10 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="anonopen"><?php echo $admin_text['allowanonopentask'];?></label>
     </td>
     <td>
-    <input id="anonopen" type="checkbox" name="anon_open" value="1" <?php if ($project_details['anon_open'] == '1') { echo "CHECKED"; }; ?>>
+    <input id="anonopen" type="checkbox" name="anon_open" value="1" <?php if ($project_details['anon_open'] == '1') { echo "CHECKED"; }; ?> />
     </td>
   </tr>
-  <tr><td colspan="2"><hr></td></tr>
+  <tr><td colspan="2"><hr /></td></tr>
   
   <!-- Column display selector -->
   <tr>
@@ -943,17 +946,17 @@ if ($_GET['show'] == 'prefs') { ?>
       $columnnames = array('id','project','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
       foreach ($columnnames AS $column) {
         if (ereg($column, $project_prefs['visible_columns']) ) {
-          echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\">$index_text[$column]<br>\n";
+          echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\" />$index_text[$column]<br />\n";
         } else {
-          echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\">$index_text[$column]<br>\n";
+          echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" />$index_text[$column]<br />\n";
         };
       };
       ?>
     </td>
   </tr>
-  <tr><td colspan="2"><hr></td></tr>
+  <tr><td colspan="2"><hr /></td></tr>
   <tr>
-    <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>"></td>
+    <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>" /></td>
   </tr>
 
 </table>
@@ -972,10 +975,10 @@ if ($_GET['show'] == 'prefs') { ?>
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
   <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="update_category">
-  <input type="hidden" name="list_type" value="category">
-  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="update_category" />
+  <input type="hidden" name="list_type" value="category" />
+  <input type="hidden" name="project_id" value="<?php echo $_GET['id'];?>" />
   <table class="list">
     <?php
     $get_categories = $fs->dbQuery("SELECT * FROM flyspray_list_category WHERE project_id = ? AND parent_id < ? ORDER BY list_position", array($project_id, '1'));
@@ -984,17 +987,17 @@ if ($_GET['show'] == 'prefs') { ?>
     ?>
      <tr>
       <td>
-        <input type="hidden" name="id[]" value="<?php echo $row['category_id'];?>">
+        <input type="hidden" name="id[]" value="<?php echo $row['category_id'];?>" />
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['category_name']));?>">
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['category_name']));?>" />
       </td>
       <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
-        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
+        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
       </td>
       <td title="<?php echo $admin_text['listshowtip'];?>">
         <label for="showinlist<?php echo $countlines; ?>"><?php echo $admin_text['show'];?></label>
-        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list[<?php echo $countlines; ?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list[<?php echo $countlines; ?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
       </td>
       <td title="<?php echo $admin_text['categoryownertip'];?>">
         <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
@@ -1014,18 +1017,18 @@ if ($_GET['show'] == 'prefs') { ?>
     ?>
      <tr>
       <td>
-        <input type="hidden" name="id[]" value="<?php echo $subrow['category_id'];?>">
+        <input type="hidden" name="id[]" value="<?php echo $subrow['category_id'];?>" />
         &rarr;
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo stripslashes($subrow['category_name']);?>">
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo stripslashes($subrow['category_name']);?>" />
       </td>
       <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
-        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $subrow['list_position'];?>">
+        <input id="listposition<?php echo $countlines; ?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $subrow['list_position'];?>" />
       </td>
       <td title="<?php echo $admin_text['listshowtip'];?>">
         <label for="showinlist<?php echo $countlines; ?>"><?php echo $admin_text['show'];?></label>
-        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list[<?php echo $countlines; ?>]" value="1" <?php if ($subrow['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+        <input id="showinlist<?php echo $countlines; ?>" type="checkbox" name="show_in_list[<?php echo $countlines; ?>]" value="1" <?php if ($subrow['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
       </td>
       <td title="<?php echo $admin_text['categoryownertip'];?>">
         <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
@@ -1044,31 +1047,31 @@ if ($_GET['show'] == 'prefs') { ?>
     };
     ?>
       <tr>
-        <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+        <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
       </tr>	
     </table>
     </form>
     <?php
     // Form to add a new category to the list
     ?>
-    <hr>
+    <hr />
     <form action="index.php" method="post">
     <table class="list">
      <tr>
-        <input type="hidden" name="do" value="modify">
-        <input type="hidden" name="action" value="add_category">
-        <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
+        <input type="hidden" name="do" value="modify" />
+        <input type="hidden" name="action" value="add_category" />
+        <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
       <td>
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-        <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name">
+        <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name" />
       </td>
       <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
+        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
       </td>
       <td title="<?php echo $admin_text['listshowtip'];?>">
         <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
+        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
       </td>
       <td title="<?php echo $admin_text['categoryownertip'];?>" colspan="2">
         <label for="categoryownernew" ><?php echo $admin_text['owner'];?></label>
@@ -1099,7 +1102,7 @@ if ($_GET['show'] == 'prefs') { ?>
         ?>
       </select>
       </td>
-      <td class="buttons"><br /><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+      <td class="buttons"><br /><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
     </tr>
   </table>
     </form>
@@ -1118,10 +1121,10 @@ if ($_GET['show'] == 'prefs') { ?>
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
   <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="update_list">
-  <input type="hidden" name="list_type" value="os">
-  <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="update_list" />
+  <input type="hidden" name="list_type" value="os" />
+  <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
   <table class="list">
     <?php
     $get_os = $fs->dbQuery("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($project_id));
@@ -1130,17 +1133,17 @@ if ($_GET['show'] == 'prefs') { ?>
     ?>
       <tr>
         <td>
-          <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>">
+          <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>" />
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']));?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']));?>" />
         </td>
         <td title="The order these items will appear in the Operating System list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
-          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
         </td>
         <td title="Show this item in the Operating System list">
           <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
-          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
         </td>
       </tr>
     <?php
@@ -1148,35 +1151,35 @@ if ($_GET['show'] == 'prefs') { ?>
     };
     ?>
       <tr>
-        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+        <td colspan="3"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
       </tr>	
     </table>
     </form>
-    <hr>
+    <hr />
     <?php     
     // Form to add a new Operating System to the list		
     ?>
     <form action="index.php" method="post">
     <table class="list">
     <tr>
-        <input type="hidden" name="do" value="modify">
-        <input type="hidden" name="action" value="add_to_list">
-        <input type="hidden" name="list_type" value="os">
-        <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
-        <input type="hidden" name="id" value="<?php echo $row['os_id'];?>">
+        <input type="hidden" name="do" value="modify" />
+        <input type="hidden" name="action" value="add_to_list" />
+        <input type="hidden" name="list_type" value="os" />
+        <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+        <input type="hidden" name="id" value="<?php echo $row['os_id'];?>" />
       <td>
         <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-        <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name">
+        <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
       </td>
       <td>
         <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
+        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
       </td>
       <td>
         <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
+        <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
       </td>
-      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>
+      <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
       </tr>
     </table>
    </form>
@@ -1195,10 +1198,10 @@ if ($_GET['show'] == 'prefs') { ?>
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
   <form action="index.php" method="post">
-  <input type="hidden" name="do" value="modify">
-  <input type="hidden" name="action" value="update_version_list">
-  <input type="hidden" name="list_type" value="version">
-  <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="action" value="update_version_list" />
+  <input type="hidden" name="list_type" value="version" />
+  <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
   <table class="list">
 
     <?php
@@ -1208,17 +1211,17 @@ if ($_GET['show'] == 'prefs') { ?>
     ?>
       <tr>
         <td>
-          <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>">
+          <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>" />
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']));?>">
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']));?>" />
         </td>
         <td title="<?php echo $admin_text['listordertip'];?>">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
-          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>">
+          <input id="listposition<?php echo $countlines;?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
         </td>
         <td title="<?php echo $admin_text['listshowtip'];?>">
           <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
-          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?>>
+          <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
         </td>
         <td title="<?php echo $admin_text['listtensetip'];?>">
           <label for="tense<?php echo $countlines;?>"><?php echo $admin_text['tense'];?></label>
@@ -1234,32 +1237,32 @@ if ($_GET['show'] == 'prefs') { ?>
     };
     ?>
       <tr>
-        <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>"></td>
+        <td colspan="4"></td><td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['update'];?>" /></td>
       </tr>
     </table>
     </form>
-    <hr>
+    <hr />
     <?php 
     // Form to add a new Version to the list
     ?>
     <form action="index.php" method="post">
     <table class="list">
       <tr>
-          <input type="hidden" name="do" value="modify">
-          <input type="hidden" name="action" value="add_to_version_list">
-          <input type="hidden" name="list_type" value="version">
-          <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="add_to_version_list" />
+          <input type="hidden" name="list_type" value="version" />
+          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
         <td>
           <label for="listnamenew"><?php echo $admin_text['name'];?></label>
-          <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name">
+          <input id="listnamenew" type="text" size="15" maxlength="20" name="list_name" />
         </td>
         <td>
           <label for="listpositionnew"><?php echo $admin_text['order'];?></label>
-          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position">
+          <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
         </td>
         <td>
           <label for="showinlistnew"><?php echo $admin_text['show'];?></label>
-          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled">
+          <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
         </td>
        <td title="<?php echo $admin_text['listtensetip'];?>">
           <label for="tensenew"><?php echo $admin_text['tense'];?></label>
@@ -1269,7 +1272,7 @@ if ($_GET['show'] == 'prefs') { ?>
             <option value="3"><?php echo $admin_text['future'];?></option>
           </select> 
         </td> 
-        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>"></td>  
+        <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['addnew'];?>" /></td>
       </tr>
     </table>
     </form>
@@ -1307,12 +1310,12 @@ if ($_GET['show'] == 'prefs') { ?>
     <textarea cols="72" rows="10" name="comment_text"><?php echo $comment_text;?></textarea>
   </p>
   <p class="buttons">
-    <input type="hidden" name="do" value="modify">
-    <input type="hidden" name="action" value="editcomment">
-    <input type="hidden" name="task_id" value="<?php echo $_GET['task_id'];?>">
-    <input type="hidden" name="comment_id" value="<?php echo $_GET['id'];?>">
-    <input type="hidden" name="previous_text" value="<?php echo $comment_text;?>">
-    <input class="adminbutton" type="submit" value="<?php echo $admin_text['saveeditedcomment'];?>">
+    <input type="hidden" name="do" value="modify" />
+    <input type="hidden" name="action" value="editcomment" />
+    <input type="hidden" name="task_id" value="<?php echo $_GET['task_id'];?>" />
+    <input type="hidden" name="comment_id" value="<?php echo $_GET['id'];?>" />
+    <input type="hidden" name="previous_text" value="<?php echo $comment_text;?>" />
+    <input class="adminbutton" type="submit" value="<?php echo $admin_text['saveeditedcomment'];?>" />
   </p>
 </div>
 </form>
@@ -1454,9 +1457,9 @@ if ($_GET['show'] == 'prefs') { ?>
 ///////////////////////////////////////////////////////
 
 } else {
-  echo "<br><br>";
+  echo "<br /><br />";
   echo $admin_text['nopermission'];
-  echo "<br><br>";
+  echo "<br /><br />";
 
 
 //////////////////////

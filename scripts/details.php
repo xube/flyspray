@@ -517,7 +517,7 @@ if ($effective_permissions['can_edit'] == '1'
         <td id="details" class="details">
         <?php 
         // Change URLs to hyperlinks
-        $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
+        $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $detailed_desc);
         // Change FS#123 into hyperlinks to tasks
         $detailed_desc = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $detailed_desc);
         echo nl2br($detailed_desc); ?>
@@ -834,7 +834,7 @@ if ($area == 'comments') { ?>
       $comment_text = htmlspecialchars($row['comment_text']);
       $comment_text = nl2br($comment_text);
       // Change URLs into hyperlinks
-      $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $comment_text);
+      $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $comment_text);
       // Change FS#123 into hyperlinks to tasks
       $comment_text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $comment_text);
       if (!get_magic_quotes_gpc()) {
