@@ -169,7 +169,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
                   item_status = ?,
                   assigned_to = ?,
                   product_category = ?,
-                  product_version = ?,
+
                   closedby_version = ?,
                   operating_system = ?,
                   task_severity = ?,
@@ -181,7 +181,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
                 ", array($_POST['attached_to_project'], $_POST['task_type'],
                     $item_summary, $detailed_desc, $_POST['item_status'],
                     $_POST['assigned_to'], $_POST['product_category'],
-                    $_POST['product_version'],
+
                     $fs->emptyToZero($_POST['closedby_version']),
                     $_POST['operating_system'], $_POST['task_severity'],
                     $_COOKIE['flyspray_userid'],
