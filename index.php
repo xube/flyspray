@@ -291,7 +291,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       if (($permissions['manage_project'] == '1'
           OR $permissions['is_admin'] == '1')
           && $num_req > '0') {
-         echo '<li>';
+         echo '<li class="attention">';
          echo '<span class="attention"><a href="?do=admin&amp;area=pendingreq">' . $num_req . ' ' . $language['adminreqwaiting'] . '</a></span>';
          echo '</li>';
       };

@@ -106,6 +106,8 @@ if ($effective_permissions['can_edit'] == '1'
     };
     ?>
     </div>
+
+   <div id="taskfieldsleftedit">
     <table class="taskdetails">
       <tr>
         <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
@@ -119,22 +121,6 @@ if ($effective_permissions['can_edit'] == '1'
             echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>";
           } else {
             echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>";
-          };
-        };
-        ?>
-        </select>
-        </td>
-        <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
-        <td>
-        <select id="severity" name="task_severity">
-        <?php
-        // Get list of severities
-        require("lang/$lang/severity.php");
-        foreach($severity_list as $key => $val) {
-          if ($task_details['task_severity'] == $key) {
-            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-          } else {
-            echo "<option value=\"$key\">$val</option>\n";
           };
         };
         ?>
@@ -174,22 +160,6 @@ if ($effective_permissions['can_edit'] == '1'
         ?>
         </select>
         </td>
-        <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
-        <td>
-        <select id="priority" name="task_priority">
-        <?php
-        // Get list of priorities
-        require("lang/$lang/priority.php");
-        foreach($priority_list as $key => $val) {
-          if ($task_details['task_priority'] == $key) {
-            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-          } else {
-            echo "<option value=\"$key\">$val</option>\n";
-          };
-        };
-        ?>
-        </select>
-        </td>
       </tr>
       <tr>
         <td><label for="status"><?php echo $details_text['status'];?></label></td>
@@ -207,26 +177,7 @@ if ($effective_permissions['can_edit'] == '1'
         };
 
         ?>
-        </select></td>
-        <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
-        <td>
-        <!--<select name="product_version">
-        <?php
-        // Get list of versions
-        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
-        while ($row = $fs->dbFetchArray($get_version)) {
-          if ($row['version_id'] == $task_details['product_version']) {
-            echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
-          } else {
-            echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
-          };
-        };
-        ?>
-        </select>-->
-        <?php
-        // Print the version name
-        echo $task_details['reported_version_name'];
-        ?>
+        </select>
         </td>
       </tr>
       <tr>
@@ -250,6 +201,77 @@ if ($effective_permissions['can_edit'] == '1'
         ?>
         </select>
         </td>
+      </tr>
+      <tr>
+        <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
+        <td>
+        <select id="os" name="operating_system">
+        <?php
+        // Get list of operating systems
+        $get_os = $fs->dbQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
+        while ($row = $fs->dbFetchArray($get_os)) {
+          if ($row['os_id'] == $task_details['operating_system']) {
+            echo "<option value=\"{$row['os_id']}\" selected=\"selected\">{$row['os_name']}</option>";
+          } else {
+            echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
+          };
+        };
+        ?>
+        </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+
+  <div id="taskfieldsrightedit">
+     <table class="taskdetails">
+       <tr>
+        <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
+        <td>
+        <select id="severity" name="task_severity">
+        <?php
+        // Get list of severities
+        require("lang/$lang/severity.php");
+        foreach($severity_list as $key => $val) {
+          if ($task_details['task_severity'] == $key) {
+            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+          } else {
+            echo "<option value=\"$key\">$val</option>\n";
+          };
+        };
+        ?>
+        </select>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
+        <td>
+        <select id="priority" name="task_priority">
+        <?php
+        // Get list of priorities
+        require("lang/$lang/priority.php");
+        foreach($priority_list as $key => $val) {
+          if ($task_details['task_priority'] == $key) {
+            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+          } else {
+            echo "<option value=\"$key\">$val</option>\n";
+          };
+        };
+        ?>
+        </select>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
+        <td>
+        <?php
+        // Print the version name
+        echo $task_details['reported_version_name'];
+        ?>
+        </td>
+      </tr>
+      <tr>
         <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
         <td>
         <select id="dueversion" name="closedby_version">
@@ -273,22 +295,6 @@ if ($effective_permissions['can_edit'] == '1'
         </td>
       </tr>
       <tr>
-        <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
-        <td>
-        <select id="os" name="operating_system">
-        <?php
-        // Get list of operating systems
-        $get_os = $fs->dbQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
-        while ($row = $fs->dbFetchArray($get_os)) {
-          if ($row['os_id'] == $task_details['operating_system']) {
-            echo "<option value=\"{$row['os_id']}\" selected=\"selected\">{$row['os_name']}</option>";
-          } else {
-            echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
-          };
-        };
-        ?>
-        </select>
-        </td>
         <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
         <td>
         <select id="percent" name="percent_complete">
@@ -306,6 +312,11 @@ if ($effective_permissions['can_edit'] == '1'
         </select>
         </td>
       </tr>
+    </table>
+  </div>
+
+  <div id="taskdetailsfull">
+    <table class="taskdetails">
       <tr>
         <td><label><?php echo $details_text['details'];?></label></td>
         <td colspan="3">
@@ -315,12 +326,13 @@ if ($effective_permissions['can_edit'] == '1'
         </td>
       </tr>
       <tr>
-    <td class="buttons" colspan="4">
-    <input class="adminbutton" type="submit"  name="buSubmit" value="<?php echo $details_text['savedetails'];?>" onclick="Disable1()" />
-    <input class="adminbutton" type="reset" name="buReset" />
-    </td>
-  </tr>
-</table>
+        <td class="buttons" colspan="4">
+        <input class="adminbutton" type="submit"  name="buSubmit" value="<?php echo $details_text['savedetails'];?>" onclick="Disable1()" />
+        <input class="adminbutton" type="reset" name="buReset" />
+        </td>
+      </tr>
+    </table>
+  </div>
 </form>
 </div>
 
@@ -352,7 +364,7 @@ if ($effective_permissions['can_edit'] == '1'
     echo "{$details_text['attachedtoproject']} &mdash; <a href=\"?project={$task_details['attached_to_project']}\">{$task_details['project_title']}</a>";
     ?>
 
-    <div class="fineprint">
+    <div id="fineprint">
     <?php
     // Get the user details of the person who opened this item
     if ($task_details['opened_by']) {
@@ -380,12 +392,13 @@ if ($effective_permissions['can_edit'] == '1'
     };
     ?>
     </div>
+
+    <div id="taskfieldsleft">
+
     <table class="taskdetails">
       <tr>
         <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
         <td id="tasktype"><?php echo $task_details['tasktype_name'];?></td>
-        <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
-        <td id="severity"><?php echo $task_details['severity_name'];?></td>
       </tr>
       <tr>
         <td><label for="category"><?php echo $details_text['category'];?></label></td>
@@ -400,10 +413,6 @@ if ($effective_permissions['can_edit'] == '1'
         };
         echo $task_details['category_name'];?>
         </td>
-        <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
-        <td id="priority">
-	<?php echo $task_details['priority_name'];?>
-	</td>
       </tr>
       <tr>
         <td><label for="status"><?php echo $details_text['status'];?></label></td>
@@ -415,9 +424,7 @@ if ($effective_permissions['can_edit'] == '1'
 			echo $task_details['status_name'];
 		};
 		?>
-		</td>
-         <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
-        <td id="reportedver"><?php echo $task_details['reported_version_name'];?></td>
+	</td>
       </tr>
       <tr>
         <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
@@ -434,28 +441,60 @@ if ($effective_permissions['can_edit'] == '1'
         };
         ?>
         </td>
-       <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
-        <td id="dueversion">
-        <?php
-        if (isset($task_details['due_in_version_name'])) {
-          echo $task_details['due_in_version_name'];
-        } else {
-          echo $details_text['undecided'];
-        };
-        ?>
-        </td>
       </tr>
       <tr>
         <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
         <td id="os"><?php echo $task_details['os_name'];?></td>
-        <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
-        <td id="percent"><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?> /></td>
       </tr>
+    </table>
 
-    <!-- end of right column -->
+    </div>
+
+
+   <div id="taskfieldsright">
+
+     <table class="taskdetails">
+       <tr>
+         <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
+         <td id="severity"><?php echo $task_details['severity_name'];?></td>
+       </tr>
+       <tr>
+         <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
+         <td id="priority">
+	 <?php echo $task_details['priority_name'];?>
+         </td>
+       </tr>
+       <tr>
+         <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
+         <td id="reportedver"><?php echo $task_details['reported_version_name'];?></td>
+       </tr>
+       <tr>
+        <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
+         <td id="dueversion">
+         <?php
+         if (isset($task_details['due_in_version_name'])) {
+           echo $task_details['due_in_version_name'];
+         } else {
+           echo $details_text['undecided'];
+         };
+         ?>
+         </td>
+       </tr>
+       <tr>
+         <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
+         <td id="percent"><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?> /></td>
+       </tr>
+     </table>
+
+   </div>
+      
+
+   <div id="taskdetailsfull">
+
+     <table class="taskdetails">
       <tr>
         <td><label for="details"><?php echo $details_text['details'];?></label></td>
-        <td id="details" class="details" colspan="3">
+        <td id="details" class="details">
         <?php 
         // Change URLs to hyperlinks
         $detailed_desc = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $detailed_desc);
@@ -466,7 +505,8 @@ if ($effective_permissions['can_edit'] == '1'
       </tr>
     </table>
 
-<div id="actionbuttons">
+  </div>
+
 
   <?php
     // Check for task dependencies that block closing this task
@@ -481,9 +521,9 @@ if ($effective_permissions['can_edit'] == '1'
                                 WHERE d.dep_task_id = ?",
                                 array($_GET['id']));
                                   
-    // Show tasks that this task depends upon
     echo '<div id="deps">';
-    echo '<table id="deps"><tr><td id="depleft">';
+    // Show tasks that this task depends upon
+    echo '<div id="taskdeps">';
     echo '<b>' . $details_text['taskdependson'] . '</b><br />';
     while ($dependency = $fs->dbFetchArray($check_deps)) {
       if ($dependency['is_closed'] == '1') {
@@ -512,17 +552,20 @@ if ($effective_permissions['can_edit'] == '1'
     </form>
     <?php
     };
-    
+    echo '</div>';
+
+    echo '<div id="taskblocks">';
     // Show tasks that this task blocks
-    echo '</td><td id="depright">';
     echo '<b>' . $details_text['taskblocks'] . '</b><br />';
     while ($block = $fs->dbFetchArray($check_blocks)) {
       echo '<a href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
     };
     
-    echo '</td></tr></table>';
+    echo '</div>';
     echo '</div>';
 
+echo "\n\n";
+echo '<div id="actionbuttons">';
 
   // If the task is closed, show the closure reason
   if ($task_details['is_closed'] == '1') {
@@ -563,7 +606,8 @@ if ($effective_permissions['can_edit'] == '1'
     // If they can't re-open this, show a button to request a PM re-open it
     } elseif ($effective_permissions['can_close'] != '1' 
               && $task_details['is_closed'] == '1'
-              && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1')  { ?>
+              && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
+              && isset($current_user['user_id']))  { ?>
 
       <form name="form2" action="index.php" method="post" id="formreopenrequesttask">
       <p>
