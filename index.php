@@ -207,7 +207,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
         $do = $_POST['do'];
       };
 
-switch ($_GET['do']) {
+switch ($do) {
   case "admin": $thepage = 'scripts/admin.php';
   break;
   case "authenticate": $thepage = 'scripts/authenticate.php';
