@@ -10,6 +10,7 @@
 // already set. This is a whole convoluted bunch of crap, but it works.
 
 $fs->get_language_pack($lang, 'index');
+$fs->get_language_pack($lang, 'details');
 
 $orderby = array();
 
@@ -575,7 +576,7 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 <div id="tasklist">
 
    <!--  Summary headings, followed by the query results -->
-   <table id="tasklist">
+   <table>
    <thead>
       <tr>
 

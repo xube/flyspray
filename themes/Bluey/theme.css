@@ -330,40 +330,34 @@ div#tasklist {
 }
 
 /* The table listing tasks on the main page */
-table#tasklist {
+div#tasklist table {
    width                : 100%;
    border-spacing       : 0px;
    border-collapse      : collapse;
 }
 
-table#tasklist th {
+div#tasklist table th {
    text-align           : left;
    padding              : 2px 1em 2px 2px;
    border-bottom        : 1px solid #cccccc;
 }
 
-/*table#tasklist tr:hover a {
-   color                : #6395c8;
-   background-color     : transparent;
-   text-decoration      : none;
-}*/
-
-table#tasklist td {
+div#tasklist table td {
    border-bottom        : 1px solid #CCC;
    padding              : 2px 1ex 2px 2px;
 }
 
-table#tasklist td.taskid, table#tasklist th.taskid {
+div#tasklist table td.taskid, div#tasklist table th.taskid {
    text-align           : center;
    padding              : 2px 1ex;
 }
 
-table#tasklist td.taskdate {
+div#tasklist table td.taskdate {
    text-align           : left;
    white-space          : nowrap;
 }
 
-table#tasklist td.progress {
+div#tasklist table td.progress {
    vertical-align       : middle;
    text-align           : center;
 }
@@ -408,7 +402,7 @@ table.taskdetails td {
 
 /* Task details are listed within a table */
 div#taskdetails table {
-  width               : 100%;
+  width               : 90%;
 }
 
 div#taskdetails table th {
@@ -693,7 +687,7 @@ div#taskfields2 table td {
 
 div#taskdetailsfull {
    clear                : both;
-   width                : 100%;
+   width                : 99%;
    margin-top           : 15px;
    padding              : 15px 0px 15px 8px;
    border-top           : 1px solid #cccccc;

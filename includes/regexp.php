@@ -10,7 +10,7 @@
 //        print "Invalid language code."; exit;
 //}
 
-if ($_GET['getfile']) {
+if (isset($_GET['getfile'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['getfile'])) {
@@ -23,7 +23,7 @@ if ($_GET['getfile']) {
     };
 };
 
-if ($_GET['order']) {
+if (isset($_GET['order'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     // Added | to end of match list to allow for blank variable
@@ -39,7 +39,7 @@ if ($_GET['order']) {
     };
 };
 
-if ($_GET['sort']) {
+if (isset($_GET['sort'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     if (preg_match ("/^(asc|desc)$/", $_GET['sort'])) {
@@ -52,7 +52,7 @@ if ($_GET['sort']) {
 
 };
 
-if ($_GET['project']) {
+if (isset($_GET['project'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['project'])) {
@@ -65,7 +65,7 @@ if ($_GET['project']) {
     };
 };
 
-if ($_GET['page']) {
+if (isset($_GET['page'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['page'])) {
@@ -78,7 +78,7 @@ if ($_GET['page']) {
     };
 };
 
-if ($_REQUEST['action']) {
+if (isset($_REQUEST['action'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     if (preg_match ("/^(logout|newtask|update|close|reopen|addcomment|chpass|registeruser|newuser|newgroup|globaloptions|newproject|updateproject|addattachment|edituser|editgroup|update_list|add_to_list|update_category|add_category|add_related|remove_related|add_notification|remove_notification|editcomment|deletecomment|deleteattachment|addreminder|deletereminder|update_version_list|add_to_version_list|addtogroup|movetogroup|requestreopen|takeownership|requestclose|newdep|removedep|sendmagic|sendcode|makeprivate|makepublic)$/", $_REQUEST['action'])) {
@@ -92,7 +92,7 @@ if ($_REQUEST['action']) {
 };
 
 
-if ($_REQUEST['do']) {
+if (isset($_REQUEST['do'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment)$/", $_REQUEST['do'])) {
@@ -105,7 +105,7 @@ if ($_REQUEST['do']) {
     };
 };
 
-if ($_REQUEST['id']) {
+if (isset($_REQUEST['id'])) {
 
      // Yes. Now check its regex format for safety -- Numbers only
     if (is_array($_REQUEST['id'])) {
@@ -128,7 +128,7 @@ if ($_REQUEST['id']) {
  };
 
 
-if ($_REQUEST['user_name']) {
+if (isset($_REQUEST['user_name'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     if (preg_match ("/^[a-zA-Z0-9_-]+$/", $_REQUEST['user_name'])) {
@@ -140,7 +140,7 @@ if ($_REQUEST['user_name']) {
     };
 };
 
-if ($_GET['real_name']) {
+if (isset($_GET['real_name'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     if (preg_match ("/^[\sa-zA-Z0-9_-]+$/", $_GET['real_name'])) {
@@ -153,7 +153,7 @@ if ($_GET['real_name']) {
     };
 };
 
-if ($_GET['email_address']) {
+if (isset($_GET['email_address'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     //if (preg_match ("/^[A-Za-z0-9\._-]+@([A-Za-z][A-Za-z0-9-]{1,62})(\.[A-Za-z][A-Za-z0-9-]{1,62})+$/", $_GET['email_address'])) {
@@ -168,7 +168,7 @@ if ($_GET['email_address']) {
     };
 };
 
-if ($_GET['notify_type']) {
+if (isset($_GET['notify_type'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['notify_type'])) {
@@ -180,7 +180,7 @@ if ($_GET['notify_type']) {
     };
 };
 
-if ($_GET['jabber_id']) {
+if (isset($_GET['jabber_id'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     // Credit: http://xrl.us/9x3
@@ -195,7 +195,7 @@ if ($_GET['jabber_id']) {
     };
 };
 
-if ($_GET['area']) {
+if (isset($_GET['area'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     if (preg_match ("/^(editcomment|comments|attachments|related|notify|users|tt|res|groups|remind|system|history|pendingreq|prefs|cat|os|ver|editgroup|newproject)$/", $_GET['area'])) {
@@ -207,7 +207,7 @@ if ($_GET['area']) {
     };
 };
 
-if ($_GET['report']) {
+if (isset($_GET['report'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     if (preg_match ("/^(summary|changelog|events|severity|age)$/", $_GET['report'])) {
@@ -217,7 +217,7 @@ if ($_GET['report']) {
     };
 };
 
-if ($_GET['pagenum']) {
+if (isset($_GET['pagenum'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['pagenum'])) {
@@ -229,7 +229,7 @@ if ($_GET['pagenum']) {
     };
 };
 
-if ($_GET['perpage']) {
+if (isset($_GET['perpage'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['perpage'])) {
@@ -241,7 +241,7 @@ if ($_GET['perpage']) {
     };
 };
 
-if ($_GET['dev']) {
+if (isset($_GET['dev'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^(\d+|notassigned)$/", $_GET['dev'])) {
@@ -253,7 +253,7 @@ if ($_GET['dev']) {
     };
 };
 
-if ($_GET['sev']) {
+if (isset($_GET['sev'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['sev'])) {
@@ -265,7 +265,7 @@ if ($_GET['sev']) {
     };
 };
 
-if ($_GET['cat']) {
+if (isset($_GET['cat'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^\d+$/", $_GET['cat'])) {
@@ -277,7 +277,7 @@ if ($_GET['cat']) {
     };
 };
 
-if ($_GET['status']) {
+if (isset($_GET['status'])) {
 
     // Yes. Now check its regex format for safety -- Numbers only
     if (preg_match ("/^(\d+|all|closed)$/", $_GET['status'])) {
@@ -289,7 +289,7 @@ if ($_GET['status']) {
     };
 };
 
-if ($_REQUEST['magic']) {
+if (isset($_REQUEST['magic'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
     if (preg_match ("/^[a-zA-Z0-9_-]+$/", $_REQUEST['magic'])) {

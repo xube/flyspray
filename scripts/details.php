@@ -60,7 +60,7 @@ if ($db->CountRows($task_exists)
 
    if ($effective_permissions['can_edit'] == '1'
     && $task_details['is_closed'] != '1'
-    && $_GET['edit'] == 'yep')
+    && isset($_GET['edit']) && $_GET['edit'] == 'yep')
    {
 
    ?>
@@ -449,7 +449,7 @@ if ($db->CountRows($task_exists)
    <?php
    } elseif (($task_details['is_closed'] == '1'
       OR $effective_permissions['can_edit'] == '0'
-      OR !$GET['edit'])
+      OR !isset($GET['edit']))
       && (($task_details['mark_private'] == '1'
             && $task_details['assigned_to'] == $current_user['user_id'])
           OR $permissions['manage_project'] == '1'
@@ -502,7 +502,7 @@ if ($db->CountRows($task_exists)
 
          <div id="taskfields1">
 
-            <table class="taskdetails">
+            <table>
                <tr>
                   <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
                   <td id="tasktype"><?php echo $task_details['tasktype_name'];?></td>
@@ -567,7 +567,7 @@ if ($db->CountRows($task_exists)
 
          <div id="taskfields2">
 
-            <table class="taskdetails">
+            <table>
                <tr>
                   <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
                   <td id="severity"><?php echo $task_details['severity_name'];?></td>
@@ -760,7 +760,7 @@ if ($db->CountRows($task_exists)
     // Check permissions and task status, then show the "close task" form
    if ($effective_permissions['can_close'] == '1'
        && $task_details['is_closed'] != '1'
-       && $deps_open != 'yes')
+       && !isset($deps_open))
    {
    ?>
       <a href="#close" id="closetask" class="button" onclick="showstuff('closeform');">
@@ -1176,12 +1176,11 @@ echo '</div>';
       </form>
 
    <?php
-   };
+   }
    ?>
 
 
    <p><em><?php echo $details_text['otherrelated'];?></em></p>
-   <p>
    <?php
    $get_related = $db->Query("SELECT *
                               FROM flyspray_related r
@@ -1192,10 +1191,12 @@ echo '</div>';
 
    while ($row = $db->FetchArray($get_related))
    {
+      echo '<p>';
       $summary = stripslashes($row['summary']);
       echo '<a href="?do=details&amp;id=' . $row['this_task'] . '">FS#' . $row['this_task'] . ' &mdash; ' . stripslashes($row['item_summary']) . '</a><br />';
+      echo '</p>';
    }
-   echo '</p>';
+
 // End of related area
 echo '</div>';
 

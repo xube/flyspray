@@ -56,7 +56,8 @@ class Flyspray {
       @return   true if user has submitted the same action within less than
                6 hours, false otherwise
    */
-   function requestDuplicated() {
+   function requestDuplicated()
+   {
       // garbage collection -- clean entries older than 6 hrs
       $now = time();
       if (!empty($_SESSION['requests_hash'])) {
@@ -68,15 +69,17 @@ class Flyspray {
       }
 
       $requestarray = array_merge(array_keys($_POST), array_values($_POST));
-      if ($_POST['do']=='modify'
-        and preg_match('/^newtask|addcomment$/',$_POST['action'])) {
+
+      if (isset($_POST['do']) && $_POST['do']=='modify'
+        and preg_match('/^newtask|addcomment$/',$_POST['action']))
+      {
          $currentrequest = md5(join(':', $requestarray));
-         if (!empty($_SESSION['requests_hash'][$currentrequest])) {
+         if (!empty($_SESSION['requests_hash'][$currentrequest]))
+         {
             return true;
          }
-      }
-
       $_SESSION['requests_hash'][$currentrequest] = time();
+      }
       return false;
    }
 

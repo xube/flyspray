@@ -8,7 +8,7 @@ if (isset($_REQUEST['num']) && is_numeric($_REQUEST['num']))
    $limit = $_REQUEST['num'];
 } else
 {
-   $limit = '5';
+   $limit = '10';
 }
 
 // If the user requested tasks from a specific project, select it. default is global default project
@@ -44,13 +44,14 @@ $project_prefs = $fs->getProjectPrefs($proj);
 // Set up the basic XML head
 header ("Content-type: text/xml");
 echo '<?xml version="1.0"?>' . "\n";
-echo '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/">' . "\n";
-echo '<channel rdf:about="http://www.zend.com/news.rss">' . "\n";
+echo '<rss version="2.0">';
+//echo '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/">' . "\n";
+//echo '<channel rdf:about="http://www.zend.com/news.rss">' . "\n";
+echo '<channel>';
 echo '<title>Flyspray</title>' . "\n";
-echo '<link>http://flyspray.rocks.cc/</link>' . "\n";
 echo '<description>Flyspray:: ' . $project_prefs['project_title'] . ': ' . $title . '</description>' . "\n";
+echo '<link>http://flyspray.rocks.cc/</link>' . "\n";
 //echo '<image rdf:resource="" />' . "\n";
-echo '</channel>' . "\n";
 
 // Query the database
 $task_details = $db->Query("SELECT task_id, item_summary, detailed_desc
@@ -79,12 +80,13 @@ while ($row = $db->FetchArray($task_details))
    $item_summary = stripslashes($item_summary);
    $detailed_desc = stripslashes($detailed_desc);
 
-   echo '<item rdf:about="This is an item for a Flyspray RSS feed">' . "\n";
+   echo '<item>' . "\n";
    echo '<title>' . $item_summary . '</title>' . "\n";
-   echo '<link>' . $flyspray_prefs['base_url'] . '?do=details&amp;do=details&amp;id=' . $row['task_id'] . '</link>' . "\n";
    echo '<description>' . $detailed_desc . '</description>' . "\n";
+   echo '<link>' . $flyspray_prefs['base_url'] . '?do=details&amp;do=details&amp;id=' . $row['task_id'] . '</link>' . "\n";
    echo '</item>';
 }
 
-
-echo '</rdf:RDF>' . "\n";
+echo '</channel>' . "\n";
+//echo '</rdf:RDF>' . "\n";
+echo '</rss>';
