@@ -37,8 +37,10 @@ $index_text = array (
 'os'			=>	'Operating System',
 'reportedin'		=>	'Reported In',
 'openedby'		=>	'Opened By',
-'comments'          =>  'Comments',
-'attachments'       =>  'Attachments',
+'comments'		=>      'Comments',
+'attachments'		=>      'Attachments',
+'priority'		=>	'Priority',
+
 
 );
 ?>

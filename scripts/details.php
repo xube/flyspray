@@ -8,12 +8,16 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
  if ($fs->dbCountRows($task_exists) && $task_details['project_is_active'] == '1') {
 
 $item_summary = htmlspecialchars($task_details['item_summary']);
-$item_summary = str_replace("\\", "&#92;", $item_summary);
-$item_summary = stripslashes($item_summary);
-
 $detailed_desc = htmlspecialchars($task_details['detailed_desc']);
-$detailed_desc = str_replace("\\", "&#92;", $detailed_desc);
-//$detailed_desc = stripslashes($detailed_desc);
+
+if (!get_magic_quotes_gpc()) {
+  $item_summary = str_replace("\\", "&#92;", $item_summary);
+  $detailed_desc = str_replace("\\", "&#92;", $detailed_desc);
+
+};
+
+$item_summary = stripslashes($item_summary);
+$detailed_desc = stripslashes($detailed_desc);
 
 // Check if the user has rights to modify tasks
 if (($_SESSION['can_modify_jobs'] == '1'
@@ -151,25 +155,21 @@ if (($_SESSION['can_modify_jobs'] == '1'
         ?>
         </select>
         </td>
-        <th><?php echo $details_text['reportedversion'];?></th>
+        <th><?php echo $details_text['priority'];?></th>
         <td>
-        <!--<select name="product_version">
+        <select name="task_priority">
         <?php
-        // Get list of versions
-        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
-        while ($row = $fs->dbFetchArray($get_version)) {
-          if ($row['version_id'] == $task_details['product_version']) {
-            echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
+        // Get list of priorities
+        require("lang/$lang/priority.php");
+        foreach($priority_list as $key => $val) {
+          if ($task_details['task_priority'] == $key) {
+            echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
           } else {
-            echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
+            echo "<option value=\"$key\">$val</option>\n";
           };
         };
         ?>
-        </select>-->
-        <?php
-        // Print the version name
-        echo $task_details['reported_version_name'];
-        ?>
+        </select>
         </td>
       </tr>
       <tr>
@@ -189,26 +189,25 @@ if (($_SESSION['can_modify_jobs'] == '1'
 
         ?>
         </select></td>
-        <th><?php echo $details_text['dueinversion'];?></th>
+        <th><?php echo $details_text['reportedversion'];?></th>
         <td>
-        <select name="closedby_version">
+        <!--<select name="product_version">
         <?php
-        // if we don't have a fix-it version, show undecided
-        if (!isset($closedby)) {
-          echo "<option value=\"\">{$details_text['undecided']}</option>\n";
-        } else {
-          echo "<option value=\"\" selected=\"selected\">{$details_text['undecided']}</option>\n";
-        };
+        // Get list of versions
         $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
         while ($row = $fs->dbFetchArray($get_version)) {
-          if ($row['version_id'] == $task_details['closedby_version']) {
+          if ($row['version_id'] == $task_details['product_version']) {
             echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
           } else {
             echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
           };
         };
         ?>
-        </select>
+        </select>-->
+        <?php
+        // Print the version name
+        echo $task_details['reported_version_name'];
+        ?>
         </td>
       </tr>
       <tr>
@@ -232,20 +231,25 @@ if (($_SESSION['can_modify_jobs'] == '1'
         ?>
         </select>
         </td>
-        <th><?php echo $details_text['percentcomplete'];?></th>
+        <th><?php echo $details_text['dueinversion'];?></th>
         <td>
-        <select name="percent_complete">
-          <option value="0" <?php if ($task_details['percent_complete'] == '0') { echo "selected=\"selected\"";};?>>0%</option>
-          <option value="10" <?php if ($task_details['percent_complete'] == '10') { echo "selected=\"selected\"";};?>>10%</option>
-          <option value="20" <?php if ($task_details['percent_complete'] == '20') { echo "selected=\"selected\"";};?>>20%</option>
-          <option value="30" <?php if ($task_details['percent_complete'] == '30') { echo "selected=\"selected\"";};?>>30%</option>
-          <option value="40" <?php if ($task_details['percent_complete'] == '40') { echo "selected=\"selected\"";};?>>40%</option>
-          <option value="50" <?php if ($task_details['percent_complete'] == '50') { echo "selected=\"selected\"";};?>>50%</option>
-          <option value="60" <?php if ($task_details['percent_complete'] == '60') { echo "selected=\"selected\"";};?>>60%</option>
-          <option value="70" <?php if ($task_details['percent_complete'] == '70') { echo "selected=\"selected\"";};?>>70%</option>
-          <option value="80" <?php if ($task_details['percent_complete'] == '80') { echo "selected=\"selected\"";};?>>80%</option>
-          <option value="90" <?php if ($task_details['percent_complete'] == '90') { echo "selected=\"selected\"";};?>>90%</option>
-          <option value="100" <?php if ($task_details['percent_complete'] == '100') { echo "selected=\"selected\"";};?>>100%</option>
+        <select name="closedby_version">
+        <?php
+        // if we don't have a fix-it version, show undecided
+        if (!isset($closedby)) {
+          echo "<option value=\"\">{$details_text['undecided']}</option>\n";
+        } else {
+          echo "<option value=\"\" selected=\"selected\">{$details_text['undecided']}</option>\n";
+        };
+        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
+        while ($row = $fs->dbFetchArray($get_version)) {
+          if ($row['version_id'] == $task_details['closedby_version']) {
+            echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
+          } else {
+            echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
+          };
+        };
+        ?>
         </select>
         </td>
       </tr>
@@ -266,8 +270,22 @@ if (($_SESSION['can_modify_jobs'] == '1'
         ?>
         </select>
         </td>
-        <td colspan="2"></td>
-
+        <th><?php echo $details_text['percentcomplete'];?></th>
+        <td>
+        <select name="percent_complete">
+          <option value="0" <?php if ($task_details['percent_complete'] == '0') { echo "selected=\"selected\"";};?>>0%</option>
+          <option value="10" <?php if ($task_details['percent_complete'] == '10') { echo "selected=\"selected\"";};?>>10%</option>
+          <option value="20" <?php if ($task_details['percent_complete'] == '20') { echo "selected=\"selected\"";};?>>20%</option>
+          <option value="30" <?php if ($task_details['percent_complete'] == '30') { echo "selected=\"selected\"";};?>>30%</option>
+          <option value="40" <?php if ($task_details['percent_complete'] == '40') { echo "selected=\"selected\"";};?>>40%</option>
+          <option value="50" <?php if ($task_details['percent_complete'] == '50') { echo "selected=\"selected\"";};?>>50%</option>
+          <option value="60" <?php if ($task_details['percent_complete'] == '60') { echo "selected=\"selected\"";};?>>60%</option>
+          <option value="70" <?php if ($task_details['percent_complete'] == '70') { echo "selected=\"selected\"";};?>>70%</option>
+          <option value="80" <?php if ($task_details['percent_complete'] == '80') { echo "selected=\"selected\"";};?>>80%</option>
+          <option value="90" <?php if ($task_details['percent_complete'] == '90') { echo "selected=\"selected\"";};?>>90%</option>
+          <option value="100" <?php if ($task_details['percent_complete'] == '100') { echo "selected=\"selected\"";};?>>100%</option>
+        </select>
+        </td>
       </tr>
       <tr>
         <th><?php echo $details_text['details'];?></th>
@@ -378,8 +396,10 @@ if (($_SESSION['can_modify_jobs'] == '1'
         };
         echo $task_details['category_name'];?>
         </td>
-        <th nowrap=""><?php echo $details_text['reportedversion'];?></th>
-        <td><?php echo $task_details['reported_version_name'];?></td>
+        <th><?php echo $details_text['priority'];?></th>
+        <td>
+	<?php echo $task_details['priority_name'];?>
+	</td>
       </tr>
       <tr>
         <th><?php echo $details_text['status'];?></th>
@@ -392,16 +412,8 @@ if (($_SESSION['can_modify_jobs'] == '1'
 		};
 		?>
 		</td>
-        <th><?php echo $details_text['dueinversion'];?></th>
-        <td>
-        <?php
-        if (isset($task_details['due_in_version_name'])) {
-          echo $task_details['due_in_version_name'];
-        } else {
-          echo $details_text['undecided'];
-        };
-        ?>
-        </td>
+         <th nowrap=""><?php echo $details_text['reportedversion'];?></th>
+        <td><?php echo $task_details['reported_version_name'];?></td>
       </tr>
       <tr>
         <th><?php echo $details_text['assignedto'];?></th>
@@ -418,13 +430,22 @@ if (($_SESSION['can_modify_jobs'] == '1'
         };
         ?>
         </td>
-        <th><?php echo $details_text['percentcomplete'];?></th>
-        <td ><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?>></td>
+       <th><?php echo $details_text['dueinversion'];?></th>
+        <td>
+        <?php
+        if (isset($task_details['due_in_version_name'])) {
+          echo $task_details['due_in_version_name'];
+        } else {
+          echo $details_text['undecided'];
+        };
+        ?>
+        </td>
       </tr>
       <tr>
         <th nowrap=""><?php echo $details_text['operatingsystem'];?></th>
         <td><?php echo $task_details['os_name'];?></td>
-        <td colspan="2"></td>
+        <th><?php echo $details_text['percentcomplete'];?></th>
+        <td ><?php echo "<img src=\"themes/{$flyspray_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"150\" height=\"10\" alt=\"{$task_details['percent_complete']}% {$details_text['complete']}\" title=\"{$task_details['percent_complete']}% {$details_text['complete']}\"";?>></td>
       </tr>
 
     <!-- end of right column -->
@@ -597,7 +618,9 @@ if ($area == 'comments') { ?>
       $comment_text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\" target=\"_blank\">\\0</a>", $comment_text);
       // Change FS#123 into hyperlinks to tasks
       $comment_text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $comment_text);
-      $comment_text = str_replace("\\", "&#92", $comment_text);
+      if (!get_magic_quotes_gpc()) {
+        $comment_text = str_replace("\\", "&#92", $comment_text);
+      };
       $comment_text = stripslashes($comment_text);
 
     ?>

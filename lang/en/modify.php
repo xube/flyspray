@@ -135,6 +135,7 @@ $modify_text = array (
 'cancel'            =>   'Cancel',
 'alreadyedited'     =>   'This task was edited by someone else before you saved.',
 'saveanyway'        =>   'Save my changes anyway',
+'priority'          =>   'Priority',
 
 );
 ?>

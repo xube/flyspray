@@ -5,9 +5,9 @@
 get_language_pack($lang, 'index');
 
 switch ($_GET['order']) {
-  case "id": $orderby = 'flyspray_tasks.task_id';
+  case "id": $orderby = 'task_id';
   break;
-  case "project_title": $orderby = 'attached_to_project';
+  case "proj": $orderby = 'attached_to_project';
   break;
   case "type": $orderby = 'task_type';
   break;
@@ -57,14 +57,14 @@ $offset = $perpage * $pagenum;
 $sql_params = array();
 $where = array();
 
-$where[] = 'project_is_active = 1';
+$where[] = 'project_is_active = ?';
+$sql_params[] = '1';
 
 // Set the default queries
 if ($_GET['project'] != '0') {
   $where[]	= "attached_to_project = ?";
   $sql_params[] = $project_id;
 };
-
 
 // Check for special tasks to display
 $dev = $_GET['dev'];
@@ -79,7 +79,7 @@ if ($_GET['tasks'] == 'assigned') {
 
 // developer whos bugs to show
 if (is_numeric($dev)) {
-  $where[]	= "assigned_to = ?";
+  $where[] = "assigned_to = ?";
   $sql_params[] = $dev;
 } elseif ($dev == "notassigned") {
   $where[] = "assigned_to = '0'";
@@ -88,13 +88,13 @@ if (is_numeric($dev)) {
 
 // The default task type
 if (is_numeric($_GET['type'])) {
-  $where[]	= "task_type = ?";
+  $where[] = "task_type = ?";
   $sql_params[] = $_GET['type'];
 };
 
 // The default severity
 if (is_numeric($_GET['sev'])) {
-  $where[]	= "task_severity = ?";
+  $where[] = "task_severity = ?";
   $sql_params[] = $_GET['sev'];
 };
 
@@ -124,7 +124,8 @@ if ($_GET['status'] == "all") {
   $where[]	= "item_status = ?";
   $sql_params[] = $_GET['status'];
 } else {
-  $where[] = "is_closed != '1'";
+  $where[] = "is_closed != ?";
+  $sql_params[] = '1';
 };
 // The default due in version
 if (is_numeric($_GET['due'])) {
@@ -138,7 +139,7 @@ if ($_GET['string']) {
   $string = ereg_replace('\)', " ", $string);
   $string = trim($string);
 
-  $where[]	= "(item_summary LIKE ? OR detailed_desc LIKE ? OR task_id LIKE ?)";
+  $where[]	= "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ?)";
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
@@ -395,6 +396,7 @@ if ($getproject['project_is_active'] == 1) {
   list_heading('tasktype','type');  
   list_heading('category','cat');
   list_heading('severity','sev');
+  list_heading('priority','pri');
   list_heading('summary','');
   list_heading('dateopened','date');
   list_heading('status','status');
@@ -414,16 +416,28 @@ if ($getproject['project_is_active'] == 1) {
 <?php
  
 // SQL JOIN condition
-$from = 'flyspray_tasks, flyspray_projects';
+$from = 'flyspray_tasks t';
 
 if ($_GET['tasks'] == 'watched') {
     //join the notification table to get watched tasks
-    $from .= ' RIGHT JOIN flyspray_notifications ON flyspray_tasks.task_id = flyspray_notifications.task_id';
-    $where[] = 'user_id = ?';
+    $from .= ' RIGHT JOIN flyspray_notifications fsn ON t.task_id = fsn.task_id';
+    $where[] = 'fsn.user_id = ?';
     $sql_params[] = $_SESSION['userid'];
 };
-    
-$where[] = 'flyspray_tasks.attached_to_project = flyspray_projects.project_id';
+
+// This SQL courtesy of Lance Conry http://www.rhinosw.com/
+$from .= ' 
+
+        LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
+        LEFT JOIN flyspray_list_tasktype lt ON t.task_type = lt.tasktype_id
+        LEFT JOIN flyspray_list_category lc ON t.product_category = lc.category_id
+        LEFT JOIN flyspray_list_version lv ON t.product_version = lv.version_id
+        LEFT JOIN flyspray_list_version lvc ON t.closedby_version = lvc.version_id
+        LEFT JOIN flyspray_users u ON t.assigned_to = u.user_id
+        LEFT JOIN flyspray_users uo ON t.opened_by = uo.user_id
+        ';
+
+//$where[] = 't.attached_to_project = flyspray_projects.project_id';
 $where = join(' AND ', $where);
 $get_total = $fs->dbQuery("SELECT * FROM $from
           WHERE $where
@@ -439,78 +453,67 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
 
 <!--<tbody>-->
-  <?php
+<?php
+// Parts of his SQL courtesy of Lance Conry http://www.rhinosw.com/
+$get_details = $fs->dbQuery("
+SELECT
+        t.*,
+        p.project_title,
+        p.project_is_active,
+        lt.tasktype_name AS 'task_type',
+        lc.category_name AS 'product_category',
+        lv.version_name AS 'product_version',
+        lvc.version_name AS 'closedby_version',
+        u.real_name AS 'assigned_to',
+        uo.real_name AS 'opened_by'
+FROM 
+        $from
+WHERE
+        $where
+ORDER BY
+        $orderby $sort", $sql_params, $perpage, $offset);
+       
 
-  $getdetails = $fs->dbQuery("SELECT * FROM $from
-          WHERE $where
-          ORDER BY $orderby $sort", $sql_params, $perpage, $offset);
+  while ($task_details = $fs->dbFetchArray($get_details)) {
 
-
-  while ($task_details = $fs->dbFetchArray($getdetails)) {
-
-    // Get the full project title
-    $get_project_title = $fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id=?", array($task_details['project_id']));
-    $project = $fs->dbFetchArray($get_project_title);
-
-    // Get the full tasktype name
-    $get_tasktype_name = $fs->dbQuery("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id=?", array($task_details['task_type']));
-    $tasktype_info = $fs->dbFetchArray($get_tasktype_name);
-
-    // Get the full category name
-    $get_category_name = $fs->dbQuery("SELECT category_name FROM flyspray_list_category WHERE category_id=?", array($task_details['product_category']));
-    list($category) = $fs->dbFetchArray($get_category_name);
-
-    // Get the full status name
-    $status_id = $task_details['item_status'];
-    require("lang/$lang/status.php");
-    $status = $status_list[$status_id];
-
+    // Set the status text to 'closed' if this task is closed
+    if ($task_details['is_closed'] == "1")
+    {
+      $status = $index_text['closed'];
+    } else {
+      // Get the full status name
+      $status_id = $task_details['item_status'];
+      require("lang/$lang/status.php");
+      $status = $status_list[$status_id];
+    }
+    
     // Get the full severity name
     $severity_id = $task_details['task_severity'];
     require("lang/$lang/severity.php");
     $severity = $severity_list[$severity_id];
 
-    // Get the full reported in version name
-    $get_reported_name = $fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id=?", array($task_details['product_version']));
-    list($reported_in) = $fs->dbFetchArray($get_reported_name);
+    // Get the full priority name
+    $priority_id = $task_details['task_priority'];
+    require("lang/$lang/priority.php");
+    $priority = $priority_list[$priority_id];
     
-    // Get the full due-in version name
-    $get_due_name = $fs->dbQuery("SELECT version_name 
-    FROM flyspray_list_version 
-    WHERE version_id=?", array($fs->emptyToZero($task_details['closedby_version'])));
-    list($due) = $fs->dbFetchArray($get_due_name);
-
-    // Convert the date_opened to a human-readable format
-    $date_opened = $fs->formatDate($task_details['date_opened'], false);
-
     // see if it's been assigned
     if (!$task_details['assigned_to']) {
       $assigned_to = $details_text['noone'];
     } else {
-      // find out the username
-      $getusername = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['assigned_to']));
-      list ($user_name, $real_name) = $fs->dbFetchArray($getusername);
-      $assigned_to = "$real_name ($user_name)";
+      $assigned_to = $task_details['assigned_to'];
     };
-    
-    // find out the username
-    $getusername = $fs->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($task_details['opened_by']));
-    list ($user_name, $real_name) = $fs->dbFetchArray($getusername);
-    $opened_by = "$real_name ($user_name)";
-    
+
+    // Convert the date_opened to a human-readable format
+    $date_opened = $fs->formatDate($task_details['date_opened'], false);
+        
     // Convert the last_edited_time to a human-readable format
     if ($task_details['last_edited_time'] != '0') {
       $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
     } else {
       $last_edited_time = $date_opened;
     };
-        
-    // Set the status text to 'closed' if this task is closed
-    if ($task_details['is_closed'] == "1")
-    {
-      $status = $index_text['closed'];
-    }
-    
+     
     // get the number of comments and attachments
     $getcomments = $fs->dbQuery("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
     list($comments) = $fs->dbFetchRow($getcomments);
@@ -528,17 +531,18 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
 
     list_cell("id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
     list_cell("project",$task_details['project_title'],1);
-    list_cell("tasktype",$tasktype_info['tasktype_name'],1);
-    list_cell("category",$category,1);
+    list_cell("tasktype",$task_details['task_type'],1);
+    list_cell("category",$task_details['product_category'],1);
     list_cell("severity",$severity,1);
+    list_cell("priority",$priority,1);
     list_cell("summary",$task_details['item_summary'],0,"?do=details&amp;id={$task_details['task_id']}");
     list_cell("dateopened",$date_opened);
     list_cell("status",$status,1);
-    list_cell("openedby",$opened_by,0);
-    list_cell("assigned",$assigned_to,0);
+    list_cell("openedby",$task_details['opened_by'],0);
+    list_cell("assigned",$task_details['assigned_to'],0);
     list_cell("lastedit",$last_edited_time);
-    list_cell("reportedin",$reported_in);
-    list_cell("dueversion",$due,1);
+    list_cell("reportedin",$task_details['product_version']);
+    list_cell("dueversion",$task_details['closedby_version'],1);
     list_cell("comments",$comments);
     list_cell("attachments",$attachments);
     list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\">\n");

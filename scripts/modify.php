@@ -39,7 +39,7 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
 
     $param_names = array('task_type', 'item_status',
         'assigned_to', 'product_category', 'product_version',
-        'closedby_version', 'operating_system', 'task_severity');
+        'closedby_version', 'operating_system', 'task_severity', 'task_priority');
     $sql_values = array($_POST['project_id'], $now, $item_summary,
                 $detailed_desc, 
 		$fs->emptyToZero($_COOKIE['flyspray_userid']), '0');
@@ -190,6 +190,7 @@ if ($_POST['edit_start_time'] < $old_details['last_edited_time']) {
     <input type="hidden" name="closedby_version" value="<?php echo $_POST['closedby_version'];?>">
     <input type="hidden" name="operating_system" value="<?php echo $_POST['operating_system'];?>">
     <input type="hidden" name="task_severity" value="<?php echo $_POST['task_severity'];?>">
+    <input type="hidden" name="task_priority" value="<?php echo $_POST['task_priority'];?>">
     <input type="hidden" name="percent_complete" value="<?php echo $_POST['percent_complete'];?>">
     <input type="submit" class="adminbutton" value="<?php echo $modify_text['saveanyway']; ?>">
   </form>
@@ -229,6 +230,7 @@ if ($_POST['edit_start_time'] < $old_details['last_edited_time']) {
                   closedby_version = ?,
                   operating_system = ?,
                   task_severity = ?,
+                  task_priority = ?,
                   last_edited_by = ?,
                   last_edited_time = ?,
                   percent_complete = ?
@@ -240,7 +242,7 @@ if ($_POST['edit_start_time'] < $old_details['last_edited_time']) {
 
                     $fs->emptyToZero($_POST['closedby_version']),
                     $_POST['operating_system'], $_POST['task_severity'],
-                    $_COOKIE['flyspray_userid'],
+                    $_POST['task_priority'], $_COOKIE['flyspray_userid'],
                     $now,
                     $_POST['percent_complete'],
                     $_POST['task_id']
@@ -260,6 +262,7 @@ if ($_POST['edit_start_time'] < $old_details['last_edited_time']) {
             "{$modify_text['status']}"           =>  'status_name',
             "{$modify_text['operatingsystem']}"  =>  'os_name',
             "{$modify_text['severity']}"         =>  'severity_name',
+            "{$modify_text['priority']}"         =>  'priority_name',
             "{$modify_text['reportedversion']}"  =>  'reported_version_name',
             "{$modify_text['dueinversion']}"     =>  'due_in_version_name',
             "{$modify_text['percentcomplete']}"  =>  'percent_complete',
@@ -915,7 +918,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   };
 
   // Process the list of visible columns
-  $columnnames = array('id','project','category','tasktype','severity','summary','dateopened','status','openedby','assignedto','lastedit','reportedin','dueversion','comments','attachments','progress');
+  $columnnames = array('id','project','category','tasktype','severity','priority','summary','dateopened','status','openedby','assignedto','lastedit','reportedin','dueversion','comments','attachments','progress');
   foreach ($columnnames AS $column)
   {
     $colname = "visible_columns".$column;
@@ -1029,35 +1032,54 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   if ($_POST['real_name'] != ""
     && $_POST['email_address'] != ""
     ) {
-      $update = $fs->dbQuery("UPDATE flyspray_users SET
+      //If the user is admin and entered matching password and confirmation
+      //we can change the selected user's password
+      $password_problem = false;
+      if ($_SESSION['admin'] == '1'
+        && ($_POST['adminchangepass']
+        || $_POST['adminconfirmpass'])
+        ) {
+          //check that the entered passwords match
+          if ($_POST['adminchangepass'] == $_POST['adminconfirmpass']) {
+            $new_pass = $_POST['adminchangepass'];
+            $new_pass_hash = crypt("$new_pass", '4t6dcHiefIkeYcn48B');
+            $update_pass = $fs->dbQuery("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_POST['user_id']));
+          } else {
+            echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passnomatch']}</em></p>";
+            echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+            $password_problem = true;
+          };
+      };
+
+      if ($password_problem == false){
+        $update = $fs->dbQuery("UPDATE flyspray_users SET
                   real_name = ?,
                   email_address = ?,
                   jabber_id = ?,
                   notify_type = ?,
                   dateformat = ?,
                   dateformat_extended = ?
+        WHERE user_id = ?",
+        array($_POST['real_name'], $_POST['email_address'],
+        $_POST['jabber_id'], $_POST['notify_type'], $_POST['dateformat'], $_POST['dateformat_extended'], $_POST['user_id']));
 
-      WHERE user_id = ?",
-      array($_POST['real_name'], $_POST['email_address'],
-      $_POST['jabber_id'], $_POST['notify_type'], $_POST['dateformat'], $_POST['dateformat_extended'], $_POST['user_id']));
-
-    if ($_SESSION['admin'] == '1') {
-      $update = $fs->dbQuery("UPDATE flyspray_users SET
+      if ($_SESSION['admin'] == '1') {
+        $update = $fs->dbQuery("UPDATE flyspray_users SET
                   group_in = ?,
                   account_enabled = ?
-      WHERE user_id = ?",
-      array($_POST['group_in'],
+        WHERE user_id = ?",
+        array($_POST['group_in'],
                 $fs->emptyToZero($_POST['account_enabled']),
                 $_POST['user_id']));
-    };
+      };
 
-    if  ($_SESSION['admin'] == '1') {
-      echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=users\">";
-    } else {
-      echo "<meta http-equiv=\"refresh\" content=\"1; URL={$flyspray_prefs['base_url']}\">";
+      if  ($_SESSION['admin'] == '1') {
+        echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=users\">";
+      } else {
+        echo "<meta http-equiv=\"refresh\" content=\"1; URL={$flyspray_prefs['base_url']}\">";
+      };
+      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
     };
-
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
   } else {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['realandemail']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
   };

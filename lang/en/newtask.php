@@ -22,6 +22,7 @@ $newtask_text = array (
 // Added in version 0.9.5
 
 'notifyme'			=>	'Notify me whenever this task changes',
+'priority'			=>	'Priority',
 
 );
 ?>

@@ -188,6 +188,11 @@ function GetTaskDetails($task_id) {
         $tmp_array = array("severity_name" => $severity_list[$severity_id]);
         $get_details = $get_details + $tmp_array;
 
+        $priority_id = $get_details['task_priority'];
+    require("lang/$lang/priority.php");
+        $tmp_array = array("priority_name" => $priority_list[$priority_id]);
+        $get_details = $get_details + $tmp_array;
+
         return $get_details;
 }
 

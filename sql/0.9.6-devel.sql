@@ -31,11 +31,11 @@ CREATE TABLE `flyspray_history` (
   `history_id` mediumint(10) NOT NULL auto_increment,
   `task_id` mediumint(10) NOT NULL default '0',
   `user_id` mediumint(3) NOT NULL default '0',
-  `event_date` varchar(12) NOT NULL default '',
+  `event_date` text NOT NULL default '',
   `event_type` mediumint(2) NOT NULL default '0',
-  `field_changed` varchar(32) NOT NULL default '',
-  `old_value` varchar(100) NOT NULL default '',
-  `new_value` varchar(100) NOT NULL default '',
+  `field_changed` text NOT NULL default '',
+  `old_value` text NOT NULL default '',
+  `new_value` text NOT NULL default '',
   PRIMARY KEY  (`history_id`)
 ) TYPE=MyISAM;
 
@@ -44,3 +44,6 @@ UPDATE flyspray_projects SET visible_columns = 'id category tasktype severity su
 
 ALTER TABLE `flyspray_list_version` ADD `version_tense` MEDIUMINT( 1 ) NOT NULL ;
 UPDATE flyspray_list_version SET version_tense = '2';
+
+ALTER TABLE `flyspray_tasks` ADD `task_priority` MEDIUMINT( 3 ) NOT NULL AFTER `task_severity` ;
+UPDATE flyspray_tasks SET task_priority = '2';

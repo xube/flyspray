@@ -102,6 +102,7 @@ $details_text = array (
 'deletedasrelated'  =>   'Task removed from the related list of',
 'reminderadded'     =>   'Reminder added',
 'reminderdeleted'   =>   'Reminder removed',
+'priority'          =>   'Priority',
 
 );
 ?>

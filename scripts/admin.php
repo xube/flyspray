@@ -87,6 +87,14 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
       <td><label for="accountenabled"><?php echo $admin_text['accountenabled'];?></label></td>
       <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?>></td>
     </tr>
+    <tr>
+      <td><label for="adminchangepass"><?php echo $admin_text['adminchangepass'];?></label></td>
+      <td><input id="adminchangepass" type="password" name="adminchangepass" size="40" maxlength="100"></td>
+    </tr>
+    <tr>
+      <td><label for="adminconfirmpass"><?php echo $admin_text['adminconfirmpass'];?></label></td>
+      <td><input id="adminconfirmpass" type="password" name="adminconfirmpass" size="40" maxlength="100"></td>
+    </tr>
     <?php
     };
     ?>
@@ -707,7 +715,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
     <td class="admintext">
       <?php // Set the selectable column names
-      $columnnames = array('id','project','tasktype','category','severity','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
+      $columnnames = array('id','project','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
       foreach ($columnnames AS $column) {
         if (ereg($column, $project_prefs['visible_columns']) ) {
           echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\">$index_text[$column]<br>\n";
@@ -1053,7 +1061,8 @@ if ($_GET['show'] == 'prefs') { ?>
       list($user_name) = $fs->dbFetchArray($getusername);
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
-      $comment_text = htmlspecialchars($row['comment_text']);
+      $comment_text = stripslashes(htmlspecialchars($row['comment_text']));
+      
     };
 ?>
 <h3><?php echo $admin_text['editcomment'];?></h3>

@@ -81,18 +81,21 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
         };
         ?></select>
      </td>
-     <td><label for="productversion"><?php echo $newtask_text['reportedversion'];?></label></td>
+     <td><label for="task_priority"><?php echo $newtask_text['priority'];?></label></td>
      <td>
-       <select class="adminlist" name="product_version" id="productversion">
+        <select id="taskpriority" name="task_priority" <?php if ($_SESSION['can_modify_jobs'] != "1") { echo " disabled=\"disabled\"";};?>>
         <?php
-        // Get list of versions
-        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
-				    array($project_id, '1', '2'));
-        while ($row = $fs->dbFetchArray($get_version)) {
-          echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
+        // Get list of statuses
+        require("lang/$lang/priority.php");
+        foreach($priority_list as $key => $val) {
+          if ($key == '2') {
+            echo "<option value=\"$key\" SELECTED>$val</option>\n";
+          } else {
+            echo "<option value=\"$key\">$val</option>\n";
+          };
         };
         ?>
-       </select>
+        </select>
      </td>
    </tr>
    <tr>
@@ -108,18 +111,18 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
         ?>
         </select>
      </td>
-     <td><label for="closedbyversion"><?php echo $newtask_text['dueinversion'];?></label></td>
-     <td><select id="closedbyversion" name="closedby_version" <?php if ($_SESSION['can_modify_jobs'] != "1") { echo " disabled=\"disabled\"";};?>>
+     <td><label for="productversion"><?php echo $newtask_text['reportedversion'];?></label></td>
+     <td>
+       <select class="adminlist" name="product_version" id="productversion">
         <?php
-        echo "<option value=\"\">Undecided</option>\n";
-
+        // Get list of versions
         $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
-				    array($project_id, '1', '3'));
+				    array($project_id, '1', '2'));
         while ($row = $fs->dbFetchArray($get_version)) {
           echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
         };
         ?>
-        </select>
+       </select>
      </td>
    </tr>
    <tr>
@@ -141,7 +144,19 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
         ?>
         </select>
      </td>
-     <td colspan="2"></td>
+     <td><label for="closedbyversion"><?php echo $newtask_text['dueinversion'];?></label></td>
+     <td><select id="closedbyversion" name="closedby_version" <?php if ($_SESSION['can_modify_jobs'] != "1") { echo " disabled=\"disabled\"";};?>>
+        <?php
+        echo "<option value=\"\">Undecided</option>\n";
+
+        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
+				    array($project_id, '1', '3'));
+        while ($row = $fs->dbFetchArray($get_version)) {
+          echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
+        };
+        ?>
+        </select>
+     </td>
    </tr>
    <tr>
      <td><label for="operatingsystem"><?php echo $newtask_text['operatingsystem'];?></label></td>
@@ -168,7 +183,7 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
     <?php
     if ($_SESSION['userid'] != '') {
       echo "<td colspan=\"3\"><label>";
-      echo "{$newtask_text['notifyme']}&nbsp;&nbsp;<input class=\"admintext\" type=\"checkbox\" name=\"notifyme\" value=\"1\"></label>";
+      echo "{$newtask_text['notifyme']}&nbsp;&nbsp;<input class=\"admintext\" type=\"checkbox\" name=\"notifyme\" value=\"1\" CHECKED></label>";
       echo "</td>";
     };
     ?>
