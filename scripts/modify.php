@@ -27,7 +27,7 @@ if (!empty($_POST['task_id'])) {
 // Start of adding a new task //
 ////////////////////////////////
 
-if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1")) {
+if ($_POST['action'] == "newtask" && ($permissions['open_new_tasks'] == "1" OR $flyspray_prefs['anon_open'] == "1")) {
 
   // If they entered something in both the summary and detailed description
   if ($_POST['item_summary'] != ''
@@ -161,8 +161,8 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 /////////////////////////////////////////
 
 } elseif ($_POST['action'] == "update" 
-          && ($_SESSION['can_modify_jobs'] == "1" 
-                OR $_SESSION['userid'] == $old_details['assigned_to'])) {
+          && ($permissions['modify_all_tasks'] == '1'
+              OR ($permissions['modify_own_tasks'] == '1' && $current_user['user_id'] == $old_details['assigned_to']))) {
 
   // If they entered something in both the summary and detailed description
   if ($_POST['item_summary'] != ''
@@ -384,7 +384,10 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
 // Start of closing a task //
 /////////////////////////////
 
-} elseif($_POST['action'] == "close" && $_SESSION['can_modify_jobs'] == "1") {
+} elseif($_POST['action'] == "close" 
+         && ($permissions['close_other_tasks'] == '1'
+         OR ($permissions['close_own_tasks'] == '1')) // FIX THIS PERMISSION CHECK!!
+         ) {
 
   if ($_POST['resolution_reason'] != "1") {
 
@@ -460,7 +463,7 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
 // Start of re-opening an task //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "reopen" && $_SESSION['can_modify_jobs'] == "1") {
+} elseif ($_POST['action'] == "reopen" && $permissions['manage_project'] == "1") {
 
     $add_item = $fs->dbQuery("UPDATE flyspray_tasks SET
 
@@ -514,7 +517,7 @@ $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_tex
 // Start of adding a comment //
 ///////////////////////////////
 
-} elseif ($_POST['action'] == "addcomment" && $_SESSION['can_add_comments'] == "1") {
+} elseif ($_POST['action'] == "addcomment" && $permissions['add_comments'] == "1") {
 
   if ($_POST['comment_text'] != "") {
 
@@ -577,54 +580,6 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
 // End of adding a comment
 
-/////////////////////////////////////////
-// Start of changing a user's password //
-/////////////////////////////////////////
-/*
-} elseif ($_POST['action'] == "chpass" && $_COOKIE['flyspray_userid'] && $_SESSION['userid']) {
-
-  // get the password hash out of the db and hash the new one
-  $get_pass_hash = $fs->dbQuery("SELECT user_pass FROM flyspray_users WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
-  list($db_pass_hash) = $fs->dbFetchArray($get_pass_hash);
-  $old_pass = $_POST['old_pass'];
-  $old_pass_hash = crypt("$old_pass", '4t6dcHiefIkeYcn48B');
-  $new_pass = $_POST['new_pass'];
-  $new_pass_hash = crypt("$new_pass", '4t6dcHiefIkeYcn48B');
-  $confirm_pass = $_POST['confirm_pass'];
-
-  // If they didn't fill in all the fields, show an error
-  if (!($_POST['old_pass'] && $_POST['new_pass'] && $_POST['confirm_pass'])) {
-    echo "<div class=\"redirectmessage\"><p>";
-    echo "<a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-
-
-  // Compare the old password with the db to see if it matches
-  } elseif ($old_pass_hash != $db_pass_hash) {
-    echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notcurrentpass']}</em></p>";
-    echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-
-  // if neither of the above two conditions are true, then process the password change
-  } else {
-
-    // If the two new passwords are the same
-    if ($new_pass == $confirm_pass) {
-      $update_pass = $fs->dbQuery("UPDATE flyspray_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_COOKIE['flyspray_userid']));
-      
-      //  Set a new passhash cookie so that the user isn't logged out
-      setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
-      
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
-      echo "<p><a href=\"?\">{$modify_text['backtoindex']}</a></p></div>";
-
-    // if the two new passwords aren't the same, show an error
-    } else {
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passnomatch']}</em></p>";
-      echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-    };
-
-  };
-// End of changing a user's password
-*/
 ////////////////////////////////////
 // Start of new user registration //
 ////////////////////////////////////
@@ -705,7 +660,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
         $pass_hash = crypt("{$_POST['user_pass']}", '4t6dcHiefIkeYcn48B');
 
-        if ($_SESSION['admin'] == '1') {
+        if ($permissions['is_admin'] == '1') {
           $group_in = $_POST['group_in'];
         } else {
           $group_in = $flyspray_prefs['anon_group'];
@@ -723,7 +678,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['newusercreated']}</em></p>";
 
-        if ($_SESSION['admin'] != '1') {
+        if ($permissions['is_admin'] != '1') {
           echo "<p>{$modify_text['loginbelow']}</p>";
           echo "<p>{$modify_text['newuserwarning']}</p></div>";
         } else {
@@ -747,7 +702,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 // Start of adding a new group //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "newgroup" && ($_SESSION['admin'] == '1' OR $flyspray_prefs['anon_open'] == '2')) {
+} elseif ($_POST['action'] == "newgroup" && $permissions['is_admin'] == '1') {
 
   // If they filled in all the required fields
   if ($_POST['group_name'] != ""
@@ -789,7 +744,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 // Update the global application preferences //
 ///////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "globaloptions" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "globaloptions" && $permissions['is_admin'] == '1') {
 
   $update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_open'", array($_POST['anon_open']));
   //$update = $fs->dbQuery("UPDATE flyspray_prefs SET pref_value = '{$_POST['theme_style']}' WHERE pref_name = 'theme_style'");
@@ -837,7 +792,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 // Start of adding a new project //
 ///////////////////////////////////
 
-} elseif ($_POST['action'] == "newproject" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "newproject" && $permissions['is_admin'] == '1') {
 
   if ($_POST['project_title'] != '') {
 
@@ -891,7 +846,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 // Start of updating project preferences //
 ///////////////////////////////////////////
 
-} elseif ($_POST['action'] == "updateproject" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "updateproject" && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1')) {
 
   if ($_POST['project_title'] != '') {
 
@@ -941,7 +896,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 // Start of uploading an attachment //
 //////////////////////////////////////
 
-} elseif ($_POST['action'] == "addattachment" && $_SESSION['can_attach_files'] == '1') {
+} elseif ($_POST['action'] == "addattachment" && $permissions['create_attachments'] == '1') {
 
      // This function came from the php function page for mt_srand()
      // seed with microseconds to create a random filename
@@ -1031,7 +986,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of modifying user details //
 /////////////////////////////////////
 
-} elseif ($_POST['action'] == "edituser" && ($_SESSION['admin'] == '1' OR ($_COOKIE['flyspray_userid'] == $_POST['user_id']))) {
+} elseif ($_POST['action'] == "edituser" && ($permissions['is_admin'] == '1' OR ($_COOKIE['flyspray_userid'] == $_POST['user_id']))) {
 
   // If they filled in all the required fields
   if ($_POST['real_name'] != ""
@@ -1072,7 +1027,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
         array($_POST['real_name'], $_POST['email_address'],
         $_POST['jabber_id'], $_POST['notify_type'], $_POST['dateformat'], $_POST['dateformat_extended'], $_POST['user_id']));
 
-      if ($_SESSION['admin'] == '1') {
+      if ($permissions['is_admin'] == '1') {
         $update = $fs->dbQuery("UPDATE flyspray_users SET
                   group_in = ?,
                   account_enabled = ?
@@ -1094,7 +1049,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of modifying group definition //
 /////////////////////////////////////////
 
-} elseif ($_POST['action'] == "editgroup" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "editgroup" && $permissions['is_admin'] == '1') {
 
   if ($_POST['group_name'] != ''
     && $_POST['group_desc'] != ''
@@ -1130,7 +1085,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of updating a list //
 //////////////////////////////
 
-} elseif ($_POST['action'] == "update_list" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "update_list" && $permissions['is_admin'] == '1') {
 
   $listname = $_POST['list_name'];
   $listposition = $_POST['list_position'];
@@ -1170,7 +1125,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a list item //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "add_to_list" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "add_to_list" && $permissions['is_admin'] == '1') {
 
   if ($_POST['list_name'] != ''
     && $_POST['list_position'] != ''
@@ -1206,7 +1161,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of updating the version list //
 ////////////////////////////////////////
 
-} elseif ($_POST['action'] == "update_version_list" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "update_version_list" && $permissions['is_admin'] == '1') {
 
   $listname = $_POST['list_name'];
   $listposition = $_POST['list_position'];
@@ -1246,7 +1201,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a version list item //
 /////////////////////////////////////////
 
-} elseif ($_POST['action'] == "add_to_version_list" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "add_to_version_list" && $permissions['is_admin'] == '1') {
 
   if ($_POST['list_name'] != ''
     && $_POST['list_position'] != ''
@@ -1274,7 +1229,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // requiring their own update section     //
 ////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "update_category" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "update_category" && $permissions['is_admin'] == '1') {
 
   $listname = $_POST['list_name'];
   $listposition = $_POST['list_position'];
@@ -1314,7 +1269,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a category list item //
 //////////////////////////////////////////
 
-} elseif ($_POST['action'] == "add_category" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "add_category" && $permissions['is_admin'] == '1') {
 
   if ($_POST['list_name'] != ''
     && $_POST['list_position'] != ''
@@ -1338,7 +1293,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a related task entry //
 //////////////////////////////////////////
 
-} elseif ($_POST['action'] == "add_related" && $_SESSION['can_modify_jobs'] == '1') {
+} elseif ($_POST['action'] == "add_related"
+          && ($permissions['modify_all_jobs'] == '1'
+               OR ($permissions['modify_own_tasks'] == '1'))) { // FIX THIS PERMISSION!!
     
   if (is_numeric($_POST['related_task'])) {  
     $check = $fs->dbQuery("SELECT * FROM flyspray_related
@@ -1398,7 +1355,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Removing a related task entry //
 ///////////////////////////////////
 
-} elseif ($_POST['action'] == "remove_related" && $_SESSION['can_modify_jobs'] == '1') {
+} elseif ($_POST['action'] == "remove_related"
+          && ($permissions['modify_all_jobs'] == '1'
+               OR ($permissions['modify_own_tasks'] == '1'))) { // FIX THIS PERMISSION!!
 
   $remove = $fs->dbQuery("DELETE FROM flyspray_related WHERE related_id = ?", array($_POST['related_id']));
   
@@ -1414,7 +1373,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a user to the notification list //
 /////////////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "add_notification" && $_SESSION['userid']) {
+} elseif ($_POST['action'] == "add_notification" && $_COOKIE['flyspray_userid']) {
 
   $check = $fs->dbQuery("SELECT * FROM flyspray_notifications
     WHERE task_id = ?  AND user_id = ?",
@@ -1439,7 +1398,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of removing a notification entry //
 ////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "remove_notification" && $_SESSION['userid']) {
+} elseif ($_POST['action'] == "remove_notification" && $_COOKIE['flyspray_userid']) {
 
   $remove = $fs->dbQuery("DELETE FROM flyspray_notifications WHERE task_id = ? AND user_id = ?",
     array($_POST['task_id'], $_POST['user_id']));
@@ -1455,7 +1414,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of editing a comment //
 ////////////////////////////////
 
-} elseif ($_POST['action'] == "editcomment" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "editcomment" && $permissions['edit_comments'] == '1') {
 
   $update = $fs->dbQuery("UPDATE flyspray_comments
               SET comment_text = ?  WHERE comment_id = ?",
@@ -1472,7 +1431,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of deleting a comment //
 /////////////////////////////////
 
-} elseif ($_POST['action'] == "deletecomment" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "deletecomment" && $permissions['delete_comments'] == '1') {
   $row = $fs->dbFetchRow($fs->dbQuery('SELECT comment_text, user_id, date_added FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id'])));
   $delete = $fs->dbQuery('DELETE FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id']));
   
@@ -1488,7 +1447,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 /////////////////////////////////////
 
 //  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
-} elseif ($_POST['action'] == "deleteattachment" && $_SESSION['admin'] == '1') {
+} elseif ($_POST['action'] == "deleteattachment" && $permissions['delete_attachments'] == '1') {
 // if an attachment needs to be deleted do it right now
   $delete = $fs->dbQuery('SELECT file_name, orig_name FROM flyspray_attachments
                             WHERE attachment_id = ?',
@@ -1510,7 +1469,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 // Start of adding a reminder //
 ////////////////////////////////
 
-} elseif ($_POST['action'] == "addreminder" && $_SESSION['can_modify_jobs'] == '1') {
+} elseif ($_POST['action'] == "addreminder" 
+          && ($permissions['manage_project'] == '1'
+              OR $permissions['is_admin'] == '1')) {
   
   $now = date(U);
   
@@ -1521,7 +1482,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   $start_time = ($_POST['timeamount2'] * $_POST['timetype2']) + $now;
   //echo "start time = $start_time";
   
-  $insert = $fs->dbQuery("INSERT INTO flyspray_reminders (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array($_POST['task_id'], $_POST['to_user_id'], $_SESSION['userid'], $start_time, $how_often, $_POST['reminder_message']));
+  $insert = $fs->dbQuery("INSERT INTO flyspray_reminders (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array($_POST['task_id'], $_POST['to_user_id'], $current_user['user_id'], $start_time, $how_often, $_POST['reminder_message']));
   
   $fs->logEvent($_POST['task_id'], 17, $_POST['to_user_id']);
 
@@ -1533,7 +1494,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 //////////////////////////////////
 // Start of removing a reminder //
 //////////////////////////////////
-} elseif ($_POST['action'] == "deletereminder" && $_SESSION['can_modify_jobs'] == '1') {
+} elseif ($_POST['action'] == "deletereminder"
+          && ($permissions['manage_project'] == '1'
+              OR $permissions['is_admin'] == '1')) {
   
   $reminder = $fs->dbFetchRow($fs->dbQuery("SELECT to_user_id FROM flyspray_reminders WHERE reminder_id = ?", array($_POST['reminder_id'])));
   $fs->dbQuery('DELETE FROM flyspray_reminders WHERE reminder_id = ?',

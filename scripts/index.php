@@ -89,10 +89,10 @@ if ($_GET['project'] != '0') {
 $dev = $_GET['dev'];
 
 if ($_GET['tasks'] == 'assigned') {
-    $dev = $_SESSION['userid'];
+    $dev = $current_user['user_id'];
 } elseif ($_GET['tasks'] == 'reported') {
     $where[] = 'opened_by = ?';
-    $sql_params[] = $_SESSION['userid'];
+    $sql_params[] = $current_user['user_id'];
 };
 
 
@@ -462,7 +462,7 @@ if ($_GET['tasks'] == 'watched') {
     //join the notification table to get watched tasks
     $from .= ' RIGHT JOIN flyspray_notifications fsn ON t.task_id = fsn.task_id';
     $where[] = 'fsn.user_id = ?';
-    $sql_params[] = $_SESSION['userid'];
+    $sql_params[] = $current_user['user_id'];
 };
 
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/

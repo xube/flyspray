@@ -5,11 +5,18 @@ $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'admin');
 get_language_pack($lang, 'index');
 
+// If no project groups are requested, set the default to the global groups
+// This is for determining which groups to display, and who can edit them
+if (isset($_GET['project'])) {
+  $project = $_GET['project'];
+} else {
+  $project = '0';
+};
 
 ////////////////////////////
 // Start of editing users //
 ////////////////////////////
-if (($_SESSION['admin'] == "1" OR $_SESSION['userid'] == $_GET['id']) && ($_GET['area'] == "users")) {
+if ($_GET['area'] == "users" && ($permissions['is_admin'] == "1" OR $current_user['user_id'] == $_GET['id'])) {
 
 // if we want a specific user
 if ($_GET['id']) {
@@ -63,7 +70,7 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
         <td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $user_details['dateformat_extended'];?>"></td>
     </tr>
     <?php
-    if ($_SESSION['admin'] == '1') {
+    if ($permissions['is_admin'] == '1') {
     ?>
     <tr>
       <td><label for="groupin"><?php echo $admin_text['group'];?></label></td>
@@ -108,14 +115,14 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
 </form>
 
 <?php
-// Show users list
-} elseif ($_SESSION['admin'] == "1") {
+// Show users list if the user has the permissions
+} elseif ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
 
 echo "<h3>{$admin_text['usergroupmanage']}</h3>";
 echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | ";
 echo "<a href=\"index.php?do=newgroup\">{$admin_text['newgroup']}</a></p>";
 
-$get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups ORDER BY group_id ASC");
+$get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
 while ($group = $fs->dbFetchArray($get_groups)) {
   echo "<h4><a href=\"?do=admin&amp;area=groups&amp;id={$group['group_id']}\">{$group['group_name']}</a></h4>";
   echo "<p>{$group['group_desc']}</p>";
@@ -143,8 +150,9 @@ while ($group = $fs->dbFetchArray($get_groups)) {
 /////////////////////////////
 // Start of editing groups //
 /////////////////////////////
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "groups") {
+} elseif ($_GET['area'] == "groups" && ($permissions['is_admin'] =='1' OR $permissions['manage_project'] == '1')) {
 
+  
 $get_group_details = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_GET['id']));
 $group_details = $fs->dbFetchArray($get_group_details);
 ?>
@@ -169,24 +177,68 @@ $group_details = $fs->dbFetchArray($get_group_details);
       <td><input id="isadmin" type="checkbox" name="is_admin" value="1" <?php if ($group_details['is_admin'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td><label for="canopenjobs"><?php echo $admin_text['opennewtasks'];?></label></td>
-      <td><input id="canopenjobs" type="checkbox" name="can_open_jobs" value="1" <?php if ($group_details['can_open_jobs'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><label for="projectmanager"><?php echo $admin_text['projectmanager'];?></label></td>
+      <td><input id="projectmanager" type="checkbox" name="manage_project" value="1" <?php if ($group_details['manage_project'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td><label for="canmodifyjobs"><?php echo $admin_text['modifytasks'];?></label></td>
-      <td><input id="canmodifyjobs" type="checkbox" name="can_modify_jobs" value="1" <?php if ($group_details['can_modify_jobs'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><label for="viewtasks"><?php echo $admin_text['viewtasks'];?></label></td>
+      <td><input id="viewtasks" type="checkbox" name="view_tasks" value="1" <?php if ($group_details['view_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="canopenjobs"><?php echo $admin_text['opennewtasks'];?></label></td>
+      <td><input id="canopenjobs" type="checkbox" name="open_new_tasks" value="1" <?php if ($group_details['open_new_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="modifyowntasks"><?php echo $admin_text['modifyowntasks'];?></label></td>
+      <td><input id="modifyowntasks" type="checkbox" name="modify_own_tasks" value="1" <?php if ($group_details['modify_own_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="modifyalltasks"><?php echo $admin_text['modifyalltasks'];?></label></td>
+      <td><input id="modifyalltasks" type="checkbox" name="modify_all_tasks" value="1" <?php if ($group_details['modify_all_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="viewcomments"><?php echo $admin_text['viewcomments'];?></label></td>
+      <td><input id="viewcomments" type="checkbox" name="view_comments" value="1" <?php if ($group_details['view_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
       <td><label for="canaddcomments"><?php echo $admin_text['addcomments'];?></label></td>
-      <td><input id="canaddcomments" type="checkbox" name="can_add_comments" value="1" <?php if ($group_details['can_add_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="canaddcomments" type="checkbox" name="can_add_comments" value="1" <?php if ($group_details['add_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td><label for="canattachfiles"><?php echo $admin_text['attachfiles'];?></label></td>
-      <td><input id="canattachfiles" type="checkbox" name="can_attach_files" value="1" <?php if ($group_details['can_attach_files'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><label for="editcomments"><?php echo $admin_text['editcomments'];?></label></td>
+      <td><input id="editcomments" type="checkbox" name="edit_comments" value="1" <?php if ($group_details['edit_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
-      <td><label for="canvote"><?php echo $admin_text['vote'];?></label></td>
-      <td><input id="canvote" type="checkbox" name="can_vote" value="1" <?php if ($group_details['can_vote'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><label for="deletecomments"><?php echo $admin_text['deletecomments'];?></label></td>
+      <td><input id="deletecomments" type="checkbox" name="delete_comments" value="1" <?php if ($group_details['delete_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="createattachments"><?php echo $admin_text['createattachments'];?></label></td>
+      <td><input id="createattachments" type="checkbox" name="create_attachments" value="1" <?php if ($group_details['create_attachments'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="deleteattachments"><?php echo $admin_text['deleteattachments'];?></label></td>
+      <td><input id="deleteattachments" type="checkbox" name="delete_attachments" value="1" <?php if ($group_details['delete_attachments'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="viewhistory"><?php echo $admin_text['viewhistory'];?></label></td>
+      <td><input id="viewhistory" type="checkbox" name="view_history" value="1" <?php if ($group_details['view_history'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="closeowntasks"><?php echo $admin_text['closeowntasks'];?></label></td>
+      <td><input id="closeowntasks" type="checkbox" name="close_own_tasks" value="1" <?php if ($group_details['close_own_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="closeothertasks"><?php echo $admin_text['closeothertasks'];?></label></td>
+      <td><input id="closeothertasks" type="checkbox" name="close_other_tasks" value="1" <?php if ($group_details['close_other_tasks'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="assigntoself"><?php echo $admin_text['assigntoself'];?></label></td>
+      <td><input id="assigntoself" type="checkbox" name="assign_to_self" value="1" <?php if ($group_details['assign_to_self'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
+    <tr>
+      <td><label for="assignotherstoself"><?php echo $admin_text['assignotherstoself'];?></label></td>
+      <td><input id="assignotherstoself" type="checkbox" name="view_history" value="1" <?php if ($group_details['assign_others_to_self'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
       <td><label for="groupopen"><?php echo $admin_text['groupenabled'];?></label></td>
@@ -204,7 +256,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
 /////////////////////////
 // Start of task types //
 /////////////////////////
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "tasktype") {
+} elseif ($_GET['area'] == "tasktype" && $permissions['is_admin'] == '1') {
 ?>
   <h3><?php echo $admin_text['tasktypelist'];?></h3>
   <p><?php echo $admin_text['listnote'];?></p>
@@ -268,7 +320,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
 //////////////////////////
 // Start of Resolutions //
 //////////////////////////
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "resolution") {
+} elseif ($_GET['area'] == "resolution" && $permissions['is_admin'] == '1') {
 ?>
   <h3><?php echo $admin_text['resolutionlist'];?></h3>
   <p><?php echo $admin_text['listnote'];?></p>
@@ -339,7 +391,10 @@ $group_details = $fs->dbFetchArray($get_group_details);
 // Start of versions //
 ///////////////////////
 
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "version") {
+} elseif ($_GET['area'] == "version"
+          && ($permission['is_admin'] == '1'
+              OR $permission['manage_project'] == '1')  // FIX THIS PERMISSION!!
+          ) {
 ?>
 
 
@@ -350,7 +405,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
 // Start of application preferences //
 //////////////////////////////////////
 
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "options") {
+} elseif ($_GET['area'] == "options" && $permissions['is_admin'] == '1') {
 ?>
 <h3><?php echo $admin_text['flysprayprefs'];?></h3>
 <form action="index.php" method="post">
@@ -571,27 +626,18 @@ $group_details = $fs->dbFetchArray($get_group_details);
 // Start of project preferences //
 //////////////////////////////////
 
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "projects") {
+} elseif ($_GET['area'] == "projects"
+           && $permissions['manage_project'] == '1')
+          {
 ?>
 <form action="index.php" method="get">
   <input type="hidden" name="do" value="admin">
   <input type="hidden" name="area" value="projects">
   <input type="hidden" name="show" value="prefs">
     <p id="changeproject">
-      <h4><?php echo $admin_text['projectprefs'];?> -
-      <select name="id">
-      <?php
-      $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects ORDER BY project_title");
-      while ($row = $fs->dbFetchArray($get_projects)) {
-        if ($_GET['id'] == $row['project_id']) {
-          echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
-        } else {
-          echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
-        };
-      };
-      ?>
-      </select>
-      <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>">
+      <h4>
+      <?php $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
+      echo $admin_text['projectprefs'] . ' - ' . stripslashes($project_details['project_title']); ?>
       </h4>
     </p>
 </form>
@@ -1055,7 +1101,7 @@ if ($_GET['show'] == 'prefs') { ?>
 // Start of editing a comment //
 ////////////////////////////////
 
-} elseif ($_SESSION['admin'] =="1" && $_GET['area'] == "editcomment") {
+} elseif ($_GET['area'] == "editcomment" && $permission['edit_comment'] == '1') {
 
 // Get the comment details
     $getcomments = $fs->dbQuery("SELECT * FROM flyspray_comments WHERE comment_id = ?", array($_GET['id']));

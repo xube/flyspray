@@ -163,15 +163,12 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
   while (list($key, $val) = each($field)) {
     if ($global_permissions[$val] == '1' OR $project_permissions[$val] == '1') {
-      //$_SESSION[$val] = '1';
       $permissions[$val] = '1';
     } else {
-      //$_SESSION[$val] = '0';
       $permissions[$val] = '0';
       
     };
-//       echo $val . ' = ' . $_SESSION[$val] . '<br />';
-         echo $val . ' = ' . $permissions[$val] . '<br />';
+//          echo $val . ' = ' . $permissions[$val] . '<br />';  // This to print out the effective permissions for testing
   };
 
   // Check that the user hasn't spoofed the cookie contents somehow
@@ -201,7 +198,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     };
     
     echo '<small> | </small>';
-    echo '<a href="?do=admin&amp;area=users&amp;id=' . $_SESSION['userid'] . '">' .
+    echo '<a href="?do=admin&amp;area=users&amp;id=' . $current_user['user_id'] . '">' .
     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/editmydetails.png") . '&nbsp;' . $language['editmydetails'] . "</a>\n";
 
     echo '<small> | </small><a href="index.php?do=chpass">
@@ -221,10 +218,6 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo '<a href="scripts/authenticate.php?action=logout">' .
     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/logout.png"). '&nbsp;' . $language['logout'] . "</a>\n";
     echo "</span>\n";
-
-    $isgroupadmin = $fs->dbQuery("SELECT is_admin FROM flyspray_groups WHERE group_id = ?", array($current_user['group_in']));
-    $is_admin = $fs->dbFetchArray($isgroupadmin);
-    $_SESSION['admin'] = $is_admin['is_admin'];
 
     // Show the Admin menu
     if ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
