@@ -729,6 +729,7 @@ fieldset.admin {
    margin-top              : 15px;
    background-color        : #e6eef6;
    color                   : #000000;
+   border                  : 1px solid #000000;
 }
 
 fieldset.admin legend {
@@ -820,6 +821,35 @@ div.tab                             { margin: 0; padding: 1ex; padding-bottom: 1
 div.tab h2                          { display: none; }
 div.tab                             { clear: left; }
 * html .tab div.clear               { clear: none; height: 14em; }
+
+div#permslink {
+   position                : absolute;
+   top                     : 5px;
+   right                   : 5px;
+   color                   : #ffffff;
+   background-color        : transparent;
+}
+
+div#permslink a {
+   color                   : #ffffff;
+   background-color        : transparent;
+}
+
+div#permissions {
+   visibility              : hidden;
+   position                : absolute;
+   top                     : 25px;
+   right                   : 5px;
+   background-color        : #e6eef6;
+   color                   : #000000;
+   border                  : 3px ridge #000000;
+   padding                 : 5px;
+   margin-top              : none;
+   width                   : auto;
+   height                  : 200px;
+   overflow                : auto;
+   z-index                 : 5;
+}
 
 
 /* End of the @screen section */

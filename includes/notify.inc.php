@@ -122,8 +122,9 @@ class Notifications {
       $flyspray_prefs = $fs->GetGlobalPrefs();
       $project_prefs = $fs->GetProjectPrefs($_COOKIE['flyspray_project']);
 
-      $subject = htmlspecialchars($subject);
-      $body = htmlspecialchars($body);
+      $subject = stripslashes($subject);
+      $body = stripslashes($body);
+      $body = str_replace('&amp;', '&', $body);
 
       if (empty($to) OR $to == $_COOKIE['flyspray_userid'])
          return;
@@ -138,6 +139,7 @@ class Notifications {
       $mail->FromName = $project_prefs['project_title'];
 
       $mail->IsMail();                                      // Use PHP's mail() function
+                                                            // CHANGE ME WHEN WE MAKE AN OPTION TO USE AN SMTP SERVER
 
       if (is_array($to))
       {

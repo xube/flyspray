@@ -362,16 +362,17 @@ function GetTaskDetails($task_id) {
   }
 
   // To stop some browsers showing a blank box when an image doesn't exist
-  function ShowImg($path)
+  function ShowImg($path, $alt_text)
   {
 
       global $db;
 
-    if(file_exists($path))
-    {
-      return '<img src="' . $path . '" alt="" />';
-    }
-  }
+      if(file_exists($path))
+      {
+         list($width, $height, $type, $attr) = getimagesize($path);
+         return "<img src=\"$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
+      }
+   }
 
   // Log a request for an admin/project manager to do something
   // Types are:

@@ -12,14 +12,14 @@
 require('includes/IXR_Library.inc.php');
 
 // Define the server. Enter the URL of your flyspray installation, with 'remote.php' at the end.
-$client = new IXR_Client('http://localhost/~tony/flyspray-dev/remote.php');
+$client = new IXR_Client('http://localhost/flyspray-dev/remote.php');
 
 // Enable debug for testing
 //$client->debug = true;
 
 // Request a task details
 // variables: username, password, task_id
-if(!$client->query('fs.getTask', 'super', 'super', '2'))
+if(!$client->query('fs.getTask', 'super', 'super', '1'))
 {
    die('Something went wrong - '.$client->getErrorCode().' : '.$client->getErrorMessage());
 }

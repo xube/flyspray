@@ -50,7 +50,9 @@ $language = array (
 
 // Added in version 0.9.8
 'admintoolbox'             =>    'Admin Toolbox',
-'manageproject'            =>   'Manage Project',
+'manageproject'            =>    'Manage Project',
+'permissions'              =>    'Permissions: ',
+'hide'                     =>    'Hide',
 
 );
 ?>

@@ -130,9 +130,15 @@ $details_text = array (
 
 
 // Added in version 0.9.8
+
 'confirmdelete'         =>    'Really delete this comment?',
 'selectedhistory'       =>    'Showing selected history details',
 'showallhistory'        =>    'Show full history tab again',
 'hidethis'              =>    'Hide this area again',
+'mark100'               =>    'Mark task 100% complete',
+'watchtask'             =>    'Watch this task',
+'stopwatching'          =>    'Stop watching this task',
+'commentlink'           =>    'Link to this comment',
+
 );
 ?>

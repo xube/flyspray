@@ -1,1 +1,2 @@
 alter table flyspray_users change user_pass user_pass varchar(40);
+ALTER TABLE `flyspray_list_category` CHANGE `parent_id` `parent_id` MEDIUMINT( 3 ) DEFAULT '0' NOT NULL;

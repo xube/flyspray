@@ -21,3 +21,15 @@ function openTask( url )
 function hidestuff(boxid){
    document.getElementById(boxid).style.visibility="hidden";
 }
+
+function showhidestuff(boxid) {
+   if (document.getElementById(boxid).style.visibility="hidden")
+   {
+      document.getElementById(boxid).style.visibility="visible";
+      this.value=' - ';
+   } else
+   {
+      document.getElementById(boxid).style.visibility="hidden";
+      this.value=' + ';
+   }
+}
