@@ -125,8 +125,6 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    // Those who aren't super users get this more restrictive query
    } elseif (isset($_COOKIE['flyspray_userid']))
    {
-      // This query is slightly dodgy - it returns duplicate results.
-      // However, the right tasks are retrieved for display... so I guess that it's ok.
       $check_projects = $db->Query("SELECT p.project_id
                                        FROM flyspray_projects p
                                        LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project

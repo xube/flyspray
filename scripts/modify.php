@@ -911,7 +911,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'anon_reg'", array($_POST['anon_reg']));
    $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'global_theme'", array($_POST['global_theme']));
-
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'smtp_server'", array($_POST['smtp_server']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'smtp_user'", array($_POST['smtp_user']));
+   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'smtp_pass'", array($_POST['smtp_pass']));
    // This is an overly complex way to ensure that we always get the right amount of posted
    // results from the assigned_groups preference
    $get_groups = $db->Query("SELECT * FROM flyspray_groups ORDER BY group_id ASC");

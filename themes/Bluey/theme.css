@@ -923,8 +923,11 @@ div#permissions {
 div#permissions table {
    color                   : #000000;
    background-color        : #ffffff;
-   border                  : 2px solid #000000;
+   border                  : 1px dotted #000000;
+}
 
+div#permissions table td {
+   border                  : 0px;
 }
 
 div#fileupload {

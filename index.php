@@ -126,11 +126,13 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // either in the php.ini or by calling ob_start().
 
    $extraurl = '';
+   if (isset($_GET['order']))
+      $extraurl = '&amp;order=' . $_GET['order'];
    // When viewing the task list, take down each value that the search form may have passed
    if ($do == 'index')
    $extraurl = '&amp;string=' . $_GET['string'] . '&amp;type=' . $_GET['type'] . '&amp;sev=' . $_GET['sev'] . '&amp;dev=' . $_GET['dev']
                . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status']
-               . '&amp;order=' . $_GET['order'] . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort']
+               . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort']
                . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage'];
 
    // If the user has used the search box, store their search for later on
@@ -157,7 +159,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    />
    <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
    <link href="themes/<?php echo $themestyle;?>/theme.css" rel="stylesheet" type="text/css" />
-   <link rel="alternate" type="text/xml" title="rss" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php?proj=<?php echo $project_id;?>" />
+   <link rel="alternate" type="text/xml" title="Flyspray RSS Feed" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php?proj=<?php echo $project_id;?>" />
    <script type="text/javascript" src="includes/functions.js"></script>
    <script type="text/javascript" src="includes/styleswitcher.js"></script>
    <script type="text/javascript" src="includes/tabs.js"></script>

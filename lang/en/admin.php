@@ -52,7 +52,7 @@ $admin_text = array (
 'flysprayprefs'         =>    'Flyspray preferences',
 'projecttitle'          =>    'Project title',
 'baseurl'               =>    'Base URL for this installation',
-'replyaddress'          =>    'Reply email address for notifications',
+'replyaddress'          =>    'Reply email address for notifications',  // Not used from version 0.9.8
 'themestyle'            =>    'Theme / Style',
 'language'              =>    'Language',
 'anonview'              =>    'Allow anonymous users to view tasks',
@@ -177,7 +177,11 @@ $admin_text = array (
 'listdeletetip'         =>    'Delete this item from the list',
 'lookandfeel'           =>    'Look and Feel',
 'globaltheme'           =>    'Global Theme',
-
+'emailnotify'           =>    'Email Notifications',
+'fromaddress'           =>    'From Address',
+'smtpserver'            =>    'SMTP Server',
+'smtpuser'              =>    'SMTP Username',
+'smtppass'              =>    'SMTP Password',
 
 );
 ?>

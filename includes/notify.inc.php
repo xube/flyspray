@@ -249,10 +249,27 @@ class Notifications {
       $mail = new PHPMailer();
 
       $mail->From = $flyspray_prefs['admin_email'];
+      $mail->Sender = $flyspray_prefs['admin_email'];
       $mail->FromName = $project_prefs['project_title'];
 
-      $mail->IsMail();                                      // Use PHP's mail() function
-                                                            // CHANGE ME WHEN WE MAKE AN OPTION TO USE AN SMTP SERVER
+      // Do we want to use a remote mail server?
+      if (!empty($flyspray_prefs['smtp_server']))
+      {
+         $mail->IsSMTP();
+         $mail->Host = $flyspray_prefs['smtp_server'];
+
+         if (!empty($flyspray_prefs['smtp_user']))
+         {
+            $mail->SMTPAuth = true;     // turn on SMTP authentication
+            $mail->Username = $flyspray_prefs['smtp_user'];  // SMTP username
+            $mail->Password = $flyspray_prefs['smtp_pass']; // SMTP password
+         }
+
+      // Use php's built-in mail() function
+      } else
+      {
+         $mail->IsMail();
+      }
 
       if (is_array($to))
       {
@@ -363,6 +380,7 @@ class Notifications {
          $body .= $details_text['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
          $body .= $details_text['category'] . ' - ' . $task_details['category_name'] . "\n";
          $body .= $details_text['status'] . ' - ' . $task_details['status_name'] . "\n";
+         $body .= $details_text['assignedto'] . ' - ' . $task_details['assigned_to_name'] . "\n";
          $body .= $details_text['operatingsystem'] . ' - ' . $task_details['os_name'] . "\n";
          $body .= $details_text['severity'] . ' - ' . $task_details['severity_name'] . "\n";
          $body .= $details_text['priority'] . ' - ' . $task_details['priority_name'] . "\n";
@@ -391,7 +409,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id;
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -460,7 +478,7 @@ class Notifications {
       if ($type == '7')
       {
          // Get the comment text
-         $comment = $db->FetchArray($db->Query("SELECT comment_text
+         $comment = $db->FetchArray($db->Query("SELECT comment_id, comment_text
                                                 FROM flyspray_comments
                                                 WHERE user_id = ?
                                                 AND task_id = ?
@@ -480,7 +498,7 @@ class Notifications {
          $body .= $comment['comment_text'] . "\n";
          $body .= "----------\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . '#' . $comment['comment_id'] . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);

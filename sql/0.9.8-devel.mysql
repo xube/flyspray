@@ -41,3 +41,11 @@ ALTER TABLE `flyspray_projects` ADD `notify_email` LONGTEXT NOT NULL ;
 ALTER TABLE `flyspray_projects` ADD `notify_email_when` MEDIUMINT( 1 ) NOT NULL ;
 ALTER TABLE `flyspray_projects` ADD `notify_jabber` LONGTEXT NOT NULL ;
 ALTER TABLE `flyspray_projects` ADD `notify_jabber_when` MEDIUMINT( 1 ) NOT NULL ;
+
+# Added 3 April 05
+
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES
+('', 'smtp_server', '', 'Remote mail server'),
+('', 'smtp_user', '', 'Username to access the remote mail server'),
+('', 'smtp_pass', '', 'Password to access the remote mail server');

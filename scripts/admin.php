@@ -69,14 +69,6 @@ if ($permissions['is_admin'] == '1')
          </tr>
          <tr>
             <td>
-            <label id="adminemaillabel" for="adminemail"><?php echo $admin_text['replyaddress'];?></label>
-            </td>
-            <td>
-            <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['admin_email'];?>" />
-            </td>
-         </tr>
-         <tr>
-            <td>
             <label id="defaultprojectlabel" for="defaultproject"><?php echo $admin_text['defaultproject'];?></label>
             </td>
             <td>
@@ -231,7 +223,43 @@ if ($permissions['is_admin'] == '1')
             </select>
             </td>
          </tr>
-
+         <tr>
+            <th colspan="2"><hr />
+            <?php echo $admin_text['emailnotify'];?>
+            </th>
+         </tr>
+         <tr>
+            <td>
+            <label id="adminemaillabel" for="adminemail"><?php echo $admin_text['fromaddress'];?></label>
+            </td>
+            <td>
+            <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['admin_email'];?>" />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <label id="smtpservlabel" for="smtpserv"><?php echo $admin_text['smtpserver'];?></label>
+            </td>
+            <td>
+            <input id="smtpserv" name="smtp_server" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['smtp_server'];?>" />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <label id="smtpuserlabel" for="smtpuser"><?php echo $admin_text['smtpuser'];?></label>
+            </td>
+            <td>
+            <input id="smtpuser" name="smtp_user" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['smtp_user'];?>" />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <label id="smtppasslabel" for="smtppass"><?php echo $admin_text['smtppass'];?></label>
+            </td>
+            <td>
+            <input id="smtppass" name="smtp_pass" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['smtp_pass'];?>" />
+            </td>
+         </tr>
          <tr>
             <th colspan="2"><hr />
             <?php echo $admin_text['jabbernotify'];?>
