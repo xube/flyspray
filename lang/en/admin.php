@@ -137,6 +137,8 @@ $admin_text = array (
 'globalgroups'		=>	'Global Groups', // Plural
 'defaultglobalgroup' => 'Default global group for new users',
 'addtogroup'		=>	'Add to group',
+'moveuserstogroup'	=>	'Move users to group',
+'nogroup'		=>	'No Group - Remove from project',
 
 
 );

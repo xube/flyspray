@@ -137,5 +137,9 @@ $modify_text = array (
 'saveanyway'        =>   'Save my changes anyway',
 'priority'          =>   'Priority',
 
+// Added in version 0.9.7
+'nouserselected'    =>   'No user selected.  Press your browser\'s back button and select at least one.',
+'groupswitchupdated' =>  'User groups modified successfully.',
+
 );
 ?>

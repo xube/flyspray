@@ -1646,9 +1646,61 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
           && ($permissions['manage_project'] == '1'
               OR $permissions['is_admin'] == '1')) {
 
+  if (!is_array($_POST['user_list'])) {
+    die($modify_text['nouserselected']);
+  };
+
+  // Cycle through the users passed to us
+  while (list($key, $val) = each($_POST['user_list'])) {
+    
+    // Create entries for them that point to the requested group
+    $create = $fs->dbQuery("INSERT INTO flyspray_users_in_groups
+                            (user_id, group_id)
+                            VALUES(?, ?)",
+                            array($val, $_POST['add_to_group']));  
+  };
+
+  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupswitchupdated']}</em></p>";
+  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
 
 // End of adding a bunch of users to a group
 
+
+///////////////////////////////////////////////
+// Start of change a bunch of users' groups //
+//////////////////////////////////////////////
+} elseif ($_POST['action'] == "movetogroup"
+          && ($permissions['manage_project'] == '1'
+              OR $permissions['is_admin'] == '1')) {
+
+  $num_users = $_POST['num_users'];
+  
+  while ($num_users > '0') {
+  
+    $foo = 'user' . $num_users;
+
+    if ($_POST['switch_to_group'] == '0') {
+    
+      $remove = $fs->dbQuery("DELETE FROM flyspray_users_in_groups
+                              WHERE user_id = ? AND group_id = ?",
+                              array($_POST[$foo], $_POST['old_group']));
+
+    } else {
+    
+      $update = $fs->dbQuery("UPDATE flyspray_users_in_groups
+                              SET group_id = ?
+                              WHERE user_id = ? AND group_id = ?",
+                              array($_POST['switch_to_group'], $_POST[$foo], $_POST['old_group']));
+    };
+    
+    $num_users --;
+  };
+  
+  echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupswitchupdated']}</em></p>";
+  echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+
+  // End of changing a bunch of users' groups
+  
 // End of actions.
 };
 

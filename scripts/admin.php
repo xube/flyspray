@@ -146,60 +146,91 @@ if ($project_id == '0' AND $permissions['is_admin'] == '0') {
   die($admin_text['nopermission']);
 };
 
-echo "<h3>{$admin_text['usergroupmanage']} - $forproject</h3>";
+echo "<h3>{$admin_text['usergroupmanage']} - $forproject</h3>\n";
 
 // Only full admins need the link to add new users
 if ($project_id == '0' && $permissions['is_admin'] == '1') {
-  echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | ";
+  echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | \n";
 };
 
-echo "<a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>";
+echo "<a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>\n\n";
+
+// We have to make sure that a user isn't displayed in the user list at the bottom of the page
+// if they're in a group from another project... so we set up an array...
+$user_checklist = array();
 
 // Cycle through the groups that belong to this project
 $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
 while ($group = $fs->dbFetchArray($get_groups)) {
 
-  echo "<h4><a href=\"?do=admin&amp;area=groups&amp;id={$group['group_id']}\">{$group['group_name']}</a></h4>";
-  echo "<p>{$group['group_desc']}</p>";
-  echo "<table class=\"userlist\"><tr><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>";
+  echo "<h4><a href=\"?do=admin&amp;area=groups&amp;id={$group['group_id']}\">{$group['group_name']}</a></h4>\n";
+  echo "<p>{$group['group_desc']}</p>\n";
+  echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
     $get_user_list = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
                               LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                               WHERE uig.group_id = ? ORDER BY u.user_name ASC",
                               array($group['group_id']));
   
-  // We have to make sure that a user isn't displayed in the user list at the bottom of the page
-  // if they're in a group from another project... so we set up an array...
-  $user_checklist = array();
-    
+  // Now, start a form to allow use to move multiple users between groups
+  echo '<form action="index.php" method="post">' . "\n";
+  echo '<input type="hidden" name="do" value="modify">' . "\n";
+  echo '<input type="hidden" name="action" value="movetogroup">' . "\n";
+  echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '">' . "\n";
+  
   while ($row = $fs->dbFetchArray($get_user_list)) {
+    // Next line to ensure we only display each user once on this page
     array_push($user_checklist, $row['user_id']);
-    echo "<tr>";
-    echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>";
-    echo "<td>{$row['real_name']}</td>";
+    // Now, to assigned each user a number for submission
+    $userincrement ++;    
+    echo "<tr><td><input type=\"checkbox\" name=\"user$userincrement\" value=\"{$row['user_id']}\"></td>\n";
+    echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
+    echo "<td>{$row['real_name']}</td>\n";
     if ($row['account_enabled'] == "1") {
       echo "<td>{$admin_text['yes']}</td>";
     } else {
       echo "<td>{$admin_text['no']}</td>";
     };
-    echo "</tr>";
+    echo "</tr>\n";
   };
-
-  echo "</table>";
+  
+  echo '<tr><td colspan="4">';
+  echo '<input type="hidden" name="num_users" value="' . $userincrement . "\">\n";
+  echo '<input class="adminbutton" type="submit" value="' . $admin_text['moveuserstogroup'] . '">' . "\n";
+  
+  // Show a list of groups to switch these users to
+  echo '<select class="adminlist" name="switch_to_group">'. "\n";
+  
+  // Show an option to remove a user from a project entirely
+  // Not applicable to the global groups, as everyone is in 
+  // one global group, regardless.
+  if ($project_id != '0') {
+  echo '<option value="0">' . $admin_text['nogroup'] . '</option>';
+  };
+  
+  // Get the list of groups to choose from
+  $groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
+  while ($group = $fs->dbFetchArray($groups)) {
+  echo '<option value="' . $group['group_id'] . '">' . $group['group_name'] . "</option>\n";
+  };
+  
+  echo '</select>';
+  
+  echo '</td></tr>';
+  echo '</form>';
+  echo "</table>\n\n";
 };
 
 // If this is a project-level edit, we need a method of placing users into a project group
 if ($project_id != '0') {
-  echo '<form action="index.php">' . "\n";
+  echo '<form action="index.php" method="post">' . "\n";
   echo '<input type="hidden" name="do" value="modify">'. "\n";
   echo '<input type="hidden" name="action" value="addtogroup">'. "\n";
-  
-  echo '<select class="adminlist" name="user_list" multiple="multiple" size="10">'. "\n";
-  
-// Get a list of the users not in any groups for this project
 
-// REMEMBER THAT YOU HAVE TO BE ABLE TO ADD MULTIPLE USERS AT ONCE, MEANING WE MAY HAVE TO LOOP AND INCREMENT
-
+  echo '<select class="adminlist" name="user_list[]" multiple="multiple" size="10">'. "\n";
+  
+  // Get a list of the users not in any groups for this project
+  
   $user_query = $fs->dbQuery("SELECT * FROM flyspray_users_in_groups uig
                               LEFT JOIN flyspray_users u on uig.user_id = u.user_id
                               LEFT JOIN flyspray_groups g on uig.group_id = g.group_id
@@ -208,7 +239,7 @@ if ($project_id != '0') {
 
   
   while ($row = $fs->dbFetchArray($user_query)) {
-    // ...and check if the user is in it...
+    // Check if the user is in the checklist of shown users...
     if (!in_array($row['user_id'], $user_checklist)) {
       // ...if not, we display them, and add them to the array so that they don't get shown again!
       echo "<option value=\"{$row['user_id']}\">{$row['real_name']} ({$row['user_name']})</option>\n";
@@ -217,13 +248,13 @@ if ($project_id != '0') {
   };
   
   echo '</select><br />';
-  echo '<input class="adminbutton" type="submit" value="' . $admin_text['addtogroup'] . '" DISABLED>'. "\n";
+  echo '<input class="adminbutton" type="submit" value="' . $admin_text['addtogroup'] . '">'. "\n";
   echo '<select class="adminbutton" name="add_to_group">'. "\n";
   
   // Get the list of groups to choose from
   $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
   while ($group = $fs->dbFetchArray($get_groups)) {
-  echo '<option value="' . $group['group_id'] . '">' . $group['group_name'] . "</a>\n";
+  echo '<option value="' . $group['group_id'] . '">' . $group['group_name'] . "</option>\n";
   };
   
   echo '</select>';
