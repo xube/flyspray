@@ -168,13 +168,8 @@ if ($_SESSION['can_modify_jobs'] == '1'
         ?>
         </select>-->
         <?php
-        // Get list of versions
-        $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = '1' ORDER BY list_position", array($project_id));
-        while ($row = $fs->dbFetchArray($get_version)) {
-          if ($row['version_id'] == $task_details['product_version']) {
-            echo $row['version_name'];
-          };
-        };
+        // Print the version name
+        echo $task_details['reported_version_name'];
         ?>
         </td>
       </tr>
