@@ -8,7 +8,6 @@ get_language_pack($lang, 'authenticate');
 
 // If logout was requested, log the user out.
 if ($_GET['action'] == "logout") {
-//  session_start();
 //  session_destroy();
   setcookie('flyspray_userid', '', time()-60, '/');
   setcookie('flyspray_passhash', '', time()-60, '/');
@@ -16,8 +15,6 @@ if ($_GET['action'] == "logout") {
 
    $_SESSION['SUCCESS'] = $authenticate_text['youareloggedout'];
    header("Location: index.php");
-
-   //$message = $authenticate_text['youareloggedout'];
 
 // Otherwise, they requested login.  See if they provided the correct credentials...
 } elseif ($_POST['username'] AND $_POST['password']) {
@@ -45,6 +42,7 @@ if ($_GET['action'] == "logout") {
        // And that their global group is allowed to login
        && $auth_details['group_open'] == '1') {
       
+      session_start();
       $_SESSION['SUCCESS'] = $authenticate_text['loginsuccessful'];
       header("Location: " . $_POST['prev_page']);
 
@@ -73,15 +71,12 @@ if ($_GET['action'] == "logout") {
     } else {
       $_SESSION['ERROR'] = $authenticate_text['loginfailed'] . ' - ' . $authenticate_text['accountdisabled'];
       header("Location: " . $_POST['prev_page']);
-
-      //$message = $authenticate_text['loginfailed'] . '<br /><br />' . $authenticate_text['accountdisabled'];
     };
     
   } else {
     $_SESSION['ERROR'] = $authenticate_text['loginfailed'];
     header("Location: " . $_POST['prev_page']);
 
-    //$message = $authenticate_text['loginfailed'];
   };
 
 } else {
@@ -89,5 +84,4 @@ if ($_GET['action'] == "logout") {
    $_SESSION['ERROR'] = $authenticate_text['loginfailed'] . ' - ' . $authenticate_text['userandpass'];
    header("Location: " . $_POST['prev_page']);
 
-  //$message = "{$authenticate_text['loginfailed']}<br>{$authenticate_text['userandpass']}";
 };

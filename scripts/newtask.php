@@ -227,13 +227,11 @@ if ($permissions['open_new_tasks'] == "1"
 
     <?php
     if (isset($_COOKIE['flyspray_userid'])) {
-      //echo "<td>";
-      echo "{$newtask_text['notifyme']}&nbsp;&nbsp;<input class=\"admintext\" type=\"checkbox\" name=\"notifyme\" value=\"1\" checked />";
-      //echo "</td>";
+       echo $newtask_text['notifyme'] . '&nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked />';
     };
     ?>
 
-<input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newtask_text['addthistask'];?>" onclick="Disable1()" />
+<input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newtask_text['addthistask'];?>" onclick="Disable1()" accesskey="s"/>
 </form>
 </div>
 

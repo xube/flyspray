@@ -115,13 +115,99 @@ p#menu {
 }
 
 p#menu a:hover {
-  color               : #6395c8;
-  background-color    : #d7e9ff;
-  text-decoration     : none;
+  color                 : #6395c8;
+  background-color      : #d7e9ff;
+  text-decoration       : none;
 }
 
 p#menu span#adminmenu {
-  display             : block;
+  display               : block;
+  height                : 20px;
+}
+
+p#menu span#mainmenu {
+  display               : block;
+  height                : 20px;
+}
+
+/* Links in menus */
+
+a#newtasklink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/newtask.png);
+   background-repeat    : no-repeat;
+}
+
+a#reportslink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/reports.png);
+   background-repeat    : no-repeat;
+}
+
+a#editmydetailslink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/editmydetails.png);
+   background-repeat    : no-repeat;
+}
+
+a#lastsearchlink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/search.png);
+   background-repeat    : no-repeat;
+}
+
+a#logoutlink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/logout.png);
+   background-repeat    : no-repeat;
+}
+
+a#optionslink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/options.png);
+   background-repeat    : no-repeat;
+}
+
+a#projectslink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/projectprefs.png);
+   background-repeat    : no-repeat;
+}
+
+a#usersandgroupslink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/usersandgroups.png);
+   background-repeat    : no-repeat;
+}
+
+a#listslink {
+   padding-left         : 20px;
+   padding-top          : 1px;
+   padding-bottom       : 1px;
+   background-image     : url(menu/lists.png);
+   background-repeat    : no-repeat;
+}
+
+/* For pending admin requests */
+a#attention {
+  color           : #ff0000;
+  background-color     : #fff000;
 }
 
 table.userlist td, table.userlist th {
@@ -200,7 +286,7 @@ p#search label {
   height              : 2.5em;
 }
 
-/* The table listing taskson the main page */
+/* The table listing tasks on the main page */
 table#tasklist {
   width               : 100%;
   background-color    : #e6eef6;
@@ -263,21 +349,6 @@ div#taskdetails h2 {
   font-weight         : normal;
 }
 
-/* form#edittask is only used for the button that allows editing of
-   a task. It is displayed on the details page */
-div#taskdetails span#linkedittask {
-  display             : block;
-  width               : 20%;
-  margin-left         : auto;
-  margin-right        : 1em;
-  text-align          : right;
-  position            : relative;
-  top                 : -1.7em;
-  font-weight         : bold;
-  color               : #ffffff;
-/*  background-color    : #838ab5;*/
-}
-
 table.taskdetails td {
 }
 
@@ -297,7 +368,7 @@ div#content {
   border               : 2px solid #948d94;
   margin               : 1ex 1em;
   padding              : 1em;
-  background-color     : #fff;
+  background-color     : #ffffff;
 }
 
 /* Powered by Flyspray */
@@ -344,30 +415,6 @@ input.adminbutton:hover, input.mainbutton:hover, button:hover {
   border              : 1px ridge #000000;
   font-weight         : bold;*/
   cursor              : pointer;
-}
-
-/* The acknowledgement/refusal of login information is displayed in
-   div#loginmessage */
-div#loginmessage {
-  text-align          : center;
-  position            : absolute;
-  top                 : 45%;
-  width               : 80%;
-  left                : 10%;
-  border              : 1px solid #CCC;
-  background-color    : #e6eef6;
-  padding             : 1ex;
-}
-
-div#loginmessage h1 {
-  margin              : 0px 0px 1em 0px;
-  font-size           : 100%;
-  font-weight         : normal;
-}
-
-div#loginmessage p, form#registernewuser p {
-  margin              : 0px;
-  padding             : 0px;
 }
 
 /* div.redirectmessage is used in modify.php when you change things and are redirected
@@ -560,75 +607,6 @@ map#formselecttasks {
   margin               : 0em 0px 0em 0px;
 }
 
-/* This is for the new admin menu that has the Project drop down list */
-
-#admenu{                         /* menu list container */
-  list-style-type: none;      /* disable the display of the list item bullets */
-  margin: 0px;                /* space around the list container */
-  padding: 0px;               /* space within the list container */
-  position: static;           /* need this so that the z-index stuff works correctly */
-  background-color: #e6eef6;     /* the default background color within the main menu container */
-  color: #000;                /* the default font color (not links) within the main menu container */
-  z-index: 20;                /* push the menu up in the layer order a bit so it isn't hidden behind anything */
-      /* Browser plug-ins like Flash or Quicktime may not allow you to overlap then with this menu! */
-}
-
-#admenu li{                      /* top-level menu element */
-  list-style-type: none;      /* disable the display of the list item bullets */
-  float: left;                /* this is to allow for the horizontal main menu */
-  border: black solid 1px;    /* border for each of the main menu items */
-  border-right: none;
-  border-top: none;
-  border-bottom: none;
-  background-color: #e6eef6;     /* main menu item background color */
-  color: #000;                /* main menu item font color (not links) */
-  margin: 0px;                /* spacing between main menu items */
-  padding-left: 5px;               /* padding within main menu items */
-  padding-right: 5px;
-  width: auto;               /* the width of each main menu item */
-  display: block;
-}
-
-#admenu li a{                    /* top-level menu element links */
-  text-align: center;         /* text alignment in main menu item links */
-  width: auto;               /* set this to (#admenu li -> width) - (2 * (#admenu li -> padding)) */
-  display: block;
-}
-
-#admenu li ul{                   /* sub-menu list container */
-  position: absolute;         /* this is so that it doesn't push that page content around on hover */
-  margin: 0px;                /* space around the list container */
-  padding: 0px;               /* space within the list container */
-  list-style-type: none;      /* disable the display of the list item bullets */
-  display: none;
-  width: 200px;               /* the width of the sub menus */
-  border: black solid 1px;    /* sub-menu borders */
-  background-color: #e6eef6;     /* sub-menu default background color */
-  color: #000;                /* sub-menu default font color (not links) */
-}
-
-#admenu li ul li{                /* sub-menu element links */
-  background-color: #e6eef6;     /* default background color for sub-menu container */
-  color: #000;                /* default font color (not links) for sub-menu container */
-  border: none;               /* sub-menu item border settings */
-  margin: 0px;                /* spacing between sub-menu containers */
-  padding: 3px;               /* This is for padding between menu items in the drop-downs */
-  width: 193px;               /* (padding*2 - 5) must be subtracted from #admenu li ul -> width and set for this one, or borders won't display properly...
-                                   not sure where the other 5 pixels come from... Maybe it's actually padding*4 instead? I'll find out some other time */
-}
-
-#admenu li ul li a{
-  display: block;
-  width: 193px;               /* should be set to the same value as #admenu li ul li -> width */
-  text-align: left;
-}
-
-#admenu li:hover ul, #admenu li.over ul{ /* lists nested under hovered list items */
-  display: block;
-}
-
-/* End of Admin menu stuff */
-
 a.closedtasklink {
   text-decoration: line-through;
 }
@@ -690,41 +668,44 @@ div#actionbuttons {
   margin-left          : 5px;
 }
 
-.attention a {
-  color           : #ff0000;
-  background-color     : #fff000;
-}
-
 fieldset.admin {
   margin-top: 15px;
 }
 
 fieldset.admin legend {
-   border-bottom        : 1px solid #000000;
-   border-right         : 1px solid #000000;
-   padding              : 2px;
-   font                 : 120% Helvetica, Verdana, sans-serif;
-   margin               : 5px;
+   border-bottom           : 1px solid #000000;
+   border-right            : 1px solid #000000;
+   padding                 : 2px;
+   font                    : 120% Helvetica, Verdana, sans-serif;
+   margin                  : 5px;
 }
 
 div#errorbar {
-  width: 100%;
-  height: 20px;
-  color: yellow;
-  background-color: red;
-  font-weight: bold;
-  position: fixed;
-  bottom: 0px;
+   width                   : 100%;
+   height                  : 20px;
+   color                   : yellow;
+   background-color        : red;
+   font-weight             : bold;
+   position                : fixed;
+   bottom                  : 0px;
+   background-image        : url(frown.png);
+   background-repeat       : no-repeat;
+   background-position     : 5px 0px;
+   padding-left            : 30px;
 }
 
 div#successbar {
-  width: 100%;
-  height: 20px;
-  color: #ffffff;
-  background-color: green;
-  font-weight: bold;
-  position: fixed;
-  bottom: 0px;
+   width                   : 100%;
+   height                  : 20px;
+   color                   : #ffffff;
+   background-color        : green;
+   font-weight             : bold;
+   position                : fixed;
+   bottom                  : 0px;
+   background-image        : url(smile.png);
+   background-repeat       : no-repeat;
+   background-position     : 5px 0px;
+   padding-left            : 30px;
 }
 
 /* End of the @screen section */
@@ -732,7 +713,7 @@ div#successbar {
 
 @media print {
 p#menu {
-  display              : none;
+  display                  : none;
 }
 
 /* End of the @print section */

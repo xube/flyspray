@@ -91,15 +91,16 @@ div.admin, p.admin, table.admin, table.login, table.userlist {
 
 /* The paragraph containing the main menu */
 p#menu {
-  border              : 1px solid green;
-  margin              : 60px 0px 1ex 1em;
-  padding             : 0px;
-  text-align          : left;
-  position            : relative;
-  top                 : -5em;
-  background-color    : white;
-  width               : 13em;
-  float               : right;
+  border                : 1px solid green;
+  margin                : 60px 0px 1ex 1em;
+  padding               : 0px;
+  text-align            : left;
+  position              : relative;
+  top                   : -5em;
+  background-color      : white;
+  width                 : 13em;
+  float                 : right;
+  z-index               : 5;
 }
 
 p#menu em {
@@ -265,31 +266,33 @@ div#loginmessage h1 {
 /* div.redirectmessage is used in modify.php when you change things and are redirected
    to the index or details page */
 div.redirectmessage {
-  border              : 1px solid #CCC;
-  background-color    : #e6eef6;
-  padding             : 1ex;
-  text-align          : center;
+   border               : 1px solid #CCC;
+   background-color     : #e6eef6;
+   padding              : 1ex;
+   text-align           : center;
 }
 
 
 form#registernewuser strong, form#newgroup strong {
-  color               : red;
+   color                : red;
 }
 
 p#tabs {
-  margin              : 0px;
-  padding             : 0px;
+   margin               : 0px;
+   padding              : 0px;
+   width                : 100%;
+   clear                : both;
 }
 
 div.tabentries {
-  margin              : 0px 0px 1em 0px;
-  border              : 1px solid #CCC;
-  min-height          : 5em;
+   margin               : 0px 0px 1em 0px;
+   border               : 1px solid #CCC;
+   min-height           : 5em;
 }
 
 .tabentry {
-  margin              : 2px 1em;
-  border-bottom       : 1px dashed #ccc;
+   margin               : 2px 1em;
+   border-bottom        : 1px dashed #ccc;
 }
 
 /* This is the division that keeps the buttons to modify comments
@@ -373,6 +376,59 @@ p#tabs a.tabactive {
 .severity5_over {
   background-color: #f3867e;
   color: #000000;
+}
+
+div#taskfields1 {
+   width                : 30%;
+   border-right         : 1px solid #cccccc;
+   margin-bottom        : 8px;
+}
+
+div#taskfields1 table td {
+  width: 50%;
+}
+
+div#taskfields2 {
+   width                : 30%;
+   border-right         : 1px solid #cccccc;
+   margin-bottom        : 8px;
+}
+
+div#taskfields2 table td {
+  width: 50%;
+}
+
+div#taskdetailsfull {
+  padding             : 0px;
+  text-align          : left;
+  position            : relative;
+  top                 : -15em;
+  background-color    : white;
+  width               : 69%;
+  float               : right;
+  text-align          : left;
+}
+
+div#deps {
+  padding: 8px;
+  width: 98%;
+  border-bottom: 1px solid #cccccc;
+  min-height: 50px;
+}
+
+div#taskdeps {
+  width: 45%;
+  margin-bottom: 8px;
+}
+
+div#taskblocks {
+  width: 50%;
+}
+
+div#actionbuttons {
+   margin-top           : 25px;
+   margin-left          : 5px;
+   clear                : bottom;
 }
 
 /* .fineprint is merely used for the details about when a task has

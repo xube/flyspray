@@ -8,6 +8,8 @@
 
 include('header.php');
 
+session_start();
+
 // Get the translation for the wrapper page (this page)
 $lang = $flyspray_prefs['lang_code'];
 get_language_pack($lang, 'main');
@@ -157,38 +159,42 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     ////////////////////////
 
     echo '<p id="menu">' . "\n";
-    echo '<em>' . $language['loggedinas'] . ' - ' . $current_user['user_name'] . '</em>';
     echo '<span id="mainmenu">' . "\n";
-    
-    if ($permissions['open_new_tasks'] == '1') {
-      echo '<small> | </small>';
-      echo '<a href="?do=newtask&amp;project=' . $project_id . '">' .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/newtask.png") . '&nbsp;' . $language['addnewtask'] . "</a>\n";
-    };
-    
-    if ($permissions['view_reports'] == '1') {
-      echo '<small> | </small>';
-      echo '<a href="index.php?do=reports">' .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/reports.png"). '&nbsp;' . $language['reports'] . "</a>\n";
-    };
-    
-    echo '<small> | </small>';
-    echo '<a href="?do=admin&amp;area=users&amp;id=' . $current_user['user_id'] . '">' .
-    $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/editmydetails.png") . '&nbsp;' . $language['editmydetails'] . "</a>\n";
 
-    // If the user has conducted a search, then show a link to the most recent task list filter
-    echo '<small> | </small>';
-    if(isset($_SESSION['lastindexfilter'])) {
-      echo '<a href="' . $_SESSION['lastindexfilter'] . '">' .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png"). '&nbsp;' . $language['lastsearch'] . "</a>\n";
-    } else {
-      echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png"). '&nbsp;' . $language['lastsearch'] . "\n";
+   // Display logged in username
+   echo '<em>' . $language['loggedinas'] . ' - ' . $current_user['user_name'] . '</em>';
+    
+   // Display Add New Task link
+   if ($permissions['open_new_tasks'] == '1') {
+      echo '<small> | </small>';
+      echo '<a id="newtasklink" href="?do=newtask&amp;project=' . $project_id . '" accesskey="a">' . $language['addnewtask'] . "</a>\n";
     };
-      
-    echo '<small> | </small>';
-    echo '<a href="index.php?do=authenticate&amp;action=logout">' .
-    $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/logout.png"). '&nbsp;' . $language['logout'] . "</a>\n";
-    echo "</span>\n";
+    
+   // Display Reports link
+   if ($permissions['view_reports'] == '1') {
+      echo '<small> | </small>';
+      echo '<a id="reportslink" href="index.php?do=reports" accesskey="r">' . $language['reports'] . "</a>\n";
+    };
+    
+   // Display Edit My Details link
+   echo '<small> | </small>';
+   echo '<a id="editmydetailslink" href="?do=admin&amp;area=users&amp;id=' . $current_user['user_id'] . '" accesskey="e">' . $language['editmydetails'] . "</a>\n";
+
+
+   // If the user has conducted a search, then show a link to the most recent task list filter
+   echo '<small> | </small>';
+   if(isset($_SESSION['lastindexfilter'])) {
+      echo '<a id="lastsearchlink" href="' . $_SESSION['lastindexfilter'] . '" accesskey="m">' . $language['lastsearch'] . "</a>\n";
+   } else {
+      echo '<a id="lastsearchlink">' . $language['lastsearch'] . "</a>\n";
+   };
+   
+   // Display Logout link   
+   echo '<small> | </small>';
+   echo '<a id="logoutlink" href="index.php?do=authenticate&amp;action=logout" accesskey="l">' . $language['logout'] . "</a>\n";
+   
+   // End of mainmenu area
+   echo "</span>\n";
 
       /////////////////////////
      // Show the Admin menu //
@@ -212,58 +218,54 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
       echo '<span id="adminmenu">';
 
-      echo '<ul id="admenu">';
-      echo '<li><em>' . $language['adminmenu']. '</em></li>';
+      echo '<em>' . $language['adminmenu'] . '</em>';
 
-      
+      // Global Options link
       if ($permissions['is_admin'] == '1') {
-        echo '<li>';
-        echo '<a href="?do=admin&amp;area=options">' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/options.png") . '&nbsp;' . $language['options'] . "</a>\n";
-        echo '</li>';
-      };
+         echo '<small> | </small>';
+         echo '<a id="optionslink" href="?do=admin&amp;area=options">' . $language['options'] . "</a>\n";
+       };
       
+      // Project options link
       if ($permissions['manage_project'] == '1') {
-        echo '<li>';
-        echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;project=' . $project_id . '">' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/projectprefs.png") . '&nbsp;' . $language['projects'] . "</a>\n";
+         echo '<small> | </small>';
+         echo '<a id="projectslink" href="?do=admin&amp;area=projects&amp;show=prefs&amp;project=' . $project_id . '">' . $language['projects'] . "</a>\n";
 
         // Get a list of projects so that we can cycle through them for the submenu
-        $get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
+        /*$get_projects = $fs->dbQuery("SELECT * FROM flyspray_projects");
         echo '<ul>';
         while ($this_project = $fs->dbFetchArray($get_projects)) {
            echo '<li>';
            echo '<a href="?do=admin&amp;area=projects&amp;show=prefs&amp;project=' . $this_project['project_id'] . '">' . stripslashes($this_project['project_title']) . "</a>\n";
            echo '</li>';
         };
-        echo '</ul>';
-        echo '</li>';
+        echo '</ul>';*/
+
       };
       
+      // Manage users link
       if ($permissions['is_admin'] == '1') {
-        echo '<li>';
-        echo '<a href="?do=admin&amp;area=users">' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/usersandgroups.png") . '&nbsp;' . $language['usersandgroups'] . "</a>\n";
-        echo '</li>';
+         echo '<small> | </small>';
+         echo '<a id="usersandgroupslink" href="?do=admin&amp;area=users">' . $language['usersandgroups'] . "</a>\n";
       };
      
       if ($permissions['is_admin'] == '1') {
-        echo '<li>';
-        echo '<a href="?do=admin&amp;area=tasktype">' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['tasktypes'] . "</a>\n";
-        echo '</li>';
-      
-        echo '<li>';
-        echo '<a href="?do=admin&amp;area=resolution">' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/lists.png") . '&nbsp;' . $language['resolutions'] . "</a>\n";
-        echo '</li>';
+         echo '<small> | </small>';
+         echo '<a id="listslink" href="?do=admin&amp;area=tasktype">' . $language['tasktypes'] . "</a>\n";
+         echo '<small> | </small>';
+         echo '<a id="listslink" href="?do=admin&amp;area=resolution">' . $language['resolutions'] . "</a>\n";
       };
 
       // Show the amount of admin requests waiting
       if (($permissions['manage_project'] == '1'
           OR $permissions['is_admin'] == '1')
           && $num_req > '0') {
-         echo '<li class="attention">';
-         echo '<span class="attention"><a href="?do=admin&amp;area=pendingreq">' . $num_req . ' ' . $language['adminreqwaiting'] . '</a></span>';
-         echo '</li>';
+         echo '<small> | </small>';
+         echo '<a id="attention" href="?do=admin&amp;area=pendingreq">' . $num_req . ' ' . $language['adminreqwaiting'] . '</a>';
+
       };
 
-      echo '</ul>';
+      // End of admin menu span
       echo "</span>\n";
 
     // End of checking if the admin menu should be displayed
@@ -274,7 +276,6 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     // If the user's account is closed
     } else {
       echo "<br />{$language['disabledaccount']}";
-      //echo "<meta http-equiv=\"refresh\" content=\"0; URL=scripts/authenticate.php?action=logout\">\n";
       Header("Location: ?do=authenticate&action=logout");
     // End of checking if the user's account is open
     };
@@ -284,13 +285,13 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
 // ERROR status bar
 if (isset($_SESSION['ERROR'])) {
-   echo '<div id="errorbar">&nbsp;&nbsp;' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/frown.png") . '&nbsp;&nbsp;' . $_SESSION['ERROR'] . '</div>';
+   echo '<div id="errorbar">' . $_SESSION['ERROR'] . '</div>';
    unset($_SESSION['ERROR']);
 };
 
 // SUCCESS status bar
 if (isset($_SESSION['SUCCESS'])) {
-   echo '<div id="successbar">&nbsp;&nbsp;' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/smile.png") . '&nbsp;&nbsp;' . $_SESSION['SUCCESS'] . '</div>';
+   echo '<div id="successbar">' . $_SESSION['SUCCESS'] . '</div>';
    unset($_SESSION['SUCCESS']);
 };
 

@@ -1,0 +1,41 @@
+Flyspray -  A ten step getting-started guide.
+
+Step One:  Unpack the compressed package into a directory where your web
+server can reach it.  It will extract into its own flyspray-version/ directory.
+If you're reading this, you've probably already done that.
+
+Step Two:  Create a mysql database for Flyspray to use.  Here is one way to do
+that, from the unix/linux command line, entering your mysql root password when
+prompted:
+
+mysqladmin -u root -p create flyspray
+
+Step Three:  Point your browser to http://yourserver/flyspray-version/ and
+follow along with the setup script.
+
+Step Four: Create youself a new user, place them into the Admin group.
+
+Step Five:  CHANGE THE PASSWORD FOR THE super/super ACCOUNT by clicking the
+'Edit My Details' link near the top of the page.  You might like to disable
+the account entirely, or it will appear in the list of users to be assigned
+tasks.
+
+Step Six: Click on the admin links to set up your Options and lists.
+
+Step Seven: Click the Projects link to set up your project options, user groups
+and lists.
+
+Step Eight:  If you wish to be able to upload attachments, you will need to make
+the attachments/ directory writeable by the webserver process.  The easiest way
+to do this is to make it world writeable.  In unix/linux this is done like this:
+
+chmod a+rwx attachments
+
+Note that this could be a security issue.  You really should learn to make it
+only writable by the process running your webserver.
+
+Step Nine: Close the sample task, and begin adding your own.
+
+Step Ten:  To report any bugs in Flyspray or request developer support, see
+the 'Support' link on the Flyspray website - http://flyspray.rocks.cc/?p=Support
+

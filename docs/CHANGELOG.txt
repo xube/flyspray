@@ -1,3 +1,24 @@
+0.9.7 - 
+
+NEW: Easy setup script
+NEW: User groups are now global AND project-level
+NEW: Group permissions now more fine-grained
+NEW: No more intermediate pages after submitting forms - new statusbar instead
+NEW: Task dependencies and blocks
+NEW: phpMarkdown used in project blurb, task details and comments areas
+     (allows document markup)
+NEW: Users can request a link to change their password
+NEW: Private tasks
+NEW: Icons.  Now using an iconset with a compatible licence.
+
+IMPROVED: Notifications no longer get sent to the user making the change
+IMPROVED: Method of sending registration confirmation codes
+IMPROVED: Anonymous browsing is now a project-level setting
+IMPROVED: Bluey theme layout and style.  It almost renders in IE!
+IMPROVED: Escaping of special characters in form selects
+IMPROVED: Detects php magic quotes setting for task display
+
+
 0.9.6 - 08 October 2004
 
 NEW: Config settings have been moved from header.php into flyspray.conf.php
