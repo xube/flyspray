@@ -60,20 +60,20 @@ if (!$res) {
 
 $flyspray_prefs = $fs->getGlobalPrefs();
 
+$project_id = 0;
 if ($_GET['do'] == 'details') {
   list($project_id) = $fs->dbFetchArray($fs->dbQuery("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = {$_GET['id']}"));
-} elseif ($_GET['project']) {
-  $project_id = $_GET['project'];
-  setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
-} elseif ($_COOKIE['flyspray_project']) {
-  $project_id = $_COOKIE['flyspray_project'];
-} else {
-  $project_id = $flyspray_prefs['default_project'];
-  setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
 };
-
-if ($_GET['project'] == '0') {
-    $allprojects = 1;
+if (!$project_id) {
+  if ($_GET['project']) {
+    $project_id = $_GET['project'];
+    setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
+  } elseif ($_COOKIE['flyspray_project']) {
+    $project_id = $_COOKIE['flyspray_project'];
+  } else {
+    $project_id = $flyspray_prefs['default_project'];
+    setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
+  };
 };
 
 if (!(ereg("upgrade", $_SERVER['PHP_SELF']))) {

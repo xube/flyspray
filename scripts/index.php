@@ -58,7 +58,7 @@ $where = array();
 $where[] = 'project_is_active = 1';
 
 // Set the default queries
-if (!isset($allprojects)) {
+if ($_GET['project'] != '0') {
   $where[]	= "attached_to_project = ?";
   $sql_params[] = $project_id;
 };
@@ -142,7 +142,7 @@ if ($_GET['string']) {
   $sql_params[] = "%$string%";
 };
 
-if (isset($allprojects)) {
+if ($_GET['project'] == '0') {
     $get = "&amp;project=0";
 } else {
     $get = "&amp;project={$project_id}";
@@ -151,13 +151,14 @@ if (isset($allprojects)) {
 $extraurl = $get . "&amp;tasks={$_GET['tasks']}&amp;type={$_GET['type']}&amp;sev={$_GET['sev']}&amp;dev={$dev}&amp;cat={$_GET['cat']}&amp;status={$_GET['status']}&amp;string={$_GET['string']}&amp;perpage=$perpage";
 // for 'sort by this column' links
 $get = $extraurl . "&amp;pagenum=$pagenum";
+$extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
 
 ?>
 
 <!-- Query line -->
 <form action="index.php" method="get">
 <input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>">
-<input type="hidden" name="project" value="<?php echo isset($allprojects) ? '0' : $project_id;?>">
+<input type="hidden" name="project" value="<?php echo $_GET['project'] == '0' ? '0' : $project_id;?>">
 <p id="search">
   <label for="searchtext"><?php echo $index_text['searchthisproject'];?>:</label>
     <input id="searchtext" name="string" type="text" size="40"

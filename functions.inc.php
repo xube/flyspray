@@ -446,7 +446,7 @@ if (!($totalcount / $perpage <= 1)) {
     $start = floor($pagenum - ($pagesper / 2)) + 1;
     if ($start <= 0) $start = 0;
     $finish = $pagenum + ceil($pagesper / 2);
-    if ($finish > $totalcount / $perpage) $finish = floor($totalcount / $perpage);
+    if ($finish >= $totalcount / $perpage) $finish = floor($totalcount / $perpage);
     for ($pagelink = $start; $pagelink <= $finish;  $pagelink++)
     {
         if ($pagelink != $start) $output .= " - ";

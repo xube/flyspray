@@ -69,25 +69,26 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
     if ($_POST['notifyme'] == '1') {
       $insert = $fs->dbQuery("INSERT INTO flyspray_notifications
       (task_id, user_id)
-      VALUES('{$get_task_info['task_id']}, '{$_COOKIE['flyspray_userid']}')");
+      VALUES('{$get_task_info['task_id']}', '{$_COOKIE['flyspray_userid']}')");
+      $fs->logEvent($get_task_info['task_id'], 9, $_COOKIE['flyspray_userid']);
     };
 
     // Check if the new task was assigned to anyone
-    if ($_POST['assigned_to'] != "0"
-      && $_POST['assigned_to'] != $_COOKIE['flyspray_userid'])
-    {
+    if ($_POST['assigned_to'] != "0") {
+        $fs->logEvent($get_task_info['task_id'], 14, $_POST['assigned_to'], '0');
+        if ($_POST['assigned_to'] != $_COOKIE['flyspray_userid']) {
 
 // Create the brief notification message
 $subject = "{$modify_text['flyspraytask']} #{$get_task_info['task_id']} - {$get_task_info['item_summary']}";
 $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 $current_realname ($current_username) {$modify_text['hasopened']}\n
 {$modify_text['newtask']}: {$_POST['item_summary']} \n
-{$modify_text['moreinfonew']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id=$task_id";
+{$modify_text['moreinfonew']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$get_task_info['task_id']}";
 
-      // ...And send it off to let the person know about their task
-      $result = $fs->SendBasicNotification($_POST['assigned_to'], $subject, $message);
-      echo $result;
-
+            // ...And send it off to let the person know about their task
+            $result = $fs->SendBasicNotification($_POST['assigned_to'], $subject, $message);
+            echo $result;
+        };
     };
 
     // OK, we also need to notify the category owner
@@ -122,7 +123,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['newtaskcategory']} - \"{$cat_details['category_name']}\"
 {$modify_text['categoryowner']}\n
 {$modify_text['tasksummary']} {$_POST['item_summary']} \n
-{$modify_text['moreinfonew']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id=$task_id";
+{$modify_text['moreinfonew']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$get_task_info['task_id']}";
 
       // ...And send it off to the category owner or default owner
       $result = $fs->SendBasicNotification($send_to, $subject, $message);
@@ -135,7 +136,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
         <p>
           <em><?php echo $modify_text['newtaskadded'];?></em>
         </p>
-        <p><?php echo "<a href=\"?do=details&id=$task_id\">{$modify_text['gotonewtask']}</a>";?></p>
+        <p><?php echo "<a href=\"?do=details&id={$get_task_info['task_id']}\">{$modify_text['gotonewtask']}</a>";?></p>
         <p><?php echo "<a href=\"?do=newtask\">{$modify_text['addanother']}</a>";?></p>
         <p><?php echo "<a href=\"?\">{$modify_text['backtoindex']}</a>";?></p>
       </div>
