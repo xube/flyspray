@@ -615,7 +615,12 @@ if ($permissions['is_admin'] == '1')
    <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
    <table class="list">
    <?php
-   $get_tasktypes = $db->Query("SELECT * FROM flyspray_list_tasktype ORDER BY list_position");
+   $get_tasktypes = $db->Query("
+       SELECT *, count(t.task_id) AS used_in_tasks
+       FROM `flyspray_list_tasktype` tt
+       LEFT JOIN flyspray_tasks t ON ( t.task_type = tt.tasktype_id ) 
+       GROUP BY tt.tasktype_id
+       ORDER BY list_position");
    $countlines = 0;
    while ($row = $db->FetchArray($get_tasktypes)) {
    ?>
@@ -632,6 +637,14 @@ if ($permissions['is_admin'] == '1')
          <label for="showinlist<?php echo $countlines?>"><?php echo $admin_text['show'];?></label>
          <input id="showinlist<?php echo $countlines?>" type="checkbox" name="show_in_list[<?php echo $countlines?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
          </td>
+         <?php if ($row['used_in_tasks'] == 0): ?>         
+         <td title="Delete this item from the TaskType list">
+         <label for="delete<?php echo $row['tasktype_id']?>"><?php echo $admin_text['delete'];?></label>
+         <input id="delete<?php echo $row['tasktype_id']?>" type="checkbox" name="delete[<?php echo $row['tasktype_id']?>]" value="1" />
+         <?php else: ?>
+         <td>&nbsp;
+         <?php endif; ?>
+         </td>         
       </tr>
       <?php
       $countlines++;

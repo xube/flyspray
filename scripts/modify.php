@@ -1451,6 +1451,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   $listname = $_POST['list_name'];
   $listposition = $_POST['list_position'];
   $listshow = $_POST['show_in_list'];
+  $listdelete = $_POST['delete'];
   $listid = $_POST['id'];
 
   $redirectmessage = $modify_text['listupdated'];
@@ -1473,6 +1474,12 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
           $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
       };
   };
+
+  if (is_array($listdelete)) {
+      $deleteids = "$list_id = " . join(" OR $list_id =", array_keys($listdelete));
+      $db->Query("DELETE FROM $list_table_name WHERE $deleteids");
+  }
+  
   if($_POST['project_id'] != '') {
       header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=" . $_POST['list_type']);
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";
