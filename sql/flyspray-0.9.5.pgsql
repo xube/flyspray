@@ -222,7 +222,7 @@ INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (1
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (11, 'admin_email', 'flyspray@yourdomain', 'Reply email address for notifications');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (12, 'assigned_groups', '1 2 3  ', 'Members of these groups can be assigned tasks');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (13, 'default_cat_owner', '0', 'Default category owner');
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (14, 'lang_code', 'pl', 'Language');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (14, 'lang_code', 'en', 'Language');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (15, 'spam_proof', '1', 'Use confirmation codes for user registrations');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (16, 'anon_view', '1', 'Allow anonymous users to view this BTS');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (17, 'default_project', '1', 'Default project to show tasks from');
