@@ -1,6 +1,13 @@
 <?php
-// set a whole bunch of DEFAULT variables if they're not already set
-//  this is a whole convoluted bunch of crap, but it works.
+
+/*
+   This script sets up and shows the front page with
+   the list of all available tasks that the user is
+   allowed to view.
+*/
+
+// First, set a whole bunch of DEFAULT variables if they're not
+// already set. This is a whole convoluted bunch of crap, but it works.
 
 get_language_pack($lang, 'index');
 
@@ -131,7 +138,7 @@ if ($_GET['tasks'] == 'assigned') {
 };
 
 
-// developer whos bugs to show
+// developer whose bugs to show
 if (is_numeric($dev)) {
   $where[] = "assigned_to = ?";
   $sql_params[] = $dev;
@@ -197,6 +204,17 @@ if ($_GET['string']) {
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
   $sql_params[] = "%$string%";
+};
+
+// Do this to hide private tasks from the list
+if ($permissions['manage_project'] == '1') {
+	// Don't add any parameters
+} elseif ($permissions['manage_project'] != '1'
+     && isset($_COOKIE['flyspray_userid'])) {
+  $where[] = "(t.mark_private <> '1' OR t.assigned_to = ?)";
+  $sql_params[] = $current_user['user_id'];
+} elseif (!isset($_COOKIE['user_id'])) {
+  $where[] = "t.mark_private <> '1'";
 };
 
 if ($_GET['project'] == '0') {

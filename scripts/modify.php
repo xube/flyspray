@@ -1,5 +1,7 @@
 <?php
-// This script performs all database modifications
+/*
+   This script performs all database modifications/
+*/
 
 get_language_pack($lang, 'modify');
 
@@ -751,7 +753,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 				       email_address,
 				       notify_type,
 				       account_enabled)
-				       VALUES(?, ?, ?, ?, ?, ?, ?, ?)", 
+				       VALUES(?, ?, ?, ?, ?, ?, ?)",
                                        array($reg_details['user_name'],
                                              $pass_hash,
                                              $reg_details['real_name'],
@@ -2257,6 +2259,43 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
   };
 
 // End of changing the user's password
+
+
+////////////////////////////////////
+// Start of making a task private //
+////////////////////////////////////
+
+} elseif ($_GET['action'] == 'makeprivate'
+  && $permissions['manage_project'] == '1') {
+
+  $update = $fs->dbQuery("UPDATE flyspray_tasks
+                          SET mark_private = '1'
+                          WHERE task_id = ?",
+                          array($_GET['id'])
+                         );
+
+  header("Location: index.php?do=details&id=" . $_GET['id']);
+
+// End of making a task private
+
+
+///////////////////////////////////
+// Start of making a task public //
+///////////////////////////////////
+
+} elseif ($_GET['action'] == 'makepublic'
+  && $permissions['manage_project'] == '1') {
+
+  $update = $fs->dbQuery("UPDATE flyspray_tasks
+                          SET mark_private = '0'
+                          WHERE task_id = ?",
+                          array($_GET['id'])
+                         );
+
+  header("Location: index.php?do=details&id=" . $_GET['id']);
+
+// End of making a task public
+
 
 /////////////////////
 // End of actions! //

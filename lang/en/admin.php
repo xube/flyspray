@@ -157,5 +157,11 @@ $admin_text = array (
 'editglobalgroup'       =>      'Edit Global Group',
 'editgroupforproj'      =>      'Edit group for Project',
 'notshownforadmin'      =>      'Permissions are not shown for the admin group.  You don\'t need to edit them.',
+'general'               =>      'General',
+'userregistration'      =>      'User Registration',
+'notifications'         =>      'Notifications',
+'resetoptions'          =>      'Reset Options',
+
+
 );
 ?>

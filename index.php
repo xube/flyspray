@@ -1,4 +1,11 @@
 <?php
+
+/*
+   This is the main script that everything else is included
+   in.  Mostly what it does is check the user permissions
+   to see what they have access to.
+*/
+
 include('header.php');
 
 // Get the translation for the wrapper page (this page)
@@ -209,9 +216,9 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     // Show the user menu //
     ////////////////////////
 
-    echo "<p id=\"menu\">\n";
-    echo "<em>{$language['loggedinas']} - {$current_user['user_name']}</em>";
-    echo "<span id=\"mainmenu\">\n";
+    echo '<p id="menu">' . "\n";
+    echo '<em>' . $language['loggedinas'] . ' - ' . $current_user['user_name'] . '</em>';
+    echo '<span id="mainmenu">' . "\n";
     
     if ($permissions['open_new_tasks'] == '1') {
       echo '<small> | </small>';
@@ -235,7 +242,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       echo '<a href="' . $_SESSION['lastindexfilter'] . '">' .
       $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png"). '&nbsp;' . $language['lastsearch'] . "</a>\n";
     } else {
-      echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png"). '&nbsp;' . $language['lastsearch'] . "</a>\n";
+      echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/search.png"). '&nbsp;' . $language['lastsearch'] . "\n";
     };
       
     echo '<small> | </small>';
@@ -423,7 +430,7 @@ if(file_exists("$footerfile")) {
 } 
 
 // Print out permissions stuff for debugging
-/*if (isset($_COOKIE['flyspray_userid'])) {
+if (isset($_COOKIE['flyspray_userid'])) {
   echo '<br /><h3>Debugging for the new permissions system</h3>';
   echo '<table border="1">';
   while (list($key, $val) = each($permissions)) {
@@ -437,7 +444,7 @@ if(file_exists("$footerfile")) {
      echo '</tr>';
   };
   echo '</table>';
-};*/
+};
 ?> 
 
 </body>

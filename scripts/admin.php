@@ -539,7 +539,13 @@ if ($group_details['belongs_to_project'] < '1') {
 } elseif ($_GET['area'] == "options" && $permissions['is_admin'] == '1') {
 ?>
 <h3><?php echo $admin_text['flysprayprefs'];?></h3>
+
+<fieldset class="admin">
+
+<legend><?php echo $admin_text['general'];?></legend>
+
 <form action="index.php" method="post">
+
 <table class="admin">
 
   <tr>
@@ -613,6 +619,28 @@ if ($group_details['belongs_to_project'] < '1') {
     </select>
     </td>
   </tr>
+  
+  <tr>
+    <td>
+      <label for="dateformat"><?php echo $admin_text['dateformat'];?></label>
+    </td>
+    <td>
+      <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat'];?>">
+    </td>
+  </tr>	
+  <tr>
+    <td>
+      <label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label>
+    </td>
+    <td>
+      <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>">
+    </td>
+  </tr>	
+
+</table>
+
+</fieldset>
+
  <!-- <tr>
     <td>
       <label for="anonview"><?php echo $admin_text['anonview']; ?></label>
@@ -621,6 +649,12 @@ if ($group_details['belongs_to_project'] < '1') {
       <input id="anonview" type="checkbox" name="anon_view" value="1" <?php if ($flyspray_prefs['anon_view'] == '1') { echo "checked=\"checked\"";};?>>
     </td>
   </tr>-->
+
+<fieldset class="admin">
+
+<legend><?php echo $admin_text['userregistration'];?></legend>
+
+<table class="admin">
   <tr>
     <td>
       <label for="allowusersignups"><?php echo $admin_text['anonreg'];?></label>
@@ -671,6 +705,15 @@ if ($group_details['belongs_to_project'] < '1') {
       ?>
     </td>
   </tr>
+</table>
+
+</fieldset>
+  
+<fieldset class="admin">
+
+<legend><?php echo $admin_text['notifications'];?></legend>
+
+<table class="admin">
   <tr>
     <td>
       <label for="usernotify"><?php echo $admin_text['forcenotify'];?></label>
@@ -684,22 +727,6 @@ if ($group_details['belongs_to_project'] < '1') {
     </select>
     </td>
   </tr>
-  <tr>
-    <td>
-      <label for="dateformat"><?php echo $admin_text['dateformat'];?></label>
-    </td>
-    <td>
-      <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat'];?>">
-    </td>
-  </tr>	
-  <tr>
-    <td>
-      <label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label>
-    </td>
-    <td>
-      <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>">
-    </td>
-  </tr>	
 
   <tr>
     <th colspan="2"><hr>
@@ -711,7 +738,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="jabberserver"><?php echo $admin_text['jabberserver'];?></label>
     </td>
     <td>
-      <input id="jabberserver" name="jabber_server" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_server'];?>">
+      <input id="jabberserver" name="jabber_server" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_server'];?>" />
     </td>
   </tr>
   <tr>
@@ -719,7 +746,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="jabberport"><?php echo $admin_text['jabberport'];?></label>
     </td>
     <td>
-      <input id="jabberport" name="jabber_port" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_port'];?>">
+      <input id="jabberport" name="jabber_port" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_port'];?>" />
     </td>
   </tr>
   <tr>
@@ -727,7 +754,7 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="jabberusername"><?php echo $admin_text['jabberuser'];?></label>
     </td>
     <td>
-      <input id="jabberusername" name="jabber_username" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_username'];?>">
+      <input id="jabberusername" name="jabber_username" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_username'];?>" />
     </td>
   </tr>
   <tr>
@@ -735,13 +762,18 @@ if ($group_details['belongs_to_project'] < '1') {
       <label for="jabberpassword"><?php echo $admin_text['jabberpass'];?></label>
     </td>
     <td>
-      <input id="jabberpassword" name="jabber_password" type="password" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_password'];?>">
+      <input id="jabberpassword" name="jabber_password" type="password" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_password'];?>" />
     </td>
   </tr>
-  <tr>
-    <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>"></td>
-  </tr>
+</table>
 
+</fieldset>
+
+<table>
+  <tr>
+    <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>" /></td>
+    <td class="buttons"><input class="adminbutton" type="reset" value="<?php echo $admin_text['resetoptions'];?>" /></td>
+  </tr>
 </table>
   </form>
 
@@ -783,6 +815,10 @@ $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projec
 // By default, show the project prefs first
 if ($_GET['show'] == 'prefs') { ?>
 
+<fieldset class="admin">
+
+<legend><?php echo $admin_text['general'];?></legend>
+
 <form action="index.php" method="post">
   <input type="hidden" name="do" value="modify">
   <input type="hidden" name="action" value="updateproject">
@@ -794,7 +830,7 @@ if ($_GET['show'] == 'prefs') { ?>
       <label for="projecttitle"><?php echo $admin_text['projecttitle'];?></label>
     </td>
     <td>
-      <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo $project_details['project_title'];?>">
+      <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo stripslashes($project_details['project_title']);?>">
     </td>
   </tr>
 
@@ -918,15 +954,18 @@ if ($_GET['show'] == 'prefs') { ?>
   </tr>
 
 </table>
-  </form>
+</form>
+  
+</fieldset>
 
 <?php
 // Show the list of categories
 } elseif ($_GET['show'] == 'category') { ?>
 
-<br><br>
+<fieldset class="admin">
 
-  <h3><?php echo $admin_text['categorylist'];?></h3>
+<legend><?php echo $admin_text['categorylist'];?></legend>
+
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
   <form action="index.php" method="post">
@@ -1063,14 +1102,16 @@ if ($_GET['show'] == 'prefs') { ?>
     </form>
   </div>
 
+</fieldset>
 
 <?php
 // Show the list of Operating Systems
 } elseif ($_GET['show'] == 'os') { ?>
 
-<br><br>
+<fieldset class="admin">
 
-  <h3><?php echo $admin_text['oslist'];?></h3>
+<legend><?php echo $admin_text['oslist'];?></legend>
+
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
   <form action="index.php" method="post">
@@ -1138,13 +1179,16 @@ if ($_GET['show'] == 'prefs') { ?>
    </form>
 </div>
 
+</fieldset>
+
 <?php
 // Show the list of Versions
 } elseif ($_GET['show'] == 'version') { ?>
 
-<br><br>
+<fieldset class="admin">
 
-  <h3><?php echo $admin_text['versionlist'];?></h3>
+  <legend><?php echo $admin_text['versionlist'];?></legend>
+
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
   <form action="index.php" method="post">
@@ -1228,6 +1272,7 @@ if ($_GET['show'] == 'prefs') { ?>
     </form>
   </div>
 
+</fieldset>
 
 <?php
 };

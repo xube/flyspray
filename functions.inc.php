@@ -1,4 +1,11 @@
 <?php
+
+/*
+   This script contains all the functions we use often in
+   Flyspray to do various things, like database access etc.
+*/
+
+
 /** Get translation for specified language and page.  It loads default
 language (en) and then merges with requested one. Thus it makes English
 messages available even if translation is not present.
@@ -422,7 +429,6 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
         };
       };
       
-      echo 'project id = ' . $project_id;
       // Now, we get the users from groups in the current project
       $get_group_details = $this->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($in_project));
       while ($group_details = $this->dbFetchArray($get_group_details)) {

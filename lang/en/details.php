@@ -123,6 +123,8 @@ $details_text = array (
 'depremoved'          =>   'Dependency removed:',
 'depremovedother'     =>   'This task removed from other task\'s dependency list:',
 'showdetailserror'    =>   'That task does not exist, or you don\'t have permission to view it.',
+'makeprivate'         =>   'Make Private',
+'makepublic'          =>   'Make Public',
 
 );
 ?>

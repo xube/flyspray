@@ -722,6 +722,9 @@ div#actionbuttons {
   background-color     : #fff000;
 }
 
+fieldset.admin {
+  margin-top: 15px;
+}
 
 
 /* End of the @screen section */

@@ -150,7 +150,11 @@ DELETE FROM `flyspray_prefs` WHERE `pref_id` = '16' LIMIT 1 ;
 
 #ALTER TABLE `flyspray_users` DROP `group_in` ;
 
+# Other things that need doing include creating "Project Managers"
+# and "Developers" group for each project.
 
 ####################################
 ## The Psi database is up to here ##
 ####################################
+
+ALTER TABLE `flyspray_tasks` ADD `mark_private` MEDIUMINT( 1 ) NOT NULL ;

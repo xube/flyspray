@@ -1,4 +1,11 @@
 <?php
+
+/*
+   This script displays task details when in view mode, and allows the
+   user to edit task details when in edit mode.  It also shows comments,
+   attachments, notifications etc.
+*/
+
 get_language_pack($lang, 'details');
 
 $task_exists = $fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_GET['id']));
@@ -8,7 +15,12 @@ $task_details = $fs->GetTaskDetails($_GET['id']);
  if ($fs->dbCountRows($task_exists)
      && $task_details['project_is_active'] == '1'
      && ($project_prefs['others_view'] == '1'
-         OR $permissions['view_tasks'] == '1')) {
+         OR $permissions['view_tasks'] == '1')
+     && (($task_details['mark_private'] == '1'
+         && $task_details['assigned_to'] == $current_user['user_id'])
+         OR $permissions['manage_project'] == '1'
+         OR $task_details['mark_private'] != '1')
+     ) {
 
 $item_summary = htmlspecialchars($task_details['item_summary']);
 $detailed_desc = htmlspecialchars($task_details['detailed_desc']);
@@ -345,6 +357,10 @@ if ($effective_permissions['can_edit'] == '1'
 } elseif (($task_details['is_closed'] == '1'
            OR $effective_permissions['can_edit'] == '0'
            OR !$GET['edit'])
+           && (($task_details['mark_private'] == '1'
+           && $task_details['assigned_to'] == $current_user['user_id'])
+             OR $permissions['manage_project'] == '1'
+             OR $task_details['mark_private'] != '1')
          ) {
 //////////////////////////////////////
 // If the user isn't an admin,      //
@@ -713,6 +729,27 @@ echo '<div id="actionbuttons">';
    <?php
    // End of showing the "edit task" button
    };
+   
+   // Start of marking private/public
+   if ($permissions['manage_project'] == '1'
+        && $task_details['is_closed'] != '1'
+        && $task_details['mark_private'] != '1') {
+   
+    echo '<form action="?do=modify&action=makeprivate&id=' . $_GET['id'] . '" method="post">';
+    echo '<input class="adminbutton" type="submit" value="' . $details_text['makeprivate'] . '" />';
+    echo '</form>';
+   
+   } elseif ($permissions['manage_project'] == '1'
+        && $task_details['is_closed'] != '1'
+        && $task_details['mark_private'] == '1') {   
+   
+   echo '<form action="?do=modify&action=makepublic&id=' . $_GET['id'] . '" method="post">';
+   echo '<input class="adminbutton" type="submit" value="' . $details_text['makepublic'] . '" />';
+   echo '</form>'; 
+    
+   // End of marking private/public
+   };
+   
    echo '</div>';
    echo '</div>';
 

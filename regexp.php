@@ -1,7 +1,10 @@
 <?php
-// This file is used to check that all user-inputted data is safe to pass to the
-// rest of Flyspray, including the sql database.  We don't want Flyspray to end
-// up on BugTraq!
+
+/* 
+   This script is used to check that all user-inputted data is safe to pass to the
+   rest of Flyspray, including the sql database.  We don't want Flyspray to end
+   up on BugTraq!
+*/
 
 //if (($_POST['lang_code']) && (!preg_match ("/^(de|dk|en|fr|it|nl|pl|es)$/", $_POST['lang_code']))) {
 //        print "Invalid language code."; exit;
@@ -78,7 +81,7 @@ if ($_GET['page']) {
 if ($_REQUEST['action']) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(logout|newtask|update|close|reopen|addcomment|chpass|registeruser|newuser|newgroup|globaloptions|newproject|updateproject|addattachment|edituser|editgroup|update_list|add_to_list|update_category|add_category|add_related|remove_related|add_notification|remove_notification|editcomment|deletecomment|deleteattachment|addreminder|deletereminder|update_version_list|add_to_version_list|addtogroup|movetogroup|requestreopen|takeownership|requestclose|newdep|removedep|sendmagic|sendcode)$/", $_REQUEST['action'])) {
+    if (preg_match ("/^(logout|newtask|update|close|reopen|addcomment|chpass|registeruser|newuser|newgroup|globaloptions|newproject|updateproject|addattachment|edituser|editgroup|update_list|add_to_list|update_category|add_category|add_related|remove_related|add_notification|remove_notification|editcomment|deletecomment|deleteattachment|addreminder|deletereminder|update_version_list|add_to_version_list|addtogroup|movetogroup|requestreopen|takeownership|requestclose|newdep|removedep|sendmagic|sendcode|makeprivate|makepublic)$/", $_REQUEST['action'])) {
 
        // continue;
 
