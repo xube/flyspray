@@ -290,8 +290,9 @@ $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
  *
  * @param string $colname	The name of the column
  * @param string $orderkey	The actual key to use when ordering the list
+ * @param string $image    An image to display instead of the column name
  */
-function list_heading($colname, $orderkey)
+function list_heading($colname, $orderkey, $image = '')
 {
   global $project_prefs;
   global $index_text;
@@ -321,13 +322,13 @@ function list_heading($colname, $orderkey)
         echo "desc";
       }
       echo "\">";
-      echo $index_text[$colname];
+      echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\">";
       echo "</a></th>";
     }
     else
     {
       echo "<th>";
-      echo $index_text[$colname];
+      echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\">";
       echo "</th>";
     }
   } 
@@ -402,6 +403,8 @@ if ($getproject['project_is_active'] == 1) {
   list_heading('lastedit', 'lastedit');
   list_heading('reportedin','reportedin');
   list_heading('dueversion','due');
+  list_heading('comments','', "themes/{$project_prefs['theme_style']}/comment.png");
+  list_heading('attachments','', "themes/{$project_prefs['theme_style']}/attachment.png");
   list_heading('progress','prog');
   ?>
 
@@ -506,6 +509,13 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
       $status = $index_text['closed'];
     }
     
+    // get the number of comments and attachments
+    $getcomments = $fs->dbQuery("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
+    list($comments) = $fs->dbFetchRow($getcomments);
+    
+    $getattachments = $fs->dbQuery("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
+    list($attachments) = $fs->dbFetchRow($getattachments);    
+    
     // Start displaying the cells for this row
     echo "<tr class=\"severity{$task_details['task_severity']}\"
     onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'
@@ -527,6 +537,8 @@ print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
     list_cell("lastedit",$last_edited_time);
     list_cell("reportedin",$reported_in);
     list_cell("dueversion",$due,1);
+    list_cell("comments",$comments);
+    list_cell("attachments",$attachments);
     list_cell("progress","<img src=\"themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png\" width=\"45\" height=\"8\" alt=\"{$task_details['percent_complete']}% {$index_text['complete']}\" title=\"{$task_details['percent_complete']}% {$index_text['complete']}\">\n");
     
     // The end of this row

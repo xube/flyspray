@@ -707,7 +707,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
     <td class="admintext">
       <?php // Set the selectable column names
-      $columnnames = array('id','project','tasktype','category','severity','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','progress');
+      $columnnames = array('id','project','tasktype','category','severity','summary','dateopened','status','openedby','assignedto', 'lastedit','reportedin','dueversion','comments','attachments','progress');
       foreach ($columnnames AS $column) {
         if (ereg($column, $project_prefs['visible_columns']) ) {
           echo "<input type=\"checkbox\" name=\"visible_columns{$column}\" value=\"1\" checked=\"checked\">$index_text[$column]<br>\n";

@@ -913,7 +913,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
   };
 
   // Process the list of visible columns
-  $columnnames = array('id','project','category','tasktype','severity','summary','dateopened','status','openedby','assignedto','lastedit','reportedin','dueversion','progress');
+  $columnnames = array('id','project','category','tasktype','severity','summary','dateopened','status','openedby','assignedto','lastedit','reportedin','dueversion','comments','attachments','progress');
   foreach ($columnnames AS $column)
   {
     $colname = "visible_columns".$column;
