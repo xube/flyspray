@@ -1022,10 +1022,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
   $update = $db->Query("UPDATE flyspray_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
 
-  //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=options\">";
-  //echo "<div class=\"redirectmessage\"><p><em>{$modify_text['optionssaved']}</em></p></div>";
   $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
-  header("Location: index.php?do=admin&area=options");
+  header("Location: index.php?do=admin&area=prefs");
 
 // End of updating application preferences
 

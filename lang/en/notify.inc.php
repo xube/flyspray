@@ -1,9 +1,9 @@
 <?php
 
-global $functions_text;
-$functions_text = array (
+global $notify_text;
+$notify_text = array (
 
-'notifyfrom'              =>    'Notify from Flyspray',
+'notifyfrom'              =>    'Notification from Flyspray',
 
 );
 ?>

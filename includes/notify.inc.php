@@ -69,6 +69,9 @@ class Notifications {
       global $db;
       global $fs;
 
+      $flyspray_prefs = $fs->GetGlobalPrefs();
+      $project_prefs = $fs->GetProjectPrefs($_COOKIE['flyspray_project']);
+
       if (empty($to) OR $to == $_COOKIE['flyspray_userid'])
          return;
 
@@ -98,9 +101,8 @@ class Notifications {
       $mail->WordWrap = 70;                                 // set word wrap to 70 characters
       //$mail->IsHTML(true);                                  // set email format to HTML
 
-      $mail->Subject = $notify_text['notifyfrom'];            // CHANGE ME WHEN WE MAKE NOTIFICATION SUBJECTS CUSTOMISABLE
-      //$mail->Body    = "This is the HTML message body <b>in bold!</b>";
-      $mail->AltBody = $message;
+      $mail->Subject = $subject;            // CHANGE ME WHEN WE MAKE NOTIFICATION SUBJECTS CUSTOMISABLE
+      $mail->Body = $message;
 
       if(!$mail->Send())
       {

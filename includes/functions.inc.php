@@ -68,11 +68,11 @@ class Flyspray {
       return $global_prefs;
    }
 
-   function getProjectPrefs($project_id) {
+   function getProjectPrefs($project) {
 
       global $db;
 
-      $get_prefs = $db->Query("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id));
+      $get_prefs = $db->Query("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project));
 
       $project_prefs = $db->FetchArray($get_prefs);
 

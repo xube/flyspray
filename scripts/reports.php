@@ -446,7 +446,7 @@ switch ($_REQUEST['sort']) {
                             $ver_list = $db->Query("SELECT version_id, version_name
                                                         FROM flyspray_list_version
                                                         WHERE project_id=? AND show_in_list=?
-                                                        ORDER BY list_position", array($_COOKIE['flyspray_project'], '1'));
+                                                        ORDER BY list_position", array($project_id, '1'));
                             while ($row = $db->FetchArray($ver_list)) {
                                 if ($_REQUEST['duein'] == $row['version_id']) {
                                 echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
