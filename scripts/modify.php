@@ -726,10 +726,10 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                              WHERE project_id = ?
                           ", array($_POST['project_title'],
 				    $_POST['theme_style'],
-				    $_POST['show_logo'],
-				    $_POST['default_cat_owner'],
+				    $fs->emptyToZero($_POST['show_logo']),
+				    $fs->emptyToZero($_POST['default_cat_owner']),
 				    $_POST['intro_message'],
-				    $_POST['project_is_active'],
+				    $fs->emptyToZero($_POST['project_is_active']),
 				    $_POST['project_id']));
 
     echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=prefs\">";
