@@ -62,3 +62,5 @@ ALTER TABLE flyspray_projects ALTER COLUMN visible_columns SET NOT NULL;
 ALTER TABLE flyspray_list_version ADD version_tense INTEGER;
 UPDATE flyspray_list_version SET version_tense = '2';
 ALTER TABLE flyspray_list_version ALTER COLUMN version_tense SET NOT NULL;
+
+UPDATE flyspray_tasks SET last_edited_time=date_opened WHERE last_edited_time='0' OR last_edited_time='' OR last_edited_time IS NULL;

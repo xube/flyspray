@@ -40,7 +40,7 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
     $param_names = array('task_type', 'item_status',
         'assigned_to', 'product_category', 'product_version',
         'closedby_version', 'operating_system', 'task_severity', 'task_priority');
-    $sql_values = array($_POST['project_id'], $now, $item_summary,
+    $sql_values = array($_POST['project_id'], $now, $now, $item_summary,
                 $detailed_desc, 
 		$fs->emptyToZero($_COOKIE['flyspray_userid']), '0');
     $sql_params = array();
@@ -54,8 +54,8 @@ if ($_POST['action'] == "newtask" && ($_SESSION['can_open_jobs'] == "1" OR $flys
     $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
 
     $add_item = $fs->dbQuery("INSERT INTO flyspray_tasks
-    (attached_to_project, date_opened, item_summary, detailed_desc,
-    opened_by, percent_complete, $sql_params)
+    (attached_to_project, date_opened, last_edited_time, item_summary, 
+    detailed_desc, opened_by, percent_complete, $sql_params)
     VALUES ($sql_placeholder)", $sql_values);
 
     // Now, let's get the task_id back, so that we can send a direct link

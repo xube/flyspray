@@ -4,37 +4,56 @@
 
 get_language_pack($lang, 'index');
 
-switch ($_GET['order']) {
-  case "id": $orderby = 'task_id';
-  break;
-  case "proj": $orderby = 'attached_to_project';
-  break;
-  case "type": $orderby = 'task_type';
-  break;
-  case "date": $orderby = 'date_opened';
-  break;
-  case "sev": $orderby = 'task_severity';
-  break;
-  case "cat": $orderby = 'product_category';
-  break;
-  case "status": $orderby = 'item_status';
-  break;
-  case "due": $orderby = 'closedby_version';
-  break;
-  case "prog": $orderby = 'percent_complete';
-  break;
-  default: $orderby = 'task_severity';
-  break;
+$orderby = array($_GET['order'], $_GET['order2']);
+
+foreach ( $orderby as $key => $val ) {
+  switch ($orderby[$key]) {
+    case "id": $orderby[$key] = 'task_id';
+    break;
+    case "proj": $orderby[$key] = 'attached_to_project';
+    break;
+    case "type": $orderby[$key] = 'task_type';
+    break;
+    case "date": $orderby[$key] = 'date_opened';
+    break;
+    case "sev": $orderby[$key] = 'task_severity';
+    break;
+    case "cat": $orderby[$key] = 'product_category';
+    break;
+    case "status": $orderby[$key] = 'item_status';
+    break;
+    case "due": $orderby[$key] = 'closedby_version';
+    break;
+    case "prog": $orderby[$key] = 'percent_complete';
+    break;
+    case "lastedit": $orderby[$key] = 'last_edited_time';
+    break;
+    case "pri": $orderby[$key] = 'task_priority';
+    break;
+    case "openedby": $orderby[$key] = 'opened_by';
+    break;
+    case "reportedin": $orderby[$key] = 'product_version';
+    break;
+    case "assignedto": $orderby[$key] = 'assigned_to';
+    break;
+    default: $orderby[$key] = 'task_severity';
+    break;
+  };
 };
 
-switch ($_GET['sort']) {
-  case "asc": $sort = "ASC";
-  break;
-  case "desc": $sort = "DESC";
-  break;
-  default: $sort = "DESC";
-  break;
+$sort = array($_GET['sort'], $_GET['sort2']);
+foreach ( $sort as $key => $val ) {
+  switch ($sort[$key]) {
+    case "asc": $sort[$key] = "ASC";
+    break;
+    case "desc": $sort[$key] = "DESC";
+    break;
+    default: $sort[$key] = "DESC";
+    break;
+  };
 };
+
+$sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}"; 
 
 // Check that what was submitted is a numerical value; most of them should be
 
@@ -155,6 +174,7 @@ $extraurl = $get . "&amp;tasks={$_GET['tasks']}&amp;type={$_GET['type']}&amp;sev
 // for 'sort by this column' links
 $get = $extraurl . "&amp;pagenum=$pagenum";
 $extraurl .= "&amp;order={$_GET['order']}&amp;sort={$_GET['sort']}";
+$extraurl .= "&amp;order={$_GET['order2']}&amp;sort={$_GET['sort2']}";
 
 ?>
 
@@ -303,26 +323,35 @@ function list_heading($colname, $orderkey, $image = '')
   { 
     if($orderkey)
     {
-      echo "<th ";
       if($_GET['order'] == "$orderkey")
       {
-        echo "class=\"severity3\"";
-      }
-      echo ">";
-      echo "<a title=\"";
-      echo $index_text['sortthiscolumn'];
-      echo "\" href=\"?order=$orderkey";
-      echo $get;
-      echo "&amp;sort=";
-      if (($_GET['sort'] == "desc") && ($_GET['order'] == "$orderkey"))
-      {
-        echo "asc";
+        $class = 'class="severity3"';
+
+        $order2 = $_GET['order2'];
+        $sort2 = $_GET['sort2'];
+        
+        if ($_GET['sort'] == 'desc')
+        {
+          $sort1 = "asc";
+        }
+        else
+        {
+          $sort1 = "desc";
+        }
       }
       else
       {
-        echo "desc";
+        $order2 = $_GET['order'];
+        $sort2 = $_GET['sort'];
       }
-      echo "\">";
+
+      $sort1 = ( $sort1 == 'asc' ? 'asc' : 'desc' );
+      $sort2 = ( $sort2 == 'asc' ? 'asc' : 'desc' );
+      
+      echo "<th $class>";
+      $title = $index_text['sortthiscolumn'];
+      $link = "?order=$orderkey$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
+      echo "<a title=\"$title\" href=\"$link\">";
       echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\">";
       echo "</a></th>";
     }
@@ -441,7 +470,7 @@ $from .= '
 $where = join(' AND ', $where);
 $get_total = $fs->dbQuery("SELECT * FROM $from
           WHERE $where
-          ORDER BY $orderby $sort", $sql_params);
+          ORDER BY $sortorder", $sql_params);
 
 $total = $fs->dbCountRows($get_total);
 print $fs->pagenums($pagenum, $perpage, "6", $total, $extraurl);
@@ -471,7 +500,7 @@ FROM
 WHERE
         $where
 ORDER BY
-        $orderby $sort", $sql_params, $perpage, $offset);
+        $sortorder", $sql_params, $perpage, $offset);
        
 
   while ($task_details = $fs->dbFetchArray($get_details)) {

@@ -47,3 +47,5 @@ UPDATE flyspray_list_version SET version_tense = '2';
 
 ALTER TABLE `flyspray_tasks` ADD `task_priority` MEDIUMINT( 3 ) NOT NULL AFTER `task_severity` ;
 UPDATE flyspray_tasks SET task_priority = '2';
+
+UPDATE flyspray_tasks SET last_edited_time=date_opened WHERE last_edited_time=0 OR last_edited_time='' OR last_edited_time IS NULL;
