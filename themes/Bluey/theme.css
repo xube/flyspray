@@ -491,6 +491,22 @@ p.unregistered {
   font-size            : smaller;
 }
 
+table#history 
+{
+  width                : 100%;
+  margin               : 1em 0px 1em 0px;
+  padding              : 0px 1em 0px 1em;
+  background-color     : #e6eef6;
+  color                : black;
+  font-family          : Helvetica, Verdana, Sans-Serif;
+}
+
+table#history td {
+  border-bottom        : 1px solid #ccc; 
+  border-left          : 1px solid #ccc;
+  padding-left         : 5px;
+}
+
 }
 
 

@@ -125,6 +125,8 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
       // ...And send it off to the category owner or default owner
       $result = $fs->SendBasicNotification($send_to, $subject, $message);
       //echo $result;
+      
+      $fs->logEvent($get_task_info['task_id'], 1);
 
 ?>
       <div class="redirectmessage">
@@ -157,6 +159,7 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
     // Get the existing task details before updating
     // We need them in order to generate the changed-task message
     $old_details = $fs->GetTaskDetails($_POST['task_id']);
+    $old_details_history = $fs->dbFetchRow($fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
 
     $item_summary = $_POST['item_summary'];
     $detailed_desc = $_POST['detailed_desc'];
@@ -193,7 +196,8 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
     // Get the details of the task we just updated
     // To generate the changed-task message
     $new_details = $fs->GetTaskDetails($_POST['task_id']);
-
+    $new_details_history = $fs->dbFetchRow($fs->dbQuery("SELECT * FROM flyspray_tasks WHERE task_id = ?", array($_POST['task_id'])));
+    
     // Now we compare old and new, mark the changed fields
     $field = array(
             "{$modify_text['project']}"          =>  'project_title',
@@ -216,6 +220,15 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
       } else {
         $message = $message . $key . " " . stripslashes($new_details[$val]) . "\n";
       };
+    };
+    
+    // Log the changed fields in the task history
+    while (list($key, $val) = each($old_details_history)) {
+        if ($key != 'last_edited_time' && $key != 'last_edited_by' && $key != 'assigned_to'
+            && !is_numeric($key)
+            && $old_details_history[$key] != $new_details_history[$key]) {
+            $fs->logEvent($_POST['task_id'], 0, $new_details_history[$key], $old_details_history[$key], $key);
+        };
     };
 
 // Complete the modification notification
@@ -282,9 +295,14 @@ $current_realname ($current_username) {$modify_text['hasassigned']}\n
         // Send the brief notification message
         $result = $fs->SendBasicNotification($_POST['assigned_to'], $subject, $message);
         echo $result;
-
+        
       };
+              
+      $fs->logEvent($_POST['task_id'], 14, $_POST['assigned_to'], $_POST['old_assigned']);
+
     };
+      
+    //$fs->logEvent($_POST['task_id'], 3);
 
     echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskupdated']}</em></p>";
@@ -362,6 +380,8 @@ $detailed_message = $detailed_message . "\n{$modify_text['moreinfomodify']} {$fl
 
       $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
+      
+    $fs->logEvent($_POST['task_id'], 2, $_POST['resolution_reason']);
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskclosed']}</em></p>";
     echo "<p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['returntotask']}</a></p>";
@@ -420,6 +440,8 @@ $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_tex
 
       $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
+      
+    $fs->logEvent($_POST['task_id'], 13);
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['taskreopened']}</em></p><p><a href=\"?do=details&amp;id={$_POST['task_id']}\">{$modify_text['backtotask']}</a></p></div>";
 
@@ -480,6 +502,9 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
 
       $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
       echo $result;
+      
+      $row = $fs->dbFetchRow($fs->dbQuery("SELECT comment_id FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id DESC LIMIT 1", array($_POST['task_id'])));        
+      $fs->logEvent($_POST['task_id'], 4, $row['comment_id']);
 
   // If they pressed submit without actually typing anything
   } else {
@@ -903,6 +928,9 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
         $result = $fs->SendDetailedNotification($_POST['task_id'], $subject, $detailed_message);
         echo $result;
+        
+        $row = $fs->dbFetchRow($fs->dbQuery("SELECT attachment_id FROM flyspray_attachments WHERE task_id = ? ORDER BY attachment_id DESC LIMIT 1", array($_POST['task_id'])));        
+        $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
 
       // Success message!
       echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
@@ -1153,7 +1181,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   if (!$fs->dbCountRows($check)) {
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_related (this_task, related_task) VALUES(?,?)", array($_POST['this_task'], $_POST['related_task']));
-
+    
+    $fs->logEvent($_POST['this_task'], 11, $_POST['related_task']);
+    $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
+    
     echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['this_task']}&amp;area=related#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedadded']}</em></p></div>";
   } else {
@@ -1170,7 +1201,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 } elseif ($_POST['action'] == "remove_related" && $_SESSION['can_modify_jobs'] == '1') {
 
   $remove = $fs->dbQuery("DELETE FROM flyspray_related WHERE related_id = ?", array($_POST['related_id']));
-
+  
+  $fs->logEvent($_POST['id'], 12, $_POST['related_task']);
+  $fs->logEvent($_POST['related_task'], 16, $_POST['id']);
+  
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['id']}&amp;area=related#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['relatedremoved']}</em></p></div>";
 
@@ -1189,6 +1223,8 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_notifications (task_id, user_id) VALUES(?,?)",
     array($_POST['task_id'], $_POST['user_id']));
+    
+    $fs->logEvent($_POST['task_id'], 9, $_POST['user_id']);
 
     echo "<meta http-equiv=\"refresh\" content=\"2; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyadded']}</em></p></div>";
@@ -1207,6 +1243,8 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 
   $remove = $fs->dbQuery("DELETE FROM flyspray_notifications WHERE task_id = ? AND user_id = ?",
     array($_POST['task_id'], $_POST['user_id']));
+    
+  $fs->logEvent($_POST['task_id'], 10, $_POST['user_id']);
 
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=notify#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['notifyremoved']}</em></p></div>";
@@ -1222,6 +1260,8 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   $update = $fs->dbQuery("UPDATE flyspray_comments
               SET comment_text = ?  WHERE comment_id = ?",
               array($_POST['comment_text'], $_POST['comment_id']));
+              
+  $fs->logEvent($_POST['task_id'], 5, $_POST['comment_id']);
 
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['editcommentsaved']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
@@ -1233,7 +1273,10 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 /////////////////////////////////
 
 } elseif ($_POST['action'] == "deletecomment" && $_SESSION['admin'] == '1') {
+  $row = $fs->dbFetchRow($fs->dbQuery('SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id'])));
   $delete = $fs->dbQuery('DELETE FROM flyspray_comments WHERE comment_id = ?', array($_POST['comment_id']));
+  
+  $fs->logEvent($_POST['task_id'], 6, $row['user_id'], $row['date_added']);
 
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=comments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['commentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
@@ -1247,7 +1290,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 //  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
 } elseif ($_POST['action'] == "deleteattachment" && $_SESSION['admin'] == '1') {
 // if an attachment needs to be deleted do it right now
-  $delete = $fs->dbQuery('SELECT file_name FROM flyspray_attachments
+  $delete = $fs->dbQuery('SELECT file_name, orig_name FROM flyspray_attachments
                             WHERE attachment_id = ?',
                             array($_POST['attachment_id']));
   if ($row = $fs->dbFetchArray($delete)) {
@@ -1255,6 +1298,8 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
     $fs->dbQuery('DELETE FROM flyspray_attachments WHERE attachment_id = ?',
                     array($_POST['attachment_id']));
   }
+  
+  $fs->logEvent($_POST['task_id'], 8, $row['orig_name']);
 
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=attachments#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['attachmentdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
@@ -1277,6 +1322,8 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
   //echo "start time = $start_time";
   
   $insert = $fs->dbQuery("INSERT INTO flyspray_reminders (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array($_POST['task_id'], $_POST['to_user_id'], $_SESSION['userid'], $start_time, $how_often, $_POST['reminder_message']));
+  
+  $fs->logEvent($_POST['task_id'], 17, $_POST['to_user_id']);
 
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderadded']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";
@@ -1288,8 +1335,11 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
 //////////////////////////////////
 } elseif ($_POST['action'] == "deletereminder" && $_SESSION['can_modify_jobs'] == '1') {
   
+  $reminder = $fs->dbFetchRow($fs->dbQuery("SELECT to_user_id FROM flyspray_reminders WHERE reminder_id = ?", array($_POST['reminder_id'])));
   $fs->dbQuery('DELETE FROM flyspray_reminders WHERE reminder_id = ?',
                     array($_POST['reminder_id']));
+                    
+  $fs->logEvent($_POST['task_id'], 18, $reminder['to_user_id']);
   
   echo "<meta http-equiv=\"refresh\" content=\"1; URL=?do=details&amp;id={$_POST['task_id']}&amp;area=remind#tabs\">";
   echo "<div class=\"redirectmessage\"><p><em>{$modify_text['reminderdeleted']}</em></p><p>{$modify_text['waitwhiletransfer']}</p></div>";

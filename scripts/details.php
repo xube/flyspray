@@ -571,6 +571,12 @@ $num_reminders = $fs->dbCountRows($fs->dbQuery("SELECT * FROM flyspray_reminders
       echo "<a class=\"tabnotactive\"";
     };
     ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=system#tabs"><?php echo "{$details_text['system']}";?></a><small> | </small>
+   <?php if ($area == 'history') {
+      echo "<a class=\"tabactive\"";
+    } else {
+      echo "<a class=\"tabnotactive\"";
+    };
+    ?> href="?do=details&amp;id=<?php echo $_GET['id'];?>&amp;area=history#tabs"><?php echo "{$details_text['history']}";?></a><small> | </small>
 </p>
 
 <?php
@@ -596,7 +602,7 @@ if ($area == 'comments') { ?>
       $comment_text = stripslashes($comment_text);
 
     ?>
-     <div class="tabentry">
+     <div class="tabentry"><a name="<?php echo $row['comment_id'];?>"></a>
       <em><?php echo "{$details_text['commentby']} <a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">$user_name</a> - $formatted_date";?></em>
       <?php
         // If the user is an admin, show the edit button
@@ -824,6 +830,7 @@ if ($_SESSION['can_attach_files'] == "1" && $task_details['is_closed'] != '1') {
             <input type="hidden" name="action" value="remove_related">
             <input type="hidden" name="id" value="<?php echo $_GET['id'];?>">
             <input type="hidden" name="related_id" value="<?php echo $row['related_id'];?>">
+            <input type="hidden" name="related_task" value="<?php echo $row['related_task'];?>">
             <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>">
             </p>
           </form>
@@ -1117,12 +1124,216 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
 
 </div>
 
-
-
-<?
-
+<?php
 // End of system log area
 
+// Start of History Tab
+} elseif($area == 'history') { ?>
+
+<div class="tabentries">
+    <table id="history">
+        <tr>
+            <th><?php echo $details_text['eventdate'];?></th>
+            <th><?php echo $details_text['user'];?></th>
+            <th><?php echo $details_text['event'];?></b></th>
+        </tr>
+     <?php
+        $query_history = $fs->dbQuery("SELECT h.*, u.user_name, u.real_name
+                                         FROM flyspray_history h
+                                         LEFT JOIN flyspray_users u ON h.user_id = u.user_id
+                                         WHERE h.task_id = ?
+                                         ORDER BY h.event_date ASC, h.event_type ASC", array($_GET['id']));
+
+        if ($fs->dbCountRows($query_history) == 0) {
+            ?>
+        <tr>
+            <td colspan="3"><?php echo $details_text['nohistory'];?></td>
+        </tr>
+            <?php
+        };
+
+        while ($history = $fs->dbFetchRow($query_history)) {
+            ?>
+        <tr>
+            <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
+            <td><?php if ($history['user_id'] == 0) {
+                          echo $details_text['anonymous'];
+                      } else {
+                          echo "<a href=\"?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
+                      }?></td>
+            <td><?php
+            $newvalue = $history['new_value'];
+            $oldvalue = $history['old_value'];
+            
+            //Create an event description
+            if ($history['event_type'] == 0) {            //Field changed
+
+                $field = $history['field_changed'];
+
+                switch ($field) {
+                case 'item_summary':
+                    $field = $details_text['summary'];
+                    $oldvalue = htmlspecialchars(stripslashes($oldvalue));
+                    $newvalue = htmlspecialchars(stripslashes($newvalue));
+                    break;
+                case 'attached_to_project':
+                    $field = $details_text['attachedtoproject'];
+                    list($oldprojecttitle) = $fs->dbFetchRow($fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id = ?", array($oldvalue)));
+                    list($newprojecttitle) = $fs->dbFetchRow($fs->dbQuery("SELECT project_title FROM flyspray_projects WHERE project_id = ?", array($newvalue)));
+                    $oldvalue = "<a href=\"?project={$oldvalue}\">{$oldprojecttitle}</a>";
+                    $newvalue = "<a href=\"?project={$newvalue}\">{$newprojecttitle}</a>";
+                    break;
+                case 'task_type':
+                    $field = $details_text['tasktype'];
+                    list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id = ?", array($oldvalue)));
+                    list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id = ?", array($newvalue)));
+                    break;
+                case 'product_category':
+                    $field = $details_text['category'];
+                    list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT category_name FROM flyspray_list_category WHERE category_id = ?", array($oldvalue)));
+                    list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT category_name FROM flyspray_list_category WHERE category_id = ?", array($newvalue)));
+                    break;
+                case 'item_status':
+                    $field = $details_text['status'];
+                    $oldvalue = $status_list[$oldvalue];
+                    $newvalue = $status_list[$newvalue];
+                    break;
+                case 'operating_system':
+                    $field = $details_text['operatingsystem'];
+                    list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT os_name FROM flyspray_list_os WHERE os_id = ?", array($oldvalue)));
+                    list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT os_name FROM flyspray_list_os WHERE os_id = ?", array($newvalue)));
+                    break;
+                case 'task_severity':
+                    $field = $details_text['severity'];
+                    $oldvalue = $severity_list[$oldvalue];
+                    $newvalue = $severity_list[$newvalue];
+                    break;
+                case 'product_version':
+                    $field = $details_text['reportedversion'];
+                    list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($oldvalue)));
+                    list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($newvalue)));
+                    break;
+                case 'closedby_version':
+                    $field = $details_text['dueinversion'];
+                    if ($oldvalue == '0') {
+                        $oldvalue = $details_text['undecided'];
+                    } else {
+                        list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($oldvalue)));
+                    };
+                    if ($newvalue == '0') {
+                        $newvalue = $details_text['undecided'];
+                    } else {
+                        list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($newvalue)));
+                    };
+                    break;
+                case 'percent_complete':
+                    $field = $details_text['percentcomplete'];
+                    $oldvalue .= '%';
+                    $newvalue .= '%';
+                    break;
+                case 'detailed_desc':
+                    $field = $details_text['details'];
+                    $oldvalue = '';
+                    $newvalue = '';
+                    break;
+                };
+
+                echo "{$details_text['fieldchanged']}: {$field}";
+                if ($oldvalue != '' || $newvalue != '') {
+                    echo " ({$oldvalue} &rarr; {$newvalue})";
+                };
+
+            } elseif ($history['event_type'] == 1) {      //Task opened
+                echo $details_text['taskopened'];
+
+            } elseif ($history['event_type'] == 2) {      //Task closed
+                echo $details_text['taskclosed'];
+                $res_name = $fs->dbFetchRow($fs->dbQuery("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($newvalue)));
+                echo " ({$res_name['resolution_name']})";
+
+            } elseif ($history['event_type'] == 3) {      //Task edited
+                echo $details_text['taskedited'];
+
+            } elseif ($history['event_type'] == 4) {      //Comment added
+                echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;area=comments#{$newvalue}\">{$details_text['commentadded']}</a>";
+
+            } elseif ($history['event_type'] == 5) {      //Comment edited
+                echo "<a href=\"?do=details&amp;id={$_GET['id']}&amp;area=comments#{$newvalue}\">{$details_text['commentedited']}</a>";
+                $comment = $fs->dbQuery("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($newvalue));
+                if ($fs->dbCountRows($comment) != 0) {
+                    $comment = $fs->dbFetchRow($comment);
+                    echo " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
+                };
+
+            } elseif ($history['event_type'] == 6) {      //Comment deleted
+                echo $details_text['commentdeleted'];
+                if ($newvalue != '' && $oldvalue != '') {
+                    echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($oldvalue, true) . ")";    
+                };
+
+            } elseif ($history['event_type'] == 7) {      //Attachment added
+                echo $details_text['attachmentadded'];
+                $attachment = $fs->dbQuery("SELECT orig_name, file_desc FROM flyspray_attachments WHERE attachment_id = ?", array($newvalue));
+                if ($fs->dbCountRows($attachment) != 0) {
+                    $attachment = $fs->dbFetchRow($attachment);
+                    echo ": <a href=\"?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
+                    if ($attachment['file_desc'] != '') {
+                        echo " ({$attachment['file_desc']})";
+                    };
+                };
+
+            } elseif ($history['event_type'] == 8) {      //Attachment deleted
+                echo "{$details_text['attachmentdeleted']}: {$newvalue}";
+
+            } elseif ($history['event_type'] == 9) {      //Notification added
+                echo "{$details_text['notificationadded']}: " . $fs->LinkedUsername($newvalue);
+
+            } elseif ($history['event_type'] == 10) {      //Notification deleted 
+                echo "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
+
+            } elseif ($history['event_type'] == 11) {      //Related task added
+                list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                echo "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";      
+
+            } elseif ($history['event_type'] == 12) {      //Related task deleted
+                list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                echo "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+
+            } elseif ($history['event_type'] == 13) {      //Task reopened
+                echo $details_text['taskreopened'];
+
+            } elseif ($history['event_type'] == 14) {      //Task assigned
+                if ($history['old_value'] == '0') {
+                    echo "{$details_text['taskassigned']} " . $fs->LinkedUsername($newvalue);
+                } elseif ($history['new_value'] == '0') {
+                    echo $details_text['assignmentremoved'];
+                } else {
+                    echo "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
+                };
+            } elseif ($history['event_type'] == 15) {      //Task added to related list of another task
+                list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                echo "{$details_text['addedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+
+            } elseif ($history['event_type'] == 16) {      //Task deleted from related list of another task
+                list($related) = $fs->dbFetchRow($fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+                echo "{$details_text['deletedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+
+            } elseif ($history['event_type'] == 17) {      //Reminder added
+                echo "{$details_text['reminderadded']}: " . $fs->LinkedUsername($newvalue);
+
+            } elseif ($history['event_type'] == 18) {      //Reminder deleted
+                echo "{$details_text['reminderdeleted']}: " . $fs->LinkedUsername($newvalue);
+            };
+            ?></td>
+        </tr>
+            <?php
+        };
+    ?>
+    </table> 
+</div>
+
+<?php
+// End of History Tab
 
 // End of tabbed areas
 };

@@ -26,3 +26,15 @@ INSERT INTO flyspray_prefs VALUES (18, 'dateformat', '', 'Default date format fo
 INSERT INTO flyspray_prefs VALUES (19, 'dateformat_extended', '', 'Default date format for new users and guests used in task details');
 
 ALTER TABLE `flyspray_list_category` ADD `parent_id` MEDIUMINT( 1 ) NOT NULL ;
+
+CREATE TABLE `flyspray_history` (
+  `history_id` mediumint(10) NOT NULL auto_increment,
+  `task_id` mediumint(10) NOT NULL default '0',
+  `user_id` mediumint(3) NOT NULL default '0',
+  `event_date` varchar(12) NOT NULL default '',
+  `event_type` mediumint(2) NOT NULL default '0',
+  `field_changed` varchar(32) NOT NULL default '',
+  `old_value` varchar(100) NOT NULL default '',
+  `new_value` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`history_id`)
+) TYPE=MyISAM;

@@ -487,6 +487,21 @@ if (!($totalcount / $perpage <= 1)) {
 
 		return date($dateformat, $timestamp);
 	}
+	
+	function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
+	{
+	    $this->dbQuery("INSERT INTO flyspray_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value) 
+	                      VALUES(?, ?, ?, ?, ?, ?, ?)",
+	                      array($task, $this->emptyToZero($_SESSION['userid']), date(U), $type, $field, $oldvalue, $newvalue));
+	}
+	
+	function LinkedUsername($user_id)
+	{
+	    $result = $this->dbQuery("SELECT user_name, real_name FROM flyspray_users WHERE user_id = ?", array($user_id));
+	    if ($this->dbCountRows($result) == 0) return '';
+	    $result = $this->dbFetchRow($result);
+	    return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";	
+	}
 
 // End of Flyspray class
 }
