@@ -316,7 +316,8 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
     function SendDetailedNotification($task_id, $subject, $message) {
 
         $flyspray_prefs = $this->GetGlobalPrefs();
-
+		$this_task = $this->GetTaskDetails($task_id);
+		
         $lang = $flyspray_prefs['lang_code'];
         require("lang/$lang/functions.inc.php");
 
@@ -326,21 +327,32 @@ function JabberMessage( $sHost, $sPort, $sUsername, $sPassword, $vTo, $sSubject,
         $get_users = $this->dbQuery("SELECT user_id FROM flyspray_notifications WHERE task_id = ?", array($task_id));
 
         while ($row = $this->dbFetchArray($get_users)) {
+           
+           // Check for current user
+           if ($row['user_id'] != $_COOKIE['flyspray_userid'] &&  $row['user_id'] != $this_task['assigned_to']) {
+           
+              $get_details = $this->dbQuery("SELECT notify_type, jabber_id, email_address
+                      FROM flyspray_users
+                      WHERE user_id = ?",
+                      array($row['user_id']));
 
-            $get_details = $this->dbQuery("SELECT notify_type, jabber_id, email_address
-                    FROM flyspray_users
-                    WHERE user_id = ?",
-                    array($row['user_id']));
-            while ($subrow = $this->dbFetchArray($get_details)) {
+              while ($subrow = $this->dbFetchArray($get_details)) {
 
-                if (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
-                        OR ($flyspray_prefs['user_notify'] == '2')) {
-                    array_push($email_users, $subrow['email_address']);
-                } elseif (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '2')
-                        OR ($flyspray_prefs['user_notify'] == '3')) {
-                    array_push($jabber_users, $subrow['jabber_id']);
-                };
-            };
+                  if (($flyspray_prefs['user_notify'] == '1' 
+                         && $subrow['notify_type'] == '1')
+                          OR ($flyspray_prefs['user_notify'] == '2')
+                          ) {
+                      array_push($email_users, $subrow['email_address']);
+                  } elseif (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '2')
+                          OR ($flyspray_prefs['user_notify'] == '3')) {
+                      array_push($jabber_users, $subrow['jabber_id']);
+                  };
+              
+              };
+           
+           // End of checking for current user
+           };
+        
         };
 
         $subject = stripslashes($subject);
