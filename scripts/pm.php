@@ -625,7 +625,13 @@ if ($permissions['manage_project'] == '1')
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
       <table class="list">
          <?php
-         $get_os = $db->Query("SELECT * FROM flyspray_list_os WHERE project_id = ? ORDER BY list_position", array($project_id));
+         $get_os = $db->Query("
+             SELECT *, count(t.task_id) AS used_in_tasks
+             FROM flyspray_list_os os
+             LEFT JOIN flyspray_tasks t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
+             WHERE os.project_id = ?
+             GROUP BY os.os_id
+             ORDER BY list_position", array($project_id));
          $countlines = 0;
          while ($row = $db->FetchArray($get_os)) {
          ?>
@@ -642,6 +648,14 @@ if ($permissions['manage_project'] == '1')
             <td title="Show this item in the Operating System list">
             <label for="showinlist<?php echo $countlines;?>"><?php echo $admin_text['show'];?></label>
             <input id="showinlist<?php echo $countlines;?>" type="checkbox" name="show_in_list[<?php echo $countlines;?>]" value="1" <?php if ($row['show_in_list'] == '1') { echo "checked=\"checked\"";};?> />
+            </td>
+            <?php if ($row['used_in_tasks'] == 0): ?>
+            <td title="Delete this item from the Operating System list">
+            <label for="delete<?php echo $row['os_id']?>"><?php echo $admin_text['delete'];?></label>
+            <input id="delete<?php echo $row['os_id']?>" type="checkbox" name="delete[<?php echo $row['os_id']?>]" value="1" />
+            <?php else: ?>
+            <td>&nbsp;
+            <?php endif; ?>
             </td>
          </tr>
          <?php
@@ -708,7 +722,13 @@ if ($permissions['manage_project'] == '1')
          <table class="list">
 
          <?php
-         $get_version = $db->Query("SELECT * FROM flyspray_list_version WHERE project_id = ? ORDER BY list_position", array($project_id));
+         $get_version = $db->Query("
+             SELECT *, count(t.task_id) AS used_in_tasks
+             FROM flyspray_list_version v
+             LEFT JOIN flyspray_tasks t ON (t.product_version = v.version_id OR t.closedby_version = v.version_id AND t.attached_to_project = v.project_id)
+             WHERE v.project_id = ?
+             GROUP BY v.version_id
+             ORDER BY list_position", array($project_id));
          $countlines = 0;
          while ($row = $db->FetchArray($get_version)) {
          ?>
@@ -733,6 +753,14 @@ if ($permissions['manage_project'] == '1')
                <option value="2" <?php if ($row['version_tense'] == '2') { echo "SELECTED";};?>><?php echo $admin_text['present'];?></option>
                <option value="3" <?php if ($row['version_tense'] == '3') { echo "SELECTED";};?>><?php echo $admin_text['future'];?></option>
             </select>
+            </td>
+            <?php if ($row['used_in_tasks'] == 0): ?>
+            <td title="<?php echo $admin_text['listdeletetip'];?>">
+            <label for="delete<?php echo $row['version_id']?>"><?php echo $admin_text['delete'];?></label>
+            <input id="delete<?php echo $row['version_id']?>" type="checkbox" name="delete[<?php echo $row['version_id']?>]" value="1" />
+            <?php else: ?>
+            <td>&nbsp;
+            <?php endif; ?>
             </td>
          </tr>
          <?php

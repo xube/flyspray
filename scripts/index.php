@@ -363,7 +363,7 @@ if ($project_prefs['project_is_active'] == '1'
 
     <select name="status">
       <option value="all" <?php if (isset($_GET['status']) && $_GET['status'] == "all") echo 'selected="selected"';?>><?php echo $index_text['allstatuses'];?></option>
-      <option value="" <?php if (isset($_GET['status']) && $_GET['status'] == "") { echo "selected=\"selected\"";};?>><?php echo $index_text['allopentasks'];?></option>
+      <option value="" <?php if ((isset($_GET['status']) && !empty($_GET['status'])) OR !isset($_GET['status'])) { echo "selected=\"selected\"";};?>><?php echo $index_text['allopentasks'];?></option>
       <?php
       require("lang/$lang/status.php");
       foreach($status_list as $key => $val) {

@@ -311,7 +311,7 @@ $message = "{$modify_text['messagefrom']} {$project_prefs['project_title']} \n
 "-----\n{$modify_text['moreinfomodify']} {$flyspray_prefs['base_url']}index.php?do=details&amp;id={$_POST['task_id']}\n\n";
 */
       if ($send_me == "YES")
-         $notify->Create('1', $_POST['task_id']);
+         $notify->Create('2', $_POST['task_id']);
 
     // Check to see if the assignment has changed
     // Because we have to send a simple notification or two
@@ -1479,7 +1479,7 @@ $detailed_message = "{$modify_text['noticefrom']} {$project_prefs['project_title
       $deleteids = "$list_id = " . join(" OR $list_id =", array_keys($listdelete));
       $db->Query("DELETE FROM $list_table_name WHERE $deleteids");
   }
-  
+
   if($_POST['project_id'] != '') {
       header("Location: index.php?do=admin&area=projects&id=" . $_POST['project_id'] . "&show=" . $_POST['list_type']);
       //echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;show={$_POST['list_type']}&amp;id={$_POST['project_id']}\">";

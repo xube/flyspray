@@ -174,6 +174,7 @@ $admin_text = array (
 'admintoolbox'          =>    'Administrator\'s Toolbox',
 'newproject'            =>    'New Project',
 'delete'                =>    'Delete',
+'listdeletetip'         =>    'Delete this item from the list',
 
 );
 ?>
