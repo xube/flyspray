@@ -10,10 +10,10 @@ $reports_text = array (
 'listfrom'	=>	'Pokaż zmiany od',
 'to'		=>	'do',
 'show'		=>	'Pokaż',
-'oldestfirst'	=>	'Od najstarszych',
-'recentfirst'	=>	'Od najnowszych',
+'oldestfirst'	=>	'Sortuj od najstarszych',
+'recentfirst'	=>	'Sortuj od najnowszych',
 
-'severity'	=>	'Dotkliwośc',
+'severity'	=>	'Dotkliwość',
 'severityrep'	=>	'Raport dotkliwości',
 'totalopen'	=>	'Całkowita liczba otwartych',
 
@@ -32,18 +32,19 @@ $reports_text = array (
 'relatedtasks'  =>      'Powiązane zgłoszenia',
 'notifications' =>      'Powiadomienia',
 'reminders'     =>      'Przypomnienia',
-'within'        =>      'w ciągu',
+'within'        =>      'Okres',
 
-'pastday'       =>      'Miniony dzień',
-'pastweek'      =>      'Zeszły tydzień',
-'pastmonth'     =>      'Zeszły miesiąc',
-'pastyear'      =>      'Zeszły rok',
-'nolimit'       =>      'Bez ograniczeń',
+'pastday'       =>      'wczoraj',
+'pastweek'      =>      'w zeszłym tygodniu',
+'pastmonth'     =>      'w zeszłym miesiącu',
+'pastyear'      =>      'w zeszłym roku',
+'nolimit'       =>      'bez ograniczeń',
 
-'from'          =>      'Od',
+'from'          =>      'Zakres dni',
 'duein'         =>      'Do wersji',
 
 'changelog'     =>      'Lista zmian',
+'date'          =>      'Data',
 
 );
 // vim:fenc=utf-8:enc=utf-8

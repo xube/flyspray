@@ -8,14 +8,14 @@
 
 $status_list = array (
 
-'1'        =>        'Niepotwierdzony',
-'2'        =>        'Nowy',
-'3'        =>        'Przydzielony',
+'1'        =>        'Niepotwierdzone',
+'2'        =>        'Nowe',
+'3'        =>        'Przydzielone',
 '4'        =>        'Trwają prace',
-'5'        =>        'Czekanie na informacje',
+'5'        =>        'Oczekuje na informacje',
 '6'        =>        'Wymaga testów',
-'7'        =>        'Ponownie otwarty',
-'8'        =>        'Zamknięty',
+'7'        =>        'Ponownie otwarte',
+'8'        =>        'Zamknięte',
 
 );
 // vim:fenc=utf-8:enc=utf-8

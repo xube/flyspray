@@ -12,7 +12,7 @@ $index_text = array (
 
 'search'	=>	'Szukaj',
 'alltasktypes'	=>	'Dowolny typ',
-'allseverities'	=>	'Dowolny priorytet',
+'allseverities'	=>	'Dowolna dotkliwość',
 'alldevelopers'	=>	'Wszyscy programiści',
 'notyetassigned'=>	'Zadania nieprzydzielone',
 'allcategories'	=>	'Dowolna kategoria',
@@ -21,7 +21,7 @@ $index_text = array (
 'sortthiscolumn'=>	'Sortuj według kolumny',
 'id'		=>	'ID',
 'tasktype'	=>	'Typ zgłoszenia',
-'severity'	=>	'Priorytet',
+'severity'	=>	'Dotkliwość',
 'summary'	=>	'W skrócie',
 'dateopened'	=>	'Data otwarcia',
 'status'	=>	'Status',

@@ -31,7 +31,7 @@ $language = array (
 'operatingsystems'	=>	'Systemy operacyjne',
 'resolutions'	=>	'Decyzje',
 'versions'	=>	'Wersje',
-'severities'	=>	'Priorytety',
+'severities'	=>	'Dotkliwość',
 'disabledaccount'	=>	'Twoje konto jest nieaktywne!<br>Wylogowano...',
 'poweredby'	=>	'Napędzane przez Flyspray',
 

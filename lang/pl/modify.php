@@ -30,7 +30,7 @@ $modify_text = array (
 'category'          =>        'Kategoria:',
 'status'            =>        'Status:',
 'operatingsystem'   =>        'System operacyjny:',
-'severity'          =>        'Priorytet:',
+'severity'          =>        'Dotkliwość:',
 'reportedversion'   =>        'Dotyczy wersji:',
 'dueinversion'      =>        'Obecne do wersji:',
 'percentcomplete'   =>        'Procent zaawansowania:',
@@ -111,10 +111,10 @@ $modify_text = array (
 
 'relatedremoved'    =>        'Powiązane zgłoszenie usunięto z listy.',
 
-'notifyadded'       =>        'Użytkownika dodano do listy powiadomień.',
+'notifyadded'       =>        'Użytkownika został dodany do listy powiadomień.',
 'notifyerror'       =>        'Użytkownik jest już na liście powiadomień tego zgłoszenia.',
 
-'notifyremoved'     =>        'Użytkownika usunięto z listy powiadomień.',
+'notifyremoved'     =>        'Użytkownika został usunięty z listy powiadomień.',
 
 'editcommentsaved'  =>        'Zmieniony komentarz zachowano.',
 'commentdeleted'    =>        'Komentarz został usunięty.',
