@@ -53,7 +53,9 @@ if ($_GET['sort']) {
   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP.">
   <script type="text/javascript" src="functions.js"></script>
   <script type="text/javascript" src="styleswitcher.js"></script>
+  <script type="text/javascript" src="calendar/javascript/simplecalendar.js"></script>
   <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
+  <link href="calendar/styles/calendar.css" rel="stylesheet" type="text/css">
   <?php
       // open the themes directory
       if ($handle = opendir('themes/')) {
@@ -180,6 +182,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo "<em>{$language['loggedinas']} - {$current_user['user_name']}</em>";
     echo "<span id=\"mainmenu\">";
     echo "<small> | </small><a href=\"?do=newtask&amp;project=$project_id\">{$language['addnewtask']}</a>";
+    echo "<small> | </small><a href=\"index.php?do=reports\">{$language['reports']}</a>";
     echo "<small> | </small><a href=\"?do=admin&amp;area=users&amp;id={$_SESSION['userid']}\">{$language['editmydetails']}</a>";
     echo "<small> | </small><a href=\"index.php?do=chpass\">{$language['changepassword']}</a>";
     echo "<small> | </small><a href=\"scripts/authenticate.php?action=logout\">{$language['logout']}</a></span>\n";
@@ -225,7 +228,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     }
 
       // This is to only allow people to request valid pages, instead of things like config.inc.php or /etc/passwd 
-      if (preg_match ("/^(admin|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register)$/", $do)
+      if (preg_match ("/^(admin|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register)$/", $do)
          && ($flyspray_prefs['anon_view'] == '1' OR $_COOKIE['flyspray_userid'])) {
          
          require("scripts/$do.php");

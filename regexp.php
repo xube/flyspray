@@ -107,7 +107,7 @@ if ($_GET['do'] || $_POST['do']) {
     };
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(admin|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report)$/", $tmp_action)) {
+    if (preg_match ("/^(admin|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report)$/", $tmp_action)) {
 
        // continue;
 
@@ -202,6 +202,16 @@ if ($_GET['area']) {
     } else {
 
         print "Area request is invalid."; exit;
+    };
+};
+
+if ($_GET['report']) {
+
+    // Yes. Now check its regex format for safety -- Limited range
+    if (preg_match ("/^(summary|changelog|severity|age)$/", $_GET['report'])) {
+       // continue;
+    } else {
+        print "Report request is invalid."; exit;
     };
 };
 
