@@ -297,7 +297,7 @@ if ($_SESSION['can_modify_jobs'] == '1'
 
 ?>
 
-<div id="taskdetails">
+<div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
     <?php if ($_SESSION['can_modify_jobs'] != '1' OR $task_details['item_status'] == '8') { ?>
     <h2 class="severity<?php echo $task_details['task_severity'];?>">
     <?php } else { ?>

@@ -138,8 +138,8 @@ $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
     // We need them in order to generate the changed-task message
     $old_details = $fs->GetTaskDetails($_POST['task_id']);
 
-    $item_summary = addslashes($_POST['item_summary']);
-    $detailed_desc = addslashes($_POST['detailed_desc']);
+    $item_summary = $_POST['item_summary'];
+    $detailed_desc = $_POST['detailed_desc'];
 
     $add_item = $fs->dbQuery("UPDATE flyspray_tasks SET
                   attached_to_project = ?,
@@ -375,7 +375,7 @@ $current_realname ($current_username) {$modify_text['hasreopened']} {$modify_tex
 
   if ($_POST['comment_text'] != "") {
 
-    $comment = addslashes($_POST['comment_text']);
+    $comment = $_POST['comment_text'];
 
     $insert = $fs->dbQuery("INSERT INTO flyspray_comments 
     (task_id, date_added, user_id, comment_text) VALUES
@@ -758,7 +758,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
     // Only add the listing to the database if the file was actually uploaded successfully
     if (file_exists("attachments/$file_name")) {
 
-      $file_desc = addslashes($_POST['file_desc']);
+      $file_desc = $_POST['file_desc'];
       $add_to_db = $fs->dbQuery("INSERT INTO flyspray_attachments 
 			(task_id, orig_name, file_name, file_desc,
 			file_type, file_size, added_by, date_added)
