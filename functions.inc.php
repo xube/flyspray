@@ -51,10 +51,8 @@ class Flyspray {
       $get_prefs = $this->dbQuery("SELECT pref_name, pref_value FROM flyspray_prefs");
 
       $global_prefs = array();
-
-      while (list($pref, $value) = $this->dbFetchRow($get_prefs)) {
-         $temp_array = array("$pref"  => "$value");
-         $global_prefs = $global_prefs + $temp_array;
+      while ($row = $this->dbFetchRow($get_prefs)) {
+	 $global_prefs[$row['pref_name']] = $row['pref_value'];
       }
 
       return $global_prefs;

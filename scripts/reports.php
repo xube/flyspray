@@ -571,12 +571,12 @@ function EventDescription($history)
                 break;
             case 'closedby_version':
                 $field = $details_text['dueinversion'];
-                if ($oldvalue == '0') {
+                if (empty($oldvalue)) {
                     $oldvalue = $details_text['undecided'];
                 } else {
                     list($oldvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($oldvalue)));
                 };
-                if ($newvalue == '0') {
+                if (empty($newvalue)) {
                     $newvalue = $details_text['undecided'];
                 } else {
                     list($newvalue) = $fs->dbFetchRow($fs->dbQuery("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($newvalue)));
