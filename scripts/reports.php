@@ -41,6 +41,12 @@ function changelog_report()
 	} else {
 		$enddate = date("d-M-Y");
 	}
+	
+	if ($_REQUEST['sort']) {
+	  $sort = $_REQUEST['sort'];  
+	} else {
+	  $sort = 'desc';
+	};
 	?>
 
 	<form name="changelog_form" action="?do=reports&report=changelog" method="POST">
@@ -73,8 +79,8 @@ function changelog_report()
 
 	
 	<select name="sort">
-		<option value="asc" <?php if($_REQUEST['sort'] == 'asc') { echo "SELECTED";};?>><?php echo $reports_text['oldestfirst'];?></option>
-		<option value="desc" <?php if($_REQUEST['sort'] == 'desc') { echo "SELECTED";};?>><?php echo $reports_text['recentfirst'];?></option>
+		<option value="asc" <?php if($sort == 'asc') { echo "SELECTED";};?>><?php echo $reports_text['oldestfirst'];?></option>
+		<option value="desc" <?php if($sort == 'desc') { echo "SELECTED";};?>><?php echo $reports_text['recentfirst'];?></option>
 	</select>
 	
 	<input type="submit" class="mainbutton" name="submit" value="<?=$reports_text['show']?>">
@@ -84,8 +90,6 @@ function changelog_report()
 	<?php
 	$ustartdate = strtotime("$startdate");
 	$uenddate   = strtotime("$enddate + 1 day");
-	
-	$sort = $_REQUEST['sort'];
 	
 	$get_changes = $fs->dbQuery("SELECT t.*, u.*, r.*
 		FROM flyspray_tasks t

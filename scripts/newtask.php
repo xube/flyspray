@@ -81,7 +81,7 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
           while ($subrow = $fs->dbFetchArray($subcat_list)) {
             $subcategory_name = stripslashes($subrow['category_name']);
 
-            echo "<option value=\"{$subrow['category_id']}\">&rarr;$subcategory_name</option>\n";
+            echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
 
           };
         };
@@ -158,7 +158,7 @@ if ($_SESSION['can_open_jobs'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
      <td><label for="closedbyversion"><?php echo $newtask_text['dueinversion'];?></label></td>
      <td><select id="closedbyversion" name="closedby_version" <?php if ($_SESSION['can_modify_jobs'] != "1") { echo " disabled=\"disabled\"";};?>>
         <?php
-        echo "<option value=\"\">Undecided</option>\n";
+        echo "<option value=\"\">{$newtask_text['undecided']}</option>\n";
 
         $get_version = $fs->dbQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",
 				    array($project_id, '1', '3'));

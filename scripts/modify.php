@@ -1083,11 +1083,7 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
                 $_POST['user_id']));
       };
 
-      if  ($_SESSION['admin'] == '1') {
-        echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php?do=admin&amp;area=users\">";
-      } else {
-        echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
-      };
+      echo "<meta http-equiv=\"refresh\" content=\"0; URL=index.php\">";
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['userupdated']}</em></p></div>";
     };
   } else {

@@ -145,9 +145,9 @@ if (($_SESSION['can_modify_jobs'] == '1'
           while ($subrow = $fs->dbFetchArray($subcat_list)) {
             $subcategory_name = stripslashes($subrow['category_name']);
             if ($task_details['product_category'] == $subrow['category_id']) {
-              echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&rarr;$subcategory_name</option>\n";
+              echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
             } else {
-              echo "<option value=\"{$subrow['category_id']}\">&rarr;$subcategory_name</option>\n";
+              echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
             };
           };
         };
@@ -380,7 +380,7 @@ if (($_SESSION['can_modify_jobs'] == '1'
                                           FROM flyspray_list_category
                                           WHERE category_id = ?',
                                           array($task_details['parent_id'])));
-          echo $get_parent_cat['category_name'] . " &rarr; ";
+          echo $get_parent_cat['category_name'] . " &nbsp;&nbsp;&rarr; ";
         };
         echo $task_details['category_name'];?>
         </td>
@@ -1239,7 +1239,7 @@ if ($_SESSION['admin'] == '1' && $task_details['is_closed'] != '1') {
 
                 echo "{$details_text['fieldchanged']}: {$field}";
                 if ($oldvalue != '' || $newvalue != '') {
-                    echo " ({$oldvalue} &rarr; {$newvalue})";
+                    echo " ({$oldvalue} &nbsp;&nbsp;&rarr; {$newvalue})";
                 };
 
             } elseif ($history['event_type'] == 1) {      //Task opened

@@ -23,6 +23,7 @@ $newtask_text = array (
 
 'notifyme'			=>	'Notify me whenever this task changes',
 'priority'			=>	'Priority',
+'undecided'			=>	'Undecided',
 
 );
 ?>

@@ -267,9 +267,9 @@ $extraurl .= "&amp;order2={$_GET['order2']}&amp;sort2={$_GET['sort2']}";
         while ($subrow = $fs->dbFetchArray($subcat_list)) {
           $subcategory_name = stripslashes($subrow['category_name']);
           if ($_GET['cat'] == $subrow['category_id']) {
-            echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&rarr;$subcategory_name</option>\n";
+            echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
           } else {
-            echo "<option value=\"{$subrow['category_id']}\">&rarr;$subcategory_name</option>\n";
+            echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
           };
         };
       };
