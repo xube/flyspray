@@ -1,8 +1,9 @@
 <?php
 get_language_pack($lang, 'register');
 
-// The application preferences allow anonymous signups
-if ($flyspray_prefs['anon_open'] != "0" && !$_SESSION['userid']) {
+// If the application preferences require the use of
+// confirmation codes, use this script
+if ($flyspray_prefs['spam_proof'] == '1' && !$_SESSION['userid']) {
 
 // The first page of signup.
 if (!$_GET['page']) {

@@ -271,10 +271,11 @@ if ($flyspray_prefs['anon_open'] == '1' && $flyspray_prefs['anon_view'] == '1' &
   echo "<p class=\"unregistered\"><a href=\"?do=newtask&amp;project=$project_id\">{$language['opentaskanon']}</a></p>";
 };
 
-// Otherwise show the link to a registration form
-if ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '1') {
+// If we want to use confirmation codes in the signup form
+if (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '1') {
   echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a></p>";
-} elseif ($flyspray_prefs['anon_open'] != '0' && !$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] != '1') {
+// ...and if we don't care about it
+} elseif (!$_COOKIE['flyspray_userid'] && $flyspray_prefs['spam_proof'] == '0') {
   echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a></p>";
 };
 

@@ -3,7 +3,7 @@ get_language_pack($lang, 'newuser');
 
 // Make sure that only admins are using this page, unless
 // The application preferences allow anonymous signups
-if ($_SESSION['admin'] == "1" OR ($flyspray_prefs['anon_open'] != "0" && !$_SESSION['userid'])) {
+if ($_SESSION['admin'] == "1" OR ($flyspray_prefs['spam_proof'] == '0' && !$_SESSION['userid'])) {
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
