@@ -147,6 +147,11 @@ div#loginbox {
    background-position  : 20px 35px;
 }
 
+div#loginbox p {
+   padding           : 0px;
+   margin            : 0px;
+}
+
 div#loginbox em {
    display              : block;
    font-weight          : normal;
@@ -985,6 +990,11 @@ div#search {
    padding              : 0px 0px 0px 0px;
    border               : 1px solid #008000;
    display              : block;
+}
+
+div#search p {
+   padding           : 0px;
+   margin            : 0px;
 }
 
 div#search em {

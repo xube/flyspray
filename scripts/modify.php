@@ -1698,7 +1698,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == "add_notification")
 {
 
-   if (is_array($_REQUEST['ids']))
+   if (is_array($_REQUEST['ids']) && !empty($_REQUEST['ids']))
    {
       $ids = $_REQUEST['ids'];
       $tasks = array();

@@ -345,8 +345,8 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['newtaskopened'] . "\n\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
-         $body .= $details_text['attachedtoproject'] . ' - ' .  $task_details['project_title'] . "\n";
-         $body .= $details_text['summary'] . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $details_text['attachedtoproject'] . ' - ' .  stripslashes($task_details['project_title']) . "\n";
+         $body .= $details_text['summary'] . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $details_text['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
          $body .= $details_text['category'] . ' - ' . $task_details['category_name'] . "\n";
          $body .= $details_text['status'] . ' - ' . $task_details['status_name'] . "\n";
@@ -406,7 +406,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['taskclosed'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
@@ -425,7 +425,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['taskreopened'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] .  ")\n\n";
          $body .= $notify_text['disclaimer'];
 
@@ -442,7 +442,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['depadded'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
@@ -462,7 +462,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['depremoved'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
@@ -477,7 +477,7 @@ class Notifications {
       ///////////////////
       if ($type == '7')
       {
-         // Get the comment text
+         // Get the comment information
          $comment = $db->FetchArray($db->Query("SELECT comment_id, comment_text
                                                 FROM flyspray_comments
                                                 WHERE user_id = ?
@@ -492,7 +492,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['commentadded'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= "----------\n";
          $body .= $comment['comment_text'] . "\n";
@@ -514,7 +514,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['attachmentadded'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
@@ -532,7 +532,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['relatedadded'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
@@ -551,7 +551,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $task_details['assigned_to_name'] . $notify_text['takenownership'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -585,7 +585,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pendingreq'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
@@ -603,7 +603,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pmdeny'] . "\n\n";
-         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";

@@ -126,14 +126,15 @@ class Flyspray {
 
  // Thanks to Mr Lance Conry for this query that saved me a lot of effort.
 // Check him out at http://www.rhinosw.com/
-function GetTaskDetails($task_id) {
-
+function GetTaskDetails($task_id)
+{
       global $db;
       global $flyspray_prefs;
+      global $lang;
 
-      $lang = $flyspray_prefs['lang_code'];
+      //$lang = $flyspray_prefs['lang_code'];
 
-        $get_details = $db->Query("SELECT t.*,
+      $get_details = $db->Query("SELECT t.*,
                                               p.*,
                                               c.category_name,
                                               c.category_owner,
@@ -164,27 +165,31 @@ function GetTaskDetails($task_id) {
                                               WHERE t.task_id = ?
                                               ", array($task_id));
 
-        $get_details = $db->FetchArray($get_details);
+      if (!$db->CountRows($get_details))
+         return false;
 
-    if (empty($get_details))
-           $get_details = array();
+      $get_details = $db->FetchArray($get_details);
 
-        $status_id = $get_details['item_status'];
-    require("lang/$lang/status.php");
-        $tmp_array = array("status_name" => $status_list[$status_id]);
-        $get_details = $get_details + $tmp_array;
+      if (empty($get_details))
+         $get_details = array();
 
-        $severity_id = $get_details['task_severity'];
-    require("lang/$lang/severity.php");
-        $tmp_array = array("severity_name" => $severity_list[$severity_id]);
-        $get_details = $get_details + $tmp_array;
+      $status_id = $get_details['item_status'];
 
-        $priority_id = $get_details['task_priority'];
-    require("lang/$lang/priority.php");
-        $tmp_array = array("priority_name" => $priority_list[$priority_id]);
-        $get_details = $get_details + $tmp_array;
+      require("lang/$lang/status.php");
+      $tmp_array = array("status_name" => $status_list[$status_id]);
+      $get_details = $get_details + $tmp_array;
 
-        return $get_details;
+      $severity_id = $get_details['task_severity'];
+      require("lang/$lang/severity.php");
+      $tmp_array = array("severity_name" => $severity_list[$severity_id]);
+      $get_details = $get_details + $tmp_array;
+
+      $priority_id = $get_details['task_priority'];
+      require("lang/$lang/priority.php");
+      $tmp_array = array("priority_name" => $priority_list[$priority_id]);
+      $get_details = $get_details + $tmp_array;
+
+      return $get_details;
 }
 
 

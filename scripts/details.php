@@ -9,51 +9,45 @@
 $fs->get_language_pack($lang, 'details');
 $fs->get_language_pack($lang, 'newtask');
 
-$task_exists = $db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($_GET['id']));
+// Only load this page if a valid task was actually requested
+if (!$fs->GetTaskDetails($_GET['id']))
+   die ( "<p><strong>{$details_text['showdetailserror']}</strong></p>" );
+
 $task_details = $fs->GetTaskDetails($_GET['id']);
 
 // declare variables
 $deps_open = null;
 
-// Only load this page if a valid task was actually requested
 // and the user has permission to view it
-if ($db->CountRows($task_exists)
-     && $task_details['project_is_active'] == '1'
-     && ($project_prefs['others_view'] == '1'
-         OR @$permissions['view_tasks'] == '1')
-     && (($task_details['mark_private'] == '1'
-         && $task_details['assigned_to'] == $current_user['user_id'])
-         OR @$permissions['manage_project'] == '1'
-         OR $task_details['mark_private'] != '1')
-     )
+if ($task_details['project_is_active'] == '1'
+  && ($project_prefs['others_view'] == '1'
+      OR @$permissions['view_tasks'] == '1')
+  && (($task_details['mark_private'] == '1'
+       && $task_details['assigned_to'] == $current_user['user_id'])
+           OR @$permissions['manage_project'] == '1'
+           OR $task_details['mark_private'] != '1')
+   )
 {
-
 
    // Create an array with effective permissions for this user on this task
    $effective_permissions = array();
 
    // Confirm that the user can modify this task or not
    if (@$permissions['modify_all_tasks'] == '1'
-      OR (@$permissions['modify_own_tasks'] == '1' && $task_details['assigned_to'] == $current_user['user_id']))
-   {
-      $effective_permissions['can_edit'] = '1';
-   }
+       OR (@$permissions['modify_own_tasks'] == '1' && $task_details['assigned_to'] == $current_user['user_id']))
+         $effective_permissions['can_edit'] = '1';
 
    // Check if the user can take ownership of this task
    if ((@$permissions['assign_to_self'] == '1' && empty($task_details['assigned_to']))
     OR @$permissions['assign_others_to_self'] == '1'
     && $task_details['assigned_to'] != $current_user['user_id'])
-   {
       $effective_permissions['can_take_ownership'] = '1';
-   }
+
 
    // Check if the user can close this task
    if ((@$permissions['close_own_tasks'] == '1' && ($task_details['assigned_to'] == $current_user['user_id']))
     OR @$permissions['close_other_tasks'] == '1')
-   {
       $effective_permissions['can_close'] = '1';
-   }
-
 
    ///////////////////////////////////
    // If the user can modify tasks, //

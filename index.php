@@ -125,23 +125,21 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // at the end of script execution by PHP itself when output buffering is turned on
    // either in the php.ini or by calling ob_start().
 
-   $extraurl = '';
-   if (isset($_GET['order']))
-      $extraurl = '&amp;order=' . $_GET['order'];
    // When viewing the task list, take down each value that the search form may have passed
    if ($do == 'index')
-   $extraurl = '&amp;string=' . $_GET['string'] . '&amp;type=' . $_GET['type'] . '&amp;sev=' . $_GET['sev'] . '&amp;dev=' . $_GET['dev']
-               . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status']
-               . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort']
-               . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage'];
+   {
+      $extraurl = '&amp;string=' . $_GET['string'] . '&amp;type=' . $_GET['type'] . '&amp;sev=' . $_GET['sev'] . '&amp;dev=' . $_GET['dev']
+                  . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status']
+                  . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort']
+                  . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage'];
 
-   // If the user has used the search box, store their search for later on
-   if (isset($_GET['perpage']) || isset($_GET['tasks']) || isset($_GET['order']))
       $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project']
                                      . '&amp;pagenum=' . $_GET['pagenum'] . $extraurl;
 
+      if (isset($_GET['order']))
+         $_SESSION['lastindexfilter'] .= '&amp;order=' . $_GET['order'];
+   }
 ?>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>

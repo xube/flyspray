@@ -270,7 +270,7 @@ if (isset($_GET['project']) && $_GET['project'] == '0') {
 $get = $get . '&amp;tasks=' . $_GET['tasks'] . $extraurl;
 
 // for page numbering
-$extraurl = $get . '&amp;order=' . $_GET['order'];
+//$extraurl = $get . '&amp;order=' . $_GET['order'];
 ?>
 
 <?php
@@ -285,9 +285,9 @@ if ($project_prefs['project_is_active'] == '1'
 
 
 <!-- Query line -->
+<div id="search">
 <map id="projectsearchform" name="projectsearchform">
 <form action="index.php" method="get">
-<div id="search">
 <input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>" />
 <input type="hidden" name="project" value="<?php echo $project_id;?>" />
   <em><?php echo $index_text['searchthisproject'];?>:</em>
@@ -442,9 +442,9 @@ if ($project_prefs['project_is_active'] == '1'
     </select>
 
     <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />
-</div>
 </form>
 </map>
+</div>
 
 <?php
 // Get the visibility state of all columns
@@ -778,7 +778,7 @@ ORDER BY
       if ($total > 0) {
          echo "<td id=\"taskrange\">";
          printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
-         echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl) . "</td>";
+         echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . $_GET['order']) . "</td>";
       } else
       {
          echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";
@@ -789,7 +789,7 @@ ORDER BY
 
    <?php
    if (isset($_COOKIE['flyspray_userid'])) { ?>
-   <div id="actionbuttons">
+   <div id="massops">
       <a href="javascript:void();" onclick="ToggleSelectedTasks()">Toggle selected</a>
       <select name="action">
          <option value="add_notification"><?php echo $index_text['watchtasks'];?></option>
