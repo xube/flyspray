@@ -598,14 +598,10 @@ $group_details = $fs->dbFetchArray($get_group_details);
   </tr>
   <tr>
     <td>
-      <label for="anonopen"><?php echo $admin_text['allowanon'];?></label>
+      <label for="allowusersignups"><?php echo $admin_text['anonreg'];?></label>
     </td>
     <td>
-    <select id="anonopen" name="anon_open">
-      <option value="0" <?php if ($flyspray_prefs['anon_open'] == "0") { echo "selected=\"selected\"";};?>><?php echo $admin_text['never'];?></option>
-      <option value="1" <?php if ($flyspray_prefs['anon_open'] == "1") { echo "selected=\"selected\"";};?>><?php echo $admin_text['anonymously'];?></option>
-      <option value="2" <?php if ($flyspray_prefs['anon_open'] == "2") { echo "selected=\"selected\"";};?>><?php echo $admin_text['afterregister'];?></option>
-    </select>
+    <input id="allowusersignups" type="checkbox" name="anon_reg" value="1" <?php if ($flyspray_prefs['anon_reg'] == '1') { echo "checked=\"checked\"";};?>>
     </td>
   </tr>
   <tr>
@@ -863,6 +859,14 @@ if ($_GET['show'] == 'prefs') { ?>
     </td>
     <td>
     <input id="othersview" type="checkbox" name="others_view" value="1" <?php if ($project_details['others_view'] == '1') { echo "CHECKED";};?>>
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <label for="anonopen"><?php echo $admin_text['allowanonopentask'];?></label>
+    </td>
+    <td>
+    <input id="anonopen" type="checkbox" name="anon_open" value="1" <?php if ($project_details['anon_open'] == '1') { echo "CHECKED"; }; ?>>
     </td>
   </tr>
   <tr><td colspan="2"><hr></td></tr>

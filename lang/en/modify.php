@@ -148,10 +148,13 @@ $modify_text = array (
 'dependaddfailed'       =>        'You can\'t add that task as a dependency at this time',
 'depremoved'            =>        'Task dependency has been removed',
 'newdepis'              =>        'The new dependency is',
-'lostpwlinksent'        =>        'A message has been sent to your notification address.  It contains a link that will take you to a page to change your password.',
+'magicurlsent'          =>        'A message has been sent to your notification address.  It contains a link that will take you to a page to complete this task.',
 'changefspass'          =>        'Change Flyspray password',
 'magicurlmessage'       =>        'Please follow the link below to change your Flyspray password:',
 'erroronform'           =>        'There was an problem with your form submission',
+'addressused'           =>        'This address has been used to register a Flyspray account.  If you were not expecting this message, please ignore and delete it.  Go to the following URL to complete your registration:',
+'confirmcodeis'         =>        'Your confirmation code is:',
+'codesent'              =>        'Your confirmation code has been sent.  Please follow the instructions contained in the message.',
 
 );
 ?>

@@ -3,7 +3,8 @@
 get_language_pack($lang, 'newtask');
 // Check if the user is an admin
 
-if ($permissions['open_new_tasks'] == "1" OR $flyspray_prefs['anon_open'] == "1") {
+if ($permissions['open_new_tasks'] == "1"
+    OR $project_prefs['anon_open'] == "1") {
 ?>
 
 <h3><?php echo $newtask_text['createnewtask'] ." ". $project_prefs['project_title'];?></h3>

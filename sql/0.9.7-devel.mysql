@@ -122,8 +122,23 @@ CREATE TABLE `flyspray_dependencies` (
 ) TYPE=MyISAM COMMENT='Task dependencies' AUTO_INCREMENT=2 ;
 
 
+ALTER TABLE `flyspray_users` ADD `magic_url` VARCHAR( 40 ) NOT NULL ;
+
+ALTER TABLE `flyspray_registrations` ADD `user_name` VARCHAR( 20 ) NOT NULL ;
+ALTER TABLE `flyspray_registrations` ADD `real_name` VARCHAR( 100 ) NOT NULL ;
+ALTER TABLE `flyspray_registrations` ADD `email_address` VARCHAR( 100 ) NOT NULL ;
+ALTER TABLE `flyspray_registrations` ADD `jabber_id` VARCHAR( 100 ) NOT NULL ;
+ALTER TABLE `flyspray_registrations` ADD `notify_type` MEDIUMINT( 1 ) NOT NULL ;
+ALTER TABLE `flyspray_registrations` ADD `magic_url` VARCHAR( 40 ) NOT NULL ;
+
+ALTER TABLE `flyspray_projects` ADD `anon_open` MEDIUMINT( 1 ) NOT NULL ;
+
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES (
+'', 'anon_reg', '1', 'Allow new user registrations'
+);
+
+
 ####################################
 ## The Psi database is up to here ##
 ####################################
-
-ALTER TABLE `flyspray_users` ADD `magic_url` VARCHAR( 40 ) NOT NULL ;

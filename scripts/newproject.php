@@ -74,20 +74,6 @@ if ($permissions['is_admin'] == '1') {
     <input type="checkbox" name="inline_images" value="1">
     </td>
   </tr>
-  <!--<tr>
-    <td>
-      <label for="defaultcatowner"><?php echo $newproject_text['defaultcatowner'];?></label>
-    </td>
-    <td>
-      <select id="defaultcatowner" name="default_cat_owner">
-      <option value=""><?php echo $newproject_text['noone'];?></option>
-      <?php
-      // Get list of developers
-      $fs->listUsers($project_details['default_cat_owner']);
-      ?>
-    </select>
-    </td>
-  </tr>-->
   <tr>
     <td>
     <label for="intromessage"><?php echo $newproject_text['intromessage'];?></label>
@@ -101,7 +87,15 @@ if ($permissions['is_admin'] == '1') {
     <label for="othersview"><?php echo $newproject_text['othersview'];?></label>
     </td>
     <td>
-    <input id="othersview" type="checkbox" name="others_view" value="1">
+    <input id="othersview" type="checkbox" name="others_view" value="1" checked>
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <label for="anonopen"><?php echo $newproject_text['allowanonopentask'];?></label>
+    </td>
+    <td>
+    <input id="anonopen" type="checkbox" name="anon_open" value="1">
     </td>
   </tr>
   <tr>

@@ -33,18 +33,16 @@
     // If we want to use confirmation codes in the signup form
     if (!$_COOKIE['flyspray_userid']
         && $flyspray_prefs['spam_proof'] == '1'
-        && $flyspray_prefs['anon_open'] > '0' ) {
+        && $flyspray_prefs['anon_reg'] == '1' ) {
     	
       echo "<p class=\"unregistered\"><a href=\"index.php?do=register\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
 
     // ...and if we don't care about them
     } elseif (!$_COOKIE['flyspray_userid']
-              && $flyspray_prefs['spam_proof'] != '1'
-              && $flyspray_prefs['anon_open'] > '0') {
+              && $flyspray_prefs['spam_proof'] == '0'
+              && $flyspray_prefs['anon_reg'] == '1') {
     
-     	
       echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
-
 
     };
     

@@ -5,7 +5,10 @@ $task_exists = $fs->dbQuery("SELECT item_summary FROM flyspray_tasks WHERE task_
 $task_details = $fs->GetTaskDetails($_GET['id']);
 
 // Only load this page if a valid task was actually requested
- if ($fs->dbCountRows($task_exists) && $task_details['project_is_active'] == '1') {
+ if ($fs->dbCountRows($task_exists)
+     && $task_details['project_is_active'] == '1'
+     && ($project_prefs['others_view'] == '1'
+         OR $permissions['view_tasks'] == '1')) {
 
 $item_summary = htmlspecialchars($task_details['item_summary']);
 $detailed_desc = htmlspecialchars($task_details['detailed_desc']);
@@ -1599,7 +1602,7 @@ if ($permissions['is_admin'] == '1' && $task_details['is_closed'] != '1') {
 <?php
 } else {
 // If no task was actually requested, show an error
-echo "<p><strong>{$details_text['invalidtaskid']}</strong></p>";
+echo "<p><strong>{$details_text['showdetailserror']}</strong></p>";
 
 };
 ?>

@@ -26,7 +26,7 @@ h1#title {
   background-color     : #47617b;
   background-image     : url("title.png");
   background-repeat    : no-repeat;
-  height               : 90px;
+  height               : 45px;
 }
 
 /* there is a span element within the h1 element to enable displaying
@@ -587,17 +587,6 @@ map#formselecttasks {
   margin               : 0em 0px 0em 0px;
 }
 
-div#actionbuttons {
-  clear                : both;
-  margin-top           : 15px;
-  margin-left          : 5px;
-}
-
-.attention {
-  text-color           : #ff0000;
-  background-color     : #fff000;
-}
-
 /* This is for the new admin menu that has the Project drop down list */
 
 #admenu{                         /* menu list container */
@@ -694,7 +683,7 @@ div#taskfields2 table td {
 
 div#taskdetailsfull {
   clear: both;
-  width: 98%;
+  width: 100%;
   margin-top: 15px;
   padding-top: 15px;
   padding-bottom: 15px;
@@ -705,16 +694,15 @@ div#taskdetailsfull {
 
 div#deps {
   padding: 8px;
-  width: 80%
-  border-top: 1px solid #cccccc;
+  width: 98%;
   border-bottom: 1px solid #cccccc;
   min-height: 50px;
+  float: left;
 }
 
 div#taskdeps {
   float: left;
   width: 45%;
-  min-height: 50px;
   margin-bottom: 8px;
 }
 
@@ -722,6 +710,18 @@ div#taskblocks {
   float: left
   width: 50%;
 }
+
+div#actionbuttons {
+  clear                : both;
+  margin-top           : 15px;
+  margin-left          : 5px;
+}
+
+.attention {
+  text-color           : #ff0000;
+  background-color     : #fff000;
+}
+
 
 
 /* End of the @screen section */

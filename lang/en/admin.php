@@ -151,7 +151,9 @@ $admin_text = array (
 'lostpwexplain'		=>	'Enter your username to send a link to change your password.  This will be sent to the notification address in your profile.',
 'sendlink'		=>	'Send link',
 'savenewpass'           =>      'Save new password',
-'badmagic'              =>      'That is not a valid magic key',
+'badmagic'              =>      'That is not a valid magic key! Are you sure that you got that from your notification message?',
+'anonreg'               =>      'Allow new user registrations',
+'allowanonopentask'     =>      'Allow anonymous users to open tasks',
 
 );
 ?>

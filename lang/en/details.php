@@ -49,7 +49,7 @@ $details_text = array (
 'addtolist'           =>    'Add to list',
 'addmyself'           =>    'Add myself to this list',
 'removemyself'        =>    'Remove myself from this list',
-'invalidtaskid'       =>    'There is no task with that id!',
+//'invalidtaskid'       =>    'There is no task with that id!',  Removed in 0.9.7
 'theseusersnotify'    =>    'These users will receive detailed notifications whenever this task changes.',
 
 // Added in version 0.9.5
@@ -122,6 +122,7 @@ $details_text = array (
 'depaddedother'       =>   'This task added as dependency:',
 'depremoved'          =>   'Dependency removed:',
 'depremovedother'     =>   'This task removed from other task\'s dependency list:',
+'showdetailserror'    =>   'That task does not exist, or you don\'t have permission to view it.',
 
 );
 ?>

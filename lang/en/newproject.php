@@ -24,6 +24,7 @@ $newproject_text = array (
 
 // Added in version 0.9.7
 'othersview'		=>	'Allow anyone to view this project',
+'allowanonopentask'     =>      'Allow anonymous users to open tasks',
 
 );
 ?>

@@ -366,8 +366,8 @@ if ($project_prefs['intro_message'] != ''  && $do != 'admin' && $do != 'modify')
 
 // If we have allowed anonymous logging of new tasks
 // Show the link to the Add Task form
-if ($flyspray_prefs['anon_open'] == '1' && !$_COOKIE['flyspray_userid']) {
-  echo "<p class=\"unregistered\"><a href=\"?do=newtask&amp;project=$project_id\">{$language['opentaskanon']}</a></p>";
+if ($project_prefs['anon_open'] == '1' && !$_COOKIE['flyspray_userid']) {
+  echo "<p class=\"unregistered\"><a href=\"?do=newtask&amp;project=$project_id\">{$language['opentaskanon']}</a></p><br />";
 };
 
 // Check that this page isn't being submitted twice
@@ -378,10 +378,9 @@ if (requestDuplicated()) {
   exit;
 };
 
-// Make sure that the user is allowed to view tasks from this project
-if ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1') {
-  require("scripts/$do.php");
-};
+// Show the page the user wanted
+require("scripts/$do.php");
+
 
 // if no-one's logged in, show the login box
 if(!$_COOKIE['flyspray_userid']) {
