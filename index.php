@@ -85,10 +85,10 @@ if ($_GET['getfile']) {
   <link href="themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="includes/functions.js"></script>
   <script type="text/javascript" src="includes/styleswitcher.js"></script>
-  <style type="text/css">@import url(jscalendar/calendar-win2k-1.css);</style>
-  <script type="text/javascript" src="jscalendar/calendar_stripped.js"></script>
-  <script type="text/javascript" src="jscalendar/lang/calendar-en.js"></script>
-  <script type="text/javascript" src="jscalendar/calendar-setup.js"></script>
+  <style type="text/css">@import url(includes/jscalendar/calendar-win2k-1.css);</style>
+  <script type="text/javascript" src="includes/jscalendar/calendar_stripped.js"></script>
+  <script type="text/javascript" src="includes/jscalendar/lang/calendar-en.js"></script>
+  <script type="text/javascript" src="includes/jscalendar/calendar-setup.js"></script>
   
   <?php
       // open the themes directory
@@ -284,13 +284,13 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
 
 // ERROR status bar
 if (isset($_SESSION['ERROR'])) {
-   echo '<h3 id="errorbar">&nbsp;&nbsp;' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/frown.png") . '&nbsp;&nbsp;' . $_SESSION['ERROR'] . '</h3>';
+   echo '<div id="errorbar">&nbsp;&nbsp;' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/frown.png") . '&nbsp;&nbsp;' . $_SESSION['ERROR'] . '</div>';
    unset($_SESSION['ERROR']);
 };
 
 // SUCCESS status bar
 if (isset($_SESSION['SUCCESS'])) {
-   echo '<h3 id="successbar">&nbsp;&nbsp;' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/smile.png") . '&nbsp;&nbsp;' . $_SESSION['SUCCESS'] . '</h3>';
+   echo '<div id="successbar">&nbsp;&nbsp;' . $fs->ShowImg("themes/{$project_prefs['theme_style']}/smile.png") . '&nbsp;&nbsp;' . $_SESSION['SUCCESS'] . '</div>';
    unset($_SESSION['SUCCESS']);
 };
 
@@ -298,7 +298,7 @@ if (isset($_SESSION['SUCCESS'])) {
 
 
 <div id="content">
-<!--<map id="formselecttasks" name="formselecttasks">-->
+
 <form action="index.php" method="get">
       <p>
       <select name="tasks">
@@ -326,7 +326,6 @@ if (isset($_SESSION['SUCCESS'])) {
       <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>" />
       </p>
 </form>
-<!--</map>-->
 
 <form action="index.php" method="get">
     <p id="showtask">
@@ -341,7 +340,7 @@ if (isset($_SESSION['SUCCESS'])) {
 
 // Show the project blurb if the project manager defined one
 if ($project_prefs['intro_message'] != ''  && $do != 'admin' && $do != 'modify') {
-  $intro_message = nl2br(stripslashes($project_prefs['intro_message'])); 
+  $intro_message = Markdown(stripslashes($project_prefs['intro_message'])); 
   echo "<p class=\"intromessage\">$intro_message</p>";
 };
 

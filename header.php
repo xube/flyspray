@@ -37,6 +37,8 @@ if (!isset($basedir)
 include_once ( "$adodbpath" );
 include ( "$basedir/includes/functions.inc.php" );
 include ( "$basedir/includes/regexp.php" );
+include_once ( "$basedir/includes/markdown.php" );
+
 
 // Check PHP Version (Must Be > 4.2)
 if (PHP_VERSION  < '4.2.0') {
