@@ -151,11 +151,6 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
                                                         array($_COOKIE['flyspray_userid'])
                                                        ));
   
-  // Check that their global group and user profile lets them login
-  /*if ($global_permissions['group_open'] != '1'
-      OR $current_user['account_enabled'] != '1') {
-      	Header("Location: scripts/authenticate.php?action=logout");
-  };*/
 
   // Get the project-level group for this user, and put the permissions into an array
   $search_project_group = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ?", array($project_id));
@@ -168,7 +163,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
   
   // Define which fields we care about from the groups information
   $field = array(
-                  '1'  => 'is_admin',
+        '1'  => 'is_admin',
 		  '2'  => 'manage_project',
 		  '3'  => 'view_tasks',
 		  '4'  => 'open_new_tasks',
@@ -199,8 +194,7 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
       $permissions[$val] = '0';
       
     };
-          // This to print out the effective permissions for testing
-          //echo $val . ' = ' . $permissions[$val] . '<br />';  
+
   };
 
   // Check that the user hasn't spoofed the cookie contents somehow
@@ -427,6 +421,23 @@ $footerfile = "$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php"
 if(file_exists("$footerfile")) { 
  include("$footerfile"); 
 } 
+
+// Print out permissions stuff for debugging
+/*if (isset($_COOKIE['flyspray_userid'])) {
+  echo '<br /><h3>Debugging for the new permissions system</h3>';
+  echo '<table border="1">';
+  while (list($key, $val) = each($permissions)) {
+     echo '<tr><td>';
+     $key = str_replace('_', ' ', $key);
+     echo $key;
+     echo '</td>';
+     $val = str_replace('0', '<td style="color: red;">No</td>', $val);
+     $val = str_replace('1', '<td style="color: green;">Yes</td>', $val);
+     echo $val;
+     echo '</tr>';
+  };
+  echo '</table>';
+};*/
 ?> 
 
 </body>

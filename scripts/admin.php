@@ -301,6 +301,14 @@ if ($group_details['belongs_to_project'] < '1') {
       <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
       <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo $group_details['group_desc'];?>"></td>
     </tr>
+   
+    <?php
+    // We don't need this stuff shown for the admin group
+    if ($_GET['id'] == '1') {
+      echo $admin_text['notshownforadmin'];  
+    } else {
+    ?>
+   
     <tr>
       <td><label for="projectmanager"><?php echo $admin_text['projectmanager'];?></label></td>
       <td><input id="projectmanager" type="checkbox" name="manage_project" value="1" <?php if ($group_details['manage_project'] == "1") { echo "checked=\"checked\"";};?>></td>
@@ -378,6 +386,12 @@ if ($group_details['belongs_to_project'] < '1') {
     <tr>
       <td colspan="2" class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['updatedetails'];?>"></td>
     </tr>
+    
+    <?php
+   // End of hiding this stuff for the admin group
+   };
+   ?>
+    
   </table>
   </form>
 

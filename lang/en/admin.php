@@ -156,6 +156,6 @@ $admin_text = array (
 'allowanonopentask'     =>      'Allow anonymous users to open tasks',
 'editglobalgroup'       =>      'Edit Global Group',
 'editgroupforproj'      =>      'Edit group for Project',
-
+'notshownforadmin'      =>      'Permissions are not shown for the admin group.  You don\'t need to edit them.',
 );
 ?>

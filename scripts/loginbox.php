@@ -15,11 +15,14 @@
         <?php echo $loginbox_text['rememberme'];?></label>
     </td> 
     <td>
-          <?php
-          if ($_GET['do']) {
-            echo "<input type=\"hidden\" name=\"task\" value=\"{$_GET['id']}\" />";
-          };
-          ?>
+    
+    <?php
+    // This generates an URL to take us back to the previous page
+    // It doesn't seem to work under WAMP, tho.  Odd...
+    $page = sprintf("%s%s%s","http://",$HTTP_HOST,$REQUEST_URI);
+    echo '<input type="hidden" name="prev_page" value="' . $page . '" />';
+    ?>
+    
     <input class="adminbutton" type="submit" value="<?php echo $loginbox_text['login'];?>" />
     </td>
   </tr>
@@ -39,7 +42,7 @@
 
     // ...and if we don't care about them
     } elseif (!$_COOKIE['flyspray_userid']
-              && $flyspray_prefs['spam_proof'] == '0'
+              && $flyspray_prefs['spam_proof'] != '1'
               && $flyspray_prefs['anon_reg'] == '1') {
     
       echo "<p class=\"unregistered\"><a href=\"index.php?do=newuser\">{$language['register']}</a>&nbsp;&nbsp;|&nbsp;&nbsp;";

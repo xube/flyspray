@@ -75,19 +75,23 @@ if ($_GET['action'] == "logout") {
   // If the user didn't provide both a username and a password, show this error:
   $message = "{$authenticate_text['loginfailed']}<br>{$authenticate_text['userandpass']}";
 };
-header('Content-type: text/html; charset=utf-8');
 
+header('Content-type: text/html; charset=utf-8');
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
   <link href="../themes/<?php echo $project_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
-    <?php if ($_POST['task']) { ?>
-  <meta http-equiv="refresh" content="2; URL=../?do=details&id=<?php echo $_POST['task'];?>">
-    <?php } else { ?>
-  <meta http-equiv="refresh" content="2; URL=../">
-    <?php };?>
+  
+  <?php 
+  if ($_GET['action'] == 'logout') {
+    echo '<meta http-equiv="refresh" content="2; URL=../">';
+  } else {
+    echo '<meta http-equiv="refresh" content="2; URL=' . $_POST['prev_page'] . '">';
+  };
+  ?>
+  
   <title>Are we logged in yet?</title>
 </head>
 <body>
@@ -95,19 +99,23 @@ header('Content-type: text/html; charset=utf-8');
 <h1>
   <?php echo "$message";?>
 </h1>
+
 <p>
-  <?php if ($_POST['task']) {
+  <?php
   echo $authenticate_text['waitwhiletransfer'];
+  echo '<br />';
+
+  if ($_GET['action'] == 'logout') {
+    echo '<a href="../">' . $authenticate_text['clicknowait'] . '</a>';
+  } else {
+    echo '<a href="' . $_POST['prev_page'] . '">' . $authenticate_text['clicknowait'] . '</a>';
+  };
+  
+  echo '<br />';
   ?>
-</p>
-<p>
-  <a href="../?do=details&id=<?php echo $_POST['task'];?>"><?php echo $authenticate_text['clicknowait'];?></a>
-  <?php } else {
-  echo $authenticate_text['waitwhiletransfer'];
-  ?>
+
   <br>
-  <a href="../"><?php echo $authenticate_text['clicknowait'];?></a>
-  <?php };?>
+
 </p>
 </div>
 </body>
