@@ -84,7 +84,6 @@ ALTER TABLE flyspray_groups ADD view_reports NUMERIC(1);
 ALTER TABLE flyspray_groups ALTER view_reports SET DEFAULT '0';
 UPDATE flyspray_groups SET view_reports = '0' WHERE view_reports IS NULL;
 ALTER TABLE flyspray_groups ALTER view_reports SET NOT NULL;
-
 UPDATE flyspray_groups SET manage_project = '1',
 	 view_tasks = '1',
 	 modify_own_tasks = '1',
@@ -98,7 +97,6 @@ UPDATE flyspray_groups SET manage_project = '1',
 	 assign_to_self = '1',
 	 assign_others_to_self = '1',
 	 view_reports = '1' WHERE group_id = '1';
-
 UPDATE flyspray_groups SET view_tasks = '1',
 	 modify_own_tasks = '1',
 	 view_comments = '1',
@@ -110,19 +108,16 @@ UPDATE flyspray_groups SET view_tasks = '1',
 	 close_other_tasks = '1',
 	 assign_to_self = '1',
 	 assign_others_to_self = '1' WHERE group_id = '2';
-
 UPDATE flyspray_groups SET view_tasks = '1',
 	 modify_own_tasks = '1',
 	 view_comments = '1',
 	 view_attachments = '1',
 	 view_history = '1',
 	 assign_to_self = '1' WHERE group_id = '3';
-
 UPDATE flyspray_groups SET view_tasks = '1',
 	 view_comments = '1',
 	 add_comments = '1',
 	 view_attachments = '1' WHERE group_id = '4';
-
 CREATE SEQUENCE "flyspray_users_in_groups_record_id_seq" START WITH 1;
 CREATE TABLE flyspray_users_in_groups (
 	record_id INT8 NOT NULL DEFAULT nextval('"flyspray_users_in_groups_record_id_seq"'::text),
@@ -130,14 +125,11 @@ CREATE TABLE flyspray_users_in_groups (
 	group_id NUMERIC(3) NOT NULL default '0',
 	PRIMARY KEY (record_id)
 );
-
 ALTER TABLE flyspray_projects ADD others_view NUMERIC(1);
 ALTER TABLE flyspray_projects ALTER others_view SET DEFAULT '0';
 UPDATE flyspray_projects SET others_view = '0' WHERE others_view IS NULL;
 ALTER TABLE flyspray_projects ALTER others_view SET NOT NULL;
-
 INSERT INTO flyspray_groups (group_name, group_desc, belongs_to_project, is_admin, manage_project, view_tasks, open_new_tasks, modify_own_tasks, modify_all_tasks, view_comments, add_comments, edit_comments, delete_comments, view_attachments, create_attachments, delete_attachments, view_history, close_own_tasks, close_other_tasks, assign_to_self, assign_others_to_self, view_reports, group_open) VALUES ('Basic', 'Members can login, relying upon Project permissions only', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1');
-
 CREATE SEQUENCE "flyspray_admin_requests_request_id_seq" START WITH 1;
 CREATE TABLE flyspray_admin_requests (
 	request_id INT8 NOT NULL DEFAULT nextval('"flyspray_admin_requests_request_id_seq"'::text),
@@ -150,8 +142,6 @@ CREATE TABLE flyspray_admin_requests (
 	time_resolved TEXT NOT NULL default '',
 	PRIMARY KEY (request_id)
 );
-
-
 CREATE SEQUENCE "flyspray_dependencies_depend_id_seq" START WITH 2;
 CREATE TABLE flyspray_dependencies (
 	depend_id INT8 NOT NULL DEFAULT nextval('"flyspray_dependencies_depend_id_seq"'::text),
@@ -159,13 +149,10 @@ CREATE TABLE flyspray_dependencies (
 	dep_task_id NUMERIC(10) NOT NULL default '0',
 	PRIMARY KEY (depend_id)
 );
-
-
 ALTER TABLE flyspray_users ADD magic_url TEXT;
 ALTER TABLE flyspray_users ALTER magic_url SET DEFAULT '';
 UPDATE flyspray_users SET magic_url = '' WHERE magic_url IS NULL;
 ALTER TABLE flyspray_users ALTER magic_url SET NOT NULL;
-
 ALTER TABLE flyspray_registrations ADD user_name TEXT;
 ALTER TABLE flyspray_registrations ALTER user_name SET DEFAULT '';
 UPDATE flyspray_registrations SET user_name = '' WHERE user_name IS NULL;
@@ -190,21 +177,18 @@ ALTER TABLE flyspray_registrations ADD magic_url TEXT;
 ALTER TABLE flyspray_registrations ALTER magic_url SET DEFAULT '';
 UPDATE flyspray_registrations SET magic_url = '' WHERE magic_url IS NULL;
 ALTER TABLE flyspray_registrations ALTER magic_url SET NOT NULL;
-
 ALTER TABLE flyspray_projects ADD anon_open NUMERIC(1);
 ALTER TABLE flyspray_projects ALTER anon_open SET DEFAULT '0';
 UPDATE flyspray_projects SET anon_open = '0' WHERE anon_open IS NULL;
 ALTER TABLE flyspray_projects ALTER anon_open SET NOT NULL;
-
 INSERT INTO flyspray_prefs (pref_name, pref_value, pref_desc) VALUES ('anon_reg', '1', 'Allow new user registrations');
-
+INSERT INTO flyspray_prefs (pref_name, pref_value, pref_desc) VALUES ('fs_ver', '0.9.7', 'Current Flyspray Version');
 DELETE FROM flyspray_prefs WHERE pref_id = '1';
 DELETE FROM flyspray_prefs WHERE pref_id = '2';
 DELETE FROM flyspray_prefs WHERE pref_id = '7';
 DELETE FROM flyspray_prefs WHERE pref_id = '13';
 DELETE FROM flyspray_prefs WHERE pref_id = '16';
-
 ALTER TABLE flyspray_tasks ADD mark_private NUMERIC(1);
 ALTER TABLE flyspray_tasks ALTER mark_private SET DEFAULT '0';
 UPDATE flyspray_tasks SET mark_private = '0' WHERE mark_private IS NULL;
-ALTER TABLE flyspray_tasks ALTER mark_private SET NOT NULL;
+ALTER TABLE flyspray_tasks ALTER mark_private SET NOT NULL

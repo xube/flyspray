@@ -8,6 +8,12 @@
 
 include('header.php');
 
+// Check that we're using 0.9.6, and start the upgrade script if we're not.
+if (isset($flyspray_prefs['dateformat']) && !isset($flyspray_prefs['fs_ver']))
+{
+   Header("Location: sql/upgrade_0.9.6_to_0.9.7.php");
+};
+
 session_start();
 
 // Get the translation for the wrapper page (this page)

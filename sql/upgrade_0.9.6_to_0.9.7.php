@@ -48,6 +48,7 @@ if (!$page) {
 
   if ($upgraded != 'yes' && $prev_ver == 'yes') {
 
+  
    // Perform the upgrade now!
    
    // Retrieve the database schema into a string
