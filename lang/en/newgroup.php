@@ -20,5 +20,26 @@ $newgroup_text = array (
 
 'groupenabled'		=>	'Members can login',
 
+// Added in version 0.9.7
+
+'projectmanager'	=>	'Project Manager',
+'viewtasks'		=>	'View tasks',
+'opennewtasks'		=>	'Open new tasks',
+'modifyowntasks'	=>	'Modify own tasks',
+'modifyalltasks'	=>	'Modify tasks that are not user\'s own',
+'viewcomments'		=>	'View comments',
+'editcomments'		=>	'Edit comments',
+'deletecomments'	=>	'Delete comments',
+'viewattachments'	=>	'View attachments',
+'createattachments'	=>	'Create attachments',
+'deleteattachments'	=>	'Delete attachments',
+'viewhistory'		=>	'View history',
+'closeowntasks'		=>	'Close own tasks',
+'closeothertasks'	=>	'Close tasks that are not user\'s own',
+'assigntoself'		=>	'Assign tasks to self if not already assigned',
+'assignotherstoself'	=>	'Assign others\' tasks to self',
+'viewreports'		=>	'View reports',
+'othersview'		=>	'Allow anyone to view this project',
+
 );
 ?>

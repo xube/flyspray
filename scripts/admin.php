@@ -118,9 +118,16 @@ echo "<h3>{$admin_text['edituser']} - {$user_details['real_name']} ({$user_detai
 // Show users list if the user has the permissions
 } elseif ($permissions['is_admin'] == "1" OR $permissions['manage_project'] == '1') {
 
-echo "<h3>{$admin_text['usergroupmanage']}</h3>";
+if (isset($_GET['project'])) {
+  $forproject = $project_prefs['project_title'];
+} else {
+  $forproject = $admin_text['globalgroups'];
+  $project_id = '0';
+};
+
+echo "<h3>{$admin_text['usergroupmanage']} - $forproject</h3>";
 echo "<p><a href=\"index.php?do=newuser\">{$admin_text['newuser']}</a> | ";
-echo "<a href=\"index.php?do=newgroup\">{$admin_text['newgroup']}</a></p>";
+echo "<a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>";
 
 $get_groups = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project));
 while ($group = $fs->dbFetchArray($get_groups)) {
@@ -173,10 +180,6 @@ $group_details = $fs->dbFetchArray($get_group_details);
       <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo $group_details['group_desc'];?>"></td>
     </tr>
     <tr>
-      <td><label for="isadmin"><?php echo $admin_text['admin'];?></label></td>
-      <td><input id="isadmin" type="checkbox" name="is_admin" value="1" <?php if ($group_details['is_admin'] == "1") { echo "checked=\"checked\"";};?>></td>
-    </tr>
-    <tr>
       <td><label for="projectmanager"><?php echo $admin_text['projectmanager'];?></label></td>
       <td><input id="projectmanager" type="checkbox" name="manage_project" value="1" <?php if ($group_details['manage_project'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
@@ -202,7 +205,7 @@ $group_details = $fs->dbFetchArray($get_group_details);
     </tr>
     <tr>
       <td><label for="canaddcomments"><?php echo $admin_text['addcomments'];?></label></td>
-      <td><input id="canaddcomments" type="checkbox" name="can_add_comments" value="1" <?php if ($group_details['add_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="canaddcomments" type="checkbox" name="add_comments" value="1" <?php if ($group_details['add_comments'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
       <td><label for="editcomments"><?php echo $admin_text['editcomments'];?></label></td>
@@ -238,9 +241,13 @@ $group_details = $fs->dbFetchArray($get_group_details);
     </tr>
     <tr>
       <td><label for="assignotherstoself"><?php echo $admin_text['assignotherstoself'];?></label></td>
-      <td><input id="assignotherstoself" type="checkbox" name="view_history" value="1" <?php if ($group_details['assign_others_to_self'] == "1") { echo "checked=\"checked\"";};?>></td>
+      <td><input id="assignotherstoself" type="checkbox" name="assign_others_to_self" value="1" <?php if ($group_details['assign_others_to_self'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
     <tr>
+    <tr>
+      <td><label for="viewreports"><?php echo $admin_text['viewreports'];?></label></td>
+      <td><input id="viewreports" type="checkbox" name="view_reports" value="1" <?php if ($group_details['view_reports'] == "1") { echo "checked=\"checked\"";};?>></td>
+    </tr>
       <td><label for="groupopen"><?php echo $admin_text['groupenabled'];?></label></td>
       <td><input id="groupopen" type="checkbox" name="group_open" value="1" <?php if ($group_details['group_open'] == "1") { echo "checked=\"checked\"";};?>></td>
     </tr>
@@ -386,20 +393,6 @@ $group_details = $fs->dbFetchArray($get_group_details);
 
 <?
 // End of Resolutions
-
-///////////////////////
-// Start of versions //
-///////////////////////
-
-} elseif ($_GET['area'] == "version"
-          && ($permission['is_admin'] == '1'
-              OR $permission['manage_project'] == '1')  // FIX THIS PERMISSION!!
-          ) {
-?>
-
-
-<?
-// End of Versions
 
 //////////////////////////////////////
 // Start of application preferences //
@@ -629,30 +622,32 @@ $group_details = $fs->dbFetchArray($get_group_details);
 } elseif ($_GET['area'] == "projects"
            && $permissions['manage_project'] == '1')
           {
-?>
-<form action="index.php" method="get">
-  <input type="hidden" name="do" value="admin">
-  <input type="hidden" name="area" value="projects">
-  <input type="hidden" name="show" value="prefs">
-    <p id="changeproject">
-      <h4>
-      <?php $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
-      echo $admin_text['projectprefs'] . ' - ' . stripslashes($project_details['project_title']); ?>
-      </h4>
-    </p>
-</form>
 
-<p id="newprojectlink">
-<a href="?do=newproject"><?php echo $admin_text['createproject'];?></a>
-</p>
+$project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($project_id)));
+echo '<h3>' . $admin_text['projectprefs'] . ' - ' . stripslashes($project_details['project_title']) . '</h3>'; ?>
 
-<?php if ($_GET['id']) {
+
+
+<?php
+echo '<span id="projectmenu">';
+
+// Only show the 'create new project' link if the user is a full admin
+if ($permissions['is_admin'] == '1') {
+  echo '<small> | </small><a href="?do=newproject">' . $admin_text['createproject'] . '</a>';
+};
+
+if ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1') {
+  echo '<small> | </small><a href="?do=admin&amp;area=users&amp;project=' . $project_id . '">' . $admin_text['usergroups'] . '</a>';
+};
+
+echo '</span>';
+
+if ($_GET['id']) {
 
   $project_details = $fs->dbFetchArray($fs->dbQuery("SELECT * FROM flyspray_projects WHERE project_id = ?", array($_GET['id'])));
 
 ?>
     <span id="projectmenu">
-     <em><?php echo $admin_text['projectlists'];?></em>
      <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=category"><?php echo $language['categories'];?></a>
      <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=os"><?php echo $language['operatingsystems'];?></a>
      <small> | </small><a href="?do=admin&amp;area=projects&amp;id=<?php echo $_GET['id'];?>&amp;show=version"><?php echo $language['versions'];?></a>
@@ -716,7 +711,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="showlogo"><?php echo $admin_text['showlogo'];?></label>
     </td>
     <td>
-    <input type="checkbox" name="show_logo" value="1" <?php if ($project_details['show_logo'] == '1') { echo "CHECKED"; }; ?>>
+    <input id="showlogo" type="checkbox" name="show_logo" value="1" <?php if ($project_details['show_logo'] == '1') { echo "CHECKED"; }; ?>>
     </td>
   </tr>
   <tr>
@@ -724,7 +719,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="inlineimages"><?php echo $admin_text['showinlineimages'];?></label>
     </td>
     <td>
-    <input type="checkbox" name="inline_images" value="1" <?php if ($project_details['inline_images'] == '1') { echo "CHECKED"; }; ?>>
+    <input id="inlineimages" type="checkbox" name="inline_images" value="1" <?php if ($project_details['inline_images'] == '1') { echo "CHECKED"; }; ?>>
     </td>
   </tr>
   <tr>
@@ -746,7 +741,7 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="intromessage"><?php echo $admin_text['intromessage'];?></label>
     </td>
     <td>
-    <textarea name="intro_message" rows="10" cols="50"><?php echo stripslashes($project_details['intro_message']);?></textarea>
+    <textarea id="intromessage" name="intro_message" rows="10" cols="50"><?php echo stripslashes($project_details['intro_message']);?></textarea>
     </td>
   </tr>
   <tr>
@@ -754,7 +749,15 @@ if ($_GET['show'] == 'prefs') { ?>
     <label for="isactive"><?php echo $admin_text['isactive'];?></label>
     </td>
     <td>
-    <input type="checkbox" name="project_is_active" value="1" <?php if ($project_details['project_is_active'] == '1') { echo "CHECKED";};?>>
+    <input id="isactive" type="checkbox" name="project_is_active" value="1" <?php if ($project_details['project_is_active'] == '1') { echo "CHECKED";};?>>
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <label for="othersview"><?php echo $admin_text['othersview'];?></label>
+    </td>
+    <td>
+    <input id="othersview" type="checkbox" name="others_view" value="1" <?php if ($project_details['others_view'] == '1') { echo "CHECKED";};?>>
     </td>
   </tr>
   <tr><td colspan="2"><hr></td></tr>

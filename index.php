@@ -201,8 +201,8 @@ if ($_COOKIE['flyspray_userid'] && $_COOKIE['flyspray_passhash']) {
     echo '<a href="?do=admin&amp;area=users&amp;id=' . $current_user['user_id'] . '">' .
     $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/editmydetails.png") . '&nbsp;' . $language['editmydetails'] . "</a>\n";
 
-    echo '<small> | </small><a href="index.php?do=chpass">
-    <img src="themes/' . $project_prefs['theme_style'] . '/menu/password.png" />&nbsp;' . $language['changepassword'] . "</a>\n";;
+    //echo '<small> | </small><a href="index.php?do=chpass">
+    //<img src="themes/' . $project_prefs['theme_style'] . '/menu/password.png" />&nbsp;' . $language['changepassword'] . "</a>\n";;
 
     
     // If the user has conducted a search, then show a link to the most recent task list filter

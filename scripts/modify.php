@@ -832,7 +832,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                         array($newproject['project_id'], '1.0', '1', '1', '2'));
 
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectcreated']}";
-    echo "<br><br><a href=\"?do=admin&amp;area=projects&amp;show=prefs&amp;id={$newproject['project_id']}\">{$modify_text['customiseproject']}</a></em></p></div>";
+    echo "<br><br><a href=\"?do=admin&amp;area=projects&amp;show=prefs&amp;project={$newproject['project_id']}\">{$modify_text['customiseproject']}</a></em></p></div>";
 
   } else {
 
@@ -857,7 +857,8 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                              inline_images = ?,
                              default_cat_owner = ?,
                              intro_message = ?,
-                             project_is_active = ?
+                             project_is_active = ?,
+                             others_view = ?
                              WHERE project_id = ?
                           ", array($_POST['project_title'],
                                     $_POST['theme_style'],
@@ -866,6 +867,7 @@ $current_realname ($current_username) {$modify_text['commenttotask']} {$modify_t
                                     $fs->emptyToZero($_POST['default_cat_owner']),
                                     $_POST['intro_message'],
                                     $fs->emptyToZero($_POST['project_is_active']),
+                                    $fs->emptyToZero($_POST['others_view']),
                                     $_POST['project_id']));
 
     echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=projects&amp;id={$_POST['project_id']}&amp;show=prefs\">";
@@ -1057,23 +1059,46 @@ $current_realname ($current_username) {$modify_text['hasattached']} {$modify_tex
       $update = $fs->dbQuery("UPDATE flyspray_groups SET
                   group_name = ?,
                   group_desc = ?,
-                  is_admin = ?,
-                  can_open_jobs = ?,
-                  can_modify_jobs = ?,
-                  can_add_comments = ?,
-                  can_attach_files = ?,
-                  can_vote = ?,
+                  manage_project = ?,
+                  view_tasks = ?,
+                  open_new_tasks = ?,
+                  modify_own_tasks = ?,
+                  modify_all_tasks = ?,
+                  view_comments = ?,
+                  add_comments = ?,
+                  edit_comments = ?,
+                  delete_comments = ?,
+                  create_attachments = ?,
+                  delete_attachments = ?,
+                  view_history = ?,
+                  close_own_tasks = ?,
+                  close_other_tasks = ?,
+                  assign_to_self = ?,
+                  assign_others_to_self = ?,
+                  view_reports = ?,
                   group_open = ?
       WHERE group_id = ?",
       array($_POST['group_name'], $_POST['group_desc'],
-              $fs->emptyToZero($_POST['is_admin']),
-              $fs->emptyToZero($_POST['can_open_jobs']),
-              $fs->emptyToZero($_POST['can_modify_jobs']),
-              $fs->emptyToZero($_POST['can_add_comments']),
-              $fs->emptyToZero($_POST['can_attach_files']),
-              $fs->emptyToZero($_POST['can_vote']),
+              $fs->emptyToZero($_POST['manage_project']),
+              $fs->emptyToZero($_POST['view_tasks']),
+              $fs->emptyToZero($_POST['open_new_tasks']),
+              $fs->emptyToZero($_POST['modify_own_tasks']),
+              $fs->emptyToZero($_POST['modify_all_tasks']),
+              $fs->emptyToZero($_POST['view_comments']),
+              $fs->emptyToZero($_POST['add_comments']),
+              $fs->emptyToZero($_POST['edit_comments']),
+              $fs->emptyToZero($_POST['delete_comments']),
+              $fs->emptyToZero($_POST['create_attachments']),
+              $fs->emptyToZero($_POST['delete_attachments']),
+              $fs->emptyToZero($_POST['view_history']),
+              $fs->emptyToZero($_POST['close_own_tasks']),
+              $fs->emptyToZero($_POST['close_other_tasks']),
+              $fs->emptyToZero($_POST['assign_to_self']),
+              $fs->emptyToZero($_POST['assign_others_to_self']),
+              $fs->emptyToZero($_POST['view_reports']),
               $fs->emptyToZero($_POST['group_open']),
               $_POST['group_id']));
+
     echo "<meta http-equiv=\"refresh\" content=\"0; URL=?do=admin&amp;area=users\">";
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupupdated']}</em></p></div>";
   } else {

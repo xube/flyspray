@@ -131,6 +131,9 @@ $admin_text = array (
 'assigntoself'		=>	'Assign tasks to self if not already assigned',
 'assignotherstoself'	=>	'Assign others\' tasks to self',
 'viewreports'		=>	'View reports',
+'othersview'		=>	'Allow anyone to view this project',
+'usergroups'		=>	'Users and Groups',
+'globalgroups'		=>	'Global Groups',
 
 );
 ?>
