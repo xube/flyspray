@@ -38,7 +38,7 @@ class Backend {
                         array($task_id, $user_id)
                        );
 
-            // Log the event to the task history
+            // Log this event to the task history
             $fs->logEvent($task_id, 9, $row['user_id']);
          }
 
@@ -62,14 +62,14 @@ class Backend {
 
       foreach ($tasks AS $key => $task_id)
       {
-         //  Add them to the notif list
+         // Remove the notif entry
          $db->Query("DELETE FROM flyspray_notifications
                      WHERE task_id = ?
                      AND user_id = ?",
-                     array($task_id, $row['user_id'])
+                     array($task_id, $user_id)
                     );
 
-         // Log the event to the task history
+         // Log this event to the task history
          $fs->logEvent($task_id, 10, $row['user_id']);
 
       // End of cycling through the tasks
@@ -88,6 +88,7 @@ class Backend {
    {
       global $db;
       global $fs;
+      global $notify;
 
       foreach ($tasks AS $key => $task_id)
       {
@@ -113,6 +114,12 @@ class Backend {
 
             // Log this event to the task history
             $fs->logEvent($task_details['task_id'], 19, $user_id, $task_details['assigned_to']);
+
+            // Get the notifications going
+            $to  = $notify->Address($task_id);
+            $msg = $notify->Create('10', $task_id);
+            $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+            $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
          // End of permission check
          }

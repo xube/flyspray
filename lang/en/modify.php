@@ -163,5 +163,6 @@ $modify_text = array (
 // Added in version 0.9.8
 
 'pmreqdenied'           =>       'Project Manager request denied',
+'massopsuccess'        =>       'Mass operations successful - where permissions allowed',
 );
 ?>

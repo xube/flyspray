@@ -33,3 +33,10 @@ CREATE TABLE IF NOT EXISTS `flyspray_notification_recipients` (
     `address`           varchar(100)    NOT NULL,
     PRIMARY KEY (`id`)
 ) TYPE=MyISAM COMMENT='Notification recipient list' AUTO_INCREMENT=2 ;
+
+# Added 27 March 05
+
+ALTER TABLE `flyspray_projects` ADD `notify_email` LONGTEXT NOT NULL ;
+ALTER TABLE `flyspray_projects` ADD `notify_email_when` MEDIUMINT( 1 ) NOT NULL ;
+ALTER TABLE `flyspray_projects` ADD `notify_jabber` LONGTEXT NOT NULL ;
+ALTER TABLE `flyspray_projects` ADD `notify_jabber_when` MEDIUMINT( 1 ) NOT NULL ;

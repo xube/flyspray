@@ -13,6 +13,9 @@ $fs->get_language_pack($lang, 'index');
 $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
 $this_page = str_replace('&', '&amp;', $this_page);
 
+if (isset($_COOKIE['flyspray_userid']))
+{
+
 echo '<h2>' . $language['editmydetails'] . '</h2>';
 
 ?>
@@ -79,3 +82,10 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
       </table>
    </form>
 </fieldset>
+
+<?php
+} else
+{
+   echo $admin_text['nopermission'];
+}
+?>

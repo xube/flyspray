@@ -329,7 +329,7 @@ class Notifications {
          $body .= $details_text['percentcomplete'] . ' - ' . $task_details['percent_complete'] . "\n";
          $body .= $details_text['details'] . ' - ' . stripslashes($task_details['detailed_desc']) . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_details['task_id'] . "\n\n";
+         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -356,6 +356,9 @@ class Notifications {
 
       }
 
+      ////////////////////
+      // Task re-opened //
+      ////////////////////
       if ($type == '4')
       {
          $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
@@ -645,10 +648,33 @@ class Notifications {
       // End of adding the assigned_to address
       }
 
+      // Now, we add the project contact addresses...
+      // ...but only if the task is public
+      $task_details = $fs->getTaskDetails($task_id);
+      if ($task_details['mark_private'] != '1')
+      {
+         $proj_emails = explode(" ", $project_prefs['notify_email']);
+         $proj_jids = explode(" ", $project_prefs['notify_jabber']);
+
+         foreach ($proj_emails AS $key => $val)
+         {
+            if (!in_array($val, $email_users))
+               array_push($val, $email_users);
+         }
+
+         foreach ($proj_jids AS $key => $val)
+         {
+            if (!in_array($val, $jabber_users))
+               array_push($val, $jabber_users);
+         }
+
+      // End of checking if a task is private
+      }
+
       // Send back two arrays containing the notification addresses
       return array($email_users, $jabber_users);
 
-   // End of multiple notification function
+   // End of Address() function
    }
 
 

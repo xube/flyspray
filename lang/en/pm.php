@@ -23,7 +23,12 @@ $pm_text = array (
 'tasktypeed'               =>    'Task Types List Editor',
 'resed'                    =>    'Resolutions List Editor',
 'deny'                     =>    'Deny',
-
+'notifications'            =>    'Notifications -- does not actually do anything yet, sorry.',
+'emailaddress'             =>    'Email address',
+'jabberid'                 =>    'Jabber ID',
+'notifiedwhen'             =>    'Notified when',
+'onlynewtasks'             =>    'New tasks are opened',
+'allevents'                =>    'Any event occurs in any task',
 
 );
 ?>

@@ -543,7 +543,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
  * @param string $url           A URL to wrap around the cell contents
  */
 
-function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
+function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
 {
    global $project;
    global $flyspray_prefs;
@@ -574,7 +574,7 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
          $cellvalue = str_replace(" ", "&nbsp;", $cellvalue);
       }
 
-      echo "<td class=\"task_$colname\">";
+      echo "<td class=\"task_$colname\" onclick='openTask(\"?do=details&amp;id=$task_id\")'>";
       if($url)
       {
          echo "<a href=\"$url\">$cellvalue</a>";
@@ -591,12 +591,19 @@ function list_cell($colname,$cellvalue,$nowrap=0,$url=0)
 
 <div id="tasklist">
 
+<!-- This form for mass operations on tasks currently displayed -->
+<form action="index.php" name="massops" method="post">
+   <input type="hidden" name="do" value="modify" />
+
    <!--  Summary headings, followed by the query results -->
    <table>
    <thead>
       <tr>
 
       <?php
+      if (isset($_COOKIE['flyspray_userid']))
+         echo '<td></td>';
+
       list_heading('id','id');
       list_heading('project','proj','asc');
       list_heading('tasktype','type','asc');
@@ -732,26 +739,28 @@ ORDER BY
       list($attachments) = $db->FetchRow($getattachments);
 
       // Start displaying the cells for this row
-      echo "<tr class=\"severity{$task_details['task_severity']}\"
-      onclick='openTask(\"?do=details&amp;id={$task_details['task_id']}\")'>\n";
+      echo "<tr class=\"severity{$task_details['task_severity']}\">\n";
 
-      list_cell("id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
-      list_cell("project",$task_details['project_title'],1);
-      list_cell("tasktype",$task_details['task_type'],1);
-      list_cell("category",$task_details['product_category'],1);
-      list_cell("severity",$severity,1);
-      list_cell("priority",$priority,1);
-      list_cell("summary",$task_details['item_summary'],0,"?do=details&amp;id={$task_details['task_id']}");
-      list_cell("dateopened",$date_opened);
-      list_cell("status",$status,1);
-      list_cell("openedby",$task_details['opened_by'],0);
-      list_cell("assigned",$task_details['assigned_to'],0);
-      list_cell("lastedit",$last_edited_time);
-      list_cell("reportedin",$task_details['product_version']);
-      list_cell("dueversion",$task_details['closedby_version'],1);
-      list_cell("comments",$comments);
-      list_cell("attachments",$attachments);
-      list_cell("progress",$fs->ShowImg("themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png", $task_details['percent_complete'] . '% ' . $index_text['complete']));
+      if (isset($_COOKIE['flyspray_userid']))
+         echo "<td width=\"10\"><input type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
+
+      list_cell($task_details['task_id'], "id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
+      list_cell($task_details['task_id'], "project",$task_details['project_title'],1);
+      list_cell($task_details['task_id'], "tasktype",$task_details['task_type'],1);
+      list_cell($task_details['task_id'], "category",$task_details['product_category'],1);
+      list_cell($task_details['task_id'], "severity",$severity,1);
+      list_cell($task_details['task_id'], "priority",$priority,1);
+      list_cell($task_details['task_id'], "summary",$task_details['item_summary'],0,"?do=details&amp;id={$task_details['task_id']}");
+      list_cell($task_details['task_id'], "dateopened",$date_opened);
+      list_cell($task_details['task_id'], "status",$status,1);
+      list_cell($task_details['task_id'], "openedby",$task_details['opened_by'],0);
+      list_cell($task_details['task_id'], "assigned",$task_details['assigned_to'],0);
+      list_cell($task_details['task_id'], "lastedit",$last_edited_time);
+      list_cell($task_details['task_id'], "reportedin",$task_details['product_version']);
+      list_cell($task_details['task_id'], "dueversion",$task_details['closedby_version'],1);
+      list_cell($task_details['task_id'], "comments",$comments);
+      list_cell($task_details['task_id'], "attachments",$attachments);
+      list_cell($task_details['task_id'], "progress",$fs->ShowImg("themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png", $task_details['percent_complete'] . '% ' . $index_text['complete']));
 
       // The end of this row
       echo "</tr>\n";
@@ -776,6 +785,22 @@ ORDER BY
       ?>
       </tr>
    </table>
+
+   <?php
+   if (isset($_COOKIE['flyspray_userid'])) { ?>
+   <div id="actionbuttons">
+      <a href="javascript:void();" onclick="ToggleSelectedTasks()">Toggle selected</a>
+      <select name="action">
+         <option value="massaddnotify"><?php echo $index_text['watchtasks'];?></option>
+         <option value="massremovenotify"><?php echo $index_text['stopwatching'];?></option>
+         <option value="masstakeownership"><?php echo $index_text['assigntome'];?></option>
+      </select>
+
+      <input class="mainbutton" type="submit" value="<?php echo $index_text['takeaction'];?>" />
+   </div>
+   <?php } ?>
+<!-- End of form to do mass operations on shown tasks -->
+</form>
 
 </div>
 

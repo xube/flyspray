@@ -792,8 +792,8 @@ fieldset.admin legend {
    padding                 : 2px;
    font                    : 120% Helvetica, Verdana, sans-serif;
    margin                  : 5px;
-   background-color         : #ffffff;
-   color                    : #000000;
+   background-color        : #f5f9fd;
+   color                   : #000000;
 }
 
 div#errorbar {
@@ -956,6 +956,7 @@ span#navigation a#prev {
    background-repeat    : no-repeat;
    background-position  : left;
 }
+
 
 /* End of the @screen section */
 }

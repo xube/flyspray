@@ -389,9 +389,8 @@ if ($_POST['action'] == 'newtask'
 } elseif(isset($_POST['action']) && $_POST['action'] == "close"
          && ($permissions['close_other_tasks'] == '1'
          OR ($permissions['close_own_tasks'] == '1'
-             && $old_details['assigned_to'] == $current_user['user_id']))
-         ) {
-
+             && $old_details['assigned_to'] == $current_user['user_id'])) )
+{
    if (!empty($_POST['resolution_reason']))
    {
       $db->Query("UPDATE flyspray_tasks SET
@@ -406,7 +405,7 @@ if ($_POST['action'] == 'newtask'
                         $db->emptyToZero($_POST['closure_comment']),
                         $_POST['resolution_reason'],
                         $_POST['task_id'])
-               );
+                );
 
       if (isset($_POST['mark100']) && $_POST['mark100'] == '1')
       {
@@ -1094,7 +1093,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                              intro_message = ?,
                              project_is_active = ?,
                              others_view = ?,
-                             anon_open = ?
+                             anon_open = ?,
+                             notify_email = ?,
+                             notify_email_when = ?,
+                             notify_jabber = ?,
+                             notify_jabber_when = ?
                              WHERE project_id = ?
                           ", array($_POST['project_title'],
                                     $_POST['theme_style'],
@@ -1105,6 +1108,10 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                     $db->emptyToZero($_POST['project_is_active']),
                                     $db->emptyToZero($_POST['others_view']),
                                     $db->emptyToZero($_POST['anon_open']),
+                                    $_POST['notify_email'],
+                                    $_POST['notify_email_type'],
+                                    $_POST['notify_jabber'],
+                                    $_POST['notify_jabber_type'],
                                     $_POST['project_id']));
 
     $_SESSION['SUCCESS'] = $modify_text['projectupdated'];
@@ -1929,12 +1936,6 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    // Make the assignment change
    $be->AssignToMe($current_user['user_id'], array($_GET['task_id']));
 
-   // Get the notifications going
-   $to  = $notify->Address($_GET['task_id']);
-   $msg = $notify->Create('10', $_GET['task_id']);
-   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-
    $_SESSION['SUCCESS'] = $modify_text['takenownership'];
    $fs->redirect("?do=details&id=" . $_GET['task_id']);
 
@@ -2323,9 +2324,69 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // End of making a task public
 
 
+///////////////////////////////////////////////
+// Start of mass adding to notification list //
+///////////////////////////////////////////////
+} elseif ($_POST['action'] == 'massaddnotify')
+{
+   $ids = $_POST['ids'];
+   $tasks = array();
+
+   if (!empty($ids))
+   {
+      foreach ($ids AS $key => $val)
+         array_push($tasks, $key);
+
+      $be->AddToNotifyList($current_user['user_id'], $tasks);
+   }
+
+   $_SESSION['SUCCESS'] = $modify_text['massopsuccess'];
+   $fs->redirect("index.php");
+
+
+//////////////////////////////////////////////////
+// Start of mass removal from notification list //
+//////////////////////////////////////////////////
+} elseif ($_POST['action'] == 'massremovenotify')
+{
+   $ids = $_POST['ids'];
+   $tasks = array();
+
+   if (!empty($ids))
+   {
+      foreach ($ids AS $key => $val)
+         array_push($tasks, $key);
+
+      $be->RemoveFromNotifyList($current_user['user_id'], $tasks);
+   }
+
+   $_SESSION['SUCCESS'] = $modify_text['massopsuccess'];
+   $fs->redirect("index.php");
+
+
+////////////////////////////////////
+// Start of mass taking ownership //
+////////////////////////////////////
+} elseif ($_POST['action'] == 'masstakeownership')
+{
+   $ids = $_POST['ids'];
+   $tasks = array();
+
+   if (!empty($ids))
+   {
+      foreach ($ids AS $key => $val)
+         array_push($tasks, $key);
+
+      $be->AssignToMe($current_user['user_id'], $tasks);
+   }
+
+   $_SESSION['SUCCESS'] = $modify_text['massopsuccess'];
+   $fs->redirect("index.php");
+
+
 /////////////////////
 // End of actions! //
 /////////////////////
-};
+}
 
 ?>

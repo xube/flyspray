@@ -26,27 +26,31 @@ $index_text = array (
 'next'                     =>      'Next',
 
 // Added in version 0.9.5
-'searchthisproject'        =>      'Search this project',
+'searchthisproject'        =>    'Search this project',
 
 // Added in version 0.9.6
-'closed'                   =>      'Closed',
-'dueanyversion'            =>      'Due In Any Version',
-'dueversion'               =>      'Due In',
-'project'                  =>      'Project',
-'category'                 =>      'Category',
-'lastedit'                 =>      'Last Edited',
-'assignedto'               =>      'Assigned To',
-'os'                       =>      'Operating System',
-'reportedin'               =>      'Reported In',
-'openedby'                 =>      'Opened By',
-'comments'                 =>      'Comments',
-'attachments'              =>      'Attachments',
-'priority'                 =>      'Priority',
+'closed'                   =>    'Closed',
+'dueanyversion'            =>    'Due In Any Version',
+'dueversion'               =>    'Due In',
+'project'                  =>    'Project',
+'category'                 =>    'Category',
+'lastedit'                 =>    'Last Edited',
+'assignedto'               =>    'Assigned To',
+'os'                       =>    'Operating System',
+'reportedin'               =>    'Reported In',
+'openedby'                 =>    'Opened By',
+'comments'                 =>    'Comments',
+'attachments'              =>    'Attachments',
+'priority'                 =>    'Priority',
 
 
 // Added in version 0.9.8
-'taskrange'                =>      'Showing tasks %d - %d of %d',
-'noresults'                =>      'Your search returned no results.',
+'taskrange'                =>    'Showing tasks %d - %d of %d',
+'noresults'                =>    'Your search returned no results.',
+'takeaction'               =>    'Take action',
+'watchtasks'               =>    'Watch selected tasks',
+'stopwatching'             =>    'Stop watching selected tasks',
+'assigntome'               =>    'Assign selected tasks to me',
 
 
 );

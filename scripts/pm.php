@@ -196,6 +196,45 @@ if ($permissions['manage_project'] == '1')
          </table>
       </fieldset>
 
+      <fieldset class="admin">
+      <legend><?php echo $pm_text['notifications'];?></legend>
+
+         <?php //echo $pm_text['notifexplain'];?>
+
+         <table class="admin">
+            <tr>
+               <td><label for="emailaddress"><?php echo $pm_text['emailaddress'];?></label></td>
+               <td>
+               <input id="emailaddress" name="notify_email" type="text" value="<?php echo $project_prefs['notify_email'];?>" />
+               </td>
+
+               <!--<td><label for="emailnotifywhen"><?php echo $pm_text['notifiedwhen'];?></label></td>
+               <td>
+               <select id="emailnotifywhen" name="notify_email_when">
+                  <option value="0"><?php echo $pm_text['onlynewtasks'];?></option>
+                  <option value="1" <?php if ($project_prefs['notify_email_when'] == '1') echo 'selected="selected"';?>><?php echo $pm_text['allevents'];?></option>
+               </select>
+               </td>-->
+            </tr>
+            <tr>
+               <td><label for="jabberid"><?php echo $pm_text['jabberid'];?></label></td>
+               <td>
+               <input id="jabberid" name="notify_jabber" type="text" value="<?php echo $project_prefs['notify_jabber'];?>" />
+               </td>
+
+               <!--<td><label for="jabbernotifywhen"><?php echo $pm_text['notifiedwhen'];?></label></td>
+               <td>
+               <select id="jabbernotifywhen" name="notify_jabber_when">
+                  <option value="0"><?php echo $pm_text['onlynewtasks'];?></option>
+                  <option value="1" <?php if ($project_prefs['notify_jabber_when'] == '1') echo 'selected="selected"';?>><?php echo $pm_text['allevents'];?></option>
+               </select>
+               </td>-->
+            </tr>
+
+         </table>
+
+      </fieldset>
+
       <table>
          <tr>
             <td class="buttons"><input class="adminbutton" type="submit" value="<?php echo $admin_text['saveoptions'];?>" /></td>

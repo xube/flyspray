@@ -1235,7 +1235,7 @@ echo '</div>';
       }
       echo '<p><a href="?do=details&amp;id=' . $row['related_task'] . '">FS#' . $row['related_task'] . ' &mdash; ' . stripslashes($row['item_summary']) . '</a></p>';
 
-      echo '<br />' . $row['item_summary'];
+      //echo '<br />' . $row['item_summary'];
 
    // End of cycling through related tasks
    }

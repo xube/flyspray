@@ -14,6 +14,7 @@ function openTask( url )
 {
    window.location = url;
 }
+
  function showstuff(boxid){
    document.getElementById(boxid).style.visibility="visible";
 }
@@ -49,5 +50,13 @@ function fader() {
     opacity -= .01;
     el.style.opacity = opacity;
     window.setTimeout(fader,10);
+  }
+}
+
+function ToggleSelectedTasks() {
+  for (var i = 0; i < document.massops.elements.length; i++) {
+    if(document.massops.elements[i].type == 'checkbox'){
+      document.massops.elements[i].checked =         !(document.massops.elements[i].checked);
+    }
   }
 }
