@@ -77,11 +77,11 @@ $details_text = array (
 'addreminder'       =>   'Dodaj przypomnienie',
 'defaultreminder'   =>   "To jest przypomnienie, by zająć się zadaniem Flyspray'a: ",
 'message'           =>   'Wiadomość',
-'closed'			=>   'Zamknięte',
-'filename'			=>   'Nazwa pliku:',
-'date'				=>   'Data:',
-'filesize'			=>   'Rozmiar pliku:',
-'closurecomment'	=>   'Dodatkowe uwagi dotyczące zamknięcia:',
+'closed'	    =>   'Zamknięte',
+'filename'	    =>   'Nazwa pliku:',
+'date'		    =>   'Data:',
+'filesize'	    =>   'Rozmiar pliku:',
+'closurecomment'    =>   'Dodatkowe uwagi dotyczące zamknięcia:',
 
 'history'           =>   'Historia',
 'nohistory'         =>   'To zgłoszenie nie ma historii.',
@@ -113,6 +113,28 @@ $details_text = array (
 'priority'          =>   'Priorytet',
 'previousvalue'     =>   'Poprzednia wartość',
 'newvalue'          =>   'Nowa wartość',
+
+// Added in version 0.9.7
+
+'selectareason'       =>   'Wybierz powód',
+'assigntome'          =>   'Przydziel mi',
+'reopenrequest'       =>   'Poproś o ponowne otwarcie',
+'requestclose'        =>   'Poproś o zamknięcie',
+'ownershiptaken'      =>   'User took ownership',   // FIXME
+'closerequestmade'    =>   'Prośba o zamknięcie zgłoszenia',
+'reopenrequestmade'   =>   'Prośba o ponowne otwarcie zgłoszenia',
+'taskdependson'       =>   'Zgłoszenie zależy od',
+'taskblocks'          =>   'Zgłoszenie blokuje następujące zgłoszenia',
+'addnew'              =>   'Dodaj nowe',
+'depadded'            =>   'Dodana zależność:',
+'depaddedother'       =>   'Dodane zgłoszenie zależne:',
+'depremoved'          =>   'Usunięta zależność:',
+'depremovedother'     =>   'Zgłoszenie usunięte z listy zależności innego zgłoszenia:',
+'showdetailserror'    =>   'Zgłoszenie nie istnieje lub nie masz uprawnień, by je oglądać.',
+'makeprivate'         =>   'Zmień na prywatne',	// FIXME: prywatne/publiczne
+'makepublic'          =>   'Zmień na publiczne',
+'taskmadeprivate'    =>    'Zgłoszenie zmienione na prywatne',
+'taskmadepublic'     =>    'Prywatność usunięta - zgłoszenie zmienione na publiczne',
 
 );
 // vim:fenc=utf-8:enc=utf-8

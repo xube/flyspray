@@ -52,6 +52,10 @@ $language = array (
 'taskswatched'      =>  'Obserwowane przeze mnie',
 'lastsearch'	    =>  'Ostatnio wyszukiwane',
 
+// Added in version 0.9.7
+'adminreqwaiting'   =>   'Oczekujące prośby o administrację',
+
+
 
 );
 // vim:fenc=utf-8:enc=utf-8

@@ -13,7 +13,7 @@ $modify_text = array (
 
 'modify'            =>        'Modyfikuj',
 'noticefrom'        =>        'Powiadomienie od',
-'hasopened'         =>        ' OTWORZYŁ NOWE ZGŁOSZENIE i przypisał je tobie:',
+'hasopened'         =>        ' OTWORZYŁ NOWE ZGŁOSZENIE i przydzielił je tobie:',
 'newtask'           =>        'Nowe zgłoszenie:',
 'moreinfonew'       =>        'Więcej informacji o zgłoszeniu znajdziesz na stronie:',
 'newtaskcategory'   =>        'Dodano nowe zgłoszenie w tej kategorii',
@@ -144,6 +144,28 @@ $modify_text = array (
 'alreadyedited'     =>   'Zgłoszenie zostało w międzyczasie zmienione przez inną osobę w czasie.',
 'saveanyway'        =>   'Mimo tego zapisz moje zmiany.',
 'priority'          =>   'Priorytet',
+
+// Added in version 0.9.7
+
+'nouserselected'        =>        'Żaden użytkownik nie został wybrany.  Wybierz użytkownika i spróbuj ponownie.',
+'groupswitchupdated'    =>        'Grupy zostały zmodyfikowane.',
+'takenownership'        =>        'Zgłoszenie jest od tej pory przydzielone tobie.',
+'adminrequestmade'      =>        'Twoja prośba została przesłana Menedżerowi projektu.',
+'newdepnotify'          =>        'Nowa zależność została dodana do poniższego zgłoszenia:',
+'dependadded'           =>        'Zależność dodana',
+'dependaddfailed'       =>        'Nie możesz w tej chwili dodać zgłoszenia jako zależności',
+'depremoved'            =>        'Zależność została usunięta',
+'newdepis'              =>        'Nowa zależność',
+'magicurlsent'          =>        'Wiadomość została wysłana na twój adres. Zawiera ona odnośnik do strony umożliwiającej dokończenie procedury.',
+'changefspass'          =>        'Zmień hasło',
+'magicurlmessage'       =>        'Wybierz poniższy odnośnik by zmienić hasło:',
+'erroronform'           =>        'Wystąpił problem podczas przetwarzania formularza',
+'addressused'           =>        'Ten adres został wprowadzony podczas rejestracji w aplikacji Flyspray. Jeśli nie spodziewałeś(-aś) się tej wiadomości, zignoruj ją i usuń. W przeciwnym wypadku uruchom przeglądarkę i przejdź do podanej strony by dokończyć rejestrację:',
+'confirmcodeis'         =>        'Kod weryfikujący:',
+'codesent'              =>        'Kod weryfikujący został wysłany.  Zastosuj się do instrukcji zawartych w wiadomości.',
+'taskmadeprivate'       =>        'Zgłoszenie ustawione jako prywatne',
+'taskmadepublic'        =>        'Zgłoszenie ponownie ustawione jako publiczne',
+'realandnotify'         =>        'Musisz wypełnić pola \'Imię i nazwisko\' oraz \'Adres e-mail\' lub \'Jabber ID\'.',
 
 );
 // vim:fenc=utf-8:enc=utf-8:nowrap

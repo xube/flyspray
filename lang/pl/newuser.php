@@ -23,6 +23,9 @@ $newuser_text = array (
 'group'		=>	'Grupa',
 'registeraccount'=>	'Utwórz konto',
 
+// New in 0.9.7
+'globalgroup'		=>	'Grupa globalna',
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>

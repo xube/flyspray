@@ -15,6 +15,9 @@ $authenticate_text = array (
 'waitwhiletransfer' =>	'Proszę czekać, jesteś kierowany do celu...',
 'clicknowait'	    =>	'Kliknij tu, jeśli nie chcesz czekać.',
 
+// Added in 0.9.7
+'accountdisabled'   =>  'Twoje konto jest nieaktywne. Skontaktuj się z administratorem.',
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>

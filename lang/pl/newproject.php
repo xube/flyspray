@@ -21,6 +21,10 @@ $newproject_text = array (
 // Added in version 0.9.6
 'inlineimages'		=>	'Wyświetl załączniki w treści strony',
 
+// Added in version 0.9.7
+'othersview'		=>	'Zezwalaj wszystkim na przeglądanie tego projektu',
+'allowanonopentask'     =>      'Zezwalaj na anonimowe dodawanie zgłoszeń',
+
 );
 // vim:fenc=utf-8:enc=utf-8:nowrap
 ?>

@@ -14,6 +14,9 @@ $loginbox_text = array (
 // Added in 0.9.6
 'rememberme'	=>	'Zapamiętaj dane', 
 
+// Added in 0.9.7
+'lostpassword'				=>	'Zapomniane hasło?',
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>

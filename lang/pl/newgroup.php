@@ -27,6 +27,27 @@ $newgroup_text = array (
 //	Added in version 0.9.5
 'groupenabled'	=>	'Członkowie mogą się logować',
 
+// Added in version 0.9.7
+'projectmanager'	=>	'Manedżer projektu',
+'viewtasks'		=>	'Podgląd zgłoszeń',
+'opennewtasks'		=>	'Otwieranie nowych zgłoszeń',
+'modifyowntasks'	=>	'Modyfikacja własnych zgłoszeń',
+'modifyalltasks'	=>	'Modyfikacja cudzych zgłoszeń',
+'viewcomments'		=>	'Podgląd komentarzy',
+'editcomments'		=>	'Edycja komentarzy',
+'deletecomments'	=>	'Usuwanie komentarzy',
+'viewattachments'	=>	'Podgląd załączników',
+'createattachments'	=>	'Dodawanie załączników',
+'deleteattachments'	=>	'Usuwanie załączników',
+'viewhistory'		=>	'Podgląd historii',
+'closeowntasks'		=>	'Zamykanie własnych zgłoszeń',
+'closeothertasks'	=>	'Zamykanie cudzych zgłoszeń',
+'assigntoself'		=>	'Przydzielanie sobie nieprzydzielonych zgłoszeń',
+'assignotherstoself'	=>	'Przydzielanie sobie już przydzielonych zgłoszeń',
+'viewreports'		=>	'Podgląd raportów',
+'othersview'		=>	'Zezwalaj wszystkim na przeglądanie tego projektu',
+'globalgroups'		=>	'Grupy globalne',
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>

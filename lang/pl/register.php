@@ -31,6 +31,9 @@ $register_text = array (
 'noticefrom'	=>	'Powiadomienie od',
 'addressused'	=>	'Ten adres został użyty do utworzenia konta we Flyspray. Jeśli się go nie spodziewałeś, zignoruj go. Twój kod potwierdzający to:',
 
+// Added in version 0.9.7
+'badmagic'      =>      'Błędny kod! Wprowadź klucz przesłany w wiadomości.',
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>
