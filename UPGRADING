@@ -1,7 +1,7 @@
 Upgrading from 0.9.4 to 0.9.5
 
 Install the ADODB database-abstraction software somewhere on your 
-system and edit the new config.inc.php to point to the adodb.inc.php file.
+system and edit the new header.php to point to the adodb.inc.php file.
 Load upgrade_0.9.4_to_0.9.5-mysql.php script in your browser and follow the
 instructions.
 

@@ -2,7 +2,7 @@
 
 // Directory with Flyspray scripts. It's the directory where this file is
 // located.
-$basedir = '/home/tony/public_html/flyspray';
+$basedir = '/var/www/flyspray';
 
 // Flyspray uses ADODB for database access.  You will need to install
 // it somewhere on your server for Flyspray to function.  It can be installed
@@ -23,9 +23,9 @@ include ( "$basedir/regexp.php" );
 $dbtype = 'mysql';  
 
 $dbhost = 'localhost';  // Name or IP of Database Server
-$dbname = 'flyspray-test';  // The name of the database.
-$dbuser = 'root';   // The user to access the database.
-$dbpass = 'dLAr0f3';   // The password to go with that username above.
+$dbname = 'flyspray';  // The name of the database.
+$dbuser = 'USERNAME';   // The user to access the database.
+$dbpass = 'PASSWORD';   // The password to go with that username above.
 
 
 // This is the key that your cookies are encrypted against.
