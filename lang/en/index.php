@@ -53,6 +53,8 @@ $index_text = array (
 'assigntome'               =>    'Assign selected tasks to me',
 'dueby'                    =>    'Due by',
 'duedate'                  =>    'Due Date',
+'dueanytime'               =>    'Due anytime',
+'selectduedate'            =>    'Select Due Date',
 
 
 );

@@ -440,15 +440,17 @@ if ($project_prefs['project_is_active'] == '1'
       <option value="closed" <?php if(isset($_GET['status']) && $_GET['status'] == "closed") { echo "SELECTED";}?>><?php echo $index_text['closed'];?></option>
     </select>
 
-   <span id="date_d"><?php echo $index_text['dueby'] . ' ';if (!empty($_GET['date']))echo $_GET['date']?></span>
-   <input id="due_date" type="hidden" name="date" size="16" value="<?php if (!empty($_GET['date']))echo $_GET['date'];?>" />
+   <select id="due_date" name="date">
+   <option value=""><?php echo $index_text['dueanytime'];?></option>
+   <option id="date_d"<?php if (!empty($_GET['date'])) { echo ' selected="1">' . $_GET['date'];}else{echo '>' . $index_text['selectduedate'];};?></option>
+   </select>
    <script type="text/javascript">
    Calendar.setup(
    {
-      inputField  : "due_date",         // ID of the input field
+      inputField  : "date_d",         // ID of the input field
       ifFormat    : "%d-%b-%Y",    // the date format
       displayArea : "date_d",       // The display field
-      daFormat    : "Due by %d-%b-%Y",
+      daFormat    : "%d-%b-%Y",
       button      : "date_d"       // ID of the button
    }
    );

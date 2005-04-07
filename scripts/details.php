@@ -8,6 +8,7 @@
 
 $fs->get_language_pack($lang, 'details');
 $fs->get_language_pack($lang, 'newtask');
+$fs->get_language_pack($lang, 'index');
 
 // Only load this page if a valid task was actually requested
 if (!$fs->GetTaskDetails($_GET['id']))
@@ -406,16 +407,25 @@ if ($task_details['project_is_active'] == '1'
                <tr>
                   <td><label for="duedate"><?php echo $details_text['duedate'];?></label></td>
                   <td id="duedate">
-                  <input id="due_date" type="text" name="due_date" size="10" value="<?php if (!empty($task_details['due_date']))echo date("d-M-Y", $task_details['due_date']);?>" readonly="1" />
+                  <!--<input id="due_date" type="text" name="due_date" size="10" value="
+                  <?php if (!empty($task_details['due_date']))echo date("d-M-Y", $task_details['due_date']);?>" readonly="1" />-->
+
+                  <select id="due_date" name="due_date">
+                     <option value=""><?php echo $index_text['dueanytime'];?></option>
+                     <option id="date_d"<?php if (!empty($task_details['due_date'])) { echo ' selected="1">' . date("d-M-Y", $task_details['due_date']);}else{echo '>' . $index_text['selectduedate'];};?></option>
+                  </select>
                   <script type="text/javascript">
                   Calendar.setup(
                   {
-                     inputField  : "due_date",        // ID of the input field
-                     ifFormat    : "%d-%b-%Y",        // the date format
-                     button      : "due_date"         // ID of the button
+                     inputField  : "date_d",         // ID of the input field
+                     ifFormat    : "%d-%b-%Y",    // the date format
+                     displayArea : "date_d",       // The display field
+                     daFormat    : "%d-%b-%Y",
+                     button      : "date_d"       // ID of the button
                   }
                   );
                   </script>
+
                   </td>
                </tr>
                <tr>

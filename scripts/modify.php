@@ -280,6 +280,14 @@ if ($_POST['action'] == 'newtask'
          $detailed_desc = stripslashes($_POST['detailed_desc']);
       }
 
+      if (!empty($_POST['due_date']))
+      {
+         $due_date = strtotime("{$_POST['due_date']} +23 hours 59 minutes 59 seconds");
+      } else
+      {
+         $due_date = '0';
+      }
+
       $add_item = $db->Query("UPDATE flyspray_tasks SET
                               attached_to_project = ?,
                               task_type = ?,
@@ -305,7 +313,7 @@ if ($_POST['action'] == 'newtask'
                               $_POST['operating_system'], $_POST['task_severity'],
                               $_POST['task_priority'], $_COOKIE['flyspray_userid'],
                               $now,
-                              strtotime("{$_POST['due_date']} +23 hours 59 minutes 59 seconds"),
+                              $due_date,
                               $_POST['percent_complete'],
                               $_POST['task_id'])
                            );
@@ -458,25 +466,20 @@ if ($_POST['action'] == 'newtask'
 /////////////////////////////////
 
 } elseif ($_GET['action'] == "reopen"
-          && $permissions['manage_project'] == "1") {
-
-    $add_item = $db->Query("UPDATE flyspray_tasks SET
-                              resolution_reason = '0',
-                              closure_comment = '0',
-                              last_edited_time = ?,
-                              last_edited_by = ?,
-                              is_closed = '0'
-                              WHERE task_id = ?",
-                              array($now, $current_user['user_id'], $_GET['task_id']));
+          && $permissions['manage_project'] == "1")
+{
+    $db->Query("UPDATE flyspray_tasks SET
+                resolution_reason = '0',
+                closure_comment = '0',
+                last_edited_time = ?,
+                last_edited_by = ?,
+                is_closed = '0'
+                WHERE task_id = ?",
+                array($now, $current_user['user_id'], $_GET['task_id']));
 
    $item_summary = stripslashes($item_summary);
 
-   $notify->Create('4', $task_details['task_id']);
-
-//    $to = $notify->Address($old_task_info['task_id']);
-//    $msg = $notify->Create('4', $old_task_info['task_id']);
-//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+   $notify->Create('4', $_GET['task_id']);
 
    // If there's an admin request related to this, close it
    if ($fs->AdminRequestCheck(2, $_GET['task_id']) == '1')

@@ -5,6 +5,7 @@
 */
 
 $fs->get_language_pack($lang, 'newtask');
+$fs->get_language_pack($lang, 'index');
 // Check if the user has the right to open new tasks
 
 if ($permissions['open_new_tasks'] == '1'
@@ -259,13 +260,18 @@ if ($permissions['open_new_tasks'] == '1'
          <tr>
             <td><label for="duedate"><?php echo $newtask_text['duedate'];?></label></td>
             <td id="duedate">
-            <input id="due_date" type="text" name="due_date" size="10" value="" readonly="1" <?php if ($permissions['modify_all_tasks'] != "1") { echo " disabled=\"disabled\"";};?> />
+            <select id="due_date" name="due_date">
+               <option value=""><?php echo $index_text['dueanytime'];?></option>
+               <option id="date_d"><?php echo $index_text['selectduedate'];?></option>
+            </select>
             <script type="text/javascript">
             Calendar.setup(
             {
-               inputField  : "due_date",         // ID of the input field
+               inputField  : "date_d",         // ID of the input field
                ifFormat    : "%d-%b-%Y",    // the date format
-               button      : "due_date"       // ID of the button
+               displayArea : "date_d",       // The display field
+               daFormat    : "%d-%b-%Y",
+               button      : "date_d"       // ID of the button
             }
             );
             </script>
