@@ -60,7 +60,13 @@ if ($_POST['action'] == 'newtask'
       }
 
       // Process the due_date
-      $due_date = strtotime("{$_POST['due_date']} +23 hours 59 minutes 59 seconds");
+      if (isset($_POST['due_date']) && !empty($_POST['due_date']))
+      {
+         $due_date = strtotime("{$_POST['due_date']} +23 hours 59 minutes 59 seconds");
+      } else
+      {
+         $due_date = '';
+      }
       array_push($sql_params, 'due_date');
       array_push($sql_values, $due_date);
 

@@ -114,7 +114,7 @@ $where[] = 'project_is_active = ?';
 $sql_params[] = '1';
 
 
-// Set the default projects to show tasks from
+// If the user wants to view tasks from all projects
 if (isset($_GET['project']) && $_GET['project'] == '0')
 {
    // If the user has the global 'view tasks' permission, view all projects unrestricted
@@ -155,11 +155,12 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    $sql_params[] = '0';
 
    // Cycle through the projects, selecting the ones that the user is allowed to view
-   while ($this_project = $db->FetchArray($check_projects)) {
+   while ($this_project = $db->FetchArray($check_projects))
+   {
       $temp_where = $temp_where . " OR attached_to_project = ?";
       $sql_params[] = $this_project['project_id'];
-      //echo $temp_where . ' - ' . $this_project['project_id'] . '<br />';
    }
+
    $where[] = $temp_where . ")";
 
 
@@ -298,7 +299,7 @@ if ($project_prefs['project_is_active'] == '1'
 <map id="projectsearchform" name="projectsearchform">
 <form action="index.php" method="get">
 <input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>" />
-<input type="hidden" name="project" value="<?php echo $project_id;?>" />
+<input type="hidden" name="project" value="<?php if(isset($_GET['project']) && $_GET['project'] == '0') { echo '0'; } else { echo $project_id; }?>" />
   <em><?php echo $index_text['searchthisproject'];?>:</em>
     <input id="searchtext" name="string" type="text" size="20"
     maxlength="100" value="<?php if(isset($_GET['string'])) echo $_GET['string'];?>" accesskey="q" />
@@ -476,7 +477,7 @@ if ($project_prefs['project_is_active'] == '1'
 $column_visible = array();
 $columns = array('id', 'project', 'tasktype', 'category', 'severity', 'priority',
                  'summary', 'dateopened', 'status', 'openedby', 'assignedto', 'lastedit',
-                 'reportedin', 'dueversion', 'comments', 'attachments', 'progress');
+                 'reportedin', 'dueversion', 'duedate', 'comments', 'attachments', 'progress');
 
 foreach ($columns as $column)
 {

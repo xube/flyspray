@@ -132,9 +132,9 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
                   . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status']
                   . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort']
                   . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage']
-                  . '&amp;date=' . $_GET['date'];
+                  . '&amp;date=' . $_GET['date'] . '&amp;project=' . @$_GET['project'];
 
-      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks'] . '&amp;project=' . @$_GET['project']
+      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks']
                                      . '&amp;pagenum=' . $_GET['pagenum'] . $extraurl;
 
       if (isset($_GET['order']))
