@@ -16,6 +16,7 @@ $pm_text = array (
 'pendingreq'               =>    'Pending Requests',
 'reasongiven'              =>    'Reason given',
 'nopendingreq'             =>    'There are no pending Project Manager requests.',
+'givereason'               =>    'Give a reason',
 
 'catlisted'                =>    'Category List Editor',
 'oslisted'                 =>    'Operating System List Editor',

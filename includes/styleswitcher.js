@@ -57,6 +57,9 @@ window.onload = function(e) {
   var cookie = readCookie("style");
   var title = cookie ? cookie : getPreferredStyleSheet();
   setActiveStyleSheet(title);
+  // Ugly, but what's a man to do?
+  // This function is in the file functions.js
+  setUpFade();
 }
 
 window.onunload = function(e) {

@@ -1690,18 +1690,18 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of adding a user to the notification list //
 /////////////////////////////////////////////////////
 
-} elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == "add_notification")
+} elseif ( isset($_REQUEST['action']) && $_REQUEST['action'] == "add_notification" )
 {
 
-   if (is_array($_REQUEST['ids']) && !empty($_REQUEST['ids']))
+   if ( isset($_REQUEST['prev_page']) )
    {
       $ids = $_REQUEST['ids'];
       $tasks = array();
       $redirect_url = $_REQUEST['prev_page'];
 
-      if (!empty($ids))
+      if ( !empty($ids) )
       {
-         foreach ($ids AS $key => $val)
+         foreach ( $ids AS $key => $val )
             array_push($tasks, $key);
 
          $be->AddToNotifyList($current_user['user_id'], $tasks);
@@ -1724,7 +1724,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 } elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == "remove_notification")
 {
-   if (is_array($_REQUEST['ids']))
+   if ( isset($_REQUEST['prev_page']) )
    {
       $ids = $_REQUEST['ids'];
       $tasks = array();
@@ -1901,7 +1901,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 ///////////////////////////////////////////////
 // Start of change a bunch of users' groups //
 //////////////////////////////////////////////
-} elseif ($_POST['action'] == "movetogroup"
+} elseif ($_POST['action'] == 'movetogroup'
           && ($permissions['manage_project'] == '1'
               OR $permissions['is_admin'] == '1'))
 {
@@ -1937,11 +1937,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 } elseif ($_REQUEST['action'] == 'takeownership')
 {
-   if (is_array($_REQUEST['ids']))
+   if ( isset($_REQUEST['prev_page']) )
    {
       $ids = $_REQUEST['ids'];
       $tasks = array();
-      $redirect_url = $REQUEST['prev_page'];
+      $redirect_url = $_REQUEST['prev_page'];
 
       if (!empty($ids))
       {
@@ -1973,7 +1973,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $fs->AdminRequest(1, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
 
    // Log this event to the task history
-   $fs->logEvent($_POST['task_id'], 20, $current_user['user_id']);
+   $fs->logEvent($_POST['task_id'], 20, $_POST['reason_given']);
 
    // Now, get the project managers details for this project
    $get_pms = $db->Query("SELECT u.user_id
@@ -2015,7 +2015,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $fs->AdminRequest(2, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
 
    // Log this event to the task history
-   $fs->logEvent($_POST['task_id'], 21, $current_user['user_id']);
+   $fs->logEvent($_POST['task_id'], 21, $_POST['reason_given']);
 
    // Check if the user is on the notification list
    $check_notify = $db->Query("SELECT * FROM flyspray_notifications
@@ -2067,37 +2067,32 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of denying a PM request //
 ///////////////////////////////////
 
-} elseif (isset($_GET['action']) && $_GET['action'] == 'denypmreq' && $permissions['is_admin'] == '1')
+} elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'denypmreq' && $permissions['is_admin'] == '1')
 {
    // Get info on the pm request
    $req_details = $db->FetchArray($db->Query("SELECT task_id
                                               FROM flyspray_admin_requests
                                               WHERE request_id = ?",
-                                              array($_GET['req_id'])
+                                              array($_REQUEST['req_id'])
                                              )
                                  );
 
    // Mark the PM request as 'resolved'
    $db->Query("UPDATE flyspray_admin_requests
-               SET resolved_by = ?, time_resolved = ?
+               SET resolved_by = ?, time_resolved = ?, deny_reason = ?
                WHERE request_id = ?",
-               array($current_user['user_id'], date('U'), $_GET['req_id']));
+               array($current_user['user_id'], date('U'), $_REQUEST['deny_reason'], $_REQUEST['req_id']));
 
 
    // Log this event to the task's history
-   $fs->logEvent($req_details['task_id'], 28, $current_user['user_id']);
+   $fs->logEvent($req_details['task_id'], 28, $_REQUEST['deny_reason']);
 
    // Send notifications
    $notify->Create('13', $req_details['task_id']);
 
-//    $to  = $notify->Address($req_details['task_id']);
-//    $msg = $notify->Create('13', $req_details['task_id']);
-//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-
    // Redirect
    $_SESSION['SUCCESS'] = $modify_text['pmreqdenied'];
-   $fs->redirect($_GET['prev_page']);
+   $fs->redirect($_REQUEST['prev_page']);
 
 // End of denying a PM request
 

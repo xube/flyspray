@@ -53,3 +53,7 @@ VALUES
 # Added 5 April 05
 
 ALTER TABLE `flyspray_tasks` ADD `due_date` VARCHAR( 10 ) NOT NULL ;
+
+# Added 15 Apr 05
+
+ALTER TABLE `flyspray_admin_requests` ADD `deny_reason` VARCHAR( 255 ) NOT NULL ;

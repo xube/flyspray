@@ -1000,21 +1000,21 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
    <?php
    if (@$permissions['view_comments'] == '1' OR @$permissions['add_comments'] == '1' OR $project_prefs['others_view'] == '1')
    {
-      echo '<li id="commentstab"><a href="#comments">'. $details_text['comments'] . "($num_comments)" . '</a></li>';
+      echo '<li id="commentstab"><a href="#comments">'. $details_text['comments'] . " ($num_comments)" . '</a></li>';
    }
 
    if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
    {
-      echo '<li id="attachtab"><a href="#attach">' . $details_text['attachments'] . "($num_attachments)" . '</a></li>';
+      echo '<li id="attachtab"><a href="#attach">' . $details_text['attachments'] . " ($num_attachments)" . '</a></li>';
    }
 
 
-   echo '<li id="relatedtab"><a href="#related">' . $details_text['relatedtasks'] . "($num_related/$num_related_to)" . '</a></li>';
+   echo '<li id="relatedtab"><a href="#related">' . $details_text['relatedtasks'] . " ($num_related/$num_related_to)" . '</a></li>';
 
    if (@$permissions['manage_project'] == '1')
    {
-      echo '<li id="notifytab"><a href="#notify">' . $details_text['notifications'] . "($num_notifications)" . '</a></li>';
-      echo '<li id="remindtab"><a href="#remind">' . $details_text['reminders'] . "($num_reminders)" . '</a></li>';
+      echo '<li id="notifytab"><a href="#notify">' . $details_text['notifications'] . " ($num_notifications) " . '</a></li>';
+      echo '<li id="remindtab"><a href="#remind">' . $details_text['reminders'] . " ($num_reminders)" . '</a></li>';
    }
 
    if (@$permissions['view_history'] == '1')
@@ -1837,11 +1837,11 @@ if (@$permissions['view_history'] == '1')
 
             } elseif ($history['event_type'] == '20')   //User requested task closure
             {
-               echo $details_text['closerequestmade'];
+               echo $details_text['closerequestmade'] . ' - ' . stripslashes($newvalue);
 
             } elseif ($history['event_type'] == '21')   //User requested task
             {
-               echo $details_text['reopenrequestmade'];
+               echo $details_text['reopenrequestmade'] . ' - ' . stripslashes($newvalue);
 
             } elseif ($history['event_type'] == '22')   // Dependency added
             {
@@ -1873,7 +1873,7 @@ if (@$permissions['view_history'] == '1')
 
             } elseif ($history['event_type'] == '28')   // PM request denied
             {
-               echo $details_text['pmreqdenied'];
+               echo $details_text['pmreqdenied'] . ' - ' . stripslashes($newvalue);
             }
 
             ?>

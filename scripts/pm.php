@@ -1117,9 +1117,9 @@ if ($permissions['manage_project'] == '1')
             // Change the numerical request type into a readable value
             switch($pending_req['request_type'])
             {
-               case "1": $request_type = $admin_text['closetask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
+               case "1": $request_type = $admin_text['closetask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . stripslashes($pending_req['item_summary']) . '</a>';
                break;
-               case "2": $request_type = $admin_text['reopentask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
+               case "2": $request_type = $admin_text['reopentask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . stripslashes($pending_req['item_summary']) . '</a>';
                break;
                case "3": $request_type = $admin_text['applymember'];
                break;
@@ -1130,7 +1130,20 @@ if ($permissions['manage_project'] == '1')
             echo '<td><a href="?do=admin&amp;area=users&amp;id=' . $pending_req['user_id'] . '">' . $pending_req['real_name'] . '(' . $pending_req['user_name'] . ')</a></td>';
             echo '<td>' . $fs->formatDate($pending_req['time_submitted'], true) . '</td>';
             echo '<td>' . stripslashes($pending_req['reason_given']) . '</td>';
-            echo '<td><a href="?do=modify&amp;action=denypmreq&req_id=' . $pending_req['request_id'] . '&amp;prev_page=' . $this_page . '">' . $pm_text['deny'] . '</a></td>';
+
+            echo '<td><a href="#" id="denyreq" class="button" onclick="showhidestuff(\'denyform\');">' . $pm_text['deny'] . '</a>';
+            echo '<div id="denyform">';
+            echo '<form name="form3" action="index.php" method="post">';
+            echo '<input type="hidden" name="do" value="modify" />';
+            echo '<input type="hidden" name="action" value="denypmreq" />';
+            echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />';
+            echo '<input type="hidden" name="req_id" value="' . $pending_req['request_id'] . '" />';
+            echo '<label for="reason">' . $pm_text['givereason'] . '</label>';
+            echo '<textarea id="reason" name="deny_reason"></textarea><br />';
+            echo '<input class="adminbutton" type="submit" value="' . $pm_text['deny'] . '" />';
+            echo '</form>';
+            echo '</div></td>';
+
          }
 
          echo '</table>';

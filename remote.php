@@ -21,11 +21,6 @@ require('header.php');
 // http://scripts.incutio.com/xmlrpc/
 require('includes/IXR_Library.inc.php');
 
-// Basic test function that returns the time
-function getTime($args)
-{
-   return date('H:i:s');
-}
 
 //////////////////////////////////////////////////
 // Start of function to return a task's details //
@@ -146,7 +141,7 @@ function closeTask($args)
                                 LEFT JOIN flyspray_tasks t on d.dep_task_id = t.task_id
                                 WHERE d.task_id = ?",
                                 array($task_id));
-    
+
     // Cycle through the dependencies, checking if any are still open
     while ($deps_details = $db->FetchArray($check_deps)) {
       if ($deps_details['is_closed'] != '1') {
@@ -171,6 +166,16 @@ function closeTask($args)
       return new IXR_Error(-2, 'You do not have permission to perform this function.');
    }
 
+   // Check if we should mark the task 100% complete
+   if(!empty($mark100))
+   {
+      $db->Query("UPDATE flyspray_tasks
+                  SET percent_complete = '100'
+                  WHERE task_id = ?",
+                  array($task_id)
+                 );
+   }
+
    //Do it.  Do it.  Close the task, now!
    $db->Query("UPDATE flyspray_tasks
                SET is_closed = '1',
@@ -181,37 +186,71 @@ function closeTask($args)
                WHERE task_id = ?",
                array($reason, $comment, date(U), $user_id, $task_id)
              );
-             
-   // Check if we should mark the task 100% complete
-   if(!empty($mark100))
-   {
-      $db->Query("UPDATE flyspray_tasks
-                  SET percent_complete = '100'
-                  WHERE task_id = ?",
-                  array($task_id)
-                 );
-   }
-   
+
    // Log this to the task's history
    $fs->logEvent($task_id, 2, $reason, $comment);
-      
+
    // Generate notifications
-   $to = $notify->Address($task_id);
-   $msg = $notify->Create('3', $task_id);
-   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
+   $notify->Create('3', $task_id);
+//    $to = $notify->Address($task_id);
+//    $msg = $notify->Create('3', $task_id);
+//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
    return true;
-   
+
 // End of close task function
 }
+
+function getUser($args)
+{
+   global $fs;
+   global $db;
+
+   $username   = $args[0];
+   $password   = $args[1];
+   $req_user   = $args[2];
+
+   // First, check the user has a valid, active login.  If not, then stop.
+   if (!$fs->checkLogin($username, $password))
+   {
+      return new IXR_Error(-1, 'Your credentials were incorrect, or your account has been disabled.');
+   }
+
+   // Get the user_id
+   $user_id = $fs->checkLogin($username, $password);
+
+   // Get the user's permissions
+   $permissions = $fs->checkPermissions($user_id, true);
+
+   if ($permissions['is_admin'] == '1' or $user_id == $req_user)
+   {
+      $user_details = $fs->getUserDetails($req_user);
+
+      return array ( 'user_id'         => $user_details['user_id'],
+                     'user_name'       => $user_details['user_name'],
+                     'real_name'       => $user_details['real_name'],
+                     'jabber_id'       => $user_details['jabber_id'],
+                     'email_address'   => $user_deatils['email_address'],
+                     'account_enabled' => $user_details['account_enabled'],
+                   );
+
+   } else
+   {
+      return new IXR_Error(-2, 'You do not have permission to perform this function.');
+   }
+
+
+// End of getUser function
+}
+
 
 // Define the server
 $server = new IXR_Server(array(
 
-   'test.getTime'    => 'getTime',
    'fs.getTask'      => 'getTask',
    'fs.closeTask'    => 'closeTask',
+   'fs.getUser'      => 'getUser',
 
 ));
 

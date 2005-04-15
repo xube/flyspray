@@ -30,27 +30,48 @@ function showhidestuff(boxid) {
       case 'visible': document.getElementById(boxid).style.visibility="hidden"; break
    }
 }
-
-window.setTimeout(fader,4000);
-function fader() {
+// This function gets called from the onload function in
+// the file styleswitcher.js
+function setUpFade() {
   if (document.getElementById('errorbar')) {
-    el = document.getElementById('errorbar');
+    elName = 'errorbar';
   } else if (document.getElementById('successbar')) {
-    el = document.getElementById('successbar');
+    elName = 'successbar';
   } else {
     return;
   }
-  opacity = el.style.opacity;
-  if (opacity == '') {
-    el.style.opacity = 1;
-    window.setTimeout(fader,10);
-  } else if (opacity == 0) {
-    el.style.display = 'none';
-  } else if (!isNaN(opacity)) {
-    opacity -= .01;
-    el.style.opacity = opacity;
-    window.setTimeout(fader,10);
+  fader(elName,2000,50,2500);
+}
+// Fades an element
+// elName - id of the element
+// start - time in ms when the fading should start
+// steps - number of fading steps
+// time - the length of the fade in ms
+function fader(elName,start,steps,time) {
+  setOpacity(elName,100); // To prevent flicker in Firefox
+                          // The first time the opacity is set
+                          // the element flickers in Firefox               
+  fadeStep = 100/steps;
+  timeStep = time/steps;
+  opacity = 100;
+  time = start + 100;
+  while (opacity >=0) {
+    window.setTimeout("setOpacity('"+elName+"',"+opacity+")",time);
+    opacity -= fadeStep;
+    time += timeStep;
   }
+}
+function setOpacity(elName,opacity) {
+  opacity = (opacity == 100)?99:opacity;
+  el = document.getElementById(elName);
+  // IE
+  el.style.filter = "alpha(opacity:"+opacity+")";
+  // Safari < 1.2, Konqueror
+  el.style.KHTMLOpacity = opacity/100;
+  // Old Mozilla
+  el.style.MozOpacity = opacity/100;
+  // Safari >= 1.2, Firefox and Mozilla, CSS3
+  el.style.opacity = opacity/100
 }
 
 function ToggleSelectedTasks() {

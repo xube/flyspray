@@ -187,16 +187,21 @@ p#menu {
    margin               : 0em 0px;
    padding              : 0px;
    background-color     : #e6eef6;
-   height               : 22px;
+   height               : 18px;
 }
 
 p#menu a {
-   height               : 22px;
+   height               : 18px;
+   padding              : 3px 1px 3px 20px;
+   background-repeat    : no-repeat;
+   background-position  : 1px 3px;
+   font-size            : 12px;
+   font-weight          : normal;
 }
 
 p#menu a:hover {
   color                 : #6395c8;
-  background-color      : #d7e9ff;
+  background-color      : transparent;
   text-decoration       : none;
 }
 
@@ -217,75 +222,31 @@ div#anonopen a {
 /* Links in menus */
 
 a#newtasklink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
    background-image     : url(menu/newtask.png);
-   background-repeat    : no-repeat;
-   background-position  : 1px 3px;
 }
 
 a#reportslink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
    background-image     : url(menu/reports.png);
-   background-repeat    : no-repeat;
-   background-position  : 1px 3px;
 }
 
 a#editmydetailslink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
    background-image     : url(menu/editmydetails.png);
-   background-repeat    : no-repeat;
-   background-position  : 1px 3px;
 }
 
 a#lastsearchlink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
    background-image     : url(menu/search.png);
-   background-repeat    : no-repeat;
-   background-position  : 1px 3px;
 }
 
 a#logoutlink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
    background-image     : url(menu/logout.png);
-   background-repeat    : no-repeat;
-   background-position  : 1px 3px;
 }
 
 a#optionslink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
    background-image     : url(menu/options.png);
-   background-repeat    : no-repeat;
-   background-position  : 1px 3px;
 }
 
 a#projectslink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
    background-image     : url(menu/projectprefs.png);
-   background-repeat    : no-repeat;
-   background-position  : 1px 3px;
-}
-
-a#usersandgroupslink {
-   padding-left         : 20px;
-   padding-top          : 1px;
-   padding-bottom       : 1px;
-   background-image     : url(menu/usersandgroups.png);
-   background-repeat    : no-repeat;
-   background-position  : 1px 3px;
 }
 
 /* For pending admin requests */
@@ -389,11 +350,11 @@ table#pagenumbers {
 }
 
 table#pagenumbers td#taskrange {
-   padding              : 3px 2ex;
+   padding              : 0px 0px 0px 5px;
  }
 
 table#pagenumbers td#numbers {
-   padding              : 3px 2ex;
+   padding              : 0px 5px 0px 0px;
    text-align           : right;
 }
 
@@ -777,24 +738,8 @@ div#actionbuttons a#hideclosetask:hover {
    border                  : none;
 }
 
-div#massops a {
-   margin                  : 0px 12px 0px 12px;
-}
-
-div#massops input.mainbutton {
-   color                   : #47617b;
-   background-color        : transparent;
-   font-size               : 12px;
-   font-family             : Helvetica, Verdana, sans-serif;
-   padding                 : none;
-   margin                  : none;
-   background-image        : none;
-   border                  : none;
-}
-
-div#massops input.mainbutton:hover {
-   color                : #6395c8;
-   background-color     : transparent;
+div#massops {
+   padding                 : 0px 0px 0px 3px;
 }
 
 div#closeform {
@@ -811,6 +756,25 @@ div#closeform {
 }
 
 div#closeform textarea {
+   width                   : 100%;
+   height                  : 100px;
+}
+
+div#denyform {
+   visibility              : hidden;
+   position                : absolute;
+   right                   : 12px;
+   background-color        : #e6eef6;
+   color                   : #000000;
+   border                  : 3px ridge #000000;
+   padding                 : 5px 30px 5px 5px;
+   margin-top              : 5px;
+   display                 : block;
+   width                   : 300px;
+   height                  : auto;
+}
+
+div#denyform textarea {
    width                   : 100%;
    height                  : 100px;
 }
@@ -907,9 +871,8 @@ a.grouptitle {
    color                   : #000000;
 }
 
-#submenu a                          { color: #999; }
+#submenu a                          { color: #999;text-decoration: none; }
 #submenu a.active                   {  z-index:5;}
-#submenu a                          { text-decoration: none; }
 
 /* margins */
 #submenu, #submenu *                { margin: 0; padding: 0; }
@@ -995,6 +958,7 @@ span#navigation a#prev {
    background-repeat    : no-repeat;
    background-position  : left;
 }
+
 
 
 /* End of the @screen section */

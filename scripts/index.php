@@ -784,7 +784,7 @@ ORDER BY
 
       // Checkbox for mass operations
       if (isset($_COOKIE['flyspray_userid']))
-         echo "<td width=\"10\"><input type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
+         echo "<td width=\"10\"><input class=\"ticktask\" type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
 
       list_cell($task_details['task_id'], "id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
       list_cell($task_details['task_id'], "project",$task_details['project_title'],1);
@@ -818,6 +818,7 @@ ORDER BY
       if ($total > 0) {
          echo "<td id=\"taskrange\">";
          printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
+         echo '&nbsp;&nbsp;<a href="javascript:void();" onclick="ToggleSelectedTasks()">Toggle selected</a>';
          echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . $_GET['order']) . "</td>";
       } else
       {
@@ -830,7 +831,6 @@ ORDER BY
    <?php
    if (isset($_COOKIE['flyspray_userid'])) { ?>
    <div id="massops">
-      <a href="javascript:void();" onclick="ToggleSelectedTasks()">Toggle selected</a>
       <select name="action">
          <option value="add_notification"><?php echo $index_text['watchtasks'];?></option>
          <option value="remove_notification"><?php echo $index_text['stopwatching'];?></option>

@@ -718,6 +718,25 @@ div#closeform textarea {
    height               : 100px;
 }
 
+div#denyform {
+   visibility              : hidden;
+   position                : absolute;
+   right                   : 12px;
+   background-color        : #e6eef6;
+   color                   : #000000;
+   border                  : 3px ridge #000000;
+   padding                 : 5px 30px 5px 5px;
+   margin-top              : 5px;
+   display                 : block;
+   width                   : 300px;
+   height                  : auto;
+}
+
+div#denyform textarea {
+   width                   : 100%;
+   height                  : 100px;
+}
+
 div#actionbuttons a#hideclosetask {
    position             : absolute;
    top                  : 3px;
@@ -831,18 +850,17 @@ div#toolbox h3 {
 
 /* The new tabs stuff */
 /* colors */
-#submenu a, div.tab {
+div.tab {
    color                : #828282;
    background-color     : #ffffff;
 }
 
-#submenu a.active {
-   color                : #5b5c5c;
-   background-color     : #eeffee;
-   padding              : 2px 2px 5px 22px;
-   background-image     : url(dot-green.png);
-   background-repeat    : no-repeat;
-   background-position  : 2px 6px;
+#submenu a {
+   margin               : auto auto -1px 1ex;
+   padding              : 2px 5px 5px 5px;
+   color                : #c5c5c5;
+   background-color     : transparent;
+   text-decoration      : none;
 }
 
 #submenu a:hover {
@@ -850,16 +868,20 @@ div#toolbox h3 {
    background-color     : #eeffee;
 }
 
-#submenu a                          { color: #c5c5c5; background-color: transparent; text-decoration: none;}
-#submenu a.active                   { border-bottom-color: #008000; }
+#submenu a.active {
+   color                : #5b5c5c;
+   background-color     : #eeffee;
+   padding              : 2px 5px 5px 22px;
+   background-image     : url(dot-green.png);
+   background-repeat    : no-repeat;
+   background-position  : 2px 6px;
+   border-bottom-color  : #008000;
+}
 
 /* margins */
 #submenu, #submenu *                { margin: 0; padding: 0; }
 #submenu a, div.tab                 { border: solid 1px #008000; }
-#submenu a {
-   margin               : auto auto -1px 1ex;
-   padding              : 2px 2px 5px 5px;
-}
+
 * html #submenu                     { margin-bottom: -19px; }
 div.tab                             { margin: 0; padding: 1ex; padding-bottom: 1cm; margin-right: 1ex; margin-bottom: 10px;}
 
@@ -869,6 +891,7 @@ div.tab                             { margin: 0; padding: 1ex; padding-bottom: 1
 div.tab h2                          { display: none; }
 div.tab                             { clear: left; }
 * html .tab div.clear               { clear: none; height: 14em; }
+
 
 /* .fineprint is merely used for the details about when a task has
    been created and changed (in the details pages) */
@@ -1082,6 +1105,24 @@ span#navigation a#prev {
    background-image     : url(prev.png);
    background-repeat    : no-repeat;
    background-position  : left;
+}
+
+/* Checkboxes next to the tasks in the task list */
+input[type=checkbox] {
+   width                : 18px;
+   height               : 18px;
+}
+
+input[type=checkbox]:hover {
+   width                : 18px;
+   height               : 18px;
+   background-image     : url(tick.png);
+}
+
+input[type=checkbox]:active {
+   width                : 18px;
+   height               : 18px;
+   background-image     : url(tick.png);
 }
 
 
