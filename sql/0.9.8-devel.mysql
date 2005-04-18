@@ -21,8 +21,8 @@ ALTER TABLE `flyspray_admin_requests` ADD `reason_given` LONGTEXT NOT NULL AFTER
 
 CREATE TABLE IF NOT EXISTS `flyspray_notification_messages` (
     `message_id`        mediumint(10)   NOT NULL    auto_increment,
-    `message_subject`   varchar(50)     NOT NULL,
-    `message_body`      longtext        NOT NULL,
+    `message_subject`   varchar(50)     NOT NULL DEFAULT '',
+    `message_body`      longtext        NOT NULL DEFAULT '',
     `time_created`   varchar(20),
     PRIMARY KEY (`message_id`)
 ) TYPE=MyISAM COMMENT='Notification body and subject' AUTO_INCREMENT=2 ;
@@ -30,17 +30,17 @@ CREATE TABLE IF NOT EXISTS `flyspray_notification_messages` (
 CREATE TABLE IF NOT EXISTS `flyspray_notification_recipients` (
     `recipient_id`                mediumint(10)   NOT NULL    auto_increment,
     `message_id`   mediumint(10)   NOT NULL,
-    `notify_method`            varchar(1)      NOT NULL,
-    `notify_address`           varchar(100)    NOT NULL,
+    `notify_method`            varchar(1)      NOT NULL DEFAULT '',
+    `notify_address`           varchar(100)    NOT NULL DEFAULT '',
     PRIMARY KEY (`recipient_id`)
 ) TYPE=MyISAM COMMENT='Notification recipient list' AUTO_INCREMENT=2 ;
 
 # Added 27 March 05
 
-ALTER TABLE `flyspray_projects` ADD `notify_email` LONGTEXT NOT NULL ;
-ALTER TABLE `flyspray_projects` ADD `notify_email_when` MEDIUMINT( 1 ) NOT NULL ;
-ALTER TABLE `flyspray_projects` ADD `notify_jabber` LONGTEXT NOT NULL ;
-ALTER TABLE `flyspray_projects` ADD `notify_jabber_when` MEDIUMINT( 1 ) NOT NULL ;
+ALTER TABLE `flyspray_projects` ADD `notify_email` LONGTEXT NOT NULL DEFAULT '';
+ALTER TABLE `flyspray_projects` ADD `notify_email_when` MEDIUMINT( 1 ) NOT NULL DEFAULT 0;
+ALTER TABLE `flyspray_projects` ADD `notify_jabber` LONGTEXT NOT NULL DEFAULT '';
+ALTER TABLE `flyspray_projects` ADD `notify_jabber_when` MEDIUMINT( 1 ) NOT NULL DEFAULT 0;
 
 # Added 3 April 05
 
@@ -52,8 +52,8 @@ VALUES
 
 # Added 5 April 05
 
-ALTER TABLE `flyspray_tasks` ADD `due_date` VARCHAR( 10 ) NOT NULL ;
+ALTER TABLE `flyspray_tasks` ADD `due_date` VARCHAR( 10 ) NOT NULL DEFAULT '';
 
 # Added 15 Apr 05
 
-ALTER TABLE `flyspray_admin_requests` ADD `deny_reason` VARCHAR( 255 ) NOT NULL ;
+ALTER TABLE `flyspray_admin_requests` ADD `deny_reason` VARCHAR( 255 ) NOT NULL DEFAULT '';

@@ -122,8 +122,8 @@ sub alterTableAddColumn {
 sub createTable {
     my $def = shift;
 
-    if ($def =~ m/(create\s+table\s+)(\w+)\s+\((.*)\)\s*type=\w+\s+(comment=.*\s+)?auto_increment=(\d+)/i) {
-	my ($pre, $table_name, $cols, $dummy, $inc) = ($1, $2, $3, $4, $5);
+    if ($def =~ m/(create\s+table\s+)(if\s+not\s+exists\s+)?(\w+)\s+\((.*)\)\s*type=\w+\s+(comment=.*\s+)?auto_increment=(\d+)/i) {
+	my ($pre, $dummy1, $table_name, $cols, $dummy2, $inc) = ($1, $2, $3, $4, $5, $6);
 	my $autoincrement_column;
 	my @cols = split /\s*,\s*/, $cols;
 	# spaces before and after
