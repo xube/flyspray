@@ -604,7 +604,7 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
          $cellvalue = str_replace(" ", "&nbsp;", $cellvalue);
       }
 
-      echo "<td class=\"task_$colname\" onclick='openTask(\"?do=details&amp;id=$task_id\")'>";
+      echo "<td class=\"task_$colname\" >";
       if($url)
       {
          echo "<a href=\"$url\">$cellvalue</a>";
@@ -627,14 +627,14 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
 
    <!--  Summary headings, followed by the query results -->
-   <table>
+   <table id="tasklist_table">
    <thead>
       <tr>
 
       <?php
       // Spacer for the checkboxes beneath it
       if (isset($_COOKIE['flyspray_userid']))
-         echo '<td></td>';
+         echo '<th></th>';
 
       list_heading('id','id');
       list_heading('project','proj','asc');
@@ -780,7 +780,7 @@ ORDER BY
       }
 
       // Start displaying the cells for this row
-      echo "<tr class=\"severity{$task_details['task_severity']}\">\n";
+      echo "<tr id=\"task{$task_details['task_id']}\" class=\"severity{$task_details['task_severity']}\">\n";
 
       // Checkbox for mass operations
       if (isset($_COOKIE['flyspray_userid']))
@@ -830,7 +830,7 @@ ORDER BY
 
    <?php
    if (isset($_COOKIE['flyspray_userid'])) { ?>
-   <div id="massops">
+   <div id="massopsactions">
       <select name="action">
          <option value="add_notification"><?php echo $index_text['watchtasks'];?></option>
          <option value="remove_notification"><?php echo $index_text['stopwatching'];?></option>

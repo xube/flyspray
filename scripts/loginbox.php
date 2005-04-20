@@ -4,8 +4,9 @@ $fs->get_language_pack($lang, 'loginbox');
 
 
 <div id="loginbox">
-<p>
+
 <em><?php echo $loginbox_text['login'];?></em>
+
 <form action="index.php?do=authenticate" method="post">
 
    <label><?php echo $loginbox_text['username'];?></label>
@@ -47,5 +48,5 @@ $fs->get_language_pack($lang, 'loginbox');
       </span>
 
    </form>
-   </p>
+
 </div>

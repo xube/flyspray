@@ -1045,8 +1045,8 @@ while ($row = $db->FetchArray($getcomments))
    // If the user has permissions, show the comments already added
    if (@$permissions['view_comments'] == '1' OR $project_prefs['others_view'] == '1')
    {
-      echo '<a name="' . $row['comment_id'] . '"></a>';
-      echo "<em><a href=\"?do=details&amp;id={$task_details['task_id']}&amp;area=comments#{$row['comment_id']}\">\n" .
+//       echo '<a name="' . $row['comment_id'] . '"></a>';
+      echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="?do=details&amp;id=' . $task_details['task_id'] . '#comment' . $row['comment_id'] . '">' .
       $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . '</a>' . $details_text['commentby'] . ' <a href="?do=admin&amp;area=users&amp;id=' . $row['user_id'] . '">' . stripslashes($user_info['real_name']) . ' (' . $user_info['user_name'] . ')</a> - ' . $formatted_date . "</em>\n";
 
       // If the user has permission, show the edit button

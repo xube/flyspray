@@ -1,3 +1,8 @@
+// Set up the error/success bar fader
+addEvent(window,'load',setUpFade);
+// Set up the task list onclick handler
+addEvent(window,'load',setUpTasklistTable);
+
 function Disable1()
 {
    document.form1.buSubmit.disabled = true;
@@ -30,8 +35,7 @@ function showhidestuff(boxid) {
       case 'visible': document.getElementById(boxid).style.visibility="hidden"; break
    }
 }
-// This function gets called from the onload function in
-// the file styleswitcher.js
+
 function setUpFade() {
   if (document.getElementById('errorbar')) {
     elName = 'errorbar';
@@ -72,6 +76,32 @@ function setOpacity(elName,opacity) {
   el.style.MozOpacity = opacity/100;
   // Safari >= 1.2, Firefox and Mozilla, CSS3
   el.style.opacity = opacity/100
+}
+function setUpTasklistTable() {
+  if (!document.getElementById('tasklist_table')) {
+    // No tasklist on the page
+    return;
+  }
+  var table = document.getElementById('tasklist_table');
+  addEvent(table,'click',tasklistTableClick);
+}
+function tasklistTableClick(e) {
+  src = eventGetSrc(e);
+  if (src.nodeName != 'TD') {
+    return;
+  }
+  // remove task from "task123"
+  id = src.parentNode.id.substr(4);
+  window.location = '?do=details&id=' + id;
+}
+function eventGetSrc(e) {
+  if (e.target) {
+    return e.target;
+  } else if (window.event) {
+    return window.event.srcElement;
+  } else {
+    return;
+  }
 }
 
 function ToggleSelectedTasks() {

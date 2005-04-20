@@ -159,9 +159,9 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
    <link href="themes/<?php echo $themestyle;?>/theme.css" rel="stylesheet" type="text/css" />
    <link rel="alternate" type="text/xml" title="Flyspray RSS Feed" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php?proj=<?php echo $project_id;?>" />
-   <script type="text/javascript" src="includes/functions.js"></script>
    <script type="text/javascript" src="includes/styleswitcher.js"></script>
    <script type="text/javascript" src="includes/tabs.js"></script>
+   <script type="text/javascript" src="includes/functions.js"></script>
    <style type="text/css">@import url(includes/jscalendar/calendar-win2k-1.css);</style>
    <script type="text/javascript" src="includes/jscalendar/calendar_stripped.js"></script>
    <script type="text/javascript" src="includes/jscalendar/lang/calendar-en.js"></script>

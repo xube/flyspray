@@ -426,7 +426,7 @@ if ($_POST['action'] == 'newtask'
                      array($_POST['task_id'])
                    );
 
-         $fs->logEvent($_POST['task_id'], '0', '100', $old_details['percent_complete']);
+         $fs->logEvent($_POST['task_id'], '0', '100', $old_details['percent_complete'], 'percent_complete');
       }
 
       // Get the resolution name for the notifications
@@ -1631,10 +1631,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
             $fs->logEvent($_POST['this_task'], 11, $_POST['related_task']);
             $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
 
-            $to  = $notify->Address($_POST['task_id']);
-            $msg = $notify->Create('9', $_POST['task_id']);
-            $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-            $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+            $notify->Create('9', $_POST['task_id']);
+
+//             $to  = $notify->Address($_POST['task_id']);
+//             $msg = $notify->Create('9', $_POST['task_id']);
+//             $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+//             $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
             $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
             $fs->redirect("index.php?do=details&id=" . $_POST['this_task'] . "#related");
