@@ -1347,29 +1347,9 @@ if (@$permissions['manage_project'] == '1')
 
       while ($row = $db->FetchArray($get_user_ids))
       {
-      ?>
-
-         <?php
-         // If the user can modify jobs, then show them a form to remove a notified user
-         if (@$permissions['manage_project'] == '1' && $task_details['is_closed'] != '1')
-         {
-         ?>
-            <div class="modifycomment">
-               <form action="index.php" method="get">
-                  <p>
-                  <input type="hidden" name="do" value="modify" />
-                  <input type="hidden" name="action" value="remove_notification" />
-                  <input type="hidden" name="ids" value="<?php echo $_GET['id'];?>" />
-                  <input type="hidden" name="user_id" value="<?php echo $row['user_id'];?>" />
-                  <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-                  <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
-                  </p>
-               </form>
-            </div>
-
-         <?php
-         }
-         echo '<p><a href="?do=admin&amp;area=users&amp;id=' . $row['user_id'] . '">' . stripslashes($row['real_name']) . ' ' . '(' . $row['user_name'] . ')</a></p>';
+         echo '<p><a href="?do=admin&amp;area=users&amp;id=' . $row['user_id'] . '">'
+         . stripslashes($row['real_name']) . ' ' . '(' . $row['user_name']
+         . ')</a> &mdash; <a href="?do=modify&amp;action=remove_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $row['user_id'] . '">' . $details_text['remove'] . '</a></p>';
       }
 
       if (@$permissions['manage_project'] == '1')

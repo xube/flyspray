@@ -26,7 +26,7 @@ $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
 $this_page = str_replace('&', '&amp;', $this_page);
 
 // Background daemon that does scheduled reminders
-$fs->startReminderDaemon();
+//$fs->startReminderDaemon();
 
 // Get the translation for the wrapper page (this page)
 $lang = $flyspray_prefs['lang_code'];

@@ -65,7 +65,7 @@ if ($_POST['action'] == 'newtask'
          $due_date = strtotime("{$_POST['due_date']} +23 hours 59 minutes 59 seconds");
       } else
       {
-         $due_date = '';
+         $due_date = '0';
       }
       array_push($sql_params, 'due_date');
       array_push($sql_values, $due_date);
@@ -344,6 +344,7 @@ if ($_POST['action'] == 'newtask'
             "{$modify_text['percentcomplete']}"  =>  'percent_complete',
             "{$modify_text['details']}"          =>  'detailed_desc',
             "{$modify_text['duedate']}"          =>  'due_date',
+            "assigned_to"                        =>  'assigned_to',
             );
 
       while (list($key, $val) = each($field))
@@ -376,7 +377,10 @@ if ($_POST['action'] == 'newtask'
          $fs->logEvent($_POST['task_id'], 14, $_POST['assigned_to'], $_POST['old_assigned']);
 
          // Notify the new assignee what happened
-         $notify->Create('14', $new_details['task_id']);
+         $to  = $notify->SpecificAddresses(array($_POST['assigned_to']));
+         $msg = $notify->GenerateMsg('14', $_POST['task_id']);
+         $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
       }
 
       $_SESSION['SUCCESS'] = $modify_text['taskupdated'];
@@ -1701,12 +1705,15 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       $tasks = array();
       $redirect_url = $_REQUEST['prev_page'];
 
-      if ( !empty($ids) )
+      if ( is_array($ids) && !empty($ids) )
       {
          foreach ( $ids AS $key => $val )
             array_push($tasks, $key);
 
          $be->AddToNotifyList($current_user['user_id'], $tasks);
+      } else
+      {
+         $be->AddToNotifyList($_REQUEST['user_id'], array($_REQUEST['ids']));
       }
 
    } else
