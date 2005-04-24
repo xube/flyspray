@@ -185,18 +185,20 @@ div#loginbox span#links a {
 p#menu {
    border               : 1px solid #ccc;
    margin               : 0em 0px;
-   padding              : 0px;
+   padding              : 4px 0 0 0;
    background-color     : #e6eef6;
    height               : 18px;
+   vertical-align       : baseline;
 }
 
 p#menu a {
    height               : 18px;
    padding              : 3px 1px 3px 20px;
    background-repeat    : no-repeat;
-   background-position  : 1px 3px;
+   background-position  : 1px 1px;
    font-size            : 12px;
    font-weight          : normal;
+   vertical-align       : baseline;
 }
 
 p#menu a:hover {
@@ -369,15 +371,15 @@ table.list label, p#showtask label, p.admin label, form#formaddrelatedtask label
 
 /* Area containing all details to a given task */
 div#taskdetails {
-  margin              : 2em 0px 1em 0px;
-  background-color    : #e6eef6;
-  border              : 1px solid #000000;
+   margin               : 2em 0px 1em 0px;
+   background-color     : #e6eef6;
+   border               : 1px solid #000000;
 }
 
 div#taskdetails h2 {
-  font-size           : 100%;
-  padding             : 0.3ex 1ex;
-  font-weight         : normal;
+   font-size            : 100%;
+   padding              : 0.3ex 1ex;
+   font-weight          : normal;
 }
 
 table.taskdetails td {
@@ -385,12 +387,12 @@ table.taskdetails td {
 
 /* Task details are listed within a table */
 div#taskdetails table {
-  width               : 90%;
+   width                : 90%;
 }
 
 div#taskdetails table th {
-  text-align          : left;
-  font-weight         : bold;
+   text-align           : left;
+   font-weight          : bold;
 }
 
 /* div#content is a generic container for anything but the title and
@@ -404,16 +406,24 @@ div#content {
    z-index              : -1;*/
 }
 
+div#content div, div#content fieldset {
+/*     -moz-border-radius   : 13px; */
+}
+
+div#content div h2 {
+/*    -moz-border-radius   : 15px; */
+}
+
 /* Powered by Flyspray */
 p#footer {
-  margin               : 0em 0em;
-  padding              : 5px;
-  background-color     : #47617b;
-  border               : 3px double white;
-  color                : #ffffff;
-  text-align           : center;
-  margin-top            :  15px;
-  clear                 : both;
+   margin               : 0em 0em;
+   padding              : 5px;
+   background-color     : #47617b;
+   border               : 3px double white;
+   color                : #ffffff;
+   text-align           : center;
+   margin-top           :  15px;
+   clear                : both;
 }
 
 p#footer a:link {
@@ -709,7 +719,7 @@ div#actionbuttons a {
    border                  : 1px solid #000000;
    margin                  : 0px 3px 0px 3px;
    /* padding values: top, right, bottom, left */
-   padding                 : 0px 5px 3px 5px;
+   padding                 : 2px 5px 2px 5px;
 }
 
 div#actionbuttons a#hideclosetask {

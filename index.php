@@ -511,9 +511,7 @@ if (isset($_COOKIE['flyspray_userid']))
 <?php
 $footerfile = "$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php";
 if(file_exists("$footerfile"))
-{
    include_once("$footerfile");
-}
 
 ?>
 

@@ -130,9 +130,9 @@ function GetTaskDetails($task_id)
 {
       global $db;
       global $flyspray_prefs;
-      global $lang;
+      global $project_prefs;
 
-      //$lang = $flyspray_prefs['lang_code'];
+      $lang = $flyspray_prefs['lang_code'];
 
       $get_details = $db->Query("SELECT t.*,
                                               p.*,
