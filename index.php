@@ -162,6 +162,9 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    <script type="text/javascript" src="includes/styleswitcher.js"></script>
    <script type="text/javascript" src="includes/tabs.js"></script>
    <script type="text/javascript" src="includes/functions.js"></script>
+<!--[if IE 6]>
+   <script type="text/javascript" src="includes/ie_hover.js"></script>
+<![endif]-->
    <style type="text/css">@import url(includes/jscalendar/calendar-win2k-1.css);</style>
    <script type="text/javascript" src="includes/jscalendar/calendar_stripped.js"></script>
    <script type="text/javascript" src="includes/jscalendar/lang/calendar-en.js"></script>
