@@ -63,7 +63,7 @@ function showTabById(tabid) { // {{{
     tab.style.display = 'block';
     // ustaw klasę 'active' dla wywojącego elementu
     if (submenu) {
-      links = submenu.getElementsByTagName('a');
+      var links = submenu.getElementsByTagName('a');
       for (i=0; i<links.length; i++) {
         if (links[i].href.match('^.*#'+tabid+'$')) {
           links[i].className = 'active';
