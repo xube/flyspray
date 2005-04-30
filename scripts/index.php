@@ -121,16 +121,16 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    if (isset($permissions['global_view']) && $permissions['global_view'] == '1')
    {
       $check_projects = $db->Query("SELECT p.project_id
-                                       FROM flyspray_projects p"
+                                       FROM {$dbprefix}_projects p"
                                     );
 
    // Those who aren't super users get this more restrictive query
    } elseif (isset($_COOKIE['flyspray_userid']))
    {
       $check_projects = $db->Query("SELECT p.project_id
-                                       FROM flyspray_projects p
-                                       LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
-                                       LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
+                                       FROM {$dbprefix}_projects p
+                                       LEFT JOIN {$dbprefix}_groups g ON p.project_id = g.belongs_to_project
+                                       LEFT JOIN {$dbprefix}_users_in_groups uig ON g.group_id = uig.group_id
                                        WHERE ((uig.user_id = ?
                                        AND g.view_tasks = '1')
                                        OR p.others_view = '1')
@@ -143,7 +143,7 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    } else
    {
       $check_projects = $db->Query("SELECT p.project_id
-                                       FROM flyspray_projects p
+                                       FROM {$dbprefix}_projects p
                                        WHERE p.others_view = '1'
                                        AND p.project_is_active = '1'"
                                     );
@@ -211,7 +211,7 @@ if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
 
   // Do some weird stuff to add the subcategories to the query
   $get_subs = $db->Query('SELECT category_id
-                            FROM flyspray_list_category
+                            FROM {$dbprefix}_list_category
                             WHERE parent_id = ?',
                             array($_GET['cat']));
   while ($row = $db->FetchArray($get_subs)) {
@@ -285,7 +285,7 @@ $get = $get . '&amp;tasks=' . $_GET['tasks'] . $extraurl;
 
 <?php
 // Check that the requested project is active
-//$getproject = $db->FetchArray($db->Query('SELECT * FROM flyspray_projects WHERE project_id = ?', array($project_id)));
+//$getproject = $db->FetchArray($db->Query('SELECT * FROM {$dbprefix}_projects WHERE project_id = ?', array($project_id)));
 
 if ($project_prefs['project_is_active'] == '1'
   && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
@@ -307,7 +307,7 @@ if ($project_prefs['project_is_active'] == '1'
     <select name="type">
       <option value=""><?php echo $index_text['alltasktypes'];?></option>
       <?php
-      $tasktype_list = $db->Query("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype
+      $tasktype_list = $db->Query("SELECT tasktype_id, tasktype_name FROM {$dbprefix}_list_tasktype
                                    WHERE show_in_list = '1'
                                    AND (project_id = '0'
                                    OR project_id = ?)
@@ -348,7 +348,7 @@ if ($project_prefs['project_is_active'] == '1'
       <option value=""><?php echo $index_text['dueanyversion'];?></option>
       <?php
       $ver_list = $db->Query("SELECT version_id, version_name
-                              FROM flyspray_list_version
+                              FROM {$dbprefix}_list_version
                               WHERE show_in_list = '1' AND version_tense = '3'
                               AND (project_id = '0'
                               OR project_id = ?)
@@ -381,7 +381,7 @@ if ($project_prefs['project_is_active'] == '1'
       <option value=""><?php echo $index_text['allcategories'];?></option>
       <?php
       $cat_list = $db->Query("SELECT category_id, category_name
-                              FROM flyspray_list_category
+                              FROM {$dbprefix}_list_category
                               WHERE show_in_list = '1' AND parent_id < '1'
                               AND (project_id = '0'
                                    OR project_id = ?)
@@ -401,7 +401,7 @@ if ($project_prefs['project_is_active'] == '1'
          }
 
          $subcat_list = $db->Query("SELECT category_id, category_name
-                                    FROM flyspray_list_category
+                                    FROM {$dbprefix}_list_category
                                     WHERE show_in_list = '1' AND parent_id = ?
                                     ORDER BY list_position",
                                     array($row['category_id'])
@@ -666,24 +666,24 @@ $from = 'flyspray_tasks t';
 
 if (isset($_GET['tasks']) && $_GET['tasks'] == 'watched') {
     //join the notification table to get watched tasks
-    $from .= ' RIGHT JOIN flyspray_notifications fsn ON t.task_id = fsn.task_id';
+    $from .= ' RIGHT JOIN {$dbprefix}_notifications fsn ON t.task_id = fsn.task_id';
     $where[] = 'fsn.user_id = ?';
     $sql_params[] = $current_user['user_id'];
 }
 
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/
-$from .= '
+$from .= "
 
-        LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
-        LEFT JOIN flyspray_list_tasktype lt ON t.task_type = lt.tasktype_id
-        LEFT JOIN flyspray_list_category lc ON t.product_category = lc.category_id
-        LEFT JOIN flyspray_list_version lv ON t.product_version = lv.version_id
-        LEFT JOIN flyspray_list_version lvc ON t.closedby_version = lvc.version_id
-        LEFT JOIN flyspray_users u ON t.assigned_to = u.user_id
-        LEFT JOIN flyspray_users uo ON t.opened_by = uo.user_id
-        ';
+        LEFT JOIN {$dbprefix}_projects p ON t.attached_to_project = p.project_id
+        LEFT JOIN {$dbprefix}_list_tasktype lt ON t.task_type = lt.tasktype_id
+        LEFT JOIN {$dbprefix}_list_category lc ON t.product_category = lc.category_id
+        LEFT JOIN {$dbprefix}_list_version lv ON t.product_version = lv.version_id
+        LEFT JOIN {$dbprefix}_list_version lvc ON t.closedby_version = lvc.version_id
+        LEFT JOIN {$dbprefix}_users u ON t.assigned_to = u.user_id
+        LEFT JOIN {$dbprefix}_users uo ON t.opened_by = uo.user_id
+        ";
 
-//$where[] = 't.attached_to_project = flyspray_projects.project_id';
+//$where[] = 't.attached_to_project = {$dbprefix}_projects.project_id';
 $where = join(' AND ', $where);
 $get_total = $db->Query("SELECT t.task_id FROM $from
           WHERE $where
@@ -769,13 +769,13 @@ ORDER BY
       // get the number of comments and attachments
       if ($column_visible['comments'])
       {
-         $getcomments = $db->Query("SELECT COUNT(*) AS num_comments FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id']));
+         $getcomments = $db->Query("SELECT COUNT(*) AS num_comments FROM {$dbprefix}_comments WHERE task_id = ?", array($task_details['task_id']));
          list($comments) = $db->FetchRow($getcomments);
       }
 
       if ($column_visible['attachments'])
       {
-         $getattachments = $db->Query("SELECT COUNT(*) AS num_attachments FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id']));
+         $getattachments = $db->Query("SELECT COUNT(*) AS num_attachments FROM {$dbprefix}_attachments WHERE task_id = ?", array($task_details['task_id']));
          list($attachments) = $db->FetchRow($getattachments);
       }
 

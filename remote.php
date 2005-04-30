@@ -44,7 +44,7 @@ function getTask($args)
    $task_details = $fs->getTaskDetails($task_id);
 
    // Get the user's permissions for the project this task belongs to
-   $permissions = $fs->checkPermissions($user_id, $task_details['attached_to_project']);
+   $permissions = $fs->getPermissions($user_id, $task_details['attached_to_project']);
 
    // If the task doesn't exist, stop.
    if (!is_numeric($task_details['task_id']))
@@ -122,7 +122,7 @@ function closeTask($args)
    $task_details = @$fs->getTaskDetails($task_id);
 
    // Get the user's permissions for the project this task belongs to
-   $permissions = $fs->checkPermissions($user_id, $task_details['attached_to_project']);
+   $permissions = $fs->getPermissions($user_id, $task_details['attached_to_project']);
 
    // If the task doesn't exist, stop.
    if (!is_numeric($task_details['task_id']))
@@ -215,7 +215,7 @@ function getUser($args)
    $user_id = $fs->checkLogin($username, $password);
 
    // Get the user's permissions
-   $permissions = $fs->checkPermissions($user_id, true);
+   $permissions = $fs->getPermissions($user_id, true);
 
    if ($permissions['is_admin'] == '1' or $user_id == $req_user)
    {

@@ -34,6 +34,7 @@ function summary_report()
 function changelog_report()
 {
    global $db;
+   global $dbprefix;
    global $fs;
    global $flyspray_prefs;
    global $reports_text;
@@ -105,9 +106,9 @@ function changelog_report()
         $uenddate   = strtotime("$enddate + 1 day");
 
         $get_changes = $db->Query("SELECT t.*, u.*, r.*
-                FROM flyspray_tasks t
-                LEFT JOIN flyspray_users u on t.closed_by = u.user_id
-                LEFT JOIN flyspray_list_resolution r on t.resolution_reason = r.resolution_id
+                FROM {$dbprefix}_tasks t
+                LEFT JOIN {$dbprefix}_users u on t.closed_by = u.user_id
+                LEFT JOIN {$dbprefix}_list_resolution r on t.resolution_reason = r.resolution_id
                 WHERE t.is_closed = 1
                 AND t.attached_to_project = ?
                 AND t.date_closed >= ?
@@ -151,6 +152,7 @@ function changelog_report()
 function severity_report()
 {
    global $db;
+   global $dbprefix;
    global $fs;
    global $severity_list;
    global $reports_text;
@@ -158,7 +160,7 @@ function severity_report()
         $severity_colours = array('','ffe9b4','efca80','edb98a','ffb2ac','f3a29b');
 
         $get_severity_count = $db->Query("SELECT task_type,task_severity,COUNT(*) AS severity_count
-                FROM flyspray_tasks WHERE attached_to_project = ?
+                FROM {$dbprefix}_tasks WHERE attached_to_project = ?
                 AND !is_closed
                 GROUP BY task_severity
                 ORDER BY task_severity DESC", array($_COOKIE['flyspray_project']));
@@ -215,6 +217,7 @@ function severity_report()
 function age_report()
 {
    global $db;
+   global $dbprefix;
    global $fs;
    global $flyspray_prefs;
    global $reports_text;
@@ -228,7 +231,7 @@ function age_report()
         $bracket_count = 1;
 
         $age_list = $db->Query("SELECT task_severity, date_opened
-                FROM flyspray_tasks
+                FROM {$dbprefix}_tasks
                 WHERE attached_to_project = ? AND is_closed = 0
                 ORDER BY date_opened", array($_COOKIE['flyspray_project']));
         while ($row = $db->FetchArray($age_list)) {
@@ -269,6 +272,7 @@ function age_report()
 function events_report()
 {
    global $db;
+   global $dbprefix;
    global $fs;
    global $flyspray_prefs;
    global $reports_text;
@@ -291,22 +295,23 @@ switch ($_REQUEST['sort']) {
         $sort = "DESC";
     };
 
-    switch ($_REQUEST['order']) {
-    case "id":
-        $orderby = "h.task_id {$sort}, h.event_date {$sort}";
-        break;
-    case "type":
-        $orderby = "h.event_type {$sort}, h.event_date {$sort}";
-        break;
-    case "date":
-        $orderby = "h.event_date {$sort}, h.event_type {$sort}";
-        break;
-    case "user":
-        $orderby = "u.real_name {$sort}, h.event_date {$sort}";
-        break;
-    default:
-        $orderby = "h.event_date {$sort}, h.event_type {$sort}";
-    };
+   switch ($_REQUEST['order'])
+   {
+      case "id":
+         $orderby = "h.task_id {$sort}, h.event_date {$sort}";
+         break;
+      case "type":
+         $orderby = "h.event_type {$sort}, h.event_date {$sort}";
+         break;
+      case "date":
+         $orderby = "h.event_date {$sort}, h.event_type {$sort}";
+         break;
+      case "user":
+         $orderby = "u.real_name {$sort}, h.event_date {$sort}";
+         break;
+      default:
+         $orderby = "h.event_date {$sort}, h.event_type {$sort}";
+   }
 
     $wheredate = '';
     switch ($_REQUEST['date']) {
@@ -450,7 +455,7 @@ switch ($_REQUEST['sort']) {
                            <select name="duein">
                               <?php
                               $ver_list = $db->Query("SELECT version_id, version_name
-                                                      FROM flyspray_list_version
+                                                      FROM {$dbprefix}_list_version
                                                       WHERE project_id = ?
                                                       AND show_in_list = '1'
                                                       AND version_tense = '3'
@@ -481,9 +486,9 @@ switch ($_REQUEST['sort']) {
 
      <?php
         $query_history = $db->Query("SELECT h.*, u.user_name, u.real_name, t.item_summary, t.task_severity
-                                         FROM flyspray_history h
-                                         LEFT JOIN flyspray_users u ON h.user_id = u.user_id
-                                         LEFT JOIN flyspray_tasks t ON h.task_id = t.task_id
+                                         FROM {$dbprefix}_history h
+                                         LEFT JOIN {$dbprefix}_users u ON h.user_id = u.user_id
+                                         LEFT JOIN {$dbprefix}_tasks t ON h.task_id = t.task_id
                                          WHERE t.attached_to_project = ? {$type} {$wheredate}
                                          ORDER BY {$orderby}", array($_COOKIE['flyspray_project']));
 
@@ -538,6 +543,7 @@ switch ($_REQUEST['sort']) {
 function EventDescription($history)
 {
    global $db;
+   global $dbprefix;
    global $fs;
    global $details_text;
 
@@ -558,20 +564,20 @@ function EventDescription($history)
                 break;
             case 'attached_to_project':
                 $field = $details_text['attachedtoproject'];
-                list($oldprojecttitle) = $db->FetchRow($db->Query("SELECT project_title FROM flyspray_projects WHERE project_id = ?", array($oldvalue)));
-                list($newprojecttitle) = $db->FetchRow($db->Query("SELECT project_title FROM flyspray_projects WHERE project_id = ?", array($newvalue)));
+                list($oldprojecttitle) = $db->FetchRow($db->Query("SELECT project_title FROM {$dbprefix}_projects WHERE project_id = ?", array($oldvalue)));
+                list($newprojecttitle) = $db->FetchRow($db->Query("SELECT project_title FROM {$dbprefix}_projects WHERE project_id = ?", array($newvalue)));
                 $oldvalue = "<a href=\"?project={$oldvalue}\">{$oldprojecttitle}</a>";
                 $newvalue = "<a href=\"?project={$newvalue}\">{$newprojecttitle}</a>";
                 break;
             case 'task_type':
                 $field = $details_text['tasktype'];
-                list($oldvalue) = $db->FetchRow($db->Query("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id = ?", array($oldvalue)));
-                list($newvalue) = $db->FetchRow($db->Query("SELECT tasktype_name FROM flyspray_list_tasktype WHERE tasktype_id = ?", array($newvalue)));
+                list($oldvalue) = $db->FetchRow($db->Query("SELECT tasktype_name FROM {$dbprefix}_list_tasktype WHERE tasktype_id = ?", array($oldvalue)));
+                list($newvalue) = $db->FetchRow($db->Query("SELECT tasktype_name FROM {$dbprefix}_list_tasktype WHERE tasktype_id = ?", array($newvalue)));
                 break;
             case 'product_category':
                 $field = $details_text['category'];
-                list($oldvalue) = $db->FetchRow($db->Query("SELECT category_name FROM flyspray_list_category WHERE category_id = ?", array($oldvalue)));
-                list($newvalue) = $db->FetchRow($db->Query("SELECT category_name FROM flyspray_list_category WHERE category_id = ?", array($newvalue)));
+                list($oldvalue) = $db->FetchRow($db->Query("SELECT category_name FROM {$dbprefix}_list_category WHERE category_id = ?", array($oldvalue)));
+                list($newvalue) = $db->FetchRow($db->Query("SELECT category_name FROM {$dbprefix}_list_category WHERE category_id = ?", array($newvalue)));
                 break;
             case 'item_status':
                 $field = $details_text['status'];
@@ -580,8 +586,8 @@ function EventDescription($history)
                 break;
             case 'operating_system':
                 $field = $details_text['operatingsystem'];
-                list($oldvalue) = $db->FetchRow($db->Query("SELECT os_name FROM flyspray_list_os WHERE os_id = ?", array($oldvalue)));
-                list($newvalue) = $db->FetchRow($db->Query("SELECT os_name FROM flyspray_list_os WHERE os_id = ?", array($newvalue)));
+                list($oldvalue) = $db->FetchRow($db->Query("SELECT os_name FROM {$dbprefix}_list_os WHERE os_id = ?", array($oldvalue)));
+                list($newvalue) = $db->FetchRow($db->Query("SELECT os_name FROM {$dbprefix}_list_os WHERE os_id = ?", array($newvalue)));
                 break;
             case 'task_severity':
                 $field = $details_text['severity'];
@@ -590,20 +596,20 @@ function EventDescription($history)
                 break;
             case 'product_version':
                 $field = $details_text['reportedversion'];
-                list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($oldvalue)));
-                list($newvalue) = $db->FetchRow($db->Query("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($newvalue)));
+                list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name FROM {$dbprefix}_list_version WHERE version_id = ?", array($oldvalue)));
+                list($newvalue) = $db->FetchRow($db->Query("SELECT version_name FROM {$dbprefix}_list_version WHERE version_id = ?", array($newvalue)));
                 break;
             case 'closedby_version':
                 $field = $details_text['dueinversion'];
                 if (empty($oldvalue)) {
                     $oldvalue = $details_text['undecided'];
                 } else {
-                    list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($oldvalue)));
+                    list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name FROM {$dbprefix}_list_version WHERE version_id = ?", array($oldvalue)));
                 };
                 if (empty($newvalue)) {
                     $newvalue = $details_text['undecided'];
                 } else {
-                    list($newvalue) = $db->FetchRow($db->Query("SELECT version_name FROM flyspray_list_version WHERE version_id = ?", array($newvalue)));
+                    list($newvalue) = $db->FetchRow($db->Query("SELECT version_name FROM {$dbprefix}_list_version WHERE version_id = ?", array($newvalue)));
                 };
                 break;
             case 'percent_complete':
@@ -628,7 +634,7 @@ function EventDescription($history)
 
         } elseif ($history['event_type'] == 2) {      //Task closed
             $description = $details_text['taskclosed'];
-            $res_name = $db->FetchRow($db->Query("SELECT resolution_name FROM flyspray_list_resolution WHERE resolution_id = ?", array($newvalue)));
+            $res_name = $db->FetchRow($db->Query("SELECT resolution_name FROM {$dbprefix}_list_resolution WHERE resolution_id = ?", array($newvalue)));
             $description .= " ({$res_name['resolution_name']})";
 
         } elseif ($history['event_type'] == 3) {      //Task edited
@@ -640,7 +646,7 @@ function EventDescription($history)
         } elseif ($history['event_type'] == 5) {      //Comment edited
             $commentid = $history['field_changed'];
             $description = "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=comments#{$commentid}\">{$details_text['commentedited']}</a>";
-            $comment = $db->Query("SELECT user_id, date_added FROM flyspray_comments WHERE comment_id = ?", array($commentid));
+            $comment = $db->Query("SELECT user_id, date_added FROM {$dbprefix}_comments WHERE comment_id = ?", array($commentid));
             if ($db->CountRows($comment) != 0) {
                 $comment = $db->FetchRow($comment);
                 $description .= " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
@@ -654,7 +660,7 @@ function EventDescription($history)
 
         } elseif ($history['event_type'] == 7) {      //Attachment added
             $description = $details_text['attachmentadded'];
-            $attachment = $db->Query("SELECT orig_name, file_desc FROM flyspray_attachments WHERE attachment_id = ?", array($newvalue));
+            $attachment = $db->Query("SELECT orig_name, file_desc FROM {$dbprefix}_attachments WHERE attachment_id = ?", array($newvalue));
             if ($db->CountRows($attachment) != 0) {
                 $attachment = $db->FetchRow($attachment);
                 $description .= ": <a href=\"?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
@@ -673,11 +679,11 @@ function EventDescription($history)
             $description = "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
 
         } elseif ($history['event_type'] == 11) {      //Related task added
-            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM {$dbprefix}_tasks WHERE task_id = ?", array($newvalue)));
             $description = "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
         } elseif ($history['event_type'] == 12) {      //Related task deleted
-            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM {$dbprefix}_tasks WHERE task_id = ?", array($newvalue)));
             $description = "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
         } elseif ($history['event_type'] == 13) {      //Task reopened
@@ -692,12 +698,12 @@ function EventDescription($history)
                 $description = "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
             };
         } elseif ($history['event_type'] == 15) {      //Task added to related list of another task
-            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM {$dbprefix}_tasks WHERE task_id = ?", array($newvalue)));
             $related = htmlspecialchars(stripslashes($related));
             $description = "{$details_text['addedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
         } elseif ($history['event_type'] == 16) {      //Task deleted from related list of another task
-            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM {$dbprefix}_tasks WHERE task_id = ?", array($newvalue)));
             $related = htmlspecialchars(stripslashes($related));
             $description = "{$details_text['deletedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 

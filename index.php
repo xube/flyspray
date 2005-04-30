@@ -46,7 +46,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    $current_user = $fs->getUserDetails($_COOKIE['flyspray_userid']);
 
    // Fetch the permissions array for the current user
-   $permissions = $fs->checkPermissions($current_user['user_id'], $project_id);
+   $permissions = $fs->getPermissions($current_user['user_id'], $project_id);
 // End of getting user permissions
 }
 
@@ -70,7 +70,7 @@ if (isset($_REQUEST['do']))
 }
 
 // Check that the requested project actually exists
-$check_proj_exists = $db->Query("SELECT * FROM flyspray_projects
+$check_proj_exists = $db->Query("SELECT * FROM {$dbprefix}_projects
                                    WHERE project_id = ?",
                                    array($project_id)
                                  );
@@ -86,7 +86,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    list($orig_name, $file_name, $file_type) = $db->FetchArray($db->Query("SELECT orig_name,
                                                                           file_name,
                                                                           file_type
-                                                                          FROM flyspray_attachments
+                                                                          FROM {$dbprefix}_attachments
                                                                           WHERE attachment_id = ?",
                                                                           array($_GET['getfile'])
                                                                         )
@@ -299,7 +299,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
     if ($permissions['manage_project'] == '1')
     {
       // Find out if there are any PM requests wanting attention
-      $get_req = $db->Query("SELECT * FROM flyspray_admin_requests
+      $get_req = $db->Query("SELECT * FROM {$dbprefix}_admin_requests
                              WHERE project_id = ? AND resolved_by = '0'",
                              array($project_id));
 
@@ -369,7 +369,7 @@ if (isset($_SESSION['SUCCESS']))
       // If the user has permission to view all projects
       if (isset($permissions['global_view']) && $permissions['global_view'] == '1')
       {
-         $get_projects = $db->Query("SELECT * FROM flyspray_projects
+         $get_projects = $db->Query("SELECT * FROM {$dbprefix}_projects
                                      ORDER BY project_title");
 
       // or, if the user is logged in
@@ -377,9 +377,9 @@ if (isset($_SESSION['SUCCESS']))
       {
 
          $get_projects = $db->Query("SELECT DISTINCT p.*
-                                       FROM flyspray_projects p
-                                       LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
-                                       LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
+                                       FROM {$dbprefix}_projects p
+                                       LEFT JOIN {$dbprefix}_groups g ON p.project_id = g.belongs_to_project
+                                       LEFT JOIN {$dbprefix}_users_in_groups uig ON g.group_id = uig.group_id
                                        WHERE uig.user_id = ?
                                        AND g.view_tasks = '1'
                                        OR p.others_view = '1'
@@ -389,7 +389,7 @@ if (isset($_SESSION['SUCCESS']))
       // Anonymous users
       } else
       {
-         $get_projects = $db->Query("SELECT * FROM flyspray_projects
+         $get_projects = $db->Query("SELECT * FROM {$dbprefix}_projects
                                      WHERE project_is_active = '1'
                                      AND others_view = '1'
                                      ORDER BY project_title");
@@ -398,7 +398,7 @@ if (isset($_SESSION['SUCCESS']))
       // Cycle through the results from whichever query above
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'] && $_GET['project'] != '0')
+         if ($project_id == $row['project_id'] && isset($_GET['project']) && !empty($_GET['project']))
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];

@@ -45,12 +45,13 @@ class Notifications {
    {
       // not sure all of these are needed any longer
       global $db;
+      global $dbprefix;
       global $fs;
-      global $notify_text;
-      global $details_text;
-      global $project_prefs;
+//       global $notify_text;
+//       global $details_text;
+//       global $project_prefs;
       global $flyspray_prefs;
-      global $current_user;
+//       global $current_user;
 
       $subject = htmlspecialchars($subject);
       $body = htmlspecialchars($body);
@@ -65,14 +66,14 @@ class Notifications {
       $date = date('U');
 
       // store notification in table
-      $db->Query("INSERT INTO flyspray_notification_messages
+      $db->Query("INSERT INTO {$dbprefix}_notification_messages
                   (message_subject, message_body, time_created)
                   VALUES (?, ?, ?)",
                   array($subject, $body, $date)
                 );
 
       // grab notification id
-      $result = $db->Query("SELECT message_id FROM flyspray_notification_messages
+      $result = $db->Query("SELECT message_id FROM {$dbprefix}_notification_messages
                             WHERE message_subject = ?
                             AND message_body = ?
                             AND time_created = ?",
@@ -85,7 +86,7 @@ class Notifications {
       foreach ($to as $jid)
       {
          // store each recipient in table
-         $db->Query("INSERT INTO flyspray_notification_recipients
+         $db->Query("INSERT INTO {$dbprefix}_notification_recipients
                      (notify_method, message_id, notify_address)
                      VALUES (?, ?, ?)",
                      array('j', $message_id, $jid)
@@ -102,12 +103,13 @@ class Notifications {
    function SendJabber()
    {
       global $db;
+      global $dbprefix;
       global $fs;
-      global $notify_text;
-      global $details_text;
+//       global $notify_text;
+//       global $details_text;
       global $project_prefs;
       global $flyspray_prefs;
-      global $current_user;
+//       global $current_user;
 
       debug_print("Checking Flyspray Jabber configuration...");
 
@@ -130,7 +132,7 @@ class Notifications {
 
       // get listing of all pending jabber notifications
       $result = $db->Query("SELECT DISTINCT message_id
-                            FROM flyspray_notification_recipients
+                            FROM {$dbprefix}_notification_recipients
                             WHERE notify_method='j'");
 
       if ( !$db->CountRows($result) )
@@ -165,7 +167,7 @@ class Notifications {
       // removed array usage as it's messing up the select
       // I suspect this is due to the variable being comma separated
       // Jamin W. Collins 20050328
-      $notifications = $db->Query("SELECT * FROM flyspray_notification_messages
+      $notifications = $db->Query("SELECT * FROM {$dbprefix}_notification_messages
                                    WHERE message_id in ($desired)
                                    ORDER BY time_created ASC"
                                  );
@@ -180,7 +182,7 @@ class Notifications {
 
          debug_print("Processing notification {" . $notification['message_id'] . "}");
 
-            $recipients = $db->Query("SELECT * FROM flyspray_notification_recipients
+            $recipients = $db->Query("SELECT * FROM {$dbprefix}_notification_recipients
                                       WHERE message_id = ?
                                       AND notify_method = 'j'",
                                       array($notification['message_id'])
@@ -200,7 +202,7 @@ class Notifications {
                         "body"      => $body
                      ));
                   // delete entry from notification_recipients
-                  $result = $db->Query("DELETE FROM flyspray_notification_recipients
+                  $result = $db->Query("DELETE FROM {$dbprefix}_notification_recipients
                                         WHERE message_id = ?
                                         AND notify_method = 'j'
                                         AND notify_address = ?",
@@ -213,7 +215,7 @@ class Notifications {
             }
 
             // check to see if there are still recipients for this notification
-            $result = $db->Query("SELECT * FROM flyspray_notification_recipients
+            $result = $db->Query("SELECT * FROM {$dbprefix}_notification_recipients
                                   WHERE message_id = ?",
                                   array($notification['message_id'])
                                 );
@@ -222,7 +224,7 @@ class Notifications {
             {
                debug_print("No further recipients for message id {" . $notification['message_id'] . "}");
                // remove notification no more recipients
-               $result = $db->Query("DELETE FROM flyspray_notification_messages
+               $result = $db->Query("DELETE FROM {$dbprefix}_notification_messages
                                      WHERE message_id = ?",
                                      array($notification['message_id'])
                                    );
@@ -241,13 +243,12 @@ class Notifications {
 
    function SendEmail($to, $subject, $body)
    {
-      global $db;
       global $fs;
-      global $notify_text;
-      global $details_text;
+//       global $notify_text;
+//       global $details_text;
       global $project_prefs;
       global $flyspray_prefs;
-      global $current_user;
+//       global $current_user;
 
       $flyspray_prefs = $fs->GetGlobalPrefs();
       $project_prefs = $fs->GetProjectPrefs($_COOKIE['flyspray_project']);
@@ -323,6 +324,7 @@ class Notifications {
    function GenerateMsg($type, $task_id)
    {
       global $db;
+      global $dbprefix;
       global $fs;
       global $notify_text;
       global $details_text;
@@ -498,7 +500,7 @@ class Notifications {
       {
          // Get the comment information
          $comment = $db->FetchArray($db->Query("SELECT comment_id, comment_text
-                                                FROM flyspray_comments
+                                                FROM {$dbprefix}_comments
                                                 WHERE user_id = ?
                                                 AND task_id = ?
                                                 ORDER BY comment_id DESC",
@@ -658,12 +660,13 @@ class Notifications {
    {
 
       global $db;
+      global $dbprefix;
       global $fs;
-      global $notify_text;
-      global $details_text;
-      global $project_prefs;
+//       global $notify_text;
+//       global $details_text;
+//       global $project_prefs;
       global $flyspray_prefs;
-      global $current_user;
+//       global $current_user;
 
       $jabber_users = array();
       $email_users = array();
@@ -697,9 +700,10 @@ class Notifications {
    function Address($task_id)
    {
       global $db;
+      global $dbprefix;
       global $fs;
-      global $notify_text;
-      global $details_text;
+//       global $notify_text;
+//       global $details_text;
       global $project_prefs;
       global $flyspray_prefs;
       global $current_user;
@@ -708,15 +712,15 @@ class Notifications {
       $email_users = array();
 
       $get_users = $db->Query("SELECT *
-                               FROM flyspray_notifications n
-                               LEFT JOIN flyspray_users u ON n.user_id = u.user_id
+                               FROM {$dbprefix}_notifications n
+                               LEFT JOIN {$dbprefix}_users u ON n.user_id = u.user_id
                                WHERE n.task_id = ?",
                                array($task_id));
 
       while ($row = $db->FetchArray($get_users))
       {
          // Check for current user
-         if ($row['user_id'] != $_COOKIE['flyspray_userid'] &&  $row['user_id'] != $task_details['assigned_to'])
+         if ($row['user_id'] != $current_user['user_id'] &&  $row['user_id'] != $task_details['assigned_to'])
          {
             if (($flyspray_prefs['user_notify'] == '1' && $row['notify_type'] == '1')
             OR $flyspray_prefs['user_notify'] == '2')

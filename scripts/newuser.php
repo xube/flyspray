@@ -72,7 +72,7 @@ if ($permissions['is_admin'] == "1"
       <td>
       <select id="groupin" class="adminlist" name="group_in">
       <?php // Get the group names
-      $get_group_details = $db->Query("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
+      $get_group_details = $db->Query("SELECT group_id, group_name FROM {$dbprefix}_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
       while ($row = $db->FetchArray($get_group_details)) {
         echo "<option value=\"{$row['group_id']}\">{$row['group_name']}</option>";
       };

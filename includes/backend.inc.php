@@ -15,6 +15,7 @@ class Backend {
    function AddToNotifyList($user_id, $tasks)
    {
       global $db;
+      global $dbprefix;
       global $fs;
 
       foreach ($tasks AS $key => $task_id)
@@ -22,7 +23,7 @@ class Backend {
          // We can't add a user to a notif list if they're already on it, so...
          // Get a list of users who are on the notif list for this task
          $notify_list = $db->Query("SELECT user_id
-                                    FROM flyspray_notifications
+                                    FROM {$dbprefix}_notifications
                                     WHERE task_id = ?
                                     AND user_id = ?",
                                     array($task_id, $user_id)
@@ -32,7 +33,7 @@ class Backend {
          if (!$db->CountRows($notify_list))
          {
             //  Add them to the notif list
-            $db->Query("INSERT INTO flyspray_notifications
+            $db->Query("INSERT INTO {$dbprefix}_notifications
                         (task_id, user_id)
                         VALUES(?,?)",
                         array($task_id, $user_id)
@@ -58,12 +59,13 @@ class Backend {
    function RemoveFromNotifyList($user_id, $tasks)
    {
       global $db;
+      global $dbprefix;
       global $fs;
 
       foreach ($tasks AS $key => $task_id)
       {
          // Remove the notif entry
-         $db->Query("DELETE FROM flyspray_notifications
+         $db->Query("DELETE FROM {$dbprefix}_notifications
                      WHERE task_id = ?
                      AND user_id = ?",
                      array($task_id, $user_id)
@@ -87,6 +89,7 @@ class Backend {
    function AssignToMe($user_id, $tasks)
    {
       global $db;
+      global $dbprefix;
       global $fs;
       global $notify;
 
@@ -108,7 +111,7 @@ class Backend {
            && $task_details['assigned_to'] != $user_id )
          {
             // Make the change in assignment
-            $db->Query("UPDATE flyspray_tasks
+            $db->Query("UPDATE {$dbprefix}_tasks
                         SET assigned_to = ?, item_status = '3'
                         WHERE task_id = ?",
                         array($user_id, $task_id));

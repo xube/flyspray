@@ -562,6 +562,7 @@ p.unregistered {
 .severity1 {
    background-color     : #fff5dd;
    color                : #000000;
+	 height								: 1%;
 }
 
 .severity1:hover {
@@ -573,6 +574,7 @@ p.unregistered {
 .severity2 {
    background-color     : #ecdbb7;
    color                : #000000;
+	 height								: 1%;
 }
 
 .severity2:hover {
@@ -584,6 +586,7 @@ p.unregistered {
 .severity3 {
    background-color     : #ecd0b7;
    color                : #000000;
+	 height								: 1%;
 }
 
 .severity3:hover {
@@ -595,6 +598,7 @@ p.unregistered {
 .severity4 {
    background-color     : #ffd5d1;
    color                : #000000;
+	 height								: 1%;
 }
 
 .severity4:hover {
@@ -606,6 +610,7 @@ p.unregistered {
 .severity5 {
    background-color     : #f3a29b;
    color                : #000000;
+	 height								: 1%;
 }
 
 .severity5:hover {
@@ -621,6 +626,7 @@ div#fineprint {
   border-bottom        : 1px solid #cccccc;
   margin               : 0px 0px 10px 5px;
   padding-bottom       : 10px;
+	height               : 1%;
 }
 
 table.history
@@ -894,7 +900,7 @@ a.grouptitle {
 #submenu, #submenu *                { margin: 0; padding: 0; }
 #submenu a, div.tab                 { border: solid 1px black; }
 #submenu a                          { margin: auto auto -1px 1ex; padding: 2px 1ex; }
-* html #submenu                     { margin-bottom: -19px; }
+* html #submenu                     { margin-bottom: -1em; }
 div.tab                             { margin: 0; padding: 1ex; padding-bottom: 1cm; margin-right: 1ex; margin-bottom: 10px;}
 
 /* flow */

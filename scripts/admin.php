@@ -74,7 +74,7 @@ if ($permissions['is_admin'] == '1')
             <td>
             <select id="defaultproject" name="default_project">
             <?php
-            $get_projects = $db->Query("SELECT * FROM flyspray_projects");
+            $get_projects = $db->Query("SELECT * FROM {$dbprefix}_projects");
             while ($row = $db->FetchArray($get_projects)) {
                if ($flyspray_prefs['default_project'] == $row['project_id']) {
                   echo '<option value="' . $row['project_id'] . '" SELECTED>' . stripslashes($row['project_title']) . '</option>';
@@ -171,7 +171,7 @@ if ($permissions['is_admin'] == '1')
             <td>
             <select id="defaultglobalgroup" name="anon_group">
             <?php // Get the group names
-            $get_group_details = $db->Query("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
+            $get_group_details = $db->Query("SELECT group_id, group_name FROM {$dbprefix}_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
             while ($row = $db->FetchArray($get_group_details)) {
                if ($flyspray_prefs['anon_group'] == $row['group_id']) {
                   echo "<option value=\"{$row['group_id']}\" selected=\"selected\">{$row['group_name']}</option>";
@@ -187,7 +187,7 @@ if ($permissions['is_admin'] == '1')
             <td><label id="groupsassignedlabel"><?php echo $admin_text['groupassigned'];?></label></td>
             <td class="admintext">
             <?php // Get the group names
-            $get_group_details = $db->Query("SELECT group_id, group_name FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
+            $get_group_details = $db->Query("SELECT group_id, group_name FROM {$dbprefix}_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
             while ($row = $db->FetchArray($get_group_details))
             {
                if (ereg($row['group_id'], $flyspray_prefs['assigned_groups']) )
@@ -382,7 +382,7 @@ if ($permissions['is_admin'] == '1')
    } elseif (isset($_GET['area']) && $_GET['area'] == "users" && isset($_GET['id']))
    {
 
-         $get_user_details = $db->Query("SELECT * FROM flyspray_users WHERE user_id = ?", array($_GET['id']));
+         $get_user_details = $db->Query("SELECT * FROM {$dbprefix}_users WHERE user_id = ?", array($_GET['id']));
          $user_details = $db->FetchArray($get_user_details);
 
          echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['edituser'] . ': ' . $user_details['user_name'] . '</h3>';
@@ -442,14 +442,14 @@ if ($permissions['is_admin'] == '1')
                <select id="groupin" name="group_in">
                <?php
                // Get the groups list
-               $current_global_group = $db->FetchArray($db->Query("SELECT * FROM flyspray_users_in_groups uig
-                                                                        LEFT JOIN flyspray_groups g ON uig.group_id = g.group_id
+               $current_global_group = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_users_in_groups uig
+                                                                        LEFT JOIN {$dbprefix}_groups g ON uig.group_id = g.group_id
                                                                         WHERE uig.user_id = ? AND g.belongs_to_project = ?
                                                                         ORDER BY g.group_id ASC",
                                                                         array($user_details['user_id'], '0')));
 
                // Now, get the list of global groups and compare for display
-               $global_groups = $db->Query("SELECT * FROM flyspray_groups
+               $global_groups = $db->Query("SELECT * FROM {$dbprefix}_groups
                                               WHERE belongs_to_project = ?",
                                               array('0'));
                while ($row = $db->FetchArray($global_groups)) {
@@ -504,7 +504,7 @@ if ($permissions['is_admin'] == '1')
 
 
          // Cycle through the global groups
-         $get_groups = $db->Query("SELECT * FROM flyspray_groups
+         $get_groups = $db->Query("SELECT * FROM {$dbprefix}_groups
                                    WHERE belongs_to_project = '0'
                                    ORDER BY group_id ASC"
                                  );
@@ -525,8 +525,8 @@ if ($permissions['is_admin'] == '1')
 
             echo '<table class="userlist"><tr><th></th><th>' . $admin_text['username'] . '</th><th>' . $admin_text['realname'] . '</th><th>' . $admin_text['accountenabled'] . '</th></tr>';
 
-            $get_user_list = $db->Query("SELECT * FROM flyspray_users_in_groups uig
-                                          LEFT JOIN flyspray_users u on uig.user_id = u.user_id
+            $get_user_list = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups uig
+                                          LEFT JOIN {$dbprefix}_users u on uig.user_id = u.user_id
                                           WHERE uig.group_id = ? ORDER BY u.user_name ASC",
                                           array($group['group_id']));
 
@@ -553,7 +553,7 @@ if ($permissions['is_admin'] == '1')
             echo '<select class="adminlist" name="switch_to_group">'. "\n";
 
             // Get the list of groups to choose from
-            $groups = $db->Query("SELECT * FROM flyspray_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
+            $groups = $db->Query("SELECT * FROM {$dbprefix}_groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
             while ($group = $db->FetchArray($groups))
             {
                echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
@@ -575,7 +575,7 @@ if ($permissions['is_admin'] == '1')
    {
       echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['editgroup'] . '</h3>';
 
-      $get_group_details = $db->Query("SELECT * FROM flyspray_groups WHERE group_id = ?", array($_GET['id']));
+      $get_group_details = $db->Query("SELECT * FROM {$dbprefix}_groups WHERE group_id = ?", array($_GET['id']));
       $group_details = $db->FetchArray($get_group_details);
 
 
@@ -720,7 +720,7 @@ if ($permissions['is_admin'] == '1')
    $get_tasktypes = $db->Query("
        SELECT *, count(t.task_id) AS used_in_tasks
        FROM `flyspray_list_tasktype` tt
-       LEFT JOIN flyspray_tasks t ON ( t.task_type = tt.tasktype_id )
+       LEFT JOIN {$dbprefix}_tasks t ON ( t.task_type = tt.tasktype_id )
        WHERE project_id = '0'
        GROUP BY tt.tasktype_id
        ORDER BY list_position");
@@ -806,8 +806,8 @@ if ($permissions['is_admin'] == '1')
     <?php
    $get_resolution = $db->Query("
        SELECT *, count(t.task_id) AS used_in_tasks
-       FROM flyspray_list_resolution r
-       LEFT JOIN flyspray_tasks t ON ( t.resolution_reason = r.resolution_id )
+       FROM {$dbprefix}_list_resolution r
+       LEFT JOIN {$dbprefix}_tasks t ON ( t.resolution_reason = r.resolution_id )
        WHERE project_id = '0'
        GROUP BY r.resolution_id
        ORDER BY list_position");
@@ -902,16 +902,16 @@ if ($permissions['is_admin'] == '1')
   <table class="list">
     <?php
     $get_categories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
-                                  FROM flyspray_list_category c
-                                  LEFT JOIN flyspray_tasks t ON (t.product_category = c.category_id)
+                                  FROM {$dbprefix}_list_category c
+                                  LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
                                   WHERE project_id = '0' AND parent_id < '1'
                                   GROUP BY c.category_id
                                   ORDER BY list_position");
     $countlines = 0;
     while ($row = $db->FetchArray($get_categories)) {
        $get_subcategories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
-                                        FROM flyspray_list_category c
-                                        LEFT JOIN flyspray_tasks t ON (t.product_category = c.category_id)
+                                        FROM {$dbprefix}_list_category c
+                                        LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
                                         WHERE project_id = '0' AND parent_id = ?
                                         GROUP BY c.category_id
                                         ORDER BY list_position",
@@ -1038,7 +1038,7 @@ if ($permissions['is_admin'] == '1')
             <option value=""><?php echo $admin_text['notsubcategory'];?></option>
             <?php
             $cat_list = $db->Query('SELECT category_id, category_name
-                                    FROM flyspray_list_category
+                                    FROM {$dbprefix}_list_category
                                     WHERE project_id= 0 AND show_in_list= 1 AND parent_id < 1
                                     ORDER BY list_position');
 
@@ -1087,8 +1087,8 @@ if ($permissions['is_admin'] == '1')
       <table class="list">
          <?php
          $get_os = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
-                               FROM flyspray_list_os os
-                               LEFT JOIN flyspray_tasks t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
+                               FROM {$dbprefix}_list_os os
+                               LEFT JOIN {$dbprefix}_tasks t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
                                WHERE os.project_id = '0'
                                GROUP BY os.os_id
                                ORDER BY list_position");
@@ -1188,8 +1188,8 @@ if ($permissions['is_admin'] == '1')
 
          <?php
          $get_version = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
-                                    FROM flyspray_list_version v
-                                    LEFT JOIN flyspray_tasks t ON (t.product_version = v.version_id OR t.closedby_version = v.version_id AND t.attached_to_project = v.project_id)
+                                    FROM {$dbprefix}_list_version v
+                                    LEFT JOIN {$dbprefix}_tasks t ON (t.product_version = v.version_id OR t.closedby_version = v.version_id AND t.attached_to_project = v.project_id)
                                     WHERE v.project_id = '0'
                                     GROUP BY v.version_id
                                     ORDER BY list_position"

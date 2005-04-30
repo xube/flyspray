@@ -46,6 +46,7 @@ $cookiesalt  = $conf_array['general']['cookiesalt'];
 $dbtype      = $conf_array['database']['dbtype'];
 $dbhost      = $conf_array['database']['dbhost'];
 $dbname      = $conf_array['database']['dbname'];
+$dbprefix    = $conf_array['database']['dbprefix'];
 $dbuser      = $conf_array['database']['dbuser'];
 $dbpass      = $conf_array['database']['dbpass'];
 
@@ -87,7 +88,7 @@ $fs->fixMissingIndices();
 // If we've gone directly to a task, we want to override the project_id set in the function below
 if ( isset($_GET['do']) && $_GET['do'] == 'details' && isset($_GET['id']) )
 {
-   $project_id = $db->FetchOne($db->Query("SELECT attached_to_project FROM flyspray_tasks WHERE task_id = ?", array($_GET['id'])));
+   $project_id = $db->FetchOne($db->Query("SELECT attached_to_project FROM {$dbprefix}_tasks WHERE task_id = ?", array($_GET['id'])));
    setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
 }
 

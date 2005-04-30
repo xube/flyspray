@@ -55,8 +55,8 @@ echo '<link>http://flyspray.rocks.cc/</link>' . "\n";
 
 // Query the database
 $task_details = $db->Query("SELECT task_id, item_summary, detailed_desc
-                            FROM flyspray_tasks t
-                            LEFT JOIN flyspray_projects p ON t.attached_to_project = p.project_id
+                            FROM {$dbprefix}_tasks t
+                            LEFT JOIN {$dbprefix}_projects p ON t.attached_to_project = p.project_id
                             WHERE t.is_closed <> '1'
                             AND p.project_id = ?
                             AND p.project_is_active = '1'
