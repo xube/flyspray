@@ -3,16 +3,10 @@ addEvent(window,'load',setUpFade);
 // Set up the task list onclick handler
 addEvent(window,'load',setUpTasklistTable);
 
-function Disable1()
+function Disable(formid)
 {
-   document.form1.buSubmit.disabled = true;
-   document.form1.submit();
-}
-
-function Disable2()
-{
-   document.form2.buSubmit.disabled = true;
-   document.form2.submit();
+   document.formid.buSubmit.disabled = true;
+   document.formid.submit();
 }
 
 function openTask( url )
@@ -54,7 +48,7 @@ function setUpFade() {
 function fader(elName,start,steps,time) {
   setOpacity(elName,100); // To prevent flicker in Firefox
                           // The first time the opacity is set
-                          // the element flickers in Firefox               
+                          // the element flickers in Firefox
   fadeStep = 100/steps;
   timeStep = time/steps;
   opacity = 100;
@@ -90,10 +84,11 @@ function tasklistTableClick(e) {
   if (src.nodeName != 'TD') {
     return;
   }
-  // remove task from "task123"
+  // remove the word 'task' from "task123"
   id = src.parentNode.id.substr(4);
   window.location = '?do=details&id=' + id;
 }
+
 function eventGetSrc(e) {
   if (e.target) {
     return e.target;

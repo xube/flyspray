@@ -16,7 +16,7 @@ if ($permissions['open_new_tasks'] == '1'
    <h3><?php echo htmlspecialchars(stripslashes($project_prefs['project_title'])) . ':: ' . $newtask_text['newtask'];?></h3>
 
    <div id="taskdetails">
-   <form enctype="multipart/form-data" name="form1" action="index.php" method="post">
+   <form enctype="multipart/form-data" name="form1" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
    <table>
       <tr>
          <td>

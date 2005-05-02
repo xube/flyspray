@@ -66,9 +66,9 @@ if ($task_details['project_is_active'] == '1'
 
       <!-- create some columns -->
       <div id="taskdetails">
-      <form name="form1" action="index.php" method="post">
+      <form name="form1" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
          <h2 class="severity<?php echo $task_details['task_severity'];?>">
-         <?php echo $details_text['task'] .  '#' . $task_details['task_id'];?> &mdash;
+         <?php echo 'FS#' . $task_details['task_id'];?> &mdash;
          <input class="severity<?php echo stripslashes($task_details['task_severity']);?>" type="text" name="item_summary" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($task_details['item_summary']));?>" />
          </h2>
          <input type="hidden" name="do" value="modify" />
@@ -523,20 +523,20 @@ if ($task_details['project_is_active'] == '1'
                 echo "<span id=\"navigation\">";
                 if ($previous_id > 0)
                 {
-                   echo "<a id=\"prev\" title=\"FS#{$previous_id} &mdash; {$summary[$previous_id]}\" href=\"?do=details&amp;id={$previous_id}\">{$details_text['previoustask']}</a>";
+                   echo "<a id=\"prev\" title=\"FS#{$previous_id} &mdash; {$summary[$previous_id]}\" href=\"" . $fs->CreateURL('details', $previous_id) . "\">{$details_text['previoustask']}</a>";
                    if ($next_id > 0)
                        echo ' | ';
                 }
                 if ($next_id > 0)
                 {
-                   echo "<a id=\"next\" title=\"FS#{$next_id} &mdash; {$summary[$next_id]}\" href=\"?do=details&amp;id={$next_id}\">{$details_text['nexttask']}</a>";
+                   echo "<a id=\"next\" title=\"FS#{$next_id} &mdash; {$summary[$next_id]}\" href=\"" . $fs->CreateURL('details', $next_id) . "\">{$details_text['nexttask']}</a>";
                 }
                 echo '</span>';
             }
         }
         ?>
 
-         <div id="taskdetails" ondblclick='openTask("?do=details&amp;id=<?php echo $task_details['task_id'];?>&amp;edit=yep")'>
+         <div id="taskdetails" ondblclick='openTask("<?php echo $fs->CreateURL('edittask', $task_details['task_id']);?>")'>
          <h2 class="severity<?php echo $task_details['task_severity'];?>">
          <?php echo 'FS#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
          </h2>
@@ -557,7 +557,7 @@ if ($task_details['project_is_active'] == '1'
          $date_opened = $task_details['date_opened'];
          $date_opened = $fs->formatDate($date_opened, true);
 
-         echo "{$details_text['openedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['opened_by']}\">$real_name ($user_name)</a> - $date_opened";
+         echo $details_text['openedby'] . ' ' . $fs->LinkedUserName($task_details['opened_by']) . ' - ' . $date_opened;
 
          // If it's been edited, get the details
          if ($task_details['last_edited_by'])
@@ -568,7 +568,7 @@ if ($task_details['project_is_active'] == '1'
             $date_edited = $task_details['last_edited_time'];
             $date_edited = $fs->formatDate($date_edited, true);
 
-            echo "<br />{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
+            echo '<br />' . $details_text['editedby'] .  $fs->LinkedUserName($task_details['last_edited_by']) . ' - ' . $date_edited;
          }
          ?>
          </div>
@@ -742,7 +742,7 @@ if ($task_details['project_is_active'] == '1'
           && $task_details['is_closed'] != '1')
          {
          ?>
-            <form action="index.php" method="post">
+            <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
                <input type="hidden" name="do" value="modify" />
                <input type="hidden" name="action" value="newdep" />
                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
@@ -816,7 +816,7 @@ if ($task_details['project_is_active'] == '1'
          // Check permissions and task status, then show the "re-open task" button
          if (@$effective_permissions['can_close'] == '1' && $task_details['is_closed'] == '1')
          {
-            echo '<a href="?do=modify&amp;action=reopen&amp;task_id=' . $_GET['id'] . '">' . $details_text['reopenthistask'] . '</a>';
+            echo '<a href="' . $flyspray_prefs['base_url'] . '?do=modify&amp;action=reopen&amp;task_id=' . $_GET['id'] . '">' . $details_text['reopenthistask'] . '</a>';
 
             // If they can't  this, show a button to request a PM re-open it
          } elseif (@$effective_permissions['can_close'] != '1'
@@ -829,7 +829,7 @@ if ($task_details['project_is_active'] == '1'
                <?php echo $details_text['reopenrequest']; ?>
                </a>
                <div id="closeform">
-                  <form name="form3" action="index.php" method="post" id="formclosetask">
+                  <form name="form3" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formclosetask">
                      <input type="hidden" name="do" value="modify" />
                      <input type="hidden" name="action" value="requestreopen" />
                      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
@@ -865,7 +865,7 @@ if ($task_details['project_is_active'] == '1'
       echo $details_text['closetask'];
       ?></a>
       <div id="closeform">
-         <form name="form2" action="index.php" method="post" id="formclosetask">
+         <form name="form2" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formclosetask">
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="close" />
             <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>" />
@@ -912,7 +912,7 @@ if ($task_details['project_is_active'] == '1'
       </a>
       <div id="closeform">
 <!--          <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a> -->
-         <form name="form3" action="index.php" method="post" id="formclosetask">
+         <form name="form3" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formclosetask">
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="requestclose" />
             <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
@@ -929,14 +929,14 @@ if ($task_details['project_is_active'] == '1'
    // Check permissions and task status, then show the "take ownership" button
    if (@$effective_permissions['can_take_ownership'] == '1' && $task_details['is_closed'] != '1')
    {
-      echo '<a id="own" class="button" href="?do=modify&amp;action=takeownership&amp;ids=' . $_GET['id'] . '">' . $details_text['assigntome'] . '</a> ';
+      echo '<a id="own" class="button" href="' . $flyspray_prefs['base_url'] . '?do=modify&amp;action=takeownership&amp;ids=' . $_GET['id'] . '">' . $details_text['assigntome'] . '</a> ';
    }
 
    // Check permissions, then show the "edit task" button
    if (@$effective_permissions['can_edit'] == '1'
    && $task_details['is_closed'] != '1')
    {
-      echo '<a id="edittask" class="button" href="?do=details&amp;id=' . $_GET['id'] . '&amp;edit=yep">' . $details_text['edittask'] . '</a> ';
+      echo '<a id="edittask" class="button" href="' . $fs->CreateURL('edittask', $_GET['id']) . '">' . $details_text['edittask'] . '</a> ';
    }
 
    // Start of marking private/public
@@ -944,13 +944,13 @@ if ($task_details['project_is_active'] == '1'
         && $task_details['is_closed'] != '1'
         && $task_details['mark_private'] != '1')
    {
-      echo '<a id="private" class="button" href="?do=modify&amp;action=makeprivate&amp;id=' . $_GET['id'] . '">' . $details_text['makeprivate'] . '</a> ';
+      echo '<a id="private" class="button" href="' . $flyspray_prefs['base_url'] . '?do=modify&amp;action=makeprivate&amp;id=' . $_GET['id'] . '">' . $details_text['makeprivate'] . '</a> ';
 
    } elseif (@$permissions['manage_project'] == '1'
         && $task_details['is_closed'] != '1'
         && $task_details['mark_private'] == '1')
    {
-      echo '<a id="public" class="button" href="?do=modify&amp;action=makepublic&amp;id=' . $_GET['id'] . '">' . $details_text['makepublic'] . '</a> ';
+      echo '<a id="public" class="button" href="' . $flyspray_prefs['base_url'] . '?do=modify&amp;action=makepublic&amp;id=' . $_GET['id'] . '">' . $details_text['makepublic'] . '</a> ';
    }
 
    if (!empty($current_user['user_id']) && $task_details['is_closed'] != '1')
@@ -962,11 +962,11 @@ if ($task_details['project_is_active'] == '1'
                           );
       if (!$db->CountRows($result))
       {
-         echo '<a id="addnotif" class="button" href="?do=modify&amp;action=add_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['watchtask'] . '</a>';
+         echo '<a id="addnotif" class="button" href="' . $flyspray_prefs['base_url'] . '?do=modify&amp;action=add_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['watchtask'] . '</a>';
 
       } else
       {
-         echo '<a id="removenotif" class="button" href="?do=modify&amp;action=remove_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['stopwatching'] . '</a>';
+         echo '<a id="removenotif" class="button" href="' . $flyspray_prefs['base_url'] . '?do=modify&amp;action=remove_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['stopwatching'] . '</a>';
       }
    }
 
@@ -1047,18 +1047,18 @@ while ($row = $db->FetchArray($getcomments))
    {
 //       echo '<a name="' . $row['comment_id'] . '"></a>';
       echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="?do=details&amp;id=' . $task_details['task_id'] . '#comment' . $row['comment_id'] . '">' .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . '</a>' . $details_text['commentby'] . ' <a href="?do=admin&amp;area=users&amp;id=' . $row['user_id'] . '">' . stripslashes($user_info['real_name']) . ' (' . $user_info['user_name'] . ')</a> - ' . $formatted_date . "</em>\n";
+      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . '</a>' . $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
 
       // If the user has permission, show the edit button
       if (@$permissions['edit_comments'] == '1')
       {
-         echo '&nbsp; - <a href="?do=editcomment&amp;task_id=' . $_GET['id'] . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
+         echo '&nbsp; - <a href="' . $flyspray_prefs['base_url'] . '?do=editcomment&amp;task_id=' . $_GET['id'] . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
       }
       // If the user has permission, show the delete button
       if (@$permissions['delete_comments'] == '1')
       {
          ?>
-         &nbsp;-&nbsp;<a href="?do=modify&amp;action=deletecomment&amp;task_id=<?php echo $_GET['id'];?>&amp;comment_id=<?php echo $row['comment_id'];?>"
+         &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deletecomment&amp;task_id=<?php echo $_GET['id'];?>&amp;comment_id=<?php echo $row['comment_id'];?>"
          onClick="if(confirm('<?php echo $details_text['confirmdelete'];?>')) {
          return true
          } else {
@@ -1081,7 +1081,7 @@ while ($row = $db->FetchArray($getcomments))
 if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
 {
 ?>
-   <form action="index.php" method="post">
+   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
    <p class="admin">
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
@@ -1134,7 +1134,7 @@ if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] ==
    {
    ?>
       <div class="modifycomment">
-      <form action="index.php" method="post" onSubmit="if(confirm('Really delete this attachment?')) {return true} else {return false }">
+      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" onSubmit="if(confirm('Really delete this attachment?')) {return true} else {return false }">
       <p>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="deleteattachment" />
@@ -1185,7 +1185,7 @@ if($pos===0 && $project_prefs['inline_images'] == '1')
    echo "<table>";
    echo "<tr><td><em>{$details_text['filename']}</em></td><td><a href=\"?getfile={$row['attachment_id']}\">{$row['orig_name']}</a></td></tr>";
    echo "<tr><td><em>{$details_text['description']}</em></td><td>$file_desc</td></tr>";
-   echo "<tr><td><em>{$details_text['fileuploadedby']}</em></td><td><a href=\"?do=admin&amp;area=users&amp;id={$row['added_by']}\">$user_name</a></td></tr>";
+   echo "<tr><td><em>{$details_text['fileuploadedby']}</em></td><td>" . $fs->LinkedUserName($row['added_by']) . '</td></tr>';
    echo "<tr><td><em>{$details_text['date']}</em></td><td>$formatted_date</td></tr>";
    $size = $row['file_size'];
    $sizes = Array(' B', ' KB', ' MB');
@@ -1206,7 +1206,7 @@ if($pos===0 && $project_prefs['inline_images'] == '1')
 if (@$permissions['create_attachments'] == "1" && $task_details['is_closed'] != '1')
 { ?>
 
-   <form enctype="multipart/form-data" action="index.php" method="post" id="formupload">
+   <form enctype="multipart/form-data" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formupload">
    <table class="admin">
       <tr>
          <td>
@@ -1266,7 +1266,7 @@ echo '</div>';
       {
       ?>
          <div class="modifycomment">
-            <form action="index.php" method="post">
+            <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
             <p>
                <input type="hidden" name="do" value="modify" />
                <input type="hidden" name="action" value="remove_related" />
@@ -1291,7 +1291,7 @@ echo '</div>';
    if (@$effective_permissions['can_edit'] == "1" && $task_details['is_closed'] != '1')
    {
    ?>
-      <form action="index.php" method="post" id="formaddrelatedtask">
+      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formaddrelatedtask">
          <p class="admin">
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="add_related" />
@@ -1347,15 +1347,13 @@ if (@$permissions['manage_project'] == '1')
 
       while ($row = $db->FetchArray($get_user_ids))
       {
-         echo '<p><a href="?do=admin&amp;area=users&amp;id=' . $row['user_id'] . '">'
-         . stripslashes($row['real_name']) . ' ' . '(' . $row['user_name']
-         . ')</a> &mdash; <a href="?do=modify&amp;action=remove_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $row['user_id'] . '">' . $details_text['remove'] . '</a></p>';
+         echo '<p>' . $fs->LinkedUserName($row['user_id']) . ' &mdash; <a href="' . $flyspray_prefs['base_url'] . '?do=modify&amp;action=remove_notification&amp;ids=' . $_GET['id'] . '&amp;user_id=' . $row['user_id'] . '">' . $details_text['remove'] . '</a></p>';
       }
 
       if (@$permissions['manage_project'] == '1')
       {
       ?>
-         <form action="index.php" method="get">
+         <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="get">
             <p class="admin">
             <?php echo $details_text['addusertolist'];?>
             <select class="adminlist" name="user_id">
@@ -1404,7 +1402,7 @@ if (@$permissions['manage_project'] == '1')
       {
       ?>
          <div class="modifycomment">
-         <form action="index.php" method="post">
+         <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
             <p>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="deletereminder" />
@@ -1444,7 +1442,7 @@ if (@$permissions['manage_project'] == '1')
    if (@$permissions['is_admin'] == '1' && $task_details['is_closed'] != '1')
    {
    ?>
-      <form action="index.php" method="post" id="formaddreminder">
+      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formaddreminder">
          <p class="admin">
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="addreminder" />
@@ -1555,7 +1553,7 @@ if (@$permissions['view_history'] == '1')
             echo $details_text['anonymous'];
          } else
          {
-            echo "<a href=\"?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
+            echo $fs->LinkedUserName($history['user_id']);
          }
          ?>
          </td>

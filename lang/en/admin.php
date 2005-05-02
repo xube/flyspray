@@ -182,6 +182,7 @@ $admin_text = array (
 'smtpserver'            =>    'SMTP Server',
 'smtpuser'              =>    'SMTP Username',
 'smtppass'              =>    'SMTP Password',
+'addrewrite'            =>    'Use address rewriting',
 
 );
 ?>

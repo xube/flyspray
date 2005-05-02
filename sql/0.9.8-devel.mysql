@@ -57,3 +57,10 @@ ALTER TABLE `flyspray_tasks` ADD `due_date` VARCHAR( 10 ) NOT NULL DEFAULT '';
 # Added 15 Apr 05
 
 ALTER TABLE `flyspray_admin_requests` ADD `deny_reason` VARCHAR( 255 ) NOT NULL DEFAULT '';
+
+# Added 01 May 05
+
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES (
+'', 'funky_urls', '0', 'Should we use address rewriting? Not all webservers support this!'
+);

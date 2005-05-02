@@ -9,21 +9,7 @@ if ($permissions['is_admin'] == "1"
     && !$_COOKIE['flyspray_userid'])) {
 ?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<head>
-  <title>Flyspray: <?php echo $newuser_text['registernewuser'];?></title>
-  <link href="../themes/<?php echo $flyspray_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css">
-  <script type="text/javascript"> <!--
-    function Disable()
-    {
-    document.form1.buSubmit.disabled = true;
-    document.form1.submit();
-    }
-//-->  </script>
-</head>
-
-<body>
-<form name="form1" action="index.php" method="post" id="registernewuser">
+<form name="form1" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="registernewuser">
 
 <h1><?php echo $newuser_text['registernewuser'];?></h1>
 <p>
@@ -91,9 +77,6 @@ if ($permissions['is_admin'] == "1"
   </table>
 </form>
 
-</body>
-</html>
-
 <?php
-};
+}
 ?>

@@ -99,7 +99,7 @@ class Backend {
          $task_details = @$fs->getTaskDetails($task_id);
 
          // Get the user's permissions for the project this task belongs to
-         $perms = $fs->checkPermissions($user_id, $task_details['attached_to_project']);
+         $perms = $fs->getPermissions($user_id, $task_details['attached_to_project']);
 
          // Check permissions first
          if ($task_details['project_is_active'] == '1'

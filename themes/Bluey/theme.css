@@ -115,15 +115,16 @@ textarea {
 
 /* labels are used nearly in every form */
 label {
-  text-align          : right;
-  display             : block;
-  margin-right        : 8px;
-  font-weight         : bold;
-  white-space         : nowrap;
+   text-align           : right;
+   display              : block;
+   margin-right         : 8px;
+   font-weight          : bold;
+   white-space          : nowrap;
+/*    padding              : 3px 0 0 0; */
 }
 
 label.inline {
-  display             : inline;
+   display             : inline;
 }
 
 /* div.admin and p.admin is used for areas that only administrators can use
@@ -562,7 +563,7 @@ p.unregistered {
 .severity1 {
    background-color     : #fff5dd;
    color                : #000000;
-	 height								: 1%;
+    height                       : 1%;
 }
 
 .severity1:hover {
@@ -574,7 +575,7 @@ p.unregistered {
 .severity2 {
    background-color     : #ecdbb7;
    color                : #000000;
-	 height								: 1%;
+    height                       : 1%;
 }
 
 .severity2:hover {
@@ -586,7 +587,7 @@ p.unregistered {
 .severity3 {
    background-color     : #ecd0b7;
    color                : #000000;
-	 height								: 1%;
+    height                       : 1%;
 }
 
 .severity3:hover {
@@ -598,7 +599,7 @@ p.unregistered {
 .severity4 {
    background-color     : #ffd5d1;
    color                : #000000;
-	 height								: 1%;
+    height                       : 1%;
 }
 
 .severity4:hover {
@@ -610,7 +611,7 @@ p.unregistered {
 .severity5 {
    background-color     : #f3a29b;
    color                : #000000;
-	 height								: 1%;
+    height                       : 1%;
 }
 
 .severity5:hover {
@@ -626,7 +627,7 @@ div#fineprint {
   border-bottom        : 1px solid #cccccc;
   margin               : 0px 0px 10px 5px;
   padding-bottom       : 10px;
-	height               : 1%;
+   height               : 1%;
 }
 
 table.history

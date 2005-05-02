@@ -37,6 +37,10 @@ class Flyspray {
    */
    function redirect($url)
    {
+      // Many of our URLs will be given to us from the new CreateURL() function,
+      // which creates the URLs with &amp; for display.  We want to strip that.
+      $url = str_replace('&amp;', '&', $url);
+
       // Redirect via an HTML form for PITA webservers
       if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
       {
@@ -286,6 +290,7 @@ function GetTaskDetails($task_id)
    function pagenums($pagenum, $perpage, $totalcount, $extraurl)
    {
       global $db;
+      global $dbprefix;
       global $lang;
 
       require("lang/$lang/functions.inc.php");
@@ -334,6 +339,7 @@ function GetTaskDetails($task_id)
    function formatDate($timestamp, $extended)
    {
       global $db;
+      global $dbprefix;
       global $flyspray_prefs;
 
       $dateformat = '';
@@ -361,6 +367,7 @@ function GetTaskDetails($task_id)
    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
    {
       global $db;
+      global $dbprefix;
 
       // This function creates entries in the history table.  These are the event types:
       //  0: Fields changed in a task
@@ -405,6 +412,7 @@ function GetTaskDetails($task_id)
    function LinkedUsername($user_id)
    {
       global $db;
+      global $dbprefix;
 
       $result = $db->Query("SELECT user_name, real_name FROM {$dbprefix}_users WHERE user_id = ?", array($user_id));
       if ($db->CountRows($result) == 0)
@@ -412,19 +420,19 @@ function GetTaskDetails($task_id)
 
       $result = $db->FetchRow($result);
 
-      return "<a href=\"?do=admin&amp;area=users&amp;id={$user_id}\">{$result['real_name']} ({$result['user_name']})</a>";
+      return "<a href=\"" . $this->CreateURL('user', $user_id) . "\">{$result['real_name']} ({$result['user_name']})</a>";
    }
 
 
    // To stop some browsers showing a blank box when an image doesn't exist
    function ShowImg($path, $alt_text)
    {
-      global $db;
+      global $flyspray_prefs;
 
       if(file_exists($path))
       {
          list($width, $height, $type, $attr) = getimagesize($path);
-         return "<img src=\"$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
+         return "<img src=\"{$flyspray_prefs['base_url']}$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
       }
    // End of ShowImg function
    }
@@ -434,10 +442,11 @@ function GetTaskDetails($task_id)
    // Types are:
    //  1: Task close
    //  2: Task re-open
-   //  3: Application for project membership
+   //  3: Application for project membership (not implemented yet)
    function AdminRequest($type, $project, $task, $submitter, $reason)
    {
       global $db;
+      global $dbprefix;
 
       $db->Query("INSERT INTO {$dbprefix}_admin_requests (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
                     VALUES(?, ?, ?, ?, ?, ?)",
@@ -450,6 +459,7 @@ function GetTaskDetails($task_id)
    function AdminRequestCheck($type, $task)
    {
       global $db;
+      global $dbprefix;
 
       $check = $db->Query("SELECT * FROM {$dbprefix}_admin_requests
                              WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
@@ -561,6 +571,8 @@ function GetTaskDetails($task_id)
    // This function removes html, slashes and other nasties
    function formatText($text)
    {
+      global $flyspray_prefs;
+
       $text = htmlspecialchars($text);
       $text = nl2br($text);
 
@@ -568,7 +580,13 @@ function GetTaskDetails($task_id)
       $text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $text);
 
       // Change FS#123 into hyperlinks to tasks
-      $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $text);
+      if (empty($flyspray_prefs['funky_urls']))
+      {
+         $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $text);
+      } else
+      {
+         $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"task/$2\">$0</a>", $text);
+      }
 
       if (!get_magic_quotes_gpc())
          $text = str_replace("\\", "&#92", $text);
@@ -603,6 +621,7 @@ function GetTaskDetails($task_id)
    function checkLogin($username, $password)
    {
       global $db;
+      global $dbprefix;
 
       $result = $db->Query("SELECT uig.*, g.group_open, u.account_enabled, u.user_pass FROM {$dbprefix}_users_in_groups uig
                               LEFT JOIN {$dbprefix}_groups g ON uig.group_id = g.group_id
@@ -700,6 +719,7 @@ function GetTaskDetails($task_id)
          return false;
 
       global $db;
+      global $dbprefix;
       global $flyspray_prefs;
       global $project_prefs;
 
@@ -798,6 +818,65 @@ function GetTaskDetails($task_id)
    // End of GenerateTaskList() function
    }
 
+
+   /* Check if we should use address rewriting
+      and return an appropriate URL
+   */
+   function CreateURL($type, $arg1, $arg2=0, $arg3=0)
+   {
+      global $flyspray_prefs;
+
+      // If we want address rewriting
+      if(empty($flyspray_prefs['funky_urls']))
+      {
+         switch ($type)
+         {
+            case "details": $url = '?do=details&amp;id=' . $arg1;
+            break;
+            case "edittask": $url = '?do=details&amp;id=' . $arg1 . '/edit';
+            break;
+            case "admin": $url = '?do=admin&amp;area=' . $arg1;
+            break;
+            case "pm": $url = '?do=pm&amp;area=' . $arg1 . '&amp;project=' . $arg2;
+            break;
+            case "newtask": $url = '?do=newtask&amp;project=' . $arg1;
+            break;
+            case "reports": $url = '?do=reports';
+            break;
+            case "myprofile": $url = '?do=myprofile';
+            break;
+            case "user": $url = '?do=admin&amp;area=users&amp;id=' . $arg1;
+            break;
+         }
+
+         return $url;
+      }
+
+      // If we don't want address rewriting
+      switch ($type)
+      {
+         case "details": $url = $flyspray_prefs['base_url'] . 'task/' . $arg1;
+         break;
+         case "edittask": $url = $flyspray_prefs['base_url'] . 'task/' . $arg1 . '/edit';
+         break;
+         case "admin": $url = $flyspray_prefs['base_url'] . 'admin/' . $arg1;
+         break;
+         case "pm": $url = $flyspray_prefs['base_url'] . 'pm/proj' . $arg2 . '/' . $arg1;
+         break;
+         case "newtask": $url = $flyspray_prefs['base_url'] . 'newtask/proj' . $arg1;
+         break;
+         case "reports": $url = $flyspray_prefs['base_url'] . 'reports';
+         break;
+         case "myprofile": $url = $flyspray_prefs['base_url'] . 'myprofile';
+         break;
+         case "user": $url = $flyspray_prefs['base_url'] . 'admin/users/' . $arg1;
+         break;
+      }
+
+      return $url;
+
+   // End of CreateURL() function
+   }
 
 ///////////////////////////
 // End of Flyspray class //

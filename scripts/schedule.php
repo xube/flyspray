@@ -46,7 +46,7 @@ while ($row = $db->FetchRow($get_reminders))
          }
       }
 
-      $subject = $functions_text['notifyfrom'] . " " . $row['project_title'];
+      $subject = $functions_text['notifyfrom'];
       $message = stripslashes($row['reminder_message']);
 
       // Pass the recipients and message onto the notification function

@@ -157,20 +157,23 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    ?>
    />
    <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
-   <link href="themes/<?php echo $themestyle;?>/theme.css" rel="stylesheet" type="text/css" />
-   <link rel="alternate" type="text/xml" title="Flyspray RSS Feed" href="<?php echo $flyspray_prefs['base_url'];?>scripts/rss.php?proj=<?php echo $project_id;?>" />
-   <script type="text/javascript" src="includes/styleswitcher.js"></script>
-   <script type="text/javascript" src="includes/tabs.js"></script>
-   <script type="text/javascript" src="includes/functions.js"></script>
+   <?php
+   echo '<link href="' . $flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/theme.css" rel="stylesheet" type="text/css" />' . "\n";
+   echo '<link rel="alternate" type="text/xml" title="Flyspray RSS Feed" href="' . $flyspray_prefs['base_url'] . 'scripts/rss.php?proj=' . $project_id . '" />' . "\n";
+   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/styleswitcher.js"></script>' . "\n";
+   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/tabs.js"></script>' . "\n";
+   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/functions.js"></script>' . "\n";
+   ?>
 <!--[if IE 6]>
    <script type="text/javascript" src="includes/ie_hover.js"></script>
 <![endif]-->
-   <style type="text/css">@import url(includes/jscalendar/calendar-win2k-1.css);</style>
-   <script type="text/javascript" src="includes/jscalendar/calendar_stripped.js"></script>
-   <script type="text/javascript" src="includes/jscalendar/lang/calendar-en.js"></script>
-   <script type="text/javascript" src="includes/jscalendar/calendar-setup.js"></script>
+   <?php
+   echo '<style type="text/css">@import url(' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-win2k-1.css);</style>';
+   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar_stripped.js"></script>';
+   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/lang/calendar-en.js"></script>';
+   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-setup.js"></script>';
 
-  <?php
+
    // open the themes directory
 /*   if ($handle = opendir('themes/'))
    {
@@ -246,19 +249,19 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    if ($permissions['open_new_tasks'] == '1')
    {
       echo '<small> | </small>';
-      echo '<a id="newtasklink" href="?do=newtask&amp;project=' . $project_id . '" accesskey="a">' . $language['addnewtask'] . "</a>\n";
+      echo '<a id="newtasklink" href="' . $fs->CreateURL('newtask', $project_id) . '" accesskey="a">' . $language['addnewtask'] . "</a>\n";
    }
 
    // Reports link
    if ($permissions['view_reports'] == '1' && $project_id != '0')
    {
       echo '<small> | </small>';
-      echo '<a id="reportslink" href="index.php?do=reports" accesskey="r">' . $language['reports'] . "</a>\n";
+      echo '<a id="reportslink" href="' . $fs->CreateURL('reports', null) . '" accesskey="r">' . $language['reports'] . "</a>\n";
    }
 
    // Edit My Details link
    echo '<small> | </small>';
-   echo '<a id="editmydetailslink" href="?do=myprofile" accesskey="e">' . $language['editmydetails'] . "</a>\n";
+   echo '<a id="editmydetailslink" href="' . $fs->CreateURL('myprofile', null) . '" accesskey="e">' . $language['editmydetails'] . "</a>\n";
 
 
    // If the user has conducted a search, then show a link to the most recent task list filter
@@ -282,7 +285,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    if ($permissions['manage_project'] == '1')
    {
       echo '<small> | </small>';
-      echo '<a id="projectslink" href="?do=pm&amp;area=prefs&amp;project=' . $project_id . '">' . $language['manageproject'] . "</a>\n";
+      echo '<a id="projectslink" href="' . $fs->CreateURL('pm', 'prefs', $project_id) . '">' . $language['manageproject'] . "</a>\n";
    }
 
    // Logout link
@@ -309,7 +312,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
       if ($num_req > '0')
       {
          echo '<small> | </small>';
-         echo '<a id="attention" href="?do=pm&amp;area=pendingreq">' . $num_req . ' ' . $language['pendingreq'] . '</a>';
+         echo '<a id="attention" href="' . $fs->CreateURL('pm', 'pendingreq') . '">' . $num_req . ' ' . $language['pendingreq'] . '</a>';
       }
 
     // End of checking if the pending PM requests should be displayed
@@ -346,7 +349,7 @@ if (isset($_SESSION['SUCCESS']))
 <div id="content">
 
 <div id="projectselector">
-<form action="index.php" method="get">
+<form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="get">
       <p>
       <select name="tasks">
         <option value="all"><?php echo $language['tasksall'];?></option>
@@ -398,7 +401,10 @@ if (isset($_SESSION['SUCCESS']))
       // Cycle through the results from whichever query above
       while ($row = $db->FetchArray($get_projects))
       {
-         if ($project_id == $row['project_id'] && isset($_GET['project']) && !empty($_GET['project']))
+         // Ensure that the selected project matches the one we are currently looking at
+         if ( $project_id == $row['project_id']
+         && (!isset($_GET['project'])
+         OR ( isset($_GET['project']) && !empty($_GET['project']) ) ) )
          {
             echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
             $project_list[] = $row['project_id'];
@@ -416,7 +422,8 @@ if (isset($_SESSION['SUCCESS']))
 </form>
 </div>
 
-<form action="index.php" method="get">
+<!-- We somehow need to make this work with the new Funky URLs -->
+<form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="get">
     <p id="showtask">
       <label><?php echo $language['showtask'];?> #
       <input id="taskid" name="id" type="text" size="10" maxlength="10" accesskey="t" /></label>

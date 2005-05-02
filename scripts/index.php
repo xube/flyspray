@@ -259,15 +259,14 @@ if (isset($_GET['string']) && $_GET['string']) {
 }
 
 // Do this to hide private tasks from the list
-if (@$permissions['manage_project'] != '1'          // $permissions empty unless user logged in
-     && isset($_COOKIE['flyspray_userid']))
+if (!isset($current_user))
+{
+   $where[] = "t.mark_private <> '1'";
+
+} elseif ( isset($current_user) && empty($permissions['manage_project']) )
 {
    $where[] = "(t.mark_private <> '1' OR t.assigned_to = ?)";
    $sql_params[] = $current_user['user_id'];
-
-} elseif (!isset($_COOKIE['user_id']))
-{
-   $where[] = "t.mark_private <> '1'";
 }
 
 if (isset($_GET['project']) && $_GET['project'] == '0') {
@@ -786,13 +785,13 @@ ORDER BY
       if (isset($_COOKIE['flyspray_userid']))
          echo "<td width=\"10\"><input class=\"ticktask\" type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
 
-      list_cell($task_details['task_id'], "id",$task_details['task_id'],1,"?do=details&amp;id={$task_details['task_id']}");
+      list_cell($task_details['task_id'], "id",$task_details['task_id'],1, $fs->CreateURL('details', $task_details['task_id']));
       list_cell($task_details['task_id'], "project",$task_details['project_title'],1);
       list_cell($task_details['task_id'], "tasktype",$task_details['task_type'],1);
       list_cell($task_details['task_id'], "category",$task_details['product_category'],1);
       list_cell($task_details['task_id'], "severity",$severity,1);
       list_cell($task_details['task_id'], "priority",$priority,1);
-      list_cell($task_details['task_id'], "summary",$task_details['item_summary'],0,"?do=details&amp;id={$task_details['task_id']}");
+      list_cell($task_details['task_id'], "summary",$task_details['item_summary'],0, $fs->CreateURL('details', $task_details['task_id']));
       list_cell($task_details['task_id'], "dateopened",$date_opened);
       list_cell($task_details['task_id'], "status",$status,1);
       list_cell($task_details['task_id'], "openedby",$task_details['opened_by'],0);

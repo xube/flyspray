@@ -378,7 +378,7 @@ class Notifications {
          $body .= $details_text['percentcomplete'] . ' - ' . $task_details['percent_complete'] . "\n";
          $body .= $details_text['details'] . ' - ' . $task_details['detailed_desc'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_details['task_id'] . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -410,7 +410,7 @@ class Notifications {
          $body .= $details_text['percentcomplete'] . ' - ' . $task_details['percent_complete'] . "\n";
          $body .= $details_text['details'] . ' - ' . stripslashes($task_details['detailed_desc']) . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -430,7 +430,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -448,6 +448,8 @@ class Notifications {
          $body .=  $notify_text['taskreopened'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] .  ")\n\n";
+         $body .= $notify_text['moreinfo'] . "\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -466,7 +468,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -486,7 +488,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -519,7 +521,7 @@ class Notifications {
          $body .= $comment['comment_text'] . "\n";
          $body .= "----------\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . '#' . $comment['comment_id'] . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . '#comment' . $comment['comment_id'] . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -538,7 +540,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -556,7 +558,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -574,7 +576,7 @@ class Notifications {
          $body .= $task_details['assigned_to_name'] . ' ' . $notify_text['takenownership'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -609,7 +611,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -627,7 +629,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -645,7 +647,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . stripslashes($task_details['item_summary']) . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $task_id . "\n\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
