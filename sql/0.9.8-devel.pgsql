@@ -70,3 +70,8 @@ ALTER TABLE flyspray_admin_requests ADD deny_reason TEXT;
 ALTER TABLE flyspray_admin_requests ALTER deny_reason SET DEFAULT '';
 UPDATE flyspray_admin_requests SET deny_reason = '' WHERE deny_reason IS NULL;
 ALTER TABLE flyspray_admin_requests ALTER deny_reason SET NOT NULL;
+
+-- Added 01 May 05
+INSERT INTO flyspray_prefs (pref_name, pref_value, pref_desc)
+VALUES ('funky_urls', '0', 
+'Should we use address rewriting? Not all webservers support this!');

@@ -833,10 +833,10 @@ if ($permissions['manage_project'] == '1')
             <select name="parent_id">
             <option value=""><?php echo $admin_text['notsubcategory'];?></option>
             <?php
-            $cat_list = $db->Query('SELECT category_id, category_name
+            $cat_list = $db->Query("SELECT category_id, category_name
                                        FROM {$dbprefix}_list_category
                                        WHERE project_id=? AND show_in_list=? AND parent_id < ?
-                                       ORDER BY list_position', array($project_id, '1', '1')
+                                       ORDER BY list_position", array($project_id, '1', '1')
                                    );
 
             while ($row = $db->FetchArray($cat_list))
