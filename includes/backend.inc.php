@@ -210,6 +210,7 @@ class Backend {
          $where = "WHERE is_closed <> '1'";
 
       } elseif ($status == 'closed')
+      {
          $where = "WHERE is_closed = '1'";
 
       } else
@@ -283,7 +284,9 @@ class Backend {
                                             FROM {$dbprefix}_tasks t
                                             LEFT JOIN {$dbprefix}_notifications fsn ON t.task_id = fsn.task_id
                                             $where",
-                                            array($params);
+                                            array($params)
+                                          )
+                               );
 
       $tasklist = array();
 
