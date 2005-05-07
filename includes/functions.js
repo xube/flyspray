@@ -80,13 +80,31 @@ function setUpTasklistTable() {
   addEvent(table,'click',tasklistTableClick);
 }
 function tasklistTableClick(e) {
-  src = eventGetSrc(e);
+  var src = eventGetSrc(e);
   if (src.nodeName != 'TD') {
     return;
   }
-  // remove the word 'task' from "task123"
-  id = src.parentNode.id.substr(4);
-  window.location = '?do=details&id=' + id;
+  if (src.hasChildNodes()) {
+    var checkBoxes = src.getElementsByTagName('input');
+    if (checkBoxes.length > 0) {
+      // User clicked the cell where the task select checkbox is
+      if (checkBoxes[0].checked) {
+        checkBoxes[0].checked = false;
+      } else {
+        checkBoxes[0].checked = true;
+      }
+      return;
+    }
+  }
+  var row = src.parentNode;
+  var aElements = row.getElementsByTagName('A');
+  if (aElements.length > 0) {
+    window.location = aElements[0].href;
+  } else {
+    // If both the task id and the task summary columns are non-visible
+    // just use the good old way to get to the task
+    window.location = '?do=details&id=' + row.id.substr(4);
+  }
 }
 
 function eventGetSrc(e) {
