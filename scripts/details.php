@@ -803,7 +803,7 @@ if ($task_details['project_is_active'] == '1'
          // Check for pending PM requests
          $get_pending = $db->Query("SELECT * FROM flyspray_admin_requests
                                     WHERE task_id = ?
-                                    AND resolved_by <> '1'",
+                                    AND resolved_by = '0'",
                                     array($task_details['task_id']));
 
          if ($db->CountRows($get_pending))
@@ -1164,7 +1164,7 @@ if($pos===0 && $project_prefs['inline_images'] == '1')
       $new_height = round(($height*$v_fraction),0);
 
       // Display the resized image, with a link to the fullsized one
-      echo "<a href=\"?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"$new_height\" alt=\"\" /></a>";
+      echo '<a href="' . $flyspray_prefs['base_url'] . "?getfile={$row['attachment_id']}\"><img src=\"?getfile={$row['attachment_id']}\" width=\"$new_height\" alt=\"\" /></a>";
    } else
    {
       // If the image is already small, just display it.

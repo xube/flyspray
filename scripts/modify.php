@@ -1813,12 +1813,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           && $permissions['delete_attachments'] == '1') {
 
 // if an attachment needs to be deleted do it right now
-  $delete = $db->Query('SELECT file_name, orig_name FROM {$dbprefix}_attachments
-                            WHERE attachment_id = ?',
+  $delete = $db->Query("SELECT file_name, orig_name FROM {$dbprefix}_attachments
+                            WHERE attachment_id = ?",
                             array($_POST['attachment_id']));
   if ($row = $db->FetchArray($delete)) {
     @unlink("attachments/".$row['file_name']);
-    $db->Query('DELETE FROM {$dbprefix}_attachments WHERE attachment_id = ?',
+    $db->Query("DELETE FROM {$dbprefix}_attachments WHERE attachment_id = ?",
                     array($_POST['attachment_id']));
   }
 
@@ -1863,7 +1863,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
               OR $permissions['is_admin'] == '1')) {
 
   $reminder = $db->FetchRow($db->Query("SELECT to_user_id FROM {$dbprefix}_reminders WHERE reminder_id = ?", array($_POST['reminder_id'])));
-  $db->Query('DELETE FROM {$dbprefix}_reminders WHERE reminder_id = ?',
+  $db->Query("DELETE FROM {$dbprefix}_reminders WHERE reminder_id = ?",
                     array($_POST['reminder_id']));
 
   $fs->logEvent($_POST['task_id'], 18, $reminder['to_user_id']);
@@ -2078,7 +2078,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of denying a PM request //
 ///////////////////////////////////
 
-} elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'denypmreq' && $permissions['is_admin'] == '1')
+} elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'denypmreq' && $permissions['manage_project'] == '1')
 {
    // Get info on the pm request
    $req_details = $db->FetchArray($db->Query("SELECT task_id

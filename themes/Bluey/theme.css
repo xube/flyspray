@@ -783,7 +783,7 @@ div#closeform textarea {
    height                  : 100px;
 }
 
-div#denyform {
+div.denyform {
    visibility              : hidden;
    position                : absolute;
    right                   : 12px;
@@ -931,8 +931,6 @@ div#permissions {
    right                   : 5px;
    padding                 : 5px;
    margin-top              : none;
-   width                   : 150px;
-   height                  : 550px;
    overflow                : auto;
    z-index                 : 5;
 }

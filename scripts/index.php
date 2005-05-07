@@ -210,9 +210,9 @@ if (isset($_GET['cat']) && is_numeric($_GET['cat'])) {
   $sql_params[] = $_GET['cat'];
 
   // Do some weird stuff to add the subcategories to the query
-  $get_subs = $db->Query('SELECT category_id
+  $get_subs = $db->Query("SELECT category_id
                             FROM {$dbprefix}_list_category
-                            WHERE parent_id = ?',
+                            WHERE parent_id = ?",
                             array($_GET['cat']));
   while ($row = $db->FetchArray($get_subs)) {
     $temp_where = $temp_where . " OR product_category =?";
@@ -287,7 +287,7 @@ $get = $get . '&amp;tasks=' . $_GET['tasks'] . $extraurl;
 //$getproject = $db->FetchArray($db->Query('SELECT * FROM {$dbprefix}_projects WHERE project_id = ?', array($project_id)));
 
 if ($project_prefs['project_is_active'] == '1'
-  && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
+  && ($project_prefs['others_view'] == '1' OR @$permissions['view_tasks'] == '1')
   OR $_GET['project'] == '0')
 {
 ?>
@@ -665,7 +665,7 @@ $from = 'flyspray_tasks t';
 
 if (isset($_GET['tasks']) && $_GET['tasks'] == 'watched') {
     //join the notification table to get watched tasks
-    $from .= ' RIGHT JOIN {$dbprefix}_notifications fsn ON t.task_id = fsn.task_id';
+    $from .= " RIGHT JOIN {$dbprefix}_notifications fsn ON t.task_id = fsn.task_id";
     $where[] = 'fsn.user_id = ?';
     $sql_params[] = $current_user['user_id'];
 }

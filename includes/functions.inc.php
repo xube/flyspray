@@ -507,11 +507,17 @@ function GetTaskDetails($task_id)
 
 
       // Get the project-level group for this user, and put the permissions into an array
-      $search_project_group = $db->Query("SELECT * FROM {$dbprefix}_groups WHERE belongs_to_project = ?", array($project_id));
+      $search_project_group = $db->Query("SELECT * FROM {$dbprefix}_groups
+                                          WHERE belongs_to_project = ?",
+                                          array($project_id));
 
       while ($row = $db->FetchRow($search_project_group))
       {
-         $check_in = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups WHERE user_id = ? AND group_id = ?", array($user_id, $row['group_id']));
+         $check_in = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups
+                                 WHERE user_id = ? AND group_id = ?",
+                                 array($user_id, $row['group_id'])
+                               );
+
          if ($db->CountRows($check_in) > '0')
          {
             $project_permissions = $row;
@@ -698,7 +704,7 @@ function GetTaskDetails($task_id)
    // set empty values for $_GET[...] variables
    function fixMissingIndices()
    {
-      $indexes = 'index date order class order order2 sort sort2 tasks permissions sev dev due string pagenum perpage type cat status';
+      $indexes = 'project index date order class order order2 sort sort2 tasks permissions sev dev due string pagenum perpage type cat status';
       $indexes = split(' ', $indexes);
       foreach ($indexes as $index)
       {
@@ -707,115 +713,6 @@ function GetTaskDetails($task_id)
          if (!isset($_REQUEST[$index]) && !isset($_GET['do']))
             $_REQUEST[$index] = '';
       }
-   }
-
-
-   /* This function takes an array of arguments, and returns a
-      nested array of task details ready to be formatted for display.
-   */
-   function GenerateTaskList($args)
-   {
-      if (!is_array($args))
-         return false;
-
-      global $db;
-      global $dbprefix;
-      global $flyspray_prefs;
-      global $project_prefs;
-
-      $args[0] =  $userid;       // The user id of the person requesting the tasklist
-      $args[1] =  $projectid;    // The project the user is viewing. '0' equals all projects
-      $args[2] =  $tasks_req;    // 'all', 'assigned', 'reported' or 'watched'
-      $args[3] =  $string;       // The search string
-      $args[4] =  $type;         // Task Type, from the editable list
-      $args[5] =  $sev;          // Severity, from the editable list
-      $args[6] =  $dev;          // User id of the person assigned the tasks
-      $args[7] =  $cat;          // Category, from the editable list
-      $args[8] =  $status;       // Status, from the translatable list
-      $args[9] =  $due;          // Version the tasks are due in
-      $args[10] = $date;         // Date the tasks are due by
-      $args[11] = $perpage;      // How many results to display
-      $args[12] = $pagenum;      // Which page of the search results we're on
-      $args[13] = $order;        // Which column to order by
-      $args[14] = $sort;         // [asc|desc]ending order for the above column ordering
-      $args[15] = $order2;        // Secondary column to order by
-      $args[16] = $sort2;         // [asc|desc]ending order for the above column ordering
-
-      // Create an array for the preferred column order
-      if (!empty($order))
-      {
-         $orderby[] = $order;
-      } else
-      {
-         $orderby[] = 'sev';
-      }
-
-      // If we want a secondary order, add it to the array
-      if (!empty($order2))
-      {
-         $orderby[] = $order2;
-      } else
-      {
-         $orderby[] = 'pri';
-      }
-
-      // Cycle through each orderby preference, substituting the arg with a real database field
-      foreach ( $orderby as $key => $val )
-      {
-         switch ($orderby[$key])
-         {
-            case "id": $orderby[$key] = 'task_id';
-            break;
-            case "proj": $orderby[$key] = 'project_title';
-            break;
-            case "type": $orderby[$key] = 'tasktype_name';
-            break;
-            case "date": $orderby[$key] = 'date_opened';
-            break;
-            case "sev": $orderby[$key] = 'task_severity';
-            break;
-            case "cat": $orderby[$key] = 'lc.category_name';
-            break;
-            case "status": $orderby[$key] = 'item_status';
-            break;
-            case "due": $orderby[$key] = 'lvc.list_position';
-            break;
-            case "duedate": $orderby[$key] = 'due_date';
-            break;
-            case "prog": $orderby[$key] = 'percent_complete';
-            break;
-            case "lastedit": $orderby[$key] = 'last_edited_time';
-            break;
-            case "pri": $orderby[$key] = 'task_priority';
-            break;
-            case "openedby": $orderby[$key] = 'uo.real_name';
-            break;
-            case "reportedin": $orderby[$key] = 't.product_version';
-            break;
-            case "assignedto": $orderby[$key] = 'u.real_name';
-            break;
-            default: $orderby[$key] = 'task_severity';
-            break;
-         }
-      }
-
-      //  ...and here we have the final column order with sorting
-      $sortorder = "{$orderby[0]} $sort, {$orderby[1]} $sort2, t.task_id ASC";
-
-      // Default page number
-      if (empty($pagenum))
-         $pagenum = '1';
-
-      if (empty($perpage))
-         $perpage = '20';
-
-      // The offset is a combination of perpage and pagenum
-      $offset = $perpage * ($pagenum - 1);
-
-
-
-
-   // End of GenerateTaskList() function
    }
 
 
@@ -831,21 +728,21 @@ function GetTaskDetails($task_id)
       {
          switch ($type)
          {
-            case "details": $url = '?do=details&amp;id=' . $arg1;
+            case "details": $url = $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $arg1;
             break;
-            case "edittask": $url = '?do=details&amp;id=' . $arg1 . '/edit';
+            case "edittask": $url = $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $arg1 . '&amp;edit=yep';
             break;
-            case "admin": $url = '?do=admin&amp;area=' . $arg1;
+            case "admin": $url = $flyspray_prefs['base_url'] . '?do=admin&amp;area=' . $arg1;
             break;
-            case "pm": $url = '?do=pm&amp;area=' . $arg1 . '&amp;project=' . $arg2;
+            case "pm": $url = $flyspray_prefs['base_url'] . '?do=pm&amp;area=' . $arg1 . '&amp;project=' . $arg2;
             break;
-            case "newtask": $url = '?do=newtask&amp;project=' . $arg1;
+            case "newtask": $url = $flyspray_prefs['base_url'] . '?do=newtask&amp;project=' . $arg1;
             break;
-            case "reports": $url = '?do=reports';
+            case "reports": $url = $flyspray_prefs['base_url'] . '?do=reports';
             break;
-            case "myprofile": $url = '?do=myprofile';
+            case "myprofile": $url = $flyspray_prefs['base_url'] . '?do=myprofile';
             break;
-            case "user": $url = '?do=admin&amp;area=users&amp;id=' . $arg1;
+            case "user": $url = $flyspray_prefs['base_url'] . '?do=admin&amp;area=users&amp;id=' . $arg1;
             break;
          }
 

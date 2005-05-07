@@ -1117,9 +1117,9 @@ if ($permissions['manage_project'] == '1')
             // Change the numerical request type into a readable value
             switch($pending_req['request_type'])
             {
-               case "1": $request_type = $admin_text['closetask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . stripslashes($pending_req['item_summary']) . '</a>';
+               case "1": $request_type = $admin_text['closetask'] . ' - <a href="' . $fs->CreateURL('details', $pending_req['task_id']) . '">FS#' . $pending_req['task_id'] . ': ' . stripslashes($pending_req['item_summary']) . '</a>';
                break;
-               case "2": $request_type = $admin_text['reopentask'] . ' - <a href="?do=details&amp;id=' . $pending_req['task_id'] . '">FS#' . $pending_req['task_id'] . ': ' . stripslashes($pending_req['item_summary']) . '</a>';
+               case "2": $request_type = $admin_text['reopentask'] . ' - <a href="' . $fs->CreateURL('details', $pending_req['task_id']) . '">FS#' . $pending_req['task_id'] . ': ' . stripslashes($pending_req['item_summary']) . '</a>';
                break;
                case "3": $request_type = $admin_text['applymember'];
                break;
@@ -1127,12 +1127,12 @@ if ($permissions['manage_project'] == '1')
 
             echo '<tr>';
             echo "<td>$request_type</td>";
-            echo '<td><a href="?do=admin&amp;area=users&amp;id=' . $pending_req['user_id'] . '">' . $pending_req['real_name'] . '(' . $pending_req['user_name'] . ')</a></td>';
+            echo '<td>' . $fs->LinkedUserName($pending_req['user_id']) . '</td>';
             echo '<td>' . $fs->formatDate($pending_req['time_submitted'], true) . '</td>';
             echo '<td>' . stripslashes($pending_req['reason_given']) . '</td>';
 
-            echo '<td><a href="#" id="denyreq" class="button" onclick="showhidestuff(\'denyform\');">' . $pm_text['deny'] . '</a>';
-            echo '<div id="denyform">';
+            echo '<td><a href="#" id="denyreq" class="button" onclick="showhidestuff(\'denyform' . $pending_req['request_id'] . '\');">' . $pm_text['deny'] . '</a>';
+            echo '<div id="denyform' . $pending_req['request_id'] . '" class="denyform">';
             echo '<form name="form3" action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">';
             echo '<input type="hidden" name="do" value="modify" />';
             echo '<input type="hidden" name="action" value="denypmreq" />';

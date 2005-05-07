@@ -83,7 +83,7 @@ while ($row = $db->FetchArray($task_details))
    echo '<item>' . "\n";
    echo '<title>' . $item_summary . '</title>' . "\n";
    echo '<description>' . $detailed_desc . '</description>' . "\n";
-   echo '<link>' . $flyspray_prefs['base_url'] . $fs->CreateURL('details', $row['task_id']) . '</link>' . "\n";
+   echo '<link>' . $fs->CreateURL('details', $row['task_id']) . '</link>' . "\n";
    echo '</item>';
 }
 

@@ -3,7 +3,7 @@
 global $language;
 $language = array (
 
-'filenotexist'             =>    'File does not exist.  Contact the Flyspray administrator for this project.',
+'filenotexist'             =>    'File does not exist, or you do not have permission to access it.',  // Changed in version 0.9.8
 'showtask'                 =>    'Show Task',
 'now'                      =>    'Now',
 'go'                       =>    'Go!',

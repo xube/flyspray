@@ -26,7 +26,7 @@ $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
 $this_page = str_replace('&', '&amp;', $this_page);
 
 // Background daemon that does scheduled reminders
-//$fs->startReminderDaemon();
+$fs->startReminderDaemon();
 
 // Get the translation for the wrapper page (this page)
 $lang = $flyspray_prefs['lang_code'];
@@ -83,16 +83,25 @@ if (!$db->CountRows($check_proj_exists))
 // If a file was requested, deliver it
 if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 {
-   list($orig_name, $file_name, $file_type) = $db->FetchArray($db->Query("SELECT orig_name,
-                                                                          file_name,
-                                                                          file_type
-                                                                          FROM {$dbprefix}_attachments
-                                                                          WHERE attachment_id = ?",
-                                                                          array($_GET['getfile'])
-                                                                        )
-                                                             );
+   list($task_id, $orig_name, $file_name, $file_type)
+      = $db->FetchArray($db->Query("SELECT task_id,
+                                    orig_name,
+                                    file_name,
+                                    file_type
+                                    FROM {$dbprefix}_attachments
+                                    WHERE attachment_id = ?",
+                                    array($_GET['getfile'])
+                                 )
+                        );
 
-   if (file_exists("attachments/$file_name"))
+   // Retrieve permissions!
+   $task_details = $fs->GetTaskDetails($task_id);
+   $proj_prefs = $fs->GetProjectPrefs($task_details['attached_to_project']);
+   $user_permissions = @$fs->getPermissions($current_user['user_id'], $task_details['attached_to_project']);
+
+   // Check if file exists, and user permission to access it!
+   if (file_exists("attachments/$file_name")
+      && ($project_prefs['others_view'] == '1' OR $user_permissions['view_attachments'] == '1'))
    {
       $path = "attachments/$file_name";
 
@@ -163,6 +172,11 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/styleswitcher.js"></script>' . "\n";
    echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/tabs.js"></script>' . "\n";
    echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/functions.js"></script>' . "\n";
+
+   // This allows theme authors to include other code/javascript/dhtml to make their theme funky
+   if (file_exists($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php'))
+      include($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php');
+
    ?>
 <!--[if IE 6]>
    <script type="text/javascript" src="includes/ie_hover.js"></script>
@@ -436,7 +450,7 @@ if (isset($_SESSION['SUCCESS']))
 
 // Show the project blurb if the project manager defined one
 if ($project_prefs['project_is_active'] == '1'
-    && ($project_prefs['others_view'] == '1' OR $permissions['view_tasks'] == '1')
+    && ($project_prefs['others_view'] == '1' OR @$permissions['view_tasks'] == '1')
     && !empty($project_prefs['intro_message'])
     && ($do == 'details' OR $do == 'index' OR $do == 'newtask' OR $do == 'reports')
     OR (isset($_GET['project']) && $_GET['project'] == '0'))

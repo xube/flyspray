@@ -12,7 +12,7 @@ if ($_GET['action'] == "logout")
 
    // Set status message and redirect
    $_SESSION['SUCCESS'] = $authenticate_text['youareloggedout'];
-   $fs->redirect('index.php');
+   $fs->redirect($flyspray_prefs['base_url']);
 
 // Otherwise, they requested login.  See if they provided the correct credentials...
 } elseif ($_POST['username'] AND $_POST['password'])

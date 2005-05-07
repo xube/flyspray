@@ -51,7 +51,7 @@ class Notifications {
 //       global $details_text;
 //       global $project_prefs;
       global $flyspray_prefs;
-//       global $current_user;
+      global $current_user;
 
       $subject = htmlspecialchars($subject);
       $body = htmlspecialchars($body);
@@ -61,6 +61,9 @@ class Notifications {
           OR empty($flyspray_prefs['jabber_username'])
           OR empty($flyspray_prefs['jabber_password']))
             return false;
+
+      if (empty($to))
+         return false;
 
       $body = str_replace('&amp;', '&', $body);
       $date = date('U');
@@ -751,7 +754,7 @@ class Notifications {
             OR ($flyspray_prefs['user_notify'] = '1' && $user_details['notify_type'] == '1')
             && !in_array($user_details['email_address'], $email_users))
          {
-            array_push($jabber_users, $user_details['email_address']);
+            array_push($email_users, $user_details['email_address']);
 
          // Jabber
          } elseif ($flyspray_prefs['user_notify'] == '3'
@@ -774,13 +777,13 @@ class Notifications {
 
          foreach ($proj_emails AS $key => $val)
          {
-            if (!in_array($val, $email_users))
+            if (!empty($val) && !in_array($val, $email_users))
                array_push($email_users, $val);
          }
 
          foreach ($proj_jids AS $key => $val)
          {
-            if (!in_array($val, $jabber_users))
+            if (!empty($val) && !in_array($val, $jabber_users))
                array_push($jabber_users, $val);
          }
 
