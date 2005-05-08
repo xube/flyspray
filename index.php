@@ -176,40 +176,19 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // This allows theme authors to include other code/javascript/dhtml to make their theme funky
    if (file_exists($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php'))
       include($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php');
-
    ?>
-<!--[if IE 6]>
-   <script type="text/javascript" src="includes/ie_hover.js"></script>
-<![endif]-->
+
+   <!--[if IE 6]>
+      <script type="text/javascript" src="includes/ie_hover.js"></script>
+   <![endif]-->
+
    <?php
    echo '<style type="text/css">@import url(' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-win2k-1.css);</style>';
    echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar_stripped.js"></script>';
    echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/lang/calendar-en.js"></script>';
    echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-setup.js"></script>';
-
-
-   // open the themes directory
-/*   if ($handle = opendir('themes/'))
-   {
-      $theme_array = array();
-      while (false !== ($file = readdir($handle)))
-      {
-         if ($file != "." && $file != ".." && file_exists("themes/$file/theme.css"))
-         {
-            array_push($theme_array, $file);
-         }
-      }
-      closedir($handle);
-   }
-
-    // Sort the array alphabetically
-    sort($theme_array);
-    // Then display them as alternate themes for browsers that support such features, like Mozilla!
-   while (list($key, $val) = each($theme_array))
-   {
-      echo "<link href=\"themes/$val/theme.css\" title=\"$val\" rel=\"alternate stylesheet\" type=\"text/css\" />\n";
-   }*/
     ?>
+
 </head>
 <body>
 

@@ -122,11 +122,6 @@ class Backend {
             // Get the notifications going
             $notify->Create('10', $task_id);
 
-//             $to  = $notify->Address($task_id);
-//             $msg = $notify->Create('10', $task_id);
-//             $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//             $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-
          // End of permission check
          }
 
@@ -145,7 +140,7 @@ class Backend {
    function GenerateTaskList($args)
    {
       if (!is_array($args))
-         return false;
+         return "We were not given an array of arguments to process.";
 
       global $db;
       global $dbprefix;
@@ -159,17 +154,29 @@ class Backend {
       are correct and safe, right?
       */
 
-      $args[0] =  $userid;       // The user id of the person requesting the tasklist
-      $args[1] =  $projectid;    // The project the user wants tasks from. '0' equals all projects
-      $args[2] =  $tasks_req;    // 'all', 'assigned', 'reported' or 'watched'
-      $args[3] =  $string;       // The search string
-      $args[4] =  $type;         // Task Type, from the editable list
-      $args[5] =  $sev;          // Severity, from the editable list
-      $args[6] =  $dev;          // User id of the person assigned the tasks
-      $args[7] =  $cat;          // Category, from the editable list
-      $args[8] =  $status;       // Status, from the translatable list
-      $args[9] =  $due;          // Version the tasks are due in
-      $args[10] = $date;         // Date the tasks are due by
+      $userid     = $args[0];    // The user id of the person requesting the tasklist
+      $projectid  = $args[1];    // The project the user wants tasks from. '0' equals all projects
+      $tasks_req  = $args[2];    // 'all', 'assigned', 'reported' or 'watched'
+      $string     = $args[3];    // The search string
+      $type       = $args[4];    // Task Type, from the editable list
+      $sev        = $args[5];    // Severity, from the editable list
+      $dev        = $args[6];    // User id of the person assigned the tasks
+      $cat        = $args[7];    // Category, from the editable list
+      $status     = $args[8];    // Status, from the translatable list
+      $due        = $args[9];    // Version the tasks are due in
+      $date       = $args[10];   // Date the tasks are due by
+
+      // We only accept numeric values for the following args
+      if (  !is_numeric($userid)
+            OR !is_numeric($projectid)
+            OR !is_numeric($type)
+            OR !is_numeric($sev)
+            OR !is_numeric($dev)
+            OR !is_numeric($cat)
+            OR !is_numeric($status)
+            OR !is_numeric($due)
+         )
+         return "At least one argument was not numerical.";
 
       /*
       I trust that Ander's funky javascript can handle sorting and paginating
@@ -192,7 +199,9 @@ class Backend {
                         'closedby_version'   => $due,
                        );
 
-      $permissions = $fs->getPermissions($userid, $projectid);
+      if (!empty($userid))
+         $permissions = @$fs->getPermissions($userid, $projectid);
+
       $project_prefs = $fs->getProjectPrefs($projectid);
 
       // Check if the user can view tasks from this project
@@ -201,61 +210,68 @@ class Backend {
          // If they have permission, let's carry on.  Otherwise, give up.
       } else
       {
-         return false;
+         //return "You don't have permission to view tasks from that project.";
       }
+
+      $where = array();
+      $params = array('0');
 
       // Check the requested status
       if (empty($status))
       {
-         $where = "WHERE is_closed <> '1'";
+         $where[] = "t.is_closed <> '1'";
 
       } elseif ($status == 'closed')
       {
-         $where = "WHERE is_closed = '1'";
+         $where[] = "t.is_closed = '1'";
 
       } else
       {
-         $where = "WHERE item_status = ?";
-         $params = $status;
+         $where[] = "t.item_status = ?";
+         $params[] = $status;
       }
 
 
       // Select which project we want. If $projectid is zero, we want everything
       if (!empty($projectid))
       {
-         $where .= " AND attached_to_project = ? ";
-         $params .= ", $projectid";
+         //$where[] = "t.attached_to_project = ?";
+         //$params[] = $projectid;
       }
 
       // Restrict query results based upon (lack of) PM permissions
-      if ($permissions['manage_project'] != '1')
+      if (!empty($userid) && $permissions['manage_project'] != '1')
       {
-         $where .= " AND (mark_private = '0' OR assigned_to = ?) ";
-         $params .= ", $userid";
+         $where[] = "(t.mark_private = '0' OR t.assigned_to = ?)";
+         $params[] = $userid;
+
+      } elseif (!isset($userid))
+      {
+         $where[] = "t.mark_private = '0'";
       }
 
       // Change query results based upon type of tasks requested
       if($tasks_req == 'assigned')
       {
-         $where .= " AND assigned_to = ? ";
-         $params .= ", $userid";
+         $where[] = "t.assigned_to = ?";
+         $params[] = $userid;
 
       } elseif ($tasks_req == 'reported')
       {
-         $where .= " AND opened_by = ? ";
-         $params .= ", $userid";
+         $where[] = "t.opened_by = ?";
+         $params[] = $userid;
 
       } elseif ($tasks_req == 'watched')
       {
-         $where .= " AND fsn.user_id = ? ";
-         $params .= ", $userid";
+         $where[] = "fsn.user_id = ?";
+         $params[] = $userid;
       }
 
       // Calculate due-by-date
       if (!empty($date))
       {
-         $where .= " AND due_date <= ? ";
-         $params .= ", $date";
+         $where[] = "(t.due_date < ? AND t.due_date <> '0' AND t.due_date <> '')";
+         $params[] = strtotime("$date +24 hours");
       }
 
       // The search string
@@ -265,8 +281,10 @@ class Backend {
          $string = ereg_replace('\)', " ", $string);
          $string = trim($string);
 
-         $where .= "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ?)";
-         $params .= ", %$string%, %$string%, %$string%";
+         $where[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ?)";
+         $params[] = "%$string%";
+         $params[] = "%$string%";
+         $params[] = "%$string%";
       }
 
       // Add the other search narrowing criteria
@@ -274,26 +292,35 @@ class Backend {
       {
          if (!empty($val))
          {
-            $where .= " AND $key = ? ";
-            $params .= ", $val";
+            $where[] = "t.$key = ?";
+            $params[] = $val;
          }
       }
 
+      // Expand the $params
+      $sql_where = implode(" AND ", $where);
+      $sql_params = implode(",", $params);
+
       // Alrighty.  We should be ok to build the query now!
-      $search = $db->FetchArray($db->Query("SELECT t.task_id
-                                            FROM {$dbprefix}_tasks t
-                                            LEFT JOIN {$dbprefix}_notifications fsn ON t.task_id = fsn.task_id
-                                            $where",
-                                            array($params)
-                                          )
-                               );
+      $search = $db->Query("SELECT DISTINCT t.task_id
+                            FROM {$dbprefix}_tasks t
+                            LEFT JOIN {$dbprefix}_notifications fsn ON t.task_id = fsn.task_id
+                            WHERE t.task_id > ?
+                            AND $sql_where
+                            ORDER BY t.task_severity DESC
+                            ", $params, 5  // Limiting to five tasks for testing purposes
+                          );
 
       $tasklist = array();
 
-      foreach ($search AS $key => $val)
-         $tasklist[] = $fs->GetTaskDetails($val);
+      while ($row = $db->FetchArray($search))
+         $tasklist[] = $fs->GetTaskDetails($row['task_id']);
 
       return $tasklist;
+
+      //return array($where, $sql_params);
+
+      //return $search;
 
    // End of GenerateTaskList() function
    }
