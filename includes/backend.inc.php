@@ -165,6 +165,7 @@ class Backend {
       $status     = $args[8];    // Status, from the translatable list
       $due        = $args[9];    // Version the tasks are due in
       $date       = $args[10];   // Date the tasks are due by
+      $limit      = $args[11];   // The amount of tasks requested.  '0' = all
 
       // We only accept numeric values for the following args
       if (  !is_numeric($userid)
@@ -175,8 +176,9 @@ class Backend {
             OR !is_numeric($cat)
             OR !is_numeric($status)
             OR !is_numeric($due)
+            OR !is_numeric($limit)
          )
-         return "At least one argument was not numerical.";
+         return "At least one required argument was not numerical.";
 
       /*
       I trust that Ander's funky javascript can handle sorting and paginating
@@ -184,12 +186,12 @@ class Backend {
       any of the following variables that we used to use on the previous
       task list page, right?
 
-      $args[11] = $perpage;      // How many results to display
-      $args[12] = $pagenum;      // Which page of the search results we're on
-      $args[13] = $order;        // Which column to order by
-      $args[14] = $sort;         // [asc|desc]ending order for the above column ordering
-      $args[15] = $order2;        // Secondary column to order by
-      $args[16] = $sort2;         // [asc|desc]ending order for the above column ordering
+      $args[12] = $perpage;      // How many results to display
+      $args[13] = $pagenum;      // Which page of the search results we're on
+      $args[14] = $order;        // Which column to order by
+      $args[15] = $sort;         // [asc|desc]ending order for the above column ordering
+      $args[16] = $order2;        // Secondary column to order by
+      $args[17] = $sort2;         // [asc|desc]ending order for the above column ordering
       */
 
       $criteria = array('task_type'          => $type,
@@ -210,7 +212,7 @@ class Backend {
          // If they have permission, let's carry on.  Otherwise, give up.
       } else
       {
-         //return "You don't have permission to view tasks from that project.";
+         return "You don't have permission to view tasks from that project.";
       }
 
       $where = array();
@@ -227,7 +229,7 @@ class Backend {
 
       } else
       {
-         $where[] = "t.item_status = ?";
+         $where[] = "t.item_status = ? AND t.is_closed <> '1'";
          $params[] = $status;
       }
 
@@ -235,8 +237,8 @@ class Backend {
       // Select which project we want. If $projectid is zero, we want everything
       if (!empty($projectid))
       {
-         //$where[] = "t.attached_to_project = ?";
-         //$params[] = $projectid;
+         $where[] = "t.attached_to_project = ?";
+         $params[] = $projectid;
       }
 
       // Restrict query results based upon (lack of) PM permissions
@@ -245,7 +247,7 @@ class Backend {
          $where[] = "(t.mark_private = '0' OR t.assigned_to = ?)";
          $params[] = $userid;
 
-      } elseif (!isset($userid))
+      } elseif (empty($userid))
       {
          $where[] = "t.mark_private = '0'";
       }
@@ -299,7 +301,6 @@ class Backend {
 
       // Expand the $params
       $sql_where = implode(" AND ", $where);
-      $sql_params = implode(",", $params);
 
       // Alrighty.  We should be ok to build the query now!
       $search = $db->Query("SELECT DISTINCT t.task_id
@@ -307,8 +308,8 @@ class Backend {
                             LEFT JOIN {$dbprefix}_notifications fsn ON t.task_id = fsn.task_id
                             WHERE t.task_id > ?
                             AND $sql_where
-                            ORDER BY t.task_severity DESC
-                            ", $params, 5  // Limiting to five tasks for testing purposes
+                            ORDER BY t.task_severity DESC, t.task_id ASC
+                            ", $params, $limit  // Limiting to five tasks for testing purposes
                           );
 
       $tasklist = array();
@@ -318,7 +319,7 @@ class Backend {
 
       return $tasklist;
 
-      //return array($where, $sql_params);
+      //return $where;
 
       //return $search;
 
