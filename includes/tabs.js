@@ -127,6 +127,9 @@ function getTabDivs() {/*{{{*/
 // show first tab or tab with given name (string after #)
 function initTabs() {/*{{{*/
   var target = location.href.substring(location.href.indexOf('#')+1);
+  if (target.match(/comment/)) {
+    target = "comments";
+  }
   makeTabLinks();
 
   if (target && document.getElementById(target)) {
