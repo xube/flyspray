@@ -36,7 +36,7 @@ $details_text = array (
 'commentby'           =>    'Comment by',
 'addcomment'          =>    'Add comment',
 'fileuploadedby'      =>    'File uploaded by',
-'uploadafile'         =>    'Upload a file to attach',
+'uploadafile'         =>    'Attach a file',             // Changed in version 0.9.8
 'description'         =>    'Description',
 'uploadnow'           =>    'Upload now!',
 'thesearerelated'     =>    'These tasks are related to this task',
@@ -146,6 +146,7 @@ $details_text = array (
 'previoustask'          =>    'Previous task',
 'nexttask'              =>    'Next task',
 'duedate'               =>    'Due Date',
+'attachmorefiles'       =>    'Attach more files',
 
 );
 ?>

@@ -124,3 +124,19 @@ function ToggleSelectedTasks() {
     }
   }
 }
+
+function addUploadFields() {
+  // Get all the table rows
+  var rows = document.getElementById('uploadfieldstable').getElementsByTagName('TR');
+  var length = rows.length;
+  if (length < 2) {
+    // The table had less than two rows
+    return;
+  }
+  // Append a copy of the "last but one" row to the table
+  rows[0].parentNode.appendChild(rows[length-2].cloneNode(true));
+  // Append a copy of the "last row" row to the table
+  rows[0].parentNode.appendChild(rows[length-1].cloneNode(true));
+  // I used rows[0] just to get the parent element, could have used any of indices
+  // in rows
+}

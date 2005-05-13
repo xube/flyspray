@@ -64,3 +64,9 @@ INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_de
 VALUES (
 '', 'funky_urls', '0', 'Should we use address rewriting? Not all webservers support this!'
 );
+
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES (
+'', 'reminder_daemon', '0', 'Should we use the built-in reminder daemon? Not all webservers support this!'
+);
+

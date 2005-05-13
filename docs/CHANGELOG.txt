@@ -1,3 +1,33 @@
+0.9.8 - SOMETIME SOON
+
+NEW - Full-featured installer
+NEW - Address rewriting for human-readable URLs
+NEW - Database table prefixes
+NEW - Background daemon to run the scheduler
+NEW - Due-by-date field, searchable
+NEW - Prev/Next task links
+NEW - Operations on multiple tasks from the tasklist
+NEW - 'Project' addresses that receive notifications for ALL changes in that
+      project
+NEW - Dropdown lists are now set globally and at Project level
+NEW - Uses class.jabber.php for Jabber notifications
+NEW - Uses class.phpmailer for email notifications
+NEW - SMTP for email notifications
+
+IMPROVED - reliability of Jabber notifications
+IMPROVED - Admin and Project Manager areas are more consistant and easy to
+           navigate
+IMPROVED - Layout and rendering
+IMPROVED - Speed of changing tabs (uses DHTML instead of a page-reload)
+IMPROVED - RSS feed
+IMPROVED - Much code has been moved to classes/functions (so is much more
+           re-usable)
+
+FIXED - Permissions that were broken in last release
+FIXED - Now checks permissions before delivering attachments
+FIXED - Re-enabled Project Manager requests
+
+
 0.9.7 - 22 January 2005
 
 NEW: Easy setup script
@@ -29,7 +59,7 @@ NEW: Priority
 NEW: Dropdown list to show only tasks assigned to me,
        tasks opened by me, and
        tasks I watch
-NEW: Locking tasks while editing, so no-one else can save over your 
+NEW: Locking tasks while editing, so no-one else can save over your
        changes-in-progress
 NEW: Referring to a Flyspray task in the format - FS#123 - creates a hyperlink
        to that task
@@ -86,7 +116,7 @@ NEW: Option to send a confirmation code for new user registrations - to prevent
 NEW: Page numbering for task list,
 NEW: Option to only allow registered users to view anything,
 NEW: Internationalisation support. English, French, German and Dutch translations
-     are included, 
+     are included,
 NEW: Alternate stylesheet support for Mozilla users, showing all installed themes,
 NEW: Comments can now be edited and deleted by members of an Admin group,
 NEW: Severities has been moved out of the database into a translatable text file.

@@ -95,10 +95,15 @@ if ( isset($_GET['do']) && $_GET['do'] == 'details' && isset($_GET['id']) )
 // Determine which project we want to see
 if ( !isset($project_id) )
 {
-   if ( isset($_GET['project']) && $_GET['project'] != '0' )
+   if ( isset($_GET['project']) && $_GET['project'] != '0' && !empty($_GET['project']))
    {
       $project_id = $_GET['project'];
       setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
+
+   } elseif ( isset($_POST['project_id']) )
+   {
+      $project_id = $_POST['project_id'];
+      setcookie('flyspray_project', $_POST['project_id'], time()+60*60*24*30, "/");
 
    } elseif ( isset($_COOKIE['flyspray_project']) )
    {

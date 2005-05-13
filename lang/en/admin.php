@@ -183,6 +183,7 @@ $admin_text = array (
 'smtpuser'              =>    'SMTP Username',
 'smtppass'              =>    'SMTP Password',
 'addrewrite'            =>    'Use address rewriting',
+'usereminderdaemon'     =>    'Enable background reminder daemon',
 
 );
 ?>

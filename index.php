@@ -26,7 +26,8 @@ $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
 $this_page = str_replace('&', '&amp;', $this_page);
 
 // Background daemon that does scheduled reminders
-$fs->startReminderDaemon();
+if ($flyspray_prefs['reminder_daemon'] == '1')
+   $fs->startReminderDaemon();
 
 // Get the translation for the wrapper page (this page)
 $lang = $flyspray_prefs['lang_code'];
@@ -143,7 +144,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
                   . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage']
                   . '&amp;date=' . $_GET['date'] . '&amp;project=' . @$_GET['project'];
 
-      $_SESSION['lastindexfilter'] = 'index.php?tasks=' . $_GET['tasks']
+      $_SESSION['lastindexfilter'] = $flyspray_prefs['base_url'] . 'index.php?tasks=' . $_GET['tasks']
                                      . '&amp;pagenum=' . $_GET['pagenum'] . $extraurl;
 
       if (isset($_GET['order']))
@@ -176,13 +177,11 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // This allows theme authors to include other code/javascript/dhtml to make their theme funky
    if (file_exists($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php'))
       include($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php');
-   ?>
 
-   <!--[if IE 6]>
-      <script type="text/javascript" src="includes/ie_hover.js"></script>
-   <![endif]-->
+   echo '<!--[if IE 6]>';
+   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/ie_hover.js"></script>';
+   echo '<![endif]-->';
 
-   <?php
    echo '<style type="text/css">@import url(' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-win2k-1.css);</style>';
    echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar_stripped.js"></script>';
    echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/lang/calendar-en.js"></script>';

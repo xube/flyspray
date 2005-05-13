@@ -136,7 +136,7 @@ function changelog_report()
                 {
                         #echo "<tr><td>$item_summary</td><td>$closure_comment</td> [$real_name]<br>";
                         #echo "<tr><td>$item_summary</td><td>$closure_comment</td><td>$real_name</td></tr>";
-                        echo "<tr><td>$event_date: <a href=\"?do=details&amp;id=$task_id\">$item_summary</a>. <b>$task_resolution :</b> $closure_comment</td><td>$real_name</td></tr>";
+                        echo "<tr><td>$event_date: <a href=\"" . $fs->CreateURL('details', $task_id) . "\">$item_summary</a>. <b>$task_resolution :</b> $closure_comment</td><td>$real_name</td></tr>";
                 }
 
         }

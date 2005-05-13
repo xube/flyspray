@@ -460,7 +460,7 @@ if ($_POST['action'] == 'newtask'
       };
 
       $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
-                        $fs->redirect("index.php?do=details&id=" . $_POST['task_id']);
+      $fs->redirect($fs->CreateURL('details', $_POST['task_id']));
 
    // If the user didn't select a closure reason
    } else
@@ -941,6 +941,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'smtp_user'", array($_POST['smtp_user']));
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'smtp_pass'", array($_POST['smtp_pass']));
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'funky_urls'", array($_POST['funky_urls']));
+   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'reminder_daemon'", array($_POST['reminder_daemon']));
 
    // Process the list of groups into a format we can store
    foreach ($_POST['assigned_groups'] as $group_id => $val)

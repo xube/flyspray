@@ -143,7 +143,7 @@ if ($task_details['project_is_active'] == '1'
 
          $date_opened = $fs->formatDate($task_details['date_opened'], true);
 
-         echo "{$details_text['openedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['opened_by']}\">$real_name ($user_name)</a> - $date_opened";
+         echo "{$details_text['openedby']} <a href=\"" . $fs->CreateURL('admin', 'users', $task_details['opened_by']) . "\">$real_name ($user_name)</a> - $date_opened";
 
 
          // If it's been edited, get the details
@@ -154,7 +154,7 @@ if ($task_details['project_is_active'] == '1'
 
             $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
 
-            echo "<br />{$details_text['editedby']} <a href=\"?do=admin&amp;area=users&amp;id={$task_details['last_edited_by']}\">$real_name ($user_name)</a> - $date_edited";
+            echo "<br />{$details_text['editedby']} <a href=\"" . $fs->CreateURL('admin', 'users', $task_details['last_edited_by']) . "\">$real_name ($user_name)</a> - $date_edited";
          }
          ?>
          </div>
@@ -721,10 +721,10 @@ if ($task_details['project_is_active'] == '1'
          {
             if ($dependency['is_closed'] == '1')
             {
-               echo '<a class="closedtasklink" href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
+               echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
             } else
             {
-               echo '<a href="?do=details&amp;id=' . $dependency['dep_task_id'] . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
+               echo '<a href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
             }
 
             // If the user has permission, show a link to remove a dependency
@@ -763,10 +763,10 @@ if ($task_details['project_is_active'] == '1'
             if ($block['is_closed'] == '1')
             {
                // Put a line through the blocking task if it's closed
-               echo '<a class="closedtasklink" href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
+               echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
             } else
             {
-               echo '<a href="?do=details&amp;id=' . $block['task_id'] . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
+               echo '<a href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
             }
 
          }
@@ -783,18 +783,16 @@ if ($task_details['project_is_active'] == '1'
             list($closedby_username, $closedby_realname) = $db->FetchArray($get_closedby_name);
             $date_closed = $task_details['date_closed'];
             $date_closed = $fs->formatDate($date_closed, true);
-            echo "{$details_text['closedby']}&nbsp;&nbsp;<a href=\"?do=admin&amp;area=users&amp;id={$task_details['closed_by']}\">$closedby_realname ($closedby_username)</a><br />";
-            echo "{$details_text['date']}&nbsp;&nbsp;$date_closed.";
-            echo '<br />';
+            echo $details_text['closedby'] . '&nbsp;&nbsp;' . $fs->LinkedUserName($task_details['closed_by']) . '<br />';
+            echo $details_text['date'] . '&nbsp;&nbsp;' . $date_closed . '<br />';;
             echo $details_text['reasonforclosing'] . '&nbsp;&nbsp;';
             echo $task_details['resolution_name'];
             echo '<br />';
 
             if (!empty($task_details['closure_comment']))
             {
-               echo "{$details_text['closurecomment']}&nbsp;&nbsp;";
-               $closure_comment = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $task_details['closure_comment']);
-               echo nl2br(stripslashes($closure_comment));
+               echo $details_text['closurecomment'] . '&nbsp;&nbsp;';
+               echo $fs->FormatText($task_details['closure_comment']);
             }
 
          // End of showing task closure reason
@@ -1046,7 +1044,7 @@ while ($row = $db->FetchArray($getcomments))
    if (@$permissions['view_comments'] == '1' OR $project_prefs['others_view'] == '1')
    {
 //       echo '<a name="' . $row['comment_id'] . '"></a>';
-      echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="?do=details&amp;id=' . $task_details['task_id'] . '#comment' . $row['comment_id'] . '">' .
+      echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">' .
       $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . '</a>' . $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
 
       // If the user has permission, show the edit button
@@ -1082,13 +1080,41 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
 {
 ?>
    <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
-   <p class="admin">
+   <div class="admin">
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-      <label for="comment_text"><?php echo $details_text['addcomment'];?></label><br />
+      <?php echo $details_text['addcomment'];?>
       <textarea id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
-      <br />
+
+            <?php if (@$permissions['create_attachments'] == '1') { ?>
+      <table class="admin" id="uploadfieldstable">
+         <tr>
+            <td>
+            <label><?php echo $details_text['uploadafile'];?></label>
+            </td>
+            <td>
+            <input type="file" size="55" name="userfile[]" />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <!--<label>Description</label>
+            </td>
+            <td>
+            <input class="admintext" type="text" name="file_desc[]" size="70" maxlength="100" />-->
+            </td>
+         </tr>
+      </table>
+      <table>
+         <tr>
+            <td class="buttons" id="formuploadbuttons">
+            <input class="adminbutton" type="button" onclick="addUploadFields()" value="<?php echo $details_text['attachmorefiles'];?>" />
+            </td>
+         </tr>
+      </table>
+      <?php } ?>
+
       <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />
       <?php
       $check_watch = $db->Query("SELECT user_id
@@ -1100,7 +1126,9 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
       if ( !$db->CountRows($check_watch) )
          echo "<input name=\"notifyme\" type=\"checkbox\" value=\"1\" checked=\"checked\" />{$newtask_text['notifyme']}";
       ?>
-   </p>
+
+   </div>
+
    </form>
 
 <?php

@@ -331,7 +331,6 @@ class Notifications {
       global $fs;
       global $notify_text;
       global $details_text;
-      global $project_prefs;
       global $flyspray_prefs;
       global $current_user;
 
@@ -339,6 +338,7 @@ class Notifications {
 
       // Get the task details
       $task_details = $fs->getTaskDetails($task_id);
+      $project_prefs = $fs->GetProjectPrefs($task_details['attached_to_project']);
 
       /* -------------------------------
          | List of notification types: |

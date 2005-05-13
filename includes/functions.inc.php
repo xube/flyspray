@@ -586,13 +586,9 @@ function GetTaskDetails($task_id)
       $text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $text);
 
       // Change FS#123 into hyperlinks to tasks
-      if (empty($flyspray_prefs['funky_urls']))
-      {
-         $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"?do=details&amp;id=$2\">$0</a>", $text);
-      } else
-      {
-         $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"task/$2\">$0</a>", $text);
-      }
+      $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"" . $this->CreateURL('details', '\\2') . "\">\\0</a>", $text);
+      $text = preg_replace("/\b(bug )(\d+)\b/", "<a href=\"" . $this->CreateURL('details', '\\2') . "\">\\0</a>", $text);
+
 
       if (!get_magic_quotes_gpc())
          $text = str_replace("\\", "&#92", $text);

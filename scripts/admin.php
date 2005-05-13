@@ -138,7 +138,14 @@ if ($permissions['is_admin'] == '1')
             <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>" />
             </td>
          </tr>
-
+         <tr>
+            <td>
+            <label id="usereminderdaemonlabel" for="usereminderdaemon"><?php echo $admin_text['usereminderdaemon'];?></label>
+            </td>
+            <td>
+            <input id="usereminderdaemon" type="checkbox" name="reminder_daemon" value="1" <?php if ($flyspray_prefs['reminder_daemon'] == '1') { echo "checked=\"checked\"";};?> />
+            </td>
+         </tr>
       </table>
 
       </fieldset>
