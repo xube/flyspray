@@ -129,9 +129,13 @@ function addUploadFields() {
   // Get all the table rows
   var el = document.getElementById('uploadfilebox');
   // The text
-  el.appendChild(el.childNodes[0].cloneNode(true));
+  el.appendChild(el.childNodes[0].cloneNode(false));
   // The input box
-  el.appendChild(el.childNodes[1].cloneNode(true));
+  var input = document.createElement('input');
+  input.setAttribute('type','file');
+  input.setAttribute('size','55');
+  input.setAttribute('name','userfile[]');
+  el.appendChild(input);
   // The <br />
-  el.appendChild(el.childNodes[2].cloneNode(true));
+  el.appendChild(el.childNodes[2].cloneNode(false));
 }
