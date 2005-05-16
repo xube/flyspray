@@ -252,8 +252,17 @@ a#projectslink {
    background-image     : url(menu/projectprefs.png);
 }
 
+a#pendingreq {
+   padding              : 0px;
+}
+
 /* For pending admin requests */
-a#attention {
+a.attention {
+   color                : #ff0000;
+   background-color     : #fff000;
+}
+
+a.attention:hover {
    color                : #ff0000;
    background-color     : #fff000;
 }
@@ -980,6 +989,10 @@ span#navigation a#prev {
    background-position  : left;
 }
 
+.attachments {
+   display              : block;
+   padding              : 5px 15px 0 20px;
+}
 
 
 /* End of the @screen section */

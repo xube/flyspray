@@ -131,7 +131,8 @@ $details_text = array (
 
 // Added in version 0.9.8
 
-'confirmdelete'         =>    'Really delete this comment?',
+'confirmdeletecomment'  =>    'Really delete this comment?  All attachments will also be deleted!',
+'confirmdeleteattach'   =>    'Really delete this attachment?',
 'selectedhistory'       =>    'Showing selected history details',
 'showallhistory'        =>    'Show full history tab again',
 'hidethis'              =>    'Hide this area again',
@@ -146,7 +147,8 @@ $details_text = array (
 'previoustask'          =>    'Previous task',
 'nexttask'              =>    'Next task',
 'duedate'               =>    'Due Date',
-'attachmorefiles'       =>    'Attach more files',
+'selectmorefiles'       =>    'Select more files',
+'attachnoperms'         =>    'There are attachments with this comment, but you have no permission to view them.',
 
 );
 ?>

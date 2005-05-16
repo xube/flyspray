@@ -224,7 +224,7 @@ passwdcrypt = "md5"                           ; Available options: "crypt", "md5
 dbtype = "' . $_SESSION['dbtype'] . '"        ; Type of database ("mysql" or "pgsql" are currently supported)
 dbhost = "' . $_SESSION['dbhost'] . '"        ; Name or IP of your database server
 dbname = "' . $_SESSION['dbname'] . '"        ; The name of the database
-dbname = "flyspray"                           ; The name of the database
+dbprefix = "flyspray"                           ; The prefix to the Flyspray tables
 dbuser = "' . $_SESSION['dbuser'] . '"        ; The user to access the database
 dbpass = "' . $_SESSION['dbpass'] . '"        ; The password to go with that username above
 ';

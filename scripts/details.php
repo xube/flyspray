@@ -143,7 +143,7 @@ if ($task_details['project_is_active'] == '1'
 
          $date_opened = $fs->formatDate($task_details['date_opened'], true);
 
-         echo "{$details_text['openedby']} <a href=\"" . $fs->CreateURL('admin', 'users', $task_details['opened_by']) . "\">$real_name ($user_name)</a> - $date_opened";
+         echo $details_text['openedby'] . ' ' . $fs->LinkedUserName($task_details['opened_by']) . ' - ' . $date_opened;
 
 
          // If it's been edited, get the details
@@ -154,7 +154,7 @@ if ($task_details['project_is_active'] == '1'
 
             $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
 
-            echo "<br />{$details_text['editedby']} <a href=\"" . $fs->CreateURL('admin', 'users', $task_details['last_edited_by']) . "\">$real_name ($user_name)</a> - $date_edited";
+            echo '<br />' . $details_text['editedby'] . ' ' . $fs->LinkedUserName($task_details['last_edited_by']) . ' - ' . $date_edited;
          }
          ?>
          </div>
@@ -459,7 +459,7 @@ if ($task_details['project_is_active'] == '1'
                </tr>
                <tr>
                   <td class="buttons" colspan="2">
-                  <input class="adminbutton" type="submit" accesskey="s" name="buSubmit" value="<?php echo $details_text['savedetails'];?>" onclick="Disable1()" />
+                  <input class="adminbutton" type="submit" accesskey="s" name="buSubmit" value="<?php echo $details_text['savedetails'];?>" />
                   <input class="adminbutton" type="reset" name="buReset" />
                   </td>
                </tr>
@@ -543,7 +543,7 @@ if ($task_details['project_is_active'] == '1'
 
          <div id="fineprint">
          <?php
-         echo $details_text['attachedtoproject'] . '&mdash; <a href="?project=' .  $task_details['attached_to_project'] . '">' . stripslashes($task_details['project_title']) . '</a><br />';
+         echo $details_text['attachedtoproject'] . '&mdash; <a href="' . $flyspray_prefs['base_url'] . '?project=' .  $task_details['attached_to_project'] . '">' . stripslashes($task_details['project_title']) . '</a><br />';
          // Get the user details of the person who opened this task
          if ($task_details['opened_by'])
          {
@@ -568,7 +568,7 @@ if ($task_details['project_is_active'] == '1'
             $date_edited = $task_details['last_edited_time'];
             $date_edited = $fs->formatDate($date_edited, true);
 
-            echo '<br />' . $details_text['editedby'] .  $fs->LinkedUserName($task_details['last_edited_by']) . ' - ' . $date_edited;
+            echo '<br />' . $details_text['editedby'] . ' ' . $fs->LinkedUserName($task_details['last_edited_by']) . ' - ' . $date_edited;
          }
          ?>
          </div>
@@ -816,7 +816,7 @@ if ($task_details['project_is_active'] == '1'
          {
             echo '<a href="' . $flyspray_prefs['base_url'] . '?do=modify&amp;action=reopen&amp;task_id=' . $_GET['id'] . '">' . $details_text['reopenthistask'] . '</a>';
 
-            // If they can't  this, show a button to request a PM re-open it
+            // If they can't re-open this, show a button to request a PM re-open it
          } elseif (@$effective_permissions['can_close'] != '1'
            && $task_details['is_closed'] == '1'
            && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
@@ -888,7 +888,7 @@ if ($task_details['project_is_active'] == '1'
                ?>
             </select>
 
-            <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" onclick="Disable2()" />
+            <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" />
             <?php echo $details_text['closurecomment'];?>
             <textarea class="admintext" name="closure_comment" rows="3" cols="30"></textarea>
             <input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;<?php echo $details_text['mark100'];?>
@@ -1033,7 +1033,12 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
 <div id="comments" class="tab">
 <?php
 // if there are comments, show them
-$getcomments = $db->Query("SELECT * FROM flyspray_comments WHERE task_id = ? ORDER BY comment_id", array($task_details['task_id']));
+$getcomments = $db->Query("SELECT * FROM flyspray_comments
+                           WHERE task_id = ?
+                           ORDER BY comment_id",
+                           array($task_details['task_id'])
+                         );
+
 while ($row = $db->FetchArray($getcomments))
 {
    $user_info        = $fs->getUserDetails($row['user_id']);
@@ -1043,7 +1048,7 @@ while ($row = $db->FetchArray($getcomments))
    // If the user has permissions, show the comments already added
    if (@$permissions['view_comments'] == '1' OR $project_prefs['others_view'] == '1')
    {
-//       echo '<a name="' . $row['comment_id'] . '"></a>';
+//       echo $row['comment_id'];
       echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">' .
       $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . '</a>' . $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
 
@@ -1057,7 +1062,7 @@ while ($row = $db->FetchArray($getcomments))
       {
          ?>
          &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deletecomment&amp;task_id=<?php echo $_GET['id'];?>&amp;comment_id=<?php echo $row['comment_id'];?>"
-         onClick="if(confirm('<?php echo $details_text['confirmdelete'];?>')) {
+         onClick="if(confirm('<?php echo $details_text['confirmdeletecomment'];?>')) {
          return true
          } else {
          return false }
@@ -1069,17 +1074,73 @@ while ($row = $db->FetchArray($getcomments))
       echo '<p class="comment">';
       echo $comment_text;
       echo '</p>';
+
+      $attachments = $db->Query("SELECT * FROM {$dbprefix}_attachments
+                                 WHERE comment_id = ?
+                                 ORDER BY attachment_id ASC",
+                                 array($row['comment_id'])
+                                );
+
+      if ($permissions['view_attachments'] == '1')
+      {
+
+
+         while ($attachment = $db->FetchArray($attachments))
+         {
+            echo '<span class="attachments">';
+            echo '<a href="' . $flyspray_prefs['base_url'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
+
+            // Let's strip the mimetype to get the icon image name
+            list($main, $specific) = split('[/]', $attachment['file_type']);
+
+            $imgpath = $basedir . "themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png";
+            if (file_exists($imgpath))
+            {
+               echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png", $attachment['file_type']);
+            }else
+            {
+               echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/mime/$main.png", $attachment['file_type']);
+            }
+
+            echo '&nbsp;&nbsp;' . $attachment['orig_name'];
+            echo "</a>\n";
+
+            // Delete link
+            if ($permissions['delete_attachments'] == '1')
+            {
+            ?>
+            &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
+            onClick="if(confirm('<?php echo $details_text['confirmdeleteattach'];?>')) {
+            return true
+            } else {
+            return false }
+            ">
+            <?php
+            echo $details_text['delete'] . '</a>';
+            }
+            echo '</span>';
+         }
+
+         echo '<br />';
+
+      // End of permission check
+      }
+
+      if ($db->CountRows($attachments) && $permissions['view_attachments'] != '1')
+      {
+         echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
+      }
    }
 
 // End of cycling through the comments for display
-};
+}
 
 // Now, show a form to add a comment (but only if the user has the rights!)
 
 if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
 {
 ?>
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form enctype="multipart/form-data" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
    <div class="admin">
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
@@ -1087,32 +1148,13 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1')
       <?php echo $details_text['addcomment'];?>
       <textarea id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
 
-            <?php if (@$permissions['create_attachments'] == '1') { ?>
-      <table class="admin" id="uploadfieldstable">
-         <tr>
-            <td>
-            <label><?php echo $details_text['uploadafile'];?></label>
-            </td>
-            <td>
-            <input type="file" size="55" name="userfile[]" />
-            </td>
-         </tr>
-         <tr>
-            <td>
-            <!--<label>Description</label>
-            </td>
-            <td>
-            <input class="admintext" type="text" name="file_desc[]" size="70" maxlength="100" />-->
-            </td>
-         </tr>
-      </table>
-      <table>
-         <tr>
-            <td class="buttons" id="formuploadbuttons">
-            <input class="adminbutton" type="button" onclick="addUploadFields()" value="<?php echo $details_text['attachmorefiles'];?>" />
-            </td>
-         </tr>
-      </table>
+      <?php if (@$permissions['create_attachments'] == '1') { ?>
+      <div id="uploadfilebox">
+         <?php echo $details_text['uploadafile'];?>
+         <input type="file" size="55" name="userfile[]" /><br />
+      </div>
+
+      <input class="adminbutton" type="button" onclick="addUploadFields()" value="<?php echo $details_text['selectmorefiles'];?>" />
       <?php } ?>
 
       <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />

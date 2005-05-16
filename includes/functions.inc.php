@@ -403,7 +403,7 @@ function GetTaskDetails($task_id)
 
       $db->Query("INSERT INTO {$dbprefix}_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                   VALUES(?, ?, ?, ?, ?, ?, ?)",
-                  array($task, $db->emptyToZero($_COOKIE['flyspray_userid']), date(U), $type, $field, $oldvalue, $newvalue));
+                  array($task, $db->emptyToZero($_COOKIE['flyspray_userid']), date('U'), $type, $field, $oldvalue, $newvalue));
 
    // End of logEvent function
    }
@@ -420,7 +420,7 @@ function GetTaskDetails($task_id)
 
       $result = $db->FetchRow($result);
 
-      return "<a href=\"" . $this->CreateURL('user', $user_id) . "\">{$result['real_name']} ({$result['user_name']})</a>";
+      return '<a href="' . $this->CreateURL('user', $user_id) . '">' . stripslashes($result['real_name']) . ' (' . $result['user_name'] . ')</a>';
    }
 
 
@@ -719,7 +719,7 @@ function GetTaskDetails($task_id)
    {
       global $flyspray_prefs;
 
-      // If we want address rewriting
+      // If we don't want address rewriting
       if(empty($flyspray_prefs['funky_urls']))
       {
          switch ($type)
@@ -740,12 +740,14 @@ function GetTaskDetails($task_id)
             break;
             case "user": $url = $flyspray_prefs['base_url'] . '?do=admin&amp;area=users&amp;id=' . $arg1;
             break;
+            case "logout": $url = $flyspray_prefs['base_url'] . '?do=authenticate&amp;action=logout';
+            break;
          }
 
          return $url;
       }
 
-      // If we don't want address rewriting
+      // If we do want address rewriting
       switch ($type)
       {
          case "details": $url = $flyspray_prefs['base_url'] . 'task/' . $arg1;
@@ -763,6 +765,8 @@ function GetTaskDetails($task_id)
          case "myprofile": $url = $flyspray_prefs['base_url'] . 'myprofile';
          break;
          case "user": $url = $flyspray_prefs['base_url'] . 'admin/users/' . $arg1;
+         break;
+         case "logout": $url = $flyspray_prefs['base_url'] . 'logout';
          break;
       }
 

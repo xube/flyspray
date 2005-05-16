@@ -1138,7 +1138,7 @@ if ($permissions['manage_project'] == '1')
             echo '<input type="hidden" name="action" value="denypmreq" />';
             echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />';
             echo '<input type="hidden" name="req_id" value="' . $pending_req['request_id'] . '" />';
-            echo '<label for="reason">' . $pm_text['givereason'] . '</label>';
+            echo $pm_text['givereason'];
             echo '<textarea id="reason" name="deny_reason"></textarea><br />';
             echo '<input class="adminbutton" type="submit" value="' . $pm_text['deny'] . '" />';
             echo '</form>';

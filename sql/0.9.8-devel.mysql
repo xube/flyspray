@@ -1,4 +1,4 @@
-alter table flyspray_users change user_pass user_pass varchar(40);
+ALTER TABLE `flyspray_users` CHANGE `user_pass` `user_pass` varchar(40);
 ALTER TABLE `flyspray_list_category` CHANGE `parent_id` `parent_id` MEDIUMINT( 3 ) DEFAULT '0' NOT NULL;
 
 ## Added on 07 March 05
@@ -70,3 +70,16 @@ VALUES (
 '', 'reminder_daemon', '0', 'Should we use the built-in reminder daemon? Not all webservers support this!'
 );
 
+# Added 14 May 05
+
+CREATE TABLE `flyspray_assigned` (
+`assigned_id` MEDIUMINT( 10 ) NOT NULL AUTO_INCREMENT ,
+`task_id` MEDIUMINT( 10 ) NOT NULL DEFAULT 0,
+`assignee_id` MEDIUMINT( 5 ) NOT NULL DEFAULT 0,
+`user_or_group` VARCHAR( 1 ) NOT NULL DEFAULT 0,
+PRIMARY KEY ( `assigned_id` )
+) COMMENT = 'Who is assigned what task';
+
+# Added 15 May 05
+
+ALTER TABLE `flyspray_attachments` ADD `comment_id` MEDIUMINT( 10 ) NOT NULL AFTER `task_id` ;

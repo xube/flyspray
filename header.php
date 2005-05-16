@@ -50,6 +50,10 @@ $dbprefix    = $conf_array['database']['dbprefix'];
 $dbuser      = $conf_array['database']['dbuser'];
 $dbpass      = $conf_array['database']['dbpass'];
 
+   if (substr($basedir,-1,1) != '/')
+   {
+      $basedir .= '/';
+   }
 
 include_once ( $adodbpath );
 include_once ( "$basedir/includes/functions.inc.php" );

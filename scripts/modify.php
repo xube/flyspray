@@ -401,10 +401,10 @@ if ($_POST['action'] == 'newtask'
 // Start of closing a task //
 /////////////////////////////
 
-} elseif(isset($_POST['action']) && $_POST['action'] == "close"
-         && ($permissions['close_other_tasks'] == '1'
-         OR ($permissions['close_own_tasks'] == '1'
-             && $old_details['assigned_to'] == $current_user['user_id'])) )
+} elseif(isset($_POST['action']) && $_POST['action'] == 'close'
+         && ( (@$permissions['close_own_tasks'] == '1'
+          && ($old_details['assigned_to'] == $current_user['user_id'])
+          OR @$permissions['close_other_tasks'] == '1') ) )
 {
    if (!empty($_POST['resolution_reason']))
    {
@@ -443,11 +443,6 @@ if ($_POST['action'] == 'newtask'
       // Create notification
       $notify->Create('3', $_POST['task_id']);
 
-//       $to = $notify->Address($_POST['task_id']);
-//       $msg = $notify->Create('3', $_POST['task_id']);
-//       $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//       $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-
       // Log this to the task's history
       $fs->logEvent($_POST['task_id'], 2, $_POST['resolution_reason'], $_POST['closure_comment']);
 
@@ -476,7 +471,9 @@ if ($_POST['action'] == 'newtask'
 /////////////////////////////////
 
 } elseif ($_GET['action'] == "reopen"
-          && $permissions['manage_project'] == "1")
+          && ( (@$permissions['close_own_tasks'] == '1'
+          && ($old_details['assigned_to'] == $current_user['user_id'])
+          OR @$permissions['close_other_tasks'] == '1') ) )
 {
     $db->Query("UPDATE {$dbprefix}_tasks SET
                 resolution_reason = '0',
@@ -486,8 +483,6 @@ if ($_POST['action'] == 'newtask'
                 is_closed = '0'
                 WHERE task_id = ?",
                 array($now, $current_user['user_id'], $_GET['task_id']));
-
-   $item_summary = stripslashes($item_summary);
 
    $notify->Create('4', $_GET['task_id']);
 
@@ -528,12 +523,75 @@ if ($_POST['action'] == 'newtask'
       $notify->Create('7', $_POST['task_id']);
 
 
-      $row = $db->FetchRow($db->Query("SELECT comment_id FROM {$dbprefix}_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));
-      $fs->logEvent($_POST['task_id'], 4, $row['comment_id']);
+      $comment = $db->FetchRow($db->Query("SELECT comment_id FROM {$dbprefix}_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));
+      $fs->logEvent($_POST['task_id'], 4, $comment['comment_id']);
 
       // If the user wanted to watch this task for changes
       if ( isset($_POST['notifyme']) && $_POST['notifyme'] == '1' )
          $be->AddToNotifyList($current_user['user_id'], array($_POST['task_id']));
+
+      // If the user uploaded one or more files
+      if ($permissions['create_attachments'] == '1')
+      {
+
+         // This function came from the php function page for mt_srand()
+         // seed with microseconds to create a random filename
+         function make_seed()
+         {
+            list($usec, $sec) = explode(' ', microtime());
+            return (float) $sec + ((float) $usec * 100000);
+         }
+
+         foreach ($_FILES['userfile']['error'] as $key => $error)
+         {
+
+            if ($error == UPLOAD_ERR_OK)
+            {
+
+               mt_srand(make_seed());
+               $randval = mt_rand();
+               $file_name = $_POST['task_id']."_$randval";
+
+               $path = $basedir . 'attachments/' . $file_name;
+
+               echo 'path is ' . $path . '<br />';
+
+               $tmp_name = $_FILES['userfile']['tmp_name'][$key];
+
+               //echo $_FILES['userfile']['name'][$key] . '<br />';
+               //echo $tmp_name . '<br />';
+
+               // Then move the uploaded file into the attachments directory and remove exe permissions
+               @move_uploaded_file($tmp_name, $path);
+               @chmod($path, 0644);
+
+               // Only add the listing to the database if the file was actually uploaded successfully
+               if (file_exists($path))
+               {
+                  $db->Query("INSERT INTO {$dbprefix}_attachments
+                              (task_id, comment_id, orig_name, file_name,
+                               file_type, file_size, added_by, date_added)
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                              array($_POST['task_id'],
+                                    $comment['comment_id'],
+                                    $_FILES['userfile']['name'][$key],
+                                    $file_name,
+                                    $_FILES['userfile']['type'][$key],
+                                    $_FILES['userfile']['size'][$key],
+                                    $_COOKIE['flyspray_userid'],
+                                    $now)
+                            );
+
+                  $attachment = $db->FetchRow($db->Query("SELECT attachment_id FROM {$dbprefix}_attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
+                  $fs->logEvent($_POST['task_id'], 7, $attachment['attachment_id']);
+
+               }
+            }
+         }
+      } else
+      {
+         echo 'file array was empty';
+      }
 
       $_SESSION['SUCCESS'] = $modify_text['commentadded'];
       $fs->redirect($fs->CreateURL('details', $_POST['task_id']));
@@ -1173,11 +1231,6 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
          $notify->Create('8', $_POST['task_id']);
 
-//          $to  = $notify->Address($_POST['task_id']);
-//          $msg = $notify->Create('8', $_POST['task_id']);
-//          $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//          $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-
          $row = $db->FetchRow($db->Query("SELECT attachment_id FROM {$dbprefix}_attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
          $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
 
@@ -1786,22 +1839,50 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_GET['action'] == "deletecomment"
 && $permissions['delete_comments'] == '1')
 {
-   $row = $db->FetchRow($db->Query("SELECT comment_text, user_id, date_added
-                                    FROM {$dbprefix}_comments
+   $comment = $db->FetchRow($db->Query("SELECT comment_text, user_id, date_added
+                                        FROM {$dbprefix}_comments
+                                        WHERE comment_id = ?",
+                                        array($_GET['comment_id'])
+                                      )
+                           );
+
+   // Check for files attached to this comment
+   $check_attachments = $db->Query("SELECT * FROM {$dbprefix}_attachments
                                     WHERE comment_id = ?",
-                                    array($_GET['comment_id'])
-                                  )
-                       );
+                                    array($_REQUEST['comment_id'])
+                                  );
 
-   $delete = $db->Query("DELETE FROM {$dbprefix}_comments
-                         WHERE comment_id = ?",
-                         array($_GET['comment_id'])
-                       );
+   if($db->CountRows($check_attachments) && $permissions['delete_attachments'] != '1')
+   {
+      $_SESSION['ERROR'] = $modify_text['commentattachperms'];
+      $fs->redirect($fs->CreateURL('details', $_REQUEST['task_id']));
 
-   $fs->logEvent($_POST['task_id'], 6, $row['user_id'], $row['comment_text'], $row['date_added']);
+   } else
+   {
+      $db->Query("DELETE FROM {$dbprefix}_comments
+                  WHERE comment_id = ?",
+                  array($_REQUEST['comment_id'])
+                );
 
-   $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
-   $fs->redirect($fs->CreateURL('details', $_REQUEST['task_id']));
+      $fs->logEvent($_REQUEST['task_id'], 6, $comment['user_id'], $comment['comment_text'], $comment['date_added']);
+
+      while ($attachment = $db->FetchRow($check_attachments))
+      {
+         // Delete the attachment
+         $db->Query("DELETE from {$dbprefix}_attachments
+                     WHERE attachment_id = ?",
+                     array($attachment['attachment_id'])
+                   );
+
+         // Log to task history
+         $fs->logEvent($attachment['task_id'], 8, $attachment['orig_name']);
+      }
+
+      $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
+      $fs->redirect($fs->CreateURL('details', $_REQUEST['task_id']));
+
+   // End of permission check
+   }
 
 // End of deleting a comment
 
@@ -1809,24 +1890,26 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of deleting an attachment //
 /////////////////////////////////////
 
-//  "Deleting attachments" code contributed by Harm Verbeek <info@certeza.nl>
-} elseif ($_POST['action'] == "deleteattachment"
-          && $permissions['delete_attachments'] == '1') {
+} elseif ($_REQUEST['action'] == 'deleteattachment'
+          && $permissions['delete_attachments'] == '1')
+{
+   // if an attachment needs to be deleted do it right now
+   $row = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_attachments
+                                      WHERE attachment_id = ?",
+                                      array($_REQUEST['id'])
+                                    )
+                         );
 
-// if an attachment needs to be deleted do it right now
-  $delete = $db->Query("SELECT file_name, orig_name FROM {$dbprefix}_attachments
-                            WHERE attachment_id = ?",
-                            array($_POST['attachment_id']));
-  if ($row = $db->FetchArray($delete)) {
-    @unlink("attachments/".$row['file_name']);
-    $db->Query("DELETE FROM {$dbprefix}_attachments WHERE attachment_id = ?",
-                    array($_POST['attachment_id']));
-  }
+   @unlink("attachments/" . $row['file_name']);
+   $db->Query("DELETE FROM {$dbprefix}_attachments
+               WHERE attachment_id = ?",
+               array($_REQUEST['id'])
+             );
 
-  $fs->logEvent($_POST['task_id'], 8, $row['orig_name']);
+  $fs->logEvent($row['task_id'], 8, $row['orig_name']);
 
   $_SESSION['SUCCESS'] = $modify_text['attachmentdeleted'];
-  $fs->redirect($fs->CreateURL('details', $_REQUEST['task_id']));
+  $fs->redirect($fs->CreateURL('details', $row['task_id']));
 
 // End of deleting an attachment
 
@@ -1981,8 +2064,10 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 } elseif ($_POST['action'] == 'requestclose')
 {
+   $task_details = $fs->GetTaskDetails($_POST['task_id']);
+
    // Log the admin request
-   $fs->AdminRequest(1, $project_id, $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
+   $fs->AdminRequest(1, $task_details['attached_to_project'], $_POST['task_id'], $current_user['user_id'], $_POST['reason_given']);
 
    // Log this event to the task history
    $fs->logEvent($_POST['task_id'], 20, $_POST['reason_given']);

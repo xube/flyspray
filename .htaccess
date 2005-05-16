@@ -1,14 +1,16 @@
 RewriteEngine on
 
+RewriteRule ^([0-9]+)$ index.php?do=details&id=$1 [L]
 RewriteRule ^task/([0-9]+)$ index.php?do=details&id=$1 [L]
-RewriteRule ^task/([0-9]+)#comment([0-9]+)$ index.php?do=details&id=$1#comment$2
-RewriteRule ^task/([0-9]+)/edit$ index.php?do=details&id=$1&edit=yep
+RewriteRule ^task/([0-9]+)#comment([0-9]+)$ index.php?do=details&id=$1#comment$2 [L]
+RewriteRule ^task/([0-9]+)/edit$ index.php?do=details&id=$1&edit=yep [L]
 
-RewriteRule ^newtask$ index.php?do=newtask
-RewriteRule ^newtask/proj([0-9]+)$ index.php?do=newtask&project=$1
+RewriteRule ^newtask$ index.php?do=newtask [L]
+RewriteRule ^newtask/proj([0-9]+)$ index.php?do=newtask&project=$1 [L]
 
-RewriteRule ^reports$ index.php?do=reports
-RewriteRule ^myprofile$ index.php?do=myprofile
+RewriteRule ^reports$ index.php?do=reports [L]
+RewriteRule ^myprofile$ index.php?do=myprofile [L]
+RewriteRule ^logout$ index.php?do=authenticate&action=logout [L]
 
 RewriteRule ^admin/([a-zA-Z]+)$ index.php?do=admin&area=$1 [L]
 RewriteRule ^admin/users/([0-9]+)$ index.php?do=admin&area=users&id=$1 [L]

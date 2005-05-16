@@ -165,5 +165,6 @@ $modify_text = array (
 'pmreqdenied'           =>       'Project Manager request denied',
 'massopsuccess'         =>       'Mass operations successful - where permissions allowed',
 'usernotexist'          =>       'That username does not exist on this Flyspray installation',
+'commentattachperms'    =>       'You cannot delete that comment - no permission to delete attachments',
 );
 ?>

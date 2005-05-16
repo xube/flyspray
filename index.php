@@ -104,7 +104,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    if (file_exists("attachments/$file_name")
       && ($project_prefs['others_view'] == '1' OR $user_permissions['view_attachments'] == '1'))
    {
-      $path = "attachments/$file_name";
+      $path = $basedir ."attachments/$file_name";
 
       header("Pragma: public");
       header("Content-type: $file_type");
@@ -159,10 +159,10 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    <?php
    if (file_exists("themes/$themestyle/favicon.ico"))
    {
-      echo "href=\"themes/$themestyle/favicon.ico\"";
+      echo "href=\"{$flyspray_prefs['base_url']}themes/$themestyle/favicon.ico\"";
    } else
    {
-      echo 'href="./favicon.ico"';
+      echo "href=\"{$flyspray_prefs['base_url']}favicon.ico\"";
    }
    ?>
    />
@@ -282,7 +282,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
 
    // Logout link
    echo '<small> | </small>';
-   echo '<a id="logoutlink" href="index.php?do=authenticate&amp;action=logout" accesskey="l">' . $language['logout'] . "</a>\n";
+   echo '<a id="logoutlink" href="' . $fs->CreateURL('logout', null)  . '" accesskey="l">' . $language['logout'] . "</a>\n";
 
    // End of mainmenu area
 
@@ -301,10 +301,10 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
       $num_req = $db->CountRows($get_req);
 
       // Show the amount of admin requests waiting
-      if ($num_req > '0')
+      if ($db->CountRows($get_req))
       {
          echo '<small> | </small>';
-         echo '<a id="attention" href="' . $fs->CreateURL('pm', 'pendingreq') . '">' . $num_req . ' ' . $language['pendingreq'] . '</a>';
+         echo '<a id="pendingreq" class="attention" href="' . $fs->CreateURL('pm', 'pendingreq', $project_id) . '">' . $num_req . ' ' . $language['pendingreq'] . '</a>';
       }
 
     // End of checking if the pending PM requests should be displayed
