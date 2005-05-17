@@ -519,10 +519,6 @@ if ($_POST['action'] == 'newtask'
                   VALUES ( ?, ?, ?, ? )",
                   array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
 
-      // Send the notification
-      $notify->Create('7', $_POST['task_id']);
-
-
       $comment = $db->FetchRow($db->Query("SELECT comment_id FROM {$dbprefix}_comments WHERE task_id = ? ORDER BY comment_id DESC", array($_POST['task_id']), 1));
       $fs->logEvent($_POST['task_id'], 4, $comment['comment_id']);
 
@@ -547,6 +543,7 @@ if ($_POST['action'] == 'newtask'
 
             if ($error == UPLOAD_ERR_OK)
             {
+               $files_added = 'yes';
 
                mt_srand(make_seed());
                $randval = mt_rand();
@@ -557,9 +554,6 @@ if ($_POST['action'] == 'newtask'
                echo 'path is ' . $path . '<br />';
 
                $tmp_name = $_FILES['userfile']['tmp_name'][$key];
-
-               //echo $_FILES['userfile']['name'][$key] . '<br />';
-               //echo $tmp_name . '<br />';
 
                // Then move the uploaded file into the attachments directory and remove exe permissions
                @move_uploaded_file($tmp_name, $path);
@@ -591,6 +585,15 @@ if ($_POST['action'] == 'newtask'
       } else
       {
          echo 'file array was empty';
+      }
+
+      // Send the notification
+      if ($files_added == 'yes')
+      {
+         $notify->Create('7', $_POST['task_id'], 'files');
+      } else
+      {
+         $notify->Create('7', $_POST['task_id']);
       }
 
       $_SESSION['SUCCESS'] = $modify_text['commentadded'];
@@ -1828,7 +1831,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $fs->logEvent($_POST['task_id'], 5, $_POST['comment_text'], $_POST['previous_text'], $_POST['comment_id']);
 
    $_SESSION['SUCCESS'] = $modify_text['editcommentsaved'];
-   $redirect_url = $fs->CreateURL('details', $_REQUEST['task_id']);
+   $fs->Redirect($fs->CreateURL('details', $_REQUEST['task_id']));
 
 // End of editing a comment
 

@@ -324,7 +324,7 @@ class Notifications {
    }
 
 
-   function GenerateMsg($type, $task_id)
+   function GenerateMsg($type, $task_id, $arg1='0')
    {
       global $db;
       global $dbprefix;
@@ -523,6 +523,10 @@ class Notifications {
          $body .= "----------\n";
          $body .= $comment['comment_text'] . "\n";
          $body .= "----------\n\n";
+
+         if ($arg1 == 'files')
+            $body .= $notify_text['fileaddedtoo'] . "\n\n";
+
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . '#comment' . $comment['comment_id'] . "\n\n";
          $body .= $notify_text['disclaimer'];

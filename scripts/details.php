@@ -986,7 +986,7 @@ if ($task_details['project_is_active'] == '1'
 ////////////////////////////
 
 $num_comments = $db->CountRows($db->Query("SELECT * FROM flyspray_comments WHERE task_id = ?", array($task_details['task_id'])));
-$num_attachments = $db->CountRows($db->Query("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id'])));
+//$num_attachments = $db->CountRows($db->Query("SELECT * FROM flyspray_attachments WHERE task_id = ?", array($task_details['task_id'])));
 $num_related = $db->CountRows($db->Query("SELECT * FROM flyspray_related WHERE this_task = ?", array($task_details['task_id'])));
 $num_related_to = $db->CountRows($db->Query("SELECT * FROM flyspray_related WHERE related_task = ?", array($task_details['task_id'])));
 $num_notifications = $db->CountRows($db->Query("SELECT * FROM flyspray_notifications WHERE task_id = ?", array($_GET['id'])));
@@ -1003,7 +1003,7 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
 
    if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
    {
-      echo '<li id="attachtab"><a href="#attach">' . $details_text['attachments'] . " ($num_attachments)" . '</a></li>';
+      //echo '<li id="attachtab"><a href="#attach">' . $details_text['attachments'] . " ($num_attachments)" . '</a></li>';
    }
 
 
@@ -1035,7 +1035,7 @@ $num_reminders = $db->CountRows($db->Query("SELECT * FROM flyspray_reminders WHE
 // if there are comments, show them
 $getcomments = $db->Query("SELECT * FROM flyspray_comments
                            WHERE task_id = ?
-                           ORDER BY comment_id",
+                           ORDER BY date_added ASC",
                            array($task_details['task_id'])
                          );
 
@@ -1081,7 +1081,7 @@ while ($row = $db->FetchArray($getcomments))
                                  array($row['comment_id'])
                                 );
 
-      if ($permissions['view_attachments'] == '1')
+      if ($permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
       {
 
 
@@ -1126,7 +1126,8 @@ while ($row = $db->FetchArray($getcomments))
       // End of permission check
       }
 
-      if ($db->CountRows($attachments) && $permissions['view_attachments'] != '1')
+      if ($db->CountRows($attachments)
+          && ($permissions['view_attachments'] != '1' && $project_prefs['others_view'] == '1') )
       {
          echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
       }

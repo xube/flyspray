@@ -23,9 +23,8 @@ if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
       $comment_text = stripslashes(htmlspecialchars($row['comment_text']));
-
-   }
    ?>
+
    <h3><?php echo $admin_text['editcomment'];?></h3>
 
    <form action="index.php" method="post">
@@ -37,7 +36,7 @@ if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
          <p class="buttons">
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="editcomment" />
-            <input type="hidden" name="task_id" value="<?php echo $_GET['task_id'];?>" />
+            <input type="hidden" name="task_id" value="<?php echo $row['task_id'];?>" />
             <input type="hidden" name="comment_id" value="<?php echo $_GET['id'];?>" />
             <input type="hidden" name="previous_text" value="<?php echo $comment_text;?>" />
             <input class="adminbutton" type="submit" value="<?php echo $admin_text['saveeditedcomment'];?>" />
@@ -46,6 +45,8 @@ if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
    </form>
 
 <?php
+   // End of looping
+   }
 // End of editing a comment
 }
 ?>

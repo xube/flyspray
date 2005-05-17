@@ -8,6 +8,10 @@
 
 include_once('header.php');
 
+// Remove this line when we release.  It's only here to ensure that the attachment updates
+// happen without having to tell everyone.  It should go in the upgrade script for release!
+@include_once('sql/convert_attachments.php');
+
 // Set a generic "blank" variable so that we don't get notices
 $novar = '';
 
@@ -316,7 +320,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
     // If the user's account is closed
    } else {
       echo "<br />{$language['disabledaccount']}";
-      Header("Location: ?do=authenticate&action=logout");
+      $fs->Redirect($fs->CreateURL('authenticate', 'logout'));
    // End of checking if the user's account is open
    }
 
