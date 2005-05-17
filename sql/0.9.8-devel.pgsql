@@ -75,3 +75,17 @@ ALTER TABLE flyspray_admin_requests ALTER deny_reason SET NOT NULL;
 INSERT INTO flyspray_prefs (pref_name, pref_value, pref_desc)
 VALUES ('funky_urls', '0', 
 'Should we use address rewriting? Not all webservers support this!');
+
+-- Added 14 May 05
+CREATE TABLE flyspray_assigned (
+    assigned_id SERIAL,
+    task_id INT8 NOT NULL DEFAULT 0,
+    assignee_id INT8 NOT NULL DEFAULT 0,
+    user_or_group VARCHAR(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY ( assigned_id )
+);
+
+-- Added 15 May 05
+ALTER TABLE flyspray_attachments ADD comment_id INT8;
+UPDATE flyspray_attachments set comment_id = 0;
+ALTER TABLE flyspray_attachments ALTER comment_id SET NOT NULL;
