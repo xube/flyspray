@@ -693,8 +693,67 @@ if ($task_details['project_is_active'] == '1'
             <?php
             // New function to strip html, convert urls to links etc
             echo $fs->formatText($task_details['detailed_desc']);
-            ?>
 
+            // Display attachments that came with this task when it opened
+            $attachments = $db->Query("SELECT * FROM {$dbprefix}_attachments
+                                       WHERE task_id = ?
+                                       AND comment_id = '0'
+                                       ORDER BY attachment_id ASC",
+                                       array($task_details['task_id'])
+                                     );
+
+            if ($permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
+            {
+
+
+               while ($attachment = $db->FetchArray($attachments))
+               {
+                  echo '<span class="attachments">';
+                  echo '<a href="' . $flyspray_prefs['base_url'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
+
+                  // Let's strip the mimetype to get the icon image name
+                  list($main, $specific) = split('[/]', $attachment['file_type']);
+
+                  $imgpath = $basedir . "themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png";
+                  if (file_exists($imgpath))
+                  {
+                     echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png", $attachment['file_type']);
+                  }else
+                  {
+                     echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/mime/$main.png", $attachment['file_type']);
+                  }
+
+                  echo '&nbsp;&nbsp;' . $attachment['orig_name'];
+                  echo "</a>\n";
+
+                  // Delete link
+                  if ($permissions['delete_attachments'] == '1')
+                  {
+                  ?>
+                     &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
+                     onClick="if(confirm('<?php echo $details_text['confirmdeleteattach'];?>')) {
+                     return true
+                     } else {
+                     return false }
+                     ">
+                     <?php
+                     echo $details_text['delete'] . '</a>';
+                  }
+                  echo '</span>';
+               }
+
+               echo '<br />';
+
+            // End of permission check
+            }
+
+            if ($db->CountRows($attachments)
+                && ($permissions['view_attachments'] != '1' && $project_prefs['others_view'] == '1') )
+            {
+               echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
+            }
+
+         ?>
          </div>
 
 
@@ -1187,7 +1246,7 @@ echo '</div>';
 ////////////////////////////////////
 
 if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
-{
+{/*
    echo '<div id="attach" class="tab">';
 
 
@@ -1306,10 +1365,10 @@ if (@$permissions['create_attachments'] == "1" && $task_details['is_closed'] != 
 
 <?php
 // End of checking permissions to upload a new attachment
-};
+}
 // End of attachments area
 echo '</div>';
-}
+*/}
 
 /////////////////////////////////
 // Start of related tasks area //

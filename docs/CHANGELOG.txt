@@ -13,8 +13,9 @@ NEW - Dropdown lists are now set globally and at Project level
 NEW - Uses class.jabber.php for Jabber notifications
 NEW - Uses class.phpmailer for email notifications
 NEW - SMTP for email notifications
+NEW - XML-RPC interface for opening/closing tasks, and retriving user details
 
-IMPROVED - reliability of Jabber notifications
+IMPROVED - Reliability of Jabber notifications
 IMPROVED - Admin and Project Manager areas are more consistant and easy to
            navigate
 IMPROVED - Layout and rendering
@@ -22,10 +23,13 @@ IMPROVED - Speed of changing tabs (uses DHTML instead of a page-reload)
 IMPROVED - RSS feed
 IMPROVED - Much code has been moved to classes/functions (so is much more
            re-usable)
+IMPROVED - Statusbar is now used for almost all updates, and fades in a
+           very pretty way.
 
 FIXED - Permissions that were broken in last release
 FIXED - Now checks permissions before delivering attachments
-FIXED - Re-enabled Project Manager requests
+FIXED - Re-enabled Project Manager requests, adding a 'deny' link with
+        reason box
 
 
 0.9.7 - 22 January 2005

@@ -6,6 +6,7 @@
 
 $fs->get_language_pack($lang, 'newtask');
 $fs->get_language_pack($lang, 'index');
+$fs->get_language_pack($lang, 'details');
 // Check if the user has the right to open new tasks
 
 if ($permissions['open_new_tasks'] == '1'
@@ -286,41 +287,27 @@ if ($permissions['open_new_tasks'] == '1'
    </div>
 
    <?php
-   if (isset($_COOKIE['flyspray_userid']))
-   {
-      echo $newtask_text['notifyme'] . '&nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked />';
-   }
-
-   if ($permissions['create_attachments'] == '1')
+   if (@$permissions['create_attachments'] == '1')
    {
    ?>
-
-      <div id="fileupload">
-         <table class="main">
-            <tr>
-            <td>
-            <label><?php echo $newtask_text['attachafile'];?></label>
-            </td>
-            <td>
-            <input type="file" size="55" name="userfile" />
-            </td>
-         </tr>
-         <tr>
-            <td>
-            <label><?php echo $newtask_text['description'];?></label>
-            </td>
-            <td>
-            <input class="admintext" type="text" name="file_desc" size="70" maxlength="100" />
-            </td>
-         </tr>
-      </table>
+      <div id="uploadfilebox">
+         <?php echo $details_text['uploadafile'];?>
+         <input type="file" size="55" name="userfile[]" /><br />
       </div>
-   <?
+
+      <input class="adminbutton" type="button" onclick="addUploadFields()" value="<?php echo $details_text['selectmorefiles'];?>" />
+   <?php
    // End of checking 'create attachments' permission
    }
    ?>
 
    <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newtask_text['addthistask'];?>" onclick="Disable1()" accesskey="s"/>
+   <?php
+      if (isset($_COOKIE['flyspray_userid']))
+   {
+      echo '&nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked />' . $newtask_text['notifyme'];
+   }
+   ?>
    </form>
 </div>
 

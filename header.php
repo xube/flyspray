@@ -126,4 +126,18 @@ $project_prefs = $fs->getProjectPrefs($project_id);
 // This to stop PHP being retarded and using the '&' char for session id delimiters
 ini_set("arg_separator.output","&amp;");
 
+// This is for retarded Windows servers not having REQUEST_URI
+if(!isset($_SERVER['REQUEST_URI']))
+{
+   if(isset($_SERVER['SCRIPT_NAME']))
+      $_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
+   else
+      $_SERVER['REQUEST_URI'] = $_SERVER['PHP_SELF'];
+
+   if($_SERVER['QUERY_STRING'])
+   {
+      $_SERVER['REQUEST_URI'] .=  '?'.$_SERVER['QUERY_STRING'];
+   }
+}
+
 ?>

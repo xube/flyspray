@@ -148,56 +148,57 @@ if ($_POST['action'] == 'newtask'
       $be->AddToNotifyList($current_user['user_id'], array($task_details['task_id']));
 
 
-   function make_seed()
+   // If the user uploaded one or more files
+   if ($permissions['create_attachments'] == '1')
    {
-      list($usec, $sec) = explode(' ', microtime());
-      return (float) $sec + ((float) $usec * 100000);
-   }
-
-   mt_srand(make_seed());
-   $randval = mt_rand();
-   $file_name = $task_details['task_id']."_$randval";
-
-   // If there is a file attachment to be uploaded, upload it
-   if ($_FILES['userfile']['name'])
-   {
-      // Then move the uploaded file into the attachments directory and remove exe permissions
-      @move_uploaded_file($_FILES['userfile']['tmp_name'], "attachments/$file_name");
-      @chmod("attachments/$file_name", 0644);
-
-      // Only add the listing to the database if the file was actually uploaded successfully
-      if (file_exists("attachments/$file_name"))
+      // This function came from the php function page for mt_srand()
+      // seed with microseconds to create a random filename
+      function make_seed()
       {
-         $file_desc = $_POST['file_desc'];
-         $add_to_db = $db->Query("INSERT INTO {$dbprefix}_attachments
-                                 (task_id, orig_name, file_name, file_desc,
-                                 file_type, file_size, added_by, date_added)
-                                 VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
-                                 array($task_details['task_id'],
-                                       $_FILES['userfile']['name'],
-                                       $file_name, $file_desc,
-                                       $_FILES['userfile']['type'],
-                                       $_FILES['userfile']['size'],
-                                       $_COOKIE['flyspray_userid'],
-                                       $now)
-                                 );
-
-         $row = $db->FetchRow($db->Query("SELECT attachment_id
-                                          FROM {$dbprefix}_attachments
-                                          WHERE task_id = ?
-                                          ORDER BY attachment_id DESC",
-                                          array($task_details['task_id']), 1)
-                             );
-
-         $fs->logEvent($task_details['task_id'], 7, $row['attachment_id']);
-
-      // If the file didn't actually get saved, better show an error to that effect
-      } else
-      {
-         $message = $modify_text['attachnotsaved'];
+         list($usec, $sec) = explode(' ', microtime());
+         return (float) $sec + ((float) $usec * 100000);
       }
 
-   // End of uploading an attachment with a new task
+      foreach ($_FILES['userfile']['error'] as $key => $error)
+      {
+         if ($error == UPLOAD_ERR_OK)
+         {
+            $files_added = 'yes';
+
+            mt_srand(make_seed());
+            $randval = mt_rand();
+            $file_name = $_POST['task_id']."_$randval";
+
+            $path = $basedir . 'attachments/' . $file_name;
+
+            $tmp_name = $_FILES['userfile']['tmp_name'][$key];
+
+            // Then move the uploaded file into the attachments directory and remove exe permissions
+            @move_uploaded_file($tmp_name, $path);
+            @chmod($path, 0644);
+
+            // Only add the listing to the database if the file was actually uploaded successfully
+            if (file_exists($path))
+            {
+               $db->Query("INSERT INTO {$dbprefix}_attachments
+                           (task_id, comment_id, orig_name, file_name,
+                            file_type, file_size, added_by, date_added)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                           array($task_details['task_id'],
+                                 '0',
+                                 $_FILES['userfile']['name'][$key],
+                                 $file_name,
+                                 $_FILES['userfile']['type'][$key],
+                                 $_FILES['userfile']['size'][$key],
+                                 $_COOKIE['flyspray_userid'],
+                                 '0')
+                         );
+
+               $attachment = $db->FetchRow($db->Query("SELECT attachment_id FROM {$dbprefix}_attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
+               $fs->logEvent($_POST['task_id'], 7, $attachment['attachment_id']);
+            }
+         }
+      }
    }
 
    $_SESSION['SUCCESS'] = $modify_text['newtaskadded'];

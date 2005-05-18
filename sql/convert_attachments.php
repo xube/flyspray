@@ -9,7 +9,8 @@ include_once('../header.php');
 
 // Get a list of the attachments
 $attachments = $db->Query("SELECT * FROM flyspray_attachments
-                           WHERE comment_id < '1'"
+                           WHERE comment_id < '1'
+                           AND date_added > '0'"
                          );
 
 // Cycle through each attachment
