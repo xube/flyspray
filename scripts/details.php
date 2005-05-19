@@ -66,7 +66,8 @@ if ($task_details['project_is_active'] == '1'
 
       <!-- create some columns -->
       <div id="taskdetails">
-      <form name="form1" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+       <div>
          <h2 class="severity<?php echo $task_details['task_severity'];?>">
          <?php echo 'FS#' . $task_details['task_id'];?> &mdash;
          <input class="severity<?php echo stripslashes($task_details['task_severity']);?>" type="text" name="item_summary" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($task_details['item_summary']));?>" />
@@ -190,7 +191,7 @@ if ($task_details['project_is_active'] == '1'
                   </td>
                </tr>
                <tr>
-                  <td><label for=category"><?php echo $details_text['category'];?></label></td>
+                  <td><label for="category"><?php echo $details_text['category'];?></label></td>
                   <td>
                   <select id="category" name="product_category">
                   <?php
@@ -359,7 +360,7 @@ if ($task_details['project_is_active'] == '1'
                   </td>
                </tr>
                <tr>
-                  <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
+                  <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label><span id="reportedver"></span></td>
                   <td>
                   <?php
                   // Print the version name
@@ -455,7 +456,7 @@ if ($task_details['project_is_active'] == '1'
 
             <table class="taskdetails">
                <tr>
-
+               <td> </td>
                </tr>
                <tr>
                   <td class="buttons" colspan="2">
@@ -465,6 +466,7 @@ if ($task_details['project_is_active'] == '1'
                </tr>
             </table>
          </div>
+       </div>  
       </form>
       </div>
 
@@ -689,7 +691,7 @@ if ($task_details['project_is_active'] == '1'
 
 
          <div id="taskdetailsfull">
-            <label for="details"><?php echo $details_text['details'];?></label>
+            <label for="details"><?php echo $details_text['details'];?></label><span id="details"></span>
             <?php
             // New function to strip html, convert urls to links etc
             echo $fs->formatText($task_details['detailed_desc']);
@@ -731,7 +733,7 @@ if ($task_details['project_is_active'] == '1'
                   {
                   ?>
                      &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
-                     onClick="if(confirm('<?php echo $details_text['confirmdeleteattach'];?>')) {
+                     onclick="if(confirm('<?php echo $details_text['confirmdeleteattach'];?>')) {
                      return true
                      } else {
                      return false }
@@ -802,11 +804,13 @@ if ($task_details['project_is_active'] == '1'
          {
          ?>
             <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+              <div>
                <input type="hidden" name="do" value="modify" />
                <input type="hidden" name="action" value="newdep" />
                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
                <input class="admintext" type="text" name="dep_task_id" size="5" maxlength="10" />
                <input class="adminbutton" type="submit" name="submit" value="<?php echo $details_text['addnew'];?>" />
+              </div> 
             </form>
 
          <?php
@@ -887,12 +891,14 @@ if ($task_details['project_is_active'] == '1'
                </a>
                <div id="closeform">
                   <form name="form3" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formclosetask">
+                    <div>
                      <input type="hidden" name="do" value="modify" />
                      <input type="hidden" name="action" value="requestreopen" />
                      <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
                      <label for="reason"><?php echo $details_text['givereason'];?></label>
                      <textarea id="reason" name="reason_given"></textarea><br />
                      <input class="adminbutton" type="submit" value="<?php echo $details_text['submitreq'];?>" />
+                    </div> 
                   </form>
                </div>
          <?php
@@ -922,7 +928,8 @@ if ($task_details['project_is_active'] == '1'
       echo $details_text['closetask'];
       ?></a>
       <div id="closeform">
-         <form name="form2" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formclosetask">
+         <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formclosetask">
+           <div>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="close" />
             <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>" />
@@ -951,6 +958,7 @@ if ($task_details['project_is_active'] == '1'
             <?php echo $details_text['closurecomment'];?>
             <textarea class="admintext" name="closure_comment" rows="3" cols="30"></textarea>
             <input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;<?php echo $details_text['mark100'];?>
+           </div>
          </form>
       </div>
 
@@ -970,12 +978,14 @@ if ($task_details['project_is_active'] == '1'
       <div id="closeform">
 <!--          <a id="hideclosetask" href="#close" onclick="hidestuff('closeform');"></a> -->
          <form name="form3" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="formclosetask">
+           <div>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="requestclose" />
             <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
             <label for="reason"><?php echo $details_text['givereason'];?></label>
             <textarea id="reason" name="reason_given"></textarea><br />
             <input class="adminbutton" type="submit" value="<?php echo $details_text['submitreq'];?>" />
+           </div> 
          </form>
       </div>
 
@@ -1121,7 +1131,7 @@ while ($row = $db->FetchArray($getcomments))
       {
          ?>
          &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deletecomment&amp;task_id=<?php echo $_GET['id'];?>&amp;comment_id=<?php echo $row['comment_id'];?>"
-         onClick="if(confirm('<?php echo $details_text['confirmdeletecomment'];?>')) {
+         onclick="if(confirm('<?php echo $details_text['confirmdeletecomment'];?>')) {
          return true
          } else {
          return false }
@@ -1169,7 +1179,7 @@ while ($row = $db->FetchArray($getcomments))
             {
             ?>
             &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
-            onClick="if(confirm('<?php echo $details_text['confirmdeleteattach'];?>')) {
+            onclick="if(confirm('<?php echo $details_text['confirmdeleteattach'];?>')) {
             return true
             } else {
             return false }
@@ -1591,7 +1601,7 @@ if (@$permissions['manage_project'] == '1')
 
          <em><?php echo $details_text['thisoften'];?></em>
 
-         <input type="admintext" name="timeamount1" size="3" maxlength="3" />
+         <input type="text" name="timeamount1" size="3" maxlength="3" />
 
          <select class="adminlist" name="timetype1">
             <option value="3600"><?php echo $details_text['hours'];?></option>
@@ -1603,7 +1613,7 @@ if (@$permissions['manage_project'] == '1')
 
          <em><?php echo $details_text['startafter'];?></em>
 
-         <input type="admintext" name="timeamount2" size="3" maxlength="3" />
+         <input type="text" name="timeamount2" size="3" maxlength="3" />
 
          <select class="adminlist" name="timetype2">
             <option value="3600"><?php echo $details_text['hours'];?></option>
