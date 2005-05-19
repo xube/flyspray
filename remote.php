@@ -92,6 +92,14 @@ function getTask($args)
 // End of getTask function
 }
 
+//////////////////////////////////////////
+// Start of function to open a new task //
+//////////////////////////////////////////
+
+
+
+
+
 ///////////////////////////////////////
 // Start of function to close a task //
 ///////////////////////////////////////
@@ -186,10 +194,6 @@ function closeTask($args)
 
    // Generate notifications
    $notify->Create('3', $task_id);
-//    $to = $notify->Address($task_id);
-//    $msg = $notify->Create('3', $task_id);
-//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//    $jabb = $notify->SendJabber($to[1], $msg[0], $msg[1]);
 
    return true;
 

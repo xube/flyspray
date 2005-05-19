@@ -309,7 +309,7 @@ class Backend {
                             WHERE t.task_id > ?
                             AND $sql_where
                             ORDER BY t.task_severity DESC, t.task_id ASC
-                            ", $params, $limit  // Limiting to five tasks for testing purposes
+                            ", $params, $limit
                           );
 
       $tasklist = array();
@@ -324,6 +324,259 @@ class Backend {
       //return $search;
 
    // End of GenerateTaskList() function
+   }
+
+
+   /* This function creates a new task.  Due to the nature of lists
+      being specified in the database, we can't really accept default
+      values, right?
+   */
+   function CreateTask($args)
+   {
+      global $db;
+      global $dbprefix;
+      global $fs;
+      global $flyspray_prefs;
+      global $notify;
+
+      if (!is_array($args))
+         return "We were not given an array of arguments to process.";
+
+      // Get some information about the project and the user's permissions
+      $project_prefs = $fs->GetProjectPrefs($projectid);
+      $permissions   = $fs->GetPermissions($userid, $projectid);
+
+      // Check permissions for the specified user (or anonymous) to open tasks
+      if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
+         return false;
+
+
+      // Here's a list of the arguments we accept
+      // These args are complusory
+      $userid        = $args[0];    // The user id of the user creating this task (numerical, 0 = anon)
+      $projectid     = $args[1];    // Project to which we're attaching this task (numerical)
+
+      $summary       = $args[2];    // Item Summary (string)
+      $desc          = $args[3];    // Detailed Description (string)
+
+      $tasktype      = $args[4];    // Task Type (numerical)
+      $category      = $args[5];    // Product Category (numerical)
+      $version       = $args[6];    // Version this task was REPORTED in (numerical)
+      $os            = $args[7];    // Operating system (numerical)
+      $severity      = $args[8];    // Task severity (numerical)
+
+      // These args are only set by someone with 'modify all tasks' permission
+      $assigned      = $args[9];    // User id of who is being assigned the task (numerical)
+      $duever        = $args[10];   // The version this task is DUE in (numerical)
+      $priority      = $args[11];   // Task Priority (numerical)
+      $duedate       = $args[12];   // Due Date (10 digit numerical)
+      $status        = $args[13];   // Item Status (numerical)
+
+
+      if ( !is_numeric($userid)
+        OR !is_numeric($projectid)
+        OR !is_numeric($tasktype)
+        OR !is_numeric($category)
+        OR !is_numeric($version)
+        OR !is_numeric($os)
+        OR !is_numeric($severity)
+        OR !is_numeric($assigned)
+        OR !is_numeric($duever)
+        OR !is_numeric($priority)
+        OR !is_numeric($duedate)
+        OR !is_numeric($status) )
+            return 'One or more required numeric fields were not numeric!';
+
+      // Some fields can have default values set
+      if (empty($assigned) OR $permissions['modify_all_tasks'] != '1')
+      {
+         $assigned = '0';
+         $duever = '0';
+         $priority = '2';
+         $duedate = '0';
+         $status = '1';
+      }
+
+      // Here comes the database insert!
+      $db->Query("INSERT INTO {$dbprefix}_tasks
+                  (attached_to_project,
+                  task_type,
+                  date_opened,
+                  opened_by,
+                  item_summary,
+                  detailed_desc,
+                  item_status,
+                  assigned_to,
+                  product_category,
+                  product_version,
+                  closedby_version,
+                  operating_system,
+                  task_severity,
+                  task_priority,
+                  due_date)
+                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                  array($projectid,
+                  $tasktype,
+                  date('U'),
+                  $userid,
+                  $summary,
+                  $desc,
+                  $status,
+                  $assigned,
+                  $category,
+                  $version,
+                  $duever,
+                  $os,
+                  $severity,
+                  $priority,
+                  $duedate)
+                );
+
+      // Get the task id back
+      $task_details = $db->FetchArray($db->Query("SELECT task_id, item_summary, product_category
+                                                FROM {$dbprefix}_tasks
+                                                WHERE item_summary = ?
+                                                AND detailed_desc = ?
+                                                ORDER BY task_id DESC",
+                                                array($summary, $desc), 1));
+
+      // Log that the task was opened
+      $fs->logEvent($task_details['task_id'], 1);
+
+      $cat_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_list_category
+                                                 WHERE category_id = ?",
+                                                 array($category)
+                                               )
+                                    );
+
+      // We need to figure out who is the category owner for this task
+      if (!empty($cat_details['category_owner']))
+      {
+         $owner = $cat_details['category_owner'];
+
+      } elseif (!empty($cat_details['parent_id']))
+      {
+         $parent_cat_details = $db->FetchArray($db->Query("SELECT category_owner
+                                                           FROM {$dbprefix}_list_category
+                                                           WHERE category_id = ?",
+                                                           array($cat_details['parent_id'])
+                                                         )
+                                              );
+
+         // If there's a parent category owner, send to them
+         if (!empty($parent_cat_details['category_owner']))
+            $owner = $parent_cat_details['category_owner'];
+      }
+
+      // Otherwise send it to the default category owner
+      if (empty($owner))
+         $owner = $project_prefs['default_cat_owner'];
+
+      if (!empty($owner))
+      {
+         // Category owners now get auto-added to the notification list for new tasks
+         $insert = $db->Query("INSERT INTO {$dbprefix}_notifications
+                              (task_id, user_id)
+                              VALUES(?, ?)",
+                              array($taskid, $owner)
+                             );
+
+         $fs->logEvent($taskid, 9, $owner);
+
+         // Create the Notification
+         $notify->Create('1', $taskid);
+
+      // End of checking if there's a category owner set, and notifying them.
+      }
+
+
+   // End of CreateTask() function
+   }
+
+   /* This function came from the php function page for mt_srand()
+      seed with microseconds to create a random filename
+   */
+   function make_seed()
+   {
+      list($usec, $sec) = explode(' ', microtime());
+      return (float) $sec + ((float) $usec * 100000);
+   // End of make_seed() function
+   }
+
+
+   /*
+      This function handles file uploads.  Flyspray doesn't allow
+      anonymous uploads of files, so the $userid is necessary.
+      $taskid is the task that the files will be attached to
+      $files is an array of files with attributes intact.  It should be $_FILES passed directly
+      $commentid is only valid if the files are to be attached to a comment
+   */
+   function UploadFiles($userid, $taskid, $files, $commentid = '0')
+   {
+      global $db;
+      global $dbprefix;
+      global $fs;
+      global $flyspray_prefs;
+      global $notify;
+
+      // Retrieve some important information
+      $task_details  = $fs->GetTaskDetails($taskid);
+      $permissions   = $fs->GetPermissions($userid, $task_details['attached_to_project']);
+
+      // If the user hasn't permission, give up.
+      if ($permissions['create_attachments'] != '1')
+         return false;
+
+      foreach ($files['userfile']['error'] as $key => $error)
+      {
+         if ($error == UPLOAD_ERR_OK)
+         {
+            $files_added = 'yes';
+
+            mt_srand($this->make_seed());
+            $randval = mt_rand();
+            $file_name = $taskid."_$randval";
+
+            $path = $basedir . 'attachments/' . $file_name;
+
+            $tmp_name = $files['userfile']['tmp_name'][$key];
+
+            // Then move the uploaded file into the attachments directory and remove exe permissions
+            @move_uploaded_file($tmp_name, $path);
+            @chmod($path, 0644);
+
+            // Only add the listing to the database if the file was actually uploaded successfully
+            if (file_exists($path))
+            {
+               $db->Query("INSERT INTO {$dbprefix}_attachments
+                           (task_id, comment_id, orig_name, file_name,
+                            file_type, file_size, added_by, date_added)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                           array($taskid,
+                                 $commentid,
+                                 $files['userfile']['name'][$key],
+                                 $file_name,
+                                 $files['userfile']['type'][$key],
+                                 $files['userfile']['size'][$key],
+                                 $userid,
+                                 '0')
+                         );
+
+               // Fetch the attachment id for the history log
+               $attachment = $db->FetchRow($db->Query("SELECT attachment_id
+                                                       FROM {$dbprefix}_attachments
+                                                       WHERE task_id = ?
+                                                       ORDER BY attachment_id DESC",
+                                                       array($taskid), 1
+                                                     )
+                                          );
+               // Log to task history
+               $fs->logEvent($taskid, 7, $attachment['attachment_id']);
+            }
+         }
+      }
+
+   // End of UploadFiles() function
    }
 
 

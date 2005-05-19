@@ -95,9 +95,9 @@ if ($task_details['project_is_active'] == '1'
                                           FROM flyspray_projects p
                                           LEFT JOIN flyspray_groups g ON p.project_id = g.belongs_to_project
                                           LEFT JOIN flyspray_users_in_groups uig ON g.group_id = uig.group_id
-                                          WHERE uig.user_id = ?
-                                          AND g.view_tasks = '1'
-                                          OR p.others_view = '1'
+                                          WHERE ((uig.user_id = ?
+                                          AND g.view_tasks = '1')
+                                          OR p.others_view = '1')
                                           AND p.project_is_active = '1'",
                                           array($current_user['user_id'])
                                         );
@@ -702,7 +702,7 @@ if ($task_details['project_is_active'] == '1'
                                        array($task_details['task_id'])
                                      );
 
-            if ($permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
+            if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
             {
 
 
@@ -727,7 +727,7 @@ if ($task_details['project_is_active'] == '1'
                   echo "</a>\n";
 
                   // Delete link
-                  if ($permissions['delete_attachments'] == '1')
+                  if (@$permissions['delete_attachments'] == '1')
                   {
                   ?>
                      &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
@@ -748,7 +748,7 @@ if ($task_details['project_is_active'] == '1'
             }
 
             if ($db->CountRows($attachments)
-                && ($permissions['view_attachments'] != '1' && $project_prefs['others_view'] == '1') )
+                && ((!isset($_COOKIE['flyspray_userid']) OR @$permissions['view_attachments'] != '1') && $project_prefs['others_view'] != '1') )
             {
                echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
             }
@@ -1140,7 +1140,7 @@ while ($row = $db->FetchArray($getcomments))
                                  array($row['comment_id'])
                                 );
 
-      if ($permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
+      if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1')
       {
 
 
@@ -1165,7 +1165,7 @@ while ($row = $db->FetchArray($getcomments))
             echo "</a>\n";
 
             // Delete link
-            if ($permissions['delete_attachments'] == '1')
+            if (@$permissions['delete_attachments'] == '1')
             {
             ?>
             &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
@@ -1185,11 +1185,11 @@ while ($row = $db->FetchArray($getcomments))
       // End of permission check
       }
 
-      if ($db->CountRows($attachments)
-          && ($permissions['view_attachments'] != '1' && $project_prefs['others_view'] == '1') )
-      {
-         echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
-      }
+         if ($db->CountRows($attachments)
+             && ((!isset($_COOKIE['flyspray_userid']) OR @$permissions['view_attachments'] != '1') && $project_prefs['others_view'] != '1') )
+         {
+            echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
+         }
    }
 
 // End of cycling through the comments for display

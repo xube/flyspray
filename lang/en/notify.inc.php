@@ -29,5 +29,6 @@ $notify_text = array (
 'pmdeny'                      =>    'A Project Manager has denied the request pending for the following task:',
 'assignedtoyou'               =>    'You have been assigned the following task:',
 'fileaddedtoo'                =>    'There was one or more files attached to this comment.',
+
 );
 ?>

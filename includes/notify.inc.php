@@ -340,6 +340,14 @@ class Notifications {
       $task_details = $fs->getTaskDetails($task_id);
       $project_prefs = $fs->GetProjectPrefs($task_details['attached_to_project']);
 
+      if ($task_details['due_date'] == '0')
+      {
+         $due_date = $fs->FormatDate($task_details['due_date'], false);
+      } else
+      {
+         $due_date = $details_text['undecided'];
+      }
+
       /* -------------------------------
          | List of notification types: |
          | 1. Task opened              |
@@ -378,7 +386,7 @@ class Notifications {
          $body .= $details_text['priority'] . ' - ' . $task_details['priority_name'] . "\n";
          $body .= $details_text['reportedversion'] . ' - ' . $task_details['reported_version_name'] . "\n";
          $body .= $details_text['dueinversion'] . ' - ' . $task_details['due_in_version_name'] . "\n";
-         $body .= $details_text['percentcomplete'] . ' - ' . $task_details['percent_complete'] . "\n";
+         $body .= $details_text['duedate'] . ' - ' . $due_date . "\n";
          $body .= $details_text['details'] . ' - ' . $task_details['detailed_desc'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
@@ -409,7 +417,7 @@ class Notifications {
          $body .= $details_text['priority'] . ' - ' . $task_details['priority_name'] . "\n";
          $body .= $details_text['reportedversion'] . ' - ' . $task_details['reported_version_name'] . "\n";
          $body .= $details_text['dueinversion'] . ' - ' . $task_details['due_in_version_name'] . "\n";
-         $body .= $details_text['duedate'] . ' - ' . $fs->FormatDate($task_details['due_date'], false) . "\n";
+         $body .= $details_text['duedate'] . ' - ' . $due_date . "\n";
          $body .= $details_text['percentcomplete'] . ' - ' . $task_details['percent_complete'] . "\n";
          $body .= $details_text['details'] . ' - ' . stripslashes($task_details['detailed_desc']) . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
