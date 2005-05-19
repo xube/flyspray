@@ -99,7 +99,7 @@ if ($permissions['manage_project'] == '1')
                <label for="isactive"><?php echo $admin_text['isactive'];?></label>
                </td>
                <td>
-               <input id="isactive" type="checkbox" name="project_is_active" value="1" <?php if ($project_prefs['project_is_active'] == '1') { echo "CHECKED";};?> />
+               <input id="isactive" type="checkbox" name="project_is_active" value="1" <?php if ($project_prefs['project_is_active'] == '1') { echo 'checked="checked"';};?> />
                </td>
             </tr>
             <tr>
@@ -107,7 +107,7 @@ if ($permissions['manage_project'] == '1')
                <label for="othersview"><?php echo $admin_text['othersview'];?></label>
                </td>
                <td>
-               <input id="othersview" type="checkbox" name="others_view" value="1" <?php if ($project_prefs['others_view'] == '1') { echo "CHECKED";};?> />
+               <input id="othersview" type="checkbox" name="others_view" value="1" <?php if ($project_prefs['others_view'] == '1') { echo 'checked="checked"';};?> />
                </td>
             </tr>
             <tr>
@@ -115,7 +115,7 @@ if ($permissions['manage_project'] == '1')
                <label for="anonopen"><?php echo $admin_text['allowanonopentask'];?></label>
                </td>
                <td>
-               <input id="anonopen" type="checkbox" name="anon_open" value="1" <?php if ($project_prefs['anon_open'] == '1') { echo "CHECKED"; }; ?> />
+               <input id="anonopen" type="checkbox" name="anon_open" value="1" <?php if ($project_prefs['anon_open'] == '1') { echo 'checked="checked"'; }; ?> />
                </td>
             </tr>
             <tr>
@@ -167,7 +167,7 @@ if ($permissions['manage_project'] == '1')
                <label for="showlogo"><?php echo $admin_text['showlogo'];?></label>
                </td>
                <td>
-               <input id="showlogo" type="checkbox" name="show_logo" value="1" <?php if ($project_prefs['show_logo'] == '1') { echo "CHECKED"; }; ?> />
+               <input id="showlogo" type="checkbox" name="show_logo" value="1" <?php if ($project_prefs['show_logo'] == '1') { echo 'checked="checked"'; }; ?> />
                </td>
             </tr>
             <tr>
@@ -175,7 +175,7 @@ if ($permissions['manage_project'] == '1')
                <label for="inlineimages"><?php echo $admin_text['showinlineimages'];?></label>
                </td>
                <td>
-               <input id="inlineimages" type="checkbox" name="inline_images" value="1" <?php if ($project_prefs['inline_images'] == '1') { echo "CHECKED"; }; ?> />
+               <input id="inlineimages" type="checkbox" name="inline_images" value="1" <?php if ($project_prefs['inline_images'] == '1') { 'checked="checked"'; }; ?> />
                </td>
             </tr>
             <tr>
@@ -279,11 +279,11 @@ if ($permissions['manage_project'] == '1')
          // Now, create a form used for moving multiple users between groups
          echo '<form action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">' . "\n";
 
-         echo '<input type="hidden" name="do" value="modify" />' . "\n";
+         echo '<div><input type="hidden" name="do" value="modify" />' . "\n";
          echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
          echo '<input type="hidden" name="old_group" value="' . $group['group_id'] . '" />' . "\n";
          echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
-         echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
+         echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "</div>\n";
 
          echo "<table class=\"userlist\">\n<tr><th></th><th>{$admin_text['username']}</th><th>{$admin_text['realname']}</th><th>{$admin_text['accountenabled']}</th></tr>\n";
 
@@ -339,7 +339,7 @@ if ($permissions['manage_project'] == '1')
 
       // Create a form used for adding users to a project group
       echo '<form action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">' . "\n";
-      echo '<input type="hidden" name="do" value="modify" />'. "\n";
+      echo '<div><input type="hidden" name="do" value="modify" />'. "\n";
       echo '<input type="hidden" name="action" value="addtogroup" />'. "\n";
       echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
       echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />'. "\n";
@@ -378,7 +378,7 @@ if ($permissions['manage_project'] == '1')
 
       echo '</select>';
 
-      echo '</form>';
+      echo '</div></form>';
 
       echo '</fieldset>';
 
@@ -515,10 +515,12 @@ if ($permissions['manage_project'] == '1')
    <legend><?php echo $admin_text['tasktypes'];?></legend>
 
    <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <div>
    <input type="hidden" name="do" value="modify" />
    <input type="hidden" name="action" value="update_list" />
    <input type="hidden" name="list_type" value="tasktype" />
    <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+   </div>
    <table class="list">
    <?php
    $get_tasktypes = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
@@ -600,10 +602,12 @@ if ($permissions['manage_project'] == '1')
    <legend><?php echo $admin_text['resolutions'];?></legend>
 
   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+  <div>
   <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="action" value="update_list" />
   <input type="hidden" name="list_type" value="resolution" />
   <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+  </div>
   <table class="list">
     <?php
    $get_resolution = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
@@ -695,12 +699,13 @@ if ($permissions['manage_project'] == '1')
       <p><?php echo $admin_text['listnote'];?></p>
       <div class="admin">
       <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+        <div>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update_category" />
          <input type="hidden" name="list_type" value="category" />
          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-
+        </div>
       <table class="list">
          <?php
          $get_categories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
@@ -804,11 +809,12 @@ if ($permissions['manage_project'] == '1')
 
       <!-- Form to add a new category to the list -->
       <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+            <div>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_category" />
             <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-
+            </div>
       <table class="list">
          <tr>
             <td>
@@ -829,8 +835,8 @@ if ($permissions['manage_project'] == '1')
             </select>
             </td>
             <td colspan="2" title="<?php echo $admin_text['categoryparenttip'];?>">
-            <label for="categoryparentnew"><?php echo $admin_text['subcategoryof'];?></label>
-            <select name="parent_id">
+            <label for="parent_id"><?php echo $admin_text['subcategoryof'];?></label>
+            <select id="parent_id" name="parent_id">
             <option value=""><?php echo $admin_text['notsubcategory'];?></option>
             <?php
             $cat_list = $db->Query("SELECT category_id, category_name
@@ -879,11 +885,13 @@ if ($permissions['manage_project'] == '1')
    <p><?php echo $admin_text['listnote'];?></p>
    <div class="admin">
    <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="update_list" />
       <input type="hidden" name="list_type" value="os" />
       <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+      </div>
       <table class="list">
          <?php
          $get_os = $db->Query("
@@ -932,12 +940,13 @@ if ($permissions['manage_project'] == '1')
 
       <!-- Form to add a new operating system to the list -->
       <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <div>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="add_to_list" />
          <input type="hidden" name="list_type" value="os" />
          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-
+      </div>
       <table class="list">
          <tr>
             <td>
@@ -976,13 +985,14 @@ if ($permissions['manage_project'] == '1')
       <p><?php echo $admin_text['listnote'];?></p>
       <div class="admin">
       <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <div>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update_version_list" />
          <input type="hidden" name="list_type" value="version" />
          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
+      </div>
          <table class="list">
-
          <?php
          $get_version = $db->Query("
              SELECT *, count(t.task_id) AS used_in_tasks
@@ -1011,9 +1021,9 @@ if ($permissions['manage_project'] == '1')
             <td title="<?php echo $admin_text['listtensetip'];?>">
             <label for="tense<?php echo $countlines;?>"><?php echo $admin_text['tense'];?></label>
             <select id="tense<?php echo $countlines;?>" name="version_tense[<?php echo $countlines;?>]">
-               <option value="1" <?php if ($row['version_tense'] == '1') { echo "SELECTED";};?>><?php echo $admin_text['past'];?></option>
-               <option value="2" <?php if ($row['version_tense'] == '2') { echo "SELECTED";};?>><?php echo $admin_text['present'];?></option>
-               <option value="3" <?php if ($row['version_tense'] == '3') { echo "SELECTED";};?>><?php echo $admin_text['future'];?></option>
+               <option value="1" <?php if ($row['version_tense'] == '1') { echo 'selected="selected"';};?>><?php echo $admin_text['past'];?></option>
+               <option value="2" <?php if ($row['version_tense'] == '2') { echo 'selected="selected"';};?>><?php echo $admin_text['present'];?></option>
+               <option value="3" <?php if ($row['version_tense'] == '3') { echo 'selected="selected"';};?>><?php echo $admin_text['future'];?></option>
             </select>
             </td>
             <?php if ($row['used_in_tasks'] == 0): ?>
@@ -1038,12 +1048,13 @@ if ($permissions['manage_project'] == '1')
 
       <!-- Form to add a new version to the list -->
       <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <div>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_to_version_list" />
             <input type="hidden" name="list_type" value="version" />
             <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-
+      </div>
       <table class="list">
          <tr>
             <td>
@@ -1062,7 +1073,7 @@ if ($permissions['manage_project'] == '1')
             <label for="tensenew"><?php echo $admin_text['tense'];?></label>
             <select id="tensenew" name="version_tense">
             <option value="1"><?php echo $admin_text['past'];?></option>
-            <option value="2" SELECTED><?php echo $admin_text['present'];?></option>
+            <option value="2" selected="selected"><?php echo $admin_text['present'];?></option>
             <option value="3"><?php echo $admin_text['future'];?></option>
             </select>
             </td>
@@ -1134,14 +1145,14 @@ if ($permissions['manage_project'] == '1')
             echo '<td><a href="#" id="denyreq" class="button" onclick="showhidestuff(\'denyform' . $pending_req['request_id'] . '\');">' . $pm_text['deny'] . '</a>';
             echo '<div id="denyform' . $pending_req['request_id'] . '" class="denyform">';
             echo '<form name="form3" action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">';
-            echo '<input type="hidden" name="do" value="modify" />';
+            echo '<div><input type="hidden" name="do" value="modify" />';
             echo '<input type="hidden" name="action" value="denypmreq" />';
             echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />';
             echo '<input type="hidden" name="req_id" value="' . $pending_req['request_id'] . '" />';
             echo $pm_text['givereason'];
             echo '<textarea id="reason" name="deny_reason"></textarea><br />';
             echo '<input class="adminbutton" type="submit" value="' . $pm_text['deny'] . '" />';
-            echo '</form>';
+            echo '</div></form>';
             echo '</div></td>';
 
          }

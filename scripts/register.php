@@ -67,7 +67,7 @@ if (isset($_GET['magic']))
 {
 ?>
 
-<form name="form1" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="registernewuser">
+<form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="registernewuser">
 
 <h1><?php echo $register_text['registernewuser'];?></h1>
 
@@ -96,7 +96,7 @@ if (isset($_GET['magic']))
     <tr>
       <td><label><?php echo $register_text['notifications'];?></label></td>
       <td>
-      <input type="radio" name="notify_type" value="1" checked /><?php echo $register_text['email'];?> <br>
+      <input type="radio" name="notify_type" value="1" checked="checked" /><?php echo $register_text['email'];?> <br />
       <input type="radio" name="notify_type" value="2" /><?php echo $register_text['jabber'];?>
       </td>
     </tr>
@@ -117,9 +117,6 @@ if (isset($_GET['magic']))
 // End of checking for magic_url
 };
 ?>
-
-</body>
-</html>
 
 <?php
 // End of checking settings

@@ -17,7 +17,8 @@ if ($permissions['open_new_tasks'] == '1'
    <h3><?php echo htmlspecialchars(stripslashes($project_prefs['project_title'])) . ':: ' . $newtask_text['newtask'];?></h3>
 
    <div id="taskdetails">
-   <form enctype="multipart/form-data" name="form1" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form enctype="multipart/form-data" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <div>
    <table>
       <tr>
          <td>
@@ -108,7 +109,7 @@ if ($permissions['open_new_tasks'] == '1'
             {
                if ($key == '2')
                {
-                  echo "<option value=\"$key\" SELECTED>$val</option>\n";
+                  echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
                } else
                {
                   echo "<option value=\"$key\">$val</option>\n";
@@ -125,8 +126,8 @@ if ($permissions['open_new_tasks'] == '1'
             // If the user can't modify jobs, we will have to set a hidden field for the status and priority
             if ($permissions['modify_all_tasks'] != "1")
             {
-               echo "<input type=\"hidden\" name=\"item_status\" value=\"1\">";
-               echo "<input type=\"hidden\" name=\"task_priority\" value=\"2\">";
+               echo "<input type=\"hidden\" name=\"item_status\" value=\"1\" />";
+               echo "<input type=\"hidden\" name=\"task_priority\" value=\"2\" />";
             }
             ?>
             <label for="assignedto"><?php echo $newtask_text['assignedto'];?></label></td>
@@ -181,7 +182,7 @@ if ($permissions['open_new_tasks'] == '1'
             {
                if ($key == '2')
                {
-                  echo "<option value=\"$key\" SELECTED>$val</option>\n";
+                  echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
                } else
                {
                   echo "<option value=\"$key\">$val</option>\n";
@@ -194,7 +195,7 @@ if ($permissions['open_new_tasks'] == '1'
          <tr>
             <td><label for="task_priority"><?php echo $newtask_text['priority'];?></label></td>
             <td>
-            <select id="taskpriority" name="task_priority" <?php if ($permissions['modify_all_tasks'] != "1") echo ' disabled="disabled"';?>>
+            <select id="task_priority" name="task_priority" <?php if ($permissions['modify_all_tasks'] != "1") echo ' disabled="disabled"';?>>
             <?php
             // Get list of statuses
             require("lang/$lang/priority.php");
@@ -202,7 +203,7 @@ if ($permissions['open_new_tasks'] == '1'
             {
                if ($key == '2')
                {
-                  echo "<option value=\"$key\" SELECTED>$val</option>\n";
+                  echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
                } else
                {
                   echo "<option value=\"$key\">$val</option>\n";
@@ -305,9 +306,10 @@ if ($permissions['open_new_tasks'] == '1'
    <?php
       if (isset($_COOKIE['flyspray_userid']))
    {
-      echo '&nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked />' . $newtask_text['notifyme'];
+      echo '&nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked="checked" />' . $newtask_text['notifyme'];
    }
    ?>
+   </div>
    </form>
 </div>
 

@@ -118,11 +118,14 @@ function eventGetSrc(e) {
 }
 
 function ToggleSelectedTasks() {
-  for (var i = 0; i < document.massops.elements.length; i++) {
-    if(document.massops.elements[i].type == 'checkbox'){
-      document.massops.elements[i].checked =         !(document.massops.elements[i].checked);
+  var inputs = document.getElementById('massops').getElementsByTagName('input');
+  for (var i = 0; i < inputs.length; i++) {
+    if(inputs[i].type == 'checkbox'){
+      inputs[i].checked = !(inputs[i].checked);
     }
   }
+  // Return false to prevent the the browser from following the href
+  return false;
 }
 
 function addUploadFields() {

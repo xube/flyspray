@@ -93,8 +93,8 @@ function changelog_report()
 
 
         <select name="sort">
-                <option value="asc" <?php if($sort == 'asc') { echo "SELECTED";};?>><?php echo $reports_text['oldestfirst'];?></option>
-                <option value="desc" <?php if($sort == 'desc') { echo "SELECTED";};?>><?php echo $reports_text['recentfirst'];?></option>
+                <option value="asc" <?php if($sort == 'asc') { echo "selected=\"selected\"";};?>><?php echo $reports_text['oldestfirst'];?></option>
+                <option value="desc" <?php if($sort == 'desc') { echo "selected=\"selected\"";};?>><?php echo $reports_text['recentfirst'];?></option>
         </select>
 
         <input type="submit" class="mainbutton" name="submit" value="<?=$reports_text['show']?>" />
@@ -371,7 +371,7 @@ switch ($_REQUEST['sort']) {
 ?>
 
     <div id="events" class="tab">
-        <form action="?do=reports&amp;report=events" method="post" name="events_form">
+        <form action="?do=reports&amp;report=events" method="post">
         <!-- <input type="hidden" name="do" value="reports">
         <input type="hidden" name="report" value="events"> -->
         <table>
@@ -411,11 +411,11 @@ switch ($_REQUEST['sort']) {
                     <td><label class="inline"><input type="radio" name="date" value="within" <?php if($date == 'within') echo 'checked';?> />
                     <?php echo $reports_text['within'];?></label></td>
                         <td colspan="6"><select name="within">
-                            <option value="day" <?php if ($_REQUEST['within'] == 'day') echo 'selected';?>><?php echo $reports_text['pastday'];?></option>
-                            <option value="week" <?php if ($_REQUEST['within'] == 'week') echo 'selected';?>><?php echo $reports_text['pastweek'];?></option>
-                            <option value="month" <?php if ($_REQUEST['within'] == 'month') echo 'selected';?>><?php echo $reports_text['pastmonth'];?></option>
-                            <option value="year" <?php if ($_REQUEST['within'] == 'year') echo 'selected';?>><?php echo $reports_text['pastyear'];?></option>
-                            <option value="all" <?php if ($_REQUEST['within'] == 'all') echo 'selected';?>><?php echo $reports_text['nolimit'];?></option>
+                            <option value="day" <?php if ($_REQUEST['within'] == 'day') echo 'selected="selected"';?>><?php echo $reports_text['pastday'];?></option>
+                            <option value="week" <?php if ($_REQUEST['within'] == 'week') echo 'selected="selected"';?>><?php echo $reports_text['pastweek'];?></option>
+                            <option value="month" <?php if ($_REQUEST['within'] == 'month') echo 'selected="selected"';?>><?php echo $reports_text['pastmonth'];?></option>
+                            <option value="year" <?php if ($_REQUEST['within'] == 'year') echo 'selected="selected"';?>><?php echo $reports_text['pastyear'];?></option>
+                            <option value="all" <?php if ($_REQUEST['within'] == 'all') echo 'selected="selected"';?>><?php echo $reports_text['nolimit'];?></option>
                         </select>
                     </td>
                 </tr>

@@ -297,6 +297,7 @@ if ($project_prefs['project_is_active'] == '1'
 <div id="search">
 <map id="projectsearchform" name="projectsearchform">
 <form action="index.php" method="get">
+<div>
 <input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>" />
 <input type="hidden" name="project" value="<?php if(isset($_GET['project']) && $_GET['project'] == '0') { echo '0'; } else { echo $project_id; }?>" />
   <em><?php echo $index_text['searchthisproject'];?>:</em>
@@ -467,6 +468,7 @@ if ($project_prefs['project_is_active'] == '1'
     </select>
 
     <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />
+</div>
 </form>
 </map>
 </div>
@@ -621,7 +623,8 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
 <div id="tasklist">
 
 <!-- This form for mass operations on tasks currently displayed -->
-<form action="index.php" name="massops" method="post">
+<form action="index.php" id="massops" method="post">
+   <div>
    <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
 
@@ -817,7 +820,7 @@ ORDER BY
       if ($total > 0) {
          echo "<td id=\"taskrange\">";
          printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
-         echo '&nbsp;&nbsp;<a href="javascript:void();" onclick="ToggleSelectedTasks()">Toggle selected</a>';
+         echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">Toggle selected</a>';
          echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . $_GET['order']) . "</td>";
       } else
       {
@@ -840,6 +843,7 @@ ORDER BY
    </div>
    <?php } ?>
 <!-- End of form to do mass operations on shown tasks -->
+</div> <!-- dummy div for xtml comliance -->
 </form>
 
 </div>
