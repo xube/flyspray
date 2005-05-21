@@ -733,11 +733,12 @@ if ($permissions['is_admin'] == '1')
    <table class="list">
    <?php
    $get_tasktypes = $db->Query("
-       SELECT *, count(t.task_id) AS used_in_tasks
-       FROM `flyspray_list_tasktype` tt
+       SELECT tt.*, count(t.task_id) AS used_in_tasks
+       FROM {$dbprefix}_list_tasktype tt
        LEFT JOIN {$dbprefix}_tasks t ON ( t.task_type = tt.tasktype_id )
        WHERE project_id = '0'
-       GROUP BY tt.tasktype_id
+       GROUP BY tt.tasktype_id, tt.tasktype_name, tt.list_position,
+       tt.show_in_list, tt.project_id 
        ORDER BY list_position");
    $countlines = 0;
    while ($row = $db->FetchArray($get_tasktypes)) {
@@ -823,11 +824,12 @@ if ($permissions['is_admin'] == '1')
   <table class="list">
     <?php
    $get_resolution = $db->Query("
-       SELECT *, count(t.task_id) AS used_in_tasks
+       SELECT r.*, count(t.task_id) AS used_in_tasks
        FROM {$dbprefix}_list_resolution r
        LEFT JOIN {$dbprefix}_tasks t ON ( t.resolution_reason = r.resolution_id )
        WHERE project_id = '0'
-       GROUP BY r.resolution_id
+       GROUP BY r.resolution_id, r.resolution_name, r.list_position,
+       r.show_in_list, r.project_id
        ORDER BY list_position");
     $countlines=0;
     while ($row = $db->FetchArray($get_resolution)) {
@@ -922,19 +924,25 @@ if ($permissions['is_admin'] == '1')
   </div>
   <table class="list">
     <?php
-    $get_categories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+    $get_categories = $db->Query("SELECT c.*, count(t.task_id) AS used_in_tasks
                                   FROM {$dbprefix}_list_category c
                                   LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
                                   WHERE project_id = '0' AND parent_id < '1'
-                                  GROUP BY c.category_id
+                                  GROUP BY c.category_id, c.project_id,
+				  c.category_name, c.list_position,
+				  c.show_in_list, c.category_owner,
+				  c.parent_id
                                   ORDER BY list_position");
     $countlines = 0;
     while ($row = $db->FetchArray($get_categories)) {
-       $get_subcategories = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+       $get_subcategories = $db->Query("SELECT c.*, count(t.task_id) AS used_in_tasks
                                         FROM {$dbprefix}_list_category c
                                         LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
                                         WHERE project_id = '0' AND parent_id = ?
-                                        GROUP BY c.category_id
+                                        GROUP BY c.category_id,
+					c.project_id, c.category_name,
+					c.list_position, c.show_in_list,
+					c.category_owner, c.parent_id
                                         ORDER BY list_position",
                                         array($row['category_id']));
     ?>
@@ -1110,11 +1118,13 @@ if ($permissions['is_admin'] == '1')
    </div>   
       <table class="list">
          <?php
-         $get_os = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+         $get_os = $db->Query("SELECT os.*, count(t.task_id) AS used_in_tasks
                                FROM {$dbprefix}_list_os os
                                LEFT JOIN {$dbprefix}_tasks t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
                                WHERE os.project_id = '0'
-                               GROUP BY os.os_id
+                               GROUP BY os.os_id, os.project_id,
+			       os.os_name, os.list_position,
+			       os.show_in_list
                                ORDER BY list_position");
          $countlines = 0;
          while ($row = $db->FetchArray($get_os)) {
@@ -1214,11 +1224,13 @@ if ($permissions['is_admin'] == '1')
          <table class="list">
 
          <?php
-         $get_version = $db->Query("SELECT *, count(t.task_id) AS used_in_tasks
+         $get_version = $db->Query("SELECT v.*, count(t.task_id) AS used_in_tasks
                                     FROM {$dbprefix}_list_version v
                                     LEFT JOIN {$dbprefix}_tasks t ON (t.product_version = v.version_id OR t.closedby_version = v.version_id AND t.attached_to_project = v.project_id)
                                     WHERE v.project_id = '0'
-                                    GROUP BY v.version_id
+                                    GROUP BY v.version_id, v.project_id,
+				    v.version_name, v.list_position,
+				    v.show_in_list, v.version_tense
                                     ORDER BY list_position"
                                   );
 
