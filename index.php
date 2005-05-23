@@ -37,6 +37,9 @@ if ($flyspray_prefs['reminder_daemon'] == '1')
 $lang = $flyspray_prefs['lang_code'];
 $fs->get_language_pack($lang, 'main');
 
+// Set the locale
+setlocale(LC_ALL, $language['locale']);
+
 // Get user permissions
 $permissions = array();
 if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
@@ -156,46 +159,42 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<head>
-   <title>Flyspray::&nbsp;&nbsp;<?php echo stripslashes($project_prefs['project_title']) . ':&nbsp;&nbsp;' ;?></title>
-   <link rel="icon" type="image/png"
-   <?php
-   if (file_exists("themes/$themestyle/favicon.ico"))
-   {
-      echo "href=\"{$flyspray_prefs['base_url']}themes/$themestyle/favicon.ico\"";
-   } else
-   {
-      echo "href=\"{$flyspray_prefs['base_url']}favicon.ico\"";
-   }
-   ?>
-   />
-   <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
-   <?php
-   echo '<link href="' . $flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/theme.css" rel="stylesheet" type="text/css" />' . "\n";
-   echo '<link rel="alternate" type="text/xml" title="Flyspray RSS Feed" href="' . $flyspray_prefs['base_url'] . 'scripts/rss.php?proj=' . $project_id . '" />' . "\n";
-   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/styleswitcher.js"></script>' . "\n";
-   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/tabs.js"></script>' . "\n";
-   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/functions.js"></script>' . "\n";
-
-   // This allows theme authors to include other code/javascript/dhtml to make their theme funky
-   if (file_exists($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php'))
-      include($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php');
-
-   echo '<!--[if IE 6]>';
-   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/ie_hover.js"></script>';
-   echo '<![endif]-->';
-
-   echo '<style type="text/css">@import url(' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-win2k-1.css);</style>';
-   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar_stripped.js"></script>';
-   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/lang/calendar-en.js"></script>';
-   echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-setup.js"></script>';
-    ?>
-
-</head>
-<body>
-
 <?php
+echo '<html lang="' . $language['locale'] . '" xml:lang="' . $language['locale'] . '">';
+echo "<head>\n";
+echo '<title>Flyspray::&nbsp;&nbsp;' . stripslashes($project_prefs['project_title']) . ":&nbsp;&nbsp;</title>\n";
+
+if (file_exists("themes/$themestyle/favicon.ico"))
+{
+   echo '<link rel="icon" type="image/png" href="' . $flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/favicon.ico" />';
+} else
+{
+   echo '<link rel="icon" type="image/png" href="' . $flyspray_prefs['base_url'] . 'favicon.ico" />';
+}
+
+echo '<meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />';
+echo '<link href="' . $flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/theme.css" rel="stylesheet" type="text/css" />' . "\n";
+echo '<link rel="alternate" type="application/rss+xml" title="Flyspray RSS Feed" href="' . $flyspray_prefs['base_url'] . 'scripts/rss.php?proj=' . $project_id . '" />' . "\n";
+echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/styleswitcher.js"></script>' . "\n";
+echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/tabs.js"></script>' . "\n";
+echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/functions.js"></script>' . "\n";
+
+// This allows theme authors to include other code/javascript/dhtml to make their theme funky
+if (file_exists($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php'))
+   include($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php');
+
+echo '<!--[if IE 6]>';
+echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/ie_hover.js"></script>';
+echo '<![endif]-->';
+
+echo '<style type="text/css">@import url(' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-win2k-1.css);</style>';
+echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar_stripped.js"></script>';
+echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/lang/calendar-en.js"></script>';
+echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-setup.js"></script>';
+
+echo '</head>';
+echo '<body>';
+
 // People might like to define their own header files for their theme
 $headerfile = "$basedir/themes/".$project_prefs['theme_style']."/header.inc.php";
 if(file_exists("$headerfile"))

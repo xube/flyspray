@@ -82,7 +82,7 @@ while ($row = $db->FetchArray($task_details))
 
    echo '<item>' . "\n";
    echo '<title>' . $item_summary . '</title>' . "\n";
-   echo '<description>' . $detailed_desc . '</description>' . "\n";
+   echo '<description>' . $fs->FormatText($detailed_desc) . '</description>' . "\n";
    echo '<link>' . $fs->CreateURL('details', $row['task_id']) . '</link>' . "\n";
    echo '</item>';
 }

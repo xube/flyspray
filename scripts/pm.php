@@ -1155,15 +1155,15 @@ if ($permissions['manage_project'] == '1')
             echo '<td>' . $fs->formatDate($pending_req['time_submitted'], true) . '</td>';
             echo '<td>' . stripslashes($pending_req['reason_given']) . '</td>';
 
-            echo '<td><a href="#" id="denyreq" class="button" onclick="showhidestuff(\'denyform' . $pending_req['request_id'] . '\');">' . $pm_text['deny'] . '</a>';
+            echo '<td><a href="#" class="button" onclick="showhidestuff(\'denyform' . $pending_req['request_id'] . '\');">' . $pm_text['deny'] . '</a>';
             echo '<div id="denyform' . $pending_req['request_id'] . '" class="denyform">';
-            echo '<form name="form3" action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">';
+            echo '<form action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">';
             echo '<div><input type="hidden" name="do" value="modify" />';
             echo '<input type="hidden" name="action" value="denypmreq" />';
             echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />';
             echo '<input type="hidden" name="req_id" value="' . $pending_req['request_id'] . '" />';
             echo $pm_text['givereason'];
-            echo '<textarea id="reason" name="deny_reason"></textarea><br />';
+            echo '<textarea name="deny_reason"></textarea><br />';
             echo '<input class="adminbutton" type="submit" value="' . $pm_text['deny'] . '" />';
             echo '</div></form>';
             echo '</div></td>';

@@ -14,6 +14,7 @@ NEW - Uses class.jabber.php for Jabber notifications
 NEW - Uses class.phpmailer for email notifications
 NEW - SMTP for email notifications
 NEW - XML-RPC interface for opening/closing tasks, and retriving user details
+NEW - New user accounts use MD5 for passwords.
 
 IMPROVED - Reliability of Jabber notifications
 IMPROVED - Admin and Project Manager areas are more consistant and easy to
@@ -25,6 +26,7 @@ IMPROVED - Much code has been moved to classes/functions (so is much more
            re-usable)
 IMPROVED - Statusbar is now used for almost all updates, and fades in a
            very pretty way.
+IMPROVED - Now formats dates using strftime() to achieve localised date strings
 
 FIXED - Permissions that were broken in last release
 FIXED - Now checks permissions before delivering attachments

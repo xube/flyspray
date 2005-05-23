@@ -334,10 +334,13 @@ if ($_POST['action'] == 'newtask'
          $fs->logEvent($_POST['task_id'], 14, $_POST['assigned_to'], $_POST['old_assigned']);
 
          // Notify the new assignee what happened
-         $to  = $notify->SpecificAddresses(array($_POST['assigned_to']));
-         $msg = $notify->GenerateMsg('14', $_POST['task_id']);
-         $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+         if ($new_details['assigned_to'] != $current_user['user_id'])
+         {
+            $to  = $notify->SpecificAddresses(array($_POST['assigned_to']));
+            $msg = $notify->GenerateMsg('14', $_POST['task_id']);
+            $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+            $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+         }
       }
 
       $_SESSION['SUCCESS'] = $modify_text['taskupdated'];

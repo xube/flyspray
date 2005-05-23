@@ -230,7 +230,7 @@ p#menu a {
    width                : 175px;
    color                : #5b5c5c;
    background-color     : transparent;
-   padding-left         : 25px;
+   padding              : 0 0 2px 25px;
    background-image     : url(dot-blue.png);
    background-position  : 5px 3px;
    background-repeat    : no-repeat;
@@ -673,28 +673,36 @@ div#taskblocks {
 }
 
 div#actionbuttons {
-   margin-top           : 15px;
+   margin-top           : 45px;
    margin-left          : 5px;
    clear                : bottom;
-   padding-bottom       : 7px;
+   float                : right;
+   display              : block;
+   width                : 22%;
+   border               : 1px solid green;
+   z-index              : 5;
+   background-image     : url(flies.jpg);
+   background-repeat    : no-repeat;
+   background-position  : 20px 35px;
 }
 
 div#actionbuttons a {
-   padding              : 0px 7px 0px 22px;
-   border               : 1px solid #779977;
-   color                : #c5c5c5;
-   background-color     : #ffffff;
+   padding              : 0 0 2px 25px;
+   border               : none;
+   color                : #5b5c5c;
+   background-color     : transparent;
    background-image     : url(dot-blue.png);
    background-repeat    : no-repeat;
    background-position  : 2px 3px;
    margin               : 3px;
+   display              : block;
 }
 
 div#actionbuttons a:hover {
-   padding              : 0px 7px 0px 22px;
-   border               : 1px solid #779977;
+   padding              : 0 0 2px 25px;
+   border               : none;
    color                : #5b5c5c;
-   background-color     : transparent;
+   background-color     : #eeffee;
    text-decoration      : none;
    background-image     : url(dot-green.png);
    background-repeat    : no-repeat;
@@ -853,6 +861,7 @@ div#toolbox h3 {
 div.tab {
    color                : #828282;
    background-color     : #ffffff;
+   width                : 75%;
 }
 
 #submenu a {
@@ -963,7 +972,7 @@ input.adminbutton:hover {
 
 div#intromessage {
    margin               : 5px 220px 5px 0px;
-   min-height           : 85px;
+   min-height           : 95px;
    border               : 1px dotted #a0a0a0;
 }
 

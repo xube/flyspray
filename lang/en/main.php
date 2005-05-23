@@ -3,6 +3,8 @@
 global $language;
 $language = array (
 
+'locale'                   =>    'en_AU',     // Required, starting in 0.9.8
+
 'filenotexist'             =>    'File does not exist, or you do not have permission to access it.',  // Changed in version 0.9.8
 'showtask'                 =>    'Show Task',
 'now'                      =>    'Now',

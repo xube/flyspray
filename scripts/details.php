@@ -466,7 +466,7 @@ if ($task_details['project_is_active'] == '1'
                </tr>
             </table>
          </div>
-       </div>  
+       </div>
       </form>
       </div>
 
@@ -782,7 +782,7 @@ if ($task_details['project_is_active'] == '1'
          {
             if ($dependency['is_closed'] == '1')
             {
-               echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
+               echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . stripslashes($dependency['item_summary']) . "</a>";
             } else
             {
                echo '<a href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
@@ -810,7 +810,7 @@ if ($task_details['project_is_active'] == '1'
                <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
                <input class="admintext" type="text" name="dep_task_id" size="5" maxlength="10" />
                <input class="adminbutton" type="submit" name="submit" value="<?php echo $details_text['addnew'];?>" />
-              </div> 
+              </div>
             </form>
 
          <?php
@@ -826,7 +826,7 @@ if ($task_details['project_is_active'] == '1'
             if ($block['is_closed'] == '1')
             {
                // Put a line through the blocking task if it's closed
-               echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
+               echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . stripslashes($block['item_summary']) . "</a><br />\n";
             } else
             {
                echo '<a href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
@@ -898,7 +898,7 @@ if ($task_details['project_is_active'] == '1'
                      <label for="reason"><?php echo $details_text['givereason'];?></label>
                      <textarea id="reason" name="reason_given"></textarea><br />
                      <input class="adminbutton" type="submit" value="<?php echo $details_text['submitreq'];?>" />
-                    </div> 
+                    </div>
                   </form>
                </div>
          <?php
@@ -985,7 +985,7 @@ if ($task_details['project_is_active'] == '1'
             <label for="reason"><?php echo $details_text['givereason'];?></label>
             <textarea id="reason" name="reason_given"></textarea><br />
             <input class="adminbutton" type="submit" value="<?php echo $details_text['submitreq'];?>" />
-           </div> 
+           </div>
          </form>
       </div>
 
@@ -1623,7 +1623,7 @@ if (@$permissions['manage_project'] == '1')
 
          <br />
 
-         <textarea class="admintext" name="reminder_message" rows="10" cols="72"><?php echo "{$details_text['defaultreminder']}\n\n{$flyspray_prefs['base_url']}?do=details&amp;id={$_GET['id']}";?></textarea>
+         <textarea class="admintext" name="reminder_message" rows="10" cols="72"><?php echo $details_text['defaultreminder'] . "\n\n" . $fs->CreateURL('details', $_GET['id']);?></textarea>
 
          <br />
 

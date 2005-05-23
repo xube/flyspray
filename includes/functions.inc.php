@@ -358,9 +358,9 @@ function GetTaskDetails($task_id)
       }
 
       if($dateformat == '')
-         $dateformat = $extended ? "l, j M Y, g:ia" : "Y-m-d";
+         $dateformat = $extended ? "%A, %d %B %Y, %I:%M%p" : "%Y-%m-%d";
 
-      return date($dateformat, $timestamp);
+      return strftime($dateformat, $timestamp);
    }
 
 

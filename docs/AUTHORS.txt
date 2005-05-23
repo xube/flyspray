@@ -3,7 +3,7 @@ Primary Developer:
       Tony Collins
       Melbourne, Australia
       http://tony.rocks.cc/
-    
+
 The Development Team:
 
       Konrad Roziewski
@@ -15,9 +15,13 @@ The Development Team:
       URL?
 
 
+We would particularly like to thank:
+      Mac Newbold for extensive testing during leadup to the 0.9.8 release.
+
+
 Other contributors:
 
-      Flyspray bottle logo designed by Robert Martinez 
+      Flyspray bottle logo designed by Robert Martinez
       http://www.mray.de/
 
       Some HTML rendering cleanups by Stefan Huber
