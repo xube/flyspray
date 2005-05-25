@@ -259,7 +259,7 @@ if ($permissions['manage_project'] == '1')
       echo '<fieldset class="admin">';
       echo '<legend>' . $admin_text['usergroups'] . '</legend>';
 
-      echo "<p><a href=\"index.php?do=newgroup&amp;project=$project_id\">{$admin_text['newgroup']}</a></p>\n\n";
+      echo '<p><a href="' . $fs->CreateURL('newgroup', $project_id) . "\">{$admin_text['newgroup']}</a></p>\n\n";
 
       // We have to make sure that a user isn't displayed in the user list at the bottom of the page
       // if they're already in a project group... so we set up an array...
@@ -273,7 +273,7 @@ if ($permissions['manage_project'] == '1')
 
       while ($group = $db->FetchArray($get_groups))
       {
-         echo '<a class="grouptitle" href="?do=pm&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
+         echo '<a class="grouptitle" href="' . $fs->CreateURL('projgroup', $group['group_id']) . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
          echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
          // Now, create a form used for moving multiple users between groups
@@ -298,7 +298,7 @@ if ($permissions['manage_project'] == '1')
             array_push($user_checklist, $row['user_id']);
 
             echo "<tr><td><input type=\"checkbox\" name=\"users[{$row['user_id']}]\" value=\"1\" /></td>\n";
-            echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
+            echo "<td><a href=\"" . $fs->CreateURL('user', $row['user_id']) . "\">{$row['user_name']}</a></td>\n";
             echo "<td>{$row['real_name']}</td>\n";
             if ($row['account_enabled'] == "1") {
                echo "<td>{$admin_text['yes']}</td>";
@@ -524,12 +524,12 @@ if ($permissions['manage_project'] == '1')
    <table class="list">
    <?php
    $get_tasktypes = $db->Query("SELECT tt.*, count(t.task_id) AS used_in_tasks
-				 FROM {$dbprefix}_list_tasktype tt
-				 LEFT JOIN {$dbprefix}_tasks t ON ( t.task_type = tt.tasktype_id )
-				 WHERE project_id = ?
-				 GROUP BY tt.tasktype_id, tt.tasktype_name, tt.list_position,
-				 tt.show_in_list, tt.project_id 
-				 ORDER BY list_position",
+             FROM {$dbprefix}_list_tasktype tt
+             LEFT JOIN {$dbprefix}_tasks t ON ( t.task_type = tt.tasktype_id )
+             WHERE project_id = ?
+             GROUP BY tt.tasktype_id, tt.tasktype_name, tt.list_position,
+             tt.show_in_list, tt.project_id
+             ORDER BY list_position",
                                 array($project_id)
                               );
    $countlines = 0;
@@ -612,12 +612,12 @@ if ($permissions['manage_project'] == '1')
   <table class="list">
     <?php
    $get_resolution = $db->Query("SELECT r.*, count(t.task_id) AS used_in_tasks
-				 FROM {$dbprefix}_list_resolution r
-				 LEFT JOIN {$dbprefix}_tasks t ON ( t.resolution_reason = r.resolution_id )
-				 WHERE project_id = ?
-				 GROUP BY r.resolution_id, r.resolution_name, r.list_position,
-				 r.show_in_list, r.project_id
-				 ORDER BY list_position",
+             FROM {$dbprefix}_list_resolution r
+             LEFT JOIN {$dbprefix}_tasks t ON ( t.resolution_reason = r.resolution_id )
+             WHERE project_id = ?
+             GROUP BY r.resolution_id, r.resolution_name, r.list_position,
+             r.show_in_list, r.project_id
+             ORDER BY list_position",
                                  array($project_id)
                                );
 
@@ -711,25 +711,25 @@ if ($permissions['manage_project'] == '1')
       <table class="list">
          <?php
          $get_categories = $db->Query("SELECT c.*, count(t.task_id) AS used_in_tasks
-				       FROM {$dbprefix}_list_category c
-				       LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
-				       WHERE project_id = ? AND parent_id < ?
-				       GROUP BY c.category_id, c.project_id,
-				       c.category_name, c.list_position,
-				       c.show_in_list, c.category_owner,
-				       c.parent_id
-				       ORDER BY list_position", array($project_id, '1'));
+                   FROM {$dbprefix}_list_category c
+                   LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
+                   WHERE project_id = ? AND parent_id < ?
+                   GROUP BY c.category_id, c.project_id,
+                   c.category_name, c.list_position,
+                   c.show_in_list, c.category_owner,
+                   c.parent_id
+                   ORDER BY list_position", array($project_id, '1'));
          $countlines = 0;
          while ($row = $db->FetchArray($get_categories)) {
            $get_subcategories = $db->Query("SELECT c.*, count(t.task_id) AS used_in_tasks
-					    FROM {$dbprefix}_list_category c
-					    LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
-					    WHERE project_id = ? AND parent_id = ?
-					    GROUP BY c.category_id,
-					    c.project_id, c.category_name,
-					    c.list_position, c.show_in_list,
-					    c.category_owner, c.parent_id
-					    ORDER BY list_position", array($project_id, $row['category_id']));
+                   FROM {$dbprefix}_list_category c
+                   LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
+                   WHERE project_id = ? AND parent_id = ?
+                   GROUP BY c.category_id,
+                   c.project_id, c.category_name,
+                   c.list_position, c.show_in_list,
+                   c.category_owner, c.parent_id
+                   ORDER BY list_position", array($project_id, $row['category_id']));
          ?>
             <tr>
                <td>
@@ -908,8 +908,8 @@ if ($permissions['manage_project'] == '1')
              LEFT JOIN {$dbprefix}_tasks t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
              WHERE os.project_id = ?
              GROUP BY os.os_id, os.project_id,
-	     os.os_name, os.list_position,
-	     os.show_in_list
+        os.os_name, os.list_position,
+        os.show_in_list
              ORDER BY list_position", array($project_id));
          $countlines = 0;
          while ($row = $db->FetchArray($get_os)) {
@@ -1008,11 +1008,11 @@ if ($permissions['manage_project'] == '1')
              SELECT v.*, count(t.task_id) AS used_in_tasks
              FROM {$dbprefix}_list_version v
              LEFT JOIN {$dbprefix}_tasks t ON ((t.product_version = v.version_id OR t.closedby_version = v.version_id)
-						  AND t.attached_to_project = v.project_id)
+                    AND t.attached_to_project = v.project_id)
              WHERE v.project_id = ?
              GROUP BY v.version_id, v.project_id,
-	     v.version_name, v.list_position,
-	     v.show_in_list, v.version_tense
+        v.version_name, v.list_position,
+        v.show_in_list, v.version_tense
              ORDER BY list_position", array($project_id));
          $countlines = 0;
          while ($row = $db->FetchArray($get_version)) {

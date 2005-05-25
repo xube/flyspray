@@ -512,8 +512,8 @@ if ($permissions['is_admin'] == '1')
          echo '<fieldset class="admin">';
          echo '<legend>' . $admin_text['usergroups'] . '</legend>';
 
-         echo '<p><a href="index.php?do=newuser">' . $admin_text['newuser'] . '</a> | ';
-         echo '<a href="index.php?do=newgroup&amp;project=0">' . $admin_text['newgroup'] . '</a></p>';
+         echo '<p><a href="' . $fs->CreateURL('newuser', null) . '">' . $admin_text['newuser'] . '</a> | ';
+         echo '<a href="' . $fs->CreateURL('newgroup', '0') . '">' . $admin_text['newgroup'] . '</a></p>';
 
 
          // Cycle through the global groups
@@ -524,7 +524,7 @@ if ($permissions['is_admin'] == '1')
 
          while ($group = $db->FetchArray($get_groups))
          {
-            echo '<a class="grouptitle" href="?do=admin&amp;area=editgroup&amp;id=' . $group['group_id'] . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
+            echo '<a class="grouptitle" href="' . $fs->CreateURL('group', $group['group_id']) . '">' . stripslashes($group['group_name']) . '</a>' . "\n";
             echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
             // Now, start a form to allow use to move multiple users between groups
@@ -548,7 +548,7 @@ if ($permissions['is_admin'] == '1')
             while ($row = $db->FetchArray($get_user_list))
             {
                echo "<tr><td><input type=\"checkbox\" name=\"users[{$row['user_id']}]\" value=\"1\" /></td>\n";
-               echo "<td><a href=\"?do=admin&amp;area=users&amp;id={$row['user_id']}\">{$row['user_name']}</a></td>\n";
+               echo "<td><a href=\"" . $fs->CreateURL('user', $row['user_id']) . "\">{$row['user_name']}</a></td>\n";
                echo "<td>{$row['real_name']}</td>\n";
                if ($row['account_enabled'] == "1") {
                   echo "<td>{$admin_text['yes']}</td>";
@@ -738,7 +738,7 @@ if ($permissions['is_admin'] == '1')
        LEFT JOIN {$dbprefix}_tasks t ON ( t.task_type = tt.tasktype_id )
        WHERE project_id = '0'
        GROUP BY tt.tasktype_id, tt.tasktype_name, tt.list_position,
-       tt.show_in_list, tt.project_id 
+       tt.show_in_list, tt.project_id
        ORDER BY list_position");
    $countlines = 0;
    while ($row = $db->FetchArray($get_tasktypes)) {
@@ -929,9 +929,9 @@ if ($permissions['is_admin'] == '1')
                                   LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
                                   WHERE project_id = '0' AND parent_id < '1'
                                   GROUP BY c.category_id, c.project_id,
-				  c.category_name, c.list_position,
-				  c.show_in_list, c.category_owner,
-				  c.parent_id
+              c.category_name, c.list_position,
+              c.show_in_list, c.category_owner,
+              c.parent_id
                                   ORDER BY list_position");
     $countlines = 0;
     while ($row = $db->FetchArray($get_categories)) {
@@ -940,9 +940,9 @@ if ($permissions['is_admin'] == '1')
                                         LEFT JOIN {$dbprefix}_tasks t ON (t.product_category = c.category_id)
                                         WHERE project_id = '0' AND parent_id = ?
                                         GROUP BY c.category_id,
-					c.project_id, c.category_name,
-					c.list_position, c.show_in_list,
-					c.category_owner, c.parent_id
+               c.project_id, c.category_name,
+               c.list_position, c.show_in_list,
+               c.category_owner, c.parent_id
                                         ORDER BY list_position",
                                         array($row['category_id']));
     ?>
@@ -1115,7 +1115,7 @@ if ($permissions['is_admin'] == '1')
       <input type="hidden" name="list_type" value="os" />
       <input type="hidden" name="project_id" value="0" />
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-   </div>   
+   </div>
       <table class="list">
          <?php
          $get_os = $db->Query("SELECT os.*, count(t.task_id) AS used_in_tasks
@@ -1123,8 +1123,8 @@ if ($permissions['is_admin'] == '1')
                                LEFT JOIN {$dbprefix}_tasks t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
                                WHERE os.project_id = '0'
                                GROUP BY os.os_id, os.project_id,
-			       os.os_name, os.list_position,
-			       os.show_in_list
+                os.os_name, os.list_position,
+                os.show_in_list
                                ORDER BY list_position");
          $countlines = 0;
          while ($row = $db->FetchArray($get_os)) {
@@ -1229,8 +1229,8 @@ if ($permissions['is_admin'] == '1')
                                     LEFT JOIN {$dbprefix}_tasks t ON (t.product_version = v.version_id OR t.closedby_version = v.version_id AND t.attached_to_project = v.project_id)
                                     WHERE v.project_id = '0'
                                     GROUP BY v.version_id, v.project_id,
-				    v.version_name, v.list_position,
-				    v.show_in_list, v.version_tense
+                v.version_name, v.list_position,
+                v.show_in_list, v.version_tense
                                     ORDER BY list_position"
                                   );
 

@@ -319,7 +319,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
     // If the user's account is closed
    } else {
       echo "<br />{$language['disabledaccount']}";
-      $fs->Redirect($fs->CreateURL('authenticate', 'logout'));
+      $fs->Redirect($fs->CreateURL('logout', null));
    // End of checking if the user's account is open
    }
 

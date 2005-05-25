@@ -740,6 +740,16 @@ function GetTaskDetails($task_id)
             break;
             case "user": $url = $flyspray_prefs['base_url'] . '?do=admin&amp;area=users&amp;id=' . $arg1;
             break;
+            case "newuser": $url = $flyspray_prefs['base_url'] . '?do=newuser';
+            break;
+            case "register": $url = $flyspray_prefs['base_url'] . '?do=register';
+            break;
+            case "newgroup": $url = $flyspray_prefs['base_url'] . '?do=newgroup&project=' . $arg1;
+            break;
+            case "group": $url = $flyspray_prefs['base_url'] . '?do=admin&area=editgroup&id=' . $arg1;
+            break;
+            case "projgroup": $url = $flyspray_prefs['base_url'] . '?do=pm&area=editgroup&id=' . $arg1 . '/' . $arg2;
+            break;
             case "logout": $url = $flyspray_prefs['base_url'] . '?do=authenticate&amp;action=logout';
             break;
          }
@@ -764,7 +774,17 @@ function GetTaskDetails($task_id)
          break;
          case "myprofile": $url = $flyspray_prefs['base_url'] . 'myprofile';
          break;
-         case "user": $url = $flyspray_prefs['base_url'] . 'admin/users/' . $arg1;
+         case "user": $url = $flyspray_prefs['base_url'] . 'user/' . $arg1;
+         break;
+         case "newuser": $url = $flyspray_prefs['base_url'] . 'newuser';
+         break;
+         case "register": $url = $flyspray_prefs['base_url'] . 'register';
+         break;
+         case "newgroup": $url = $flyspray_prefs['base_url'] . 'newgroup/proj' . $arg1;
+         break;
+         case "group": $url = $flyspray_prefs['base_url'] . 'group/' . $arg1;
+         break;
+         case "projgroup": $url = $flyspray_prefs['base_url'] . 'projgroup/' . $arg1;
          break;
          case "logout": $url = $flyspray_prefs['base_url'] . 'logout';
          break;
