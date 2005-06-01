@@ -30,7 +30,7 @@ $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
 $this_page = str_replace('&', '&amp;', $this_page);
 
 // Background daemon that does scheduled reminders
-if ($flyspray_prefs['reminder_daemon'] == '1')
+if ($conf['general']['reminder_daemon'] == '1')
    $fs->startReminderDaemon();
 
 // Get the translation for the wrapper page (this page)
@@ -130,11 +130,11 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 {
    // Start Output Buffering and gzip encoding if setting is present.
    // This functionality provided Mariano D'Arcangelo
-   if ($conf_array['general']['output_buffering']=='gzip')
+   if ($conf['general']['output_buffering']=='gzip')
    {
       include_once( 'includes/gzip_compress.php' );
 
-   } elseif ($conf_array['general']['output_buffering']=='on')
+   } elseif ($conf['general']['output_buffering']=='on')
    {
       ob_start();
    }
@@ -151,7 +151,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
                   . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage']
                   . '&amp;date=' . $_GET['date'] . '&amp;project=' . @$_GET['project'];
 
-      $_SESSION['lastindexfilter'] = $flyspray_prefs['base_url'] . 'index.php?tasks=' . $_GET['tasks']
+      $_SESSION['lastindexfilter'] = $conf['baseurl'] . 'index.php?tasks=' . $_GET['tasks']
                                      . '&amp;pagenum=' . $_GET['pagenum'] . $extraurl;
 
       if (isset($_GET['order']))
@@ -166,31 +166,31 @@ echo '<title>Flyspray::&nbsp;&nbsp;' . stripslashes($project_prefs['project_titl
 
 if (file_exists("themes/$themestyle/favicon.ico"))
 {
-   echo '<link rel="icon" type="image/png" href="' . $flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/favicon.ico" />';
+   echo '<link rel="icon" type="image/png" href="' . $conf['general']['baseurl'] . 'themes/' . $themestyle . '/favicon.ico" />';
 } else
 {
-   echo '<link rel="icon" type="image/png" href="' . $flyspray_prefs['base_url'] . 'favicon.ico" />';
+   echo '<link rel="icon" type="image/png" href="' . $conf['general']['baseurl'] . 'favicon.ico" />';
 }
 
 echo '<meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />';
-echo '<link href="' . $flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/theme.css" rel="stylesheet" type="text/css" />' . "\n";
-echo '<link rel="alternate" type="application/rss+xml" title="Flyspray RSS Feed" href="' . $flyspray_prefs['base_url'] . 'scripts/rss.php?proj=' . $project_id . '" />' . "\n";
-echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/styleswitcher.js"></script>' . "\n";
-echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/tabs.js"></script>' . "\n";
-echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/functions.js"></script>' . "\n";
+echo '<link href="' . $conf['general']['baseurl'] . 'themes/' . $themestyle . '/theme.css" rel="stylesheet" type="text/css" />' . "\n";
+echo '<link rel="alternate" type="application/rss+xml" title="Flyspray RSS Feed" href="' . $conf['general']['baseurl'] . 'scripts/rss.php?proj=' . $project_id . '" />' . "\n";
+echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/styleswitcher.js"></script>' . "\n";
+echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/tabs.js"></script>' . "\n";
+echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/functions.js"></script>' . "\n";
 
 // This allows theme authors to include other code/javascript/dhtml to make their theme funky
-if (file_exists($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php'))
-   include($flyspray_prefs['base_url'] . 'themes/' . $themestyle . '/header.php');
+if (file_exists($conf['general']['baseurl'] . 'themes/' . $themestyle . '/header.php'))
+   include($conf['general']['baseurl'] . 'themes/' . $themestyle . '/header.php');
 
 echo '<!--[if IE 6]>';
-echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/ie_hover.js"></script>';
+echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/ie_hover.js"></script>';
 echo '<![endif]-->';
 
-echo '<style type="text/css">@import url(' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-win2k-1.css);</style>';
-echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar_stripped.js"></script>';
-echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/lang/calendar-en.js"></script>';
-echo '<script type="text/javascript" src="' . $flyspray_prefs['base_url'] . 'includes/jscalendar/calendar-setup.js"></script>';
+echo '<style type="text/css">@import url(' . $conf['general']['baseurl'] . 'includes/jscalendar/calendar-win2k-1.css);</style>';
+echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/jscalendar/calendar_stripped.js"></script>';
+echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/jscalendar/lang/calendar-en.js"></script>';
+echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/jscalendar/calendar-setup.js"></script>';
 
 echo '</head>';
 echo '<body>';
@@ -344,7 +344,7 @@ if (isset($_SESSION['SUCCESS']))
 <div id="content">
 
 <div id="projectselector">
-<form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="get">
+<form action="<?php echo $conf['general']['baseurl'];?>index.php" method="get">
       <p>
       <select name="tasks">
         <option value="all"><?php echo $language['tasksall'];?></option>
@@ -418,7 +418,7 @@ if (isset($_SESSION['SUCCESS']))
 </div>
 
 <!-- We somehow need to make this work with the new Funky URLs -->
-<form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="get">
+<form action="<?php echo $conf['baseurl'];?>index.php" method="get">
     <p id="showtask">
       <label><?php echo $language['showtask'];?> #
       <input id="taskid" name="id" type="text" size="10" maxlength="10" accesskey="t" /></label>

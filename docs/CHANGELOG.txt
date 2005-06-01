@@ -15,6 +15,7 @@ NEW - Uses class.phpmailer for email notifications
 NEW - SMTP for email notifications
 NEW - XML-RPC interface for opening/closing tasks, and retriving user details
 NEW - New user accounts use MD5 for passwords.
+NEW - Attaching multiple files to tasks and comments.
 
 IMPROVED - Reliability of Jabber notifications
 IMPROVED - Admin and Project Manager areas are more consistant and easy to

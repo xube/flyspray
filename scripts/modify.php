@@ -1982,6 +1982,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 } elseif ($_POST['action'] == 'requestclose')
 {
+   // Retrieve details on the task we want to close
    $task_details = $fs->GetTaskDetails($_POST['task_id']);
 
    // Log the admin request
@@ -1990,7 +1991,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    // Log this event to the task history
    $fs->logEvent($_POST['task_id'], 20, $_POST['reason_given']);
 
-   // Now, get the project managers details for this project
+   // Now, get the project managers' details for this project
    $get_pms = $db->Query("SELECT u.user_id
                           FROM {$dbprefix}_users u
                           LEFT JOIN {$dbprefix}_users_in_groups uig ON u.user_id = uig.user_id

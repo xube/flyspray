@@ -61,14 +61,6 @@ if ($permissions['is_admin'] == '1')
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="globaloptions" />
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
-            <label id="baseurllabel" for="baseurl"><?php echo $admin_text['baseurl'];?></label>
-            </td>
-            <td>
-            <input id="baseurl" name="base_url" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['base_url'];?>" />
-            </td>
-         </tr>
-         <tr>
-            <td>
             <label id="defaultprojectlabel" for="defaultproject"><?php echo $admin_text['defaultproject'];?></label>
             </td>
             <td>
@@ -136,14 +128,6 @@ if ($permissions['is_admin'] == '1')
             </td>
             <td>
             <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>" />
-            </td>
-         </tr>
-         <tr>
-            <td>
-            <label id="usereminderdaemonlabel" for="usereminderdaemon"><?php echo $admin_text['usereminderdaemon'];?></label>
-            </td>
-            <td>
-            <input id="usereminderdaemon" type="checkbox" name="reminder_daemon" value="1" <?php if ($flyspray_prefs['reminder_daemon'] == '1') { echo "checked=\"checked\"";};?> />
             </td>
          </tr>
       </table>
@@ -345,12 +329,6 @@ if ($permissions['is_admin'] == '1')
                };
                ?>
             </select>
-            </td>
-         </tr>
-         <tr>
-            <td><label id="funkyurlslabel"><?php echo $admin_text['addrewrite'];?></label></td>
-            <td class="admintext">
-               <input type="checkbox" name="funky_urls" value="1" <?php if (!empty($flyspray_prefs['funky_urls'])) echo 'checked="yes"';?> />
             </td>
          </tr>
          <tr>

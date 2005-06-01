@@ -35,24 +35,29 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 $conf_file = $path . $slash . "flyspray.conf.php";
 
 // Load the config file
-$conf_array = @parse_ini_file($conf_file, true);
+$conf = @parse_ini_file($conf_file, true);
 
 // Set values from the config file. Once these settings are loaded a connection
 // is made to the database to retrieve all the other preferences.
-$basedir     = $conf_array['general']['basedir'];
-$adodbpath   = $conf_array['general']['adodbpath'];
-//$jpgraphpath = $conf_array['general']['jpgraphpath'];
-$cookiesalt  = $conf_array['general']['cookiesalt'];
-$dbtype      = $conf_array['database']['dbtype'];
-$dbhost      = $conf_array['database']['dbhost'];
-$dbname      = $conf_array['database']['dbname'];
-$dbprefix    = $conf_array['database']['dbprefix'];
-$dbuser      = $conf_array['database']['dbuser'];
-$dbpass      = $conf_array['database']['dbpass'];
+$basedir     = $conf['general']['basedir'];
+$baseurl     = $conf['general']['baseurl'];
+$adodbpath   = $conf['general']['adodbpath'];
+$cookiesalt  = $conf['general']['cookiesalt'];
+$dbtype      = $conf['database']['dbtype'];
+$dbhost      = $conf['database']['dbhost'];
+$dbname      = $conf['database']['dbname'];
+$dbprefix    = $conf['database']['dbprefix'];
+$dbuser      = $conf['database']['dbuser'];
+$dbpass      = $conf['database']['dbpass'];
 
    if (substr($basedir,-1,1) != '/')
    {
       $basedir .= '/';
+   }
+
+   if (substr($baseurl,-1,1) != '/')
+   {
+      $baseurl .= '/';
    }
 
 include_once ( $adodbpath );

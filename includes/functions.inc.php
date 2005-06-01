@@ -105,13 +105,14 @@ class Flyspray {
    {
       global $db;
       global $dbprefix;
+      global $conf;
 
       $get_prefs = $db->Query("SELECT pref_name, pref_value FROM {$dbprefix}_prefs");
 
       $global_prefs = array();
-      while ($row = $db->FetchRow($get_prefs)) {
+
+      while ($row = $db->FetchRow($get_prefs))
          $global_prefs[$row['pref_name']] = $row['pref_value'];
-      }
 
       return $global_prefs;
    }
@@ -205,7 +206,7 @@ function GetTaskDetails($task_id)
    {
       global $db;
       global $dbprefix;
-      global $flyspray_prefs;
+      global $conf;
 
       $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
 
@@ -340,7 +341,7 @@ function GetTaskDetails($task_id)
    {
       global $db;
       global $dbprefix;
-      global $flyspray_prefs;
+      global $conf;
 
       $dateformat = '';
       $format_id = $extended ? "dateformat_extended" : "dateformat";
@@ -427,12 +428,12 @@ function GetTaskDetails($task_id)
    // To stop some browsers showing a blank box when an image doesn't exist
    function ShowImg($path, $alt_text)
    {
-      global $flyspray_prefs;
+      global $conf;
 
       if(file_exists($path))
       {
          list($width, $height, $type, $attr) = getimagesize($path);
-         return "<img src=\"{$flyspray_prefs['base_url']}$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
+         return "<img src=\"{$conf['baseurl']}$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
       }
    // End of ShowImg function
    }
@@ -577,7 +578,7 @@ function GetTaskDetails($task_id)
    // This function removes html, slashes and other nasties
    function formatText($text)
    {
-      global $flyspray_prefs;
+      global $conf;
 
       $text = htmlspecialchars($text);
       $text = nl2br($text);
@@ -717,76 +718,76 @@ function GetTaskDetails($task_id)
    */
    function CreateURL($type, $arg1, $arg2=0, $arg3=0)
    {
-      global $flyspray_prefs;
+      global $conf;
 
-      // If we don't want address rewriting
-      if(empty($flyspray_prefs['funky_urls']))
+      // If we do want address rewriting
+      if($conf['general']['address_rewriting'] == '1')
       {
          switch ($type)
          {
-            case "details": $url = $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $arg1;
+            case "details": $url = $conf['general']['baseurl'] . 'task/' . $arg1;
             break;
-            case "edittask": $url = $flyspray_prefs['base_url'] . '?do=details&amp;id=' . $arg1 . '&amp;edit=yep';
+            case "edittask": $url = $conf['general']['baseurl'] . 'task/' . $arg1 . '/edit';
             break;
-            case "admin": $url = $flyspray_prefs['base_url'] . '?do=admin&amp;area=' . $arg1;
+            case "admin": $url = $conf['general']['baseurl'] . 'admin/' . $arg1;
             break;
-            case "pm": $url = $flyspray_prefs['base_url'] . '?do=pm&amp;area=' . $arg1 . '&amp;project=' . $arg2;
+            case "pm": $url = $conf['general']['baseurl'] . 'pm/proj' . $arg2 . '/' . $arg1;
             break;
-            case "newtask": $url = $flyspray_prefs['base_url'] . '?do=newtask&amp;project=' . $arg1;
+            case "newtask": $url = $conf['general']['baseurl'] . 'newtask/proj' . $arg1;
             break;
-            case "reports": $url = $flyspray_prefs['base_url'] . '?do=reports';
+            case "reports": $url = $conf['general']['baseurl'] . 'reports';
             break;
-            case "myprofile": $url = $flyspray_prefs['base_url'] . '?do=myprofile';
+            case "myprofile": $url = $conf['general']['baseurl'] . 'myprofile';
             break;
-            case "user": $url = $flyspray_prefs['base_url'] . '?do=admin&amp;area=users&amp;id=' . $arg1;
+            case "user": $url = $conf['general']['baseurl'] . 'user/' . $arg1;
             break;
-            case "newuser": $url = $flyspray_prefs['base_url'] . '?do=newuser';
+            case "newuser": $url = $conf['general']['baseurl'] . 'newuser';
             break;
-            case "register": $url = $flyspray_prefs['base_url'] . '?do=register';
+            case "register": $url = $conf['general']['baseurl'] . 'register';
             break;
-            case "newgroup": $url = $flyspray_prefs['base_url'] . '?do=newgroup&project=' . $arg1;
+            case "newgroup": $url = $conf['general']['baseurl'] . 'newgroup/proj' . $arg1;
             break;
-            case "group": $url = $flyspray_prefs['base_url'] . '?do=admin&area=editgroup&id=' . $arg1;
+            case "group": $url = $conf['general']['baseurl'] . 'group/' . $arg1;
             break;
-            case "projgroup": $url = $flyspray_prefs['base_url'] . '?do=pm&area=editgroup&id=' . $arg1 . '/' . $arg2;
+            case "projgroup": $url = $conf['general']['baseurl'] . 'projgroup/' . $arg1;
             break;
-            case "logout": $url = $flyspray_prefs['base_url'] . '?do=authenticate&amp;action=logout';
+            case "logout": $url = $conf['general']['baseurl'] . 'logout';
             break;
          }
+
 
          return $url;
       }
 
-      // If we do want address rewriting
       switch ($type)
       {
-         case "details": $url = $flyspray_prefs['base_url'] . 'task/' . $arg1;
+         case "details": $url = $conf['general']['baseurl'] . '?do=details&amp;id=' . $arg1;
          break;
-         case "edittask": $url = $flyspray_prefs['base_url'] . 'task/' . $arg1 . '/edit';
+         case "edittask": $url = $conf['general']['baseurl'] . '?do=details&amp;id=' . $arg1 . '&amp;edit=yep';
          break;
-         case "admin": $url = $flyspray_prefs['base_url'] . 'admin/' . $arg1;
+         case "admin": $url = $conf['general']['baseurl'] . '?do=admin&amp;area=' . $arg1;
          break;
-         case "pm": $url = $flyspray_prefs['base_url'] . 'pm/proj' . $arg2 . '/' . $arg1;
+         case "pm": $url = $conf['general']['baseurl'] . '?do=pm&amp;area=' . $arg1 . '&amp;project=' . $arg2;
          break;
-         case "newtask": $url = $flyspray_prefs['base_url'] . 'newtask/proj' . $arg1;
+         case "newtask": $url = $conf['general']['baseurl'] . '?do=newtask&amp;project=' . $arg1;
          break;
-         case "reports": $url = $flyspray_prefs['base_url'] . 'reports';
+         case "reports": $url = $conf['general']['baseurl'] . '?do=reports';
          break;
-         case "myprofile": $url = $flyspray_prefs['base_url'] . 'myprofile';
+         case "myprofile": $url = $conf['general']['baseurl'] . '?do=myprofile';
          break;
-         case "user": $url = $flyspray_prefs['base_url'] . 'user/' . $arg1;
+         case "user": $url = $conf['general']['baseurl'] . '?do=admin&amp;area=users&amp;id=' . $arg1;
          break;
-         case "newuser": $url = $flyspray_prefs['base_url'] . 'newuser';
+         case "newuser": $url = $conf['general']['baseurl'] . '?do=newuser';
          break;
-         case "register": $url = $flyspray_prefs['base_url'] . 'register';
+         case "register": $url = $conf['general']['baseurl'] . '?do=register';
          break;
-         case "newgroup": $url = $flyspray_prefs['base_url'] . 'newgroup/proj' . $arg1;
+         case "newgroup": $url = $conf['general']['baseurl'] . '?do=newgroup&project=' . $arg1;
          break;
-         case "group": $url = $flyspray_prefs['base_url'] . 'group/' . $arg1;
+         case "group": $url = $conf['general']['baseurl'] . '?do=admin&area=editgroup&id=' . $arg1;
          break;
-         case "projgroup": $url = $flyspray_prefs['base_url'] . 'projgroup/' . $arg1;
+         case "projgroup": $url = $conf['general']['baseurl'] . '?do=pm&area=editgroup&id=' . $arg1 . '/' . $arg2;
          break;
-         case "logout": $url = $flyspray_prefs['base_url'] . 'logout';
+         case "logout": $url = $conf['general']['baseurl'] . '?do=authenticate&amp;action=logout';
          break;
       }
 

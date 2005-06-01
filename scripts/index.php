@@ -820,7 +820,10 @@ ORDER BY
       if ($total > 0) {
          echo "<td id=\"taskrange\">";
          printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
+
+         if (isset($_COOKIE['flyspray_userid']))
          echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">Toggle selected</a>';
+
          echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . $_GET['order']) . "</td>";
       } else
       {
