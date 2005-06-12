@@ -753,6 +753,8 @@ function GetTaskDetails($task_id)
             break;
             case "logout": $url = $conf['general']['baseurl'] . 'logout';
             break;
+            case "error":  $url = $conf['general']['baseurl'] . 'error';
+            break;
          }
 
 
@@ -788,6 +790,8 @@ function GetTaskDetails($task_id)
          case "projgroup": $url = $conf['general']['baseurl'] . '?do=pm&area=editgroup&id=' . $arg1 . '/' . $arg2;
          break;
          case "logout": $url = $conf['general']['baseurl'] . '?do=authenticate&amp;action=logout';
+         break;
+         case "error": $url = $conf['general']['baseurl'] . '?do=error';
          break;
       }
 

@@ -12,7 +12,8 @@ $fs->get_language_pack($lang, 'index');
 
 // Only load this page if a valid task was actually requested
 if (!$fs->GetTaskDetails($_GET['id']))
-   die ( "<p><strong>{$details_text['showdetailserror']}</strong></p>" );
+   $fs->Redirect( $fs->CreateURL('error', null) );
+   //die ( "<p><strong>{$details_text['showdetailserror']}</strong></p>" );
 
 $task_details = $fs->GetTaskDetails($_GET['id']);
 
@@ -684,7 +685,8 @@ if ($task_details['project_is_active'] == '1'
                </tr>
                <tr>
                   <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
-                  <td id="percent"><?php echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png", $task_details['percent_complete'] . '% ' . $details_text['complete']);?></td>
+                  <td id="percent">
+                  <?php echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/percent-' . $task_details['percent_complete'] . '.png" title="' . $task_details['percent_complete'] . '% ' . $details_text['complete'] . '" />';?></td>
                </tr>
             </table>
          </div>
@@ -711,7 +713,7 @@ if ($task_details['project_is_active'] == '1'
                while ($attachment = $db->FetchArray($attachments))
                {
                   echo '<span class="attachments">';
-                  echo '<a href="' . $flyspray_prefs['base_url'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
+                  echo '<a href="' . $conf['general']['baseurl'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
 
                   // Let's strip the mimetype to get the icon image name
                   list($main, $specific) = split('[/]', $attachment['file_type']);
@@ -719,10 +721,10 @@ if ($task_details['project_is_active'] == '1'
                   $imgpath = $basedir . "themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png";
                   if (file_exists($imgpath))
                   {
-                     echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png", $attachment['file_type']);
+                     echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/mime/' . $attachment['file_type'] . '.png" title="' . $attachment['file_type'] . '" />';
                   }else
                   {
-                     echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/mime/$main.png", $attachment['file_type']);
+                     echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/mime/' . $main . '.png" title="' . $attachment['file_type'] . '" />';
                   }
 
                   echo '&nbsp;&nbsp;' . $attachment['orig_name'];
@@ -1118,19 +1120,20 @@ while ($row = $db->FetchArray($getcomments))
    if (@$permissions['view_comments'] == '1' OR $project_prefs['others_view'] == '1')
    {
 //       echo $row['comment_id'];
-      echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">' .
-      $fs->ShowImg("themes/{$project_prefs['theme_style']}/menu/comment.png", $details_text['commentlink']) . '</a>' . $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
+      echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">';
+      echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/menu/comment.png" title="' . $details_text['commentlink'] . '" /></a>';
+      echo $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
 
       // If the user has permission, show the edit button
       if (@$permissions['edit_comments'] == '1')
       {
-         echo '&nbsp; - <a href="' . $flyspray_prefs['base_url'] . '?do=editcomment&amp;task_id=' . $_GET['id'] . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
+         echo '&nbsp; - <a href="' . $conf['general']['baseurl'] . '?do=editcomment&amp;task_id=' . $_GET['id'] . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
       }
       // If the user has permission, show the delete button
       if (@$permissions['delete_comments'] == '1')
       {
          ?>
-         &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deletecomment&amp;task_id=<?php echo $_GET['id'];?>&amp;comment_id=<?php echo $row['comment_id'];?>"
+         &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deletecomment&amp;task_id=<?php echo $_GET['id'];?>&amp;comment_id=<?php echo $row['comment_id'];?>"
          onclick="if(confirm('<?php echo $details_text['confirmdeletecomment'];?>')) {
          return true
          } else {
@@ -1157,18 +1160,18 @@ while ($row = $db->FetchArray($getcomments))
          while ($attachment = $db->FetchArray($attachments))
          {
             echo '<span class="attachments">';
-            echo '<a href="' . $flyspray_prefs['base_url'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
+            echo '<a href="' . $conf['general']['baseurl'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
 
             // Let's strip the mimetype to get the icon image name
             list($main, $specific) = split('[/]', $attachment['file_type']);
 
-            $imgpath = $basedir . "themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png";
+            $imgpath = $basedir . "{$conf['general']['baseurl']}themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png";
             if (file_exists($imgpath))
             {
-               echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png", $attachment['file_type']);
+               echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/mime/' . $attachment['file_type'] . '.png" title="' . $attachment['file_type'] . '" />';
             }else
             {
-               echo $fs->ShowImg("themes/{$project_prefs['theme_style']}/mime/$main.png", $attachment['file_type']);
+               echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/mime/' . $main . '.png" title="' . $attachment['file_type'] . '" />';
             }
 
             echo '&nbsp;&nbsp;' . $attachment['orig_name'];
@@ -1178,7 +1181,7 @@ while ($row = $db->FetchArray($getcomments))
             if (@$permissions['delete_attachments'] == '1')
             {
             ?>
-            &nbsp;-&nbsp;<a href="<?php echo $flyspray_prefs['base_url'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
+            &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
             onclick="if(confirm('<?php echo $details_text['confirmdeleteattach'];?>')) {
             return true
             } else {
@@ -2030,8 +2033,9 @@ if (@$permissions['view_history'] == '1')
 
 <?php
 } else {
-// If no task was actually requested, show an error
-echo "<p><strong>{$details_text['showdetailserror']}</strong></p>";
+// If no task was actually requested, redirect to the error page
+   $fs->Redirect( $fs->CreateURL('error', null) );
+   //echo "<p><strong>{$details_text['showdetailserror']}</strong></p>";
 
 };
 ?>

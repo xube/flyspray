@@ -19,7 +19,8 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 
     } else {
 
-        print "Getfile request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+        //print "Getfile request is invalid."; exit;
     };
 };
 
@@ -35,7 +36,8 @@ if (isset($_GET['order']) && !empty($_GET['order']))
 
     } else {
 
-        print "Order request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+        //print "Order request is invalid."; exit;
     };
 };
 
@@ -47,7 +49,8 @@ if (isset($_GET['sort']) && !empty($_GET['sort']))
       // continue;
     } else {
 
-        print "Sorting request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Sorting request is invalid."; exit;
     };
 
 };
@@ -61,7 +64,8 @@ if (isset($_GET['project']) && !empty($_GET['project'])) {
 
     } else {
 
-        print "Project request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Project request is invalid."; exit;
     };
 };
 
@@ -74,7 +78,8 @@ if (isset($_GET['page']) && !empty($_GET['page']))
 
     } else {
 
-        print "Page request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Page request is invalid."; exit;
     };
 };
 
@@ -87,7 +92,8 @@ if (isset($_REQUEST['action']) && !empty($_REQUEST['action']))
 
     } else {
 
-        print "$tmp_action - Action request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "$tmp_action - Action request is invalid."; exit;
     };
 };
 
@@ -95,13 +101,14 @@ if (isset($_REQUEST['action']) && !empty($_REQUEST['action']))
 if (isset($_REQUEST['do']) && !empty($_REQUEST['do'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment)$/", $_REQUEST['do'])) {
+    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment|error)$/", $_REQUEST['do'])) {
 
        // continue;
 
     } else {
 
-        print "$tmp_action - Do request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "$tmp_action - Do request is invalid."; exit;
     };
 };
 
@@ -111,7 +118,8 @@ if (isset($_REQUEST['id']) && !empty($_REQUEST['id']))
     if (is_array($_REQUEST['id'])) {
         foreach($_REQUEST['id'] as $id) {
             if (!preg_match ("/^\d+$/", $id)) {
-                die("ID request is invalid.");
+               $fs->Redirect($fs->CreateURL('error', null));
+//                 die("ID request is invalid.");
             };
         };
     } else {
@@ -122,7 +130,8 @@ if (isset($_REQUEST['id']) && !empty($_REQUEST['id']))
 
         } else {
 
-            print "ID request is invalid."; exit;
+            //print "ID request is invalid."; exit;
+            $fs->Redirect($fs->CreateURL('error', null));
         };
      };
  };
@@ -136,7 +145,8 @@ if (isset($_REQUEST['user_name']) && !empty($_REQUEST['user_name']))
       // continue;
     } else {
 
-        print "Username request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Username request is invalid."; exit;
     };
 };
 
@@ -149,7 +159,8 @@ if (isset($_GET['real_name']) && !empty($_GET['real_name'])){
 
     } else {
 
-        print "RealName request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "RealName request is invalid."; exit;
     };
 };
 
@@ -164,7 +175,8 @@ if (isset($_GET['email_address']) && !empty($_GET['email_address']))
       // continue;
     } else {
 
-        print "Email Address request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Email Address request is invalid."; exit;
     };
 };
 
@@ -176,7 +188,8 @@ if (isset($_GET['notify_type']) && !empty($_GET['notify_type']))
       // continue;
     } else {
 
-        print "Notify Type request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Notify Type request is invalid."; exit;
     };
 };
 
@@ -191,7 +204,8 @@ if (isset($_GET['jabber_id']) && !empty($_GET['jabber_id']))
        // continue;
     } else {
 
-        print "Jabber ID request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Jabber ID request is invalid."; exit;
     };
 };
 
@@ -203,7 +217,8 @@ if (isset($_GET['area']) && !empty($_GET['area']))
        // continue;
     } else {
 
-        print "Area request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Area request is invalid."; exit;
     };
 };
 
@@ -213,7 +228,9 @@ if (isset($_GET['report']) && !empty($_GET['report']))
     if (preg_match ("/^(summary|changelog|events|severity|age)$/", $_GET['report'])) {
        // continue;
     } else {
-        print "Report request is invalid."; exit;
+
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Report request is invalid."; exit;
     };
 };
 
@@ -225,7 +242,8 @@ if (isset($_GET['pagenum']) && !empty($_GET['pagenum']))
       // continue;
     } else {
 
-        print "Page Number request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Page Number request is invalid."; exit;
     };
 };
 
@@ -237,7 +255,8 @@ if (isset($_GET['perpage']) && !empty($_GET['perpage']))
        // continue;
     } else {
 
-        print "Per Page request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Per Page request is invalid."; exit;
     };
 };
 
@@ -249,7 +268,8 @@ if (isset($_GET['dev']) && !empty($_GET['dev']))
        // continue;
     } else
     {
-        print "Developer request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Developer request is invalid."; exit;
     }
 }
 
@@ -261,7 +281,8 @@ if (isset($_GET['sev']) && !empty($_GET['sev'])) {
        // continue;
     } else {
 
-        print "Severity request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Severity request is invalid."; exit;
     };
 };
 
@@ -273,7 +294,8 @@ if (isset($_GET['cat']) && !empty($_GET['cat']))
        // continue;
     } else {
 
-        print "Category request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Category request is invalid."; exit;
     };
 };
 
@@ -285,7 +307,8 @@ if (isset($_GET['status']) && !empty($_GET['status']))
        // continue;
     } else {
 
-        print "Status request is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Status request is invalid."; exit;
     };
 };
 
@@ -297,7 +320,8 @@ if (isset($_REQUEST['magic']) && !empty($_REQUEST['magic'])) {
       // continue;
     } else {
 
-        print "Magic URL is invalid."; exit;
+      $fs->Redirect($fs->CreateURL('error', null));
+//         print "Magic URL is invalid."; exit;
     };
 };
 ?>

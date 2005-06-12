@@ -387,6 +387,7 @@ class Notifications {
          $body .= $details_text['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
          $body .= $details_text['category'] . ' - ' . $task_details['category_name'] . "\n";
          $body .= $details_text['status'] . ' - ' . $task_details['status_name'] . "\n";
+         $body .= $details_text['assignedto'] . ' - ' . $task_details['assigned_to_name'] . "\n";
          $body .= $details_text['operatingsystem'] . ' - ' . $task_details['os_name'] . "\n";
          $body .= $details_text['severity'] . ' - ' . $task_details['severity_name'] . "\n";
          $body .= $details_text['priority'] . ' - ' . $task_details['priority_name'] . "\n";

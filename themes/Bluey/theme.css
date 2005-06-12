@@ -994,6 +994,15 @@ span#navigation a#prev {
    padding              : 10px 15px 0 20px;
 }
 
+div#error {
+   margin               : 30px;
+   padding              : 10px;
+   background-color     : #feffc2;
+   color                : #000;
+   font-size            : 150%;
+   font-family          : Helvetica, Verdana, sans-serif;
+   border               : 2px solid red;
+}
 
 /* End of the @screen section */
 }

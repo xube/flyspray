@@ -62,15 +62,16 @@ $dbpass      = $conf['database']['dbpass'];
 
 include_once ( $adodbpath );
 include_once ( "$basedir/includes/functions.inc.php" );
-include_once ( "$basedir/includes/regexp.php" );
 include_once ( "$basedir/includes/db.inc.php" );
 include_once ( "$basedir/includes/backend.inc.php" );
-include_once ( "$basedir/includes/markdown.php" );
 
 // Define our functions classes
 $fs = new Flyspray;
 $db = new Database;
 $be = new Backend;
+
+include_once ( "$basedir/includes/markdown.php" );
+include_once ( "$basedir/includes/regexp.php" );
 
 // Check PHP Version (Must Be at least 4.3)
 if (PHP_VERSION  < '4.3.0')

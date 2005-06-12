@@ -47,7 +47,8 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    // Check to see if the user has been trying to hack their cookies to perform sql-injection
    if (!preg_match ("/^\d*$/", $_COOKIE['flyspray_userid']) OR (!preg_match ("/^\d*$/", @$_COOKIE['flyspray_project'])))
    {
-      die("Stop hacking your cookies, you naughty fellow!");
+      $fs->Redirect( $fs->CreateURL('error', null) );
+      //die("Stop hacking your cookies, you naughty fellow!");
    }
 
    // Fetch info on the current user
@@ -122,7 +123,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
       readfile("$path");
    } else
    {
-      echo $language['filenotexist'];
+      $fs->Redirect( $fs->CreateURL('error', null) );
    }
 
 // If no file was requested, show the page as per normal
@@ -418,16 +419,28 @@ if (isset($_SESSION['SUCCESS']))
 </div>
 
 <!-- We somehow need to make this work with the new Funky URLs -->
-<form action="<?php echo $conf['baseurl'];?>index.php" method="get">
+<form action="<?php echo $conf['general']['baseurl'];?>index.php" method="get">
     <p id="showtask">
       <label><?php echo $language['showtask'];?> #
-      <input id="taskid" name="id" type="text" size="10" maxlength="10" accesskey="t" /></label>
-      <input type="hidden" name="do" value="details" />
+      <input id="taskid" name="show_task" type="text" size="10" maxlength="10" accesskey="t" /></label>
+      <!--<input type="hidden" name="do" value="details" />-->
       <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>" />
     </p>
 </form>
 
 <?php
+// If someone used the 'show task' form above, redirect them
+if ( isset($_GET['show_task']) )
+{
+   if ( is_numeric($_GET['show_task']) )
+   {
+      $fs->Redirect( $fs->CreateURL('details', $_GET['show_task']) );
+   } else
+   {
+      $fs->Redirect( $fs->CreateURL('error', null) );
+   }
+}
+
 
 // Show the project blurb if the project manager defined one
 if ($project_prefs['project_is_active'] == '1'

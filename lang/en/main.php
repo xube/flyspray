@@ -56,5 +56,12 @@ $language = array (
 'hide'                     =>    'Hide',
 'pendingreq'               =>    'PM requests waiting',
 
+'errorpage'                =>    'Flyspray cannot provide the page you requested.
+                                 Perhaps you requested a task that does not exist, or you
+                                 do not have permission to view the page you wanted.<br /><br />
+                                 You may have tried to use a naughty URL to interact with the database
+                                 backend using SQL injection.  If this is true, go to the corner and think
+                                 about your actions.  When you return, please do not do it again!',
+
 );
 ?>
