@@ -31,7 +31,7 @@ $modify_text = array (
 'status'            =>        'Status:',
 'operatingsystem'   =>        'System operacyjny:',
 'severity'          =>        'Ważność:',
-'reportedversion'   =>        'Dotyczy wersji:',
+'reportedversion'   =>        'Obecne w wersji:',
 'dueinversion'      =>        'Obecne do wersji:',
 'percentcomplete'   =>        'Procent zaawansowania:',
 'details'           =>        'Szczegóły:',
@@ -166,6 +166,12 @@ $modify_text = array (
 'taskmadepublic'        =>        'Zgłoszenie ponownie ustawione jako publiczne',
 'realandnotify'         =>        'Musisz wypełnić pola \'Imię i nazwisko\' oraz \'Adres e-mail\' lub \'Jabber ID\'.',
 
+// Added in version 0.9.8
+
+'pmreqdenied'           =>       'Menedżer projektu odrzucił prośbę',
+'massopsuccess'         =>       'Operacja zbiorowa udana (tam, gdzie pozwalały na to uprawnienia)',
+'usernotexist'          =>       'Użytkownik nie istnieje',
+'commentattachperms'    =>       'Nie możesz usunąć komentarza - brak uprawnień do usuwania załączników',
 );
 // vim:fenc=utf-8:enc=utf-8:nowrap
 ?>

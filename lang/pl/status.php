@@ -15,7 +15,8 @@ $status_list = array (
 '5'        =>        'Oczekuje na informacje',
 '6'        =>        'Wymaga testów',
 '7'        =>        'Ponownie otwarte',
-'8'        =>        'Zamknięte',
+// Removed in version 0.9.6
+//'8'	=>	'Zamknięte',
 
 );
 // vim:fenc=utf-8:enc=utf-8

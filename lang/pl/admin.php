@@ -11,7 +11,7 @@
 
 $admin_text = array (
 
-'edituser'	=>	'Edycja użytkownika',
+'edituser'	=>	'Edycja danych użytkownika',
 'username'	=>	'Nazwa użytkownika',
 'realname'	=>	'Imię i nazwisko',
 'emailaddress'	=>	'Adres e-mail',
@@ -111,7 +111,7 @@ $admin_text = array (
 'dateformat'		=>  'Format daty',
 'dateformat_extended'	=>  'Rozszerzony format daty',
 'subcategoryof'		=>  'Kategoria nadrzędna',
-'visiblecolumns'	=>  'Kolumny obecne na liście zadań',
+'visiblecolumns'	=>  'Kolumny widoczne na liście zadań',
 'tense'			=>  'Czas',
 'listtensetip'		=>  'Przeszłe, obecne, przyszłe',
 'past'			=>  'Przeszła',
@@ -169,6 +169,28 @@ $admin_text = array (
 'userregistration'      =>      'Rejestracja użytkowników',
 'notifications'         =>      'Powiadomienia',
 'resetoptions'          =>      'Przywróć ustawienia',
+
+// Added in version 0.9.8
+
+'preferences'           =>    'Ustawienia',
+'tasktypes'             =>    'Typy zgłoszeń',
+'resolutions'           =>    'Powody zamknięcia',
+'categories'            =>    'Kategorie',
+'operatingsystems'      =>    'Systemy operacyjne',
+'versions'              =>    'Wersje',
+'admintoolbox'          =>    'Narzędzia administratora',
+'newproject'            =>    'Nowy projekt',
+'delete'                =>    'Usuń',
+'listdeletetip'         =>    'Usuń element',
+'lookandfeel'           =>    'Wygląd i zachowanie',
+'globaltheme'           =>    'Temat globalny',
+'emailnotify'           =>    'Powiadomienia email',
+'fromaddress'           =>    'Adres nadawcy',
+'smtpserver'            =>    'Serwer SMTP',
+'smtpuser'              =>    'Nazwa użytkownika SMTP',
+'smtppass'              =>    'Hasło użytkownika SMTP',
+'addrewrite'            =>    'Używaj przyjaznych adresów',
+'usereminderdaemon'     =>    'Włącz demona przypomnień',
 
 );
 // vim:fenc=utf-8:enc=utf-8

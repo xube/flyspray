@@ -42,11 +42,24 @@ $index_text = array (
 'lastedit'		=>	'Data ostatniej edycji',
 'assignedto'		=>	'Przydzielone dla',
 'os'			=>	'System operacyjny',
-'reportedin'		=>	'Dotyczy wersji',
+'reportedin'		=>	'Obecne w wersji',
 'openedby'		=>	'Zgłoszone przez',
 'comments'          	=>	'Komentarze',
 'attachments'		=>	'Załączniki',
 'priority'		=>	'Priorytet',
+
+
+// Added in version 0.9.8
+'taskrange'                =>    'Pokazane zadania %d - %d z %d',
+'noresults'                =>    'Żadne zgłoszenie nie spełnia warunków wyszukiwania.',
+'takeaction'               =>    'Wybierz czynność',
+'watchtasks'               =>    'Obserwuj zaznaczone',
+'stopwatching'             =>    'Przestań obserwować zaznaczone',
+'assigntome'               =>    'Przydziel mi zaznaczone zadania',
+'dueby'                    =>    'Obecne do',
+'duedate'                  =>    'Obecne do dnia',
+'dueanytime'               =>    'dowolnego',
+'selectduedate'            =>    'Wybierz datę',
 
 
 );

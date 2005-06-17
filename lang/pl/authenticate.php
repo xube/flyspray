@@ -18,6 +18,7 @@ $authenticate_text = array (
 // Added in 0.9.7
 'accountdisabled'   =>  'Twoje konto jest nieaktywne. Skontaktuj się z administratorem.',
 
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>

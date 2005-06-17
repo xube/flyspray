@@ -13,6 +13,13 @@ $functions_text = array (
 'back'		=>	'Wróć',
 'forward'	=>	'Prześlij',
 
+// Added in version 0.9.8
+'previous'              =>    'Poprzednia',
+'next'                  =>    'Następna',
+'first'                 =>    'Pierwsza',
+'last'                  =>    'Ostatnia',
+'page'                  =>    'Strona %d z %d',
+
 );
 // vim:fenc=utf-8:enc=utf-8
 ?>

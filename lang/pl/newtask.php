@@ -20,7 +20,7 @@ $newtask_text = array (
 'noone'		=>	'Nikogo',
 'operatingsystem'	=>	'System operacyjny',
 'severity'	=>	'Ważność',
-'reportedversion'	=>	'Dotyczy wersji',
+'reportedversion'	=>	'Obecne w wersji',
 'dueinversion'	=>	'Obecne do wersji',
 'details'	=>	'Szczegóły',
 'addanother'	=>	'Potem dodaj kolejne zgłoszenie',
@@ -32,6 +32,12 @@ $newtask_text = array (
 'notifyme'	=>	'Powiadom mnie, gdy zgłoszenie zostanie zmienione',
 'priority'	=>	'Priorytet',
 'undecided'	=>	'Nie zdecydowano',
+
+// Added in version 0.9.8
+'newtask'                     =>    'Nowe zgłoszenie',
+'attachafile'                 =>    'Dołącz plik',
+'description'                 =>    'Opis',
+'duedate'                     =>    'Obecne do dnia',
 
 );
 // vim:fenc=utf-8:enc=utf-8

@@ -22,7 +22,7 @@ $details_text = array (
 'noone'		=>	'Nikogo',
 'operatingsystem'	=>	'System operacyjny',
 'severity'	=>	'Ważność',
-'reportedversion'	=>	'Dotyczy wersji',
+'reportedversion'	=>	'Obecne w wersji',
 'dueinversion'	=>	'Obecne do wersji',
 'undecided'	=>	'Nie wskazano',
 'percentcomplete'	=>	'Procent postępu',
@@ -135,6 +135,28 @@ $details_text = array (
 'makepublic'          =>   'Zmień na publiczne',
 'taskmadeprivate'    =>    'Zgłoszenie zmienione na prywatne',
 'taskmadepublic'     =>    'Prywatność usunięta - zgłoszenie zmienione na publiczne',
+
+
+// Added in version 0.9.8
+
+'confirmdeletecomment'  =>    'Czy na pewno chcesz usunąć komentarz? Wszelkie załączniki zostaną również usunięte!',
+'confirmdeleteattach'   =>    'Czy na pewno chcesz usunąć załącznik?',
+'selectedhistory'       =>    'Pokazane zostały wybrane szczegóły historii.',
+'showallhistory'        =>    'Ponownie pokaż pełną historię',
+'hidethis'              =>    'Ponownie ukryj obszar',
+'mark100'               =>    'Oznacz zgłoszenie jako wykonane w 100%',
+'watchtask'             =>    'Śledź zgłoszenie',
+'stopwatching'          =>    'Przestań śledzić zgłoszenie',
+'commentlink'           =>    'Link do komentarza',
+'submitreq'             =>    'Wyślij prośbę',
+'givereason'            =>    'Powód prośby',
+'pmreqdenied'           =>    'Menedżer projektu odrzucił prośbę',
+'taskpendingreq'        =>    'Prośba zgłoszona menedżerowi projektu.  Więcej szczegółów w zakładce Historia.',
+'previoustask'          =>    'Poprzednie zgłoszenie',
+'nexttask'              =>    'Następne zgłoszenie',
+'duedate'               =>    'Obecne do dnia',
+'selectmorefiles'       =>    'Więcej plików',
+'attachnoperms'         =>    'Komentarz posiada załączniki, ale nie masz uprawnień, by je zobaczyć.',
 
 );
 // vim:fenc=utf-8:enc=utf-8
