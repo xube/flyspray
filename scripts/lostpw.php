@@ -20,7 +20,7 @@ $fs->get_language_pack($lang, 'admin');
     echo '<br /><br />' . "\n";
 
     echo '<div class="admin">' . "\n";
-    echo '<form action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">' . "\n";
+    echo '<form action="' . $conf['general']['baseurl'] . 'index.php" method="post">' . "\n";
     echo '<input type="hidden" name="do" value="modify" />' . "\n";
     echo '<input type="hidden" name="action" value="sendmagic" />' . "\n";
     echo '<b>' . $admin_text['username'] . '</b>' . "\n";

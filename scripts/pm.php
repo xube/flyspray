@@ -53,7 +53,7 @@ if ($permissions['manage_project'] == '1')
       echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $project_prefs['project_title'] . ': ' . $admin_text['preferences'] . '</h3>';
    ?>
 
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
 
       <fieldset class="admin">
 
@@ -277,7 +277,7 @@ if ($permissions['manage_project'] == '1')
          echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
          // Now, create a form used for moving multiple users between groups
-         echo '<form action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">' . "\n";
+         echo '<form action="' . $conf['general']['baseurl'] . 'index.php" method="post">' . "\n";
 
          echo '<div><input type="hidden" name="do" value="modify" />' . "\n";
          echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
@@ -338,7 +338,7 @@ if ($permissions['manage_project'] == '1')
 
 
       // Create a form used for adding users to a project group
-      echo '<form action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">' . "\n";
+      echo '<form action="' . $conf['general']['baseurl'] . 'index.php" method="post">' . "\n";
       echo '<div><input type="hidden" name="do" value="modify" />'. "\n";
       echo '<input type="hidden" name="action" value="addtogroup" />'. "\n";
       echo '<input type="hidden" name="project_id" value="' . $project_id . '" />'. "\n";
@@ -403,7 +403,7 @@ if ($permissions['manage_project'] == '1')
       <fieldset class="admin">
       <legend><?php echo $admin_text['editgroup'];?></legend>
 
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
       <table class="admin">
          <tr>
             <td>
@@ -514,7 +514,7 @@ if ($permissions['manage_project'] == '1')
    <fieldset class="admin">
    <legend><?php echo $admin_text['tasktypes'];?></legend>
 
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
    <div>
    <input type="hidden" name="do" value="modify" />
    <input type="hidden" name="action" value="update_list" />
@@ -567,7 +567,7 @@ if ($permissions['manage_project'] == '1')
    </table>
    </form>
    <hr />
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
    <table class="list">
       <tr>
          <td>
@@ -602,7 +602,7 @@ if ($permissions['manage_project'] == '1')
    <fieldset class="admin">
    <legend><?php echo $admin_text['resolutions'];?></legend>
 
-  <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+  <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
   <div>
   <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="action" value="update_list" />
@@ -658,7 +658,7 @@ if ($permissions['manage_project'] == '1')
     </table>
     </form>
     <hr />
-    <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+    <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
     <table class="list">
       <tr>
         <td>
@@ -700,7 +700,7 @@ if ($permissions['manage_project'] == '1')
 
       <p><?php echo $admin_text['listnote'];?></p>
       <div class="admin">
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
         <div>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update_category" />
@@ -816,7 +816,7 @@ if ($permissions['manage_project'] == '1')
       <hr />
 
       <!-- Form to add a new category to the list -->
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
             <div>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_category" />
@@ -892,7 +892,7 @@ if ($permissions['manage_project'] == '1')
 
    <p><?php echo $admin_text['listnote'];?></p>
    <div class="admin">
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
       <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="update_list" />
@@ -949,7 +949,7 @@ if ($permissions['manage_project'] == '1')
       <hr />
 
       <!-- Form to add a new operating system to the list -->
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
       <div>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="add_to_list" />
@@ -994,7 +994,7 @@ if ($permissions['manage_project'] == '1')
 
       <p><?php echo $admin_text['listnote'];?></p>
       <div class="admin">
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
       <div>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update_version_list" />
@@ -1060,7 +1060,7 @@ if ($permissions['manage_project'] == '1')
       <hr />
 
       <!-- Form to add a new version to the list -->
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
       <div>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_to_version_list" />
@@ -1157,7 +1157,7 @@ if ($permissions['manage_project'] == '1')
 
             echo '<td><a href="#" class="button" onclick="showhidestuff(\'denyform' . $pending_req['request_id'] . '\');">' . $pm_text['deny'] . '</a>';
             echo '<div id="denyform' . $pending_req['request_id'] . '" class="denyform">';
-            echo '<form action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">';
+            echo '<form action="' . $conf['general']['baseurl'] . 'index.php" method="post">';
             echo '<div><input type="hidden" name="do" value="modify" />';
             echo '<input type="hidden" name="action" value="denypmreq" />';
             echo '<input type="hidden" name="prev_page" value="' . $this_page . '" />';

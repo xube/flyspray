@@ -595,7 +595,7 @@ $subject = $register_text['noticefrom'] . ' ' . $flyspray_prefs['project_title']
 
 $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 {$modify_text['addressused']}\n
-{$flyspray_prefs['base_url']}index.php?do=register&magic=$magic_url \n
+{$conf['general']['baseurl']}index.php?do=register&magic=$magic_url \n
 {$modify_text['confirmcodeis']}\n
 {$confirm_code}";
 
@@ -895,7 +895,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'jabber_password'", array($_POST['jabber_password']));
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'anon_group'", array($_POST['anon_group']));
 
-   $base_url = trim($_POST['base_url']);
+   /*$base_url = trim($_POST['base_url']);
 
    if (substr($base_url,-1,1) != '/')
    {
@@ -903,7 +903,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    }
 
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'base_url'", array($base_url));
-
+*/
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'user_notify'", array($_POST['user_notify']));
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'admin_email'", array($_POST['admin_email']));
    $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'lang_code'", array($_POST['lang_code']));
@@ -2256,7 +2256,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
       $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
 {$modify_text['magicurlmessage']} \n
-{$flyspray_prefs['base_url']}index.php?do=lostpw&amp;magic=$magic_url\n";
+{$conf['general']['baseurl']}index.php?do=lostpw&amp;magic=$magic_url\n";
       // End of generating a message
 
       // Send the brief notification message

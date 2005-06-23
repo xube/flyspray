@@ -120,7 +120,7 @@ $modify_text = array (
 'customiseproject'      =>        'Customise this project',
 'projectupdated'        =>        'Project preferences updated',
 'emptytitle'            =>        'You left the Project Title field blank.  Go back and fix it.',
-'loginbelow'            =>        'You may now attempt to login using the form below.',
+'loginbelow'            =>        'You may now attempt to login.',      // Changed in version 0.9.8
 'attachmentdeleted'     =>        'The attachment has been deleted',
 
 // Added in 0.9.6

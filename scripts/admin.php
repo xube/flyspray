@@ -49,7 +49,7 @@ if ($permissions['is_admin'] == '1')
       echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['preferences'] . '</h3>';
       ?>
 
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
 
       <fieldset class="admin">
 
@@ -383,7 +383,7 @@ if ($permissions['is_admin'] == '1')
 
          <legend><?php echo $admin_text['edituser'];?></legend>
 
-         <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+         <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
          <table class="admin">
             <tr>
                <td>
@@ -506,7 +506,7 @@ if ($permissions['is_admin'] == '1')
             echo '<p>' . stripslashes($group['group_desc']) . "</p>\n";
 
             // Now, start a form to allow use to move multiple users between groups
-            echo '<form action="' . $flyspray_prefs['base_url'] . 'index.php" method="post">' . "\n";
+            echo '<form action="' . $conf['general']['baseurl'] . 'index.php" method="post">' . "\n";
 
             echo '<div><input type="hidden" name="do" value="modify" />' . "\n";
             echo '<input type="hidden" name="action" value="movetogroup" />' . "\n";
@@ -572,7 +572,7 @@ if ($permissions['is_admin'] == '1')
 
 ?>
 
-  <form action="<?php echo $flyspray_prefs['base_url'];?>index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
+  <form action="<?php echo $conf['general']['baseurl'];?>index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
   <table class="admin">
     <tr>
       <td>
@@ -701,7 +701,7 @@ if ($permissions['is_admin'] == '1')
    <fieldset class="admin">
    <legend><?php echo $admin_text['tasktypes'];?></legend>
 
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
    <div>
    <input type="hidden" name="do" value="modify" />
    <input type="hidden" name="action" value="update_list" />
@@ -753,7 +753,7 @@ if ($permissions['is_admin'] == '1')
    </table>
    </form>
    <hr />
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
    <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="add_to_list" />
@@ -792,7 +792,7 @@ if ($permissions['is_admin'] == '1')
    <fieldset class="admin">
    <legend><?php echo $admin_text['resolutions'];?></legend>
 
-  <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+  <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
   <div>
   <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="action" value="update_list" />
@@ -845,7 +845,7 @@ if ($permissions['is_admin'] == '1')
     </table>
     </form>
     <hr />
-    <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+    <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
     <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="add_to_list" />
@@ -892,7 +892,7 @@ if ($permissions['is_admin'] == '1')
 
   <p><?php echo $admin_text['listnote'];?></p>
   <div class="admin">
-  <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+  <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
   <div>
   <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="action" value="update_category" />
@@ -1010,7 +1010,7 @@ if ($permissions['is_admin'] == '1')
     // Form to add a new category to the list
     ?>
     <hr />
-    <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+    <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
     <div>
          <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="add_category" />
@@ -1086,7 +1086,7 @@ if ($permissions['is_admin'] == '1')
    <fieldset class="admin">
    <legend><?php echo $admin_text['operatingsystems'];?></legend>
 
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
    <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="update_list" />
@@ -1147,7 +1147,7 @@ if ($permissions['is_admin'] == '1')
       <hr />
 
       <!-- Form to add a new operating system to the list -->
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
       <div>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="add_to_list" />
@@ -1191,7 +1191,7 @@ if ($permissions['is_admin'] == '1')
 
       <p><?php echo $admin_text['listnote'];?></p>
       <div class="admin">
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
       <div>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update_version_list" />
@@ -1258,7 +1258,7 @@ if ($permissions['is_admin'] == '1')
       <hr />
 
       <!-- Form to add a new version to the list -->
-      <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
       <div>
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_to_version_list" />
@@ -1310,7 +1310,7 @@ if ($permissions['is_admin'] == '1')
    <fieldset class="admin">
    <legend><?php echo $admin_text['newproject'];?></legend>
 
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
    <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="newproject" />

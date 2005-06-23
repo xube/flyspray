@@ -15,7 +15,7 @@ while (touch($runfile))
 function run($include)
 {
     global $db, $fs;
-    
+
     $lang = 'en';
 
     include $include;

@@ -821,7 +821,7 @@ ORDER BY
          echo "<td id=\"taskrange\">";
          printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
 
-         if (isset($_COOKIE['flyspray_userid']))
+         if (isset($_COOKIE['flyspray_userid']) && $total > 0)
          echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">Toggle selected</a>';
 
          echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . $_GET['order']) . "</td>";
@@ -834,7 +834,7 @@ ORDER BY
    </table>
 
    <?php
-   if (isset($_COOKIE['flyspray_userid'])) { ?>
+   if (isset($_COOKIE['flyspray_userid']) && $total > 0) { ?>
    <div id="massopsactions">
       <select name="action">
          <option value="add_notification"><?php echo $index_text['watchtasks'];?></option>

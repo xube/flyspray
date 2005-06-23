@@ -21,7 +21,7 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
 ?>
 
 <fieldset class="admin">
-   <form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
       <table class="admin">
          <tr>
             <td>

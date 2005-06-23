@@ -206,6 +206,7 @@ function GetTaskDetails($task_id)
    {
       global $db;
       global $dbprefix;
+      global $flyspray_prefs;
       global $conf;
 
       $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
@@ -342,6 +343,7 @@ function GetTaskDetails($task_id)
       global $db;
       global $dbprefix;
       global $conf;
+      global $flyspray_prefs;
 
       $dateformat = '';
       $format_id = $extended ? "dateformat_extended" : "dateformat";
@@ -433,7 +435,7 @@ function GetTaskDetails($task_id)
       if(file_exists($path))
       {
          list($width, $height, $type, $attr) = getimagesize($path);
-         return "<img src=\"{$conf['baseurl']}$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
+         return "<img src=\"{$conf['general']['baseurl']}$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
       }
    // End of ShowImg function
    }
@@ -578,7 +580,7 @@ function GetTaskDetails($task_id)
    // This function removes html, slashes and other nasties
    function formatText($text)
    {
-      global $conf;
+      //global $conf;
 
       $text = htmlspecialchars($text);
       $text = nl2br($text);
@@ -587,9 +589,9 @@ function GetTaskDetails($task_id)
       $text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $text);
 
       // Change FS#123 into hyperlinks to tasks
-      $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"" . $this->CreateURL('details', '\\2') . "\">\\0</a>", $text);
-      $text = preg_replace("/\b(bug )(\d+)\b/", "<a href=\"" . $this->CreateURL('details', '\\2') . "\">\\0</a>", $text);
-
+      $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"" . $this->CreateURL('details', '\\2') . "\" title=\"--" . $this->taskTitle('\\2') . "\">\\0</a>", $text);
+      $text = preg_replace("/\b(bug )(\d+)\b/", "<a href=\"" . $this->CreateURL('details', '\\2') . "\" title=\"--" . $this->taskTitle('\\2') . "\">\\0</a>", $text);
+      //echo "____" . $this->taskTitle('2') . "____";
 
       if (!get_magic_quotes_gpc())
          $text = str_replace("\\", "&#92", $text);
@@ -601,11 +603,31 @@ function GetTaskDetails($task_id)
    // End of formatText function
    }
 
+
+   function taskTitle($taskid)
+   {
+      global $db;
+      global $dbprefix;
+
+      $task_details = $this->GetTaskDetails($taskid);
+
+//       $task_details = $db->FetchArray($db->Query("SELECT item_summary
+//                                                   FROM {$dbprefix}_tasks
+//                                                   WHERE task_id = ?",
+//                                                   array($taskid)
+//                                                 )
+//                                      );
+
+      return substr($task_details['item_summary'],0,30);
+      //return 'Link to task  ' . $taskid;
+   }
+
+
    // Crypt a password with the method set in the configfile
    function cryptPassword($password)
    {
-      global $conf_array;
-      $pwcrypt = $conf_array['general']['passwdcrypt'];
+      global $conf;
+      $pwcrypt = $conf['general']['passwdcrypt'];
 
       if(strtolower($pwcrypt) == 'sha1')
       {

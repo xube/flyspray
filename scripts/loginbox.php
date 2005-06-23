@@ -7,7 +7,7 @@ $fs->get_language_pack($lang, 'loginbox');
 
 <em><?php echo $loginbox_text['login'];?></em>
 
-<form action="<?php echo $flyspray_prefs['base_url'];?>index.php?do=authenticate" method="post">
+<form action="<?php echo $conf['general']['baseurl'];?>index.php?do=authenticate" method="post">
 <div>
    <label><?php echo $loginbox_text['username'];?></label>
    <input class="maintext" type="text" name="username" size="20" maxlength="20" />

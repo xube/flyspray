@@ -152,7 +152,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
                   . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage']
                   . '&amp;date=' . $_GET['date'] . '&amp;project=' . @$_GET['project'];
 
-      $_SESSION['lastindexfilter'] = $conf['baseurl'] . 'index.php?tasks=' . $_GET['tasks']
+      $_SESSION['lastindexfilter'] = $conf['general']['baseurl'] . 'index.php?tasks=' . $_GET['tasks']
                                      . '&amp;pagenum=' . $_GET['pagenum'] . $extraurl;
 
       if (isset($_GET['order']))
@@ -274,7 +274,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
    if ($permissions['is_admin'] == '1')
    {
       echo '<small> | </small>';
-      echo '<a id="optionslink" href="?do=admin&amp;area=prefs">' . $language['admintoolbox'] . "</a>\n";
+      echo '<a id="optionslink" href="' . $fs->CreateURL('admin', 'prefs') . '">' . $language['admintoolbox'] . "</a>\n";
    }
 
    // Project Manager's Toolbox link
@@ -470,9 +470,6 @@ if (isset($_COOKIE['flyspray_userid']))
 {
    echo '<div id="permslink">';
    echo '<a href="#" onclick="showhidestuff(\'permissions\');">' . $language['permissions'] . '</a>';
-//    echo $language['permissions'];
-//    echo '<a href="#" onclick="showstuff(\'permissions\');">' . $language['show'] . '</a>&nbsp;/&nbsp;';
-//    echo '<a href="#" onclick="hidestuff(\'permissions\');">' . $language['hide'] . '</a>&nbsp;';
    echo '</div>';
 
    echo '<div id="permissions">';

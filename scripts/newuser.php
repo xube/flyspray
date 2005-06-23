@@ -9,7 +9,7 @@ if ($permissions['is_admin'] == "1"
     && !$_COOKIE['flyspray_userid'])) {
 ?>
 
-<form name="form1" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="registernewuser">
+<form name="form1" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="registernewuser">
 
 <h1><?php echo $newuser_text['registernewuser'];?></h1>
 <p>

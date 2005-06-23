@@ -17,7 +17,7 @@ if ($permissions['open_new_tasks'] == '1'
    <h3><?php echo htmlspecialchars(stripslashes($project_prefs['project_title'])) . ':: ' . $newtask_text['newtask'];?></h3>
 
    <div id="taskdetails">
-   <form enctype="multipart/form-data" action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post">
+   <form enctype="multipart/form-data" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
    <div>
    <table>
       <tr>
@@ -317,7 +317,8 @@ if ($permissions['open_new_tasks'] == '1'
 // If the user hasn't permissions to open new tasks, show an error
 } else
 {
-   echo $newtask_text['nopermission'];
+   $fs->Redirect( $fs->CreateURL('error', null) );
+   //echo $newtask_text['nopermission'];
 
 // End of checking permissions
 }

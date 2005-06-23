@@ -26,7 +26,7 @@ if (isset($_GET['magic']))
     ?>
 
 <h1><?php echo $register_text['registernewuser'];?></h1>
-<form action="<?php echo $flyspray_prefs['base_url'];?>index.php" name="form2" method="post" id="registernewuser">
+<form action="<?php echo $conf['general']['baseurl'];?>index.php" name="form2" method="post" id="registernewuser">
   <table class="admin">
     <tr>
       <td colspan="2">
@@ -67,7 +67,7 @@ if (isset($_GET['magic']))
 {
 ?>
 
-<form action="<?php echo $flyspray_prefs['base_url'];?>index.php" method="post" id="registernewuser">
+<form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="registernewuser">
 
 <h1><?php echo $register_text['registernewuser'];?></h1>
 
