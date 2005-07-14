@@ -251,10 +251,11 @@ class Notifications {
 //       global $details_text;
       global $project_prefs;
       global $flyspray_prefs;
+      global $project_id;
 //       global $current_user;
 
       $flyspray_prefs = $fs->GetGlobalPrefs();
-      $project_prefs = $fs->GetProjectPrefs($_COOKIE['flyspray_project']);
+      $project_prefs = $fs->GetProjectPrefs($project_id);
 
       //$subject = stripslashes($subject);
       //$body = stripslashes($body);

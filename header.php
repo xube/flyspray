@@ -96,10 +96,19 @@ $flyspray_prefs = $fs->getGlobalPrefs();
 $fs->fixMissingIndices();
 
 // If we've gone directly to a task, we want to override the project_id set in the function below
-if ( isset($_GET['do']) && $_GET['do'] == 'details' && isset($_GET['id']) )
+// Any "do" mode that accepts a task_id or id field should be added here.
+if ( (isset($_GET['do'])  && $_GET['do']  == 'details') || 
+     (isset($_GET['do'])  && $_GET['do']  == 'depends') || 
+     (isset($_POST['do']) && $_POST['do'] == 'modify') ) 
 {
-   $project_id = $db->FetchOne($db->Query("SELECT attached_to_project FROM {$dbprefix}_tasks WHERE task_id = ?", array($_GET['id'])));
-   setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
+   unset($id);
+   if ( isset($_POST['task_id']) ) { $id = $_POST['task_id']; }
+   elseif ( isset($_GET['id']) ) { $id = $_GET['id']; }
+   if ( isset($id) ) 
+   {
+     $project_id = $db->FetchOne($db->Query("SELECT attached_to_project FROM {$dbprefix}_tasks WHERE task_id = ?", array($id)));
+     setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
+   }
 }
 
 // Determine which project we want to see

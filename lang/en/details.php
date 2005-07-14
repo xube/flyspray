@@ -149,6 +149,9 @@ $details_text = array (
 'duedate'               =>    'Due Date',
 'selectmorefiles'       =>    'Select more files',
 'attachnoperms'         =>    'There are attachments with this comment, but you have no permission to view them.',
+'open'                  =>    'OPEN',
+'closed'                =>    'CLOSED',
+'depgraph'              =>    'View Dependency Graph',
 
 );
 ?>

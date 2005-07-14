@@ -38,6 +38,7 @@ function changelog_report()
    global $fs;
    global $flyspray_prefs;
    global $reports_text;
+   global $project_id;
 
         echo "<div class=\"tabentries\">";
         echo "<p><em>$reports_text[changeloggen]</em></p>";
@@ -113,7 +114,7 @@ function changelog_report()
                 AND t.attached_to_project = ?
                 AND t.date_closed >= ?
                 AND t.date_closed <= ?
-                ORDER BY t.date_closed $sort", array($_COOKIE['flyspray_project'],$ustartdate,$uenddate));
+                ORDER BY t.date_closed $sort", array($project_id,$ustartdate,$uenddate));
 
         echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\">";
         while ($row = $db->FetchArray($get_changes))
@@ -156,6 +157,7 @@ function severity_report()
    global $fs;
    global $severity_list;
    global $reports_text;
+   global $project_id;
 
         $severity_colours = array('','ffe9b4','efca80','edb98a','ffb2ac','f3a29b');
 
@@ -163,7 +165,7 @@ function severity_report()
                 FROM {$dbprefix}_tasks WHERE attached_to_project = ?
                 AND !is_closed
                 GROUP BY task_severity
-                ORDER BY task_severity DESC", array($_COOKIE['flyspray_project']));
+                ORDER BY task_severity DESC", array($project_id));
         $count = $db->CountRows($get_severity_count);
 
         echo "<div class=\"tabentries\">\n";
@@ -221,6 +223,7 @@ function age_report()
    global $fs;
    global $flyspray_prefs;
    global $reports_text;
+   global $project_id;
 
         echo "<div class=\"tabentries\">\n";
         echo "<p><em>Age Report</em></p>\n";
@@ -233,7 +236,7 @@ function age_report()
         $age_list = $db->Query("SELECT task_severity, date_opened
                 FROM {$dbprefix}_tasks
                 WHERE attached_to_project = ? AND is_closed = 0
-                ORDER BY date_opened", array($_COOKIE['flyspray_project']));
+                ORDER BY date_opened", array($project_id));
         while ($row = $db->FetchArray($age_list)) {
                 $date_opened = $row['date_opened'];
                 $task_age = $today - $date_opened;
@@ -274,6 +277,7 @@ function events_report()
    global $db;
    global $dbprefix;
    global $fs;
+   global $conf;
    global $flyspray_prefs;
    global $reports_text;
    global $details_text;
@@ -371,7 +375,7 @@ switch ($_REQUEST['sort']) {
 ?>
 
     <div id="events" class="tab">
-        <form action="?do=reports&amp;report=events" method="post">
+        <form action="<?php echo $conf['general']['baseurl'];?>?do=reports&amp;report=events" method="post">
         <!-- <input type="hidden" name="do" value="reports">
         <input type="hidden" name="report" value="events"> -->
         <table>
@@ -490,7 +494,7 @@ switch ($_REQUEST['sort']) {
                                          LEFT JOIN {$dbprefix}_users u ON h.user_id = u.user_id
                                          LEFT JOIN {$dbprefix}_tasks t ON h.task_id = t.task_id
                                          WHERE t.attached_to_project = ? {$type} {$wheredate}
-                                         ORDER BY {$orderby}", array($_COOKIE['flyspray_project']));
+                                         ORDER BY {$orderby}", array($project_id));
 
         if ($db->CountRows($query_history) == 0)
         {
@@ -501,10 +505,10 @@ switch ($_REQUEST['sort']) {
            ?>
            <table id="tasklist">
            <tr>
-              <th><a href="?do=history&amp;order=date&amp;sort=<?php echo ($_REQUEST['order'] == 'date' && $_REQUEST['sort'] == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $details_text['eventdate'];?></a></th>
-              <th><a href="?do=history&amp;order=user&amp;sort=<?php echo ($_REQUEST['order'] == 'user' && $_REQUEST['sort'] == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $details_text['user'];?></a></th>
               <th class="taskid"><a href="?do=history&amp;order=id&amp;sort=<?php echo ($_REQUEST['order'] == 'id' && $_REQUEST['sort'] == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $index_text['id'];?></a></th>
               <th><?php echo $details_text['summary'];?></th>
+              <th><a href="?do=history&amp;order=date&amp;sort=<?php echo ($_REQUEST['order'] == 'date' && $_REQUEST['sort'] == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $details_text['eventdate'];?></a></th>
+              <th><a href="?do=history&amp;order=user&amp;sort=<?php echo ($_REQUEST['order'] == 'user' && $_REQUEST['sort'] == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $details_text['user'];?></a></th>
               <th><a href="?do=history&amp;order=type&amp;sort=<?php echo ($_REQUEST['order'] == 'type' && $_REQUEST['sort'] == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $details_text['event'];?></a></th>
            </tr>
            <?php
@@ -512,15 +516,15 @@ switch ($_REQUEST['sort']) {
             while ($history = $db->FetchRow($query_history))
             {
                 ?>
-                <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('?do=details&amp;id=<?php echo $history['task_id'];?>')">
+                <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('<?php echo $conf['general']['baseurl'];?>?do=details&amp;id=<?php echo $history['task_id'];?>')">
+                <?php echo "<td><a href=\"" . $conf['general']['baseurl'] . "?do=details&amp;id={$history['task_id']}\">FS#{$history['task_id']}</a></td>";?>
+                <?php echo "<td><a href=\"" . $conf['general']['baseurl'] . "?do=details&amp;id={$history['task_id']}\">" . htmlspecialchars(stripslashes($history['item_summary'])) . "</a></td>";?>
                 <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
                 <td><?php if ($history['user_id'] == 0) {
                             echo $details_text['anonymous'];
                         } else {
-                            echo "<a href=\"?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
+                            echo "<a href=\"" . $conf['general']['baseurl'] . "?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
                         }?></td>
-                <?php echo "<td><a href=\"?do=details&amp;id={$history['task_id']}\">FS#{$history['task_id']}</a></td>";?>
-                <?php echo "<td><a href=\"?do=details&amp;id={$history['task_id']}#history\">" . htmlspecialchars(stripslashes($history['item_summary'])) . "</a></td>";?>
                 <td><?php echo EventDescription($history);?></td>
                 </tr>
                 <?php

@@ -775,6 +775,8 @@ if ($task_details['project_is_active'] == '1'
                                      array($_GET['id'])
                                    );
 
+    $total = $db->CountRows($check_deps) + $db->CountRows($check_blocks);
+
          echo '<div id="deps">';
          // Show tasks that this task depends upon
          echo '<div id="taskdeps">';
@@ -799,6 +801,11 @@ if ($task_details['project_is_active'] == '1'
             echo '<br />';
          }
          echo "<br />\n";
+    // If there are dependencies, show a link for the dependency graph
+    if ($total>0) {
+      echo "<a href=\"" . $fs->CreateURL('depends', $id) .
+        '">' . $details_text['depgraph'] . '</a>\n<br />&nbsp;<br />';
+    }
          // If the user has permission, show a form to add a new dependency
          if (@$effective_permissions['can_edit'] == '1'
           && $task_details['is_closed'] != '1')

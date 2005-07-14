@@ -589,9 +589,15 @@ function GetTaskDetails($task_id)
       $text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $text);
 
       // Change FS#123 into hyperlinks to tasks
-      $text = preg_replace("/\b(FS#)(\d+)\b/", "<a href=\"" . $this->CreateURL('details', '\\2') . "\" title=\"--" . $this->taskTitle('\\2') . "\">\\0</a>", $text);
-      $text = preg_replace("/\b(bug )(\d+)\b/", "<a href=\"" . $this->CreateURL('details', '\\2') . "\" title=\"--" . $this->taskTitle('\\2') . "\">\\0</a>", $text);
-      //echo "____" . $this->taskTitle('2') . "____";
+
+      if (preg_match_all("/\b(FS#|bug )(\d+)\b/",$text,$hits,PREG_SET_ORDER)) {
+	foreach ($hits as $n => $hit) { $tasks[$hit[2]] = $hit[0]; }
+	foreach ($tasks as $id => $str) {
+	  $link = "<a href=\"" . $this->CreateURL('details', $id) .
+	    "\" title=\"" . $this->taskTitle($id) . "\">$str</a>";
+	  $text = preg_replace("/\b$str\b/",$link,$text);
+	}
+      }
 
       if (!get_magic_quotes_gpc())
          $text = str_replace("\\", "&#92", $text);
@@ -606,20 +612,18 @@ function GetTaskDetails($task_id)
 
    function taskTitle($taskid)
    {
-      global $db;
-      global $dbprefix;
+      global $details_text;
 
       $task_details = $this->GetTaskDetails($taskid);
 
-//       $task_details = $db->FetchArray($db->Query("SELECT item_summary
-//                                                   FROM {$dbprefix}_tasks
-//                                                   WHERE task_id = ?",
-//                                                   array($taskid)
-//                                                 )
-//                                      );
+      if ($task_details['is_closed'] == '1')
+      {
+         $status = $details_text['closed'] . ':: ' . $task_details['resolution_name'];
+      } else {
+         $status = $details_text['open'] . ':: ' . $task_details['status_name'];
+      }
 
-      return substr($task_details['item_summary'],0,30);
-      //return 'Link to task  ' . $taskid;
+      return $status . ': ' . substr($task_details['item_summary'],0,40);
    }
 
 
@@ -743,11 +747,14 @@ function GetTaskDetails($task_id)
       global $conf;
 
       // If we do want address rewriting
-      if($conf['general']['address_rewriting'] == '1')
+      if(isset($conf['general']['address_rewriting']) &&
+	 $conf['general']['address_rewriting'] == '1')
       {
          switch ($type)
          {
             case "details": $url = $conf['general']['baseurl'] . 'task/' . $arg1;
+            break;
+            case "depends": $url = $conf['general']['baseurl'] . 'task/' . $arg1 . '/depends';
             break;
             case "edittask": $url = $conf['general']['baseurl'] . 'task/' . $arg1 . '/edit';
             break;
@@ -786,6 +793,8 @@ function GetTaskDetails($task_id)
       switch ($type)
       {
          case "details": $url = $conf['general']['baseurl'] . '?do=details&amp;id=' . $arg1;
+         break;
+         case "depends": $url = $conf['general']['baseurl'] . '?do=depends&amp;id=' . $arg1;
          break;
          case "edittask": $url = $conf['general']['baseurl'] . '?do=details&amp;id=' . $arg1 . '&amp;edit=yep';
          break;

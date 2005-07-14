@@ -101,7 +101,7 @@ if (isset($_REQUEST['action']) && !empty($_REQUEST['action']))
 if (isset($_REQUEST['do']) && !empty($_REQUEST['do'])) {
 
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment|error)$/", $_REQUEST['do'])) {
+    if (preg_match ("/^(admin|pm|reports|authenticate|chpass|chproject|details|depends|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment|error)$/", $_REQUEST['do'])) {
 
        // continue;
 

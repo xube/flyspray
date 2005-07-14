@@ -5,6 +5,7 @@ RewriteRule ^.*\?do=admin&area=prefs$ index.php?do=admin&area=prefs [L]
 RewriteRule ^([0-9]+)$ index.php?do=details&id=$1 [L]
 RewriteRule ^task/([0-9]+)$ index.php?do=details&id=$1 [L]
 RewriteRule ^task/([0-9]+)#comment([0-9]+)$ index.php?do=details&id=$1#comment$2 [L]
+RewriteRule ^task/([0-9]+)/depends$ index.php?do=depends&id=$1 [L]
 RewriteRule ^task/([0-9]+)/edit$ index.php?do=details&id=$1&edit=yep [L]
 
 RewriteRule ^newtask$ index.php?do=newtask [L]

@@ -446,7 +446,7 @@ if ( isset($_GET['show_task']) )
 if ($project_prefs['project_is_active'] == '1'
     && ($project_prefs['others_view'] == '1' OR @$permissions['view_tasks'] == '1')
     && !empty($project_prefs['intro_message'])
-    && ($do == 'details' OR $do == 'index' OR $do == 'newtask' OR $do == 'reports')
+    && ($do == 'details' OR $do == 'index' OR $do == 'newtask' OR $do == 'reports' OR $do == 'depends')
     OR (isset($_GET['project']) && $_GET['project'] == '0'))
 {
    $intro_message = Markdown(stripslashes($project_prefs['intro_message']));

@@ -594,13 +594,13 @@ p.unregistered {
 }
 
 .severity3 {
-   background-color     : #ecd0b7;
+   background-color     : #f5d5c6;
    color                : #000000;
     height                       : 1%;
 }
 
 .severity3:hover {
-   background-color     : #edb98a;
+   background-color     : #f7b390;
    color                : #000000;
    cursor               : pointer;
 }
