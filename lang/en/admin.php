@@ -184,6 +184,7 @@ $admin_text = array (
 'smtppass'              =>    'SMTP Password',
 'addrewrite'            =>    'Use address rewriting',
 'usereminderdaemon'     =>    'Enable background reminder daemon',
+'tasksperpage'          =>    'Tasks per page of the task list',
 
 );
 ?>

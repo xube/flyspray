@@ -65,6 +65,17 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
             <td><label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label></td>
             <td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $current_user['dateformat_extended'];?>" /></td>
          </tr>
+            <td><label for="tasks_perpage"><?php echo $admin_text['tasksperpage'];?></label></td>
+            <td>
+                <select name="tasks_perpage">
+                  <option value="10" <?php if ($current_user['tasks_perpage'] == "10") { echo "selected=\"selected\"";}?>>10</option>
+                  <option value="25" <?php if ($current_user['tasks_perpage'] == "25") { echo "selected=\"selected\"";}?>>25</option>
+                  <option value="50" <?php if ($current_user['tasks_perpage'] == "50") { echo "selected=\"selected\"";}?>>50</option>
+                  <option value="100" <?php if ($current_user['tasks_perpage'] == "100") { echo "selected=\"selected\"";}?>>100</option>
+                  <option value="250" <?php if ($current_user['tasks_perpage'] == "250") { echo "selected=\"selected\"";}?>>250</option>
+                  <option value="500" <?php if ($current_user['tasks_perpage'] == "500") { echo "selected=\"selected\"";}?>>500</option>
+               </select>
+            </td>
          <tr>
             <td colspan="2"><hr /></td>
          </tr>

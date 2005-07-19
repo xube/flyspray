@@ -1219,7 +1219,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                  jabber_id = ?,
                                  notify_type = ?,
                                  dateformat = ?,
-                                 dateformat_extended = ?
+                                 dateformat_extended = ?,
+                                 tasks_perpage = ?
                                  WHERE user_id = ?",
                                  array(
                                        $_POST['real_name'],
@@ -1228,6 +1229,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                        $db->emptyToZero($_POST['notify_type']),
                                        $_POST['dateformat'],
                                        $_POST['dateformat_extended'],
+                                       $_POST['tasks_perpage'],
                                        $_POST['user_id']
                                       )
                               );

@@ -83,3 +83,15 @@ PRIMARY KEY ( `assigned_id` )
 # Added 15 May 05
 
 ALTER TABLE `flyspray_attachments` ADD `comment_id` MEDIUMINT( 10 ) NOT NULL AFTER `task_id` ;
+
+# Added 19 Jul 05
+
+ALTER TABLE `flyspray_users` ADD `last_search` LONGTEXT NOT NULL ;
+DELETE FROM `flyspray_prefs` WHERE `pref_name` = 'anon_view' ;
+DELETE FROM `flyspray_prefs` WHERE `pref_name` = 'theme_style' ;
+DELETE FROM `flyspray_prefs` WHERE `pref_name` = 'base_url' ;
+DELETE FROM `flyspray_prefs` WHERE `pref_name` = 'project_title' ;
+DELETE FROM `flyspray_prefs` WHERE `pref_name` = 'default_cat_owner' ;
+ALTER TABLE `flyspray_users` DROP `group_in` ;
+ALTER TABLE `flyspray_users` ADD `tasks_perpage` MEDIUMINT( 3 ) NOT NULL ;
+UPDATE `flyspray_users` SET `tasks_perpage` = '25' ;

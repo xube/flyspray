@@ -51,11 +51,28 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
       //die("Stop hacking your cookies, you naughty fellow!");
    }
 
+   // Create a 'last search' cookie
+   // Only logged in users get to use the 'last search' functionality
+   if ( !empty($_GET['string']) OR !empty($_GET['type'])
+        OR !empty($_GET['sev']) OR !empty($_GET['due'])
+        OR !empty($_GET['dev']) OR !empty($_GET['cat'])
+        OR !empty($_GET['status']) OR !empty($_GET['status'])
+        OR !empty($_GET['perpage'])
+      )
+   {
+      $db->Query("UPDATE {$dbprefix}_users
+                    SET last_search = ?
+                    WHERE user_id = ?",
+                    array($this_page, $_COOKIE['flyspray_userid'])
+                  );
+   }
+
    // Fetch info on the current user
    $current_user = $fs->getUserDetails($_COOKIE['flyspray_userid']);
 
    // Fetch the permissions array for the current user
    $permissions = $fs->getPermissions($current_user['user_id'], $project_id);
+
 // End of getting user permissions
 }
 
@@ -262,12 +279,12 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
 
    // If the user has conducted a search, then show a link to the most recent task list filter
    echo '<small> | </small>';
-   if(isset($_SESSION['lastindexfilter']))
+   if ( !empty($current_user['last_search']) )
    {
-      echo '<a id="lastsearchlink" href="' . $_SESSION['lastindexfilter'] . '" accesskey="m">' . $language['lastsearch'] . "</a>\n";
+      echo '<a id="lastsearchlink" href="' . $current_user['last_search'] . '" accesskey="m">' . $language['lastsearch'] . "</a>\n";
    } else
    {
-      echo '<a id="lastsearchlink" href="index.php">' . $language['lastsearch'] . "</a>\n";
+      echo '<a id="lastsearchlink" href="' . $conf['general']['baseurl'] . 'index.php">' . $language['lastsearch'] . "</a>\n";
    }
 
    // Administrator's Toolbox link

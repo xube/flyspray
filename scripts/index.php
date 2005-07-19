@@ -16,9 +16,17 @@ $fs->get_language_pack($lang, 'details');
 $orderby = array();
 $dev = null;
 
-// This generates an URL so that the action script takes us back to the previous page
+// This generates an URL so that action scripts take us back to this page
 $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
 $this_page = str_replace('&', '&amp;', $this_page);
+
+if ( isset($_COOKIE['flyspray_userid']) )
+{
+   $perpage = $current_user['tasks_perpage'];
+} else
+{
+   $perpage = '20';
+}
 
 if (isset($_GET['order']) && !empty($_GET['order']))
 {
@@ -95,13 +103,6 @@ if (isset($_GET['pagenum']) && is_numeric($_GET['pagenum']))
    $pagenum = $_GET['pagenum'];
 } else {
    $pagenum = "1";
-}
-// number of results per page
-if (isset($_GET['perpage']) && is_numeric($_GET['perpage']))
-{
-   $perpage = $_GET['perpage'];
-} else {
-   $perpage = "20";
 }
 
 // the mysql query offset is a combination of the num results per page and the page num
@@ -456,7 +457,7 @@ if ($project_prefs['project_is_active'] == '1'
    }
    );
    </script>
-
+<!--
     <select name="perpage">
       <option value="10" <?php if ($perpage == "10") { echo "selected=\"selected\"";}?>>10</option>
       <option value="20" <?php if ($perpage == "20") { echo "selected=\"selected\"";}?>>20</option>
@@ -466,7 +467,7 @@ if ($project_prefs['project_is_active'] == '1'
       <option value="75" <?php if ($perpage == "75") { echo "selected=\"selected\"";}?>>75</option>
       <option value="100" <?php if ($perpage == "100") { echo "selected=\"selected\"";}?>>100</option>
     </select>
-
+-->
     <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />
 </div>
 </form>
