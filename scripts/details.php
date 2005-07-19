@@ -803,8 +803,8 @@ if ($task_details['project_is_active'] == '1'
          echo "<br />\n";
     // If there are dependencies, show a link for the dependency graph
     if ($total>0) {
-      echo "<a href=\"" . $fs->CreateURL('depends', $id) .
-        '">' . $details_text['depgraph'] . '</a>\n<br />&nbsp;<br />';
+      echo '<a href="' . $fs->CreateURL('depends', $id) .
+        '">' . $details_text['depgraph'] . '</a><br />&nbsp;<br />';
     }
          // If the user has permission, show a form to add a new dependency
          if (@$effective_permissions['can_edit'] == '1'

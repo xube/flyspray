@@ -516,14 +516,14 @@ switch ($_REQUEST['sort']) {
             while ($history = $db->FetchRow($query_history))
             {
                 ?>
-                <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('<?php echo $conf['general']['baseurl'];?>?do=details&amp;id=<?php echo $history['task_id'];?>')">
-                <?php echo "<td><a href=\"" . $conf['general']['baseurl'] . "?do=details&amp;id={$history['task_id']}\">FS#{$history['task_id']}</a></td>";?>
-                <?php echo "<td><a href=\"" . $conf['general']['baseurl'] . "?do=details&amp;id={$history['task_id']}\">" . htmlspecialchars(stripslashes($history['item_summary'])) . "</a></td>";?>
+                <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('<?php echo $fs->CreateURL('details', $history['task_id']);?>')">
+                <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . "\">FS#{$history['task_id']}</a></td>";?>
+                <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . '">' . htmlspecialchars(stripslashes($history['item_summary'])) . '</a></td>';?>
                 <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
                 <td><?php if ($history['user_id'] == 0) {
                             echo $details_text['anonymous'];
                         } else {
-                            echo "<a href=\"" . $conf['general']['baseurl'] . "?do=admin&amp;area=users&amp;id={$history['user_id']}\"> {$history['real_name']} ({$history['user_name']})</a>";
+                            echo $fs->LinkedUserName($history['user_id']);
                         }?></td>
                 <td><?php echo EventDescription($history);?></td>
                 </tr>
