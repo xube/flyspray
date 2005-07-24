@@ -524,6 +524,9 @@ function GetTaskDetails($task_id)
          if ($db->CountRows($check_in) > '0')
          {
             $project_permissions = $row;
+         } else
+         {
+            $project_permissions = $global_permissions;
          }
       }
 

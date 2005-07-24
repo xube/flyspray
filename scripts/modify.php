@@ -669,15 +669,17 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                        jabber_id,
                                        email_address,
                                        notify_type,
-                                       account_enabled)
-                                       VALUES(?, ?, ?, ?, ?, ?, ?)",
+                                       account_enabled,
+                                       tasks_perpage)
+                                       VALUES(?, ?, ?, ?, ?, ?, ?,?)",
                                        array($reg_details['user_name'],
                                              $pass_hash,
                                              $reg_details['real_name'],
                                              $reg_details['jabber_id'],
                                              $reg_details['email_address'],
                                              $reg_details['notify_type'],
-                                             '1')
+                                             '1',
+                                             '25')
                                    );
 
 
@@ -762,15 +764,17 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                      jabber_id,
                                      email_address,
                                      notify_type,
-                                     account_enabled)
-                                     VALUES( ?, ?, ?, ?, ?, ?, ?)",
+                                     account_enabled,
+                                     tasks_perpage)
+                                     VALUES( ?, ?, ?, ?, ?, ?, ?,?)",
                                     array($_POST['user_name'],
                                           $pass_hash,
                                           $_POST['real_name'],
                                           $_POST['jabber_id'],
                                           $_POST['email_address'],
                                           $_POST['notify_type'],
-                                          '1')
+                                          '1',
+                                          '25')
                                  );
 
         // Get this user's id for the record
