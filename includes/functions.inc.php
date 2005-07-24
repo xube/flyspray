@@ -591,12 +591,12 @@ function GetTaskDetails($task_id)
       // Change FS#123 into hyperlinks to tasks
 
       if (preg_match_all("/\b(FS#|bug )(\d+)\b/",$text,$hits,PREG_SET_ORDER)) {
-	foreach ($hits as $n => $hit) { $tasks[$hit[2]] = $hit[0]; }
-	foreach ($tasks as $id => $str) {
-	  $link = "<a href=\"" . $this->CreateURL('details', $id) .
-	    "\" title=\"" . $this->taskTitle($id) . "\">$str</a>";
-	  $text = preg_replace("/\b$str\b/",$link,$text);
-	}
+   foreach ($hits as $n => $hit) { $tasks[$hit[2]] = $hit[0]; }
+   foreach ($tasks as $id => $str) {
+     $link = "<a href=\"" . $this->CreateURL('details', $id) .
+       "\" title=\"" . $this->taskTitle($id) . "\">$str</a>";
+     $text = preg_replace("/\b$str\b/",$link,$text);
+   }
       }
 
       if (!get_magic_quotes_gpc())
@@ -748,7 +748,7 @@ function GetTaskDetails($task_id)
 
       // If we do want address rewriting
       if(isset($conf['general']['address_rewriting']) &&
-	 $conf['general']['address_rewriting'] == '1')
+    $conf['general']['address_rewriting'] == '1')
       {
          switch ($type)
          {
@@ -818,7 +818,7 @@ function GetTaskDetails($task_id)
          break;
          case "group": $url = $conf['general']['baseurl'] . '?do=admin&area=editgroup&id=' . $arg1;
          break;
-         case "projgroup": $url = $conf['general']['baseurl'] . '?do=pm&area=editgroup&id=' . $arg1 . '/' . $arg2;
+         case "projgroup": $url = $conf['general']['baseurl'] . '?do=pm&area=editgroup&id=' . $arg1;
          break;
          case "logout": $url = $conf['general']['baseurl'] . '?do=authenticate&amp;action=logout';
          break;

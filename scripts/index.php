@@ -128,17 +128,16 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    // Those who aren't super users get this more restrictive query
    } elseif (isset($_COOKIE['flyspray_userid']))
    {
-      $check_projects = $db->Query("SELECT p.project_id
-                                       FROM {$dbprefix}_projects p
-                                       LEFT JOIN {$dbprefix}_groups g ON p.project_id = g.belongs_to_project
-                                       LEFT JOIN {$dbprefix}_users_in_groups uig ON g.group_id = uig.group_id
-                                       WHERE ((uig.user_id = ?
-                                       AND g.view_tasks = '1')
-                                       OR p.others_view = '1')
-                                       AND p.project_is_active = '1'",
-                                       array($current_user['user_id'])
-                                     );
-
+       $check_projects = $db->Query("SELECT p.project_id
+                                     FROM {$dbprefix}_users_in_groups uig
+                                     LEFT JOIN {$dbprefix}_groups g ON uig.group_id = g.group_id
+                                     LEFT JOIN {$dbprefix}_projects p ON g.belongs_to_project = p.project_id
+                                     WHERE ((uig.user_id = ?
+                                     AND g.view_tasks = '1')
+                                     OR p.others_view = '1')
+                                     AND p.project_is_active = '1'",
+                                     array($current_user['user_id'])
+                                   );
 
    // Anonymous users also need a query here
    } else

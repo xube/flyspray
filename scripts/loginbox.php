@@ -10,7 +10,7 @@ $fs->get_language_pack($lang, 'loginbox');
 <form action="<?php echo $conf['general']['baseurl'];?>index.php?do=authenticate" method="post">
 <div>
    <label><?php echo $loginbox_text['username'];?></label>
-   <input class="maintext" type="text" name="username" size="20" maxlength="20" />
+   <input class="maintext" type="text" name="user_name" size="20" maxlength="20" />
 
    <label><?php echo $loginbox_text['password'];?></label>
    <input class="maintext" type="password" name="password" size="20" maxlength="20" />

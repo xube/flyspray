@@ -15,9 +15,9 @@ if ($_GET['action'] == "logout")
    $fs->redirect($conf['general']['baseurl']);
 
 // Otherwise, they requested login.  See if they provided the correct credentials...
-} elseif ($_POST['username'] AND $_POST['password'])
+} elseif ($_POST['user_name'] AND $_POST['password'])
 {
-   $username = $_POST['username'];
+   $username = $_POST['user_name'];
    $password = $_POST['password'];
 
    // Run the username and password through the login checker

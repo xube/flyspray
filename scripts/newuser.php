@@ -3,10 +3,10 @@ $fs->get_language_pack($lang, 'newuser');
 
 // Make sure that only admins are using this page, unless
 // The application preferences allow anonymous signups
-if ($permissions['is_admin'] == "1"
+if (@$permissions['is_admin'] == "1"
     OR ($flyspray_prefs['spam_proof'] != '1'
     && $flyspray_prefs['anon_reg'] == '1'
-    && !$_COOKIE['flyspray_userid'])) {
+    && !isset($_COOKIE['flyspray_userid']) ) ) {
 ?>
 
 <form name="form1" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="registernewuser">
@@ -52,7 +52,7 @@ if ($permissions['is_admin'] == "1"
       <input type="radio" name="notify_type" value="2" /><?php echo $newuser_text['jabber'];?> <br />
       </td>
     </tr>
-    <?php if ($permissions['is_admin'] == "1") { ?>
+    <?php if (@$permissions['is_admin'] == "1") { ?>
     <tr>
       <td><label for="groupin"><?php echo $newuser_text['globalgroup'];?></label></td>
       <td>

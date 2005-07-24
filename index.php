@@ -391,17 +391,16 @@ if (isset($_SESSION['SUCCESS']))
       // or, if the user is logged in
       } elseif (isset($_COOKIE['flyspray_userid']))
       {
-
          $get_projects = $db->Query("SELECT DISTINCT p.*
-                                       FROM {$dbprefix}_projects p
-                                       LEFT JOIN {$dbprefix}_groups g ON p.project_id = g.belongs_to_project
-                                       LEFT JOIN {$dbprefix}_users_in_groups uig ON g.group_id = uig.group_id
-                                       WHERE ((uig.user_id = ?
-                                       AND g.view_tasks = '1')
-                                       OR p.others_view = '1')
-                                       AND p.project_is_active = '1'",
-                                       array($current_user['user_id'])
-                                     );
+                                     FROM {$dbprefix}_users_in_groups uig
+                                     LEFT JOIN {$dbprefix}_groups g ON uig.group_id = g.group_id
+                                     LEFT JOIN {$dbprefix}_projects p ON g.belongs_to_project = p.project_id
+                                     WHERE ((uig.user_id = ?
+                                     AND g.view_tasks = '1')
+                                     OR p.others_view = '1')
+                                     AND p.project_is_active = '1'",
+                                     array($current_user['user_id'])
+                                   );
       // Anonymous users
       } else
       {
@@ -526,6 +525,7 @@ if (isset($_COOKIE['flyspray_userid']))
          echo $val;
          echo "</tr>\n";
       }
+      //echo '<tr><td>' . $key . '</td><td>' . $val . '</td></tr>';
    }
 
    echo '</table></div>';

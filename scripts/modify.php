@@ -430,7 +430,7 @@ if ($_POST['action'] == 'newtask'
 // Start of re-opening an task //
 /////////////////////////////////
 
-} elseif ($_GET['action'] == "reopen"
+} elseif ( isset($_GET['action']) && $_GET['action'] == "reopen"
           && ( (@$permissions['close_own_tasks'] == '1'
           && ($old_details['assigned_to'] == $current_user['user_id'])
           OR @$permissions['close_other_tasks'] == '1') ) )
@@ -724,7 +724,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 ///////////////////////////////////////////////////////////////
 
 } elseif ($_POST['action'] == "newuser"
-           && ($permissions['is_admin'] == '1'
+           && (@$permissions['is_admin'] == '1'
                 OR ($flyspray_prefs['anon_reg'] == '1'
                     && $flyspray_prefs['spam_proof'] != '1')))
 {
@@ -749,7 +749,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
         $pass_hash = $fs->cryptPassword($_POST['user_pass']);
 
-        if ($permissions['is_admin'] == '1') {
+        if (@$permissions['is_admin'] == '1') {
           $group_in = $_POST['group_in'];
         } else {
           $group_in = $flyspray_prefs['anon_group'];
@@ -783,22 +783,25 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                           VALUES( ?, ?)",
                                           array($user_details['user_id'], $group_in));
 
-        if ($permissions['is_admin'] != '1') {
+        if (@$permissions['is_admin'] != '1') {
           echo "<p>{$modify_text['loginbelow']}</p>";
           echo "<p>{$modify_text['newuserwarning']}</p></div>";
-        } else {
+        } else
+        {
           $_SESSION['SUCCESS'] = $modify_text['newusercreated'];
           $fs->redirect($fs->CreateURL('admin', 'groups'));
-        };
+        }
 
 
-      } else {
+      } else
+      {
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['nomatchpass']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-      };
+      }
 
-    };
+    }
 
-  } else {
+  } else
+  {
     echo "<div class=\"redirectmessage\"><p><em>{$modify_text['formnotcomplete']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
   }
 
@@ -1081,9 +1084,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                     $db->emptyToZero($_POST['others_view']),
                                     $db->emptyToZero($_POST['anon_open']),
                                     $_POST['notify_email'],
-                                    $_POST['notify_email_type'],
+                                    $db->emptyToZero($_POST['notify_email_type']),
                                     $_POST['notify_jabber'],
-                                    $_POST['notify_jabber_type'],
+                                    $db->emptyToZero($_POST['notify_jabber_type']),
                                     $_POST['project_id']));
 
       // Process the list of visible columns into a format we can store

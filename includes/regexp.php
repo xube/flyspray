@@ -140,7 +140,7 @@ if (isset($_REQUEST['id']) && !empty($_REQUEST['id']))
 if (isset($_REQUEST['user_name']) && !empty($_REQUEST['user_name']))
 {
     // Yes. Now check its regex format for safety -- Limited range
-    if (preg_match ("/^[a-zA-Z0-9_-]+$/", $_REQUEST['user_name'])) {
+    if (preg_match ("/^[a-zA-Z0-9_.-]+$/", $_REQUEST['user_name'])) {
 
       // continue;
     } else {

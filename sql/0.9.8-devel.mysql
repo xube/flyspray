@@ -58,17 +58,6 @@ ALTER TABLE `flyspray_tasks` ADD `due_date` VARCHAR( 10 ) NOT NULL DEFAULT '';
 
 ALTER TABLE `flyspray_admin_requests` ADD `deny_reason` VARCHAR( 255 ) NOT NULL DEFAULT '';
 
-# Added 01 May 05
-
-INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
-VALUES (
-'', 'funky_urls', '0', 'Should we use address rewriting? Not all webservers support this!'
-);
-
-INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
-VALUES (
-'', 'reminder_daemon', '0', 'Should we use the built-in reminder daemon? Not all webservers support this!'
-);
 
 # Added 14 May 05
 
@@ -95,3 +84,7 @@ DELETE FROM `flyspray_prefs` WHERE `pref_name` = 'default_cat_owner' ;
 ALTER TABLE `flyspray_users` DROP `group_in` ;
 ALTER TABLE `flyspray_users` ADD `tasks_perpage` MEDIUMINT( 3 ) NOT NULL ;
 UPDATE `flyspray_users` SET `tasks_perpage` = '25' ;
+
+# Added 21 Jul 05
+
+ALTER TABLE `flyspray_prefs` CHANGE `pref_value` `pref_value` VARCHAR( 250 ) NOT NULL ;

@@ -97,14 +97,14 @@ $fs->fixMissingIndices();
 
 // If we've gone directly to a task, we want to override the project_id set in the function below
 // Any "do" mode that accepts a task_id or id field should be added here.
-if ( (isset($_GET['do'])  && $_GET['do']  == 'details') || 
-     (isset($_GET['do'])  && $_GET['do']  == 'depends') || 
-     (isset($_POST['do']) && $_POST['do'] == 'modify') ) 
+if ( (isset($_REQUEST['do'])  && $_REQUEST['do']  == 'details') ||
+     (isset($_REQUEST['do'])  && $_REQUEST['do']  == 'depends') ||
+     (isset($_REQUEST['do']) && $_REQUEST['do'] == 'modify') )
 {
    unset($id);
-   if ( isset($_POST['task_id']) ) { $id = $_POST['task_id']; }
-   elseif ( isset($_GET['id']) ) { $id = $_GET['id']; }
-   if ( isset($id) ) 
+   if ( isset($_REQUEST['task_id']) ) { $id = $_REQUEST['task_id']; }
+   elseif ( isset($_REQUEST['id']) ) { $id = $_REQUEST['id']; }
+   if ( isset($id) )
    {
      $project_id = $db->FetchOne($db->Query("SELECT attached_to_project FROM {$dbprefix}_tasks WHERE task_id = ?", array($id)));
      setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
@@ -114,15 +114,15 @@ if ( (isset($_GET['do'])  && $_GET['do']  == 'details') ||
 // Determine which project we want to see
 if ( !isset($project_id) )
 {
-   if ( isset($_GET['project']) && $_GET['project'] != '0' && !empty($_GET['project']))
+   if ( isset($_REQUEST['project']) && $_REQUEST['project'] != '0' && !empty($_REQUEST['project']))
    {
-      $project_id = $_GET['project'];
-      setcookie('flyspray_project', $_GET['project'], time()+60*60*24*30, "/");
+      $project_id = $_REQUEST['project'];
+      setcookie('flyspray_project', $_REQUEST['project'], time()+60*60*24*30, "/");
 
-   } elseif ( isset($_POST['project_id']) )
+   } elseif ( isset($_REQUEST['project_id']) )
    {
-      $project_id = $_POST['project_id'];
-      setcookie('flyspray_project', $_POST['project_id'], time()+60*60*24*30, "/");
+      $project_id = $_REQUEST['project_id'];
+      setcookie('flyspray_project', $_REQUEST['project_id'], time()+60*60*24*30, "/");
 
    } elseif ( isset($_COOKIE['flyspray_project']) )
    {

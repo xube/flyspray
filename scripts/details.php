@@ -788,7 +788,7 @@ if ($task_details['project_is_active'] == '1'
                echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . stripslashes($dependency['item_summary']) . "</a>";
             } else
             {
-               echo '<a href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
+	      echo '<a href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . stripslashes($dependency['item_summary']) . "</a>\n";
             }
 
             // If the user has permission, show a link to remove a dependency
@@ -837,7 +837,7 @@ if ($task_details['project_is_active'] == '1'
                echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . stripslashes($block['item_summary']) . "</a><br />\n";
             } else
             {
-               echo '<a href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
+	       echo '<a href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . stripslashes($block['item_summary']) . "</a><br />\n";
             }
 
          }
@@ -1916,12 +1916,14 @@ if (@$permissions['view_history'] == '1')
 
             } elseif ($history['event_type'] == '11')    //Related task added
             {
-                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
-                echo "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
+	       list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       $related = stripslashes($related);
+               echo "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '12')    //Related task deleted
             {
                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       $related = stripslashes($related);
                echo "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '13')   //Task reopened
@@ -1944,11 +1946,13 @@ if (@$permissions['view_history'] == '1')
             } elseif ($history['event_type'] == '15')   //Task added to related list of another task
             {
                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       $related = stripslashes($related);
                echo "{$details_text['addedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '16')   //Task deleted from related list of another task
             {
                list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       $related = stripslashes($related);
                echo "{$details_text['deletedasrelated']} FS#{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
             } elseif ($history['event_type'] == '17')   //Reminder added
@@ -1973,22 +1977,26 @@ if (@$permissions['view_history'] == '1')
 
             } elseif ($history['event_type'] == '22')   // Dependency added
             {
-               list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       $dependency = stripslashes($dependency);
                echo "{$details_text['depadded']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
             } elseif ($history['event_type'] == '23')   // Dependency added to other task
             {
-               list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       $dependency = stripslashes($dependency);
                echo "{$details_text['depaddedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
             } elseif ($history['event_type'] == '24')   // Dependency removed
             {
                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       $dependency = stripslashes($dependency);
                echo "{$details_text['depremoved']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
             } elseif ($history['event_type'] == '25')   // Dependency removed from other task
             {
                list($dependency) = $db->FetchRow($db->Query("SELECT item_summary FROM flyspray_tasks WHERE task_id = ?", array($newvalue)));
+	       $dependency = stripslashes($dependency);
                echo "{$details_text['depremovedother']} <a href=\"?do=details&amp;id={$newvalue}\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
             } elseif ($history['event_type'] == '26')   // Task marked private
