@@ -76,6 +76,7 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
                   <option value="500" <?php if ($current_user['tasks_perpage'] == "500") { echo "selected=\"selected\"";}?>>500</option>
                </select>
             </td>
+         </tr>
          <tr>
             <td colspan="2"><hr /></td>
          </tr>

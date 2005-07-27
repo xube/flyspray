@@ -1,8 +1,10 @@
 <?php
-error_reporting(E_ALL);
+
 /*
    This script displays a task dependancy graph.
 */
+
+$fs->get_language_pack($lang, 'details');
 
 // Configuration information:
 // [FIXME: in the future, this will come from the initial configuration.]
@@ -14,11 +16,20 @@ $fmt = "png"; // Do you need a different image format?
 // but they never get deleted. Once there, they'll be overwritten but
 // never removed, except for manually.
 
+// ASAP Todo items:
+// - Hook in WebDot method, so if you don't have system() or dot,
+//   you can still see the pretty pictures
+// - Need to get the configuration options put into the installer/configurator
+//   (someone who knows them well should probably do it)
+
+// Other Todo items:
+// - Put the pruning strings into the details language pack, once they're set
+
 // Only load this page if a valid task was actually requested
-if (!$fs->GetTaskDetails($_GET['id']))
+if (!$fs->GetTaskDetails($_REQUEST['id']))
    $fs->Redirect( $fs->CreateURL('error', null) );
 
-$task_details = $fs->GetTaskDetails($_GET['id']);
+$task_details = $fs->GetTaskDetails($_REQUEST['id']);
 
 // Check if they have permissions to view this task (same checks as details)
 if ($task_details['project_is_active'] == '1'
@@ -31,6 +42,20 @@ if ($task_details['project_is_active'] == '1'
    )
 {
 
+  if (isset($_REQUEST['prune'])) { $prunemode = $_REQUEST['prune']; }
+  else { $prunemode = 0; }
+
+  $selfurl = $fs->CreateURL('depends',$id);
+  $pmodes = array(0=>"None",1=>"Prune Closed Links",2=>"Prune Closed Tasks");
+  foreach ($pmodes as $mode => $desc) {
+    $strlist[] =
+      ($mode==$prunemode ? $desc :
+       "<a href='$selfurl".($mode!=0 ? "&prune=$mode" : "")."'>$desc</a>\n");
+  }
+  echo "<p><b>Pruning Level: </b>\n".
+    implode(" &nbsp;|&nbsp; \n",$strlist)."</p>\n";
+
+  
   $starttime = microtime();
   
   $sql = "SELECT
@@ -83,20 +108,28 @@ if ($task_details['project_is_active'] == '1'
   $levelsup   = 0;
   function ConnectsTo($id,$down,$up) {
     global $connected, $edge_list, $rvrs_list, $levelsdown, $levelsup;
+    global $prunemode, $node_list;
     if (!isset($connected[$id])) { $connected[$id]=1; }
     if ($down > $levelsdown) { $levelsdown = $down; }
     if ($up   > $levelsup  ) { $levelsup   = $up  ; }
     //echo "$id ($down d, $up u) => $levelsdown d $levelsup u<br>\n";
+    $selfclosed = $node_list[$id]['clsd'];
     if (isset($edge_list[$id])) {
       foreach ($edge_list[$id] as $neighbor) {
-	if (!isset($connected[$neighbor])) {
+	$neighborclosed = $node_list[$neighbor]['clsd'];
+	if (!isset($connected[$neighbor]) &&
+	    !($prunemode==1 && $selfclosed && $neighborclosed) &&
+	    !($prunemode==2 && $neighborclosed)) {
 	  ConnectsTo($neighbor,$down,$up+1);
 	}
       }
     }
     if (isset($rvrs_list[$id])) {
       foreach ($rvrs_list[$id] as $neighbor) {
-	if (!isset($connected[$neighbor])) {
+	$neighborclosed = $node_list[$neighbor]['clsd'];
+	if (!isset($connected[$neighbor]) &&
+	    !($prunemode==1 && $selfclosed && $neighborclosed) &&
+	    !($prunemode==2 && $neighborclosed)) {
 	  ConnectsTo($neighbor,$down+1,$up);
 	}
       }
@@ -109,15 +142,22 @@ if ($task_details['project_is_active'] == '1'
 
   //echo "<pre>".implode(", ",$connected_nodes)."</pre>\n";
 
-  // Now lets get rid of the extra junk in our arrays We know we're
-  // only going to have to get rid of whole lists, and not elements in
-  // the lists, because if they were in the list, they'd be connected,
-  // so we wouldn't be removing them :)
+  // Now lets get rid of the extra junk in our arrays.
+  // In prunemode 0, we know we're only going to have to get rid of
+  // whole lists, and not elements in the lists, because if they were
+  // in the list, they'd be connected, so we wouldn't be removing them.
+  // In prunemode 1 or 2, we may have to remove stuff from the list, because
+  // you can have an edge to a node that didn't end up connected.
   foreach (array("edge_list","rvrs_list","node_list") as $l) {
     foreach (${$l} as $n => $list) {
       if (!isset($connected[$n])) {
 	unset(${$l}[$n]);
-	//echo "rm list $n in $l<br>\n"; 
+	//echo "rm list $n in $l<br>\n";
+      }
+      if ($prunemode!=0 && $l!="node_list" && isset(${$l}[$n])) {
+	// Only keep entries that appear in the $connected_nodes list
+	//echo "${l}[$n] = ".print_r(${$l}[$n],1)."<br>\n";
+	${$l}[$n] = array_intersect(${$l}[$n],$connected_nodes);
       }
     }
   }
@@ -137,12 +177,14 @@ if ($task_details['project_is_active'] == '1'
   // define the nodes
   foreach ($node_list as $n => $r) {
     $col = "";
+    if ($r['clsd'] && $n!=$id) { $r['pct'] = 120; }
     // color code: shades of gray for % done, shades of yellow for this task
     $x = dechex(255-($r['pct']*1.5)-($n==$id ? 105 : 0));
     if ($n==$id) { $col = "#ffff$x"; } else {  $col = "#$x$x$x"; }
     // Make sure label terminates in \n!
-    $label = "FS#$n - $r[pct]% ".
-      ($r['clsd'] ? "(closed)" : "done").#" status $r[stat]".
+    $label = "FS#$n - ".
+      ($r['clsd'] ? $details_text['closed'] :
+       "$r[pct]% ".$details_text['complete']).#" status $r[stat]".
       "\n".wordwrap($r['sum'],20)."\n";
     $dotgraph .= "FS$n [label=\"".str_replace("\n","\\$lj",$label)."\",".
       "href=\"".$fs->CreateURL("details",$n)."\",".
@@ -165,7 +207,8 @@ if ($task_details['project_is_active'] == '1'
   fclose($tmp);
 
   // Now run dot on it:
-  $out = "$path_for_images/depends_$id.$fmt";
+  $out = "$path_for_images/depends_$id".
+    ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
   $cmd = "$path_to_dot -T $fmt -o$out $tname";
   $rv = system($cmd,$stat);
   if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
