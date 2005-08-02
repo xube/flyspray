@@ -51,7 +51,6 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
       //die("Stop hacking your cookies, you naughty fellow!");
    }
 
-   // Create a 'last search' cookie
    // Only logged in users get to use the 'last search' functionality
    if ( !empty($_GET['string']) OR !empty($_GET['type'])
         OR !empty($_GET['sev']) OR !empty($_GET['due'])

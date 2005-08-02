@@ -513,7 +513,9 @@ function GetTaskDetails($task_id)
       $search_project_group = $db->Query("SELECT * FROM {$dbprefix}_groups
                                           WHERE belongs_to_project = ?",
                                           array($project_id));
-
+      
+      // Default to the global permissions, but allow it to override if we find a match
+      $project_permissions = $global_permissions;
       while ($row = $db->FetchRow($search_project_group))
       {
          $check_in = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups
@@ -524,9 +526,6 @@ function GetTaskDetails($task_id)
          if ($db->CountRows($check_in) > '0')
          {
             $project_permissions = $row;
-         } else
-         {
-            $project_permissions = $global_permissions;
          }
       }
 

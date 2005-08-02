@@ -10,6 +10,10 @@
 
 //error_reporting(E_ALL & -E_NOTICE);
 
+// Check PHP Version (Must Be at least 4.3)
+if (PHP_VERSION  < '4.3.0')
+   die('Your version of PHP is not compatible with Flyspray, please upgrade to the latest version of PHP.  Flyspray requires at least PHP version 4.3.0');
+
 // This line gets the operating system so that we know which way to put slashes in the path
 strstr( PHP_OS, "WIN") ? $slash = "\\" : $slash = "/";
 
@@ -72,10 +76,6 @@ $be = new Backend;
 
 include_once ( "$basedir/includes/markdown.php" );
 include_once ( "$basedir/includes/regexp.php" );
-
-// Check PHP Version (Must Be at least 4.3)
-if (PHP_VERSION  < '4.3.0')
-   die('Your version of PHP is not compatible with Flyspray, please upgrade to the latest version of PHP.  Flyspray requires at least PHP version 4.3.0');
 
 session_start();
 
