@@ -40,7 +40,7 @@
     foreach($arrdiff as $varname) {
       $diff[] = $varname;
     }
-    if (count($diff)) {
+    if (@count($diff)) {
       printHeader("Variables missing in module $module");
       foreach($diff as $varname) {
 	printLine($varname);

@@ -13,7 +13,7 @@ $modify_text = array (
 
 'modify'            =>        'Modyfikuj',
 'noticefrom'        =>        'Powiadomienie od',
-'hasopened'         =>        ' OTWORZYŁ NOWE ZGŁOSZENIE i przydzielił je tobie:',
+'hasopened'         =>        ' OTWORZYŁ(A) NOWE ZGŁOSZENIE i przydzielił(a) je tobie:',
 'newtask'           =>        'Nowe zgłoszenie:',
 'moreinfonew'       =>        'Więcej informacji o zgłoszeniu znajdziesz na stronie:',
 'newtaskcategory'   =>        'Dodano nowe zgłoszenie w tej kategorii',
@@ -37,37 +37,37 @@ $modify_text = array (
 'details'           =>        'Szczegóły:',
 
 'messagefrom'       =>        'Wiadomość z systemu śledzenia usterek Flyspray na ',
-'hasjustmodified'   =>        'właśnie zmodyfikował zgłoszenie.',
+'hasjustmodified'   =>        'właśnie zmodyfikował(a) zgłoszenie.',
 'changedfields'     =>        'Zmienione pola oznaczono gwiazdkami (**)',
 'moreinfomodify'    =>        'Więcej informacji o zgłoszeniu znajdziesz na stronie:',
 
 'task'              =>        'Zgłoszenie',
 'nolongerassigned'  =>        'Wskazane zgłoszenie nie jest już przydzielone tobie. Teraz jest przydzielone dla',
-'hasassigned'       =>        'przydzielił ci następujące zgłoszenie:',
+'hasassigned'       =>        'przydzielił(a) ci następujące zgłoszenie:',
 
 'taskupdated'       =>        'Zgłoszenie zostało zaktualizowane.',
 
-'hasclosedassigned' =>	      'zamknął zgłoszenie które było do ciebie przypisane:',
+'hasclosedassigned' =>	      'zamknął(-ęła) zgłoszenie które było do ciebie przypisane:',
 'reasonforclosing'  =>        'Powód zamknięcia:',
 'noone'             =>        'Nikt',
 'unassigned'        =>        'Nieprzydzielone',
 
-'hasclosed'         =>        'zamknął poniższe zgłoszenie.',
+'hasclosed'         =>        'zamknął(-ęła) poniższe zgłoszenie.',
 'youonnotify'       =>        'Otrzymujesz wiadomość, bo jesteś na liście powiadomień.',
 'taskclosed'        =>        'Zgłoszenie zostało zamknięte.',
 'returntotask'      =>        'Wróć do szczegółów zgłoszenia',
 'backtoindex'       =>        'Wróć do listy zgłoszeń',
 'noclosereason'     =>        'Nie wybrałeś powodu zamknięcia zgłoszenia.',
-'hasreopened'       =>        'ponownie otworzył zgłoszenie, które zamknąłeś:',
+'hasreopened'       =>        'ponownie otworzył(a) zgłoszenie, które zamknąłeś:',
 'taskreopened'      =>        'Zgłoszenie zostało ponownie otworzone.',
 'backtotask'        =>        'Wróć do zgłoszenia.',
 
 'commentadded'      =>        'Komentarz został dodany.',
-'commenttoassigned' =>        'dodał następujący komentarz do przypisanego zgłoszenia:',
-'commenttotask'     =>        'dodał następujący komentarz do zgłoszenia.',
+'commenttoassigned' =>        'dodał(a) następujący komentarz do przypisanego zgłoszenia:',
+'commenttotask'     =>        'dodał(a) następujący komentarz do zgłoszenia.',
 'nocommententered'  =>        'Przed zatwierdzeniem formularza wpisz komentarz.',
 
-'fillinfields'      =>        'Nie wypełniłeś wszystkich pól.',
+'fillinfields'      =>        'Nie wypełniłeś(-aś) wszystkich pól.',
 'notcurrentpass'    =>        'To nie jest twoje bieżące hasło!',
 'passchanged'       =>        'Twoje hasło zostało zmienione.',
 'closewindow'       =>        'Możesz już zamknąć to okno.',
@@ -93,13 +93,13 @@ $modify_text = array (
 'fileuploaded'      =>        'Plik został wysłany.',
 'fileerror'         =>        'Podczas wysyłania pliku wystąpił błąd. Być może jest to problem z niewłaściwymi prawami dostępu do katalogu załączników.',
 'contactadmin'      =>        'Skontaktuj się z administratorem tego projektu.',
-'selectfileerror'   =>        'Nie podałeś pliku i/lub opisu.',
+'selectfileerror'   =>        'Nie podałeś(-aś) pliku i/lub opisu.',
 
 'userupdated'       =>        'Dane użytkownika zostały zaktualizowane',
-'realandemail'      =>        'Nie podałeś nazwiska oraz adresu e-mail.',
+'realandemail'      =>        'Nie podałeś(-aś) nazwiska oraz adresu e-mail.',
 
 'groupupdated'      =>        'Ustawienia grupy zostały zaktualizowane.',
-'groupanddesc'      =>        'Nie podałeś nazwy i opisu grupy.',
+'groupanddesc'      =>        'Nie podałeś(-aś) nazwy i opisu grupy.',
 
 'fillallfields'     =>        'Wypełnij wszystkie pola.',
 'listupdated'       =>        'Lista została zaktualizowana.',

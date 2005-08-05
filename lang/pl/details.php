@@ -157,6 +157,9 @@ $details_text = array (
 'duedate'               =>    'Obecne do dnia',
 'selectmorefiles'       =>    'Więcej plików',
 'attachnoperms'         =>    'Komentarz posiada załączniki, ale nie masz uprawnień, by je zobaczyć.',
+'open'                  =>    'OTWARTE',
+'closed'                =>    'ZAMKNIĘTE',
+'depgraph'              =>    'Pokaż graf zależności',
 
 );
 // vim:fenc=utf-8:enc=utf-8

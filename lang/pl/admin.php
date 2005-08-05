@@ -191,6 +191,7 @@ $admin_text = array (
 'smtppass'              =>    'Hasło użytkownika SMTP',
 'addrewrite'            =>    'Używaj przyjaznych adresów',
 'usereminderdaemon'     =>    'Włącz demona przypomnień',
+'tasksperpage'          =>    'Liczba zgłoszeń na stronie',
 
 );
 // vim:fenc=utf-8:enc=utf-8
