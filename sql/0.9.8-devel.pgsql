@@ -89,3 +89,21 @@ CREATE TABLE flyspray_assigned (
 ALTER TABLE flyspray_attachments ADD comment_id INT8;
 UPDATE flyspray_attachments set comment_id = 0;
 ALTER TABLE flyspray_attachments ALTER comment_id SET NOT NULL;
+
+-- Added 19 Jul 05
+ALTER TABLE flyspray_users ADD last_search TEXT;
+DELETE FROM flyspray_prefs WHERE pref_name = 'anon_view' ;
+DELETE FROM flyspray_prefs WHERE pref_name = 'theme_style' ;
+DELETE FROM flyspray_prefs WHERE pref_name = 'base_url' ;
+DELETE FROM flyspray_prefs WHERE pref_name = 'project_title' ;
+DELETE FROM flyspray_prefs WHERE pref_name = 'default_cat_owner' ;
+ALTER TABLE flyspray_users DROP group_in ;
+ALTER TABLE flyspray_users ADD tasks_perpage INT4;
+UPDATE flyspray_users SET tasks_perpage = '25' ;
+ALTER TABLE flyspray_users ALTER tasks_perpage set NOT NULL ;
+
+-- Added 21 Jul 05
+-- altering flyspray_prefs.pref_value unnecessary, already stored as TEXT
+
+-- Added 7 Aug 05
+ALTER TABLE flyspray_tasks ALTER closure_comment DROP NOT NULL;

@@ -643,7 +643,8 @@ function GetTaskDetails($task_id)
          return md5($password);
       }
       // use random salted crypt by default
-      return crypt($password, chr(rand(21,255)).chr(rand(21,255)) );
+      $letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return crypt($password, substr($letters, rand(0, 52), 1).substr($letters, rand(0, 52), 1) );
    // End of cryptPassword function
    }
 

@@ -2129,7 +2129,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == 'newdep'
    && (($permissions['modify_own_tasks'] == '1'
    && $old_details['assigned_to'] == $current_user['user_id'])
-   OR $permissions['modify_all_tasks'] =='1'))
+   OR $permissions['modify_all_tasks'] == '1')
+   && !empty($_POST['dep_task_id']]))
 {
   // First check that the user hasn't tried to add this twice
   $check_dep = $db->Query("SELECT * FROM {$dbprefix}_dependencies

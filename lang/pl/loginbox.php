@@ -12,10 +12,10 @@ $loginbox_text = array (
 'login'		=>	'Zaloguj!',
 
 // Added in 0.9.6
-'rememberme'	=>	'Zapamiętaj dane', 
+'rememberme'	=>	'Zapamiętaj mnie', 
 
 // Added in 0.9.7
-'lostpassword'				=>	'Zapomniane hasło?',
+'lostpassword'				=>	'Zgubiłeś(aś) hasło?',
 
 );
 // vim:fenc=utf-8:enc=utf-8
