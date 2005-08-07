@@ -12,14 +12,16 @@
    -2    No permission
    -3    Task does not exist
 
+   Changes:
+   4th August 2005: Angus Hardie Angus@malcolmhardie.com for xmlrpc library instead of ixr
 */
 
 // Get the main headerfile.  It calls other important files
 require('header.php');
 
-// Call the library that does all the funky stuff
-// http://scripts.incutio.com/xmlrpc/
-require('includes/IXR_Library.inc.php');
+// use xmlrpc library (library + server library)
+require_once 'includes/xmlrpc/xmlrpc.inc';
+require_once 'includes/xmlrpc/xmlrpcs.inc';
 
 
 //////////////////////////////////////////////////
@@ -29,13 +31,13 @@ function getTask($args)
 {
    global $fs;
 
-   $username   = $args[0];
-   $password   = $args[1];
-   $task_id    = $args[2];
+   $username   = php_xmlrpc_decode($args->getParam(0));
+   $password   = php_xmlrpc_decode($args->getParam(1));
+   $task_id    = php_xmlrpc_decode($args->getParam(2));
 
    // First, check the user has a valid, active login.  If not, then stop.
    if (!$fs->checkLogin($username, $password))
-      return new IXR_Error(-1, 'Your credentials were incorrect, or your account has been disabled.');
+      return new xmlrpcresp (0, -1, 'Your credentials were incorrect, or your account has been disabled.');
 
    // Get the user_id
    $user_id = $fs->checkLogin($username, $password);
@@ -48,7 +50,7 @@ function getTask($args)
 
    // If the task doesn't exist, stop.
    if (!is_numeric($task_details['task_id']))
-      return new IXR_Error(-3, 'The requested task does not exist.');
+      return new xmlrpcresp (0,-3, 'The requested task does not exist.');
 
    // Compare permissions to view this task
    if ($task_details['project_is_active'] == '1'
@@ -59,9 +61,9 @@ function getTask($args)
 
 
    if (!$can_view)
-      return new IXR_Error(-2, 'You do not have permission to perform this function.');
+      return new xmlrpcresp (0,-2, 'You do not have permission to perform this function.');
 
-   return array (
+   $result = array (
                   'task_id'              =>    $task_details['task_id'],
                   'attached_to_project'  =>    $task_details['project_title'],
                   'task_type'            =>    $task_details['tasktype_name'],
@@ -88,6 +90,7 @@ function getTask($args)
                   'mark_private'         =>    $task_details['mark_private'],
                );
 
+   return new xmlrpcresp(php_xmlrpc_encode($result));
 
 // End of getTask function
 }
@@ -110,17 +113,17 @@ function closeTask($args)
    include_once('includes/notify.inc.php');
    $notify = new Notifications;
 
-   $username   = $args[0];
-   $password   = $args[1];
-   $task_id    = $args[2];
-   $reason     = $args[3];
-   $comment    = $args[4];
-   $mark100    = $args[5];
+   $username   = php_xmlrpc_decode($args->getParam(0));
+   $password   = php_xmlrpc_decode($args->getParam(1));
+   $task_id    = php_xmlrpc_decode($args->getParam(2));
+   $reason     = php_xmlrpc_decode($args->getParam(3));
+   $comment    = php_xmlrpc_decode($args->getParam(4));
+   $mark100    = php_xmlrpc_decode($args->getParam(5));
 
    // First, check the user has a valid, active login.  If not, then stop.
    if (!$fs->checkLogin($username, $password))
    {
-      return new IXR_Error(-1, 'Your credentials were incorrect, or your account has been disabled.');
+      return new xmlrpcresp (0,-1, 'Your credentials were incorrect, or your account has been disabled.');
    }
 
    // Get the user_id
@@ -135,7 +138,7 @@ function closeTask($args)
    // If the task doesn't exist, stop.
    if (!is_numeric($task_details['task_id']))
    {
-      return new IXR_Error(-3, 'The requested task does not exist.');
+      return new xmlrpcresp (0,-3, 'The requested task does not exist.');
    }
 
     // Get info on the dependencies
@@ -205,14 +208,14 @@ function getUser($args)
    global $fs;
    global $db;
 
-   $username   = $args[0];
-   $password   = $args[1];
-   $req_user   = $args[2];
+   $username   = php_xmlrpc_decode($args->getParam(0));
+   $password   = php_xmlrpc_decode($args->getParam(1));
+   $req_user   = php_xmlrpc_decode($args->getParam(2));
 
    // First, check the user has a valid, active login.  If not, then stop.
    if (!$fs->checkLogin($username, $password))
    {
-      return new IXR_Error(-1, 'Your credentials were incorrect, or your account has been disabled.');
+      return new xmlrpcresp (0,-1, 'Your credentials were incorrect, or your account has been disabled.');
    }
 
    // Get the user_id
@@ -228,20 +231,22 @@ function getUser($args)
       // If the task doesn't exist, stop.
       if (!is_numeric($user_details['user_id']))
       {
-         return new IXR_Error(-3, 'The requested user does not exist.');
+         return new xmlrpcresp (0,-3, 'The requested user does not exist.');
       }
 
-      return array ( 'user_id'         => $user_details['user_id'],
+      $result = array ( 'user_id'         => $user_details['user_id'],
                      'user_name'       => $user_details['user_name'],
                      'real_name'       => $user_details['real_name'],
                      'jabber_id'       => $user_details['jabber_id'],
                      'email_address'   => $user_details['email_address'],
                      'account_enabled' => $user_details['account_enabled'],
                    );
+      
+      return new xmlrpcresp(php_xmlrpc_encode($result));
 
    } else
    {
-      return new IXR_Error(-2, 'You do not have permission to perform this function.');
+      return new xmlrpcresp (0,-2, 'You do not have permission to perform this function.');
    }
 
 
@@ -250,12 +255,13 @@ function getUser($args)
 
 
 // Define the server
-$server = new IXR_Server(array(
+$server = new xmlrpc_server(array(
 
-   'fs.getTask'      => 'getTask',
-   'fs.closeTask'    => 'closeTask',
-   'fs.getUser'      => 'getUser',
+                                  'fs.getTask' =>  array( 'function' => 'getTask' ),
+                                  'fs.getUser' =>  array( 'function' => 'getUser' ),
+                                  'fs.closeTask' =>  array( 'function' => 'closeTask' )
 
-));
+                                 )
+                            );
 
 ?>

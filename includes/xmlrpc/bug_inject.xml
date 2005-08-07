@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!-- $Id -->
+<!-- PHP code injection found by GulfTech Security Research [security@gulftech.org] -->
+<methodResponse>
+<params>
+<param>
+<value>
+<struct>
+
+<member>
+<name>','')); echo('gotcha!'); die(); //</name>
+<value>
+not quite...
+</value>
+</member>
+
+<member>
+<name>","")); echo("gotcha!"); die();  //</name>
+<value>
+not quite...
+</value>
+</member>
+
+<member>
+<name>bad base64 val single quote</name>
+<value>
+<base64>','')); echo('gotcha!'); die(); //</base64>
+</value>
+</member>
+
+<member>
+<name>bad base64 val double quote</name>
+<value>
+<base64>","")); echo("gotcha!"); die(); //</base64>
+</value>
+</member>
+
+<member>
+<name>bad date val single quote</name>
+<value>
+<dateTime.iso8601>','')); echo('gotcha!'); die(); //</dateTime.iso8601>
+</value>
+</member>
+
+<member>
+<name>bad date val double quote</name>
+<value>
+<dateTime.iso8601>","")); echo("gotcha!"); die(); //</dateTime.iso8601>
+</value>
+</member>
+
+</struct>
+</value>
+</param>
+</params>
+</methodResponse>

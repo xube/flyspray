@@ -1,0 +1,18 @@
+HTTP/1.1 100 Welcome to the jungle
+
+HTTP/1.0 200 OK
+X-Content-Marx-Brothers: Harpo
+			Chico and Groucho
+Content-Length: who knows?
+
+
+  
+<?xml version="1.0"?>
+<!-- First of all, let's check out if the lib properly handles a commented </methodResponse> tag... -->
+<methodResponse><params><param><value><struct><member><name>userid</name><value>311127</value></member>
+<member><name>dateCreated</name><value><dateTime.iso8601>20011126T09:17:52</dateTime.iso8601></value></member><member><name>content</name><value>hello world. 2 newlines follow
+
+
+and there they were.</value></member><member><name>postid</name><value>7414222</value></member></struct></value></param></params></methodResponse>
+<script type="text\javascript">document.write('Hello, my name is added nag, I\'m happy to serve your content for free');</script>
+
