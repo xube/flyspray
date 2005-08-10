@@ -297,6 +297,8 @@ function GetTaskDetails($task_id)
 
       require("lang/$lang/functions.inc.php");
 
+      // Just in case $perpage is something weird, like 0, fix it here:
+      if ($perpage < 1) { $perpage = ($totalcount > 0 ? $totalcount : 1); }
       $pages = ceil($totalcount / $perpage);
       $output = sprintf($functions_text['page'], $pagenum, $pages);
 
@@ -730,7 +732,7 @@ function GetTaskDetails($task_id)
    // set empty values for $_GET[...] variables
    function fixMissingIndices()
    {
-      $indexes = 'project index date order class order order2 sort sort2 tasks permissions sev dev due string pagenum perpage type cat status';
+      $indexes = 'project index date order class order order2 sort sort2 tasks permissions sev dev due string pagenum type cat status';
       $indexes = split(' ', $indexes);
       foreach ($indexes as $index)
       {

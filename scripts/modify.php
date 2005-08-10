@@ -671,7 +671,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                        notify_type,
                                        account_enabled,
                                        tasks_perpage)
-                                       VALUES(?, ?, ?, ?, ?, ?, ?,?)",
+                                       VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
                                        array($reg_details['user_name'],
                                              $pass_hash,
                                              $reg_details['real_name'],
@@ -766,7 +766,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                      notify_type,
                                      account_enabled,
                                      tasks_perpage)
-                                     VALUES( ?, ?, ?, ?, ?, ?, ?,?)",
+                                     VALUES( ?, ?, ?, ?, ?, ?, ?, ?)",
                                     array($_POST['user_name'],
                                           $pass_hash,
                                           $_POST['real_name'],

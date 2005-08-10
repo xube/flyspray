@@ -64,7 +64,7 @@ function changelog_report()
         };
         ?>
 
-        <form name="changelog_form" action="?do=reports&report=changelog" method="POST">
+        <form name="changelog_form" action="index.php?do=reports&report=changelog" method="POST">
 
         <?php echo $reports_text['listfrom']?>
 
@@ -375,7 +375,7 @@ switch ($_REQUEST['sort']) {
 ?>
 
     <div id="events" class="tab">
-        <form action="<?php echo $conf['general']['baseurl'];?>?do=reports&amp;report=events" method="post">
+        <form action="<?php echo $conf['general']['baseurl'];?>index.php?do=reports&amp;report=events" method="post">
         <!-- <input type="hidden" name="do" value="reports">
         <input type="hidden" name="report" value="events"> -->
         <table>

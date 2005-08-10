@@ -272,7 +272,7 @@ class Notifications {
 
       $mail->From = $flyspray_prefs['admin_email'];
       $mail->Sender = $flyspray_prefs['admin_email'];
-      $mail->FromName = $project_prefs['project_title'];
+      $mail->FromName = 'Flyspray';
 
       // Do we want to use a remote mail server?
       if (!empty($flyspray_prefs['smtp_server']))
@@ -415,6 +415,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['taskchanged'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
          $body .= $details_text['attachedtoproject'] . ' - ' .  $task_details['project_title'] . "\n";
          $body .= $details_text['summary'] . ' - ' . $task_details['item_summary'] . "\n";

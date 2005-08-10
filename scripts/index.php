@@ -20,7 +20,7 @@ $dev = null;
 $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);
 $this_page = str_replace('&', '&amp;', $this_page);
 
-if ( isset($_COOKIE['flyspray_userid']) )
+if ( isset($_COOKIE['flyspray_userid']) && isset($current_user['tasks_perpage']) && $current_user['tasks_perpage']>0 )
 {
    $perpage = $current_user['tasks_perpage'];
 } else
@@ -456,17 +456,7 @@ if ($project_prefs['project_is_active'] == '1'
    }
    );
    </script>
-<!--
-    <select name="perpage">
-      <option value="10" <?php if ($perpage == "10") { echo "selected=\"selected\"";}?>>10</option>
-      <option value="20" <?php if ($perpage == "20") { echo "selected=\"selected\"";}?>>20</option>
-      <option value="30" <?php if ($perpage == "30") { echo "selected=\"selected\"";}?>>30</option>
-      <option value="40" <?php if ($perpage == "40") { echo "selected=\"selected\"";}?>>40</option>
-      <option value="50" <?php if ($perpage == "50") { echo "selected=\"selected\"";}?>>50</option>
-      <option value="75" <?php if ($perpage == "75") { echo "selected=\"selected\"";}?>>75</option>
-      <option value="100" <?php if ($perpage == "100") { echo "selected=\"selected\"";}?>>100</option>
-    </select>
--->
+
     <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />
 </div>
 </form>

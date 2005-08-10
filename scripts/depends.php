@@ -216,6 +216,8 @@ if ($task_details['project_is_active'] == '1'
   $cmd = "$path_to_dot -T cmapx $tname";
   $rv = system($cmd,$stat);
   if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
+
+  unlink($tname);
   
   echo "<img src='$out' alt='task $id dependencies' usemap='$graphname'>\n";
 

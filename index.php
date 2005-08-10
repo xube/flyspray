@@ -56,7 +56,6 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
         OR !empty($_GET['sev']) OR !empty($_GET['due'])
         OR !empty($_GET['dev']) OR !empty($_GET['cat'])
         OR !empty($_GET['status']) OR !empty($_GET['status'])
-        OR !empty($_GET['perpage'])
       )
    {
       $db->Query("UPDATE {$dbprefix}_users
@@ -165,7 +164,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
       $extraurl = '&amp;string=' . $_GET['string'] . '&amp;type=' . $_GET['type'] . '&amp;sev=' . $_GET['sev'] . '&amp;dev=' . $_GET['dev']
                   . '&amp;due=' . $_GET['due'] . '&amp;cat=' . $_GET['cat'] . '&amp;status=' . $_GET['status']
                   . '&amp;order2=' . $_GET['order2'] . '&amp;sort=' . $_GET['sort']
-                  . '&amp;sort2=' . $_GET['sort2'] . '&amp;perpage=' . $_GET['perpage']
+                  . '&amp;sort2=' . $_GET['sort2']
                   . '&amp;date=' . $_GET['date'] . '&amp;project=' . @$_GET['project'];
 
       $_SESSION['lastindexfilter'] = $conf['general']['baseurl'] . 'index.php?tasks=' . $_GET['tasks']

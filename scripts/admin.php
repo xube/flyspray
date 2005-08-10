@@ -431,12 +431,14 @@ if ($permissions['is_admin'] == '1')
                <td><label for="tasks_perpage"><?php echo $admin_text['tasksperpage'];?></label></td>
                <td>
                   <select name="tasks_perpage">
-                     <option value="10" <?php if ($current_user['tasks_perpage'] == "10") { echo "selected=\"selected\"";}?>>10</option>
-                     <option value="25" <?php if ($current_user['tasks_perpage'] == "25") { echo "selected=\"selected\"";}?>>25</option>
-                     <option value="50" <?php if ($current_user['tasks_perpage'] == "50") { echo "selected=\"selected\"";}?>>50</option>
-                     <option value="100" <?php if ($current_user['tasks_perpage'] == "100") { echo "selected=\"selected\"";}?>>100</option>
-                     <option value="250" <?php if ($current_user['tasks_perpage'] == "250") { echo "selected=\"selected\"";}?>>250</option>
-                     <option value="500" <?php if ($current_user['tasks_perpage'] == "500") { echo "selected=\"selected\"";}?>>500</option>
+<?php
+// This should really share its list of values with myprofile.php...
+$perpagevals = array(10,25,50,100,250,500);
+foreach ($perpagevals as $n) {
+  $s = ($current_user['tasks_perpage'] == $n ? " selected=\"selected\"" : "");
+  echo "                     <option value=\"$n\"$s>$n</option>\n";
+ }
+?>
                   </select>
                </td>
             </tr>
