@@ -337,18 +337,15 @@ class Backend {
       global $dbprefix;
       global $fs;
       global $flyspray_prefs;
-      global $notify;
+      //global $notify;
+      
+      $notify = new Notifications();
+      
 
       if (!is_array($args))
          return "We were not given an array of arguments to process.";
 
-      // Get some information about the project and the user's permissions
-      $project_prefs = $fs->GetProjectPrefs($projectid);
-      $permissions   = $fs->GetPermissions($userid, $projectid);
-
-      // Check permissions for the specified user (or anonymous) to open tasks
-      if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
-         return false;
+      
 
 
       // Here's a list of the arguments we accept
@@ -372,30 +369,38 @@ class Backend {
       $duedate       = $args[12];   // Due Date (10 digit numerical)
       $status        = $args[13];   // Item Status (numerical)
 
+      
+      // Get some information about the project and the user's permissions
+      $project_prefs = $fs->GetProjectPrefs($projectid);
+      $permissions   = $fs->GetPermissions($userid, $projectid);
+      
+      // Check permissions for the specified user (or anonymous) to open tasks
+      if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
+         return false;
 
-      if ( !is_numeric($userid)
-        OR !is_numeric($projectid)
-        OR !is_numeric($tasktype)
-        OR !is_numeric($category)
-        OR !is_numeric($version)
-        OR !is_numeric($os)
-        OR !is_numeric($severity)
-        OR !is_numeric($assigned)
-        OR !is_numeric($duever)
-        OR !is_numeric($priority)
-        OR !is_numeric($duedate)
-        OR !is_numeric($status) )
-            return 'One or more required numeric fields were not numeric!';
-
+      
       // Some fields can have default values set
       if (empty($assigned) OR $permissions['modify_all_tasks'] != '1')
       {
-         $assigned = '0';
-         $duever = '0';
-         $priority = '2';
-         $duedate = '0';
-         $status = '1';
+         $assigned = 0;
+         $duever = 0;
+         $priority = 2;
+         $duedate = 0;
+         $status = 1;
       }
+      
+      $checkArray = array("userid","projectid","tasktype","category","version","os","severity",
+                          "assigned","duever","priority","duedate","status");
+      
+      
+      foreach ($checkArray as $item) {
+         
+         if (!is_numeric($$item)) {
+            return "value for $item is not numeric ($item='".($$item)."')";
+         }
+      }
+     
+
 
       // Here comes the database insert!
       $db->Query("INSERT INTO {$dbprefix}_tasks
@@ -440,6 +445,8 @@ class Backend {
                                                 ORDER BY task_id DESC",
                                                 array($summary, $desc), 1));
 
+      
+      $taskid = $task_details['task_id'];
       // Log that the task was opened
       $fs->logEvent($task_details['task_id'], 1);
 
@@ -488,7 +495,9 @@ class Backend {
 
       // End of checking if there's a category owner set, and notifying them.
       }
-
+      
+      // give some information back
+      return $task_details;
 
    // End of CreateTask() function
    }
