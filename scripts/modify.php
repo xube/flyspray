@@ -591,7 +591,7 @@ if ($_POST['action'] == 'newtask'
                                       )
                               );
 
-$subject = $register_text['noticefrom'] . ' ' . $flyspray_prefs['project_title'];
+$subject = $modify_text['noticefrom'] . ' Flyspray';
 
 $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 {$modify_text['addressused']}\n
