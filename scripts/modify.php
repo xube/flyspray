@@ -15,7 +15,7 @@ $notify = new Notifications;
 $_POST['default_cat_owner'] = $db->emptyToZero($_POST['default_cat_owner']);
 $_POST['category_owner']    = $db->emptyToZero($_POST['category_owner']);
 
-$list_table_name = "flyspray_list_".addslashes($_POST['list_type']);
+$list_table_name = "{$dbprefix}_list_".addslashes($_POST['list_type']);
 $list_column_name = addslashes($_POST['list_type'])."_name";
 $list_id = addslashes($_POST['list_type'])."_id";
 

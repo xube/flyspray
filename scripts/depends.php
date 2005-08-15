@@ -63,9 +63,9 @@ if ($task_details['project_is_active'] == '1'
 	  pct1, t1.is_closed AS clsd1, t1.item_status AS stat1,
 	  t2.task_id AS id2, t2.item_summary AS sum2, t2.percent_complete as
 	  pct2, t2.is_closed AS clsd2, t2.item_status AS stat2
-	  FROM flyspray_dependencies AS d
-	  JOIN flyspray_tasks AS t1 ON d.task_id=t1.task_id
-	  JOIN flyspray_tasks AS t2 ON d.dep_task_id=t2.task_id
+	  FROM {$dbprefix}_dependencies AS d
+	  JOIN {$dbprefix}_tasks AS t1 ON d.task_id=t1.task_id
+	  JOIN {$dbprefix}_tasks AS t2 ON d.dep_task_id=t2.task_id
 	  WHERE t1.attached_to_project='$project_id'
 	  ORDER BY d.task_id, d.dep_task_id";
   #echo "<pre>".print_r($sql,1)."</pre>\n";

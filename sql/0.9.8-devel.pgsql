@@ -90,6 +90,9 @@ ALTER TABLE flyspray_attachments ADD comment_id INT8;
 UPDATE flyspray_attachments set comment_id = 0;
 ALTER TABLE flyspray_attachments ALTER comment_id SET NOT NULL;
 
+-- Added 26 June 2005
+ALTER TABLE flyspray_tasks ALTER closure_comment DROP NOT NULL;
+
 -- Added 19 Jul 05
 ALTER TABLE flyspray_users ADD last_search TEXT;
 DELETE FROM flyspray_prefs WHERE pref_name = 'anon_view' ;
