@@ -52,16 +52,15 @@ function showTabById(tabid) { // {{{
   var submenu = document.getElementById('submenu');
   var i;
 
-  // ukryj wszystkie zakładki
   for (i=0; i<divs.length; i++) {
     if (divs[i].className && (divs[i].className.indexOf('tab') > -1)) {
       divs[i].style.display = 'none';
     }
   }
-  // pokaż żądaną zakładkę
+
   if (tab) {
     tab.style.display = 'block';
-    // ustaw klasę 'active' dla wywojącego elementu
+
     if (submenu) {
       var links = submenu.getElementsByTagName('a');
       for (i=0; i<links.length; i++) {
@@ -137,8 +136,26 @@ function initTabs() {/*{{{*/
   } else {
     showTabByNumber(0);
   }
+  var history = document.getElementById('history');
+  if (history) {
+    addEvent(history,'click',uglyHistoryCommentFix);
+  }
 
 }/*}}}*/
+function uglyHistoryCommentFix(e) {
+  var target = e.target || window.event.srcElement;
+  if ('A' == target.nodeName) {
+    var re= /#comments/;
+    if (re.test(target.href)) {
+      showTabById('comments');
+    }
+  }
+  var history = document.getElementById('history');
+  if (history) {
+    addEvent(history,'click',uglyHistoryCommentFix);
+  }
+}
+// }}}
 
 // }}}
 

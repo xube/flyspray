@@ -1895,7 +1895,7 @@ if (@$permissions['view_history'] == '1')
                if ($db->CountRows($attachment) != 0)
                {
                   $attachment = $db->FetchRow($attachment);
-                  echo ": <a href=\"?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
+                  echo ": <a href=\"{$baseurl}?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
                   if ($attachment['file_desc'] != '')
                   {
                      echo " ({$attachment['file_desc']})";
