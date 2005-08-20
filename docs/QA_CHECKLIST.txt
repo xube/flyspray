@@ -1,0 +1,57 @@
+
+			Flyspray Quality Assurance
+			==========================
+
+This file contains a list of things to check before release and after major
+changes in code.
+
+Please note that some tests may require having two users--more and less
+privileged--and two web browsers. These tests are marked with [2U].
+
+Some tests are meant to fail; these are marked with [F].
+
+Tasks:
+* create task
+* create task twice in a row with the same details [F]
+* find task using 'Show Task' box
+* show task details
+* show task details for non-existent task [F]
+* take ownership (when permissions allow)
+* take ownership (when permissions don't allow)
+* add comment without attachment
+* add comment with attachment
+* check history entries
+* assign task
+* close task
+* add dependency
+* add dependency on non-existent task
+* search for tasks (check all conditions--developers, categories,
+  severities, etc.--separately)
+* show previous/next task using Prev / Next links
+* check permissions for project selector dropdown
+* mark task private, ensure it's treated as private [2U]
+* watch task, add comment, check notification [2U]
+* schedule reminder, check if it works
+* view/download attachment when permissions allow
+* view/download attachment when permissions don't allow [F]
+
+Users:
+* add user with admin toolbox
+* register as new user with confirmation code
+* register as new user without confirmation code
+* move user between groups (project level)
+* move user between groups (global level)
+* edit user details with myprofile.php
+
+Projects:
+* add project
+* define columns in tasks view
+* ensure project_id set correctly and respected when moving between tasks
+  (TODO: specify places to check)
+* project prefs respected everywhere (TODO: specify places to check)
+
+Code quality:
+* check php syntax:
+    for file in `find . -name '*.php'`; do php -l $file; done
+* search for 'TODO', 'FIXME' and 'release' strings:
+    grep -Er '(TODO|FIXME|release)' * | grep '.php:'
