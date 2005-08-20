@@ -912,7 +912,6 @@ foreach ($perpagevals as $n) {
   <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="action" value="update_category" />
   <input type="hidden" name="list_type" value="category" />
-  <input type="hidden" name="project_id" value="0" />
   <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
   </div>
   <table class="list">
@@ -1029,7 +1028,6 @@ foreach ($perpagevals as $n) {
     <div>
          <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="add_category" />
-        <input type="hidden" name="project_id" value="0" />
         <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
     </div>
       <table class="list">
@@ -1106,7 +1104,6 @@ foreach ($perpagevals as $n) {
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="update_list" />
       <input type="hidden" name="list_type" value="os" />
-      <input type="hidden" name="project_id" value="0" />
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
    </div>
       <table class="list">
@@ -1167,7 +1164,6 @@ foreach ($perpagevals as $n) {
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="add_to_list" />
          <input type="hidden" name="list_type" value="os" />
-         <input type="hidden" name="project_id" value="0" />
          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
       </div>
       <table class="list">
@@ -1211,7 +1207,6 @@ foreach ($perpagevals as $n) {
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update_version_list" />
          <input type="hidden" name="list_type" value="version" />
-         <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
          <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
       </div>
          <table class="list">
@@ -1278,7 +1273,6 @@ foreach ($perpagevals as $n) {
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_to_version_list" />
             <input type="hidden" name="list_type" value="version" />
-            <input type="hidden" name="project_id" value="0" />
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
       </div>
       <table class="list">
@@ -1329,7 +1323,6 @@ foreach ($perpagevals as $n) {
    <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="newproject" />
-      <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
    </div>
       <table class="admin">
       <tr>

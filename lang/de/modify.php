@@ -137,7 +137,7 @@ $modify_text = array (
 'priority'          =>  'Priorität',
 
 // Added in version 0.9.7
-'nouserselected'    =>  'Keinen Bneutzer ausgewählt. Markieren Sie mindestens einen Benutzer und versuchen Sie es erneut.',
+'nouserselected'    =>  'Keinen Benutzer ausgewählt. Markieren Sie mindestens einen Benutzer und versuchen Sie es erneut.',
 'groupswitchupdated'=>  'Benutzergruppen erfolgreich geändert.',
 'takenownership'    =>  'Diese Aufgabe ist nun Ihnen zugeteilt.',
 'adminrequestmade'  =>  'Ein Projektmanager wurde über Ihre Anfrage informiert.',
@@ -156,6 +156,13 @@ $modify_text = array (
 'taskmadeprivate'   =>  'Diese Aufgabe wurde versteckt',
 'taskmadepublic'    =>  'Diese Aufgabe wurde wieder öffentlich gemacht',
 'realandnotify'     =>  'Sie müssen Ihren Namen angeben und entweder das Feld für die E-Mail-Adresse oder die Jabber-ID ausfüllen.',
+
+// Added in version 0.9.8
+
+'pmreqdenied'           =>       'Projektmanager Anfrage abgelehnt',
+'massopsuccess'         =>       'Vorgang auf allen Elementen erfolgreich, wo die Berechtigungen ausreichend waren',
+'usernotexist'          =>       'Dieser Benutzername existiert nicht',
+'commentattachperms'    =>       'Sie können dieses Kommentar nicht löschen - Berechtigung nicht ausreichend',
 
 
 );

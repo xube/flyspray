@@ -103,7 +103,7 @@ if ( (isset($_REQUEST['do'])  && $_REQUEST['do']  == 'details') ||
 {
    unset($id);
    if ( isset($_REQUEST['task_id']) ) { $id = $_REQUEST['task_id']; }
-   elseif ( isset($_REQUEST['id']) ) { $id = $_REQUEST['id']; }
+   elseif ( isset($_REQUEST['id']) && !is_array($_REQUEST['id']) ) { $id = $_REQUEST['id']; }
    if ( isset($id) )
    {
      $project_id = $db->FetchOne($db->Query("SELECT attached_to_project FROM {$dbprefix}_tasks WHERE task_id = ?", array($id)));

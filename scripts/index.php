@@ -812,7 +812,7 @@ ORDER BY
          printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
 
          if (isset($_COOKIE['flyspray_userid']) && $total > 0)
-         echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">Toggle selected</a>';
+         echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">' . $index_text['toggleselected'] . '</a>';
 
          echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . $_GET['order']) . "</td>";
       } else

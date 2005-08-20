@@ -14,6 +14,9 @@
 global $language;
 $language = array(
 
+'locale'                   =>    'de_DE',     // Required, starting in 0.9.8
+
+
 'filenotexist'      =>  'Datei nicht gefunden. Wenden Sie sich an den Flyspray-Administrator dieses Projektes.',
 'showtask'          =>  'Zeige Aufgabe',
 'now'               =>  'Jetzt',
@@ -55,5 +58,16 @@ $language = array(
 // Added in version 0.9.7
 'adminreqwaiting'   =>   'Administrationsaufgaben',
 
+// Added in version 0.9.8
+'admintoolbox'             =>    'Verwaltungswerkzeuge',
+'manageproject'            =>    'Projektverwaltung',
+'permissions'              =>    'Berechtigungen anzeigen',
+'hide'                     =>    'Verstecken',
+'pendingreq'               =>    'PM requests waiting',
+
+'errorpage'                =>    'Flyspray kann die Seite die Sie angefordert haben nicht anzeigen.
+                                  Vielleicht haben Sie eine Aufgabe ausgewählt die nicht existiert, oder sie keine ausreichenden Berechtigungen haben sie anzuzeigen.<br /><br />
+                                  Falls Sie versucht haben eine Sicherheitslücke wie beispielsweise SQL-Injection auszunutzen, gehen Sie in die Ecke und schämen sich.
+                                  Falls Sie wiederkommen, versuchen Sie dies nicht noch einmal!'
 );
 ?>

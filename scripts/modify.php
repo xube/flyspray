@@ -1445,6 +1445,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   $listposition = $_POST['list_position'];
   $listshow = $_POST['show_in_list'];
   $listtense = $_POST['version_tense'];
+  $listdelete = $_POST['delete'];
   $listid = $_POST['id'];
 
   $redirectmessage = $modify_text['listupdated'];
@@ -1470,6 +1471,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
       }
    }
+
+  if (is_array($listdelete)) {
+      $deleteids = "$list_id = " . join(" OR $list_id =", array_keys($listdelete));
+      $db->Query("DELETE FROM $list_table_name WHERE $deleteids");
+  }
 
   $_SESSION['SUCCESS'] = $redirectmessage;
   $fs->redirect($_POST['prev_page']);
@@ -1618,12 +1624,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
             $fs->logEvent($_POST['this_task'], 11, $_POST['related_task']);
             $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
 
-            $notify->Create('9', $_POST['task_id']);
+            $notify->Create('9', $_POST['this_task']);
 
-//             $to  = $notify->Address($_POST['task_id']);
-//             $msg = $notify->Create('9', $_POST['task_id']);
-//             $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//             $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
             $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
             $fs->redirect("index.php?do=details&id=" . $_POST['this_task'] . "#related");

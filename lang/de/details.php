@@ -125,5 +125,31 @@ $details_text = array (
 'makepublic'        =>  'Öffentlich machen',
 'taskmadeprivate'   =>  'Aufgabe versteckt',
 'taskmadepublic'    =>  'Aufgabe öffentlich gemacht',
+
+// from 0.9.6
+'system'              =>   'System',
+// Added in version 0.9.8
+
+'confirmdeletecomment'  =>    'Dieses Kommentar wirklich löschen?  Es werden auch alle Änhänge gelöscht!',
+'confirmdeleteattach'   =>    'Diesen Anhang wirklich löschen?',
+'selectedhistory'       =>    'Verlauf für markierten Eintrag anzeigen',
+'showallhistory'        =>    'Kompletten Verlaufs-Reiter wieder anzeigen',
+'hidethis'              =>    'Diesen Bereich wieder ausblenden',
+'mark100'               =>    'Aufgabe als 100% komplett markieren',
+'watchtask'             =>    'Diese Aufgabe beobachten',
+'stopwatching'          =>    'Diese Aufgabe nicht mehr beobachten',
+'commentlink'           =>    'Dieses Kommentar verlinken',
+'submitreq'             =>    'Anfrage abschicken',
+'givereason'            =>    'Grund für diese Anfrage',
+'pmreqdenied'           =>    'Projektmanager hat den Zugriff nicht erlaubt',
+'taskpendingreq'        =>    'Warte auf eine Aktion des Projektmanagers. Weiter Informationen in dem Verlaufs-Reiter',
+'previoustask'          =>    'vorherige Aufgabe',
+'nexttask'              =>    'nächste Aufgabe',
+'duedate'               =>    'Fälligkeitsdatum',
+'selectmorefiles'       =>    'Mehr Dateien auswählen',
+'attachnoperms'         =>    'An diesem Kommentar befinden sich Anhänge, aber Ihnen fehlt die Berechtigung sie zu öffnen',
+'open'                  =>    'OFFEN',
+'closed'                =>    'GESCHLOSSEN',
+'depgraph'              =>    'Abhängigkeitsgraph anzeigen',
 );
 ?>

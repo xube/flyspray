@@ -161,5 +161,28 @@ $admin_text = array (
 'notifications'     =>  'Benachrichtigungen',
 'resetoptions'      =>  'Einstellungen zurücksetzen',
 
+// Added in version 0.9.8
+
+'preferences'           =>    'Einstellungen',
+'tasktypes'             =>    'Aufgaben Typen',
+'resolutions'           =>    'Lösungen',
+'categories'            =>    'Kategorien',
+'operatingsystems'      =>    'Betriebssysteme',
+'versions'              =>    'Versionen',
+'admintoolbox'          =>    'Verwaltungswerkzeuge',
+'newproject'            =>    'Neues Projekt',
+'delete'                =>    'Löschen',
+'listdeletetip'         =>    'Dieses Element von der Liste löschen',
+'lookandfeel'           =>    'Look and Feel',
+'globaltheme'           =>    'Globales Thema',
+'emailnotify'           =>    'E-Mail Benachrichtigungen',
+'fromaddress'           =>    'Absender Adresse',
+'smtpserver'            =>    'SMTP Server',
+'smtpuser'              =>    'SMTP Benutzername',
+'smtppass'              =>    'SMTP Passwort',
+'addrewrite'            =>    'Email-Adresse umschreiben',
+'usereminderdaemon'     =>    'Hintergrund-Erinnerungsprozess aktivieren',
+'tasksperpage'          =>    'Aufgaben pro Seiten in der Übersicht',
+
 );
 ?>

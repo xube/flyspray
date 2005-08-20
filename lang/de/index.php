@@ -41,5 +41,18 @@ $index_text = array (
 'attachments'   =>  'Anhänge',
 'priority'      =>  'Priorität',
 
+// Added in version 0.9.8
+'taskrange'                =>    'Zeige Aufgaben %d - %d von %d',
+'noresults'                =>    'Für Ihre Suche wurden keine Treffer gefunden.',
+'takeaction'               =>    'Ausführen',
+'watchtasks'               =>    'Beobachte markierte Aufgaben',
+'stopwatching'             =>    'Beende beobachtung von markierten Aufgaben',
+'assigntome'               =>    'Markierte Aufgaben mir zuweisen',
+'dueby'                    =>    'zu erbringen von',
+'duedate'                  =>    'Fälligkeitsdatum',
+'dueanytime'               =>    'unbestimmt',
+'selectduedate'            =>    'Fälligkeitsdatum auswählen',
+'toggleselected'           =>    'Auswahl umkehren'
+
 );
 ?>
