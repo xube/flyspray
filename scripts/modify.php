@@ -15,7 +15,7 @@ $notify = new Notifications;
 $_POST['default_cat_owner'] = $db->emptyToZero($_POST['default_cat_owner']);
 $_POST['category_owner']    = $db->emptyToZero($_POST['category_owner']);
 
-$list_table_name = "{$dbprefix}_list_".addslashes($_POST['list_type']);
+$list_table_name = "{$dbprefix}list_".addslashes($_POST['list_type']);
 $list_column_name = addslashes($_POST['list_type'])."_name";
 $list_id = addslashes($_POST['list_type'])."_id";
 
@@ -73,7 +73,7 @@ if ($_POST['action'] == 'newtask'
       $sql_params = join(', ', $sql_params);
       $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
 
-      $add_item = $db->Query("INSERT INTO {$dbprefix}_tasks
+      $add_item = $db->Query("INSERT INTO {$dbprefix}tasks
                               (attached_to_project,
                               date_opened,
                               last_edited_time,
@@ -88,7 +88,7 @@ if ($_POST['action'] == 'newtask'
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
     $task_details = $db->FetchArray($db->Query("SELECT task_id, item_summary, product_category
-                                                FROM {$dbprefix}_tasks
+                                                FROM {$dbprefix}tasks
                                                 WHERE item_summary = ?
                                                 AND detailed_desc = ?
                                                 ORDER BY task_id DESC",
@@ -106,7 +106,7 @@ if ($_POST['action'] == 'newtask'
                                         );
       }
 
-   $cat_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_list_category
+   $cat_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}list_category
                                               WHERE category_id = ?",
                                               array($_POST['product_category'])
                                             )
@@ -120,7 +120,7 @@ if ($_POST['action'] == 'newtask'
    } elseif (!empty($cat_details['parent_id']))
    {
       $parent_cat_details = $db->FetchArray($db->Query("SELECT category_owner
-                                                         FROM {$dbprefix}_list_category
+                                                         FROM {$dbprefix}list_category
                                                          WHERE category_id = ?",
                                                          array($cat_details['parent_id'])
                                                       )
@@ -138,7 +138,7 @@ if ($_POST['action'] == 'newtask'
    if (!empty($owner))
    {
       // Category owners now get auto-added to the notification list for new tasks
-      $insert = $db->Query("INSERT INTO {$dbprefix}_notifications
+      $insert = $db->Query("INSERT INTO {$dbprefix}notifications
                            (task_id, user_id)
                            VALUES(?, ?)",
                            array($task_details['task_id'], $owner)
@@ -231,7 +231,7 @@ if ($_POST['action'] == 'newtask'
    <?php
    } else {
 
-      $old_details_history = $db->FetchRow($db->Query("SELECT * FROM {$dbprefix}_tasks WHERE task_id = ?", array($_POST['task_id'])));
+      $old_details_history = $db->FetchRow($db->Query("SELECT * FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id'])));
 
       $item_summary = $_POST['item_summary'];
       $detailed_desc = $_POST['detailed_desc'];
@@ -251,7 +251,7 @@ if ($_POST['action'] == 'newtask'
          $due_date = '0';
       }
 
-      $add_item = $db->Query("UPDATE {$dbprefix}_tasks SET
+      $add_item = $db->Query("UPDATE {$dbprefix}tasks SET
                               attached_to_project = ?,
                               task_type = ?,
                               item_summary = ?,
@@ -284,7 +284,7 @@ if ($_POST['action'] == 'newtask'
       // Get the details of the task we just updated
       // To generate the changed-task message
       $new_details = $fs->GetTaskDetails($_POST['task_id']);
-      $new_details_history = $db->FetchRow($db->Query("SELECT * FROM {$dbprefix}_tasks WHERE task_id = ?", array($_POST['task_id'])));
+      $new_details_history = $db->FetchRow($db->Query("SELECT * FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id'])));
 
       // Now we compare old and new, mark the changed fields
       $field = array(
@@ -368,7 +368,7 @@ if ($_POST['action'] == 'newtask'
 {
    if (!empty($_POST['resolution_reason']))
    {
-      $db->Query("UPDATE {$dbprefix}_tasks SET
+      $db->Query("UPDATE {$dbprefix}tasks SET
                   date_closed = ?,
                   closed_by = ?,
                   closure_comment = ?,
@@ -384,7 +384,7 @@ if ($_POST['action'] == 'newtask'
 
       if (isset($_POST['mark100']) && $_POST['mark100'] == '1')
       {
-         $db->Query("UPDATE {$dbprefix}_tasks SET
+         $db->Query("UPDATE {$dbprefix}tasks SET
                      percent_complete = '100'
                      WHERE task_id = ?",
                      array($_POST['task_id'])
@@ -394,10 +394,10 @@ if ($_POST['action'] == 'newtask'
       }
 
       // Get the resolution name for the notifications
-      $get_res = $db->FetchArray($db->Query("SELECT resolution_name FROM {$dbprefix}_list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason'])));
+      $get_res = $db->FetchArray($db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason'])));
 
       // Get the item summary for the notifications
-      list($item_summary) = $db->FetchArray($db->Query("SELECT item_summary FROM {$dbprefix}_tasks WHERE task_id = ?", array($_POST['task_id'])));
+      list($item_summary) = $db->FetchArray($db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id'])));
       $item_summary = stripslashes($item_summary);
 
       // Create notification
@@ -408,7 +408,7 @@ if ($_POST['action'] == 'newtask'
 
       // If there's an admin request related to this, close it
       if ($fs->AdminRequestCheck(1, $_POST['task_id']) == '1') {
-         $db->Query("UPDATE {$dbprefix}_admin_requests
+         $db->Query("UPDATE {$dbprefix}admin_requests
                     SET resolved_by = ?, time_resolved = ?
                     WHERE task_id = ? AND request_type = ?",
                     array($current_user['user_id'], date('U'), $_POST['task_id'], 1));
@@ -435,7 +435,7 @@ if ($_POST['action'] == 'newtask'
           && ($old_details['assigned_to'] == $current_user['user_id'])
           OR @$permissions['close_other_tasks'] == '1') ) )
 {
-    $db->Query("UPDATE {$dbprefix}_tasks SET
+    $db->Query("UPDATE {$dbprefix}tasks SET
                 resolution_reason = '0',
                 closure_comment = '0',
                 last_edited_time = ?,
@@ -449,7 +449,7 @@ if ($_POST['action'] == 'newtask'
    // If there's an admin request related to this, close it
    if ($fs->AdminRequestCheck(2, $_GET['task_id']) == '1')
    {
-      $db->Query("UPDATE {$dbprefix}_admin_requests
+      $db->Query("UPDATE {$dbprefix}admin_requests
                   SET resolved_by = ?, time_resolved = ?
                   WHERE task_id = ? AND request_type = ?",
                   array($current_user['user_id'], date('U'), $_GET['task_id'], 2));
@@ -474,12 +474,12 @@ if ($_POST['action'] == 'newtask'
    {
       $comment = $_POST['comment_text'];
 
-      $db->Query("INSERT INTO {$dbprefix}_comments
+      $db->Query("INSERT INTO {$dbprefix}comments
                   (task_id, date_added, user_id, comment_text)
                   VALUES ( ?, ?, ?, ? )",
                   array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
 
-      $comment = $db->FetchRow($db->Query("SELECT comment_id FROM {$dbprefix}_comments
+      $comment = $db->FetchRow($db->Query("SELECT comment_id FROM {$dbprefix}comments
                                            WHERE task_id = ?
                                            ORDER BY comment_id DESC",
                                            array($_POST['task_id']), 1
@@ -540,7 +540,7 @@ if ($_POST['action'] == 'newtask'
 
 
       // Check to see if the username is available
-      $check_username = $db->Query("SELECT * FROM {$dbprefix}_users WHERE user_name = ?",
+      $check_username = $db->Query("SELECT * FROM {$dbprefix}users WHERE user_name = ?",
                                      array($_POST['user_name']));
       if ($db->CountRows($check_username))
       {
@@ -551,7 +551,7 @@ if ($_POST['action'] == 'newtask'
          // Delete registration codes older than 24 hours
          $now = date('U');
          $yesterday = $now - '86400';
-         $remove = $db->Query("DELETE FROM {$dbprefix}_registrations WHERE reg_time < ?",
+         $remove = $db->Query("DELETE FROM {$dbprefix}registrations WHERE reg_time < ?",
                                 array($yesterday));
 
          // Generate a random bunch of numbers for the confirmation code
@@ -570,7 +570,7 @@ if ($_POST['action'] == 'newtask'
          $magic_url = md5(microtime());
 
          // Insert everything into the database
-         $save_code = $db->Query("INSERT INTO {$dbprefix}_registrations
+         $save_code = $db->Query("INSERT INTO {$dbprefix}registrations
                                   (reg_time,
                                   confirm_code,
                                   user_name,
@@ -652,7 +652,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
          // Check that the user entered the right confirmation code
-         $code_check = $db->Query("SELECT * FROM {$dbprefix}_registrations WHERE magic_url = ?", array($_POST['magic_url']));
+         $code_check = $db->Query("SELECT * FROM {$dbprefix}registrations WHERE magic_url = ?", array($_POST['magic_url']));
          $reg_details = $db->FetchArray($code_check);
 
          // If the code is correct
@@ -662,7 +662,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
             $pass_hash = $fs->cryptPassword($_POST['user_pass']);
 
             // Add the user to the database
-            $add_user = $db->Query("INSERT INTO {$dbprefix}_users
+            $add_user = $db->Query("INSERT INTO {$dbprefix}users
                                       (user_name,
                                        user_pass,
                                        real_name,
@@ -684,10 +684,10 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
             // Get this user's id for the record
-            $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_users WHERE user_name = ?", array($reg_details['user_name'])));
+            $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}users WHERE user_name = ?", array($reg_details['user_name'])));
 
             // Now, create a new record in the users_in_groups table
-            $set_global_group = $db->Query("INSERT INTO {$dbprefix}_users_in_groups
+            $set_global_group = $db->Query("INSERT INTO {$dbprefix}users_in_groups
                                           (user_id,
                                           group_id)
                                           VALUES(?, ?)",
@@ -740,7 +740,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     ) {
 
     // Check to see if the username is available
-    $check_username = $db->Query("SELECT * FROM {$dbprefix}_users WHERE user_name = ?", array($_POST['user_name']));
+    $check_username = $db->Query("SELECT * FROM {$dbprefix}users WHERE user_name = ?", array($_POST['user_name']));
     if ($db->CountRows($check_username)) {
       echo "<div class=\"redirectmessage\"><p><em>{$modify_text['usernametaken']}</em></p>";
       echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
@@ -757,7 +757,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           $group_in = $flyspray_prefs['anon_group'];
         };
 
-        $add_user = $db->Query("INSERT INTO {$dbprefix}_users
+        $add_user = $db->Query("INSERT INTO {$dbprefix}users
                                     (user_name,
                                      user_pass,
                                      real_name,
@@ -778,10 +778,10 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                  );
 
         // Get this user's id for the record
-        $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_users WHERE user_name = ?", array($_POST['user_name'])));
+        $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}users WHERE user_name = ?", array($_POST['user_name'])));
 
         // Now, create a new record in the users_in_groups table
-        $set_global_group = $db->Query("INSERT INTO {$dbprefix}_users_in_groups
+        $set_global_group = $db->Query("INSERT INTO {$dbprefix}users_in_groups
                                           (user_id,
                                           group_id)
                                           VALUES( ?, ?)",
@@ -823,13 +823,13 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    if (!empty($_POST['group_name']) && !empty($_POST['group_desc']))
    {
       // Check to see if the group name is available
-      $check_groupname = $db->Query("SELECT * FROM {$dbprefix}_groups WHERE group_name = ? AND belongs_to_project = ?", array($_POST['group_name'], $project_id));
+      $check_groupname = $db->Query("SELECT * FROM {$dbprefix}groups WHERE group_name = ? AND belongs_to_project = ?", array($_POST['group_name'], $project_id));
       if ($db->CountRows($check_groupname))
       {
          echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupnametaken']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
       } else
       {
-         $db->Query("INSERT INTO {$dbprefix}_groups
+         $db->Query("INSERT INTO {$dbprefix}groups
                      (group_name,
                       group_desc,
                       belongs_to_project,
@@ -896,11 +896,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == "globaloptions"
           && $permissions['is_admin'] == '1')
 {
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'jabber_server'", array($_POST['jabber_server']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'jabber_port'", array($_POST['jabber_port']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'jabber_username'", array($_POST['jabber_username']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'jabber_password'", array($_POST['jabber_password']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'anon_group'", array($_POST['anon_group']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'jabber_server'", array($_POST['jabber_server']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'jabber_port'", array($_POST['jabber_port']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'jabber_username'", array($_POST['jabber_username']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'jabber_password'", array($_POST['jabber_password']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'anon_group'", array($_POST['anon_group']));
 
    /*$base_url = trim($_POST['base_url']);
 
@@ -909,35 +909,35 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       $base_url .= '/';
    }
 
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'base_url'", array($base_url));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'base_url'", array($base_url));
 */
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'user_notify'", array($_POST['user_notify']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'admin_email'", array($_POST['admin_email']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'lang_code'", array($_POST['lang_code']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'spam_proof'", array($_POST['spam_proof']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'default_project'", array($_POST['default_project']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'anon_reg'", array($_POST['anon_reg']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'global_theme'", array($_POST['global_theme']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'smtp_server'", array($_POST['smtp_server']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'smtp_user'", array($_POST['smtp_user']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'smtp_pass'", array($_POST['smtp_pass']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'funky_urls'", array($_POST['funky_urls']));
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'reminder_daemon'", array($_POST['reminder_daemon']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'user_notify'", array($_POST['user_notify']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'admin_email'", array($_POST['admin_email']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'lang_code'", array($_POST['lang_code']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'spam_proof'", array($_POST['spam_proof']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'default_project'", array($_POST['default_project']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'dateformat'", array($_POST['dateformat']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'dateformat_extended'", array($_POST['dateformat_extended']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'anon_reg'", array($_POST['anon_reg']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'global_theme'", array($_POST['global_theme']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'smtp_server'", array($_POST['smtp_server']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'smtp_user'", array($_POST['smtp_user']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'smtp_pass'", array($_POST['smtp_pass']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'funky_urls'", array($_POST['funky_urls']));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'reminder_daemon'", array($_POST['reminder_daemon']));
 
    // Process the list of groups into a format we can store
    foreach ($_POST['assigned_groups'] as $group_id => $val)
       $assigned_groups .= $group_id . ' ';
 
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
 
 
    // Process the list of visible columns into format we can store
    foreach ($_POST['visible_columns'] as $column => $val)
       $columnlist .= $column . ' ';
 
-   $update = $db->Query("UPDATE {$dbprefix}_prefs SET pref_value = ? WHERE pref_name = 'visible_columns'", array($columnlist));
+   $update = $db->Query("UPDATE {$dbprefix}prefs SET pref_value = ? WHERE pref_name = 'visible_columns'", array($columnlist));
 
 
    $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
@@ -954,7 +954,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
   if ($_POST['project_title'] != '') {
 
-    $insert = $db->Query("INSERT INTO {$dbprefix}_projects
+    $insert = $db->Query("INSERT INTO {$dbprefix}projects
                               (project_title,
                               theme_style,
                               show_logo,
@@ -978,9 +978,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                               'id tasktype severity summary status dueversion progress',
                               ));
 
-    $newproject = $db->FetchArray($db->Query("SELECT project_id FROM {$dbprefix}_projects ORDER BY project_id DESC", false, 1));
+    $newproject = $db->FetchArray($db->Query("SELECT project_id FROM {$dbprefix}projects ORDER BY project_id DESC", false, 1));
 
-      $add_group = $db->Query("INSERT INTO {$dbprefix}_groups
+      $add_group = $db->Query("INSERT INTO {$dbprefix}groups
                                       (group_name,
                                       group_desc,
                                       belongs_to_project,
@@ -1025,20 +1025,20 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                             '1')
                                      );
 
-    $insert = $db->Query("INSERT INTO {$dbprefix}_list_category
+    $insert = $db->Query("INSERT INTO {$dbprefix}list_category
                              (project_id, category_name, list_position,
                              show_in_list, category_owner)
                              VALUES ( ?, ?, ?, ?, ?)",
                              array($newproject['project_id'],
                             'Backend / Core', '1', '1', '0'));
 
-    $insert = $db->Query("INSERT INTO {$dbprefix}_list_os
+    $insert = $db->Query("INSERT INTO {$dbprefix}list_os
                              (project_id, os_name, list_position,
                              show_in_list)
                              VALUES (?,?,?,?)",
                              array($newproject['project_id'], 'All', '1', '1'));
 
-    $insert = $db->Query("INSERT INTO {$dbprefix}_list_version
+    $insert = $db->Query("INSERT INTO {$dbprefix}list_version
                              (project_id, version_name, list_position,
                              show_in_list, version_tense)
                              VALUES (?, ?, ?, ?, ?)",
@@ -1063,7 +1063,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 {
    if (!empty($_POST['project_title']))
    {
-      $update = $db->Query("UPDATE {$dbprefix}_projects SET
+      $update = $db->Query("UPDATE {$dbprefix}projects SET
                             project_title = ?,
                             theme_style = ?,
                             show_logo = ?,
@@ -1097,7 +1097,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       foreach ($_POST['visible_columns'] as $column => $val)
          $columnlist .= $column . ' ';
 
-      $update = $db->Query("UPDATE {$dbprefix}_projects SET visible_columns = ? WHERE project_id = ?", array($columnlist, $_POST['project_id']));
+      $update = $db->Query("UPDATE {$dbprefix}projects SET visible_columns = ? WHERE project_id = ?", array($columnlist, $_POST['project_id']));
 
 
       $_SESSION['SUCCESS'] = $modify_text['projectupdated'];
@@ -1141,7 +1141,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       if (file_exists("attachments/$file_name"))
       {
          $file_desc = $_POST['file_desc'];
-         $add_to_db = $db->Query("INSERT INTO {$dbprefix}_attachments
+         $add_to_db = $db->Query("INSERT INTO {$dbprefix}attachments
                                   (task_id, orig_name, file_name, file_desc,
                                   file_type, file_size, added_by, date_added)
                                   VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -1156,7 +1156,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
          $notify->Create('8', $_POST['task_id']);
 
-         $row = $db->FetchRow($db->Query("SELECT attachment_id FROM {$dbprefix}_attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
+         $row = $db->FetchRow($db->Query("SELECT attachment_id FROM {$dbprefix}attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
          $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
 
          // Success message!
@@ -1202,7 +1202,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
          {
             $new_pass = $_POST['changepass'];
             $new_pass_hash = $fs->cryptPassword($new_pass);
-            $update_pass = $db->Query("UPDATE {$dbprefix}_users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_POST['user_id']));
+            $update_pass = $db->Query("UPDATE {$dbprefix}users SET user_pass = '$new_pass_hash' WHERE user_id = ?", array($_POST['user_id']));
 
             // If the user is changing their password, better update their cookie hash
             if ($_COOKIE['flyspray_userid'] == $_POST['user_id'])
@@ -1220,7 +1220,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
       if ($password_problem == false)
       {
-         $update = $db->Query("UPDATE {$dbprefix}_users SET
+         $update = $db->Query("UPDATE {$dbprefix}users SET
                                  real_name = ?,
                                  email_address = ?,
                                  jabber_id = ?,
@@ -1243,7 +1243,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
          if ($permissions['is_admin'] == '1' && !empty($_POST['group_in']))
          {
-            $update = $db->Query("UPDATE {$dbprefix}_users SET
+            $update = $db->Query("UPDATE {$dbprefix}users SET
                                   account_enabled = ?
                                   WHERE user_id = ?",
                                   array(
@@ -1252,7 +1252,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                         )
                                 );
 
-            $update = $db->Query("UPDATE {$dbprefix}_users_in_groups SET
+            $update = $db->Query("UPDATE {$dbprefix}users_in_groups SET
                                   group_id = ?
                                   WHERE record_id = ?",
                                   array($_POST['group_in'], $_POST['record_id'])
@@ -1282,7 +1282,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    if ($_POST['group_name'] != ''
      && $_POST['group_desc'] != '')
    {
-      $update = $db->Query("UPDATE {$dbprefix}_groups SET
+      $update = $db->Query("UPDATE {$dbprefix}groups SET
                              group_name = ?,
                              group_desc = ?,
                              manage_project = ?,
@@ -1331,7 +1331,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
       // Get the group definition that this group belongs to
-      $group_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_groups WHERE group_id = ?", array($_POST['group_id'])));
+      $group_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}groups WHERE group_id = ?", array($_POST['group_id'])));
 
       $_SESSION['SUCCESS'] = $modify_text['groupupdated'];
       $fs->redirect($_POST['prev_page']);
@@ -1533,7 +1533,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       if ($listname[$i] != ''
           && is_numeric($listposition[$i])
           ) {
-          $update = $db->Query("UPDATE {$dbprefix}_list_category SET
+          $update = $db->Query("UPDATE {$dbprefix}list_category SET
                                     category_name = ?,
                                     list_position = ?,
                                     show_in_list = ?,
@@ -1551,7 +1551,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
   if (is_array($listdelete)) {
       $deleteids = "$list_id = " . join(" OR $list_id =", array_keys($listdelete));
-      $db->Query("DELETE FROM {$dbprefix}_list_category WHERE $deleteids");
+      $db->Query("DELETE FROM {$dbprefix}list_category WHERE $deleteids");
   }
 
   $_SESSION['SUCCESS'] = $redirectmessage;
@@ -1570,7 +1570,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   if ($_POST['list_name'] != ''
     && $_POST['list_position'] != ''
     ) {
-      $update = $db->Query("INSERT INTO {$dbprefix}_list_category
+      $update = $db->Query("INSERT INTO {$dbprefix}list_category
                                 (project_id, category_name, list_position,
                                 show_in_list, category_owner, parent_id)
                                 VALUES (?, ?, ?, ?, ?, ?)",
@@ -1598,11 +1598,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                OR ($permissions['modify_own_tasks'] == '1' && $old_details['assigned_to'] == $current_user['user_id']))) {
 
   if (is_numeric($_POST['related_task'])) {
-    $check = $db->Query("SELECT * FROM {$dbprefix}_related
+    $check = $db->Query("SELECT * FROM {$dbprefix}related
         WHERE this_task = ?
         AND related_task = ?",
         array($_POST['this_task'], $_POST['related_task']));
-    $check2 = $db->Query("SELECT attached_to_project FROM {$dbprefix}_tasks
+    $check2 = $db->Query("SELECT attached_to_project FROM {$dbprefix}tasks
         WHERE task_id = ?",
         array($_POST['related_task']));
 
@@ -1619,7 +1619,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     {
         list($relatedproject) = $db->FetchRow($check2);
         if ($project_id == $relatedproject || isset($_POST['allprojects'])) {
-            $insert = $db->Query("INSERT INTO {$dbprefix}_related (this_task, related_task) VALUES(?,?)", array($_POST['this_task'], $_POST['related_task']));
+            $insert = $db->Query("INSERT INTO {$dbprefix}related (this_task, related_task) VALUES(?,?)", array($_POST['this_task'], $_POST['related_task']));
 
             $fs->logEvent($_POST['this_task'], 11, $_POST['related_task']);
             $fs->logEvent($_POST['related_task'], 15, $_POST['this_task']);
@@ -1667,7 +1667,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           && ($permissions['modify_all_jobs'] == '1'
                OR ($permissions['modify_own_tasks'] == '1'))) { // FIX THIS PERMISSION!!
 
-  $remove = $db->Query("DELETE FROM {$dbprefix}_related WHERE related_id = ?", array($_POST['related_id']));
+  $remove = $db->Query("DELETE FROM {$dbprefix}related WHERE related_id = ?", array($_POST['related_id']));
 
   $fs->logEvent($_POST['id'], 12, $_POST['related_task']);
   $fs->logEvent($_POST['related_task'], 16, $_POST['id']);
@@ -1750,7 +1750,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == "editcomment"
           && $permissions['edit_comments'] == '1')
 {
-   $update = $db->Query("UPDATE {$dbprefix}_comments
+   $update = $db->Query("UPDATE {$dbprefix}comments
                          SET comment_text = ?  WHERE comment_id = ?",
                          array($_POST['comment_text'], $_POST['comment_id']));
 
@@ -1769,14 +1769,14 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 && $permissions['delete_comments'] == '1')
 {
    $comment = $db->FetchRow($db->Query("SELECT comment_text, user_id, date_added
-                                        FROM {$dbprefix}_comments
+                                        FROM {$dbprefix}comments
                                         WHERE comment_id = ?",
                                         array($_GET['comment_id'])
                                       )
                            );
 
    // Check for files attached to this comment
-   $check_attachments = $db->Query("SELECT * FROM {$dbprefix}_attachments
+   $check_attachments = $db->Query("SELECT * FROM {$dbprefix}attachments
                                     WHERE comment_id = ?",
                                     array($_REQUEST['comment_id'])
                                   );
@@ -1788,7 +1788,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
    } else
    {
-      $db->Query("DELETE FROM {$dbprefix}_comments
+      $db->Query("DELETE FROM {$dbprefix}comments
                   WHERE comment_id = ?",
                   array($_REQUEST['comment_id'])
                 );
@@ -1798,7 +1798,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       while ($attachment = $db->FetchRow($check_attachments))
       {
          // Delete the attachment
-         $db->Query("DELETE from {$dbprefix}_attachments
+         $db->Query("DELETE from {$dbprefix}attachments
                      WHERE attachment_id = ?",
                      array($attachment['attachment_id'])
                    );
@@ -1823,14 +1823,14 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           && $permissions['delete_attachments'] == '1')
 {
    // if an attachment needs to be deleted do it right now
-   $row = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_attachments
+   $row = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}attachments
                                       WHERE attachment_id = ?",
                                       array($_REQUEST['id'])
                                     )
                          );
 
    @unlink("attachments/" . $row['file_name']);
-   $db->Query("DELETE FROM {$dbprefix}_attachments
+   $db->Query("DELETE FROM {$dbprefix}attachments
                WHERE attachment_id = ?",
                array($_REQUEST['id'])
              );
@@ -1859,7 +1859,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   $start_time = ($_POST['timeamount2'] * $_POST['timetype2']) + $now;
   //echo "start time = $start_time";
 
-  $insert = $db->Query("INSERT INTO {$dbprefix}_reminders (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array($_POST['task_id'], $_POST['to_user_id'], $current_user['user_id'], $start_time, $how_often, $_POST['reminder_message']));
+  $insert = $db->Query("INSERT INTO {$dbprefix}reminders (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array($_POST['task_id'], $_POST['to_user_id'], $current_user['user_id'], $start_time, $how_often, $_POST['reminder_message']));
 
   $fs->logEvent($_POST['task_id'], 17, $_POST['to_user_id']);
 
@@ -1875,8 +1875,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           && ($permissions['manage_project'] == '1'
               OR $permissions['is_admin'] == '1')) {
 
-  $reminder = $db->FetchRow($db->Query("SELECT to_user_id FROM {$dbprefix}_reminders WHERE reminder_id = ?", array($_POST['reminder_id'])));
-  $db->Query("DELETE FROM {$dbprefix}_reminders WHERE reminder_id = ?",
+  $reminder = $db->FetchRow($db->Query("SELECT to_user_id FROM {$dbprefix}reminders WHERE reminder_id = ?", array($_POST['reminder_id'])));
+  $db->Query("DELETE FROM {$dbprefix}reminders WHERE reminder_id = ?",
                     array($_POST['reminder_id']));
 
   $fs->logEvent($_POST['task_id'], 18, $reminder['to_user_id']);
@@ -1907,7 +1907,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       foreach ($_POST['user_list'] AS $key => $val)
       {
          // Create entries for them that point to the requested group
-         $create = $db->Query("INSERT INTO {$dbprefix}_users_in_groups
+         $create = $db->Query("INSERT INTO {$dbprefix}users_in_groups
                                (user_id, group_id)
                                VALUES(?, ?)",
                                array($val, $_POST['add_to_group'])
@@ -1935,7 +1935,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       // To be removed from a project entirely
       if ($_POST['switch_to_group'] == '0')
       {
-         $db->Query("DELETE FROM {$dbprefix}_users_in_groups
+         $db->Query("DELETE FROM {$dbprefix}users_in_groups
                      WHERE user_id = ? AND group_id = ?",
                      array($user_id, $_POST['old_group'])
                    );
@@ -1943,7 +1943,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       // Otherwise moved to another project/global group
       } else
       {
-         $db->Query("UPDATE {$dbprefix}_users_in_groups
+         $db->Query("UPDATE {$dbprefix}users_in_groups
                      SET group_id = ?
                      WHERE user_id = ? AND group_id = ?",
                      array($_POST['switch_to_group'], $user_id, $_POST['old_group']));
@@ -2004,9 +2004,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
    // Now, get the project managers' details for this project
    $get_pms = $db->Query("SELECT u.user_id
-                          FROM {$dbprefix}_users u
-                          LEFT JOIN {$dbprefix}_users_in_groups uig ON u.user_id = uig.user_id
-                          LEFT JOIN {$dbprefix}_groups g ON uig.group_id = g.group_id
+                          FROM {$dbprefix}users u
+                          LEFT JOIN {$dbprefix}users_in_groups uig ON u.user_id = uig.user_id
+                          LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id
                           WHERE g.belongs_to_project = ?
                           AND g.manage_project = '1'",
                           array($project_id)
@@ -2045,7 +2045,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $fs->logEvent($_POST['task_id'], 21, $_POST['reason_given']);
 
    // Check if the user is on the notification list
-   $check_notify = $db->Query("SELECT * FROM {$dbprefix}_notifications
+   $check_notify = $db->Query("SELECT * FROM {$dbprefix}notifications
                                WHERE task_id = ?
                                AND user_id = ?",
                                array($_POST['task_id'], $current_user['user_id'])
@@ -2061,9 +2061,9 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
    // Now, get the project managers details for this project
    $get_pms = $db->Query("SELECT u.user_id
-                          FROM {$dbprefix}_users u
-                          LEFT JOIN {$dbprefix}_users_in_groups uig ON u.user_id = uig.user_id
-                          LEFT JOIN {$dbprefix}_groups g ON uig.group_id = g.group_id
+                          FROM {$dbprefix}users u
+                          LEFT JOIN {$dbprefix}users_in_groups uig ON u.user_id = uig.user_id
+                          LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id
                           WHERE g.belongs_to_project = ?
                           AND g.manage_project = '1'",
                           array($project_id)
@@ -2098,14 +2098,14 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 {
    // Get info on the pm request
    $req_details = $db->FetchArray($db->Query("SELECT task_id
-                                              FROM {$dbprefix}_admin_requests
+                                              FROM {$dbprefix}admin_requests
                                               WHERE request_id = ?",
                                               array($_REQUEST['req_id'])
                                              )
                                  );
 
    // Mark the PM request as 'resolved'
-   $db->Query("UPDATE {$dbprefix}_admin_requests
+   $db->Query("UPDATE {$dbprefix}admin_requests
                SET resolved_by = ?, time_resolved = ?, deny_reason = ?
                WHERE request_id = ?",
                array($current_user['user_id'], date('U'), $_REQUEST['deny_reason'], $_REQUEST['req_id']));
@@ -2135,17 +2135,17 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    && !empty($_POST['dep_task_id']))
 {
   // First check that the user hasn't tried to add this twice
-  $check_dep = $db->Query("SELECT * FROM {$dbprefix}_dependencies
+  $check_dep = $db->Query("SELECT * FROM {$dbprefix}dependencies
                              WHERE task_id = ? AND dep_task_id = ?",
                              array($_POST['task_id'], $_POST['dep_task_id']));
 
   // or that they are trying to reverse-depend the same task, creating a mutual-block
-  $check_dep2 = $db->Query("SELECT * FROM {$dbprefix}_dependencies
+  $check_dep2 = $db->Query("SELECT * FROM {$dbprefix}dependencies
                              WHERE task_id = ? AND dep_task_id = ?",
                              array($_POST['dep_task_id'], $_POST['task_id']));
 
   // Check that the dependency actually exists!
-  $check_dep3 = $db->Query("SELECT * FROM {$dbprefix}_tasks
+  $check_dep3 = $db->Query("SELECT * FROM {$dbprefix}tasks
                               WHERE task_id = ?",
                               array($_POST['dep_task_id'])
                             );
@@ -2169,7 +2169,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     $fs->logEvent($_POST['dep_task_id'], 23, $_POST['task_id']);
 
     // Add the dependency to the database
-    $add_dep = $db->Query("INSERT INTO {$dbprefix}_dependencies
+    $add_dep = $db->Query("INSERT INTO {$dbprefix}dependencies
                              (task_id, dep_task_id)
                              VALUES(?,?)",
                              array($_POST['task_id'], $_POST['dep_task_id']));
@@ -2204,7 +2204,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
              OR $permissions['modify_all_tasks'] =='1')) {
 
   // We need some info about this dep for the task history
-  $dep_info = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_dependencies
+  $dep_info = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}dependencies
                                           WHERE depend_id = ?",
                                           array($_GET['depend_id'])));
 
@@ -2220,7 +2220,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
 
    // Do the removal
-   $remove = $db->Query("DELETE FROM {$dbprefix}_dependencies
+   $remove = $db->Query("DELETE FROM {$dbprefix}dependencies
                          WHERE depend_id = ?",
                          array($_GET['depend_id']));
 
@@ -2238,7 +2238,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == 'sendmagic') {
 
    // Check that the username exists
-   $check_details = $db->Query("SELECT * FROM {$dbprefix}_users
+   $check_details = $db->Query("SELECT * FROM {$dbprefix}users
                                 WHERE user_name = ?",
                                 array($_POST['user_name']));
 
@@ -2257,7 +2257,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       $magic_url = md5(microtime());
 
       // Insert the random "magic url" into the user's profile
-      $update = $db->Query("UPDATE {$dbprefix}_users
+      $update = $db->Query("UPDATE {$dbprefix}users
                             SET magic_url = ?
                             WHERE user_id = ?",
                             array($magic_url, $user_details['user_id'])
@@ -2299,7 +2299,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
      && $_POST['pass2'] == $_POST['pass2'])
    {
       // Get the user's details from the magic url
-      $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_users
+      $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}users
                                                   WHERE magic_url = ?",
                                                   array($_POST['magic_url'])
                                                 )
@@ -2309,7 +2309,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       $new_pass_hash = $fs->cryptPassword($_POST['pass1']);
 
       // Change the password and clear the magic_url field
-      $update = $db->Query("UPDATE {$dbprefix}_users SET
+      $update = $db->Query("UPDATE {$dbprefix}users SET
                             user_pass = ?,
                             magic_url = ''
                             WHERE magic_url = ?",
@@ -2339,7 +2339,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_GET['action'] == 'makeprivate'
   && $permissions['manage_project'] == '1')
 {
-   $update = $db->Query("UPDATE {$dbprefix}_tasks
+   $update = $db->Query("UPDATE {$dbprefix}tasks
                          SET mark_private = '1'
                          WHERE task_id = ?",
                          array($_GET['id'])
@@ -2361,7 +2361,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_GET['action'] == 'makepublic'
   && $permissions['manage_project'] == '1')
 {
-   $update = $db->Query("UPDATE {$dbprefix}_tasks
+   $update = $db->Query("UPDATE {$dbprefix}tasks
                          SET mark_private = '0'
                          WHERE task_id = ?",
                          array($_GET['id'])

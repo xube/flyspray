@@ -35,7 +35,7 @@ $fs->get_language_pack($lang, 'admin');
           && !isset($_COOKIE['flyspray_userid']))
 {
    // Check that the magic url is valid
-   $check_magic = $db->Query("SELECT * FROM {$dbprefix}_users
+   $check_magic = $db->Query("SELECT * FROM {$dbprefix}users
                               WHERE magic_url = ?",
                               array($_GET['magic'])
                             );

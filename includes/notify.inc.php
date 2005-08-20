@@ -69,14 +69,14 @@ class Notifications {
       $date = date('U');
 
       // store notification in table
-      $db->Query("INSERT INTO {$dbprefix}_notification_messages
+      $db->Query("INSERT INTO {$dbprefix}notification_messages
                   (message_subject, message_body, time_created)
                   VALUES (?, ?, ?)",
                   array($subject, $body, $date)
                 );
 
       // grab notification id
-      $result = $db->Query("SELECT message_id FROM {$dbprefix}_notification_messages
+      $result = $db->Query("SELECT message_id FROM {$dbprefix}notification_messages
                             WHERE message_subject = ?
                             AND message_body = ?
                             AND time_created = ?",
@@ -89,7 +89,7 @@ class Notifications {
       foreach ($to as $jid)
       {
          // store each recipient in table
-         $db->Query("INSERT INTO {$dbprefix}_notification_recipients
+         $db->Query("INSERT INTO {$dbprefix}notification_recipients
                      (notify_method, message_id, notify_address)
                      VALUES (?, ?, ?)",
                      array('j', $message_id, $jid)
@@ -135,7 +135,7 @@ class Notifications {
 
       // get listing of all pending jabber notifications
       $result = $db->Query("SELECT DISTINCT message_id
-                            FROM {$dbprefix}_notification_recipients
+                            FROM {$dbprefix}notification_recipients
                             WHERE notify_method='j'");
 
       if ( !$db->CountRows($result) )
@@ -170,7 +170,7 @@ class Notifications {
       // removed array usage as it's messing up the select
       // I suspect this is due to the variable being comma separated
       // Jamin W. Collins 20050328
-      $notifications = $db->Query("SELECT * FROM {$dbprefix}_notification_messages
+      $notifications = $db->Query("SELECT * FROM {$dbprefix}notification_messages
                                    WHERE message_id in ($desired)
                                    ORDER BY time_created ASC"
                                  );
@@ -185,7 +185,7 @@ class Notifications {
 
          debug_print("Processing notification {" . $notification['message_id'] . "}");
 
-            $recipients = $db->Query("SELECT * FROM {$dbprefix}_notification_recipients
+            $recipients = $db->Query("SELECT * FROM {$dbprefix}notification_recipients
                                       WHERE message_id = ?
                                       AND notify_method = 'j'",
                                       array($notification['message_id'])
@@ -205,7 +205,7 @@ class Notifications {
                         "body"      => $body
                      ));
                   // delete entry from notification_recipients
-                  $result = $db->Query("DELETE FROM {$dbprefix}_notification_recipients
+                  $result = $db->Query("DELETE FROM {$dbprefix}notification_recipients
                                         WHERE message_id = ?
                                         AND notify_method = 'j'
                                         AND notify_address = ?",
@@ -218,7 +218,7 @@ class Notifications {
             }
 
             // check to see if there are still recipients for this notification
-            $result = $db->Query("SELECT * FROM {$dbprefix}_notification_recipients
+            $result = $db->Query("SELECT * FROM {$dbprefix}notification_recipients
                                   WHERE message_id = ?",
                                   array($notification['message_id'])
                                 );
@@ -227,7 +227,7 @@ class Notifications {
             {
                debug_print("No further recipients for message id {" . $notification['message_id'] . "}");
                // remove notification no more recipients
-               $result = $db->Query("DELETE FROM {$dbprefix}_notification_messages
+               $result = $db->Query("DELETE FROM {$dbprefix}notification_messages
                                      WHERE message_id = ?",
                                      array($notification['message_id'])
                                    );
@@ -541,7 +541,7 @@ class Notifications {
       {
          // Get the comment information
          $comment = $db->FetchArray($db->Query("SELECT comment_id, comment_text
-                                                FROM {$dbprefix}_comments
+                                                FROM {$dbprefix}comments
                                                 WHERE user_id = ?
                                                 AND task_id = ?
                                                 ORDER BY comment_id DESC",
@@ -771,8 +771,8 @@ class Notifications {
       $email_users = array();
 
       $get_users = $db->Query("SELECT *
-                               FROM {$dbprefix}_notifications n
-                               LEFT JOIN {$dbprefix}_users u ON n.user_id = u.user_id
+                               FROM {$dbprefix}notifications n
+                               LEFT JOIN {$dbprefix}users u ON n.user_id = u.user_id
                                WHERE n.task_id = ?",
                                array($task_id));
 

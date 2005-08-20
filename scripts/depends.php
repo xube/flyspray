@@ -55,22 +55,22 @@ if ($task_details['project_is_active'] == '1'
   echo "<p><b>Pruning Level: </b>\n".
     implode(" &nbsp;|&nbsp; \n",$strlist)."</p>\n";
 
-  
+
   $starttime = microtime();
-  
+
   $sql = "SELECT
-	  t1.task_id AS id1, t1.item_summary AS sum1, t1.percent_complete as
-	  pct1, t1.is_closed AS clsd1, t1.item_status AS stat1,
-	  t2.task_id AS id2, t2.item_summary AS sum2, t2.percent_complete as
-	  pct2, t2.is_closed AS clsd2, t2.item_status AS stat2
-	  FROM {$dbprefix}_dependencies AS d
-	  JOIN {$dbprefix}_tasks AS t1 ON d.task_id=t1.task_id
-	  JOIN {$dbprefix}_tasks AS t2 ON d.dep_task_id=t2.task_id
-	  WHERE t1.attached_to_project='$project_id'
-	  ORDER BY d.task_id, d.dep_task_id";
+     t1.task_id AS id1, t1.item_summary AS sum1, t1.percent_complete as
+     pct1, t1.is_closed AS clsd1, t1.item_status AS stat1,
+     t2.task_id AS id2, t2.item_summary AS sum2, t2.percent_complete as
+     pct2, t2.is_closed AS clsd2, t2.item_status AS stat2
+     FROM {$dbprefix}dependencies AS d
+     JOIN {$dbprefix}tasks AS t1 ON d.task_id=t1.task_id
+     JOIN {$dbprefix}tasks AS t2 ON d.dep_task_id=t2.task_id
+     WHERE t1.attached_to_project='$project_id'
+     ORDER BY d.task_id, d.dep_task_id";
   #echo "<pre>".print_r($sql,1)."</pre>\n";
   $get_edges = $db->Query($sql);
-  
+
   $edge_list = array();
   $rvrs_list = array();
   $node_list = array();
@@ -88,10 +88,10 @@ if ($task_details['project_is_active'] == '1'
       $rvrs_list[$id2] = array($id1);
     }
     $node_list[$id1] = array("id"=>$id1, "sum"=>$sum1, "pct"=>$pct1,
-			     "clsd"=>$clsd1, "stat"=>$stat1);
+              "clsd"=>$clsd1, "stat"=>$stat1);
     $node_list[$id2] = array("id"=>$id2, "sum"=>$sum2, "pct"=>$pct2,
-			     "clsd"=>$clsd2, "stat"=>$stat2);
-    
+              "clsd"=>$clsd2, "stat"=>$stat2);
+
   }
   #echo "<pre>".print_r($edge_list,1)."</pre>\n";
   #echo "<pre>".print_r($rvrs_list,1)."</pre>\n";
@@ -116,22 +116,22 @@ if ($task_details['project_is_active'] == '1'
     $selfclosed = $node_list[$id]['clsd'];
     if (isset($edge_list[$id])) {
       foreach ($edge_list[$id] as $neighbor) {
-	$neighborclosed = $node_list[$neighbor]['clsd'];
-	if (!isset($connected[$neighbor]) &&
-	    !($prunemode==1 && $selfclosed && $neighborclosed) &&
-	    !($prunemode==2 && $neighborclosed)) {
-	  ConnectsTo($neighbor,$down,$up+1);
-	}
+   $neighborclosed = $node_list[$neighbor]['clsd'];
+   if (!isset($connected[$neighbor]) &&
+       !($prunemode==1 && $selfclosed && $neighborclosed) &&
+       !($prunemode==2 && $neighborclosed)) {
+     ConnectsTo($neighbor,$down,$up+1);
+   }
       }
     }
     if (isset($rvrs_list[$id])) {
       foreach ($rvrs_list[$id] as $neighbor) {
-	$neighborclosed = $node_list[$neighbor]['clsd'];
-	if (!isset($connected[$neighbor]) &&
-	    !($prunemode==1 && $selfclosed && $neighborclosed) &&
-	    !($prunemode==2 && $neighborclosed)) {
-	  ConnectsTo($neighbor,$down+1,$up);
-	}
+   $neighborclosed = $node_list[$neighbor]['clsd'];
+   if (!isset($connected[$neighbor]) &&
+       !($prunemode==1 && $selfclosed && $neighborclosed) &&
+       !($prunemode==2 && $neighborclosed)) {
+     ConnectsTo($neighbor,$down+1,$up);
+   }
       }
     }
   }
@@ -151,13 +151,13 @@ if ($task_details['project_is_active'] == '1'
   foreach (array("edge_list","rvrs_list","node_list") as $l) {
     foreach (${$l} as $n => $list) {
       if (!isset($connected[$n])) {
-	unset(${$l}[$n]);
-	//echo "rm list $n in $l<br>\n";
+   unset(${$l}[$n]);
+   //echo "rm list $n in $l<br>\n";
       }
       if ($prunemode!=0 && $l!="node_list" && isset(${$l}[$n])) {
-	// Only keep entries that appear in the $connected_nodes list
-	//echo "${l}[$n] = ".print_r(${$l}[$n],1)."<br>\n";
-	${$l}[$n] = array_intersect(${$l}[$n],$connected_nodes);
+   // Only keep entries that appear in the $connected_nodes list
+   //echo "${l}[$n] = ".print_r(${$l}[$n],1)."<br>\n";
+   ${$l}[$n] = array_intersect(${$l}[$n],$connected_nodes);
       }
     }
   }
@@ -189,7 +189,7 @@ if ($task_details['project_is_active'] == '1'
     $dotgraph .= "FS$n [label=\"".str_replace("\n","\\$lj",$label)."\",".
       "href=\"".$fs->CreateURL("details",$n)."\",".
       "tooltip=\"".str_replace("\n"," ",$label)."\",".
-      "fillcolor=\"$col\"];\n"; 
+      "fillcolor=\"$col\"];\n";
   }
   // Add edges
   foreach ($edge_list as $src => $dstlist) {
@@ -212,13 +212,13 @@ if ($task_details['project_is_active'] == '1'
   $cmd = "$path_to_dot -T $fmt -o$out $tname";
   $rv = system($cmd,$stat);
   if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
-  
+
   $cmd = "$path_to_dot -T cmapx $tname";
   $rv = system($cmd,$stat);
   if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
 
   unlink($tname);
-  
+
   echo "<img src='$out' alt='task $id dependencies' usemap='$graphname'>\n";
 
   #echo "<pre>$dotgraph</pre>\n";
@@ -235,7 +235,7 @@ if ($task_details['project_is_active'] == '1'
 
   // They don't have permission to view this task!
   $fs->Redirect( $fs->CreateURL('error', null) );
-  
+
 } // end of "if they have permission"
 
 ?>

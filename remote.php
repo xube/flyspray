@@ -15,12 +15,12 @@ define('NO_SUCH_TASK',-3);    //Task does not exist
 define('NO_SUCH_USER',-3);    //user does not exist (also -3 for compatibility)
 define('CREATE_TASK_FAILED',-4);    //Error creating task
 
-/* 
+/*
    Changes:
    4th August 2005: Angus Hardie Angus@malcolmhardie.com for xmlrpc library instead of ixr
-   10th August 2005: Angus Hardie Angus@malcolmhardie.com refactored code and 
+   10th August 2005: Angus Hardie Angus@malcolmhardie.com refactored code and
                      added new information and task creation functions
- 
+
    Requires the xmlrpc library
    http://phpxmlrpc.sourceforge.net
    should be located in a directory called xmlrpc in the root of the flyspray directory
@@ -32,7 +32,7 @@ require('header.php');
 $lang = "en";
 
 
-// define a version for this interface so that clients can figure out 
+// define a version for this interface so that clients can figure out
 // if a particular function is available
 // not sure how this should work, but increase the number if a function gets added
 define('FS_XMLRPC_VERSION','1.0');
@@ -54,10 +54,10 @@ require_once 'includes/xmlrpc/xmlrpcs.inc';
 function checkRPCLogin($args)
 {
    global $fs;
-   
+
    $username   = php_xmlrpc_decode($args->getParam(0));
    $password   = php_xmlrpc_decode($args->getParam(1));
-   
+
    return $fs->checkLogin($username, $password);
 }
 
@@ -75,7 +75,7 @@ function loginErrorResponse()
 function xmlrpcError($code,$message)
 {
    return new xmlrpcresp(0,$code,$message);
-   
+
 }
 
 /**
@@ -85,7 +85,7 @@ function xmlrpcError($code,$message)
 **/
 function xmlrpcEncodedArrayResponse($data)
 {
-   
+
       return new xmlrpcresp(php_xmlrpc_encode($data));
 }
 
@@ -100,15 +100,15 @@ function getTask($args)
 
    // First, check the user has a valid, active login.  If not, then stop.
    // get the user information
-   
+
    $user_id = checkRPCLogin($args);
-   
+
    // if the user doesn't hava a valid login then return an error response
    if (!$user_id) {
       return loginErrorResponse();
-   } 
-   
-  
+   }
+
+
 
    // Get the task details
    $task_details = $fs->getTaskDetails($task_id);
@@ -182,24 +182,24 @@ function getVersion($args)
 {
    global $fs;
    global $db;
-   
-   
+
+
    // First, check the user has a valid, active login.  If not, then stop.
    // get the user information
-   
+
    $user_id = checkRPCLogin($args);
-   
+
    // if the user doesn't have a valid login then return an error response
    if (!$user_id) {
       return loginErrorResponse();
-   } 
-   
+   }
+
    $result = array( 'application' => 'flyspray', 'access'=>'xmlrpc','version'=> $fs->version, 'fs_xmlrpcversion'=>FS_XMLRPC_VERSION);
-   
+
    // return the result
-   
+
    return xmlrpcEncodedArrayResponse($result);
-   
+
 }
 
 
@@ -220,12 +220,12 @@ function getVersion($args)
 function arrayForQuery($query,$keyName,$valueName,$queryParam=array())
 {
    global $db;
-   
+
    $get_severity = $db->query($query,$queryParam);
-   
+
    while ($row = $db->FetchArray($get_severity)) {
       $result[$row[$keyName]] = $row[$valueName];
-      
+
    };
    return $result;
 }
@@ -254,7 +254,7 @@ function statusArray()
 {
    global $lang;
    require("lang/$lang/status.php");
-   
+
    return $status_list;
 }
 
@@ -264,9 +264,9 @@ function statusArray()
 function severityArray()
 {
    global $lang;
-   require("lang/$lang/severity.php");   
+   require("lang/$lang/severity.php");
    return $severity_list;
-   
+
 }
 /**
 ** returns an array of possible task priority values
@@ -274,7 +274,7 @@ function severityArray()
 function priorityArray()
 {
    global $lang;
-   require("lang/$lang/priority.php");   
+   require("lang/$lang/priority.php");
    return $priority_list;
 }
 
@@ -284,10 +284,10 @@ function priorityArray()
 function operatingSystemArray()
 {
    global $project_id;
-   
+
    return arrayForQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = ? ORDER BY list_position"
                         ,'os_id','os_name',array($project_id, '1'));
-   
+
 }
 
 /**
@@ -296,28 +296,28 @@ function operatingSystemArray()
 function reportedVersionArray()
 {
     global $project_id;
-   
+
    return arrayForQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",'version_id','version_name',array($project_id, '1', '2'));
-   
+
 }
 
 
 /**
 ** returns a list of versions that a task can be due in
 ** @FIXME localization for undecided type is missing
-** @BUG 
+** @BUG
 **/
 function dueInVersionArray()
 {
   global $project_id;
-   
+
    $result = arrayForQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",'version_id','version_name',array($project_id, '1', '3'));
    // note undecided should appear at the top of the list
    array_unshift($result,'undecided');
-   
-   
+
+
    return $result;
-   
+
 }
 
 /**
@@ -327,17 +327,17 @@ function dueInVersionArray()
 **/
 function assignedUserListArray()
 {
-   
-   
+
+
    global $project_id,$dbprefix;
-   
-   $query = "SELECT user_id, real_name from {$dbprefix}_users";
-   
-   
-      
+
+   $query = "SELECT user_id, real_name from {$dbprefix}users";
+
+
+
    return arrayForQuery($query,'user_id','real_name');
-   
-   
+
+
 }
 
 /**
@@ -353,8 +353,8 @@ function taskDataArray()
    $result['operatingSystem'] = operatingSystemArray();
    $result['reportedVersion'] = reportedVersionArray();
    $result['dueInVersion'] = dueInVersionArray();
-   $result['assignedUserList'] = assignedUserListArray(); 
-   
+   $result['assignedUserList'] = assignedUserListArray();
+
    return $result;
 }
 
@@ -370,23 +370,23 @@ function resultFromQueryAsArray($args,$arrayName)
 {
    global $fs;
    global $db;
-   
+
    // First, check the user has a valid, active login.  If not, then stop.
    // get the user information
-   
+
    $user_id = checkRPCLogin($args);
-   
+
    // if the user doesn't hava a valid login then return an error response
    if (!$user_id) {
       return loginErrorResponse();
-   } 
-   
+   }
+
    $array = getArrayData($arrayName);
-   
+
    // return the array as a xmlrpc response
-      
+
    return xmlrpcEncodedArrayResponse($array);
-   
+
 }
 
 
@@ -394,14 +394,14 @@ function resultFromQueryAsArray($args,$arrayName)
 function getArrayListForName($args)
 {
    $requestedArray = php_xmlrpc_decode($args->getParam(2));
-   
+
    return resultFromQueryAsArray($args,$requestedArray);
 }
 
 
 function getArrayData($arrayName)
 {
-   
+
    switch($arrayName) {
       case "taskType":
          return taskTypeArray();
@@ -425,8 +425,8 @@ function getArrayData($arrayName)
       case "taskData":
          return taskDataArray();
    }
-   
-   
+
+
 }
 
 
@@ -435,23 +435,23 @@ function getArrayData($arrayName)
 function getTaskTypeList($args)
 {
    return resultFromQueryAsArray($args,"taskType");
-   
+
 }
 
 function getCategoryList($args)
 {
    return resultFromQueryAsArray($args,"category");
-   
+
 }
 
 function getStatusList($args)
 {
    return resultFromQueryAsArray($args,"status");
-} 
+}
 function getNewTaskData($args)
 {
    return resultFromQueryAsArray($args,"taskData");
-}  
+}
 
 
 //////////////////////////////////////////
@@ -471,88 +471,88 @@ function openTask($args)
    global $be;
    include_once('includes/notify.inc.php');
    $notify = new Notifications();
-   
-   
+
+
    $taskData   = php_xmlrpc_decode($args->getParam(2));
-   
+
    // First, check the user has a valid, active login.  If not, then stop.
    // get the user information
-   
+
    $user_id = checkRPCLogin($args);
-   
+
    // if the user doesn't have a valid login then return an error response
    if (!$user_id) {
       return loginErrorResponse();
-   } 
-   
+   }
+
    // Get the task details
    $task_details = @$fs->getTaskDetails($task_id);
-   
+
    // Get the user's permissions for the project this task belongs to
    $permissions = $fs->getPermissions($user_id, $taskData['project_id']);
-   
-   
-   
-   
+
+
+
+
    // compulsory args
    $taskData[0] = $user_id;
    $taskData[1] = $taskData['project_id'];
-   
+
    $taskData[2] = $taskData['item_summary'];
    $taskData[3] = $taskData['detailed_desc'];
-   
+
    $taskData[4] = $taskData['task_type'];
    $taskData[5] = $taskData['product_category'];
    $taskData[6] = $taskData['product_version'];
    $taskData[7] = $taskData['operating_system'];
    $taskData[8] = $taskData['task_severity'];
-   
+
    // permission based arguments
-   // these get used if the permissions are sufficient 
+   // these get used if the permissions are sufficient
    // otherwise these values get overridden in $be->createtask
-   
+
    $taskData[9] = $taskData['assigned_to'];
    $taskData[10] = $taskData['closedby_version'];
    $taskData[11] = $taskData['task_priority'];
    $taskData[12] = $taskData['due_date'];
    $taskData[13] = $taskData['item_status'];
-   
-   
+
+
    // data should now be loaded
-   
-   
-   
+
+
+
    // get permissions for the project
    $project_prefs = $fs->GetProjectPrefs($taskData['project_id']);
-   
-   // check permissions here rather than waiting until we get to 
+
+   // check permissions here rather than waiting until we get to
    // the backend module. Saves time and effort
    if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1') {
       return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to perform this function.');
    }
-   
-   
+
+
    // creeate the new task
-   // we may or may not get a result back depending on the 
+   // we may or may not get a result back depending on the
    //version of the be module
    $result = $be->createTask($taskData);
-   
-   
-   
+
+
+
    // if the result is empty then return a generic result
    // if the result is not empty then assume that if we get an array back then success
    // otherwise if we get a string back then it's probably an error message
-   
+
    if (empty($result)) {
-      
+
       $result =  "create task returned - no data returned";
    } else if (!is_array($result)) {
       // return the error
       return new xmlrpcresp (0,CREATE_TASK_FAILED, $result);
-      
+
    }
-  
-   
+
+
    // return success
    return xmlrpcEncodedArrayResponse($result);
 }
@@ -575,13 +575,13 @@ function closeTask($args)
 
    // First, check the user has a valid, active login.  If not, then stop.
    // get the user information
-   
+
    $user_id = checkRPCLogin($args);
-   
+
    // if the user doesn't have a valid login then return an error response
    if (!$user_id) {
       return loginErrorResponse();
-   } 
+   }
 
    // Get the task details
    $task_details = @$fs->getTaskDetails($task_id);
@@ -596,8 +596,8 @@ function closeTask($args)
    }
 
     // Get info on the dependencies
-    $check_deps = $db->Query("SELECT * FROM {$dbprefix}_dependencies d
-                                LEFT JOIN {$dbprefix}_tasks t on d.dep_task_id = t.task_id
+    $check_deps = $db->Query("SELECT * FROM {$dbprefix}dependencies d
+                                LEFT JOIN {$dbprefix}tasks t on d.dep_task_id = t.task_id
                                 WHERE d.task_id = ?",
                                 array($task_id));
 
@@ -628,7 +628,7 @@ function closeTask($args)
    // Check if we should mark the task 100% complete
    if(!empty($mark100))
    {
-      $db->Query("UPDATE {$dbprefix}_tasks
+      $db->Query("UPDATE {$dbprefix}tasks
                   SET percent_complete = '100'
                   WHERE task_id = ?",
                   array($task_id)
@@ -636,7 +636,7 @@ function closeTask($args)
    }
 
    //Do it.  Do it.  Close the task, now!
-   $db->Query("UPDATE {$dbprefix}_tasks
+   $db->Query("UPDATE {$dbprefix}tasks
                SET is_closed = '1',
                resolution_reason = ?,
                closure_comment = ?,
@@ -666,13 +666,13 @@ function getUser($args)
 
    // First, check the user has a valid, active login.  If not, then stop.
    // get the user information
-   
+
    $user_id = checkRPCLogin($args);
-   
+
    // if the user doesn't have a valid login then return an error response
    if (!$user_id) {
       return loginErrorResponse();
-   } 
+   }
 
    // Get the user's permissions
    $permissions = $fs->getPermissions($user_id, true);
@@ -694,7 +694,7 @@ function getUser($args)
                      'email_address'   => $user_details['email_address'],
                      'account_enabled' => $user_details['account_enabled'],
                    );
-      
+
       return xmlrpcEncodedArrayResponse($result);
 
    } else

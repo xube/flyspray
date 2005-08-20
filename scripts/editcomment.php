@@ -15,10 +15,10 @@ $fs->get_language_pack($lang, 'admin');
 if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
 {
    // Get the comment details
-   $getcomments = $db->Query("SELECT * FROM {$dbprefix}_comments WHERE comment_id = ?", array($_GET['id']));
+   $getcomments = $db->Query("SELECT * FROM {$dbprefix}comments WHERE comment_id = ?", array($_GET['id']));
    while ($row = $db->FetchArray($getcomments))
    {
-      $getusername = $db->Query("SELECT real_name FROM {$dbprefix}_users WHERE user_id = ?", array($row['user_id']));
+      $getusername = $db->Query("SELECT real_name FROM {$dbprefix}users WHERE user_id = ?", array($row['user_id']));
       list($user_name) = $db->FetchArray($getusername);
 
       $formatted_date = $fs->formatDate($row['date_added'], true);

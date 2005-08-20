@@ -107,7 +107,7 @@ class Flyspray {
       global $dbprefix;
       global $conf;
 
-      $get_prefs = $db->Query("SELECT pref_name, pref_value FROM {$dbprefix}_prefs");
+      $get_prefs = $db->Query("SELECT pref_name, pref_value FROM {$dbprefix}prefs");
 
       $global_prefs = array();
 
@@ -122,7 +122,7 @@ class Flyspray {
       global $db;
       global $dbprefix;
 
-      $get_prefs = $db->Query("SELECT * FROM {$dbprefix}_projects WHERE project_id = ?", array($project));
+      $get_prefs = $db->Query("SELECT * FROM {$dbprefix}projects WHERE project_id = ?", array($project));
 
       $project_prefs = $db->FetchArray($get_prefs);
 
@@ -157,18 +157,18 @@ function GetTaskDetails($task_id)
                                               uc.real_name as closed_by_name,
                                               ua.real_name as assigned_to_name
 
-                                              FROM {$dbprefix}_tasks t
-                                              LEFT JOIN {$dbprefix}_projects p ON t.attached_to_project = p.project_id
-                                              LEFT JOIN {$dbprefix}_list_category c ON t.product_category = c.category_id
-                                              LEFT JOIN {$dbprefix}_list_os o ON t.operating_system = o.os_id
-                                              LEFT JOIN {$dbprefix}_list_resolution r ON t.resolution_reason = r.resolution_id
-                                              LEFT JOIN {$dbprefix}_list_tasktype tt ON t.task_type = tt.tasktype_id
-                                              LEFT JOIN {$dbprefix}_list_version vr ON t.product_version = vr.version_id
-                                              LEFT JOIN {$dbprefix}_list_version vd ON t.closedby_version = vd.version_id
-                                              LEFT JOIN {$dbprefix}_users uo ON t.opened_by = uo.user_id
-                                              LEFT JOIN {$dbprefix}_users ue ON t.last_edited_by = ue.user_id
-                                              LEFT JOIN {$dbprefix}_users uc ON t.closed_by = uc.user_id
-                                              LEFT JOIN {$dbprefix}_users ua ON t.assigned_to = ua.user_id
+                                              FROM {$dbprefix}tasks t
+                                              LEFT JOIN {$dbprefix}projects p ON t.attached_to_project = p.project_id
+                                              LEFT JOIN {$dbprefix}list_category c ON t.product_category = c.category_id
+                                              LEFT JOIN {$dbprefix}list_os o ON t.operating_system = o.os_id
+                                              LEFT JOIN {$dbprefix}list_resolution r ON t.resolution_reason = r.resolution_id
+                                              LEFT JOIN {$dbprefix}list_tasktype tt ON t.task_type = tt.tasktype_id
+                                              LEFT JOIN {$dbprefix}list_version vr ON t.product_version = vr.version_id
+                                              LEFT JOIN {$dbprefix}list_version vd ON t.closedby_version = vd.version_id
+                                              LEFT JOIN {$dbprefix}users uo ON t.opened_by = uo.user_id
+                                              LEFT JOIN {$dbprefix}users ue ON t.last_edited_by = ue.user_id
+                                              LEFT JOIN {$dbprefix}users uc ON t.closed_by = uc.user_id
+                                              LEFT JOIN {$dbprefix}users ua ON t.assigned_to = ua.user_id
 
                                               WHERE t.task_id = ?
                                               ", array($task_id));
@@ -216,10 +216,10 @@ function GetTaskDetails($task_id)
          if (empty($val))
             continue;
 
-         $group_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_groups WHERE group_id = ?", array($val)));
+         $group_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}groups WHERE group_id = ?", array($val)));
 
          // Check that there is a user in the selected group prior to display
-         $check_group = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
+         $check_group = $db->Query("SELECT * FROM {$dbprefix}users_in_groups WHERE group_id = ?", array($group_details['group_id']));
          if (!$db->CountRows($check_group))
          {
             continue;
@@ -227,8 +227,8 @@ function GetTaskDetails($task_id)
          {
             echo '<optgroup label="' . stripslashes($group_details['group_name']) . "\">\n";
 
-            $user_query = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups uig
-                                        LEFT JOIN {$dbprefix}_users u on uig.user_id = u.user_id
+            $user_query = $db->Query("SELECT * FROM {$dbprefix}users_in_groups uig
+                                        LEFT JOIN {$dbprefix}users u on uig.user_id = u.user_id
                                         WHERE group_id = ? AND u.account_enabled = '1'
                                         ORDER BY u.real_name ASC",
                                         array($group_details['group_id'])
@@ -250,11 +250,11 @@ function GetTaskDetails($task_id)
       }
 
       // Now, we get the users from groups in the current project
-      $get_group_details = $db->Query("SELECT * FROM {$dbprefix}_groups WHERE belongs_to_project = ?", array($in_project));
+      $get_group_details = $db->Query("SELECT * FROM {$dbprefix}groups WHERE belongs_to_project = ?", array($in_project));
       while ($group_details = $db->FetchArray($get_group_details) AND $in_project > '0')
       {
          // Check that there is a user in the selected group prior to display
-         $check_group = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups WHERE group_id = ?", array($group_details['group_id']));
+         $check_group = $db->Query("SELECT * FROM {$dbprefix}users_in_groups WHERE group_id = ?", array($group_details['group_id']));
          if (!$db->CountRows($check_group))
          {
             continue;
@@ -264,8 +264,8 @@ function GetTaskDetails($task_id)
             echo "<optgroup label=\"{$group_details['group_name']}\">\n";
 
             // Get the users that belong to this group
-            $user_query = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups uig
-                                        LEFT JOIN {$dbprefix}_users u on uig.user_id = u.user_id
+            $user_query = $db->Query("SELECT * FROM {$dbprefix}users_in_groups uig
+                                        LEFT JOIN {$dbprefix}users u on uig.user_id = u.user_id
                                         WHERE group_id = ?",
                                         array($group_details['group_id'])
                                      );
@@ -352,7 +352,7 @@ function GetTaskDetails($task_id)
 
       if(isset($_SESSION['userid']))
       {
-         $get_user_details = $db->Query("SELECT {$format_id} FROM {$dbprefix}_users WHERE user_id = " . $_SESSION['userid']);
+         $get_user_details = $db->Query("SELECT {$format_id} FROM {$dbprefix}users WHERE user_id = " . $_SESSION['userid']);
          $user_details = $db->FetchArray($get_user_details);
          $dateformat = $user_details[$format_id];
       }
@@ -406,7 +406,7 @@ function GetTaskDetails($task_id)
       // 28: PM request denied
 
 
-      $db->Query("INSERT INTO {$dbprefix}_history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
+      $db->Query("INSERT INTO {$dbprefix}history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                   VALUES(?, ?, ?, ?, ?, ?, ?)",
                   array($task, $db->emptyToZero($_COOKIE['flyspray_userid']), date('U'), $type, $field, $oldvalue, $newvalue));
 
@@ -419,7 +419,7 @@ function GetTaskDetails($task_id)
       global $db;
       global $dbprefix;
 
-      $result = $db->Query("SELECT user_name, real_name FROM {$dbprefix}_users WHERE user_id = ?", array($user_id));
+      $result = $db->Query("SELECT user_name, real_name FROM {$dbprefix}users WHERE user_id = ?", array($user_id));
       if ($db->CountRows($result) == 0)
          return '';
 
@@ -453,7 +453,7 @@ function GetTaskDetails($task_id)
       global $db;
       global $dbprefix;
 
-      $db->Query("INSERT INTO {$dbprefix}_admin_requests (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
+      $db->Query("INSERT INTO {$dbprefix}admin_requests (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
                     VALUES(?, ?, ?, ?, ?, ?)",
                     array($project, $task, $submitter, $type, $reason, date(U)));
    // End of AdminRequest function
@@ -466,7 +466,7 @@ function GetTaskDetails($task_id)
       global $db;
       global $dbprefix;
 
-      $check = $db->Query("SELECT * FROM {$dbprefix}_admin_requests
+      $check = $db->Query("SELECT * FROM {$dbprefix}admin_requests
                              WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
                              array($type, $task));
       if ($db->CountRows($check))
@@ -485,7 +485,7 @@ function GetTaskDetails($task_id)
       global $dbprefix;
 
       // Get current user details.  We need this to see if their account is enabled or disabled
-      $result = $db->Query("SELECT * FROM {$dbprefix}_users WHERE user_id = ?", array($user_id));
+      $result = $db->Query("SELECT * FROM {$dbprefix}users WHERE user_id = ?", array($user_id));
       $user_details = $db->FetchArray($result);
 
       return $user_details;
@@ -504,23 +504,23 @@ function GetTaskDetails($task_id)
 
       // Get the global group permissions for the current user
       $global_permissions = $db->FetchArray($db->Query("SELECT *
-                                                        FROM {$dbprefix}_groups g
-                                                        LEFT JOIN {$dbprefix}_users_in_groups uig ON g.group_id = uig.group_id
+                                                        FROM {$dbprefix}groups g
+                                                        LEFT JOIN {$dbprefix}users_in_groups uig ON g.group_id = uig.group_id
                                                         WHERE uig.user_id = ? and g.belongs_to_project = '0'",
                                                         array($user_id)
                                                        ));
 
 
       // Get the project-level group for this user, and put the permissions into an array
-      $search_project_group = $db->Query("SELECT * FROM {$dbprefix}_groups
+      $search_project_group = $db->Query("SELECT * FROM {$dbprefix}groups
                                           WHERE belongs_to_project = ?",
                                           array($project_id));
-      
+
       // Default to the global permissions, but allow it to override if we find a match
       $project_permissions = $global_permissions;
       while ($row = $db->FetchRow($search_project_group))
       {
-         $check_in = $db->Query("SELECT * FROM {$dbprefix}_users_in_groups
+         $check_in = $db->Query("SELECT * FROM {$dbprefix}users_in_groups
                                  WHERE user_id = ? AND group_id = ?",
                                  array($user_id, $row['group_id'])
                                );
@@ -657,9 +657,9 @@ function GetTaskDetails($task_id)
       global $db;
       global $dbprefix;
 
-      $result = $db->Query("SELECT uig.*, g.group_open, u.account_enabled, u.user_pass FROM {$dbprefix}_users_in_groups uig
-                              LEFT JOIN {$dbprefix}_groups g ON uig.group_id = g.group_id
-                              LEFT JOIN {$dbprefix}_users u ON uig.user_id = u.user_id
+      $result = $db->Query("SELECT uig.*, g.group_open, u.account_enabled, u.user_pass FROM {$dbprefix}users_in_groups uig
+                              LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id
+                              LEFT JOIN {$dbprefix}users u ON uig.user_id = u.user_id
                               WHERE u.user_name = ? AND g.belongs_to_project = ?
                               ORDER BY g.group_id ASC",
                               array($username, '0'));

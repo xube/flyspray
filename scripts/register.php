@@ -11,7 +11,7 @@ if ($flyspray_prefs['spam_proof'] == '1'
 if (isset($_GET['magic']))
 {
    // Check that the magic url is valid
-   $check_magic = $db->Query("SELECT * FROM {$dbprefix}_registrations
+   $check_magic = $db->Query("SELECT * FROM {$dbprefix}registrations
                               WHERE magic_url = ?",
                               array($_GET['magic'])
                             );

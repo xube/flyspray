@@ -23,7 +23,7 @@ class Backend {
          // We can't add a user to a notif list if they're already on it, so...
          // Get a list of users who are on the notif list for this task
          $notify_list = $db->Query("SELECT user_id
-                                    FROM {$dbprefix}_notifications
+                                    FROM {$dbprefix}notifications
                                     WHERE task_id = ?
                                     AND user_id = ?",
                                     array($task_id, $user_id)
@@ -33,7 +33,7 @@ class Backend {
          if (!$db->CountRows($notify_list))
          {
             //  Add them to the notif list
-            $db->Query("INSERT INTO {$dbprefix}_notifications
+            $db->Query("INSERT INTO {$dbprefix}notifications
                         (task_id, user_id)
                         VALUES(?,?)",
                         array($task_id, $user_id)
@@ -65,7 +65,7 @@ class Backend {
       foreach ($tasks AS $key => $task_id)
       {
          // Remove the notif entry
-         $db->Query("DELETE FROM {$dbprefix}_notifications
+         $db->Query("DELETE FROM {$dbprefix}notifications
                      WHERE task_id = ?
                      AND user_id = ?",
                      array($task_id, $user_id)
@@ -111,7 +111,7 @@ class Backend {
            && $task_details['assigned_to'] != $user_id )
          {
             // Make the change in assignment
-            $db->Query("UPDATE {$dbprefix}_tasks
+            $db->Query("UPDATE {$dbprefix}tasks
                         SET assigned_to = ?, item_status = '3'
                         WHERE task_id = ?",
                         array($user_id, $task_id));
@@ -304,8 +304,8 @@ class Backend {
 
       // Alrighty.  We should be ok to build the query now!
       $search = $db->Query("SELECT DISTINCT t.task_id
-                            FROM {$dbprefix}_tasks t
-                            LEFT JOIN {$dbprefix}_notifications fsn ON t.task_id = fsn.task_id
+                            FROM {$dbprefix}tasks t
+                            LEFT JOIN {$dbprefix}notifications fsn ON t.task_id = fsn.task_id
                             WHERE t.task_id > ?
                             AND $sql_where
                             ORDER BY t.task_severity DESC, t.task_id ASC
@@ -338,14 +338,14 @@ class Backend {
       global $fs;
       global $flyspray_prefs;
       //global $notify;
-      
+
       $notify = new Notifications();
-      
+
 
       if (!is_array($args))
          return "We were not given an array of arguments to process.";
 
-      
+
 
 
       // Here's a list of the arguments we accept
@@ -369,16 +369,16 @@ class Backend {
       $duedate       = $args[12];   // Due Date (10 digit numerical)
       $status        = $args[13];   // Item Status (numerical)
 
-      
+
       // Get some information about the project and the user's permissions
       $project_prefs = $fs->GetProjectPrefs($projectid);
       $permissions   = $fs->GetPermissions($userid, $projectid);
-      
+
       // Check permissions for the specified user (or anonymous) to open tasks
       if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
          return false;
 
-      
+
       // Some fields can have default values set
       if (empty($assigned) OR $permissions['modify_all_tasks'] != '1')
       {
@@ -388,22 +388,22 @@ class Backend {
          $duedate = 0;
          $status = 1;
       }
-      
+
       $checkArray = array("userid","projectid","tasktype","category","version","os","severity",
                           "assigned","duever","priority","duedate","status");
-      
-      
+
+
       foreach ($checkArray as $item) {
-         
+
          if (!is_numeric($$item)) {
             return "value for $item is not numeric ($item='".($$item)."')";
          }
       }
-     
+
 
 
       // Here comes the database insert!
-      $db->Query("INSERT INTO {$dbprefix}_tasks
+      $db->Query("INSERT INTO {$dbprefix}tasks
                   (attached_to_project,
                   task_type,
                   date_opened,
@@ -439,18 +439,18 @@ class Backend {
 
       // Get the task id back
       $task_details = $db->FetchArray($db->Query("SELECT task_id, item_summary, product_category
-                                                FROM {$dbprefix}_tasks
+                                                FROM {$dbprefix}tasks
                                                 WHERE item_summary = ?
                                                 AND detailed_desc = ?
                                                 ORDER BY task_id DESC",
                                                 array($summary, $desc), 1));
 
-      
+
       $taskid = $task_details['task_id'];
       // Log that the task was opened
       $fs->logEvent($task_details['task_id'], 1);
 
-      $cat_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}_list_category
+      $cat_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}list_category
                                                  WHERE category_id = ?",
                                                  array($category)
                                                )
@@ -464,7 +464,7 @@ class Backend {
       } elseif (!empty($cat_details['parent_id']))
       {
          $parent_cat_details = $db->FetchArray($db->Query("SELECT category_owner
-                                                           FROM {$dbprefix}_list_category
+                                                           FROM {$dbprefix}list_category
                                                            WHERE category_id = ?",
                                                            array($cat_details['parent_id'])
                                                          )
@@ -482,7 +482,7 @@ class Backend {
       if (!empty($owner))
       {
          // Category owners now get auto-added to the notification list for new tasks
-         $insert = $db->Query("INSERT INTO {$dbprefix}_notifications
+         $insert = $db->Query("INSERT INTO {$dbprefix}notifications
                               (task_id, user_id)
                               VALUES(?, ?)",
                               array($taskid, $owner)
@@ -495,7 +495,7 @@ class Backend {
 
       // End of checking if there's a category owner set, and notifying them.
       }
-      
+
       // give some information back
       return $task_details;
 
@@ -557,7 +557,7 @@ class Backend {
             // Only add the listing to the database if the file was actually uploaded successfully
             if (file_exists($path))
             {
-               $db->Query("INSERT INTO {$dbprefix}_attachments
+               $db->Query("INSERT INTO {$dbprefix}attachments
                            (task_id, comment_id, orig_name, file_name,
                             file_type, file_size, added_by, date_added)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -573,7 +573,7 @@ class Backend {
 
                // Fetch the attachment id for the history log
                $attachment = $db->FetchRow($db->Query("SELECT attachment_id
-                                                       FROM {$dbprefix}_attachments
+                                                       FROM {$dbprefix}attachments
                                                        WHERE task_id = ?
                                                        ORDER BY attachment_id DESC",
                                                        array($taskid), 1

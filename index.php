@@ -58,7 +58,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
         OR !empty($_GET['status']) OR !empty($_GET['status'])
       )
    {
-      $db->Query("UPDATE {$dbprefix}_users
+      $db->Query("UPDATE {$dbprefix}users
                     SET last_search = ?
                     WHERE user_id = ?",
                     array($this_page, $_COOKIE['flyspray_userid'])
@@ -94,7 +94,7 @@ if (isset($_REQUEST['do']))
 }
 
 // Check that the requested project actually exists
-$check_proj_exists = $db->Query("SELECT * FROM {$dbprefix}_projects
+$check_proj_exists = $db->Query("SELECT * FROM {$dbprefix}projects
                                    WHERE project_id = ?",
                                    array($project_id)
                                  );
@@ -112,7 +112,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
                                     orig_name,
                                     file_name,
                                     file_type
-                                    FROM {$dbprefix}_attachments
+                                    FROM {$dbprefix}attachments
                                     WHERE attachment_id = ?",
                                     array($_GET['getfile'])
                                  )
@@ -313,7 +313,7 @@ if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
     if ($permissions['manage_project'] == '1')
     {
       // Find out if there are any PM requests wanting attention
-      $get_req = $db->Query("SELECT * FROM {$dbprefix}_admin_requests
+      $get_req = $db->Query("SELECT * FROM {$dbprefix}admin_requests
                              WHERE project_id = ? AND resolved_by = '0'",
                              array($project_id));
 
@@ -383,16 +383,16 @@ if (isset($_SESSION['SUCCESS']))
       // If the user has permission to view all projects
       if (isset($permissions['global_view']) && $permissions['global_view'] == '1')
       {
-         $get_projects = $db->Query("SELECT * FROM {$dbprefix}_projects
+         $get_projects = $db->Query("SELECT * FROM {$dbprefix}projects
                                      ORDER BY project_title");
 
       // or, if the user is logged in
       } elseif (isset($_COOKIE['flyspray_userid']))
       {
          $get_projects = $db->Query("SELECT DISTINCT p.*
-                                     FROM {$dbprefix}_users_in_groups uig
-                                     LEFT JOIN {$dbprefix}_groups g ON uig.group_id = g.group_id
-                                     LEFT JOIN {$dbprefix}_projects p ON g.belongs_to_project = p.project_id
+                                     FROM {$dbprefix}users_in_groups uig
+                                     LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id
+                                     LEFT JOIN {$dbprefix}projects p ON g.belongs_to_project = p.project_id
                                      WHERE ((uig.user_id = ?
                                      AND g.view_tasks = '1')
                                      OR p.others_view = '1')
@@ -402,7 +402,7 @@ if (isset($_SESSION['SUCCESS']))
       // Anonymous users
       } else
       {
-         $get_projects = $db->Query("SELECT * FROM {$dbprefix}_projects
+         $get_projects = $db->Query("SELECT * FROM {$dbprefix}projects
                                      WHERE project_is_active = '1'
                                      AND others_view = '1'
                                      ORDER BY project_title");
