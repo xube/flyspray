@@ -5,7 +5,7 @@ $authenticate_text = array (
 
 'loginsuccessful'	=>	'Login satisfactorio.',
 'loginfailed'		=>	'Login FALLIDO!',
-'userandpass'		=>	'Ud. no ingreso ni su nombre de usuario ni su contraseña.',
+'userandpass'		=>	'Ud. no ingreso ni su nombre de usuario ni su contrase&ntilde;a.',
 'youareloggedout'	=>	'Ud. ha sido desconectado',
 'waitwhiletransfer'	=>	'Espere mientras es transferido...',
 'clicknowait'		=>	'Haga clic aqui si no quiere esperar.',

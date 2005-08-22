@@ -15,7 +15,7 @@ $newproject_text = array (
 'htmlallowed'		=>	'Permitir codigo HTML',
 'createproject'		=>	'Crear un nuevo Proyecto',
 'noone'				=>	'Nadie',
-'defaultcatowner'	=>	'Dueño de Categoría por defecto',
+'defaultcatowner'	=>	'Due&ntilde;o de Categoria por defecto',
 'createthisproject'	=>	'Crear este proyecto',
 'nopermission'		=>	'No tiene permiso para usar esta pagina',
 

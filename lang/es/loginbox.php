@@ -4,7 +4,7 @@ global $loginbox_text;
 $loginbox_text = array (
 
 'username'				=>	'Nombre de Usuario',
-'password'				=>	'Contraseña',
+'password'				=>	'Contrase&ntilde;a',
 'login'					=>	'Login!',
 
 // Added in 0.9.6
@@ -12,7 +12,7 @@ $loginbox_text = array (
 
 
 // Added in 0.9.7
-'lostpassword'				=>	'Perdio su contraseña?',
+'lostpassword'				=>	'Perdio su contrase&ntilde;a?',
 
 
 );

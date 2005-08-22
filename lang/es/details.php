@@ -4,7 +4,7 @@ global $details_text;
 $details_text = array (
 
 'task'                =>    'Tarea',
-'edittask'            =>    'Editar esta tarea',
+'edittask'            =>    'Editar tarea',
 'openedby'            =>    'Abierta por',
 'editedby'            =>    'Ultima edicion por',
 'tasktype'            =>    'Tipo de tarea',
@@ -20,7 +20,7 @@ $details_text = array (
 'percentcomplete'     =>    'Porcentaje completo',
 'details'             =>    'Detalles',
 'savedetails'         =>    'Guardar detalles',
-'canceledit'          =>    'Cancelar la edicion',
+'canceledit'          =>    'Cancelar edicion',
 'anonymous'           =>    'Envio anonimo',
 'complete'            =>    'completo',
 'closedby'            =>    'Cerrada por',
@@ -61,7 +61,7 @@ $details_text = array (
 'reminders'           =>   'Recordatorios',
 'system'              =>   'Sistema',
 'remindthisuser'      =>   'Recordar a este usuario',
-'thisoften'           =>   'Con este continuidad',
+'thisoften'           =>   'Con esta continuidad',
 'startafter'          =>   'Esperar antes de comenzar los recordatorios',
 'hours'               =>   'Hora(s)',
 'days'                =>   'Dia(s)',
@@ -72,10 +72,10 @@ $details_text = array (
 'closed'              =>   'Cerrado',
 'filename'            =>   'Archivo:',
 'date'                =>   'Fecha:',
-'filesize'            =>   'Tamaño:',
+'filesize'            =>   'Tama&ntilde;o:',
 'closurecomment'      =>   'Comentarios adicionales sobre el cierre:',
 'history'             =>   'Historial',
-'nohistory'           =>   'No hay un historial disponible.',
+'nohistory'           =>   'No hay historial disponible.',
 'eventdate'           =>   'Fecha',
 'user'                =>   'Usuario',
 'event'               =>   'Evento',
@@ -109,7 +109,7 @@ $details_text = array (
 // Added in version 0.9.7
 
 'selectareason'       =>   'Seleccione una razon',
-'assigntome'          =>   'Asignar a mi',
+'assigntome'          =>   'Asignarmela a mi',
 'reopenrequest'       =>   'Requerir re-apertura',
 'requestclose'        =>   'Requerir cierre',
 'ownershiptaken'      =>   'Usuario tomo propiedad',
@@ -127,6 +127,31 @@ $details_text = array (
 'makepublic'          =>   'Hacerla Publica',
 'taskmadeprivate'    =>    'La Tarea ahora es privada',
 'taskmadepublic'     =>    'Se removio la privacidad - Ahora la Tarea es publica',
+
+
+// Added in version 0.9.8
+
+'confirmdeletecomment'  =>    'Seguro que elimina este comentario?  Todos los adjuntos tambien se eliminaran!',
+'confirmdeleteattach'   =>    'Seguro que elimina este adjunto?',
+'selectedhistory'       =>    'Observando detalles del historial seleccionado',
+'showallhistory'        =>    'Mostrar nuevamente la solapa completa del historial',
+'hidethis'              =>    'Ocultar nuevamente esta area',
+'mark100'               =>    'Marcar la tarea como 100% completada',
+'watchtask'             =>    'Observar esta tarea',
+'stopwatching'          =>    'Dejar de observar esta tarea',
+'commentlink'           =>    'Enlace a este comentario',
+'submitreq'             =>    'Enviar pedido',
+'givereason'            =>    'Razon para este pedido',
+'pmreqdenied'           =>    'El Manager del Proyecto rechazo el pedido',
+'taskpendingreq'        =>    'Accion pendiente del Manager del Proyecto.  Mire la solapa del Historial para mas detalles.',
+'previoustask'          =>    'Tarea previa',
+'nexttask'              =>    'Tarea proxima',
+'duedate'               =>    'Fecha de vencimiento',
+'selectmorefiles'       =>    'Seleccionar mas archivos',
+'attachnoperms'         =>    'Existen adjuntos en este comentario, pero Ud. no tiene permiso para verlos.',
+'open'                  =>    'ABIERTO',
+'closed'                =>    'CERRADO',
+'depgraph'              =>    'Ver grafico de Dependencia',
 
 );
 ?>

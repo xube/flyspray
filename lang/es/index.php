@@ -44,5 +44,19 @@ $index_text = array (
 'priority'		=>	'Prioridad',
 
 
+// Added in version 0.9.8
+'taskrange'                =>    'Viendo tareas %d - %d de %d',
+'noresults'                =>    'No se encontraron resultados.',
+'takeaction'               =>    'Accion a tomar',
+'watchtasks'               =>    'Observar tareas seleccionadas',
+'stopwatching'             =>    'Dejar de observar tareas seleccionadas',
+'assigntome'               =>    'Asignarme las tareas seleccionadas',
+'dueby'                    =>    'Vencen por',
+'duedate'                  =>    'Fecha de vencimiento',
+'dueanytime'               =>    'Vencen en cualquier momento',
+'selectduedate'            =>    'Elija fecha de vencimiento',
+'toggleselected'           =>    'Invertir seleccion',
+
+
 );
 ?>

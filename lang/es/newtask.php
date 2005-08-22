@@ -25,5 +25,11 @@ $newtask_text = array (
 'priority'			=>	'Prioridad',
 'undecided'			=>	'Sin decidir',
 
+// Added in version 0.9.8
+'newtask'                     =>    'Nueva Tarea',
+'attachafile'                 =>    'Adjuntar un archivo',
+'description'                 =>    'Descripcion',
+'duedate'                     =>    'Fecha de vencimiento',
+
 );
 ?>

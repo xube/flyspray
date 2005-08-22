@@ -61,16 +61,16 @@ $modify_text = array (
 'nocommententered'      =>        'Se debe ingresar un comentario antes de hacer click en el boton de envio.',
 
 'fillinfields'          =>        'No lleno todos los campos.',
-'notcurrentpass'        =>        'No es su contraseña actual!',
-'passchanged'           =>        'Su contraseña ha cambiado.',
+'notcurrentpass'        =>        'No es su contrase&ntilde;a actual!',
+'passchanged'           =>        'Su contrase&ntilde;a ha cambiado.',
 'closewindow'           =>        'Ahora puede cerrar esta ventana..',
-'passnomatch'           =>        'Sus nuevas contraseñas no coinciden!',
+'passnomatch'           =>        'Sus nuevas contrase&ntilde;as no coinciden!',
 
 'usernametaken'         =>        'Ese nombre de usuario ya fue asignado.',
 'newusercreated'        =>        'Se creo una nueva Cuenta de Usuario.',
 'accountcreated'        =>        'Se creo su cuenta.',
 'newuserwarning'        =>        'Note que las preferencias globales pueden requerir que su cuenta sea aprobada por un admin. Si no puede ingresar al sistema, esa debe ser la razon.',
-'nomatchpass'           =>        'Las contaseñas no coincidieron.',
+'nomatchpass'           =>        'Las contase&ntilde;as no coincidieron.',
 'confirmwrong'          =>        'El codigo de confirmacion es incorrecto!',
 'formnotcomplete'       =>        'El formulario no se lleno completamente.',
 
@@ -149,8 +149,8 @@ $modify_text = array (
 'depremoved'            =>        'Se elimino la dependencia de la tarea',
 'newdepis'              =>        'La nueva dependencia es',
 'magicurlsent'          =>        'Se envio un mensaje a su direccion de notificacion. Contiene un enlace que lo llevara a una pagina para completar esta tarea.',
-'changefspass'          =>        'Cambiar la contraseña Flyspray',
-'magicurlmessage'       =>        'Por favor, siga el siguiente enlace de abajo para cambiar su contraseña Flyspray:',
+'changefspass'          =>        'Cambiar la contrase&ntilde;a Flyspray',
+'magicurlmessage'       =>        'Por favor, siga el siguiente enlace de abajo para cambiar su contrase&ntilde;a Flyspray:',
 'erroronform'           =>        'Ocurrio un problema con el envio del formulario',
 'addressused'           =>        'Esta direccion se utilizo para registrar una cuenta Flyspray. Si Ud. no esperaba este mensaje, puede ignorarlo y borrarlo. De lo contrario siga el siguiente enlace para completar su registracion:',
 'confirmcodeis'         =>        'Su codigo de confirmacion es:',
@@ -159,5 +159,12 @@ $modify_text = array (
 'taskmadepublic'        =>        'La tarea se hizo Publica nuevamente',
 'realandnotify'         =>        'Necesita rellenar los campos Nombre Real y alguno de los campos Email o Jabber ID.',
 
+
+// Added in version 0.9.8
+
+'pmreqdenied'           =>       'El pedido al Manager del Proyecto fue rechazado',
+'massopsuccess'         =>       'Las multiples operaciones fueron satisfactorias',
+'usernotexist'          =>       'Ese nombre de usuario no existe en esta instalacion Flyspray',
+'commentattachperms'    =>       'No puede eliminar ese comentario - No tiene permisos para eliminar adjuntos',
 );
 ?>

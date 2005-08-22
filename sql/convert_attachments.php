@@ -8,7 +8,7 @@
 include_once('../header.php');
 
 // Get a list of the attachments
-$attachments = $db->Query("SELECT * FROM flyspray_attachments
+$attachments = $db->Query("SELECT * FROM {$dbprefix}attachments
                            WHERE comment_id < '1'
                            AND date_added > '0'"
                          );
@@ -17,13 +17,13 @@ $attachments = $db->Query("SELECT * FROM flyspray_attachments
 while($row = $db->FetchArray($attachments))
 {
    // Create a comment
-   $db->Query("INSERT INTO flyspray_comments
+   $db->Query("INSERT INTO {$dbprefix}comments
                (task_id, date_added, user_id, comment_text)
                VALUES ( ?, ?, ?, ? )",
                array($row['task_id'], $row['date_added'], $row['added_by'], $row['file_desc']));
 
    // Retrieve the comment ID
-   $comment = $db->FetchRow($db->Query("SELECT * FROM flyspray_comments
+   $comment = $db->FetchRow($db->Query("SELECT * FROM {$dbprefix}comments
                                         WHERE comment_text = ?
                                         ORDER BY comment_id DESC",
                                         array($row['file_desc']), 1
@@ -31,7 +31,7 @@ while($row = $db->FetchArray($attachments))
                            );
 
    // Update the attachment entry to point it to the comment ID
-   $db->Query("UPDATE flyspray_attachments
+   $db->Query("UPDATE {$dbprefix}attachments
                SET comment_id = ?
                WHERE attachment_id = ?",
                array($comment['comment_id'], $row['attachment_id'])

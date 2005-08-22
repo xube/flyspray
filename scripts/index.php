@@ -654,7 +654,7 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
 <?php
 
 // SQL JOIN condition
-$from = 'flyspray_tasks t';
+$from = "{$dbprefix}tasks t";
 
 if (isset($_GET['tasks']) && $_GET['tasks'] == 'watched') {
     //join the notification table to get watched tasks
