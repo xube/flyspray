@@ -1,12 +1,15 @@
+###############################################################################
+##### Flyspray .htaccess Config. To be used with Apache Server ###
+##### Check for Mod-Rewrite module ############################################
+###############################################################################
 <IfModule mod_rewrite.c>
-
 RewriteEngine on
 
 RewriteRule ^.*\?do=admin&area=prefs$ index.php?do=admin&area=prefs [L]
 
 RewriteRule ^([0-9]+)$ index.php?do=details&id=$1 [L]
 RewriteRule ^task/([0-9]+)$ index.php?do=details&id=$1 [L]
-RewriteRule ^task/([0-9]+)#comment([0-9]+)$ index.php?do=details&id=$1#comment$2 [L]
+RewriteRule ^task/([0-9]+)comment([0-9]+)$ index.php?do=details&id=$1comment$2 [L]
 RewriteRule ^task/([0-9]+)/depends$ index.php?do=depends&id=$1 [L]
 RewriteRule ^task/([0-9]+)/edit$ index.php?do=details&id=$1&edit=yep [L]
 
@@ -28,5 +31,4 @@ RewriteRule ^newuser$ index.php?do=newuser [L]
 RewriteRule ^register$ index.php?do=register [L]
 
 RewriteRule ^error$ index.php?do=error [L]
-
 </IfModule>

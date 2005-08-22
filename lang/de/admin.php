@@ -182,7 +182,7 @@ $admin_text = array (
 'smtppass'              =>    'SMTP Passwort',
 'addrewrite'            =>    'Email-Adresse umschreiben',
 'usereminderdaemon'     =>    'Hintergrund-Erinnerungsprozess aktivieren',
-'tasksperpage'          =>    'Aufgaben pro Seiten in der Übersicht',
+'tasksperpage'          =>    'Aufgaben pro Seite',
 
 );
 ?>
