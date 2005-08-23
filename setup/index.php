@@ -12,7 +12,7 @@
 
 session_start();
 
-error_reporting(E_ALL);
+error_reporting(0);
 
 if (file_exists('../flyspray.conf.php') && (count($config = parse_ini_file('../flyspray.conf.php', true)) > 0) )
 {
@@ -121,7 +121,7 @@ class Setup extends Flyspray
       $this->mDatabaseSetup		= array (
                                     1 => array ('Install 0.9.8' => '/sql/flyspray-0.9.8', 'dependency' => '', 'function' => 'InstallPointNineEight'),
                                     2 => array ('Upgrade 0.9.7 - 0.9.8' => '/sql/upgrade_0.9.7_to_0.9.8', 'dependency' => '3', 'function' => 'UpgradePointNineSeven'),
-                                    3 => array ('Install 0.9.7' => '/sql/flyspray-0.9.7', 'dependency' => '', 'function' => 'InstallPointNineSeven'),
+                                    // Only for testing 3 => array ('Install 0.9.7' => '/sql/flyspray-0.9.7', 'dependency' => '', 'function' => 'InstallPointNineSeven'),
                                  );
 
       $this->mServerSoftware		= (strstr($_SERVER['SERVER_SOFTWARE'], 'Apache'))
@@ -952,7 +952,7 @@ class Setup extends Flyspray
       // where to download the libraries
       $download_to = realpath('../adodb');
 
-      $url ='http://dl.sourceforge.net/sourceforge/adodb/adodb461.tgz';
+      $url ='http://dl.sourceforge.net/sourceforge/adodb/adodb465.tgz';
       $alternate_url = 'http://sourceforge.net/project/showfiles.php?group_id=42718';
 
       // If the libraries were downloaded successfully
@@ -1980,7 +1980,58 @@ class Setup extends Flyspray
             }
             else
             {
-               return TRUE;
+				// Fix the Attachments to be within the comments
+				// Get a list of the attachments
+				$sql	= "
+				SELECT 
+					*
+				FROM 
+					flyspray_attachments
+				WHERE
+					comment_id < '1'
+				AND 
+					date_added > '0'";
+				
+				$attachments = $this->mDbConnection->Execute($sql);
+				
+				// Cycle through each attachment
+				while($row = $attachments->FetchRow())
+				{
+					// Create a comment
+					$sql	= "
+					INSERT INTO 
+						flyspray_comments
+						(task_id, date_added, user_id, comment_text)
+					VALUES 
+						( ?, ?, ?, ? )";
+					$data	= array($row['task_id'], $row['date_added'], $row['added_by'], $row['file_desc']);
+					$this->mDbConnection->Execute($sql, $data);
+				
+					// Retrieve the comment ID
+					$comment_sql	= "
+					SELECT
+						*
+					FROM
+						flyspray_comments
+					WHERE 
+						comment_text = ?
+					ORDER BY 
+						comment_id DESC";
+					
+					$comment = $this->mDbConnection->FetchRow($this->mDbConnection->Execute($comment_sql, array($row['file_desc'])));
+				
+					// Update the attachment entry to point it to the comment ID
+					$update_attachments	= "
+					UPDATE
+						flyspray_attachments
+					SET
+						comment_id = ?
+					WHERE
+						attachment_id = ?";
+					
+					$this->mDbConnection->Execute($update_attachments, array($comment['comment_id'], $row['attachment_id']));
+				}
+				return TRUE;
             }
          }
          else
