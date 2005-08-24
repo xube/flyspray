@@ -38,16 +38,24 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 // Define the path to the config file.  Change this line if you move flyspray.conf.php elsewhere
 $conf_file = $path . $slash . "flyspray.conf.php";
 
-// Check if config file exists and its not empty. 
+// Check if config file exists and its not empty.
 // If it doesn't exist or is empty, take the user to the setup page
 if (!file_exists($conf_file) || (count($config = parse_ini_file($conf_file, true)) == 0) )
 {
   header("Location: setup/index.php");
-  exit;  
+  exit;
 }
 
 // Load the config file
 $conf = @parse_ini_file($conf_file, true);
+
+// Detect for lack of variables that would be in a 0.9.8 installation,
+// and redirect to the setup script
+if (!isset($conf['general']['baseurl']))
+{
+  header("Location: setup/index.php");
+  exit;
+}
 
 // Set values from the config file. Once these settings are loaded a connection
 // is made to the database to retrieve all the other preferences.

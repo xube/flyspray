@@ -273,6 +273,7 @@ class Notifications {
       $mail->From = $flyspray_prefs['admin_email'];
       $mail->Sender = $flyspray_prefs['admin_email'];
       $mail->FromName = 'Flyspray';
+      $mail->CharSet = "UTF-8";
 
       // Do we want to use a remote mail server?
       if (!empty($flyspray_prefs['smtp_server']))
@@ -769,6 +770,8 @@ class Notifications {
 
       $jabber_users = array();
       $email_users = array();
+
+      $task_details = $fs->GetTaskDetails($task_id);
 
       $get_users = $db->Query("SELECT *
                                FROM {$dbprefix}notifications n
