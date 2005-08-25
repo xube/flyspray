@@ -42,6 +42,7 @@ Users:
 * move user between groups (project level)
 * move user between groups (global level)
 * edit user details with myprofile.php
+* add new group (project level)
 
 Projects:
 * add project

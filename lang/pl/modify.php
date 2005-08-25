@@ -127,7 +127,7 @@ $modify_text = array (
 'customiseproject'  =>	'Dostosuj projekt',
 'projectupdated'    =>	'Ustawienia projektu zostały zaktualizowane.',
 'emptytitle'	    =>	'Pusty tytuł projektu. Wróć i popraw.',
-'loginbelow'	    =>	'Teraz możesz zalogować się, korzystając z poniższego formularza.',
+'loginbelow'	    =>	'Teraz możesz zalogować się, korzystając z formularza logowania.',
 'attachmentdeleted' =>	'Załącznik został usunięty',
 
 // Added in 0.9.6

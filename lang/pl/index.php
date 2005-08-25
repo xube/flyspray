@@ -58,8 +58,9 @@ $index_text = array (
 'assigntome'               =>    'Przydziel mi zaznaczone zadania',
 'dueby'                    =>    'Obecne do',
 'duedate'                  =>    'Obecne do dnia',
-'dueanytime'               =>    'dowolnego',
+'dueanytime'               =>    'Dowolna data',
 'selectduedate'            =>    'Wybierz datę',
+'toggleselected'           =>    'Przełącz zaznaczone',
 
 
 );

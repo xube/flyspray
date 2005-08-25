@@ -121,7 +121,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    // Retrieve permissions!
    $task_details = $fs->GetTaskDetails($task_id);
    $proj_prefs = $fs->GetProjectPrefs($task_details['attached_to_project']);
-   $user_permissions = @$fs->getPermissions($current_user['user_id'], $task_details['attached_to_project']);
+   $user_permissions = @$fs->getPermissions($db->emptyToZero($current_user['user_id']), $task_details['attached_to_project']);
 
    // Check if file exists, and user permission to access it!
    if (file_exists("attachments/$file_name")
