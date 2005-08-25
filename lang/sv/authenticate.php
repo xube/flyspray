@@ -2,7 +2,7 @@
 
 /*
  *
- * Svensk översättning av Flyspray:
+ * Svensk Ã¶versÃ¤ttning av Flyspray:
  * Holger Gremminger
  * info@gremminger.de
  * www.gremminger.de
@@ -14,13 +14,13 @@ $authenticate_text = array (
 
 'loginsuccessful'  =>  'Inloggning erforderlig.',
 'loginfailed'      =>  'Inloggningen har slagit fel!',
-'userandpass'      =>  'Användarnamn och/eller lösenord saknas.',
+'userandpass'      =>  'AnvÃ¤ndarnamn och/eller lÃ¶senord saknas.',
 'youareloggedout'  =>  'Du har loggats ut.',
 'waitwhiletransfer'=>  'Du leds vidare ...',
 'clicknowait'      =>  'Vidare',
 
 // Added in 0.9.7
-'accountdisabled'  =>  'Ditt användarkonto har deaktiverats. Kontakta Flyspray-administratorn.',
+'accountdisabled'  =>  'Ditt anvÃ¤ndarkonto har deaktiverats. Kontakta Flyspray-administratorn.',
 
 );
 ?>

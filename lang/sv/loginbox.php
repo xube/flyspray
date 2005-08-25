@@ -2,7 +2,7 @@
 
 /*
  *
- * Svensk översättning av Flyspray:
+ * Svensk Ã¶versÃ¤ttning av Flyspray:
  * Holger Gremminger
  * info@gremminger.de
  * www.gremminger.de
@@ -12,15 +12,15 @@
 global $loginbox_text;
 $loginbox_text = array (
 
-'username'      =>  'Användarnamn',
-'password'      =>  'Lösenord',
+'username'      =>  'AnvÃ¤ndarnamn',
+'password'      =>  'LÃ¶senord',
 'login'         =>  'Logga in',
 
 // Added in 0.9.6
-'rememberme'    =>  'Logga in automatiskt vid varje besök',
+'rememberme'    =>  'Logga in automatiskt vid varje besÃ¶k',
 
 // Added in 0.9.7
-'lostpassword'  =>  'Glömt lösenordet?',
+'lostpassword'  =>  'GlÃ¶mt lÃ¶senordet?',
 
 );
 ?>
