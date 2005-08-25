@@ -31,7 +31,7 @@ define('APPLICATION_NAME', 'Flyspray');
 define('SERVER_WEB_ROOT', 'http://'.$_SERVER['SERVER_NAME']);
 define('APPLICATION_SETUP_FOLDER', dirname($_SERVER['PHP_SELF']));
 define('APPLICATION_SETUP_INDEX', SERVER_WEB_ROOT . APPLICATION_SETUP_FOLDER);
-define('APPLICATION_WEB_ROOT', str_replace(APPLICATION_SETUP_FOLDER,"",APPLICATION_SETUP_INDEX));
+define('APPLICATION_WEB_ROOT', str_replace('setup',"",APPLICATION_SETUP_INDEX));
 
 // ---------------------------------------------------------------------
 // Application file system locations
@@ -347,7 +347,7 @@ class Setup extends Flyspray
          // Check for variable types
          elseif (!$this->VerifyVariableTypes($expectedFields[$key][1], $data[$key]))
          {
-            $_SESSION['page_message'][] = "<strong>{$expectedFields[$key][0]}</strong> has to be of type {$expectedFields[$key][1]}";
+            $_SESSION['page_message'][] = "<strong>{$expectedFields[$key][0]}</strong> has to be a {$expectedFields[$key][1]}";
          }
       }
 
@@ -437,7 +437,7 @@ class Setup extends Flyspray
                                     'htaccess_text' => $this->mHtaccessText,
                                     'admin_username' => $this->mAdminUsername,
                                     'admin_password' => $this->mAdminPassword,
-                                    'site_index' => APPLICATION_WEB_ROOT,
+                                    'site_index' => $data['site_url'],
                                     'complete_action' => $this->mCompleteAction,
                                     'daemonise' => $this->mDaemonise,
                                  ),
@@ -1134,7 +1134,7 @@ class Setup extends Flyspray
                'db_setup_options' =>  array('Database type', 'number', TRUE),
                'site_name' => array('Site name', 'string', TRUE),
                'site_url' => array($this->mProductName . ' URL location', 'string', TRUE),
-               'absolute_path' => array($this->mProductName . ' absolute path', 'string', TRUE),
+               'absolute_path' => array($this->mProductName . ' Absolute path must exist and', 'folder', TRUE),
                'admin_username' => array('Administrator\'s username', 'string', ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')),
                'admin_password' => array("Administrator's Password must be minimum {$this->mMinPasswordLength} characters long and", 'password', ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')),
                'admin_email' => array('Administrator\'s email address', 'email address', ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')),
@@ -1217,12 +1217,12 @@ class Setup extends Flyspray
       $config[] = "dbprefix = \"$db_prefix\"				; The prefix to the {$this->mProductName} tables";
       $config[] = "\n";
       $config[] = '[general]';
-      $config[] = "basedir = \"$absolute_path{$sep}\"		; Location of your {$this->mProductName} installation";
+      $config[] = "basedir = \"$absolute_path\"		; Location of your {$this->mProductName} installation";
       $config[] = "cookiesalt = \"$cookiesalt\"			; Randomisation value for cookie encoding";
       $config[] = "adodbpath = \"{$this->mAdodbPath}\"	; Path to the main ADODB include file";
       $config[] = 'output_buffering = "on"				; Available options: "on" or "gzip"';
       $config[] = "passwdcrypt = \"md5\"					; Available options: \"crypt\", \"md5\", \"sha1\"";
-      $config[] = "baseurl = \"{$site_url}/\"				; URL that points to {$this->mProductName}'s root";
+      $config[] = "baseurl = \"{$site_url}\"				; URL that points to {$this->mProductName}'s root";
       $config[] = "address_rewriting = \"$re_writing\"	; Boolean. 0 = off, 1 = on.";
       $config[] = "reminder_daemon = \"$daemonise\"		; Boolean. 0 = off, 1 = on.";
       $config[] = "\n";
@@ -2089,6 +2089,12 @@ class Setup extends Flyspray
             ? TRUE
             : FALSE;
          break;
+		 
+		 case 'folder':
+		 	return (file_exists($value) && is_dir($value))
+			? TRUE
+			: FALSE;
+		 break;
 
          default:
          return TRUE;

@@ -5,14 +5,14 @@
  | Most functions require authentication with a  Flyspray      |
  | username and password.                                      |
  ---------------------------------------------------------------
- 
+
  Changes:
  4th August 2005: Angus Hardie Angus@malcolmhardie.com for xmlrpc library instead of ixr
- 
+
  requires the xmlrpc library
  http://phpxmlrpc.sourceforge.net
  should be located in a directory called xmlrpc in the root of the flyspray directory
- 
+
  */
 
 // default server (for easier testing)
@@ -46,7 +46,7 @@ if (!isset($_REQUEST['username']))
       local application or website.  You are welcome to request information from the official Flyspray BTS,
       but you are free to point it to another Flyspray installation with the latest revision of remote.php
       </div>
-      
+
       <div id="taskdetails" style="position:absolute;top:80px;left:250px;width:600px;border:1px solid black;">
          <form action="remote-client.php" method="get">
          <table style="width:100%">
@@ -94,7 +94,7 @@ if (!isset($_REQUEST['username']))
          <td>Array name:</td>
          <td><input name="arrayname" type="text" size="16" value="status"/></td>
          </tr>
-         
+
          <tr>
          <td colspan="2"><hr /></td>
          </tr>
@@ -108,12 +108,12 @@ if (!isset($_REQUEST['username']))
          </table>
          </form>
          </div>
-         
-         
-         
-         
-         
-         
+
+
+
+
+
+
          <?
          // If something was posted, use this second section
 }
@@ -125,71 +125,71 @@ else
    // Include a copy of the xml-rpc library. This can reside anywhere.
    // We're just calling the same copy as the server for convenience.
    // (switched to xmlrpc)
-   require_once 'includes/xmlrpc/xmlrpc.inc';
-   
+   require_once 'includes/xmlrpc.inc';
+
    //extract parts of the submitted url
    $urlParts = parse_url($_REQUEST['url']);
-   
+
    // Define the server. Enter the URL of your flyspray installation, with 'remote.php' at the end.
    $client = new xmlrpc_client($urlParts['path'],$urlParts['host']);
-   
+
    // Enable debug for testing
    if (isset($_REQUEST['debug']) && $_REQUEST['debug'] == '1')
       $client->debug = true;
-   
+
    $action = $_REQUEST['action'];
    $msg = "";
-   
+
    if (!isset($action)) {
       die ("no action specified");
    }
-   
+
    if ("getTask" == $action) {
       $response = remoteCall("fs.getTask",$_REQUEST['taskid']);
       showResponse($response);
    }
-   
+
    if ("getUser" == $action) {
       $response = remoteCall("fs.getUser",$_REQUEST['userid']);
       showResponse($response);
    }
-   
+
    if ("getTaskTypeList" == $action) {
       $response = remoteCall("fs.getTaskTypeList");
       showResponse($response);
    }
-   
+
    if ("getCategoryList" == $action) {
       $response = remoteCall("fs.getCategoryList");
       showResponse($response);
    }
-   
+
    if ("getNewTaskData" == $action) {
-      
+
       $response = remoteCall("fs.getNewTaskData");
       showResponse($response);
    }
-   
+
    if ("getArrayListForName" == $action) {
-      
+
       $response = remoteCall("fs.getArrayListForName",$_REQUEST['arrayname']);
       showResponse($response);
    }
-   
+
    if ("getVersion" == $action) {
-      
+
       $response = remoteCall("fs.getVersion");
       showResponse($response);
    }
-   
-   
+
+
    if ("createNewTask" == $action) {
       $response = remoteCall("fs.getNewTaskData");
-      
-      
+
+
       if ($response->success) {
       ?>
-         
+
          <div id="taskdetails">
          <form enctype="multipart/form-data" action="remote-client.php" method="post">
          <div>
@@ -206,7 +206,7 @@ else
          <label for="itemsummary">Summary</label>
             </td>
             <td><input id="itemsummary" type="text" name="item_summary" size="50" maxlength="100" /></td></tr>
-            
+
             </table>
             <div id="taskfields1">
             <table>
@@ -214,8 +214,8 @@ else
                <td>
                   <label for="tasktype">Task Type</label>
                </td>
-               <td> 
-                  <?php echo menuForArray($response->value['taskType'],"task_type");?> 
+               <td>
+                  <?php echo menuForArray($response->value['taskType'],"task_type");?>
                </td>
             </tr>
             <tr>
@@ -271,7 +271,7 @@ else
                </td>
           </tr>
           <tr>
-                                                      
+
             <td>
                <label for="productversion">Reported Version</label>
             </td>
@@ -307,12 +307,12 @@ else
                                  }
                                  );
             </script>
-               
+
             </td>
          </tr>
       </table>
    </div>
-               
+
    <div id="taskdetailsfull">
       <label for="details">Details</label>
       <textarea id="details" name="detailed_desc" cols="70" rows="10"></textarea>
@@ -320,45 +320,45 @@ else
    <div id="uploadfilebox">
       Attach a file         <input type="file" size="55" name="userfile[]" /><br />
    </div>
-                  
+
    <input class="adminbutton" type="button" onclick="addUploadFields()" value="Select more files" />
-                  
+
    <input class="adminbutton" type="submit" name="buSubmit" value="Add this task" onclick="Disable1()" accesskey="s"/>
-            &nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked="checked" />Notify me whenever this task changes   
-   
-                     
+            &nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked="checked" />Notify me whenever this task changes
+
+
    </form>
 </div>
-                     
+
 <?php
       } else {
             showResponse($response);
       }
    }
-   
+
    if ("newTask" == $action) {
-      
+
       $taskArray = $_REQUEST;
-      
+
       $taskArray['project_id'] = 1;
-      
-      
-      
+
+
+
      // print "<pre>".print_r($taskArray,true)."</pre>";
-      
+
       $response = remoteCall("fs.openTask",$taskArray);
-      
+
       showResponse($response);
-      
+
       if ($response->success) {
          $taskId = $response->value['task_id'];
          echo "<a href=\"index.php?do=details&id=$taskId\">View New Task</a>";
       }
-      
+
    }
-   
+
    if ("openTask" == $action) {
-      
+
       $taskArray['item_summary'] = "test task summary";
       $taskArray['detailed_desc'] = "test task description";
       $taskArray['project_id'] = 1;
@@ -372,52 +372,52 @@ else
       $taskArray['task_severity'] = 1;
       $taskArray['task_priority'] = 2;
       $taskArray['due_date'] = 0;
-      
-      
-      
+
+
+
       $response = remoteCall("fs.openTask",$taskArray);
-      
+
       showResponse($response);
    }
-   
-   
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
+
    // End of script
 }
 
 function showResponse($response)
 {
-   
+
    // Display the results
    echo '<pre>';
-   
+
    if ($response->success) {
       print_r($response->value);
    } else {
       print($response->message);
    }
    echo '</pre>';
-   
+
    echo '<div><br /><br /><a href="remote-client.php">Try again</a></div>';
 }
 
-function menuForArray($array,$name) 
+function menuForArray($array,$name)
 {
-   
-   
+
+
    $result = "<select name=\"$name\" id=\"$name\">\n";
-   
+
    //for($i=1;$i<=count($array);$i++) {
-   foreach($array as $key => $value)   
+   foreach($array as $key => $value)
       $result .= "<option value=\"$key\">".$value."</option>\n";
    //}
    $result .= "</select>\n";
-   
+
    return $result;
 }
 
@@ -426,11 +426,11 @@ function remoteCall($name,$args=array())
    global $client;
    $params = array(new xmlrpcval($_REQUEST['username']),new xmlrpcval($_REQUEST['password']),php_xmlrpc_encode($args));
    $msg = new xmlrpcmsg($name, $params);
-   
+
    $response = $client->send($msg);
-   
+
    if ($response->faultCode() != 0) {
-      
+
       $result->message = 'XML_RPC Error ('.$response->faultCode().') <br /> '.$response->faultString();
       if ($_REQUEST['debug'])  {
          $result->message .= "\n<br />".print_r($response,true);
@@ -442,13 +442,13 @@ function remoteCall($name,$args=array())
       $result->success = false;
       return $result;
    } else {
-      
+
       $result->message = "ok";
       $result->success = true;
       $result->response = $response;
       $result->value = php_xmlrpc_decode($response->value());
       return $result;
-      
+
    }
 }
 
