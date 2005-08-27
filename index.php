@@ -127,7 +127,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
    if (file_exists("attachments/$file_name")
       && ($project_prefs['others_view'] == '1' OR $user_permissions['view_attachments'] == '1'))
    {
-      $path = $basedir ."attachments/$file_name";
+      $path = $basedir ."/attachments/$file_name";
 
       header("Pragma: public");
       header("Content-type: $file_type");

@@ -44,7 +44,6 @@ require_once(OBJECTS_PATH . '/template.php');
 require_once(OBJECTS_PATH . '/functions.inc.php');
 require_once(OBJECTS_PATH . '/version.php');
 
-
 class Setup extends Flyspray
 {
    var $mPhpRequired;
@@ -59,8 +58,6 @@ class Setup extends Flyspray
    var $mConfigText;
    var $mHtaccessText;
    var $mCacheFolderStatus;
-
-   var $mHtaccessFileStatus;
 
    var $mDbConnection;
    var $mProductName;
@@ -79,13 +76,15 @@ class Setup extends Flyspray
 
    var $mPreferencesTable;
    var $mUsersTable;
+   var $mAttachmentsTable;
+   var $mCommentsTable;
 
    var $mServerSoftware;
    var $mMinPasswordLength;
    var $mAdminUsername;
    var $mAdminPassword;
    var $mCompleteAction;
-   var $mDaemonise;
+   var $mPhpCliStatus;
 
    function Setup()
    {
@@ -121,8 +120,8 @@ class Setup extends Flyspray
       $this->mDatabaseSetup		= array (
                                     1 => array ('Install 0.9.8' => '/sql/flyspray-0.9.8', 'dependency' => '', 'function' => 'InstallPointNineEight'),
                                     2 => array ('Upgrade 0.9.7 - 0.9.8' => '/sql/upgrade_0.9.7_to_0.9.8', 'dependency' => '3', 'function' => 'UpgradePointNineSeven'),
-                                    // Only for testing 3 => array ('Install 0.9.7' => '/sql/flyspray-0.9.7', 'dependency' => '', 'function' => 'InstallPointNineSeven'),
-                                 );
+                                    // Only for testing3 => array ('Install 0.9.7' => '/sql/flyspray-0.9.7', 'dependency' => '', 'function' => 'InstallPointNineSeven'),
+                                 ); 
 
       $this->mServerSoftware		= (strstr($_SERVER['SERVER_SOFTWARE'], 'Apache'))
                            ? 'apache'
@@ -272,23 +271,6 @@ class Setup extends Flyspray
    }
 
 
-   function CheckHtaccessRequired()
-   {
-      return ($this->mServerSoftware == 'apache');
-   }
-
-   function CheckHtaccessStatus()
-   {
-      // Get the full path to the file
-      $file = realpath('../.htaccess');
-
-      // Update the status of the Htaccess file
-      $this->mHtaccessFileStatus = $this->IsWriteable($file);
-
-      // Return an html formated writeable/un-writeable string
-      return $this->ReturnStatus($this->mHtaccessFileStatus, $type = 'writeable');
-   }
-
    function CheckPreStatus()
    {
       $this->mProceed =
@@ -313,6 +295,20 @@ class Setup extends Flyspray
 
       // Return an html formated Yes/No string
       return $this->ReturnStatus($this->mPhpVersionStatus, $type = 'yes');
+   }
+   
+   function CheckPhpCli()
+   {
+		exec("php -v", $output, $php_cli);
+		if ($php_cli && $output)
+		{
+			$this->mPhpCliStatus = TRUE;
+			return $this->mPhpCliStatus;
+		}
+		else
+		{
+			return FALSE;
+		}
    }
 
    /**
@@ -379,7 +375,6 @@ class Setup extends Flyspray
                         'vars' => array(
                                     'product_name' => $this->mProductName,
                                     'message' => $this->GetPageMessage(),
-                                    'site_name' => $this->GetParamValue($data, 'site_name', ''),
                                     'site_url' => APPLICATION_WEB_ROOT,
                                     'absolute_path' => realpath(APPLICATION_PATH),
                                     'admin_email' => $this->GetAdminInput('admin_email', $this->GetParamValue($data, 'admin_email', ''), 'Admin Email'),
@@ -392,7 +387,8 @@ class Setup extends Flyspray
                                     'db_password' => $this->GetParamValue($data, 'db_password', ''),
                                     'db_name' => $this->GetParamValue($data, 'db_name', ''),
                                     'db_prefix' => $this->GetParamValue($data, 'db_prefix', ''),
-                                    'db_setup_options' => $this->GetParamValue($data, 'db_setup_options', '')
+                                    'db_setup_options' => $this->GetParamValue($data, 'db_setup_options', ''),
+									'daemonise' => $this->GetReminderDaemonSelection($this->GetParamValue($data, 'reminder_daemon', '1')),
                                  ),
                      ),
 
@@ -433,13 +429,11 @@ class Setup extends Flyspray
                                     'message' => $this->GetPageMessage(),
                                     'config_writeable' => $this->mConfigFileStatus,
                                     'config_text' => $this->mConfigText,
-                                    'htaccess_writeable' => ($this->mHtaccessFileStatus),
-                                    'htaccess_text' => $this->mHtaccessText,
                                     'admin_username' => $this->mAdminUsername,
                                     'admin_password' => $this->mAdminPassword,
                                     'site_index' => $data['site_url'],
                                     'complete_action' => $this->mCompleteAction,
-                                    'daemonise' => $this->mDaemonise,
+                                    'daemonise' => $this->CheckPhpCli(),
                                  ),
                      ),
 
@@ -531,8 +525,6 @@ class Setup extends Flyspray
                                     'adodb_status' => $this->mAdodbStatus,
                                     'config_output' => $this->CheckConfigFile(),
                                     'config_status' => $this->mConfigFileStatus,
-                                    'htaccess_required' => $this->CheckHtaccessRequired(),
-                                    'htaccess_status' => $this->CheckHtaccessStatus(),
                                     //'cache_output' => $this->CheckCacheFolder(),
                                     //'cache_status' => $this->mCacheFolderStatus,
                                     'php_settings' => $this->GetPhpSettings(),
@@ -717,65 +709,65 @@ class Setup extends Flyspray
       if ($this->IsWriteable($downloadTo))
       {
 
-      // Get the file name of the download
-      $filename = basename($url);
-
-      // Set time-out for 15 minutes
-      set_time_limit(900);
-
-      // Grab the file contents
-      $contents = file_get_contents($url);
-
-      // If successful in getting file contents
-      if ($contents)
-      {
-         // If was able to open a handle to write to the file stream
-         if ($handle = fopen("$downloadTo/$filename", 'w'))
-         {
-         // If the contents was not written to file
-         if (fwrite($handle, $contents) === FALSE)
-         {
-            $_SESSION['page_message'][] = 'Could not write data to file';
-            return FALSE;
-         }
-         else
-         {
-            // Closes the open file pointer and return success
-            fclose($handle);
-            return TRUE;
-         }
-         }
-         else
-         {
-         $_SESSION['page_message'][] = "Cannot open file ($filename) for writing. Please make $filename writeable before continuing.";
-         return FALSE;
-         }
-      }
-      elseif ($this->FetchThroughCurl($url, $downloadTo))
-      {
-         return TRUE;
+		// Get the file name of the download
+		$filename = basename($url);
+	
+		// Set time-out for 15 minutes
+		set_time_limit(900);
+	
+		// Grab the file contents
+		$contents = file_get_contents($url);
+	
+		// If successful in getting file contents
+		if ($contents)
+		{
+			// If was able to open a handle to write to the file stream
+			if ($handle = fopen("$downloadTo/$filename", 'w'))
+			{
+				// If the contents was not written to file
+				if (fwrite($handle, $contents) === FALSE)
+				{
+					$_SESSION['page_message'][] = 'Could not write data to file';
+					return FALSE;
+				}
+				else
+				{
+					// Closes the open file pointer and return success
+					fclose($handle);
+					return TRUE;
+				}
+			}
+			else
+			{
+				$_SESSION['page_message'][] = "Cannot open file ($filename) for writing. Please make $filename writeable before continuing.";
+				return FALSE;
+			}
+		}
+		elseif ($this->FetchThroughCurl($url, $downloadTo))
+		{
+			return TRUE;
+		}
+		else
+		{
+			// Taking care of broken links or PHP URL restrictions
+			$_SESSION['page_message'][] = "The file <strong>$url</strong> could not be downloaded for installation. " .
+			(
+				$alternate = (!empty($alternate_url))
+				? "Please download the libraries from <a href=\"$alternate_url\" title=\"$alternate_url\">$alternate_url</a> and extract to <strong>$downloadTo</strong>"
+				: ''
+			);
+			return FALSE;
+		}
       }
       else
       {
-         // Taking care of broken links or PHP URL restrictions
-         $_SESSION['page_message'][] = "The file <strong>$url</strong> could not be downloaded for installation. " .
-         (
-            $alternate = (!empty($alternate_url))
-            ? "Please download the libraries from <a href=\"$alternate_url\" title=\"$alternate_url\">$alternate_url</a> and extract to <strong>$downloadTo</strong>"
-            : ''
-         );
-         return FALSE;
-      }
-      }
-      else
-      {
-      $_SESSION['page_message'][] = "Please make folder <strong>$downloadTo</strong> writeable by the web-server user or world writeable.";
-      $_SESSION['page_message'][] = "On a Unix/Linux platform, its as easy as executing <strong><i>chmod 777 $downloadTo</i></strong> to make it world writeable.";
-      $_SESSION['page_message'][] = 'It is advised to revert these permissions once you have finished the application setup.';
-      return FALSE;
+		$_SESSION['page_message'][] = "Please make folder <strong>$downloadTo</strong> writeable by the web-server user or world writeable.";
+		$_SESSION['page_message'][] = "On a Unix/Linux platform, its as easy as executing <strong><i>chmod 777 $downloadTo</i></strong> to make it world writeable.";
+		$_SESSION['page_message'][] = 'It is advised to revert these permissions once you have finished the application setup.';
+		return FALSE;
       }
    }
-
+   
 
    function GetAdminInput($field, $value, $label)
    {
@@ -915,6 +907,30 @@ class Setup extends Flyspray
       }
       return $output;
    }
+   
+   
+	function GetReminderDaemonSelection($value)
+	{
+		$selection	= '';
+		if ($this->CheckPhpCli())
+		{
+			if ($value == 1)
+			{
+				$selection .= '<input type="radio" name="reminder_daemon" value="1" checked="checked" /> Enable';
+				$selection .= '<input type="radio" name="reminder_daemon" value="0" /> Disable';
+			}
+			else
+			{
+				$selection .= '<input type="radio" name="reminder_daemon" value="1" /> Enable';
+				$selection .= '<input type="radio" name="reminder_daemon" value="0" checked="checked" /> Disable';
+			}
+			return $selection;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
 
 
    function GetSetupOptions()
@@ -949,26 +965,37 @@ class Setup extends Flyspray
    {
       $_SESSION['page_heading'] = 'ADOdb Installation';
 
-      // where to download the libraries
-      $download_to = realpath('../adodb');
-
-      $url ='http://dl.sourceforge.net/sourceforge/adodb/adodb465.tgz';
-      $alternate_url = 'http://sourceforge.net/project/showfiles.php?group_id=42718';
-
-      // If the libraries were downloaded successfully
-      if ( ($adodb_message = $this->DownloadFileToServer($url, $download_to, $alternate_url)) === TRUE)
-      {
-         // Specify locations to fetch file and un-compress archive to
-         $from_location = $download_to;
-         $uncompress_to = "$download_to/../";
-
-         // If able to uncompress the archive. It will un-compress to the download location
-         if ( ($adodb_message = $this->UncompressFile($from_location, basename($url), $uncompress_to)) === TRUE )
-         {
-            $_SESSION['page_message'][] =  "Successfully installed ADOdb library into <strong>$download_to</strong>";
-            return TRUE;
-         }
-      }
+		// where to download the libraries
+		$download_to = realpath('../adodb');
+		if (file_exists($download_to) && is_dir($download_to))
+		{
+			// Setup the Download URL's
+			$url ='http://dl.sourceforge.net/sourceforge/adodb/adodb465.tgz';
+			$alternate_url = 'http://sourceforge.net/project/showfiles.php?group_id=42718';
+			
+			// If the libraries were downloaded successfully
+			if ( ($adodb_message = $this->DownloadFileToServer($url, $download_to, $alternate_url)) === TRUE)
+			{
+				// Specify locations to fetch file and un-compress archive to
+				$from_location = $download_to;
+				$uncompress_to = "$download_to/../";
+			
+				// If able to uncompress the archive. It will un-compress to the download location
+				if ( ($adodb_message = $this->UncompressFile($from_location, basename($url), $uncompress_to)) === TRUE )
+				{
+					$_SESSION['page_message'][] =  "Successfully installed ADOdb library into <strong>$download_to</strong>";
+					return TRUE;
+				}
+			}
+		}
+		else
+		{
+			$_SESSION['page_message'][] = "Please create the adodb folder in the root of your $this->mProductName installation.";
+			$_SESSION['page_message'][] = "After creating the folder, make it writeable by the webserver user or world writeable.";
+			$_SESSION['page_message'][] = "On a Unix/Linux platform, its as easy as executing <strong><i>chmod 777 adodb</i></strong> to make it world writeable.";
+			$_SESSION['page_message'][] = 'It is advised to revert these permissions once you have finished the application setup.';
+			return FALSE;
+		}
    }
 
 
@@ -1132,12 +1159,12 @@ class Setup extends Flyspray
                'db_name' => array('Database name', 'string', TRUE),
                'db_prefix' => array('Table prefix', 'string', TRUE),
                'db_setup_options' =>  array('Database type', 'number', TRUE),
-               'site_name' => array('Site name', 'string', TRUE),
                'site_url' => array($this->mProductName . ' URL location', 'string', TRUE),
                'absolute_path' => array($this->mProductName . ' Absolute path must exist and', 'folder', TRUE),
                'admin_username' => array('Administrator\'s username', 'string', ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')),
                'admin_password' => array("Administrator's Password must be minimum {$this->mMinPasswordLength} characters long and", 'password', ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')),
                'admin_email' => array('Administrator\'s email address', 'email address', ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')),
+			   'reminder_daemon' => array('Reminder Daemon', 'option', FALSE),
                );
             if ($data = $this->CheckPostedData($required_data, $message = 'Missing config values'))
             {
@@ -1182,9 +1209,6 @@ class Setup extends Flyspray
       }
 
 
-      // Fix for Windows.. need to double check this....
-      //$absolute_path= str_replace("\\","/", $absolute_path);
-
       $config_intro	=
       "; <?php die( 'Do not access this page directly.' ); ?>
 
@@ -1198,14 +1222,26 @@ class Setup extends Flyspray
       // Create a random cookie salt
       $cookiesalt = substr(md5(microtime()), 0, 2);
 
-      // Check if running Apache software.
-      $re_writing	= ($this->mServerSoftware == 'apache') ? 1 : 0;
+	  // Check to see if running apache software and mod_rewrite is enabled (Can only check in PHP 4.3.2 and above)
+	  $re_writing	= 0;
+	  if ($this->mServerSoftware == 'apache' && function_exists('apache_get_modules'))
+	  {
+			$apache_modules	= apache_get_modules();
+			if ( ($apache_modules) && (in_array('mod_rewrite', $apache_modules)) )
+			{
+				$re_writing = 1;
+			}
+	  }
 
-      exec("php -v", $output, $php_cli);
-      $daemonise	= ($php_cli) ? 1 : 0;
-      $this->mDaemonise	= $daemonise;
-
-      $sep		= DIRECTORY_SEPARATOR;
+	  // check to see if to enable the Reminder Daemon.
+      $daemonise	= ( (isset($data['reminder_daemon'])) && ($data['reminder_daemon'] == 1) )
+					? 1
+					: 0;
+					
+	  // Double check the urls and paths slashes.
+	  $site_url			.= (substr($site_url, -1, 1) != '/') ? '/' : '';
+	  $absolute_path	= (substr($absolute_path, -1, 1) == DIRECTORY_SEPARATOR) 
+	  					? substr($absolute_path, 0, (strlen($absolute_path)-1) ) : $absolute_path;
 
       $config	= array();
       $config[] = "[database]";
@@ -1239,65 +1275,6 @@ class Setup extends Flyspray
       {
          $this->mConfigText = $config_text;
          $this->mConfigFileStatus = FALSE;
-      }
-
-
-      // If its required to update the .htaccess file and it is writeable
-      if ($this->CheckHtaccessRequired())
-      {
-         $this->CheckHtaccessStatus();
-
-         $htaccess_contents	=
-         "###############################################################################
-         ##### {$this->mProductName} .htaccess Config. To be used with Apache Server ###
-         ##### Check for Mod-Rewrite module ############################################
-         ###############################################################################
-         <IfModule mod_rewrite.c>
-         RewriteEngine on
-
-         RewriteRule ^.*\?do=admin&area=prefs$ index.php?do=admin&area=prefs [L]
-
-         RewriteRule ^([0-9]+)$ index.php?do=details&id=$1 [L]
-         RewriteRule ^task/([0-9]+)$ index.php?do=details&id=$1 [L]
-         RewriteRule ^task/([0-9]+)comment([0-9]+)$ index.php?do=details&id=$1comment$2 [L]
-         RewriteRule ^task/([0-9]+)/depends$ index.php?do=depends&id=$1 [L]
-         RewriteRule ^task/([0-9]+)/edit$ index.php?do=details&id=$1&edit=yep [L]
-
-         RewriteRule ^newtask$ index.php?do=newtask [L]
-         RewriteRule ^newtask/proj([0-9]+)$ index.php?do=newtask&project=$1 [L]
-
-         RewriteRule ^reports$ index.php?do=reports [L]
-         RewriteRule ^myprofile$ index.php?do=myprofile [L]
-         RewriteRule ^logout$ index.php?do=authenticate&action=logout [L]
-
-         RewriteRule ^admin/([a-zA-Z]+)$ index.php?do=admin&area=$1 [L]
-         RewriteRule ^pm/proj([0-9]+)/([a-zA-Z]+)$ index.php?do=pm&project=$1&area=$2 [L]
-
-         RewriteRule ^newgroup/proj([0-9]+)$ index.php?do=newgroup&project=$1 [L]
-         RewriteRule ^group/([0-9]+)$ index.php?do=admin&area=editgroup&id=$1 [L]
-         RewriteRule ^projgroup/([0-9]+)$ index.php?do=pm&area=editgroup&id=$1 [L]
-         RewriteRule ^user/([0-9]+)$ index.php?do=admin&area=users&id=$1 [L]
-         RewriteRule ^newuser$ index.php?do=newuser [L]
-         RewriteRule ^register$ index.php?do=register [L]
-
-         RewriteRule ^error$ index.php?do=error [L]
-         </IfModule>";
-         $htaccess_contents	= str_replace("\t", "", $htaccess_contents);
-         if ( ($this->mHtaccessFileStatus) && ($fp = fopen('../.htaccess', "w")))
-         {
-            fputs($fp, $htaccess_contents, strlen($htaccess_contents));
-            fclose($fp);
-         }
-         else
-         {
-            $this->mHtaccessFileStatus = FALSE;
-            $this->mHtaccessText = $htaccess_contents;
-         }
-      }
-      else
-      {
-         // We don't have to worry about displaying the config in the textarea.
-         $this->mHtaccessFileStatus	= TRUE;
       }
 
 
@@ -1354,7 +1331,7 @@ class Setup extends Flyspray
          $this->mAdminUsername = '';
          $this->mAdminPassword = '';
          $this->mCompleteAction	= 'do=myprofile';
-         $this->SetUpgradeLogin($data);
+         $this->SetUpgradeLogin($data, $cookiesalt);
       }
       return TRUE;
    }
@@ -1803,7 +1780,7 @@ class Setup extends Flyspray
       }
    }
 
-   function SetUpgradeLogin($data)
+   function SetUpgradeLogin($data, $cookiesalt)
    {
       // Extract the varibales to local namespace
       extract($data);
@@ -1818,9 +1795,6 @@ class Setup extends Flyspray
       // Get current user details.  We need this to see if their account is enabled or disabled
       $result = $this->mDbConnection->Execute("SELECT * FROM {$db_prefix}users WHERE user_id = ?", array(1));
       $user	= $result->FetchRow();
-
-      $conf			= @parse_ini_file('../flyspray.conf.php', true);
-      $cookiesalt		= $conf['general']['cookiesalt'];
 
       // Set a couple of cookies
       setcookie('flyspray_userid', $user['user_id'], $cookie_time, "/");
@@ -1963,6 +1937,14 @@ class Setup extends Flyspray
                      ? str_replace("{$this->mUnixName}_", $db_prefix, $this->mPreferencesTable)
                      : $this->mPreferencesTable;
 
+      $attachments_table	= ($db_prefix != '')
+                     ? str_replace("{$this->mUnixName}_", $db_prefix, $this->mAttachmentsTable)
+                     : $this->mAttachmentsTable;
+
+      $comments_table	= ($db_prefix != '')
+                     ? str_replace("{$this->mUnixName}_", $db_prefix, $this->mCommentsTable)
+                     : $this->mCommentsTable;
+
       // Query to check the current version of Flyspray
       $sql	= "SELECT pref_value FROM $preferences_table WHERE pref_name = 'fs_ver'";
 
@@ -1986,50 +1968,52 @@ class Setup extends Flyspray
 				SELECT 
 					*
 				FROM 
-					flyspray_attachments
+					$attachments_table
 				WHERE
 					comment_id < '1'
 				AND 
 					date_added > '0'";
 				
 				$attachments = $this->mDbConnection->Execute($sql);
-				
-				// Cycle through each attachment
-				while($row = $attachments->FetchRow())
-				{
-					// Create a comment
-					$sql	= "
-					INSERT INTO 
-						flyspray_comments
-						(task_id, date_added, user_id, comment_text)
-					VALUES 
-						( ?, ?, ?, ? )";
-					$data	= array($row['task_id'], $row['date_added'], $row['added_by'], $row['file_desc']);
-					$this->mDbConnection->Execute($sql, $data);
-				
-					// Retrieve the comment ID
-					$comment_sql	= "
-					SELECT
-						*
-					FROM
-						flyspray_comments
-					WHERE 
-						comment_text = ?
-					ORDER BY 
-						comment_id DESC";
+				if ($attachments)
+      			{
+					// Cycle through each attachment
+					while($row = $attachments->FetchRow())
+					{
+						// Create a comment
+						$sql	= "
+						INSERT INTO 
+							flyspray_comments
+							(task_id, date_added, user_id, comment_text)
+						VALUES 
+							( ?, ?, ?, ? )";
+						$data	= array($row['task_id'], $row['date_added'], $row['added_by'], $row['file_desc']);
+						$this->mDbConnection->Execute($sql, $data);
 					
-					$comment = $this->mDbConnection->FetchRow($this->mDbConnection->Execute($comment_sql, array($row['file_desc'])));
-				
-					// Update the attachment entry to point it to the comment ID
-					$update_attachments	= "
-					UPDATE
-						flyspray_attachments
-					SET
-						comment_id = ?
-					WHERE
-						attachment_id = ?";
+						// Retrieve the comment ID
+						$comment_sql	= "
+						SELECT
+							*
+						FROM
+							$comments_table
+						WHERE 
+							comment_text = ?
+						ORDER BY 
+							comment_id DESC";
+						
+						$comment = $this->mDbConnection->FetchRow($this->mDbConnection->Execute($comment_sql, array($row['file_desc'])));
 					
-					$this->mDbConnection->Execute($update_attachments, array($comment['comment_id'], $row['attachment_id']));
+						// Update the attachment entry to point it to the comment ID
+						$update_attachments	= "
+						UPDATE
+							flyspray_attachments
+						SET
+							comment_id = ?
+						WHERE
+							attachment_id = ?";
+						
+						$this->mDbConnection->Execute($update_attachments, array($comment['comment_id'], $row['attachment_id']));
+					}
 				}
 				return TRUE;
             }

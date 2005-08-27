@@ -18,14 +18,6 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 				<div class="installBlock">
 				<table class="formBlock" style="width:68%;">
 					<tr>
-						<td width="200" align="right">Site name</td>
-						<td align="center"><input class="inputbox" type="text" name="site_name" size="30" value="<?php echo $site_name; ?>" /></td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
-						<td align="center" class="small">e.g. "XYZ Bug Tracker"</td>
-					</tr>
-					<tr>
 						<td align="right"><?php echo $product_name; ?> URL</td>
 						<td align="center">
 							<input class="inputbox" type="text" name="site_url" value="<?php echo $site_url; ?>" size="30" />
@@ -40,19 +32,80 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 					<?php echo $admin_email; ?>
 					<?php echo $admin_username; ?>
 					<?php echo $admin_password; ?>
+					<?php
+					if ($daemonise)
+					{
+					?>
+					<tr>
+						<td align="right">Reminder daemon</td>
+						<td align="center">
+							<?php echo $daemonise; ?>
+						</td>
+					</tr>					
+					<?php
+					}
+					?>
 				</table>
 				<p>
-				The Database has been populated. Please follow the instructions to complete the configuration.
+				The Database schema has been populated. Please follow the instructions to complete the Admin configuration.
 				</p>
 				<p>
-				Type in the name for your <?php echo $product_name; ?> site. This name is used in email messages
-				so make it something meaningful.
+				1) <strong><?php echo $product_name; ?> URL</strong>. This is the URL for your <?php echo $product_name; ?> 
+				installation. Please do not change the values if you are not sure what you are doing. Usually the values 
+				displayed here will work for your site.
 				</p>
 				<p>
-				If URL and Path looks correct then please do not change.
-				If you are not sure then please contact your ISP or administrator. Usually
-				the values displayed here will work for your site.
+				2) <strong>System Path</strong> is where your copy of <?php echo $product_name; ?>
+				is being installed. Again as above, do not change the values or add extra slashes to the path unless you 
+				are certain its not going to affect the installation.
 				</p>
+				<?php
+				$counter = 2;
+				if ($admin_email && $admin_username & $admin_password)
+				{
+					$counter++;
+				?>
+				<p>
+				<?php echo $counter; ?>) Admin <strong>Email, Username, Password</strong> are values for the Administrator of your <?php echo $product_name; ?>
+				Installation. You can change these values through the administration section of <?php echo $product_name; ?>.
+				</p>
+				<?php
+				}
+				if ($daemonise)
+				{
+					$counter++;
+				?>
+				<p>
+				<?php echo $counter; ?>) The <strong>Reminder Daemon</strong>.
+				 Starting with the 0.9.8 release, <?php echo $product_name; ?> has a background daemon to regularly trigger 
+				 the scheduled reminders script. The background reminder requires that you have the Command line 
+				 version of PHP installed. <?php echo $product_name; ?> installer has found that your system does have the 
+				 command line version of PHP running. You can choose to enable/disable the background reminder.
+				</p>
+				<?php
+				}
+				else
+				{
+				?>
+				<h3>Additional Configuration</h3>
+				<p>
+				 The <strong>Reminder Daemon</strong>. 
+				 Starting with the 0.9.8 release, <?php echo $product_name; ?> has a background daemon to regularly trigger 
+				 the scheduled reminders script. The background reminder requires that you have the Command line 
+				 version of PHP installed. <?php echo $product_name; ?> installer has found that your system does not have the 
+				 command line version of PHP running.
+				</p>
+				<p>
+				An alternative solution is to activate the scripts/schrem.php file regularly through some task 
+				scheduler (like "cron") to make a download program (like "wget") to retrieve the file every five or 
+				ten minutes. You don't need to save it anywhere, just send it to the bit bucket. Merely retrieving 
+				the file causes it to run, and thus, send the reminders out. More details can be obtained at 
+				<a href="http://flyspray.rocks.cc/manual/reminders" target="_blank">http://flyspray.rocks.cc/manual/reminders</a>.
+				Meanwhile you can proceed to complete the installation process.
+				</p>
+				<?php
+				}
+				?>
 				<input type="hidden" name="db_type" value="<?php echo $db_type; ?>" />
 				<input type="hidden" name="db_hostname" value="<?php echo $db_hostname; ?>" />
 				<input type="hidden" name="db_username" value="<?php echo $db_username; ?>" />

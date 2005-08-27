@@ -104,13 +104,6 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 					<td align="left"><b><?php echo $config_output; ?></b></td>
 					<td>&nbsp;</td>
 				</tr>
-				<?php if ($htaccess_required) { ?>
-				<tr>
-					<td valign="top">../.htaccess</td>
-					<td align="left"><b><?php echo $htaccess_status; ?></b></td>
-					<td>&nbsp;</td>
-				</tr>
-				<?php } ?>
 				</table>
 				<p>
 				In order for <?php echo $product_name; ?> to function

@@ -4,7 +4,7 @@
 $fs->get_language_pack($lang, 'authenticate');
 
 // If logout was requested, log the user out.
-if ($_GET['action'] == "logout")
+if (isset($_REQUEST['action']) && $_REQUEST['action'] == "logout")
 {
    // Set cookie expiry time to the past, thus removing them
    setcookie('flyspray_userid', '', time()-60, '/');
@@ -15,23 +15,23 @@ if ($_GET['action'] == "logout")
    $fs->redirect($conf['general']['baseurl']);
 
 // Otherwise, they requested login.  See if they provided the correct credentials...
-} elseif ($_POST['user_name'] AND $_POST['password'])
+} elseif (isset($_REQUEST['user_name']) && isset($_REQUEST['password']) )
 {
-   $username = $_POST['user_name'];
-   $password = $_POST['password'];
+   $username = $_REQUEST['user_name'];
+   $password = $_REQUEST['password'];
 
    // Run the username and password through the login checker
    if (!$fs->checkLogin($username, $password))
    {
       $_SESSION['ERROR'] = $authenticate_text['loginfailed'];
-      $fs->redirect($_POST['prev_page']);
+      $fs->redirect($_REQUEST['prev_page']);
 
    } else
    {
       $user_id = $fs->checkLogin($username, $password);
 
       // Determine if the user should be remembered on this machine
-      if ($_POST['remember_login'])
+      if (isset($_REQUEST['remember_login']) )
       {
          $cookie_time = time() + (60 * 60 * 24 * 30); // Set cookies for 30 days
       } else
@@ -53,7 +53,7 @@ if ($_GET['action'] == "logout")
                                 );
 
       $_SESSION['SUCCESS'] = $authenticate_text['loginsuccessful'];
-      $fs->redirect($_POST['prev_page']);
+      $fs->redirect($_REQUEST['prev_page']);
    // End of checking credentials
    }
 
@@ -61,5 +61,6 @@ if ($_GET['action'] == "logout")
 {
    // If the user didn't provide both a username and a password, show this error:
    $_SESSION['ERROR'] = $authenticate_text['loginfailed'] . ' - ' . $authenticate_text['userandpass'];
-   $fs->redirect($_POST['prev_page']);
+   $fs->redirect($_REQUEST['prev_page']);
 }
+?>

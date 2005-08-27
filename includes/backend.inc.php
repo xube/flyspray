@@ -546,7 +546,7 @@ class Backend {
             $randval = mt_rand();
             $file_name = $taskid."_$randval";
 
-            $path = $basedir . 'attachments/' . $file_name;
+            $path = 'attachments/' . $file_name;
 
             $tmp_name = $files['userfile']['tmp_name'][$key];
 

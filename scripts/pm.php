@@ -170,14 +170,14 @@ if ($permissions['manage_project'] == '1')
                <input id="showlogo" type="checkbox" name="show_logo" value="1" <?php if ($project_prefs['show_logo'] == '1') { echo 'checked="checked"'; }; ?> />
                </td>
             </tr>
-            <tr>
+            <!--<tr>
                <td>
                <label for="inlineimages"><?php echo $admin_text['showinlineimages'];?></label>
                </td>
                <td>
                <input id="inlineimages" type="checkbox" name="inline_images" value="1" <?php if ($project_prefs['inline_images'] == '1') { 'checked="checked"'; }; ?> />
                </td>
-            </tr>
+            </tr>-->
             <tr>
                <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
                <td class="admintext">
@@ -326,7 +326,7 @@ if ($permissions['manage_project'] == '1')
 
          while ($group = $db->FetchArray($groups))
          {
-            echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
+            echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name']),ENT_COMPAT,'utf-8') . "</option>\n";
          }
 
          echo '</select>';
@@ -373,7 +373,7 @@ if ($permissions['manage_project'] == '1')
       // Get the list of groups to choose from
       $get_groups = $db->Query("SELECT * FROM {$dbprefix}groups WHERE belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
       while ($group = $db->FetchArray($get_groups)) {
-      echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
+      echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name']),ENT_COMPAT,'utf-8') . "</option>\n";
       };
 
       echo '</select>';
@@ -413,11 +413,11 @@ if ($permissions['manage_project'] == '1')
             <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
 
             <label for="groupname"><?php echo $admin_text['groupname'];?></label></td>
-            <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']));?>" /></td>
+            <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']),ENT_COMPAT,'utf-8');?>" /></td>
          </tr>
          <tr>
             <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
-            <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']));?>" /></td>
+            <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']),ENT_COMPAT,'utf-8');?>" /></td>
          </tr>
          <tr>
             <td><label for="projectmanager"><?php echo $admin_text['projectmanager'];?></label></td>
@@ -539,7 +539,7 @@ if ($permissions['manage_project'] == '1')
          <td>
          <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>" />
          <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
-         <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']));?>" /></td>
+         <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']),ENT_COMPAT,'utf-8');?>" /></td>
          <td title="The order these items will appear in the TaskType list">
          <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
          <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
@@ -629,7 +629,7 @@ if ($permissions['manage_project'] == '1')
         <td>
           <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>" />
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']));?>" />
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']),ENT_COMPAT,'utf-8');?>" />
         </td>
         <td title="The order these items will be shown in the Resolution list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -735,7 +735,7 @@ if ($permissions['manage_project'] == '1')
                <td>
                <input type="hidden" name="id[]" value="<?php echo $row['category_id'];?>" />
                <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-               <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['category_name']));?>" />
+               <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['category_name']),ENT_COMPAT,'utf-8');?>" />
                </td>
                <td title="<?php echo $admin_text['listordertip'];?>">
                <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -918,7 +918,7 @@ if ($permissions['manage_project'] == '1')
             <td>
             <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>" />
             <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']));?>" />
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']),ENT_COMPAT,'utf-8');?>" />
             </td>
             <td title="The order these items will appear in the Operating System list">
             <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -1021,7 +1021,7 @@ if ($permissions['manage_project'] == '1')
             <td>
             <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>" />
             <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']));?>" />
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']),ENT_COMPAT,'utf-8');?>" />
             </td>
             <td title="<?php echo $admin_text['listordertip'];?>">
             <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>

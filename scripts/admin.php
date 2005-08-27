@@ -562,7 +562,7 @@ foreach ($perpagevals as $n) {
             $groups = $db->Query("SELECT * FROM {$dbprefix}groups WHERE belongs_to_project = '0' ORDER BY group_id ASC");
             while ($group = $db->FetchArray($groups))
             {
-               echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name'])) . "</option>\n";
+               echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name']),ENT_COMPAT,'utf-8') . "</option>\n";
             }
 
             echo '</select>';
@@ -597,11 +597,11 @@ foreach ($perpagevals as $n) {
       <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
 
       <label for="groupname"><?php echo $admin_text['groupname'];?></label></td>
-      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']));?>" /></td>
+      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']),ENT_COMPAT,'utf-8');?>" /></td>
     </tr>
     <tr>
       <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
-      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']));?>" /></td>
+      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']),ENT_COMPAT,'utf-8');?>" /></td>
     </tr>
 
     <?php
@@ -740,7 +740,7 @@ foreach ($perpagevals as $n) {
          <td>
          <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>" />
          <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
-         <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']));?>" /></td>
+         <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']),ENT_COMPAT,'utf-8');?>" /></td>
          <td title="The order these items will appear in the TaskType list">
          <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
          <input id="listposition<?php echo $countlines?>" type="text" size="3" maxlength="3" name="list_position[]" value="<?php echo $row['list_position'];?>" />
@@ -831,7 +831,7 @@ foreach ($perpagevals as $n) {
         <td>
           <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>" />
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']));?>" />
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']),ENT_COMPAT,'utf-8');?>" />
         </td>
         <td title="The order these items will be shown in the Resolution list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -942,7 +942,7 @@ foreach ($perpagevals as $n) {
       <td>
         <input type="hidden" name="id[]" value="<?php echo $row['category_id'];?>" />
         <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['category_name']));?>" />
+        <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['category_name']),ENT_COMPAT,'utf-8');?>" />
       </td>
       <td title="<?php echo $admin_text['listordertip'];?>">
         <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -1123,7 +1123,7 @@ foreach ($perpagevals as $n) {
             <td>
             <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>" />
             <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']));?>" />
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']),ENT_COMPAT,'utf-8');?>" />
             </td>
             <td title="The order these items will appear in the Operating System list">
             <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -1229,7 +1229,7 @@ foreach ($perpagevals as $n) {
             <td>
             <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>" />
             <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']));?>" />
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']),ENT_COMPAT,'utf-8');?>" />
             </td>
             <td title="<?php echo $admin_text['listordertip'];?>">
             <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>

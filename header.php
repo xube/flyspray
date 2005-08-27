@@ -70,10 +70,13 @@ $dbprefix    = $conf['database']['dbprefix'];
 $dbuser      = $conf['database']['dbuser'];
 $dbpass      = $conf['database']['dbpass'];
 
+   /* 
+   Not required since you are already adding a slash in the include statements below.
+   I have updated other locations for the same scenario. ~ Jeffery
    if (substr($basedir,-1,1) != '/')
    {
       $basedir .= '/';
-   }
+   }*/
 
    if (substr($baseurl,-1,1) != '/')
    {
@@ -95,9 +98,6 @@ include_once ( "$basedir/includes/regexp.php" );
 
 session_start();
 
-// Check that the config file has been created.  If not, redirect to the setup script.
-if ( !isset($basedir) OR empty($basedir) )
-   $fs->redirect("sql/install-0.9.7.php");
 
 // Open a connection to the database
 $res = $db->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);

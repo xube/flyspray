@@ -70,7 +70,7 @@ if ($task_details['project_is_active'] == '1'
        <div>
          <h2 class="severity<?php echo $task_details['task_severity'];?>">
          <?php echo 'FS#' . $task_details['task_id'];?> &mdash;
-         <input class="severity<?php echo stripslashes($task_details['task_severity']);?>" type="text" name="item_summary" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($task_details['item_summary']));?>" />
+         <input class="severity<?php echo stripslashes($task_details['task_severity']);?>" type="text" name="item_summary" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($task_details['item_summary']),ENT_COMPAT,'utf-8');?>" />
          </h2>
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update" />
@@ -519,7 +519,7 @@ if ($task_details['project_is_active'] == '1'
 
                 while ($row = $db->FetchRow($get_summary))
                 {
-                    $summary[$row['task_id']] = htmlentities(stripslashes($row['item_summary']));
+                    $summary[$row['task_id']] = htmlentities(stripslashes($row['item_summary']),ENT_COMPAT,'utf-8');
                 }
 
                 echo "<span id=\"navigation\">";
@@ -1719,8 +1719,8 @@ if (@$permissions['view_history'] == '1')
                 switch ($field) {
                 case 'item_summary':
                     $field = $details_text['summary'];
-                    $oldvalue = htmlspecialchars($oldvalue);
-                    $newvalue = htmlspecialchars($newvalue);
+                    $oldvalue = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
+                    $newvalue = htmlspecialchars($newvalue,ENT_COMPAT,'utf-8');
                     if (!get_magic_quotes_gpc()) {
                       $oldvalue = str_replace("\\", "&#92;", $oldvalue);
                       $newvalue = str_replace("\\", "&#92;", $newvalue);
@@ -1813,8 +1813,8 @@ if (@$permissions['view_history'] == '1')
                     $field = "<a href=\"index.php?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}#history\">{$details_text['details']}</a>";
                     if (!empty($details))
                     {
-                       $details_previous = htmlspecialchars($oldvalue);
-                       $details_new = htmlspecialchars($newvalue);
+                       $details_previous = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
+                       $details_new = htmlspecialchars($newvalue,ENT_COMPAT,'utf-8');
                        if (!get_magic_quotes_gpc())
                        {
                           $details_previous = str_replace("\\", "&#92;", $details_previous);
@@ -1860,8 +1860,8 @@ if (@$permissions['view_history'] == '1')
                     echo " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
                 };
                 if ($details != '') {
-                    $details_previous = htmlspecialchars($oldvalue);
-                    $details_new = htmlspecialchars($newvalue);
+                    $details_previous = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
+                    $details_new = htmlspecialchars($newvalue,ENT_COMPAT,'utf-8');
                     if (!get_magic_quotes_gpc()) {
                       $details_previous = str_replace("\\", "&#92;", $details_previous);
                       $details_new = str_replace("\\", "&#92;", $details_new);
@@ -1879,7 +1879,7 @@ if (@$permissions['view_history'] == '1')
                }
                if (!empty($details))
                {
-                  $details_previous = htmlspecialchars($oldvalue);
+                  $details_previous = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
                   if (!get_magic_quotes_gpc())
                   {
                      $details_previous = str_replace("\\", "&#92;", $details_previous);

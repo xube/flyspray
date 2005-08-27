@@ -22,13 +22,13 @@ class Flyspray {
       require_once("lang/en/$module.php");
       $after_en = get_defined_vars();
       $new_var = array_keys(array_diff($after_en, $before));
-      $new_var_name = $new_var[1];
-      $new_var['en'] = $$new_var_name;
+      $new_var_name = @$new_var[1];
+      $new_var['en'] = @$$new_var_name;
       if (file_exists("lang/$lang/$module.php"))
       {
          require_once("lang/$lang/$module.php");
       }
-      $new_var[$lang] = $$new_var_name;
+      $new_var[$lang] = @$$new_var_name;
 
       $$new_var_name = array_merge($new_var['en'], $new_var[$lang]);
    }

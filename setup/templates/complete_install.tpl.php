@@ -11,7 +11,7 @@
 if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly');
 ?>
 			<div id="right">
-			<form action="<?php echo $site_index; ?>/?<?php echo $complete_action; ?>" method="post" name="database_form">
+			<form action="<?php echo $site_index; ?>?<?php echo $complete_action; ?>" method="post" name="database_form">
 				<?php echo $message; ?>
 				<h1>Install status</h1>
 				<h2>Congratulations! <?php echo $product_name; ?> is installed</h2>
@@ -20,7 +20,7 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 					PLEASE REMEMBER TO COMPLETELY REMOVE THE SETUP DIRECTORY
 				</p>	
 				<?php
-				if (!$config_writeable || !$htaccess_writeable)
+				if (!$config_writeable)
 				{
 				?>
 				<table class="formBlock">
@@ -44,24 +44,6 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 					</tr>
 				<?php 
 				}
-				if (!$htaccess_writeable)
-				{
-				?>
-					<tr>
-						<td>
-							The .htaccess file is not writeable. You will have to upload the following
-							code manually. Click in the textarea to highlight all of the code. Copy and
-							paste the contents into the .htaccess file available in the base of
-							<?php echo $product_name; ?> installation.
-						</td>
-					</tr>
-					<tr>
-						<td align="center">
-							<textarea class="inputbox" rows="10" cols="38" name="htaccesscode" onclick="javascript:this.form.htaccesscode.focus();this.form.htaccesscode.select();" ><?php echo htmlspecialchars($htaccess_text); ?></textarea>
-						</td>
-					</tr>
-				<?php 
-				}
 				?>
 				</table>
 				<?php 
@@ -75,19 +57,6 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 				</p>
 				<?php
 				}
-				if (!$htaccess_writeable)
-				{
-				?>
-				<h3>.htaccess is NOT writeable</h3>
-				<p>
-					To complete setup, copy and paste the contents of the textarea box into the .htaccess file.
-					This file resides in the base of your <?php echo $product_name; ?> installation.
-				</p>
-				<?php
-				}
-				?>
-
-				<?php
 				if (!$daemonise)
 				{
 				?>

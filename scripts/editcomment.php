@@ -22,7 +22,7 @@ if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
       list($user_name) = $db->FetchArray($getusername);
 
       $formatted_date = $fs->formatDate($row['date_added'], true);
-      $comment_text = stripslashes(htmlspecialchars($row['comment_text']));
+      $comment_text = htmlspecialchars(stripslashes($row['comment_text']),ENT_COMPAT,'utf-8');
    ?>
 
    <h3><?php echo $admin_text['editcomment'];?></h3>
