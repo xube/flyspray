@@ -3,21 +3,6 @@
 --
 
 SET client_encoding = 'UNICODE';
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'Standard public schema';
-
-
-SET search_path = public, pg_catalog;
-
-SET default_tablespace = '';
-
-SET default_with_oids = true;
 
 --
 -- Name: flyspray_admin_requests; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
@@ -61,7 +46,7 @@ SELECT pg_catalog.setval('flyspray_admin_requests_request_id_seq', 1, false);
 --
 
 CREATE TABLE flyspray_assigned (
-    assigned_id serial NOT NULL,
+    assigned_id bigint DEFAULT nextval('"flyspray_assigned_assigned_id_seq"'::text) NOT NULL,
     task_id bigint DEFAULT 0 NOT NULL,
     assignee_id bigint DEFAULT 0 NOT NULL,
     user_or_group character varying(1) DEFAULT 0 NOT NULL
@@ -71,8 +56,14 @@ CREATE TABLE flyspray_assigned (
 --
 -- Name: flyspray_assigned_assigned_id_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
 --
+CREATE SEQUENCE flyspray_assigned_assigned_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
 
-SELECT pg_catalog.setval(pg_catalog.pg_get_serial_sequence('flyspray_assigned', 'assigned_id'), 1, false);
+SELECT pg_catalog.setval('flyspray_assigned_assigned_id_seq', 1, false);
 
 
 --

@@ -1516,8 +1516,17 @@ class Setup extends Flyspray
       // Loop through the tables array
       foreach ($table_list as $table)
       {
+         $db_type	= strtolower($db_type);
          // Prepare the query to drop the existing tables
-         $sql	= "DROP TABLE $table";
+	 switch ($db_type)
+	 {
+	   case 'mysql':
+	     $sql = "DROP TABLE $table";
+	     break;
+	   case 'postgres':
+	     $sql = "DROP TABLE $table cascade";
+	     break;
+	 }
          $this->mDbConnection->Execute($sql);
          // If any errors, record the error message in the array
          if ($error_number = $this->mDbConnection->MetaError())
@@ -1546,7 +1555,7 @@ class Setup extends Flyspray
             break;
 
             case 'postgres':
-               $sql	= "SELECT tablename from pg_tables where tableowner = '$db_name'";
+               $sql	= "SELECT tablename from pg_tables where tableowner = '$db_username'";
             break;
          }
 
