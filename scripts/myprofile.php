@@ -65,9 +65,10 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
             <td><label for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label></td>
             <td><input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $current_user['dateformat_extended'];?>" /></td>
          </tr>
+         <tr>
             <td><label for="tasks_perpage"><?php echo $admin_text['tasksperpage'];?></label></td>
             <td>
-                <select name="tasks_perpage">
+                <select name="tasks_perpage" id="tasks_perpage">
 <?php
 // This should really share its list of values with admin.php...
 $perpagevals = array(10,25,50,100,250,500);

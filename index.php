@@ -19,6 +19,9 @@ $novar = '';
 // Note that server admins can override this, breaking Flyspray.
 header("Content-type: text/html; charset=utf-8");
 
+// For all style-Attributes, see http://www.w3.org/TR/html401/present/styles.html#h-14.2.1
+header("Content-Style-Type: text/css");
+
 // Check that we're using 0.9.6, and start the upgrade script if we're not.
 if (isset($flyspray_prefs['dateformat']) && !isset($flyspray_prefs['fs_ver']))
 {

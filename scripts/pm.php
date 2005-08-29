@@ -91,7 +91,7 @@ if ($permissions['manage_project'] == '1')
                <label for="intromessage"><?php echo $admin_text['intromessage'];?></label>
                </td>
                <td>
-               <textarea id="intromessage" name="intro_message" rows="12" cols="70"><?php echo stripslashes($project_prefs['intro_message']);?></textarea>
+               <textarea id="intromessage" name="intro_message" rows="12" cols="70"><?php echo htmlspecialchars(stripslashes($project_prefs['intro_message']));?></textarea>
                </td>
             </tr>
             <tr>

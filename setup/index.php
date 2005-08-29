@@ -1683,7 +1683,7 @@ class Setup extends Flyspray
          @set_magic_quotes_runtime($mqr);
 
          // Get the sql queries
-         $sql_blocks  = $this->SplitSql($query);
+         $sql_blocks  = $this->SplitSql($query, $db_type);
 
          $sql_count = count($sql_blocks);
          for ($i=0; $i < $sql_count; $i++)
@@ -1816,15 +1816,23 @@ class Setup extends Flyspray
    * Thanks to Ben Balbo http://www.benbalbo.com for the code comments
    * @param string $sql The sql queries which was grabbed from a SQL file
    */
-   function SplitSql($sql)
+   function SplitSql($sql, $db_type)
    {
       // Trim the SQL
       $sql = trim($sql);
-
-      // Removes any lines that start with a #
-      //$sql = ereg_replace("\n#[^\n]*\n", "\n", $sql); // Doesn't work as expected
-      $sql = ereg_replace("#[^\n]*\n", "\n", $sql);
-
+	  switch (strtolower($db_type))
+	  {
+	  	
+      	// Removes any lines that start with a # and --
+      	//$sql = ereg_replace("\n#[^\n]*\n", "\n", $sql); // Doesn't work as expected
+		case 'mysql':
+			$sql = ereg_replace("#[^\n]*\n", "\n", $sql);
+		break;
+		
+		case 'postgres':
+			$sql = ereg_replace("--[^\n]*\n", "\n", $sql);
+		break;
+	  }
       // This array only ever has 2 items [0] is previous character seen - [1] is current character
       $buffer = array();
 

@@ -452,7 +452,7 @@ if ($task_details['project_is_active'] == '1'
 
          <div id="taskdetailsfull">
            <label for="details"><?php echo $details_text['details'];?></label>
-           <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo stripslashes($task_details['detailed_desc']);?></textarea>
+           <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo htmlspecialchars(stripslashes($task_details['detailed_desc']));?></textarea>
 
             <table class="taskdetails">
                <tr>
@@ -685,7 +685,7 @@ if ($task_details['project_is_active'] == '1'
                <tr>
                   <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
                   <td id="percent">
-                  <?php echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/percent-' . $task_details['percent_complete'] . '.png" title="' . $task_details['percent_complete'] . '% ' . $details_text['complete'] . '" />';?></td>
+                  <?php echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/percent-' . $task_details['percent_complete'] . '.png" title="' . $task_details['percent_complete'] . '% ' . $details_text['complete'] . '" alt="' . $task_details['percent_complete'] . '%" />';?></td>
                </tr>
             </table>
          </div>
@@ -1127,7 +1127,7 @@ while ($row = $db->FetchArray($getcomments))
    {
 //       echo $row['comment_id'];
       echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">';
-      echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/menu/comment.png" title="' . $details_text['commentlink'] . '" /></a>';
+      echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/menu/comment.png" title="' . $details_text['commentlink'] . '" alt="" /></a>';
       echo $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
 
       // If the user has permission, show the edit button

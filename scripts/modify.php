@@ -204,8 +204,8 @@ if ($_POST['action'] == 'newtask'
          <input type="hidden" name="task_type" value="<?php echo $_POST['task_type'];?>">
 
          <!-- A bit dodgy, part 1 -->
-         <input type="text" style="display:none;" name="item_summary" value="<?php echo htmlspecialchars($_POST['item_summary']);?>">
-         <textarea style="display:none" name="detailed_desc"><?php echo htmlspecialchars($_POST['detailed_desc']);?></textarea>
+         <input type="text" style="display:none;" name="item_summary" value="<?php echo htmlspecialchars($_POST['item_summary'],ENT_COMPAT,'utf-8');?>">
+         <textarea style="display:none" name="detailed_desc"><?php echo htmlspecialchars($_POST['detailed_desc'],ENT_COMPAT,'utf-8');?></textarea>
 
          <input type="hidden" name="item_status" value="<?php echo $_POST['item_status'];?>">
          <input type="hidden" name="assigned_to" value="<?php echo $_POST['assigned_to'];?>">
@@ -607,7 +607,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
       } elseif ($_POST['notify_type'] == '2')
       {
          $notify->StoreJabber(array($_POST['jabber_id']), $subject,
-            htmlentities($message));
+            htmlentities($message),ENT_COMPAT,'utf-8');
 
       }
 

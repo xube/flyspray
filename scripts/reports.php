@@ -452,6 +452,7 @@ switch ($_REQUEST['sort']) {
                      );
                   </script>
                      </td>
+                  </tr>
                   <tr>
                      <td><label class="inline"><input type="radio" name="date" value="duein" <?php if($date == 'duein') echo 'checked';?> />
                      <?php echo $reports_text['duein'];?></label></td>
@@ -530,8 +531,6 @@ switch ($_REQUEST['sort']) {
                 <?php
             }
         }
-
-        echo "</table>\n";
 
         echo '</div>';
 
