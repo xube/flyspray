@@ -816,14 +816,20 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 /////////////////////////////////
 
 } elseif ($_POST['action'] == "newgroup"
-          && (($_POST['belongs_to_project'] == '0' && $permissions['is_admin'] == '1')
-          OR $permissions['manage_project'] == '1'))
+          && ((!empty($_POST['belongs_to_project']) && $permissions['manage_project'] == '1')
+          OR $permissions['is_admin'] == '1') )
 {
    // If they filled in all the required fields
    if (!empty($_POST['group_name']) && !empty($_POST['group_desc']))
    {
       // Check to see if the group name is available
-      $check_groupname = $db->Query("SELECT * FROM {$dbprefix}groups WHERE group_name = ? AND belongs_to_project = ?", array($_POST['group_name'], $project_id));
+      $check_groupname = $db->Query("SELECT * FROM {$dbprefix}groups
+                                     WHERE group_name = ?
+                                     AND belongs_to_project = ?",
+                                     array($_POST['group_name'],
+                                           $_POST['project'])
+                                   );
+
       if ($db->CountRows($check_groupname))
       {
          echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupnametaken']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
@@ -853,7 +859,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                       group_open)
                       VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                       array($_POST['group_name'], $_POST['group_desc'],
-                      $db->emptyToZero($project_id),
+                      $db->emptyToZero($_POST['project']),
                       $db->emptyToZero($_POST['manage_project']),
                       $db->emptyToZero($_POST['view_tasks']),
                       $db->emptyToZero($_POST['open_new_tasks']),
@@ -875,12 +881,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                     );
 
          $_SESSION['SUCCESS'] = $modify_text['newgroupadded'];
-         if ($project_id == '0')
+         if (empty($_POST['project']) )
          {
             $fs->redirect($fs->CreateURL('admin', 'groups'));
          } else
          {
-            $fs->redirect($fs->CreateURL('pm', 'groups', $project_id));
+            $fs->redirect($fs->CreateURL('pm', 'groups', $_POST['project']));
          }
       }
 

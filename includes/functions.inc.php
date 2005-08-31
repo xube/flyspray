@@ -753,7 +753,7 @@ function GetTaskDetails($task_id)
 
       // If we do want address rewriting
       if(isset($conf['general']['address_rewriting']) &&
-    $conf['general']['address_rewriting'] == '1')
+      $conf['general']['address_rewriting'] == '1')
       {
          switch ($type)
          {

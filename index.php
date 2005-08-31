@@ -435,12 +435,10 @@ if (isset($_SESSION['SUCCESS']))
 </form>
 </div>
 
-<!-- We somehow need to make this work with the new Funky URLs -->
 <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="get">
     <p id="showtask">
       <label><?php echo $language['showtask'];?> #
       <input id="taskid" name="show_task" type="text" size="10" maxlength="10" accesskey="t" /></label>
-      <!--<input type="hidden" name="do" value="details" />-->
       <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>" />
     </p>
 </form>
