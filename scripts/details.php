@@ -75,7 +75,7 @@ if ($task_details['project_is_active'] == '1'
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update" />
          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-         <input type="hidden" name="edit_start_time" value="<?php echo date(U); ?>" />
+         <input type="hidden" name="edit_start_time" value="<?php echo date('U'); ?>" />
 
          <?php echo $details_text['attachedtoproject'] . ' &mdash; ';?>
          <select name="attached_to_project">
@@ -795,15 +795,15 @@ if ($task_details['project_is_active'] == '1'
             if (@$effective_permissions['can_edit'] == '1'
              && $task_details['is_closed'] != '1')
             {
-               echo '&nbsp;&mdash;&nbsp;<a class="removedeplink" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=removedep&amp;depend_id=' . $dependency['depend_id'] . '">' . $details_text['remove'] . "</a>\n";
+               echo '<span class="DoNotPrint">&nbsp;&mdash;&nbsp;<a class="removedeplink" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=removedep&amp;depend_id=' . $dependency['depend_id'] . '">' . $details_text['remove'] . "</a></span>\n";
             }
 
             echo '<br />';
          }
-         echo "<br />\n";
+         echo "<br class=\"DoNotPrint\" />\n";
     // If there are dependencies, show a link for the dependency graph
     if ($total>0) {
-      echo '<a href="' . $fs->CreateURL('depends', $id) .
+      echo '<a class="DoNotPrint" href="' . $fs->CreateURL('depends', $id) .
         '">' . $details_text['depgraph'] . '</a><br />&nbsp;<br />';
     }
          // If the user has permission, show a form to add a new dependency
@@ -1133,7 +1133,7 @@ while ($row = $db->FetchArray($getcomments))
       // If the user has permission, show the edit button
       if (@$permissions['edit_comments'] == '1')
       {
-         echo '&nbsp; - <a href="' . $conf['general']['baseurl'] . '?do=editcomment&amp;task_id=' . $_GET['id'] . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
+         echo '<span class="DoNotPrint">&nbsp; - <a href="' . $conf['general']['baseurl'] . '?do=editcomment&amp;task_id=' . $_GET['id'] . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
       }
       // If the user has permission, show the delete button
       if (@$permissions['delete_comments'] == '1')
@@ -1146,7 +1146,7 @@ while ($row = $db->FetchArray($getcomments))
          return false }
          ">
          <?php
-         echo $details_text['delete'] . '</a>';
+         echo $details_text['delete'] . '</a></span>';
       }
 
       echo '<p class="comment">';

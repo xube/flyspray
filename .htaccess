@@ -29,6 +29,7 @@ RewriteRule ^projgroup/([0-9]+)$ index.php?do=pm&area=editgroup&id=$1 [L]
 RewriteRule ^user/([0-9]+)$ index.php?do=admin&area=users&id=$1 [L]
 RewriteRule ^newuser$ index.php?do=newuser [L]
 RewriteRule ^register$ index.php?do=register [L]
+RewriteRule ^lostpw$ index.php?do=lostpw [L]
 
 RewriteRule ^error$ index.php?do=error [L]
 </IfModule>

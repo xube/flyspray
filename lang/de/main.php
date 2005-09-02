@@ -14,7 +14,7 @@
 global $language;
 $language = array(
 
-'locale'                   =>    'de_DE',     // Required, starting in 0.9.8
+'locale'                   =>    'de-DE',     // Required, starting in 0.9.8
 
 
 'filenotexist'      =>  'Datei nicht gefunden. Wenden Sie sich an den Flyspray-Administrator dieses Projektes.',

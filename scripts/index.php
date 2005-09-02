@@ -626,7 +626,7 @@ function list_cell($task_id, $colname,$cellvalue,$nowrap=0,$url=0)
       <?php
       // Spacer for the checkboxes beneath it
       if (isset($_COOKIE['flyspray_userid']))
-         echo '<th></th>';
+         echo '<th class="ttcolumn"></th>';
 
       list_heading('id','id');
       list_heading('project','proj','asc');
@@ -776,7 +776,7 @@ ORDER BY
 
       // Checkbox for mass operations
       if (isset($_COOKIE['flyspray_userid']))
-         echo "<td style=\"width:10px;\"><input class=\"ticktask\" type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
+         echo "<td class=\"ttcolumn\"><input class=\"ticktask\" type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
 
       list_cell($task_details['task_id'], "id",$task_details['task_id'],1, $fs->CreateURL('details', $task_details['task_id']));
       list_cell($task_details['task_id'], "project",$task_details['project_title'],1);

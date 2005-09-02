@@ -3,7 +3,7 @@
 global $language;
 $language = array (
 
-'locale'                   =>    'es_ES',     // Required, starting in 0.9.8
+'locale'                   =>    'es-ES',     // Required, starting in 0.9.8
 
 'filenotexist'             =>    'El archivo no existe. Contacte al Administrador Flyspray de este proyecto.',
 'showtask'                 =>    'Mostrar tarea',

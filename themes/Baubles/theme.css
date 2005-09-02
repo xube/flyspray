@@ -1,5 +1,3 @@
-@media screen {
-
 html {
    margin               : 0px;
    padding              : 0px;
@@ -1133,17 +1131,3 @@ input[type=checkbox]:active {
    height               : 18px;
    background-image     : url(tick.png);
 }
-
-
-/* End of screen section */
-}
-
-
-@media print {
-p#menu {
-  display              : none;
-}
-
-
-}
-

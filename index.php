@@ -41,7 +41,7 @@ $lang = $flyspray_prefs['lang_code'];
 $fs->get_language_pack($lang, 'main');
 
 // Set the locale
-setlocale(LC_ALL, $language['locale']);
+setlocale(LC_ALL, str_replace('-','_',$language['locale']));
 
 // Get user permissions
 $permissions = array();
@@ -179,7 +179,7 @@ if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
-echo '<html lang="' . $language['locale'] . '" xml:lang="' . $language['locale'] . '">';
+echo '<html xmlns="http://www.w3.org/1999/xhtml" lang="' . $language['locale'] . '" xml:lang="' . $language['locale'] . '">';
 echo "<head>\n";
 echo '<title>Flyspray::&nbsp;&nbsp;' . stripslashes($project_prefs['project_title']) . ":&nbsp;&nbsp;</title>\n";
 
@@ -192,7 +192,8 @@ if (file_exists("themes/$themestyle/favicon.ico"))
 }
 
 echo '<meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />';
-echo '<link href="' . $conf['general']['baseurl'] . 'themes/' . $themestyle . '/theme.css" rel="stylesheet" type="text/css" />' . "\n";
+echo '<style type="text/css" media="screen">@import "'. $conf['general']['baseurl'] . 'themes/' . $themestyle . '/theme.css";</style>';
+// echo '<link media="print" href="' . $conf['general']['baseurl'] . 'themes/' . $themestyle . '/theme_print.css" rel="stylesheet" type="text/css" />' . "\n";
 echo '<link rel="alternate" type="application/rss+xml" title="Flyspray RSS Feed" href="' . $conf['general']['baseurl'] . 'scripts/rss.php?proj=' . $project_id . '" />' . "\n";
 echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/styleswitcher.js"></script>' . "\n";
 echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/tabs.js"></script>' . "\n";

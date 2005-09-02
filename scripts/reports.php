@@ -530,6 +530,7 @@ switch ($_REQUEST['sort']) {
                 </tr>
                 <?php
             }
+            echo '</table>';
         }
 
         echo '</div>';

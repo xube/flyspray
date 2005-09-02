@@ -30,12 +30,12 @@ class Flyspray {
       }
       $new_var[$lang] = @$$new_var_name;
 
-      $$new_var_name = array_merge($new_var['en'], $new_var[$lang]);
+      $$new_var_name = @array_merge($new_var['en'], $new_var[$lang]);
    }
 
    /**   Redirects the browser to the page in $url
    */
-   function redirect($url)
+   function Redirect($url)
    {
       // Many of our URLs will be given to us from the new CreateURL() function,
       // which creates the URLs with &amp; for display.  We want to strip that.
@@ -44,6 +44,9 @@ class Flyspray {
       // Redirect via an HTML form for PITA webservers
       if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
       {
+/*
+         This stuff shouldn't be needed anymore, since we pass the full URL to this function.
+
          $server_prefix = 'http';                                                    //Start building prefix
 
          if ($_SERVER['HTTPS'] == 'on') {       $server_prefix = $server_prefix . 's';  }  //If secure, use https://
@@ -61,6 +64,9 @@ class Flyspray {
          }
          header('Refresh: 0; URL=' . $server_prefix . $url);
          echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_prefix . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_prefix . $url . '">HERE</a> to be redirected</div></body></html>';
+*/
+         header('Refresh: 0; URL=' . $url);
+         echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_prefix . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $url . '">HERE</a> to be redirected</div></body></html>';
 
       } else
       {
@@ -238,7 +244,7 @@ function GetTaskDetails($task_id)
             {
                if ($current == $row['user_id'])
                {
-                  echo '<option value="' . $row['user_id'] . '" SELECTED>' . stripslashes($row['real_name']) . "</option>\n";
+                  echo '<option value="' . $row['user_id'] . '" selected="selected">' . stripslashes($row['real_name']) . "</option>\n";
                } else
                {
                   echo '<option value="' . $row['user_id'] . '">' . stripslashes($row['real_name']) . "</option>\n";
@@ -274,7 +280,7 @@ function GetTaskDetails($task_id)
             {
                if ($current == $row['user_id'])
                {
-                  echo '<option value="' . $row['user_id'] . '" SELECTED>' . stripslashes($row['real_name']) . "</option>\n";
+                  echo '<option value="' . $row['user_id'] . '" selected="selected">' . stripslashes($row['real_name']) . "</option>\n";
                } else
                {
                   echo '<option value="' . $row['user_id'] . '">' . stripslashes($row['real_name']) . "</option>\n";
@@ -304,7 +310,7 @@ function GetTaskDetails($task_id)
 
       if (!($totalcount / $perpage <= 1))
       {
-         $output .= " &nbsp;&nbsp;--&nbsp;&nbsp; ";
+         $output .= "<span class=\"DoNotPrint\"> &nbsp;&nbsp;--&nbsp;&nbsp; ";
 
          $start = max(1, $pagenum - 3);
          $finish = min($pages, $pagenum + 3);
@@ -330,9 +336,9 @@ function GetTaskDetails($task_id)
          }
 
          if ($pagenum < $pages)
-            $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a> ";
+            $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a></span> ";
          if ($finish < $pages)
-            $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
+            $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a></span>";
       }
 
       return $output;
@@ -789,6 +795,8 @@ function GetTaskDetails($task_id)
             break;
             case "error":  $url = $conf['general']['baseurl'] . 'error';
             break;
+            case "lostpw":  $url = $conf['general']['baseurl'] . 'lostpw';
+            break;
          }
 
 
@@ -828,6 +836,8 @@ function GetTaskDetails($task_id)
          case "logout": $url = $conf['general']['baseurl'] . '?do=authenticate&amp;action=logout';
          break;
          case "error": $url = $conf['general']['baseurl'] . '?do=error';
+         break;
+         case "lostpw": $url = $conf['general']['baseurl'] . '?do=lostpw';
          break;
       }
 

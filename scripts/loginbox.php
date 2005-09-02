@@ -34,16 +34,16 @@ $fs->get_language_pack($lang, 'loginbox');
             // If we want to use confirmation codes in the signup form
             if ($flyspray_prefs['spam_proof'] == '1')
             {
-               echo '<a href="index.php?do=register">' . $language['register'] . '</a>';
+               echo '<a href="' . $fs->CreateURL('register','') . '">' . $language['register'] . '</a>';
 
             // ...and if we don't care about them
             } else
             {
-               echo '<a href="index.php?do=newuser">' . $language['register'] . '</a>';
+               echo '<a href="' . $fs->CreateURL('newuser','') . '">' . $language['register'] . '</a>';
             }
          }
 
-         echo '<a href="?do=lostpw">' . $loginbox_text['lostpassword'] . '</a>';
+         echo '<a href="' . $fs->CreateURL('lostpw','') . '">' . $loginbox_text['lostpassword'] . '</a>';
          ?>
       </span>
 </div>

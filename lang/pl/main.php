@@ -10,7 +10,7 @@
 // Konrad Roziewski <konrad#suwalki-com-pl>
 
 $language = array (
-'locale'                   =>    'pl_PL',     // Required, starting in 0.9.8
+'locale'                   =>    'pl-PL',     // Required, starting in 0.9.8
 
 'filenotexist'	=>	'Plik nie istnieje. Skontaktuj się z administratorem projektu.',
 'showtask'	=>	'Pokaż zgłoszenie',
