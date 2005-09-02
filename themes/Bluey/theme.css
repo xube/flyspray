@@ -572,61 +572,62 @@ indication of severities
 IE can't do hover on anything but A elements, so there is a
 script in /includes/ie_hover.js that fixes this with
 javascript. That javascript only checks background-color and
-color. If you want to change other properties during the hover
+color and it can't handle short color forms like #000.
+If you want to change other properties during the hover
 you'll have to adjust the javascript
 */
 .severity1 {
 background-color     :  #fff5dd;
-color                :  #000;
+color                :  #000000;
 }
 
 .severity1:hover {
 background-color     :  #ffe9b4;
-color                :  #000;
+color                :  #000000;
 cursor               :  pointer;
 }
 
 .severity2 {
 background-color     :  #ecdbb7;
-color                :  #000;
+color                :  #000000;
 }
 
 .severity2:hover {
 background-color     :  #efca80;
-color                :  #000;
+color                :  #000000;
 cursor               :  pointer;
 }
 
 .severity3 {
 background-color     :  #f5d5c6;
-color                :  #000;
+color                :  #000000;
 }
 
 .severity3:hover {
 background-color     :  #f7b390;
-color                :  #000;
+color                :  #000000;
 cursor               :  pointer;
 }
 
 .severity4 {
 background-color     :  #ffd5d1;
-color                :  #000;
+color                :  #000000;
 }
 
 .severity4:hover {
 background-color     :  #ffb2ac;
-color                :  #000;
+color                :  #000000;
 cursor               :  pointer;
 }
 
 .severity5 {
 background-color     :  #f3a29b;
-color                :  #000;
+color                :  #000000;
 }
 
 .severity5:hover {
 background-color     :  #f3867e;
-color                :  #000;
+color                :  #000000;
 cursor               :  pointer;
 }
 
