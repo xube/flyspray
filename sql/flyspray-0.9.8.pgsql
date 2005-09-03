@@ -805,237 +805,191 @@ SELECT pg_catalog.setval('flyspray_users_user_id_seq', 2, false);
 -- Data for Name: flyspray_admin_requests; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_admin_requests (request_id, project_id, task_id, submitted_by, request_type, time_submitted, resolved_by, time_resolved, reason_given, deny_reason) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_assigned; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_assigned (assigned_id, task_id, assignee_id, user_or_group) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_attachments; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_attachments (attachment_id, task_id, orig_name, file_name, file_desc, file_type, file_size, added_by, date_added, comment_id) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_comments; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_comments (comment_id, task_id, date_added, user_id, comment_text) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_dependencies; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_dependencies (depend_id, task_id, dep_task_id) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_groups; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_groups (group_id, group_name, group_desc, belongs_to_project, is_admin, manage_project, view_tasks, open_new_tasks, modify_own_tasks, modify_all_tasks, view_comments, add_comments, edit_comments, delete_comments, view_attachments, create_attachments, delete_attachments, view_history, close_own_tasks, close_other_tasks, assign_to_self, assign_others_to_self, view_reports, group_open) FROM stdin;
-1	Admin	Members have unlimited access to all functionality.	0	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
-2	Developers	Global Developers for all projects	0	0	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
-3	Reporters	Open new tasks / add comments in all projects	0	0	0	1	1	0	0	1	1	0	0	1	0	0	0	0	0	0	0	0	1
-4	Basic	Members can login, relying upon Project permissions only	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1
-5	Pending	Users who are awaiting approval of their accounts.	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-6	Project Managers	Permission to do anything related to the Default Project.	1	0	1	1	1	1	1	1	1	1	1	0	1	1	1	1	1	1	1	1	1
-\.
+INSERT INTO flyspray_groups (group_id, group_name, group_desc, belongs_to_project, is_admin, manage_project, view_tasks, open_new_tasks, modify_own_tasks, modify_all_tasks, view_comments, add_comments, edit_comments, delete_comments, view_attachments, create_attachments, delete_attachments, view_history, close_own_tasks, close_other_tasks, assign_to_self, assign_others_to_self, view_reports, group_open) VALUES (1, 'Admin', 'Members have unlimited access to all functionality.', 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+INSERT INTO flyspray_groups (group_id, group_name, group_desc, belongs_to_project, is_admin, manage_project, view_tasks, open_new_tasks, modify_own_tasks, modify_all_tasks, view_comments, add_comments, edit_comments, delete_comments, view_attachments, create_attachments, delete_attachments, view_history, close_own_tasks, close_other_tasks, assign_to_self, assign_others_to_self, view_reports, group_open) VALUES (2, 'Developers', 'Global Developers for all projects', 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+INSERT INTO flyspray_groups (group_id, group_name, group_desc, belongs_to_project, is_admin, manage_project, view_tasks, open_new_tasks, modify_own_tasks, modify_all_tasks, view_comments, add_comments, edit_comments, delete_comments, view_attachments, create_attachments, delete_attachments, view_history, close_own_tasks, close_other_tasks, assign_to_self, assign_others_to_self, view_reports, group_open) VALUES (3, 'Reporters', 'Open new tasks / add comments in all projects', 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO flyspray_groups (group_id, group_name, group_desc, belongs_to_project, is_admin, manage_project, view_tasks, open_new_tasks, modify_own_tasks, modify_all_tasks, view_comments, add_comments, edit_comments, delete_comments, view_attachments, create_attachments, delete_attachments, view_history, close_own_tasks, close_other_tasks, assign_to_self, assign_others_to_self, view_reports, group_open) VALUES (4, 'Basic', 'Members can login, relying upon Project permissions only', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+INSERT INTO flyspray_groups (group_id, group_name, group_desc, belongs_to_project, is_admin, manage_project, view_tasks, open_new_tasks, modify_own_tasks, modify_all_tasks, view_comments, add_comments, edit_comments, delete_comments, view_attachments, create_attachments, delete_attachments, view_history, close_own_tasks, close_other_tasks, assign_to_self, assign_others_to_self, view_reports, group_open) VALUES (5, 'Pending', 'Users who are awaiting approval of their accounts.', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+INSERT INTO flyspray_groups (group_id, group_name, group_desc, belongs_to_project, is_admin, manage_project, view_tasks, open_new_tasks, modify_own_tasks, modify_all_tasks, view_comments, add_comments, edit_comments, delete_comments, view_attachments, create_attachments, delete_attachments, view_history, close_own_tasks, close_other_tasks, assign_to_self, assign_others_to_self, view_reports, group_open) VALUES (6, 'Project Managers', 'Permission to do anything related to the Default Project.', 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
 
 --
 -- Data for Name: flyspray_history; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_history (history_id, task_id, user_id, event_date, event_type, field_changed, old_value, new_value) FROM stdin;
-1	1	1	1103430560	1			
-\.
+INSERT INTO flyspray_history (history_id, task_id, user_id, event_date, event_type, field_changed, old_value, new_value) VALUES (1, 1, 1, '1103430560', 1, '', '', '');
 
 
 --
 -- Data for Name: flyspray_list_category; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner, parent_id) FROM stdin;
-1	1	Backend / Core	1	1	0	0
-2	1	User Interface	2	1	0	0
-\.
+INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner, parent_id) VALUES (1, 1, 'Backend / Core', 1, 1, 0, 0);
+INSERT INTO flyspray_list_category (category_id, project_id, category_name, list_position, show_in_list, category_owner, parent_id) VALUES (2, 1, 'User Interface', 2, 1, 0, 0);
 
 
 --
 -- Data for Name: flyspray_list_os; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) FROM stdin;
-1	1	All	1	1
-2	1	Windows	2	1
-3	1	Linux	3	1
-4	1	Mac OS	4	1
-5	1	UNIX	4	1
-\.
+INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (1, 1, 'All', 1, 1);
+INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (2, 1, 'Windows', 2, 1);
+INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (3, 1, 'Linux', 3, 1);
+INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (4, 1, 'Mac OS', 4, 1);
+INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in_list) VALUES (5, 1, 'UNIX', 4, 1);
 
 
 --
 -- Data for Name: flyspray_list_resolution; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) FROM stdin;
-1	None	1	1	0
-2	Not a bug	2	1	0
-3	Won't fix	3	1	0
-4	Won't implement	4	1	0
-5	Works for me	5	1	0
-6	Duplicate	6	1	0
-7	Deferred	7	1	0
-8	Fixed	8	1	0
-9	Implemented	9	1	0
-\.
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (1, 'None', 1, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (2, 'Not a bug', 2, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (3, 'Won''t fix', 3, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (4, 'Won''t implement', 4, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (5, 'Works for me', 5, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (6, 'Duplicate', 6, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (7, 'Deferred', 7, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (8, 'Fixed', 8, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (9, 'Implemented', 9, 1, 0);
 
 
 --
 -- Data for Name: flyspray_list_tasktype; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list, project_id) FROM stdin;
-1	Bug Report	1	1	0
-2	Feature Request	2	1	0
-3	Support Request	3	1	0
-\.
+INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list, project_id) VALUES (1, 'Bug Report', 1, 1, 0);
+INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list, project_id) VALUES (2, 'Feature Request', 2, 1, 0);
+INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list, project_id) VALUES (3, 'Support Request', 3, 1, 0);
 
 
 --
 -- Data for Name: flyspray_list_version; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list, version_tense) FROM stdin;
-1	1	CVS	1	1	2
-2	1	1.0	2	1	3
-\.
+INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list, version_tense) VALUES (1, 1, 'CVS', 1, 1, 2);
+INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list, version_tense) VALUES (2, 1, '1.0', 2, 1, 3);
 
 
 --
 -- Data for Name: flyspray_notification_messages; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_notification_messages (message_id, message_subject, message_body, time_created) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_notification_recipients; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_notification_recipients (recipient_id, message_id, notify_method, notify_address) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_notifications; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_notifications (notify_id, task_id, user_id) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_prefs; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) FROM stdin;
-1	fs_ver	0.9.7	Current Flyspray version
-2	jabber_server		Jabber server
-3	jabber_port	5222	Jabber server port
-4	jabber_username		Jabber username
-5	jabber_password		Jabber password
-6	anon_group	4	Group for anonymous registrations
-8	user_notify	1	Force task notifications as
-9	admin_email	flyspray@example.com	Reply email address for notifications
-10	assigned_groups	1 2 3	Members of these groups can be assigned tasks
-11	lang_code	en	Language
-12	spam_proof	1	Use confirmation codes for user registrations
-13	default_project	1	Default project id
-14	dateformat		Default date format for new users and guests used in the task list
-15	dateformat_extended		Default date format for new users and guests used in task details
-16	anon_reg	1	Allow new user registrations
-17	global_theme	Bluey	Theme to use when viewing all projects
-18	visible_columns	id project category tasktype severity summary status progress	Columns visible when viewing all projects
-19	smtp_server		Remote mail server
-20	smtp_user		Username to access the remote mail server
-21	smtp_pass		Password to access the remote mail server
-22	funky_urls	0	Should we use address rewriting? Not all webservers support this!
-\.
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (1, 'fs_ver', '0.9.7', 'Current Flyspray version');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (2, 'jabber_server', '', 'Jabber server');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (3, 'jabber_port', '5222', 'Jabber server port');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (4, 'jabber_username', '', 'Jabber username');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (5, 'jabber_password', '', 'Jabber password');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (6, 'anon_group', '4', 'Group for anonymous registrations');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (8, 'user_notify', '1', 'Force task notifications as');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (9, 'admin_email', 'flyspray@example.com', 'Reply email address for notifications');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (10, 'assigned_groups', '1 2 3', 'Members of these groups can be assigned tasks');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (11, 'lang_code', 'en', 'Language');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (12, 'spam_proof', '1', 'Use confirmation codes for user registrations');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (13, 'default_project', '1', 'Default project id');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (14, 'dateformat', '', 'Default date format for new users and guests used in the task list');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (15, 'dateformat_extended', '', 'Default date format for new users and guests used in task details');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (16, 'anon_reg', '1', 'Allow new user registrations');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (17, 'global_theme', 'Bluey', 'Theme to use when viewing all projects');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (18, 'visible_columns', 'id project category tasktype severity summary status progress', 'Columns visible when viewing all projects');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (19, 'smtp_server', '', 'Remote mail server');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (20, 'smtp_user', '', 'Username to access the remote mail server');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (21, 'smtp_pass', '', 'Password to access the remote mail server');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (22, 'funky_urls', '0', 'Should we use address rewriting? Not all webservers support this!');
 
 
 --
 -- Data for Name: flyspray_projects; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_projects (project_id, project_title, theme_style, show_logo, inline_images, default_cat_owner, intro_message, project_is_active, visible_columns, others_view, anon_open, notify_email, notify_email_when, notify_jabber, notify_jabber_when) FROM stdin;
-1	Default Project	Bluey	1	0	0	This message can be customised under the <b>Projects</b> admin menu...	1	id category tasktype severity summary status progress	1	0		0		0
-\.
+INSERT INTO flyspray_projects (project_id, project_title, theme_style, show_logo, inline_images, default_cat_owner, intro_message, project_is_active, visible_columns, others_view, anon_open, notify_email, notify_email_when, notify_jabber, notify_jabber_when) VALUES (1, 'Default Project', 'Bluey', 1, 0, 0, 'This message can be customised under the <b>Projects</b> admin menu...', 1, 'id category tasktype severity summary status progress', 1, 0, '', 0, '', 0);
 
 
 --
 -- Data for Name: flyspray_registrations; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_registrations (reg_id, reg_time, confirm_code, user_name, real_name, email_address, jabber_id, notify_type, magic_url) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_related; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_related (related_id, this_task, related_task) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_reminders; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_reminders (reminder_id, task_id, to_user_id, from_user_id, start_time, how_often, last_sent, reminder_message) FROM stdin;
-\.
 
 
 --
 -- Data for Name: flyspray_tasks; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_tasks (task_id, attached_to_project, task_type, date_opened, opened_by, is_closed, date_closed, closed_by, closure_comment, item_summary, detailed_desc, item_status, assigned_to, resolution_reason, product_category, product_version, closedby_version, operating_system, task_severity, task_priority, last_edited_by, last_edited_time, percent_complete, mark_private, due_date) FROM stdin;
-1	1	1	1103430560	1	0		1	 	Sample Task	This isn't a real task.  You should close it and start opening some real tasks.	2	0	1	1	1	0	1	1	2	0		0	0	
-\.
+INSERT INTO flyspray_tasks (task_id, attached_to_project, task_type, date_opened, opened_by, is_closed, date_closed, closed_by, closure_comment, item_summary, detailed_desc, item_status, assigned_to, resolution_reason, product_category, product_version, closedby_version, operating_system, task_severity, task_priority, last_edited_by, last_edited_time, percent_complete, mark_private, due_date) VALUES (1, 1, 1, '1103430560', 1, 0, '', 1, ' ', 'Sample Task', 'This isn''t a real task.  You should close it and start opening some real tasks.', 2, 0, 1, 1, 1, 0, 1, 1, 2, 0, '', 0, 0, '');
 
 
 --
 -- Data for Name: flyspray_users; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_users (user_id, user_name, user_pass, real_name, jabber_id, email_address, notify_type, account_enabled, dateformat, dateformat_extended, magic_url, last_search, tasks_perpage) FROM stdin;
-1	super	4tuKHcjxpFYag	Mr Super User	super@example.com	super@example.com	0	1				\N	25
-\.
+INSERT INTO flyspray_users (user_id, user_name, user_pass, real_name, jabber_id, email_address, notify_type, account_enabled, dateformat, dateformat_extended, magic_url, last_search, tasks_perpage) VALUES (1, 'super', '4tuKHcjxpFYag', 'Mr Super User', 'super@example.com', 'super@example.com', 0, 1, '', '', '', NULL, 25);
 
 
 --
 -- Data for Name: flyspray_users_in_groups; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-COPY flyspray_users_in_groups (record_id, user_id, group_id) FROM stdin;
-1	1	1
-\.
+INSERT INTO flyspray_users_in_groups (record_id, user_id, group_id) VALUES (1, 1, 1);
 
 
 --

@@ -1281,7 +1281,7 @@ class Setup extends Flyspray
       // Setting the database for the ADODB connection
       require_once($this->mAdodbPath);
       $this->mDbConnection =& NewADOConnection(strtolower($db_type));
-      $this->mDbConnection->PConnect($db_hostname, $db_username, $db_password, $db_name);
+      $this->mDbConnection->Connect($db_hostname, $db_username, $db_password, $db_name);
 
       // Get the users table name.
       $users_table	= ($db_prefix != '')
@@ -1356,7 +1356,7 @@ class Setup extends Flyspray
       $this->mDbConnection->debug = FALSE;
 
       /* check hostname/username/password */
-      if (!$this->mDbConnection->PConnect($data['db_hostname'], $data['db_username'], $data['db_password'], $data['db_name']))
+      if (!$this->mDbConnection->Connect($data['db_hostname'], $data['db_username'], $data['db_password'], $data['db_name']))
       {
          switch($error_number = $this->mDbConnection->MetaError())
          {
@@ -1511,8 +1511,10 @@ class Setup extends Flyspray
       }
    }
 
-   function DeleteTables($table_list)
+   function DeleteTables($data, $table_list)
    {
+      extract($data);
+      
       // Loop through the tables array
       foreach ($table_list as $table)
       {
@@ -1535,6 +1537,47 @@ class Setup extends Flyspray
             return FALSE;
          }
       }
+      return TRUE;
+   }
+
+   
+   function DeleteSequences($data)
+   {
+      extract($data);
+      $db_type	= strtolower($db_type);
+      
+      if ($db_type != 'postgres') {
+	return TRUE;
+      }
+      $sql = "SELECT c.relname
+	FROM pg_catalog.pg_class c
+	LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner
+	LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+	WHERE c.relkind = 'S'
+	AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+	AND pg_catalog.pg_table_is_visible(c.oid)";
+
+      $result = $this->mDbConnection->Execute($sql);
+      $sequence_list = array();
+      if ($result)
+      {
+	while ($row = $result->FetchRow())
+	{
+	  $sequence_list[] = $row[0];
+	}
+      }
+
+      foreach ($sequence_list as $sequence) {
+	$sql = "DROP SEQUENCE $sequence";
+	$this->mDbConnection->Execute($sql);
+	// If any errors, record the error message in the array
+	if ($error_number = $this->mDbConnection->MetaError())
+	{
+	  $_SESSION['page_message'][] =  ucfirst($this->mDbConnection->MetaErrorMsg($error_number));
+	  return FALSE;
+	}
+      }
+
       return TRUE;
    }
 
@@ -1575,7 +1618,7 @@ class Setup extends Flyspray
          $filtered_tables	= array();
          foreach ($table_list as $table)
          {
-            if (strpos($table, $db_prefix) === 0)
+            if (strpos($table, $db_prefix) == 0)
             {
                $filtered_tables[]	= $table;
             }
@@ -1614,13 +1657,16 @@ class Setup extends Flyspray
 
 
                // Drop tables only if there are no dependancies. eg. Fresh Install
-               if ( ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == ''))
+	        if ( ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == ''))
                {
                   // Return the status of deleting the tables if it was not successful.
-                  if (!$this->DeleteTables($filtered_tables))
-                  {
-                     return FALSE;
-                  }
+		 if (!$this->DeleteTables($data, $filtered_tables))
+		 {
+		   return FALSE;
+		 }
+		 if (!$this->DeleteSequences($data)) {
+		   return FALSE;
+		 }
                }
                else
                {
