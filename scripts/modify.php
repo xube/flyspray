@@ -947,7 +947,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
    $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
-   $fs->redirect("index.php?do=admin&area=prefs");
+   $fs->redirect($FS->CreateURL('admin','prefs'));
 
 // End of updating application preferences
 
@@ -1167,7 +1167,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
          // Success message!
          $_SESSION['SUCCESS'] = $modify_text['fileuploaded'];
-         $fs->redirect("index.php?do=details&id=" . $_POST['task_id'] . "#attach");
+         $fs->redirect($fs->CreateURL('details', $_POST['task_id']));
 
       // If the file didn't actually get saved, better show an error to that effect
       } else
@@ -1615,12 +1615,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     if ($db->CountRows($check) > 0)
     {
         $_SESSION['ERROR'] = $modify_text['relatederror'];
-        $fs->redirect("index.php?do=details&id=" . $_POST['this_task'] . "#related");
+        $fs->redirect($fs->CreateURL('details', $_POST['this_task']));
 
     } elseif (!$db->CountRows($check2))
     {
         $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
-        $fs->redirect("index.php?do=details&id=" . $_POST['this_task'] . "#related");
+        $fs->redirect($fs->CreateURL('details', $_POST['this_task']));
     } else
     {
         list($relatedproject) = $db->FetchRow($check2);
@@ -1634,7 +1634,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
             $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
-            $fs->redirect("index.php?do=details&id=" . $_POST['this_task'] . "#related");
+            $fs->redirect($fs->CreateURL('details', $_POST['this_task']));
 
         } else {
             ?>
@@ -2252,7 +2252,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    if (!$db->CountRows($check_details))
    {
       $_SESSION['ERROR'] = $modify_text['usernotexist'];
-      $fs->redirect("?do=lostpw");
+      $fs->redirect($fs->CreateURL('lostpw', null));
 
    // ...otherwise get on with it
    } else
