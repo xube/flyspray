@@ -1,21 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 2.6.1
--- http://www.phpmyadmin.net
--- 
--- Host: localhost
--- Generation Time: Jul 31, 2005 at 02:30 PM
--- Server version: 4.0.23
--- PHP Version: 4.3.10-10ubuntu4
--- 
--- Database: `flyspray-dev`
--- 
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_admin_requests`
--- 
-
 CREATE TABLE `flyspray_admin_requests` (
   `request_id` mediumint(5) NOT NULL auto_increment,
   `project_id` mediumint(5) NOT NULL default '0',
@@ -30,17 +12,6 @@ CREATE TABLE `flyspray_admin_requests` (
   PRIMARY KEY  (`request_id`)
 ) TYPE=MyISAM COMMENT='Pending requests for admins and PMs to attend to' AUTO_INCREMENT=1 ;
 
--- 
--- Dumping data for table `flyspray_admin_requests`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_assigned`
--- 
-
 CREATE TABLE `flyspray_assigned` (
   `assigned_id` mediumint(10) NOT NULL auto_increment,
   `task_id` mediumint(10) NOT NULL default '0',
@@ -48,17 +19,6 @@ CREATE TABLE `flyspray_assigned` (
   `user_or_group` char(1) NOT NULL default '0',
   PRIMARY KEY  (`assigned_id`)
 ) TYPE=MyISAM COMMENT='Who is assigned what task' AUTO_INCREMENT=1 ;
-
--- 
--- Dumping data for table `flyspray_assigned`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_attachments`
--- 
 
 CREATE TABLE `flyspray_attachments` (
   `attachment_id` mediumint(5) NOT NULL auto_increment,
@@ -74,17 +34,6 @@ CREATE TABLE `flyspray_attachments` (
   PRIMARY KEY  (`attachment_id`)
 ) TYPE=MyISAM COMMENT='List the names and locations of files attached to tasks' AUTO_INCREMENT=1 ;
 
--- 
--- Dumping data for table `flyspray_attachments`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_comments`
--- 
-
 CREATE TABLE `flyspray_comments` (
   `comment_id` mediumint(10) NOT NULL auto_increment,
   `task_id` mediumint(10) NOT NULL default '0',
@@ -94,35 +43,12 @@ CREATE TABLE `flyspray_comments` (
   PRIMARY KEY  (`comment_id`)
 ) TYPE=MyISAM AUTO_INCREMENT=2 ;
 
--- 
--- Dumping data for table `flyspray_comments`
--- 
-
-INSERT INTO `flyspray_comments` VALUES (1, 1, '1122642165', 1, 'test');
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_dependencies`
--- 
-
 CREATE TABLE `flyspray_dependencies` (
   `depend_id` mediumint(10) NOT NULL auto_increment,
   `task_id` mediumint(10) NOT NULL default '0',
   `dep_task_id` mediumint(10) NOT NULL default '0',
   PRIMARY KEY  (`depend_id`)
 ) TYPE=MyISAM COMMENT='Task dependencies' AUTO_INCREMENT=1 ;
-
--- 
--- Dumping data for table `flyspray_dependencies`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_groups`
--- 
 
 CREATE TABLE `flyspray_groups` (
   `group_id` mediumint(3) NOT NULL auto_increment,
@@ -152,22 +78,12 @@ CREATE TABLE `flyspray_groups` (
   PRIMARY KEY  (`group_id`)
 ) TYPE=MyISAM COMMENT='User Groups for the Flyspray bug killer' AUTO_INCREMENT=7 ;
 
--- 
--- Dumping data for table `flyspray_groups`
--- 
-
 INSERT INTO `flyspray_groups` VALUES (1, 'Admin', 'Members have unlimited access to all functionality.', 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 INSERT INTO `flyspray_groups` VALUES (2, 'Developers', 'Global Developers for all projects', 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 INSERT INTO `flyspray_groups` VALUES (3, 'Reporters', 'Open new tasks / add comments in all projects', 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 INSERT INTO `flyspray_groups` VALUES (4, 'Basic', 'Members can login, relying upon Project permissions only', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 INSERT INTO `flyspray_groups` VALUES (5, 'Disabled', 'Users whose accounts are disabled.', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 INSERT INTO `flyspray_groups` VALUES (6, 'Project Managers', 'Permission to do anything related to the Default Project.', 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_history`
--- 
 
 CREATE TABLE `flyspray_history` (
   `history_id` mediumint(10) NOT NULL auto_increment,
@@ -181,17 +97,7 @@ CREATE TABLE `flyspray_history` (
   PRIMARY KEY  (`history_id`)
 ) TYPE=MyISAM AUTO_INCREMENT=1 ;
 
--- 
--- Dumping data for table `flyspray_history`
--- 
-
 INSERT INTO `flyspray_history` VALUES (1, 1, 1, '1122784578', 1, '', '', '');
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_list_category`
--- 
 
 CREATE TABLE `flyspray_list_category` (
   `category_id` mediumint(3) NOT NULL auto_increment,
@@ -202,20 +108,9 @@ CREATE TABLE `flyspray_list_category` (
   `category_owner` mediumint(3) NOT NULL default '0',
   `parent_id` mediumint(3) NOT NULL default '0',
   PRIMARY KEY  (`category_id`)
-) TYPE=MyISAM AUTO_INCREMENT=3 ;
-
--- 
--- Dumping data for table `flyspray_list_category`
--- 
+) TYPE=MyISAM AUTO_INCREMENT=2 ;
 
 INSERT INTO `flyspray_list_category` VALUES (1, 1, 'Backend / Core', 1, 1, 0, 0);
-INSERT INTO `flyspray_list_category` VALUES (2, 1, 'User Interface', 2, 1, 0, 0);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_list_os`
--- 
 
 CREATE TABLE `flyspray_list_os` (
   `os_id` mediumint(3) NOT NULL auto_increment,
@@ -224,23 +119,12 @@ CREATE TABLE `flyspray_list_os` (
   `list_position` mediumint(3) NOT NULL default '0',
   `show_in_list` mediumint(1) NOT NULL default '0',
   PRIMARY KEY  (`os_id`)
-) TYPE=MyISAM COMMENT='Operating system list for the Flyspray bug killer' AUTO_INCREMENT=6 ;
-
--- 
--- Dumping data for table `flyspray_list_os`
--- 
+) TYPE=MyISAM COMMENT='Operating system list for the Flyspray bug killer' AUTO_INCREMENT=5 ;
 
 INSERT INTO `flyspray_list_os` VALUES (1, 1, 'All', 1, 1);
 INSERT INTO `flyspray_list_os` VALUES (2, 1, 'Windows', 2, 1);
 INSERT INTO `flyspray_list_os` VALUES (3, 1, 'Linux', 3, 1);
 INSERT INTO `flyspray_list_os` VALUES (4, 1, 'Mac OS', 4, 1);
-INSERT INTO `flyspray_list_os` VALUES (5, 1, 'UNIX', 4, 1);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_list_resolution`
--- 
 
 CREATE TABLE `flyspray_list_resolution` (
   `resolution_id` mediumint(3) NOT NULL auto_increment,
@@ -249,27 +133,16 @@ CREATE TABLE `flyspray_list_resolution` (
   `show_in_list` mediumint(1) NOT NULL default '0',
   `project_id` mediumint(3) NOT NULL default '0',
   PRIMARY KEY  (`resolution_id`)
-) TYPE=MyISAM AUTO_INCREMENT=10 ;
+) TYPE=MyISAM AUTO_INCREMENT=9 ;
 
--- 
--- Dumping data for table `flyspray_list_resolution`
--- 
-
-INSERT INTO `flyspray_list_resolution` VALUES (1, 'None', 1, 1, 0);
-INSERT INTO `flyspray_list_resolution` VALUES (2, 'Not a bug', 2, 1, 0);
-INSERT INTO `flyspray_list_resolution` VALUES (3, 'Won''t fix', 3, 1, 0);
-INSERT INTO `flyspray_list_resolution` VALUES (4, 'Won''t implement', 4, 1, 0);
-INSERT INTO `flyspray_list_resolution` VALUES (5, 'Works for me', 5, 1, 0);
-INSERT INTO `flyspray_list_resolution` VALUES (6, 'Duplicate', 6, 1, 0);
-INSERT INTO `flyspray_list_resolution` VALUES (7, 'Deferred', 7, 1, 0);
-INSERT INTO `flyspray_list_resolution` VALUES (8, 'Fixed', 8, 1, 0);
-INSERT INTO `flyspray_list_resolution` VALUES (9, 'Implemented', 9, 1, 0);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_list_tasktype`
--- 
+INSERT INTO `flyspray_list_resolution` VALUES (1, 'Not a bug', 1, 1, 0);
+INSERT INTO `flyspray_list_resolution` VALUES (2, 'Won''t fix', 2, 1, 0);
+INSERT INTO `flyspray_list_resolution` VALUES (3, 'Won''t implement', 3, 1, 0);
+INSERT INTO `flyspray_list_resolution` VALUES (4, 'Works for me', 4, 1, 0);
+INSERT INTO `flyspray_list_resolution` VALUES (5, 'Duplicate', 5, 1, 0);
+INSERT INTO `flyspray_list_resolution` VALUES (6, 'Deferred', 6, 1, 0);
+INSERT INTO `flyspray_list_resolution` VALUES (7, 'Fixed', 7, 1, 0);
+INSERT INTO `flyspray_list_resolution` VALUES (8, 'Implemented', 8, 1, 0);
 
 CREATE TABLE `flyspray_list_tasktype` (
   `tasktype_id` mediumint(3) NOT NULL auto_increment,
@@ -278,21 +151,10 @@ CREATE TABLE `flyspray_list_tasktype` (
   `show_in_list` mediumint(1) NOT NULL default '0',
   `project_id` mediumint(3) NOT NULL default '0',
   PRIMARY KEY  (`tasktype_id`)
-) TYPE=MyISAM COMMENT='List of task types for Flyspray the bug killer.' AUTO_INCREMENT=4 ;
-
--- 
--- Dumping data for table `flyspray_list_tasktype`
--- 
+) TYPE=MyISAM COMMENT='List of task types for Flyspray the bug killer.' AUTO_INCREMENT=3 ;
 
 INSERT INTO `flyspray_list_tasktype` VALUES (1, 'Bug Report', 1, 1, 0);
 INSERT INTO `flyspray_list_tasktype` VALUES (2, 'Feature Request', 2, 1, 0);
-INSERT INTO `flyspray_list_tasktype` VALUES (3, 'Support Request', 3, 1, 0);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_list_version`
--- 
 
 CREATE TABLE `flyspray_list_version` (
   `version_id` mediumint(3) NOT NULL auto_increment,
@@ -302,20 +164,9 @@ CREATE TABLE `flyspray_list_version` (
   `show_in_list` mediumint(1) NOT NULL default '0',
   `version_tense` mediumint(1) NOT NULL default '0',
   PRIMARY KEY  (`version_id`)
-) TYPE=MyISAM AUTO_INCREMENT=3 ;
+) TYPE=MyISAM AUTO_INCREMENT=2 ;
 
--- 
--- Dumping data for table `flyspray_list_version`
--- 
-
-INSERT INTO `flyspray_list_version` VALUES (1, 1, 'CVS', 1, 1, 2);
-INSERT INTO `flyspray_list_version` VALUES (2, 1, '1.0', 2, 1, 3);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_notification_messages`
--- 
+INSERT INTO `flyspray_list_version` VALUES (1, 1, 'Development', 1, 1, 2);
 
 CREATE TABLE `flyspray_notification_messages` (
   `message_id` mediumint(10) NOT NULL auto_increment,
@@ -325,17 +176,6 @@ CREATE TABLE `flyspray_notification_messages` (
   PRIMARY KEY  (`message_id`)
 ) TYPE=MyISAM COMMENT='Notification body and subject' AUTO_INCREMENT=2 ;
 
--- 
--- Dumping data for table `flyspray_notification_messages`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_notification_recipients`
--- 
-
 CREATE TABLE `flyspray_notification_recipients` (
   `recipient_id` mediumint(10) NOT NULL auto_increment,
   `message_id` mediumint(10) NOT NULL default '0',
@@ -344,35 +184,12 @@ CREATE TABLE `flyspray_notification_recipients` (
   PRIMARY KEY  (`recipient_id`)
 ) TYPE=MyISAM COMMENT='Notification recipient list' AUTO_INCREMENT=2 ;
 
--- 
--- Dumping data for table `flyspray_notification_recipients`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_notifications`
--- 
-
 CREATE TABLE `flyspray_notifications` (
   `notify_id` mediumint(10) NOT NULL auto_increment,
   `task_id` mediumint(10) NOT NULL default '0',
   `user_id` mediumint(5) NOT NULL default '0',
   PRIMARY KEY  (`notify_id`)
-) TYPE=MyISAM COMMENT='Extra task notifications are stored here' AUTO_INCREMENT=2 ;
-
--- 
--- Dumping data for table `flyspray_notifications`
--- 
-
-INSERT INTO `flyspray_notifications` VALUES (1, 1, 1);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_prefs`
--- 
+) TYPE=MyISAM COMMENT='Extra task notifications are stored here' AUTO_INCREMENT=1 ;
 
 CREATE TABLE `flyspray_prefs` (
   `pref_id` mediumint(1) NOT NULL auto_increment,
@@ -381,10 +198,6 @@ CREATE TABLE `flyspray_prefs` (
   `pref_desc` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`pref_id`)
 ) TYPE=MyISAM COMMENT='Application preferences are set here' AUTO_INCREMENT=22 ;
-
--- 
--- Dumping data for table `flyspray_prefs`
--- 
 
 INSERT INTO `flyspray_prefs` VALUES (1, 'fs_ver', '0.9.8', 'Current Flyspray version');
 INSERT INTO `flyspray_prefs` VALUES (2, 'jabber_server', '', 'Jabber server');
@@ -407,12 +220,6 @@ INSERT INTO `flyspray_prefs` VALUES (19, 'smtp_server', '', 'Remote mail server'
 INSERT INTO `flyspray_prefs` VALUES (20, 'smtp_user', '', 'Username to access the remote mail server');
 INSERT INTO `flyspray_prefs` VALUES (21, 'smtp_pass', '', 'Password to access the remote mail server');
 
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_projects`
--- 
-
 CREATE TABLE `flyspray_projects` (
   `project_id` mediumint(3) NOT NULL auto_increment,
   `project_title` varchar(100) NOT NULL default '',
@@ -432,17 +239,7 @@ CREATE TABLE `flyspray_projects` (
   PRIMARY KEY  (`project_id`)
 ) TYPE=MyISAM COMMENT='Details on multiple Flyspray projects' AUTO_INCREMENT=2 ;
 
--- 
--- Dumping data for table `flyspray_projects`
--- 
-
 INSERT INTO `flyspray_projects` VALUES (1, 'Default Project', 'Bluey', 1, 0, 0, 'This message can be customised under the <b>Projects</b> admin menu...', 1, 'id category tasktype severity summary status progress', 1, 0, '', 0, '', 0);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_registrations`
--- 
 
 CREATE TABLE `flyspray_registrations` (
   `reg_id` mediumint(10) NOT NULL auto_increment,
@@ -457,34 +254,12 @@ CREATE TABLE `flyspray_registrations` (
   PRIMARY KEY  (`reg_id`)
 ) TYPE=MyISAM COMMENT='Storage for new user registration confirmation codes' AUTO_INCREMENT=1 ;
 
--- 
--- Dumping data for table `flyspray_registrations`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_related`
--- 
-
 CREATE TABLE `flyspray_related` (
   `related_id` mediumint(10) NOT NULL auto_increment,
   `this_task` mediumint(10) NOT NULL default '0',
   `related_task` mediumint(10) NOT NULL default '0',
   PRIMARY KEY  (`related_id`)
 ) TYPE=MyISAM COMMENT='Related task entries' AUTO_INCREMENT=1 ;
-
--- 
--- Dumping data for table `flyspray_related`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_reminders`
--- 
 
 CREATE TABLE `flyspray_reminders` (
   `reminder_id` mediumint(10) NOT NULL auto_increment,
@@ -497,17 +272,6 @@ CREATE TABLE `flyspray_reminders` (
   `reminder_message` longtext NOT NULL,
   PRIMARY KEY  (`reminder_id`)
 ) TYPE=MyISAM COMMENT='Scheduled reminders about tasks' AUTO_INCREMENT=1 ;
-
--- 
--- Dumping data for table `flyspray_reminders`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_tasks`
--- 
 
 CREATE TABLE `flyspray_tasks` (
   `task_id` mediumint(10) NOT NULL auto_increment,
@@ -538,17 +302,7 @@ CREATE TABLE `flyspray_tasks` (
   PRIMARY KEY  (`task_id`)
 ) TYPE=MyISAM COMMENT='Bugs and feature requests for the Flyspray bug killer' AUTO_INCREMENT=2 ;
 
--- 
--- Dumping data for table `flyspray_tasks`
--- 
-
 INSERT INTO `flyspray_tasks` VALUES (1, 1, 1, '1122784578', 1, 0, '', 1, ' ', 'Sample Task', 'This isn''t a real task.  You should close it and start opening some real tasks.', 2, 0, 1, 1, 1, 0, 1, 1, 2, 0, '', 0, 0, '');
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_users`
--- 
 
 CREATE TABLE `flyspray_users` (
   `user_id` mediumint(3) NOT NULL auto_increment,
@@ -567,17 +321,7 @@ CREATE TABLE `flyspray_users` (
   PRIMARY KEY  (`user_id`)
 ) TYPE=MyISAM COMMENT='Users for the Flyspray bug killer' AUTO_INCREMENT=2 ;
 
--- 
--- Dumping data for table `flyspray_users`
--- 
-
 INSERT INTO `flyspray_users` VALUES (1, 'super', '4tuKHcjxpFYag', 'Mr Super User', 'super@example.com', 'super@example.com', 0, 1, '', '', '', '', 25);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `flyspray_users_in_groups`
--- 
 
 CREATE TABLE `flyspray_users_in_groups` (
   `record_id` mediumint(5) NOT NULL auto_increment,
@@ -585,9 +329,5 @@ CREATE TABLE `flyspray_users_in_groups` (
   `group_id` mediumint(3) NOT NULL default '0',
   PRIMARY KEY  (`record_id`)
 ) TYPE=MyISAM COMMENT='Which users are in which groups' AUTO_INCREMENT=2 ;
-
--- 
--- Dumping data for table `flyspray_users_in_groups`
--- 
 
 INSERT INTO `flyspray_users_in_groups` VALUES (1, 1, 1);

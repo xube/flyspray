@@ -5,7 +5,7 @@
 SET client_encoding = 'UNICODE';
 
 --
--- Name: flyspray_admin_requests; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_admin_requests; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_admin_requests (
@@ -42,7 +42,7 @@ SELECT pg_catalog.setval('flyspray_admin_requests_request_id_seq', 1, false);
 
 
 --
--- Name: flyspray_assigned; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_assigned; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_assigned (
@@ -67,7 +67,7 @@ SELECT pg_catalog.setval('flyspray_assigned_assigned_id_seq', 1, false);
 
 
 --
--- Name: flyspray_attachments; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_attachments; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_attachments (
@@ -104,7 +104,7 @@ SELECT pg_catalog.setval('flyspray_attachments_attachment_id_seq', 1, false);
 
 
 --
--- Name: flyspray_comments; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_comments; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_comments (
@@ -136,7 +136,7 @@ SELECT pg_catalog.setval('flyspray_comments_comment_id_seq', 1, false);
 
 
 --
--- Name: flyspray_dependencies; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_dependencies; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_dependencies (
@@ -166,7 +166,7 @@ SELECT pg_catalog.setval('flyspray_dependencies_depend_id_seq', 1, false);
 
 
 --
--- Name: flyspray_groups; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_groups; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_groups (
@@ -217,7 +217,7 @@ SELECT pg_catalog.setval('flyspray_groups_group_id_seq', 7, false);
 
 
 --
--- Name: flyspray_history; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_history; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_history (
@@ -252,7 +252,7 @@ SELECT pg_catalog.setval('flyspray_history_history_id_seq', 2, false);
 
 
 --
--- Name: flyspray_list_category; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_category; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_list_category (
@@ -286,7 +286,7 @@ SELECT pg_catalog.setval('flyspray_list_category_category_id_seq', 3, false);
 
 
 --
--- Name: flyspray_list_os; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_os; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_list_os (
@@ -318,7 +318,7 @@ SELECT pg_catalog.setval('flyspray_list_os_os_id_seq', 6, false);
 
 
 --
--- Name: flyspray_list_resolution; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_resolution; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_list_resolution (
@@ -335,7 +335,7 @@ CREATE TABLE flyspray_list_resolution (
 --
 
 CREATE SEQUENCE flyspray_list_resolution_resolution_id_seq
-    START WITH 10
+    START WITH 9
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -346,11 +346,11 @@ CREATE SEQUENCE flyspray_list_resolution_resolution_id_seq
 -- Name: flyspray_list_resolution_resolution_id_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
 --
 
-SELECT pg_catalog.setval('flyspray_list_resolution_resolution_id_seq', 10, false);
+SELECT pg_catalog.setval('flyspray_list_resolution_resolution_id_seq', 9, false);
 
 
 --
--- Name: flyspray_list_tasktype; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_tasktype; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_list_tasktype (
@@ -367,7 +367,7 @@ CREATE TABLE flyspray_list_tasktype (
 --
 
 CREATE SEQUENCE flyspray_list_tasktype_tasktype_id_seq
-    START WITH 4
+    START WITH 3
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -378,11 +378,11 @@ CREATE SEQUENCE flyspray_list_tasktype_tasktype_id_seq
 -- Name: flyspray_list_tasktype_tasktype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
 --
 
-SELECT pg_catalog.setval('flyspray_list_tasktype_tasktype_id_seq', 4, false);
+SELECT pg_catalog.setval('flyspray_list_tasktype_tasktype_id_seq', 3, false);
 
 
 --
--- Name: flyspray_list_version; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_version; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_list_version (
@@ -400,7 +400,7 @@ CREATE TABLE flyspray_list_version (
 --
 
 CREATE SEQUENCE flyspray_list_version_version_id_seq
-    START WITH 3
+    START WITH 2
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -411,11 +411,11 @@ CREATE SEQUENCE flyspray_list_version_version_id_seq
 -- Name: flyspray_list_version_version_id_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
 --
 
-SELECT pg_catalog.setval('flyspray_list_version_version_id_seq', 3, false);
+SELECT pg_catalog.setval('flyspray_list_version_version_id_seq', 2, false);
 
 
 --
--- Name: flyspray_notification_messages; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_notification_messages; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_notification_messages (
@@ -446,7 +446,7 @@ SELECT pg_catalog.setval('flyspray_notification_messages_message_id_seq', 2, fal
 
 
 --
--- Name: flyspray_notification_recipients; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_notification_recipients; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_notification_recipients (
@@ -477,7 +477,7 @@ SELECT pg_catalog.setval('flyspray_notification_recipients_recipient_id_seq', 2,
 
 
 --
--- Name: flyspray_notifications; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_notifications; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_notifications (
@@ -507,7 +507,7 @@ SELECT pg_catalog.setval('flyspray_notifications_notify_id_seq', 1, false);
 
 
 --
--- Name: flyspray_prefs; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_prefs; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_prefs (
@@ -537,7 +537,7 @@ SELECT pg_catalog.setval('flyspray_prefs_pref_id_seq', 22, true);
 
 
 --
--- Name: flyspray_projects; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_projects; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_projects (
@@ -579,7 +579,7 @@ SELECT pg_catalog.setval('flyspray_projects_project_id_seq', 2, false);
 
 
 --
--- Name: flyspray_registrations; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_registrations; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_registrations (
@@ -615,7 +615,7 @@ SELECT pg_catalog.setval('flyspray_registrations_reg_id_seq', 1, false);
 
 
 --
--- Name: flyspray_related; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_related; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_related (
@@ -645,7 +645,7 @@ SELECT pg_catalog.setval('flyspray_related_related_id_seq', 1, false);
 
 
 --
--- Name: flyspray_reminders; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_reminders; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_reminders (
@@ -680,7 +680,7 @@ SELECT pg_catalog.setval('flyspray_reminders_reminder_id_seq', 1, false);
 
 
 --
--- Name: flyspray_tasks; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_tasks; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_tasks (
@@ -732,7 +732,7 @@ SELECT pg_catalog.setval('flyspray_tasks_task_id_seq', 2, false);
 
 
 --
--- Name: flyspray_users; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_users; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_users (
@@ -753,7 +753,7 @@ CREATE TABLE flyspray_users (
 
 
 --
--- Name: flyspray_users_in_groups; Type: TABLE; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_users_in_groups; Type: TABLE; Schema: public; Owner: cr; Tablespace:
 --
 
 CREATE TABLE flyspray_users_in_groups (
@@ -873,15 +873,14 @@ INSERT INTO flyspray_list_os (os_id, project_id, os_name, list_position, show_in
 -- Data for Name: flyspray_list_resolution; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (1, 'None', 1, 1, 0);
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (2, 'Not a bug', 2, 1, 0);
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (3, 'Won''t fix', 3, 1, 0);
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (4, 'Won''t implement', 4, 1, 0);
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (5, 'Works for me', 5, 1, 0);
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (6, 'Duplicate', 6, 1, 0);
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (7, 'Deferred', 7, 1, 0);
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (8, 'Fixed', 8, 1, 0);
-INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (9, 'Implemented', 9, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (1, 'Not a bug', 1, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (2, 'Won''t fix', 2, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (3, 'Won''t implement', 3, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (4, 'Works for me', 4, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (5, 'Duplicate', 5, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (6, 'Deferred', 6, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (7, 'Fixed', 7, 1, 0);
+INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_position, show_in_list, project_id) VALUES (8, 'Implemented', 8, 1, 0);
 
 
 --
@@ -890,15 +889,13 @@ INSERT INTO flyspray_list_resolution (resolution_id, resolution_name, list_posit
 
 INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list, project_id) VALUES (1, 'Bug Report', 1, 1, 0);
 INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list, project_id) VALUES (2, 'Feature Request', 2, 1, 0);
-INSERT INTO flyspray_list_tasktype (tasktype_id, tasktype_name, list_position, show_in_list, project_id) VALUES (3, 'Support Request', 3, 1, 0);
 
 
 --
 -- Data for Name: flyspray_list_version; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list, version_tense) VALUES (1, 1, 'CVS', 1, 1, 2);
-INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list, version_tense) VALUES (2, 1, '1.0', 2, 1, 3);
+INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_position, show_in_list, version_tense) VALUES (1, 1, 'Devel', 1, 1, 2);
 
 
 --
@@ -923,7 +920,7 @@ INSERT INTO flyspray_list_version (version_id, project_id, version_name, list_po
 -- Data for Name: flyspray_prefs; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (1, 'fs_ver', '0.9.7', 'Current Flyspray version');
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (1, 'fs_ver', '0.9.8', 'Current Flyspray version');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (2, 'jabber_server', '', 'Jabber server');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (3, 'jabber_port', '5222', 'Jabber server port');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (4, 'jabber_username', '', 'Jabber username');
@@ -943,7 +940,6 @@ INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (1
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (19, 'smtp_server', '', 'Remote mail server');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (20, 'smtp_user', '', 'Username to access the remote mail server');
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (21, 'smtp_pass', '', 'Password to access the remote mail server');
-INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (22, 'funky_urls', '0', 'Should we use address rewriting? Not all webservers support this!');
 
 
 --
@@ -993,7 +989,7 @@ INSERT INTO flyspray_users_in_groups (record_id, user_id, group_id) VALUES (1, 1
 
 
 --
--- Name: flyspray_admin_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_admin_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_admin_requests
@@ -1001,7 +997,7 @@ ALTER TABLE ONLY flyspray_admin_requests
 
 
 --
--- Name: flyspray_assigned_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_assigned_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_assigned
@@ -1009,7 +1005,7 @@ ALTER TABLE ONLY flyspray_assigned
 
 
 --
--- Name: flyspray_attachments_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_attachments_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_attachments
@@ -1017,7 +1013,7 @@ ALTER TABLE ONLY flyspray_attachments
 
 
 --
--- Name: flyspray_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_comments
@@ -1025,7 +1021,7 @@ ALTER TABLE ONLY flyspray_comments
 
 
 --
--- Name: flyspray_dependencies_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_dependencies_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_dependencies
@@ -1033,7 +1029,7 @@ ALTER TABLE ONLY flyspray_dependencies
 
 
 --
--- Name: flyspray_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_groups
@@ -1041,7 +1037,7 @@ ALTER TABLE ONLY flyspray_groups
 
 
 --
--- Name: flyspray_history_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_history_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_history
@@ -1049,7 +1045,7 @@ ALTER TABLE ONLY flyspray_history
 
 
 --
--- Name: flyspray_list_category_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_category_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_list_category
@@ -1057,7 +1053,7 @@ ALTER TABLE ONLY flyspray_list_category
 
 
 --
--- Name: flyspray_list_os_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_os_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_list_os
@@ -1065,7 +1061,7 @@ ALTER TABLE ONLY flyspray_list_os
 
 
 --
--- Name: flyspray_list_resolution_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_resolution_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_list_resolution
@@ -1073,7 +1069,7 @@ ALTER TABLE ONLY flyspray_list_resolution
 
 
 --
--- Name: flyspray_list_tasktype_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_tasktype_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_list_tasktype
@@ -1081,7 +1077,7 @@ ALTER TABLE ONLY flyspray_list_tasktype
 
 
 --
--- Name: flyspray_list_version_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_list_version_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_list_version
@@ -1089,7 +1085,7 @@ ALTER TABLE ONLY flyspray_list_version
 
 
 --
--- Name: flyspray_notification_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_notification_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_notification_messages
@@ -1097,7 +1093,7 @@ ALTER TABLE ONLY flyspray_notification_messages
 
 
 --
--- Name: flyspray_notification_recipients_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_notification_recipients_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_notification_recipients
@@ -1105,7 +1101,7 @@ ALTER TABLE ONLY flyspray_notification_recipients
 
 
 --
--- Name: flyspray_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_notifications
@@ -1113,7 +1109,7 @@ ALTER TABLE ONLY flyspray_notifications
 
 
 --
--- Name: flyspray_prefs_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_prefs_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_prefs
@@ -1121,7 +1117,7 @@ ALTER TABLE ONLY flyspray_prefs
 
 
 --
--- Name: flyspray_projects_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_projects_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_projects
@@ -1129,7 +1125,7 @@ ALTER TABLE ONLY flyspray_projects
 
 
 --
--- Name: flyspray_registrations_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_registrations_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_registrations
@@ -1137,7 +1133,7 @@ ALTER TABLE ONLY flyspray_registrations
 
 
 --
--- Name: flyspray_related_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_related_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_related
@@ -1145,7 +1141,7 @@ ALTER TABLE ONLY flyspray_related
 
 
 --
--- Name: flyspray_reminders_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_reminders_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_reminders
@@ -1153,7 +1149,7 @@ ALTER TABLE ONLY flyspray_reminders
 
 
 --
--- Name: flyspray_tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_tasks
@@ -1161,7 +1157,7 @@ ALTER TABLE ONLY flyspray_tasks
 
 
 --
--- Name: flyspray_users_in_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_users_in_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_users_in_groups
@@ -1169,7 +1165,7 @@ ALTER TABLE ONLY flyspray_users_in_groups
 
 
 --
--- Name: flyspray_users_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace: 
+-- Name: flyspray_users_pkey; Type: CONSTRAINT; Schema: public; Owner: cr; Tablespace:
 --
 
 ALTER TABLE ONLY flyspray_users
