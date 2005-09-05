@@ -1,3 +1,8 @@
+Upgrading from 0.9.7 to 0.9.8
+
+Point your browser at your Flyspray directory to launch to new setup script.
+
+
 Upgrading from 0.9.6 to 0.9.7
 
 Simply pointing your browser at your Flyspray directory should launch
@@ -25,13 +30,13 @@ script instead.
 
 Upgrading from 0.9.4 to 0.9.5
 
-Install the ADODB database-abstraction software somewhere on your 
+Install the ADODB database-abstraction software somewhere on your
 system and edit the new header.php to point to the adodb.inc.php file.
 Also enter your database configuration in the header.php file, as config.inc.php
 isn't used anymore. Load the upgrade_0.9.4_to_0.9.5-mysql.php script in your
  browser and follow the instructions.
 
- 
+
 Upgrading from 0.9.3.1 to 0.9.4
 
 Load the 'upgrade_0.9.3.1_to_0.9.4.php' script in your browser and follow the

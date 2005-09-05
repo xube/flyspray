@@ -27,6 +27,8 @@ Upgrade:
 * insert database upgrade tables
 * attachments are converted to comments + attachments
 
+Be sure to test everything below with address_rewriting both ON and OFF.
+
 Tasks:
 * create task
 * create task twice in a row with the same details [F]
@@ -53,20 +55,33 @@ Tasks:
 * view/download attachment when permissions don't allow [F]
 
 Users:
-* add user with admin toolbox
 * register as new user with confirmation code
 * register as new user without confirmation code
-* move user between groups (project level)
-* move user between groups (global level)
 * edit user details with myprofile.php
-* add new group (project level)
 
-Projects:
-* add project
+Project Manager's Toolbox:
+* saving project prefs
 * define columns in tasks view
 * ensure project_id set correctly and respected when moving between tasks
   (TODO: specify places to check)
 * project prefs respected everywhere (TODO: specify places to check)
+* add new groups
+* edit existing groups
+* move user between project groups
+* adding new list items
+* editing existing lists
+* deleting list items where available
+
+Administrator's toolbox:
+* saving preferences
+* adding new users
+* adding new groups
+* editing groups
+* move user between global groups
+* adding new list items
+* editing existing lists
+* deleting list items where available
+* add new project
 
 Code quality:
 * check php syntax:
