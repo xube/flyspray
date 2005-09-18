@@ -160,7 +160,7 @@ class Setup extends Flyspray
       foreach($paths as $path)
       {
          // Check to see if the last character of the path is a "directory separator"
-         if (substr($paths[1], -1, 1) == DIRECTORY_SEPARATOR)
+         if (substr($path, -1, 1) == DIRECTORY_SEPARATOR)
          {
             // If file exists, transfer the values and quit the foreach loop
             if (file_exists($path . $includeFile))
@@ -192,7 +192,7 @@ class Setup extends Flyspray
    function CheckAdodbLibrary()
    {
       // Get the ADOdb library path. If not found it will be FALSE
-      $this->mAdodbPath = $this->ScanIncludePath('adodb/adodb.inc.php', realpath('../'));
+      $this->mAdodbPath = $this->ScanIncludePath('adodb.inc.php', realpath('../adodb'));
 
       // Update the status of the library
       $this->mAdodbStatus = ($this->mAdodbPath) ? TRUE : FALSE;
@@ -1340,7 +1340,7 @@ class Setup extends Flyspray
    function ProcessDatabaseSetup($data)
    {
       // Look for ADOdb
-      $this->mAdodbPath = $this->ScanIncludePath('adodb/adodb.inc.php', realpath('../'));
+      $this->mAdodbPath = $this->ScanIncludePath('adodb.inc.php', realpath('../adodb'));
       require_once($this->mAdodbPath);
 
       // Perform a number of fatality checks, then die gracefully

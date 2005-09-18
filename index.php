@@ -8,11 +8,8 @@
 
 include_once('header.php');
 
-// Remove this line when we release.  It's only here to ensure that the attachment updates
-// happen without having to tell everyone.  It should go in the upgrade script for release!
-@include_once('sql/convert_attachments.php');
-
 // Set a generic "blank" variable so that we don't get notices
+// FIXME: properly check for variables!
 $novar = '';
 
 // Send this header for i18n support
@@ -21,12 +18,6 @@ header("Content-type: text/html; charset=utf-8");
 
 // For all style-Attributes, see http://www.w3.org/TR/html401/present/styles.html#h-14.2.1
 header("Content-Style-Type: text/css");
-
-// Check that we're using 0.9.6, and start the upgrade script if we're not.
-if (isset($flyspray_prefs['dateformat']) && !isset($flyspray_prefs['fs_ver']))
-{
-   Header("Location: sql/upgrade_0.9.6_to_0.9.7.php");
-}
 
 // This generates an URL so that action scripts can take us back to the previous page
 $this_page = sprintf("%s",$_SERVER["REQUEST_URI"]);

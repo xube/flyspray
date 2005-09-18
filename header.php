@@ -11,8 +11,9 @@
 //error_reporting(E_ALL & -E_NOTICE);
 
 // Check PHP Version (Must Be at least 4.3)
+// For 0.9.9, this should redirect to the error page
 if (PHP_VERSION  < '4.3.0')
-   die('Your version of PHP is not compatible with Flyspray, please upgrade to the latest version of PHP.  Flyspray requires at least PHP version 4.3.0');
+   die('Your version of PHP is not compatible with Flyspray, please upgrade to at least PHP version 4.3.0');
 
 // This line gets the operating system so that we know which way to put slashes in the path
 strstr( PHP_OS, "WIN") ? $slash = "\\" : $slash = "/";
@@ -70,7 +71,7 @@ $dbprefix    = $conf['database']['dbprefix'];
 $dbuser      = $conf['database']['dbuser'];
 $dbpass      = $conf['database']['dbpass'];
 
-   /* 
+   /*
    Not required since you are already adding a slash in the include statements below.
    I have updated other locations for the same scenario. ~ Jeffery
    if (substr($basedir,-1,1) != '/')

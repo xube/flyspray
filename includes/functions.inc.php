@@ -159,7 +159,7 @@ function GetTaskDetails($task_id)
                                               vr.version_name as reported_version_name,
                                               vd.version_name as due_in_version_name,
                                               uo.real_name as opened_by_name,
-                                              ue.real_name as last_edited__by_name,
+                                              ue.real_name as last_edited_by_name,
                                               uc.real_name as closed_by_name,
                                               ua.real_name as assigned_to_name
 
@@ -681,7 +681,7 @@ function GetTaskDetails($task_id)
          case 32:
             $password = md5($password);
             break;
-         case 13;
+         case 13:
             $password = crypt($password, $auth_details['user_pass']); //using the salt from db
             break;
          default:

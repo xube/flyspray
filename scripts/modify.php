@@ -947,7 +947,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
    $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
-   $fs->redirect($FS->CreateURL('admin','prefs'));
+   $fs->redirect($fs->CreateURL('admin','prefs'));
 
 // End of updating application preferences
 

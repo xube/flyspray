@@ -1423,7 +1423,7 @@ foreach ($perpagevals as $n) {
 //////////////////////
 // End of all areas //
 //////////////////////
-};
+}
 
 // End of the toolbox div
 echo '</div>';

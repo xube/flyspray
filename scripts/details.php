@@ -75,7 +75,7 @@ if ($task_details['project_is_active'] == '1'
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="update" />
          <input type="hidden" name="task_id" value="<?php echo $_GET['id'];?>" />
-         <input type="hidden" name="edit_start_time" value="<?php echo date('U'); ?>" />
+         <input type="hidden" name="edit_start_time" value="<?php echo date('U') ?>" />
 
          <?php echo $details_text['attachedtoproject'] . ' &mdash; ';?>
          <select name="attached_to_project">
@@ -116,7 +116,7 @@ if ($task_details['project_is_active'] == '1'
          $project_list = array();
          while ($row = $db->FetchArray($get_projects))
          {
-            if ($project_id == $row['project_id'] && $_GET['project'] != '0' && !in_array($row['project_id'], $project_list))
+            if ($project_id == $row['project_id'] && !empty($_GET['project']) && !in_array($row['project_id'], $project_list))
             {
                echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
                $project_list[] = $row['project_id'];
@@ -461,7 +461,7 @@ if ($task_details['project_is_active'] == '1'
                <tr>
                   <td class="buttons" colspan="2">
                   <input class="adminbutton" type="submit" accesskey="s" name="buSubmit" value="<?php echo $details_text['savedetails'];?>" />
-                  <input class="adminbutton" type="reset" name="buReset" />
+                  <input class="adminbutton" type="reset" name="buReset" value="<?php echo $details_text['reset'];?>" />
                   </td>
                </tr>
             </table>

@@ -219,7 +219,7 @@ if ($task_details['project_is_active'] == '1'
 
   unlink($tname);
 
-  echo "<img src='$out' alt='task $id dependencies' usemap='$graphname'>\n";
+  echo "<img src='$out' alt='task $id dependencies' usemap='#$graphname'>\n";
 
   #echo "<pre>$dotgraph</pre>\n";
 

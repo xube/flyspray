@@ -152,6 +152,7 @@ $details_text = array (
 'open'                  =>    'OPEN',
 'closed'                =>    'CLOSED',
 'depgraph'              =>    'View Dependency Graph',
+'reset'                 =>    'Reset',
 
 );
 ?>
