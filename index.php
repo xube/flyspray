@@ -183,7 +183,8 @@ if (file_exists("themes/$themestyle/favicon.ico"))
 }
 
 echo '<meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />';
-echo '<style type="text/css" media="screen">@import "'. $conf['general']['baseurl'] . 'themes/' . $themestyle . '/theme.css";</style>';
+echo '<link href="' . $conf['general']['baseurl'] . 'themes/' . $themestyle . '/theme.css" rel="stylesheet" type="text/css" />' . "\n";
+//echo '<style type="text/css" media="screen">@import "'. $conf['general']['baseurl'] . 'themes/' . $themestyle . '/theme.css";</style>';
 // echo '<link media="print" href="' . $conf['general']['baseurl'] . 'themes/' . $themestyle . '/theme_print.css" rel="stylesheet" type="text/css" />' . "\n";
 echo '<link rel="alternate" type="application/rss+xml" title="Flyspray RSS Feed" href="' . $conf['general']['baseurl'] . 'scripts/rss.php?proj=' . $project_id . '" />' . "\n";
 echo '<script type="text/javascript" src="' . $conf['general']['baseurl'] . 'includes/styleswitcher.js"></script>' . "\n";

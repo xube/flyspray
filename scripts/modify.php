@@ -1615,12 +1615,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     if ($db->CountRows($check) > 0)
     {
         $_SESSION['ERROR'] = $modify_text['relatederror'];
-        $fs->redirect($fs->CreateURL('details', $_POST['this_task']));
+        $fs->redirect($fs->CreateURL('details', $_POST['this_task'].'#related'));
 
     } elseif (!$db->CountRows($check2))
     {
         $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
-        $fs->redirect($fs->CreateURL('details', $_POST['this_task']));
+        $fs->redirect($fs->CreateURL('details', $_POST['this_task'].'#related'));
     } else
     {
         list($relatedproject) = $db->FetchRow($check2);
@@ -1634,7 +1634,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
             $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
-            $fs->redirect($fs->CreateURL('details', $_POST['this_task']));
+            $fs->redirect($fs->CreateURL('details', $_POST['this_task'].'#related'));
 
         } else {
             ?>
@@ -1660,7 +1660,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
     };
   } else {
     $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
-    $fs->redirect($fs->CreateURL('details', $_POST['this_task']));
+    $fs->redirect($fs->CreateURL('details', $_POST['this_task'].'#related'));
   };
 
 // End of adding a related task entry
@@ -1714,7 +1714,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    }
 
    $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
-   $fs->redirect($redirect_url);
+   $fs->redirect($redirect_url.'#notify');
 
 // End of adding a user to the notification list
 
@@ -1745,7 +1745,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    }
 
    $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
-   $fs->redirect($redirect_url);
+   $fs->redirect($redirect_url.'#notify');
 
 // End of removing a notification entry
 
@@ -1870,7 +1870,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   $fs->logEvent($_POST['task_id'], 17, $_POST['to_user_id']);
 
   $_SESSION['SUCCESS'] = $modify_text['reminderadded'];
-  $fs->redirect($fs->CreateURL('details', $_REQUEST['task_id']));
+  $fs->redirect($fs->CreateURL('details', $_REQUEST['task_id']).'#remind');
 
 // End of adding a reminder
 
@@ -1888,7 +1888,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
   $fs->logEvent($_POST['task_id'], 18, $reminder['to_user_id']);
 
   $_SESSION['SUCCESS'] = $modify_text['reminderdeleted'];
-  $fs->redirect($fs->CreateURL('details', $_REQUEST['task_id']));
+  $fs->redirect($fs->CreateURL('details', $_REQUEST['task_id']).'#remind');
 
 // End of removing a reminder
 
