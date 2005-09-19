@@ -441,20 +441,32 @@ if ($project_prefs['project_is_active'] == '1'
       <option value="closed" <?php if(isset($_GET['status']) && $_GET['status'] == "closed") { echo "SELECTED";}?>><?php echo $index_text['closed'];?></option>
     </select>
 
-   <select id="due_date" name="date">
-   <option value=""><?php echo $index_text['dueanytime'];?></option>
-   <option id="date_d"<?php if (!empty($_GET['date'])) { echo ' selected="1">' . $_GET['date'];}else{echo '>' . $index_text['selectduedate'];};?></option>
-   </select>
-   <script type="text/javascript">
-   Calendar.setup(
+   <?php
+   if (!empty($_GET['date']) )
    {
-      inputField  : "date_d",         // ID of the input field
-      ifFormat    : "%d-%b-%Y",    // the date format
-      displayArea : "date_d",       // The display field
-      daFormat    : "%d-%b-%Y",
-      button      : "date_d"       // ID of the button
+      $due_date = $_GET['date'];
+      $show_date = $index_text['due'] . ' ' . $_GET['date'];
+   } else
+   {
+      $due_date = '0';
+      $show_date = $index_text['selectduedate'];
    }
-   );
+   ?>
+
+   <input id="duedatehidden" type="hidden" name="date" value="<?php echo $due_date;?>" />
+   <span id="duedateview"><?php echo $show_date;?></span> <small>|</small>
+   <a href="#" onClick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $index_text['selectduedate']?>'">X</a>
+
+   <script type="text/javascript">
+      Calendar.setup(
+      {
+         inputField  : "duedatehidden",         // ID of the input field
+         ifFormat    : "%d-%b-%Y",    // the date format
+         displayArea : "duedateview",       // The display field
+         daFormat    : "%d-%b-%Y",
+         button      : "duedateview"       // ID of the button
+      }
+      );
    </script>
 
     <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />

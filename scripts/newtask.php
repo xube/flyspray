@@ -262,21 +262,23 @@ if ($permissions['open_new_tasks'] == '1'
          <tr>
             <td><label for="duedate"><?php echo $newtask_text['duedate'];?></label></td>
             <td id="duedate">
-            <select id="due_date" name="due_date" <?php if ($permissions['modify_all_tasks'] != "1") echo ' disabled="disabled"';?>>
-               <option value=""><?php echo $index_text['dueanytime'];?></option>
-               <option id="date_d"><?php echo $index_text['selectduedate'];?></option>
-            </select>
+
+            <input id="duedatehidden" type="hidden" name="due_date" value="" />
+            <span id="duedateview"><?php echo $index_text['selectduedate'];?></span> <small>|</small>
+            <a href="#" onClick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $index_text['selectduedate']?>'">X</a>
+
             <script type="text/javascript">
-            Calendar.setup(
-            {
-               inputField  : "date_d",         // ID of the input field
-               ifFormat    : "%d-%b-%Y",    // the date format
-               displayArea : "date_d",       // The display field
-               daFormat    : "%d-%b-%Y",
-               button      : "date_d"       // ID of the button
-            }
-            );
+               Calendar.setup(
+               {
+                  inputField  : "duedatehidden",         // ID of the input field
+                  ifFormat    : "%d-%b-%Y",    // the date format
+                  displayArea : "duedateview",       // The display field
+                  daFormat    : "%d-%b-%Y",
+                  button      : "duedateview"       // ID of the button
+               }
+               );
             </script>
+
             </td>
          </tr>
       </table>

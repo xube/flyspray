@@ -199,8 +199,6 @@ if ($permissions['manage_project'] == '1')
       <fieldset class="admin">
       <legend><?php echo $pm_text['notifications'];?></legend>
 
-         <?php //echo $pm_text['notifexplain'];?>
-
          <table class="admin">
             <tr>
                <td><label for="emailaddress"><?php echo $pm_text['emailaddress'];?></label></td>
@@ -246,7 +244,7 @@ if ($permissions['manage_project'] == '1')
 
 
 
-   <?
+   <?php
    ////////////////////////////////////////////////
    // Start of managing project user-groups area //
    ////////////////////////////////////////////////

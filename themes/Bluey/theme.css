@@ -1069,3 +1069,21 @@ background           :  white !important;
 background           :  none;
 height               :  15px;
 }
+
+span#duedateview {
+   color                : #47617b;
+   background-color     : #eef7ff;
+   font-weight          : bold;
+   border               : 1px ridge #000000;
+   margin               : 2px;
+   padding              : 4px 5px 2px 5px;
+   font-size            : 100%;
+   white-space          : nowrap;
+}
+
+span#duedateview:hover {
+   color                : #6395c8;
+   background-color     : #eef7ff;
+   font-weight          : bold;
+   cursor               : pointer;
+}

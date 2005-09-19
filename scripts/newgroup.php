@@ -2,7 +2,7 @@
 $fs->get_language_pack($lang, 'newgroup');
 
 // Make sure that only admins are using this page
-if (@$permissions['admin'] == '1'
+if (@$permissions['is_admin'] == '1'
      OR ($permissions['manage_project'] == '1' && !empty($_GET['project']) ) ) {
 
 if (empty($_GET['project']) )

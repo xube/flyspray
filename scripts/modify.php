@@ -12,12 +12,18 @@ $notify = new Notifications;
 
 
 // FIXME: only temporary workaround
-$_POST['default_cat_owner'] = $db->emptyToZero($_POST['default_cat_owner']);
-$_POST['category_owner']    = $db->emptyToZero($_POST['category_owner']);
+if (!empty($_POST['default_cat_owner']) )
+   $_POST['default_cat_owner'] = $db->emptyToZero($_POST['default_cat_owner']);
 
-$list_table_name = "{$dbprefix}list_".addslashes($_POST['list_type']);
-$list_column_name = addslashes($_POST['list_type'])."_name";
-$list_id = addslashes($_POST['list_type'])."_id";
+if (!empty($_POST['category_owner']) )
+   $_POST['category_owner'] = $db->emptyToZero($_POST['category_owner']);
+
+if (!empty($_POST['list_type']) )
+{
+   $list_table_name = "{$dbprefix}list_".addslashes($_POST['list_type']);
+   $list_column_name = addslashes($_POST['list_type'])."_name";
+   $list_id = addslashes($_POST['list_type'])."_id";
+}
 
 $now = date('U');
 
@@ -639,18 +645,15 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 {
 
    // If they filled in all the required fields
-   if ($_POST['user_pass'] != ''
-      && $_POST['user_pass2'] != ''
+   if (!empty($_POST['user_pass'])
+      && !empty($_POST['user_pass2'])
+      && !empty($_POST['confirmation_code'])
     )
    {
 
       // If the passwords matched
-      if (($_POST['user_pass'] == $_POST['user_pass2'])
-           && $_POST['user_pass'] != ''
-           && $_POST['confirmation_code'] != '')
+      if ($_POST['user_pass'] == $_POST['user_pass2']) )
       {
-
-
          // Check that the user entered the right confirmation code
          $code_check = $db->Query("SELECT * FROM {$dbprefix}registrations WHERE magic_url = ?", array($_POST['magic_url']));
          $reg_details = $db->FetchArray($code_check);

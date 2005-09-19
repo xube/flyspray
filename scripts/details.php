@@ -408,21 +408,30 @@ if ($task_details['project_is_active'] == '1'
                <tr>
                   <td><label for="duedate"><?php echo $details_text['duedate'];?></label></td>
                   <td id="duedate">
-                  <!--<input id="due_date" type="text" name="due_date" size="10" value="
-                  <?php if (!empty($task_details['due_date']))echo date("d-M-Y", $task_details['due_date']);?>" readonly="1" />-->
 
-                  <select id="due_date" name="due_date">
-                     <option value=""><?php echo $index_text['dueanytime'];?></option>
-                     <option id="date_d"<?php if (!empty($task_details['due_date'])) { echo ' selected="1">' . date("d-M-Y", $task_details['due_date']);}else{echo '>' . $index_text['selectduedate'];};?></option>
-                  </select>
+
+                  <?php
+                  if (!empty($task_details['due_date']) )
+                  {
+                     $due_date = $fs->formatDate($task_details['due_date'], false);
+                  } else
+                  {
+                     $due_date = $details_text['undecided'];
+                  }
+                  ?>
+
+                  <input id="duedatehidden" type="hidden" name="due_date" value="<?php echo $due_date;?>" />
+                  <span id="duedateview"><?php echo $due_date;?></span> <small>|</small>
+                  <a href="#" onClick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $details_text['undecided']?>'">X</a>
+
                   <script type="text/javascript">
                   Calendar.setup(
                   {
-                     inputField  : "date_d",         // ID of the input field
+                     inputField  : "duedatehidden",         // ID of the input field
                      ifFormat    : "%d-%b-%Y",    // the date format
-                     displayArea : "date_d",       // The display field
+                     displayArea : "duedateview",       // The display field
                      daFormat    : "%d-%b-%Y",
-                     button      : "date_d"       // ID of the button
+                     button      : "duedateview"       // ID of the button
                   }
                   );
                   </script>
