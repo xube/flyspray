@@ -160,6 +160,7 @@ $details_text = array (
 'open'                  =>    'OTWARTE',
 'closed'                =>    'ZAMKNIĘTE',
 'depgraph'              =>    'Pokaż graf zależności',
+'reset'                 =>    'Przywróć',
 
 );
 // vim:fenc=utf-8:enc=utf-8

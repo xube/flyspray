@@ -61,7 +61,7 @@ $index_text = array (
 'dueanytime'               =>    'Dowolna data',
 'selectduedate'            =>    'Wybierz datę',
 'toggleselected'           =>    'Przełącz zaznaczone',
-
+'due'                      =>    'Wymagane',
 
 );
 // vim:fenc=utf-8:enc=utf-8

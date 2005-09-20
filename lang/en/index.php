@@ -56,7 +56,6 @@ $index_text = array (
 'dueanytime'               =>    'Due anytime',
 'selectduedate'            =>    'Select Due Date',
 'toggleselected'           =>    'Toggle Selected',
-'selectduedate'            =>    'Select Due Date',
 'due'                      =>    'Due',
 
 );
