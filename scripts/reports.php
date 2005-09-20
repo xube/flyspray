@@ -288,6 +288,21 @@ function events_report()
    $index_text = null;
 
 
+// Temporary workaround for unset variables
+if (empty($_REQUEST['sort']) )
+   $_REQUEST['sort'] = 'asc';
+
+if (empty($_REQUEST['order']) )
+   $_REQUEST['order'] = 'id';
+
+if (empty($_REQUEST['date']) )
+   $_REQUEST['date'] = 'within';
+
+if (empty($_REQUEST['within']) )
+   $_REQUEST['within'] = 'year';
+// End of temp workaround
+
+
 switch ($_REQUEST['sort']) {
     case "asc":
         $sort = "ASC";

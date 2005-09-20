@@ -652,7 +652,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
    {
 
       // If the passwords matched
-      if ($_POST['user_pass'] == $_POST['user_pass2']) )
+      if ($_POST['user_pass'] == $_POST['user_pass2'])
       {
          // Check that the user entered the right confirmation code
          $code_check = $db->Query("SELECT * FROM {$dbprefix}registrations WHERE magic_url = ?", array($_POST['magic_url']));

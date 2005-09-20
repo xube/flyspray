@@ -1477,8 +1477,7 @@ echo '</div>';
    while ($row = $db->FetchArray($get_related))
    {
       echo '<p>';
-      $summary = stripslashes($row['summary']);
-      echo '<a href="' . $fs->CreateURL('details', $row['this_task']) . '">FS#' . $row['this_task'] . ' &mdash; ' . stripslashes($row['item_summary']) . '</a><br />';
+      echo '<a href="' . $fs->CreateURL('details', $row['this_task']) . '">FS#' . $row['this_task'] . ' &mdash; ' . htmlspecialchars(stripslashes($row['item_summary'])) . '</a><br />';
       echo '</p>';
    }
 
