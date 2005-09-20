@@ -414,14 +414,16 @@ if ($task_details['project_is_active'] == '1'
                   if (!empty($task_details['due_date']) )
                   {
                      $due_date = $fs->formatDate($task_details['due_date'], false);
+                     $view_date = $fs->formatDate($task_details['due_date'], false);
                   } else
                   {
-                     $due_date = $details_text['undecided'];
+                     $due_date = '0';
+                     $view_date = $details_text['undecided'];
                   }
                   ?>
 
                   <input id="duedatehidden" type="hidden" name="due_date" value="<?php echo $due_date;?>" />
-                  <span id="duedateview"><?php echo $due_date;?></span> <small>|</small>
+                  <span id="duedateview"><?php echo $view_date;?></span> <small>|</small>
                   <a href="#" onClick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $details_text['undecided']?>'">X</a>
 
                   <script type="text/javascript">
