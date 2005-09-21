@@ -633,7 +633,7 @@ function GetTaskDetails($task_id)
          $status = $details_text['open'] . ':: ' . $task_details['status_name'];
       }
 
-      return $status . ': ' . substr($task_details['item_summary'],0,40);
+      return $status . ': ' . htmlspecialchars(stripslashes(substr($task_details['item_summary'],0,40)));
    }
 
 

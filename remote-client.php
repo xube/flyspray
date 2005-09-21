@@ -53,7 +53,7 @@ if (!isset($_REQUEST['username']))
          <caption>Request task details</caption>
          <tr>
          <td>Base URL to Flyspray</td>
-         <td><input name="url" type="text" size="30" value="<? echo $server;?>" /></td>
+         <td><input name="url" type="text" size="30" value="<?php echo $server;?>" /></td>
          </tr>
          <tr>
          <td>Your User Name:</td>
@@ -114,10 +114,9 @@ if (!isset($_REQUEST['username']))
 
 
 
-         <?
-         // If something was posted, use this second section
+<?php
+// If something was posted, use this second section
 }
-//if (isset($_REQUEST['username']))
 else
 {
    //echo "<div style=\"border:1px solid gray;padding:8px;overflow:scroll;height:400px;left:20px;width:350px;position:relative;float:left\">";

@@ -791,7 +791,7 @@ foreach ($perpagevals as $n) {
 
    </fieldset>
 
-<?
+<?php
 // End of task types
 
 //////////////////////////
@@ -889,7 +889,7 @@ foreach ($perpagevals as $n) {
 
 </fieldset>
 
-<?
+<?php
 // End of Resolutions
 
 /////////////////////////

@@ -50,7 +50,7 @@ if ($permissions['manage_project'] == '1')
    if ((isset($_GET['area']) && $_GET['area'] == 'prefs') OR !isset($_GET['area']))
    {
 
-      echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $project_prefs['project_title'] . ': ' . $admin_text['preferences'] . '</h3>';
+      echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . htmlspecialchars(stripslashes($project_prefs['project_title'])) . ': ' . $admin_text['preferences'] . '</h3>';
    ?>
 
    <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
@@ -682,7 +682,7 @@ if ($permissions['manage_project'] == '1')
     </form>
 </fieldset>
 
-<?
+<?php
    //////////////////////////////////
    // Start of the Categories area //
    //////////////////////////////////

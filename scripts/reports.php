@@ -68,7 +68,7 @@ function changelog_report()
 
         <?php echo $reports_text['listfrom']?>
 
-        <input id="startdate" type="text" name="startdate" size="10" value="<?=$startdate?>" />
+        <input id="startdate" type="text" name="startdate" size="10" value="<?php echo $startdate?>" />
         <button id="triggerstartdate">...</button>
         <script type="text/javascript">
           Calendar.setup(
@@ -98,7 +98,7 @@ function changelog_report()
                 <option value="desc" <?php if($sort == 'desc') { echo "selected=\"selected\"";};?>><?php echo $reports_text['recentfirst'];?></option>
         </select>
 
-        <input type="submit" class="mainbutton" name="submit" value="<?=$reports_text['show']?>" />
+        <input type="submit" class="mainbutton" name="submit" value="<?php echo $reports_text['show']?>" />
 
         </form>
 
