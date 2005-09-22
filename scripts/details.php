@@ -90,8 +90,6 @@ if ($task_details['project_is_active'] == '1'
          // or, if the user is logged in
          } elseif (isset($_COOKIE['flyspray_userid']))
          {
-            // This query needs fixing.  It returns double results if a project has the 'others view' option turned on
-            // This means I had to make it strip duplicate results when cycling through projects a bit further down...
                $get_projects = $db->Query("SELECT p.*
                                           FROM {$dbprefix}projects p
                                           LEFT JOIN {$dbprefix}groups g ON p.project_id = g.belongs_to_project
@@ -99,7 +97,8 @@ if ($task_details['project_is_active'] == '1'
                                           WHERE ((uig.user_id = ?
                                           AND g.view_tasks = '1')
                                           OR p.others_view = '1')
-                                          AND p.project_is_active = '1'",
+                                          AND p.project_is_active = '1'
+					  GROUP BY p.project_id",
                                           array($current_user['user_id'])
                                         );
          } else
@@ -112,18 +111,13 @@ if ($task_details['project_is_active'] == '1'
          }
 
          // Cycle through the results from whichever query above
-         // The query above is dodgy, and returns duplicate results... so I add each result to an array and filter dupes - FIXME
-         $project_list = array();
          while ($row = $db->FetchArray($get_projects))
          {
-            if ($project_id == $row['project_id'] && !empty($_GET['project']) && !in_array($row['project_id'], $project_list))
+            if ($project_id == $row['project_id'])
             {
                echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
-               $project_list[] = $row['project_id'];
-            } elseif (!in_array($row['project_id'], $project_list))
-            {
+            } else {
                echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
-               $project_list[] = $row['project_id'];
             }
 
          }
