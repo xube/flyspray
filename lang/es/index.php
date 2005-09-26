@@ -12,7 +12,7 @@ $index_text = array (
 'allstatuses'		=>	'Todos los estados',
 'allopentasks'		=>	'Todas las tareas abiertas',
 'sortthiscolumn'	=>	'Ordenar por esta columna',
-'id'			=>	'ID',
+'id'				=>	'ID',
 'tasktype'			=>	'Tipo de Tarea',
 'project'			=>	'Projecto',
 'category'			=>	'Categoria',
@@ -32,16 +32,16 @@ $index_text = array (
 'closed'			=>	'Cerrada',
 'dueanyversion'		=>	'Agendada para cualquier version',
 'dueversion'		=>	'Agendada para',
-'project'		=>	'Proyecto',
-'category'		=>	'Categoria',
-'lastedit'		=>	'Ultima edicion',
+'project'			=>	'Proyecto',
+'category'			=>	'Categoria',
+'lastedit'			=>	'Ultima edicion',
 'assignedto'		=>	'Asignada a',
-'os'			=>	'Sistema Operativo',
+'os'				=>	'Sistema Operativo',
 'reportedin'		=>	'Reportada en',
-'openedby'		=>	'Abierta por',
-'comments'		=>      'Comentarios',
-'attachments'		=>      'Adjuntos',
-'priority'		=>	'Prioridad',
+'openedby'			=>	'Abierta por',
+'comments'			=>  'Comentarios',
+'attachments'		=>  'Adjuntos',
+'priority'			=>	'Prioridad',
 
 
 // Added in version 0.9.8
@@ -56,7 +56,7 @@ $index_text = array (
 'dueanytime'               =>    'Vencen en cualquier momento',
 'selectduedate'            =>    'Elija fecha de vencimiento',
 'toggleselected'           =>    'Invertir seleccion',
-
+'due'                      =>    'Vence',
 
 );
 ?>

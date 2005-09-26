@@ -1372,14 +1372,6 @@ foreach ($perpagevals as $n) {
       </tr>
       <tr>
          <td>
-            <label for="inline_images"><?php echo $newproject_text['inlineimages'];?></label>
-         </td>
-         <td>
-            <input id="inline_images" type="checkbox" name="inline_images" value="1" />
-         </td>
-      </tr>
-      <tr>
-         <td>
             <label for="intro_message"><?php echo $newproject_text['intromessage'];?></label>
          </td>
          <td>

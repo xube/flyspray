@@ -961,25 +961,32 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_POST['action'] == "newproject"
           && $permissions['is_admin'] == '1') {
 
-  if ($_POST['project_title'] != '') {
+   if ($_POST['project_title'] != '') {
 
-    $insert = $db->Query("INSERT INTO {$dbprefix}projects
+      // FIXME: Temporary workaround to supress notices
+      if (empty($_POST['show_logo']) )
+         $_POST['show_logo'] = '0';
+
+      if (empty($_POST['others_view']) )
+         $_POST['others_view'] = '0';
+
+      if (empty($_POST['anon_open']) )
+         $_POST['anon_open'] = '0';
+
+
+      $insert = $db->Query("INSERT INTO {$dbprefix}projects
                               (project_title,
                               theme_style,
                               show_logo,
-                              inline_images,
-
                               intro_message,
                               others_view,
                               anon_open,
                               project_is_active,
                               visible_columns)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                             array($_POST['project_title'],
                               $_POST['theme_style'],
                               $db->emptyToZero($_POST['show_logo']),
-                              $db->emptyToZero($_POST['inline_images']),
-
                               $_POST['intro_message'],
                               $db->emptyToZero($_POST['others_view']),
                               $db->emptyToZero($_POST['anon_open']),

@@ -170,14 +170,6 @@ if ($permissions['manage_project'] == '1')
                <input id="showlogo" type="checkbox" name="show_logo" value="1" <?php if ($project_prefs['show_logo'] == '1') { echo 'checked="checked"'; }; ?> />
                </td>
             </tr>
-            <!--<tr>
-               <td>
-               <label for="inlineimages"><?php echo $admin_text['showinlineimages'];?></label>
-               </td>
-               <td>
-               <input id="inlineimages" type="checkbox" name="inline_images" value="1" <?php if ($project_prefs['inline_images'] == '1') { 'checked="checked"'; }; ?> />
-               </td>
-            </tr>-->
             <tr>
                <td><label><?php echo $admin_text['visiblecolumns'];?></label></td>
                <td class="admintext">
