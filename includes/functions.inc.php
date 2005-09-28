@@ -222,7 +222,8 @@ function GetTaskDetails($task_id)
          if (empty($val))
             continue;
 
-         $group_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}groups WHERE group_id = ?", array($val)));
+         $result = $db->Query("SELECT * FROM {$dbprefix}groups WHERE group_id = ?", array($val));
+         $group_details = $db->FetchArray($result);
 
          // Check that there is a user in the selected group prior to display
          $check_group = $db->Query("SELECT * FROM {$dbprefix}users_in_groups WHERE group_id = ?", array($group_details['group_id']));
@@ -509,13 +510,14 @@ function GetTaskDetails($task_id)
       $current_user = $this->getUserDetails($user_id);
 
       // Get the global group permissions for the current user
-      $global_permissions = $db->FetchArray($db->Query("SELECT *
+      $result = $db->Query("SELECT *
                                                         FROM {$dbprefix}groups g
                                                         LEFT JOIN {$dbprefix}users_in_groups uig ON g.group_id = uig.group_id
                                                         WHERE uig.user_id = ? and g.belongs_to_project = '0'",
                                                         array($user_id)
-                                                       ));
+                                                       );
 
+      $global_permissions = $db->FetchArray($result);
 
       // Get the project-level group for this user, and put the permissions into an array
       $search_project_group = $db->Query("SELECT * FROM {$dbprefix}groups

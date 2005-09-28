@@ -438,23 +438,24 @@ class Backend {
                 );
 
       // Get the task id back
-      $task_details = $db->FetchArray($db->Query("SELECT task_id, item_summary, product_category
+      $result = $db->Query("SELECT task_id, item_summary, product_category
                                                 FROM {$dbprefix}tasks
                                                 WHERE item_summary = ?
                                                 AND detailed_desc = ?
                                                 ORDER BY task_id DESC",
-                                                array($summary, $desc), 1));
+                                                array($summary, $desc), 1);
+      $task_details = $db->FetchArray($result);
 
 
       $taskid = $task_details['task_id'];
       // Log that the task was opened
       $fs->logEvent($task_details['task_id'], 1);
 
-      $cat_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}list_category
+      $result = $db->Query("SELECT * FROM {$dbprefix}list_category
                                                  WHERE category_id = ?",
                                                  array($category)
-                                               )
                                     );
+      $cat_details = $db->FetchArray($result);
 
       // We need to figure out who is the category owner for this task
       if (!empty($cat_details['category_owner']))

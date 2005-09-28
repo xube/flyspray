@@ -448,11 +448,12 @@ foreach ($perpagevals as $n) {
                <select id="groupin" name="group_in">
                <?php
                // Get the groups list
-               $current_global_group = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}users_in_groups uig
+               $result = $db->Query("SELECT * FROM {$dbprefix}users_in_groups uig
                                                                         LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id
                                                                         WHERE uig.user_id = ? AND g.belongs_to_project = ?
                                                                         ORDER BY g.group_id ASC",
-                                                                        array($user_details['user_id'], '0')));
+                                                                        array($user_details['user_id'], '0'));
+               $current_global_group = $db->FetchArray($result);
 
                // Now, get the list of global groups and compare for display
                $global_groups = $db->Query("SELECT * FROM {$dbprefix}groups

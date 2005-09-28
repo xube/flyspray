@@ -123,7 +123,8 @@ if ( (isset($_REQUEST['do'])  && $_REQUEST['do']  == 'details') ||
    elseif ( isset($_REQUEST['id']) && !is_array($_REQUEST['id']) ) { $id = $_REQUEST['id']; }
    if ( isset($id) )
    {
-     $project_id = $db->FetchOne($db->Query("SELECT attached_to_project FROM {$dbprefix}tasks WHERE task_id = ?", array($id)));
+     $result = $db->Query("SELECT attached_to_project FROM {$dbprefix}tasks WHERE task_id = ?", array($id));
+     $project_id = $db->FetchOne($result);
      setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
    }
 }

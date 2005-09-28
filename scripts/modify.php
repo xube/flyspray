@@ -93,12 +93,13 @@ if ($_POST['action'] == 'newtask'
 
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
-    $task_details = $db->FetchArray($db->Query("SELECT task_id, item_summary, product_category
+    $result = $db->Query("SELECT task_id, item_summary, product_category
                                                 FROM {$dbprefix}tasks
                                                 WHERE item_summary = ?
                                                 AND detailed_desc = ?
                                                 ORDER BY task_id DESC",
-                                                array($item_summary, $detailed_desc), 1));
+                                                array($item_summary, $detailed_desc), 1);
+    $task_details = $db->FetchArray($result);
 
    // Log that the task was opened
    $fs->logEvent($task_details['task_id'], 1);
@@ -112,11 +113,11 @@ if ($_POST['action'] == 'newtask'
                                         );
       }
 
-   $cat_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}list_category
+   $result = $db->Query("SELECT * FROM {$dbprefix}list_category
                                               WHERE category_id = ?",
                                               array($_POST['product_category'])
-                                            )
                                  );
+   $cat_details = $db->FetchArray($result);
 
    // We need to figure out who is the category owner for this task
    if (!empty($cat_details['category_owner']))
@@ -125,12 +126,12 @@ if ($_POST['action'] == 'newtask'
 
    } elseif (!empty($cat_details['parent_id']))
    {
-      $parent_cat_details = $db->FetchArray($db->Query("SELECT category_owner
+      $result = $db->Query("SELECT category_owner
                                                          FROM {$dbprefix}list_category
                                                          WHERE category_id = ?",
                                                          array($cat_details['parent_id'])
-                                                      )
                                             );
+      $parent_cat_details = $db->FetchArray($result);
 
       // If there's a parent category owner, send to them
       if (!empty($parent_cat_details['category_owner']))
@@ -237,7 +238,8 @@ if ($_POST['action'] == 'newtask'
    <?php
    } else {
 
-      $old_details_history = $db->FetchRow($db->Query("SELECT * FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id'])));
+      $result = $db->Query("SELECT * FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id']));
+      $old_details_history = $db->FetchRow($result);
 
       $item_summary = $_POST['item_summary'];
       $detailed_desc = $_POST['detailed_desc'];
@@ -290,7 +292,8 @@ if ($_POST['action'] == 'newtask'
       // Get the details of the task we just updated
       // To generate the changed-task message
       $new_details = $fs->GetTaskDetails($_POST['task_id']);
-      $new_details_history = $db->FetchRow($db->Query("SELECT * FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id'])));
+      $result = $db->Query("SELECT * FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id']));
+      $new_details_history = $db->FetchRow($result);
 
       // Now we compare old and new, mark the changed fields
       $field = array(
@@ -400,10 +403,12 @@ if ($_POST['action'] == 'newtask'
       }
 
       // Get the resolution name for the notifications
-      $get_res = $db->FetchArray($db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason'])));
+      $result = $db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($_POST['resolution_reason']));
+      $get_res = $db->FetchArray($result);
 
       // Get the item summary for the notifications
-      list($item_summary) = $db->FetchArray($db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id'])));
+      $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($_POST['task_id']));
+      list($item_summary) = $db->FetchArray($result);
       $item_summary = stripslashes($item_summary);
 
       // Create notification
@@ -485,12 +490,12 @@ if ($_POST['action'] == 'newtask'
                   VALUES ( ?, ?, ?, ? )",
                   array($_POST['task_id'], $now, $_COOKIE['flyspray_userid'], $comment));
 
-      $comment = $db->FetchRow($db->Query("SELECT comment_id FROM {$dbprefix}comments
+      $result = $db->Query("SELECT comment_id FROM {$dbprefix}comments
                                            WHERE task_id = ?
                                            ORDER BY comment_id DESC",
                                            array($_POST['task_id']), 1
-                                         )
                               );
+      $comment = $db->FetchRow($result);
 
       $fs->logEvent($_POST['task_id'], 4, $comment['comment_id']);
 
@@ -687,7 +692,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
             // Get this user's id for the record
-            $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}users WHERE user_name = ?", array($reg_details['user_name'])));
+            $result = $db->Query("SELECT * FROM {$dbprefix}users WHERE user_name = ?", array($reg_details['user_name']));
+            $user_details = $db->FetchArray($result);
 
             // Now, create a new record in the users_in_groups table
             $set_global_group = $db->Query("INSERT INTO {$dbprefix}users_in_groups
@@ -781,7 +787,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                  );
 
         // Get this user's id for the record
-        $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}users WHERE user_name = ?", array($_POST['user_name'])));
+        $result = $db->Query("SELECT * FROM {$dbprefix}users WHERE user_name = ?", array($_POST['user_name']));
+        $user_details = $db->FetchArray($result);
 
         // Now, create a new record in the users_in_groups table
         $set_global_group = $db->Query("INSERT INTO {$dbprefix}users_in_groups
@@ -994,7 +1001,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                               'id tasktype severity summary status dueversion progress',
                               ));
 
-    $newproject = $db->FetchArray($db->Query("SELECT project_id FROM {$dbprefix}projects ORDER BY project_id DESC", false, 1));
+    $result = $db->Query("SELECT project_id FROM {$dbprefix}projects ORDER BY project_id DESC", false, 1);
+    $newproject = $db->FetchArray($result);
 
       $add_group = $db->Query("INSERT INTO {$dbprefix}groups
                                       (group_name,
@@ -1172,7 +1180,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
          $notify->Create('8', $_POST['task_id']);
 
-         $row = $db->FetchRow($db->Query("SELECT attachment_id FROM {$dbprefix}attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1));
+         $result = $db->Query("SELECT attachment_id FROM {$dbprefix}attachments WHERE task_id = ? ORDER BY attachment_id DESC", array($_POST['task_id']), 1);
+         $row = $db->FetchRow($result);
          $fs->logEvent($_POST['task_id'], 7, $row['attachment_id']);
 
          // Success message!
@@ -1347,7 +1356,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 
       // Get the group definition that this group belongs to
-      $group_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}groups WHERE group_id = ?", array($_POST['group_id'])));
+      $result = $db->Query("SELECT * FROM {$dbprefix}groups WHERE group_id = ?", array($_POST['group_id']));
+      $group_details = $db->FetchArray($result);
 
       $_SESSION['SUCCESS'] = $modify_text['groupupdated'];
       $fs->redirect($_POST['prev_page']);
@@ -1784,12 +1794,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif ($_GET['action'] == "deletecomment"
 && $permissions['delete_comments'] == '1')
 {
-   $comment = $db->FetchRow($db->Query("SELECT comment_text, user_id, date_added
+   $result = $db->Query("SELECT comment_text, user_id, date_added
                                         FROM {$dbprefix}comments
                                         WHERE comment_id = ?",
                                         array($_GET['comment_id'])
-                                      )
                            );
+   $comment = $db->FetchRow($result);
 
    // Check for files attached to this comment
    $check_attachments = $db->Query("SELECT * FROM {$dbprefix}attachments
@@ -1891,7 +1901,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           && ($permissions['manage_project'] == '1'
               OR $permissions['is_admin'] == '1')) {
 
-  $reminder = $db->FetchRow($db->Query("SELECT to_user_id FROM {$dbprefix}reminders WHERE reminder_id = ?", array($_POST['reminder_id'])));
+  $result = $db->Query("SELECT to_user_id FROM {$dbprefix}reminders WHERE reminder_id = ?", array($_POST['reminder_id']));
+  $reminder = $db->FetchRow($result);
   $db->Query("DELETE FROM {$dbprefix}reminders WHERE reminder_id = ?",
                     array($_POST['reminder_id']));
 

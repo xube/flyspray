@@ -1842,7 +1842,8 @@ if (@$permissions['view_history'] == '1')
 
             } elseif ($history['event_type'] == '2') {      //Task closed
                 echo $details_text['taskclosed'];
-                $res_name = $db->FetchRow($db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($newvalue)));
+                $result = $db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($newvalue));
+                $res_name = $db->FetchRow($result);
                 echo " ({$res_name['resolution_name']}";
                 if (!empty($oldvalue))
                 {
