@@ -322,7 +322,7 @@ else
 
    <input class="adminbutton" type="button" onclick="addUploadFields()" value="Select more files" />
 
-   <input class="adminbutton" type="submit" name="buSubmit" value="Add this task" onclick="Disable1()" accesskey="s"/>
+   <input class="adminbutton" type="submit" name="buSubmit" value="Add this task" accesskey="s"/>
             &nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked="checked" />Notify me whenever this task changes
 
 

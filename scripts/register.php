@@ -107,7 +107,7 @@ if (isset($_GET['magic']))
     </tr>
     <tr>
       <td colspan="2" class="buttons">
-      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $register_text['sendcode'];?>" onclick="Disable1()" />
+      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $register_text['sendcode'];?>" />
       </td>
     </tr>
   </table>

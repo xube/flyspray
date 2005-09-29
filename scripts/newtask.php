@@ -304,7 +304,7 @@ if ($permissions['open_new_tasks'] == '1'
    }
    ?>
 
-   <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newtask_text['addthistask'];?>" onclick="Disable1()" accesskey="s"/>
+   <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newtask_text['addthistask'];?>" accesskey="s"/>
    <?php
       if (isset($_COOKIE['flyspray_userid']))
    {
