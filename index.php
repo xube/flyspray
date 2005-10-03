@@ -101,16 +101,15 @@ if (!$db->CountRows($check_proj_exists))
 // If a file was requested, deliver it
 if (isset($_GET['getfile']) && !empty($_GET['getfile']))
 {
-   list($task_id, $orig_name, $file_name, $file_type)
-      = $db->FetchArray($db->Query("SELECT task_id,
-                                    orig_name,
-                                    file_name,
-                                    file_type
-                                    FROM {$dbprefix}attachments
-                                    WHERE attachment_id = ?",
-                                    array($_GET['getfile'])
-                                 )
-                        );
+   $result = $db->Query("SELECT task_id,
+                         orig_name,
+                         file_name,
+                         file_type
+                         FROM {$dbprefix}attachments
+                         WHERE attachment_id = ?",
+                         array($_GET['getfile'])
+                       );
+   list($task_id, $orig_name, $file_name, $file_type) = $db->FetchArray($result);
 
    // Retrieve permissions!
    $task_details = $fs->GetTaskDetails($task_id);

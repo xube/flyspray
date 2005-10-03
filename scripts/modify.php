@@ -1849,11 +1849,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
           && $permissions['delete_attachments'] == '1')
 {
    // if an attachment needs to be deleted do it right now
-   $row = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}attachments
-                                      WHERE attachment_id = ?",
-                                      array($_REQUEST['id'])
-                                    )
-                         );
+   $result = $db->Query("SELECT * FROM {$dbprefix}attachments
+                         WHERE attachment_id = ?",
+                         array($_REQUEST['id'])
+                       );
+   $row = $db->FetchArray($result);
 
    @unlink("attachments/" . $row['file_name']);
    $db->Query("DELETE FROM {$dbprefix}attachments
@@ -2124,12 +2124,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 } elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'denypmreq' && $permissions['manage_project'] == '1')
 {
    // Get info on the pm request
-   $req_details = $db->FetchArray($db->Query("SELECT task_id
-                                              FROM {$dbprefix}admin_requests
-                                              WHERE request_id = ?",
-                                              array($_REQUEST['req_id'])
-                                             )
-                                 );
+   $result = $db->Query("SELECT task_id
+                         FROM {$dbprefix}admin_requests
+                         WHERE request_id = ?",
+                         array($_REQUEST['req_id'])
+                        );
+   $req_details = $db->FetchArray($result);
 
    // Mark the PM request as 'resolved'
    $db->Query("UPDATE {$dbprefix}admin_requests
@@ -2231,9 +2231,10 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
              OR $permissions['modify_all_tasks'] =='1')) {
 
   // We need some info about this dep for the task history
-  $dep_info = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}dependencies
-                                          WHERE depend_id = ?",
-                                          array($_GET['depend_id'])));
+  $result = $db->Query("SELECT * FROM {$dbprefix}dependencies
+                        WHERE depend_id = ?",
+                        array($_GET['depend_id']));
+  $dep_info = $db->FetchArray($result);
 
    $notify->Create('6', $dep_info['task_id']);
 
@@ -2326,11 +2327,11 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
      && $_POST['pass2'] == $_POST['pass2'])
    {
       // Get the user's details from the magic url
-      $user_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}users
-                                                  WHERE magic_url = ?",
-                                                  array($_POST['magic_url'])
-                                                )
-                                     );
+      $result = $db->Query("SELECT * FROM {$dbprefix}users
+                            WHERE magic_url = ?",
+                            array($_POST['magic_url'])
+                          );
+      $user_details = $db->FetchArray($result);
 
       // Encrypt the new password
       $new_pass_hash = $fs->cryptPassword($_POST['pass1']);

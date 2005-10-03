@@ -10,11 +10,10 @@ if (empty($_GET['project']) )
    $forproject = $newgroup_text['globalgroups'];
 } else
 {
-   $project_details = $db->FetchArray($db->Query("SELECT * FROM {$dbprefix}projects
-                                                  WHERE project_id = ?",
-                                                  array($_GET['project'])
-                                                )
-                                     );
+   $result = $db->Query("SELECT * FROM {$dbprefix}projects
+                         WHERE project_id = ?",
+                         array($_GET['project']));
+   $project_details = $db->FetchArray($result);
    $forproject = $project_details['project_title'];
 }
 ?>

@@ -284,7 +284,8 @@ $get = $get . '&amp;tasks=' . $_GET['tasks'] . $extraurl;
 
 <?php
 // Check that the requested project is active
-//$getproject = $db->FetchArray($db->Query('SELECT * FROM {$dbprefix}projects WHERE project_id = ?', array($project_id)));
+//$result = $db->Query('SELECT * FROM {$dbprefix}projects WHERE project_id = ?', array($project_id));
+//$getproject = $db->FetchArray($result);
 
 if ($project_prefs['project_is_active'] == '1'
   && ($project_prefs['others_view'] == '1' OR @$permissions['view_tasks'] == '1')

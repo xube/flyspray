@@ -464,12 +464,11 @@ class Backend {
 
       } elseif (!empty($cat_details['parent_id']))
       {
-         $parent_cat_details = $db->FetchArray($db->Query("SELECT category_owner
-                                                           FROM {$dbprefix}list_category
-                                                           WHERE category_id = ?",
-                                                           array($cat_details['parent_id'])
-                                                         )
-                                              );
+         $result = $db->Query("SELECT category_owner
+                               FROM {$dbprefix}list_category
+                               WHERE category_id = ?",
+                               array($cat_details['parent_id']));
+         $parent_cat_details = $db->FetchArray($result);
 
          // If there's a parent category owner, send to them
          if (!empty($parent_cat_details['category_owner']))
@@ -573,13 +572,12 @@ class Backend {
                          );
 
                // Fetch the attachment id for the history log
-               $attachment = $db->FetchRow($db->Query("SELECT attachment_id
-                                                       FROM {$dbprefix}attachments
-                                                       WHERE task_id = ?
-                                                       ORDER BY attachment_id DESC",
-                                                       array($taskid), 1
-                                                     )
-                                          );
+               $result = $db->Query("SELECT attachment_id
+                                     FROM {$dbprefix}attachments
+                                     WHERE task_id = ?
+                                     ORDER BY attachment_id DESC",
+                                     array($taskid), 1);
+               $attachment = $db->FetchRow($result);
                // Log to task history
                $fs->logEvent($taskid, 7, $attachment['attachment_id']);
             }

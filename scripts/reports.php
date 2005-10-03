@@ -583,20 +583,26 @@ function EventDescription($history)
                 break;
             case 'attached_to_project':
                 $field = $details_text['attachedtoproject'];
-                list($oldprojecttitle) = $db->FetchRow($db->Query("SELECT project_title FROM {$dbprefix}projects WHERE project_id = ?", array($oldvalue)));
-                list($newprojecttitle) = $db->FetchRow($db->Query("SELECT project_title FROM {$dbprefix}projects WHERE project_id = ?", array($newvalue)));
+                $result = $db->Query("SELECT project_title FROM {$dbprefix}projects WHERE project_id = ?", array($oldvalue));
+                list($oldprojecttitle) = $db->FetchRow($result);
+                $result = $db->Query("SELECT project_title FROM {$dbprefix}projects WHERE project_id = ?", array($newvalue));
+                list($newprojecttitle) = $db->FetchRow($result);
                 $oldvalue = "<a href=\"?project={$oldvalue}\">{$oldprojecttitle}</a>";
                 $newvalue = "<a href=\"?project={$newvalue}\">{$newprojecttitle}</a>";
                 break;
             case 'task_type':
                 $field = $details_text['tasktype'];
-                list($oldvalue) = $db->FetchRow($db->Query("SELECT tasktype_name FROM {$dbprefix}list_tasktype WHERE tasktype_id = ?", array($oldvalue)));
-                list($newvalue) = $db->FetchRow($db->Query("SELECT tasktype_name FROM {$dbprefix}list_tasktype WHERE tasktype_id = ?", array($newvalue)));
+                $result = $db->Query("SELECT tasktype_name FROM {$dbprefix}list_tasktype WHERE tasktype_id = ?", array($oldvalue));
+                list($oldvalue) = $db->FetchRow($result);
+                $result = $db->Query("SELECT tasktype_name FROM {$dbprefix}list_tasktype WHERE tasktype_id = ?", array($newvalue));
+                list($newvalue) = $db->FetchRow($result);
                 break;
             case 'product_category':
                 $field = $details_text['category'];
-                list($oldvalue) = $db->FetchRow($db->Query("SELECT category_name FROM {$dbprefix}list_category WHERE category_id = ?", array($oldvalue)));
-                list($newvalue) = $db->FetchRow($db->Query("SELECT category_name FROM {$dbprefix}list_category WHERE category_id = ?", array($newvalue)));
+                $result = $db->Query("SELECT category_name FROM {$dbprefix}list_category WHERE category_id = ?", array($oldvalue));
+                list($oldvalue) = $db->FetchRow($result);
+                $result = $db->Query("SELECT category_name FROM {$dbprefix}list_category WHERE category_id = ?", array($newvalue));
+                list($newvalue) = $db->FetchRow($result);
                 break;
             case 'item_status':
                 $field = $details_text['status'];
@@ -605,8 +611,10 @@ function EventDescription($history)
                 break;
             case 'operating_system':
                 $field = $details_text['operatingsystem'];
-                list($oldvalue) = $db->FetchRow($db->Query("SELECT os_name FROM {$dbprefix}list_os WHERE os_id = ?", array($oldvalue)));
-                list($newvalue) = $db->FetchRow($db->Query("SELECT os_name FROM {$dbprefix}list_os WHERE os_id = ?", array($newvalue)));
+                $result = $db->Query("SELECT os_name FROM {$dbprefix}list_os WHERE os_id = ?", array($oldvalue));
+                list($oldvalue) = $db->FetchRow($result);
+                $result = $db->Query("SELECT os_name FROM {$dbprefix}list_os WHERE os_id = ?", array($newvalue));
+                list($newvalue) = $db->FetchRow($result);
                 break;
             case 'task_severity':
                 $field = $details_text['severity'];
@@ -615,20 +623,24 @@ function EventDescription($history)
                 break;
             case 'product_version':
                 $field = $details_text['reportedversion'];
-                list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($oldvalue)));
-                list($newvalue) = $db->FetchRow($db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($newvalue)));
+                $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($oldvalue));
+                list($oldvalue) = $db->FetchRow($result);
+                $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($newvalue));
+                list($newvalue) = $db->FetchRow($result);
                 break;
             case 'closedby_version':
                 $field = $details_text['dueinversion'];
                 if (empty($oldvalue)) {
                     $oldvalue = $details_text['undecided'];
                 } else {
-                    list($oldvalue) = $db->FetchRow($db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($oldvalue)));
+                    $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($oldvalue));
+                    list($oldvalue) = $db->FetchRow($result);
                 };
                 if (empty($newvalue)) {
                     $newvalue = $details_text['undecided'];
                 } else {
-                    list($newvalue) = $db->FetchRow($db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($newvalue)));
+                    $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($newvalue));
+                    list($newvalue) = $db->FetchRow($result);
                 };
                 break;
             case 'percent_complete':
@@ -653,7 +665,8 @@ function EventDescription($history)
 
         } elseif ($history['event_type'] == 2) {      //Task closed
             $description = $details_text['taskclosed'];
-            $res_name = $db->FetchRow($db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($newvalue)));
+            $result = $db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($newvalue));
+            $res_name = $db->FetchRow($result);
             $description .= " ({$res_name['resolution_name']})";
 
         } elseif ($history['event_type'] == 3) {      //Task edited
@@ -698,11 +711,13 @@ function EventDescription($history)
             $description = "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
 
         } elseif ($history['event_type'] == 11) {      //Related task added
-            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue)));
+            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            list($related) = $db->FetchRow($result);
             $description = "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
         } elseif ($history['event_type'] == 12) {      //Related task deleted
-            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue)));
+            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            list($related) = $db->FetchRow($result);
             $description = "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
         } elseif ($history['event_type'] == 13) {      //Task reopened
@@ -717,12 +732,14 @@ function EventDescription($history)
                 $description = "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
             };
         } elseif ($history['event_type'] == 15) {      //Task added to related list of another task
-            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue)));
+            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            list($related) = $db->FetchRow($result);
             $related = htmlspecialchars(stripslashes($related));
             $description = "{$details_text['addedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
         } elseif ($history['event_type'] == 16) {      //Task deleted from related list of another task
-            list($related) = $db->FetchRow($db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue)));
+            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            list($related) = $db->FetchRow($result);
             $related = htmlspecialchars(stripslashes($related));
             $description = "{$details_text['deletedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 

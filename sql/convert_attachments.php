@@ -23,12 +23,11 @@ while($row = $db->FetchArray($attachments))
                array($row['task_id'], $row['date_added'], $row['added_by'], $row['file_desc']));
 
    // Retrieve the comment ID
-   $comment = $db->FetchRow($db->Query("SELECT * FROM {$dbprefix}comments
-                                        WHERE comment_text = ?
-                                        ORDER BY comment_id DESC",
-                                        array($row['file_desc']), 1
-                                      )
-                           );
+   $result = $db->Query("SELECT * FROM {$dbprefix}comments
+                         WHERE comment_text = ?
+                         ORDER BY comment_id DESC",
+                         array($row['file_desc']), 1));
+   $comment = $db->FetchRow($result);
 
    // Update the attachment entry to point it to the comment ID
    $db->Query("UPDATE {$dbprefix}attachments

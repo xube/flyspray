@@ -541,14 +541,14 @@ class Notifications {
       if ($type == '7')
       {
          // Get the comment information
-         $comment = $db->FetchArray($db->Query("SELECT comment_id, comment_text
-                                                FROM {$dbprefix}comments
-                                                WHERE user_id = ?
-                                                AND task_id = ?
-                                                ORDER BY comment_id DESC",
-                                                array($current_user['user_id'], $task_id), '1'
-                                              )
-                                   );
+         $result = $db->Query("SELECT comment_id, comment_text
+                               FROM {$dbprefix}comments
+                               WHERE user_id = ?
+                               AND task_id = ?
+                               ORDER BY comment_id DESC",
+                               array($current_user['user_id'], $task_id), '1'
+                             );
+         $comment = $db->FetchArray($result);
 
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
