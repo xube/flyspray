@@ -71,7 +71,7 @@ if (@$permissions['is_admin'] == "1"
     ?>
     <tr>
       <td colspan="2" class="buttons">
-      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newuser_text['registeraccount'];?>" onclick="Disable()" />
+      <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newuser_text['registeraccount'];?>" />
       </td>
     </tr>
   </table>

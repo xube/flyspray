@@ -9,9 +9,13 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == "logout")
    // Set cookie expiry time to the past, thus removing them
    setcookie('flyspray_userid', '', time()-60, '/');
    setcookie('flyspray_passhash', '', time()-60, '/');
+   if (isset($_COOKIE[session_name()])) {
+      setcookie(session_name(), '', time()-60, '/');
+   }
 
-   // Set status message and redirect
-   $_SESSION['SUCCESS'] = $authenticate_text['youareloggedout'];
+   // Unset all of the session variables.
+   $_SESSION = array();
+   session_destroy();
    $fs->redirect($conf['general']['baseurl']);
 
 // Otherwise, they requested login.  See if they provided the correct credentials...
