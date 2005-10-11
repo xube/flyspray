@@ -26,7 +26,7 @@ while($row = $db->FetchArray($attachments))
    $result = $db->Query("SELECT * FROM {$dbprefix}comments
                          WHERE comment_text = ?
                          ORDER BY comment_id DESC",
-                         array($row['file_desc']), 1));
+                         array($row['file_desc']), 1);
    $comment = $db->FetchRow($result);
 
    // Update the attachment entry to point it to the comment ID
