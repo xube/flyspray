@@ -43,7 +43,7 @@ Tasks:
 * assign task
 * close task
 * add dependency
-* add dependency on non-existent task
+* add dependency on non-existent task [F]
 * search for tasks (check all conditions--developers, categories,
   severities, etc.--separately)
 * show previous/next task using Prev / Next links
@@ -82,6 +82,7 @@ Administrator's toolbox:
 * editing existing lists
 * deleting list items where available
 * add new project
+* add category without owner
 
 Code quality:
 * check php syntax:

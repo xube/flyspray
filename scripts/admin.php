@@ -958,7 +958,7 @@ foreach ($perpagevals as $n) {
         <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
-         $fs->listUsers($novar, 0);
+         $fs->listUsers($row['category_owner'], 0);
         ?>
       </select>
       </td>
@@ -997,7 +997,7 @@ foreach ($perpagevals as $n) {
         <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
         <option value=""><?php echo $admin_text['selectowner'];?></option>
         <?php
-         $fs->listUsers($novar, 0);
+         $fs->listUsers($subrow['category_owner'], 0);
         ?>
       </select>
       </td>

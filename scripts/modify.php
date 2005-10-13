@@ -1600,10 +1600,12 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                 (project_id, category_name, list_position,
                                 show_in_list, category_owner, parent_id)
                                 VALUES (?, ?, ?, ?, ?, ?)",
-                        array($_POST['project_id'], $_POST['list_name'],
+                        array(
+			$db->emptyToZero($_POST['project_id']),
+			$_POST['list_name'],
                         $_POST['list_position'],
                         '1',
-                        $_POST['category_owner'],
+                        $db->emptyToZero($_POST['category_owner']),
                         $db->emptyToZero($_POST['parent_id'])));
 
       $_SESSION['SUCCESS'] = $modify_text['listitemadded'];

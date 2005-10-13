@@ -2,11 +2,11 @@
 INSERT INTO flyspray_prefs (pref_name, pref_value, pref_desc) VALUES ('global_theme', 'Bluey', 'Theme to use when viewing all projects');
 INSERT INTO flyspray_prefs (pref_name, pref_value, pref_desc) VALUES ('visible_columns', 'id project category tasktype severity summary status progress', 'Columns visible when viewing all projects');
 
-ALTER TABLE flyspray_list_tasktype ADD project_id NUMERIC(3);
+ALTER TABLE flyspray_list_tasktype ADD project_id BIGINT;
 UPDATE flyspray_list_tasktype SET project_id = 0;
 ALTER TABLE flyspray_list_tasktype ALTER project_id SET NOT NULL;
 
-ALTER TABLE flyspray_list_resolution ADD project_id NUMERIC(3);
+ALTER TABLE flyspray_list_resolution ADD project_id BIGINT;
 UPDATE flyspray_list_resolution SET project_id = 0;
 ALTER TABLE flyspray_list_resolution ALTER project_id SET NOT NULL;
 
@@ -27,7 +27,7 @@ CREATE TABLE flyspray_notification_messages (
 CREATE SEQUENCE "flyspray_notification_recipients_recipient_id_seq" START WITH 2;
 CREATE TABLE flyspray_notification_recipients (
 	recipient_id INT8  NOT NULL  DEFAULT nextval('"flyspray_notification_recipients_recipient_id_seq"'::text),
-	message_id  NUMERIC(10)  NOT NULL,
+	message_id  BIGINT  NOT NULL,
 	notify_method      TEXT   NOT NULL DEFAULT '',
 	notify_address      TEXT  NOT NULL DEFAULT '',
 	PRIMARY KEY (recipient_id)
@@ -39,7 +39,7 @@ ALTER TABLE flyspray_projects ALTER notify_email SET DEFAULT '';
 UPDATE flyspray_projects SET notify_email = '' WHERE notify_email IS NULL;
 ALTER TABLE flyspray_projects ALTER notify_email SET NOT NULL;
 
-ALTER TABLE flyspray_projects ADD notify_email_when NUMERIC(1);
+ALTER TABLE flyspray_projects ADD notify_email_when BIGINT;
 ALTER TABLE flyspray_projects ALTER notify_email_when SET DEFAULT 0;
 UPDATE flyspray_projects SET notify_email_when = 0 WHERE notify_email_when IS NULL;
 ALTER TABLE flyspray_projects ALTER notify_email_when SET NOT NULL;
@@ -49,7 +49,7 @@ ALTER TABLE flyspray_projects ALTER notify_jabber SET DEFAULT '';
 UPDATE flyspray_projects SET notify_jabber = '' WHERE notify_jabber IS NULL;
 ALTER TABLE flyspray_projects ALTER notify_jabber SET NOT NULL;
 
-ALTER TABLE flyspray_projects ADD notify_jabber_when NUMERIC(1);
+ALTER TABLE flyspray_projects ADD notify_jabber_when BIGINT;
 ALTER TABLE flyspray_projects ALTER notify_jabber_when SET DEFAULT 0;
 UPDATE flyspray_projects SET notify_jabber_when = 0 WHERE notify_jabber_when IS NULL;
 ALTER TABLE flyspray_projects ALTER notify_jabber_when SET NOT NULL;

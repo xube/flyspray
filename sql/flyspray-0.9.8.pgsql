@@ -10,12 +10,12 @@ SET client_encoding = 'UNICODE';
 
 CREATE TABLE flyspray_admin_requests (
     request_id bigint DEFAULT nextval('"flyspray_admin_requests_request_id_seq"'::text) NOT NULL,
-    project_id numeric(5,0) DEFAULT 0::numeric NOT NULL,
-    task_id numeric(5,0) DEFAULT 0::numeric NOT NULL,
-    submitted_by numeric(5,0) DEFAULT 0::numeric NOT NULL,
-    request_type numeric(2,0) DEFAULT 0::numeric NOT NULL,
+    project_id bigint DEFAULT 0::numeric NOT NULL,
+    task_id bigint DEFAULT 0::numeric NOT NULL,
+    submitted_by bigint DEFAULT 0::numeric NOT NULL,
+    request_type bigint DEFAULT 0::numeric NOT NULL,
     time_submitted text DEFAULT ''::text NOT NULL,
-    resolved_by numeric(5,0) DEFAULT 0::numeric NOT NULL,
+    resolved_by bigint DEFAULT 0::numeric NOT NULL,
     time_resolved text DEFAULT ''::text NOT NULL,
     reason_given text NOT NULL,
     deny_reason text DEFAULT ''::text NOT NULL
@@ -72,13 +72,13 @@ SELECT pg_catalog.setval('flyspray_assigned_assigned_id_seq', 1, false);
 
 CREATE TABLE flyspray_attachments (
     attachment_id bigint DEFAULT nextval('"flyspray_attachments_attachment_id_seq"'::text) NOT NULL,
-    task_id numeric(10,0) DEFAULT 0::numeric NOT NULL,
+    task_id bigint DEFAULT 0::numeric NOT NULL,
     orig_name text DEFAULT ''::text NOT NULL,
     file_name text DEFAULT ''::text NOT NULL,
     file_desc text DEFAULT ''::text NOT NULL,
     file_type text DEFAULT ''::text NOT NULL,
-    file_size numeric(20,0) DEFAULT 0::numeric NOT NULL,
-    added_by numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    file_size bigint DEFAULT 0::numeric NOT NULL,
+    added_by bigint DEFAULT 0::numeric NOT NULL,
     date_added text DEFAULT ''::text NOT NULL,
     comment_id bigint NOT NULL
 );
@@ -109,9 +109,9 @@ SELECT pg_catalog.setval('flyspray_attachments_attachment_id_seq', 1, false);
 
 CREATE TABLE flyspray_comments (
     comment_id bigint DEFAULT nextval('"flyspray_comments_comment_id_seq"'::text) NOT NULL,
-    task_id numeric(10,0) DEFAULT 0::numeric NOT NULL,
+    task_id bigint DEFAULT 0::numeric NOT NULL,
     date_added text DEFAULT ''::text NOT NULL,
-    user_id numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    user_id bigint DEFAULT 0::numeric NOT NULL,
     comment_text text NOT NULL
 );
 
@@ -141,8 +141,8 @@ SELECT pg_catalog.setval('flyspray_comments_comment_id_seq', 1, false);
 
 CREATE TABLE flyspray_dependencies (
     depend_id bigint DEFAULT nextval('"flyspray_dependencies_depend_id_seq"'::text) NOT NULL,
-    task_id numeric(10,0) DEFAULT 0::numeric NOT NULL,
-    dep_task_id numeric(10,0) DEFAULT 0::numeric NOT NULL
+    task_id bigint DEFAULT 0::numeric NOT NULL,
+    dep_task_id bigint DEFAULT 0::numeric NOT NULL
 );
 
 
@@ -173,27 +173,27 @@ CREATE TABLE flyspray_groups (
     group_id bigint DEFAULT nextval('"flyspray_groups_group_id_seq"'::text) NOT NULL,
     group_name text DEFAULT ''::text NOT NULL,
     group_desc text DEFAULT ''::text NOT NULL,
-    belongs_to_project numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    is_admin numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    manage_project numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    view_tasks numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    open_new_tasks numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    modify_own_tasks numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    modify_all_tasks numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    view_comments numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    add_comments numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    edit_comments numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    delete_comments numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    view_attachments numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    create_attachments numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    delete_attachments numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    view_history numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    close_own_tasks numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    close_other_tasks numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    assign_to_self numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    assign_others_to_self numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    view_reports numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    group_open numeric(1,0) DEFAULT 0::numeric NOT NULL
+    belongs_to_project bigint DEFAULT 0::numeric NOT NULL,
+    is_admin bigint DEFAULT 0::numeric NOT NULL,
+    manage_project bigint DEFAULT 0::numeric NOT NULL,
+    view_tasks bigint DEFAULT 0::numeric NOT NULL,
+    open_new_tasks bigint DEFAULT 0::numeric NOT NULL,
+    modify_own_tasks bigint DEFAULT 0::numeric NOT NULL,
+    modify_all_tasks bigint DEFAULT 0::numeric NOT NULL,
+    view_comments bigint DEFAULT 0::numeric NOT NULL,
+    add_comments bigint DEFAULT 0::numeric NOT NULL,
+    edit_comments bigint DEFAULT 0::numeric NOT NULL,
+    delete_comments bigint DEFAULT 0::numeric NOT NULL,
+    view_attachments bigint DEFAULT 0::numeric NOT NULL,
+    create_attachments bigint DEFAULT 0::numeric NOT NULL,
+    delete_attachments bigint DEFAULT 0::numeric NOT NULL,
+    view_history bigint DEFAULT 0::numeric NOT NULL,
+    close_own_tasks bigint DEFAULT 0::numeric NOT NULL,
+    close_other_tasks bigint DEFAULT 0::numeric NOT NULL,
+    assign_to_self bigint DEFAULT 0::numeric NOT NULL,
+    assign_others_to_self bigint DEFAULT 0::numeric NOT NULL,
+    view_reports bigint DEFAULT 0::numeric NOT NULL,
+    group_open bigint DEFAULT 0::numeric NOT NULL
 );
 
 
@@ -222,10 +222,10 @@ SELECT pg_catalog.setval('flyspray_groups_group_id_seq', 7, false);
 
 CREATE TABLE flyspray_history (
     history_id bigint DEFAULT nextval('"flyspray_history_history_id_seq"'::text) NOT NULL,
-    task_id numeric(10,0) DEFAULT 0::numeric NOT NULL,
-    user_id numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    task_id bigint DEFAULT 0::numeric NOT NULL,
+    user_id bigint DEFAULT 0::numeric NOT NULL,
     event_date text NOT NULL,
-    event_type numeric(2,0) DEFAULT 0::numeric NOT NULL,
+    event_type bigint DEFAULT 0::numeric NOT NULL,
     field_changed text NOT NULL,
     old_value text NOT NULL,
     new_value text NOT NULL
@@ -257,12 +257,12 @@ SELECT pg_catalog.setval('flyspray_history_history_id_seq', 2, false);
 
 CREATE TABLE flyspray_list_category (
     category_id bigint DEFAULT nextval('"flyspray_list_category_category_id_seq"'::text) NOT NULL,
-    project_id numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    project_id bigint DEFAULT 0::numeric NOT NULL,
     category_name text DEFAULT ''::text NOT NULL,
-    list_position numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    show_in_list numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    category_owner numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    parent_id numeric(1,0) DEFAULT 0::numeric NOT NULL
+    list_position bigint DEFAULT 0::numeric NOT NULL,
+    show_in_list bigint DEFAULT 0::numeric NOT NULL,
+    category_owner bigint DEFAULT 0::numeric NOT NULL,
+    parent_id bigint DEFAULT 0::numeric NOT NULL
 );
 
 
@@ -291,10 +291,10 @@ SELECT pg_catalog.setval('flyspray_list_category_category_id_seq', 3, false);
 
 CREATE TABLE flyspray_list_os (
     os_id bigint DEFAULT nextval('"flyspray_list_os_os_id_seq"'::text) NOT NULL,
-    project_id numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    project_id bigint DEFAULT 0::numeric NOT NULL,
     os_name text DEFAULT ''::text NOT NULL,
-    list_position numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    show_in_list numeric(1,0) DEFAULT 0::numeric NOT NULL
+    list_position bigint DEFAULT 0::numeric NOT NULL,
+    show_in_list bigint DEFAULT 0::numeric NOT NULL
 );
 
 
@@ -324,9 +324,9 @@ SELECT pg_catalog.setval('flyspray_list_os_os_id_seq', 6, false);
 CREATE TABLE flyspray_list_resolution (
     resolution_id bigint DEFAULT nextval('"flyspray_list_resolution_resolution_id_seq"'::text) NOT NULL,
     resolution_name text DEFAULT ''::text NOT NULL,
-    list_position numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    show_in_list numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    project_id numeric(3,0) NOT NULL
+    list_position bigint DEFAULT 0::numeric NOT NULL,
+    show_in_list bigint DEFAULT 0::numeric NOT NULL,
+    project_id bigint NOT NULL
 );
 
 
@@ -356,9 +356,9 @@ SELECT pg_catalog.setval('flyspray_list_resolution_resolution_id_seq', 9, false)
 CREATE TABLE flyspray_list_tasktype (
     tasktype_id bigint DEFAULT nextval('"flyspray_list_tasktype_tasktype_id_seq"'::text) NOT NULL,
     tasktype_name text DEFAULT ''::text NOT NULL,
-    list_position numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    show_in_list numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    project_id numeric(3,0) NOT NULL
+    list_position bigint DEFAULT 0::numeric NOT NULL,
+    show_in_list bigint DEFAULT 0::numeric NOT NULL,
+    project_id bigint NOT NULL
 );
 
 
@@ -387,11 +387,11 @@ SELECT pg_catalog.setval('flyspray_list_tasktype_tasktype_id_seq', 3, false);
 
 CREATE TABLE flyspray_list_version (
     version_id bigint DEFAULT nextval('"flyspray_list_version_version_id_seq"'::text) NOT NULL,
-    project_id numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    project_id bigint DEFAULT 0::numeric NOT NULL,
     version_name text DEFAULT ''::text NOT NULL,
-    list_position numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    show_in_list numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    version_tense numeric(1,0) DEFAULT 0::numeric NOT NULL
+    list_position bigint DEFAULT 0::numeric NOT NULL,
+    show_in_list bigint DEFAULT 0::numeric NOT NULL,
+    version_tense bigint DEFAULT 0::numeric NOT NULL
 );
 
 
@@ -451,7 +451,7 @@ SELECT pg_catalog.setval('flyspray_notification_messages_message_id_seq', 2, fal
 
 CREATE TABLE flyspray_notification_recipients (
     recipient_id bigint DEFAULT nextval('"flyspray_notification_recipients_recipient_id_seq"'::text) NOT NULL,
-    message_id numeric(10,0) NOT NULL,
+    message_id bigint NOT NULL,
     notify_method text DEFAULT ''::text NOT NULL,
     notify_address text DEFAULT ''::text NOT NULL
 );
@@ -482,8 +482,8 @@ SELECT pg_catalog.setval('flyspray_notification_recipients_recipient_id_seq', 2,
 
 CREATE TABLE flyspray_notifications (
     notify_id bigint DEFAULT nextval('"flyspray_notifications_notify_id_seq"'::text) NOT NULL,
-    task_id numeric(10,0) DEFAULT 0::numeric NOT NULL,
-    user_id numeric(5,0) DEFAULT 0::numeric NOT NULL
+    task_id bigint DEFAULT 0::numeric NOT NULL,
+    user_id bigint DEFAULT 0::numeric NOT NULL
 );
 
 
@@ -544,18 +544,18 @@ CREATE TABLE flyspray_projects (
     project_id bigint DEFAULT nextval('"flyspray_projects_project_id_seq"'::text) NOT NULL,
     project_title text DEFAULT ''::text NOT NULL,
     theme_style text DEFAULT '0'::text NOT NULL,
-    show_logo numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    inline_images numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    default_cat_owner numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    show_logo bigint DEFAULT 0::numeric NOT NULL,
+    inline_images bigint DEFAULT 0::numeric NOT NULL,
+    default_cat_owner bigint DEFAULT 0::numeric NOT NULL,
     intro_message text NOT NULL,
-    project_is_active numeric(1,0) DEFAULT 0::numeric NOT NULL,
+    project_is_active bigint DEFAULT 0::numeric NOT NULL,
     visible_columns text DEFAULT ''::text NOT NULL,
-    others_view numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    anon_open numeric(1,0) DEFAULT 0::numeric NOT NULL,
+    others_view bigint DEFAULT 0::numeric NOT NULL,
+    anon_open bigint DEFAULT 0::numeric NOT NULL,
     notify_email text DEFAULT ''::text NOT NULL,
-    notify_email_when numeric(1,0) DEFAULT 0 NOT NULL,
+    notify_email_when bigint DEFAULT 0 NOT NULL,
     notify_jabber text DEFAULT ''::text NOT NULL,
-    notify_jabber_when numeric(1,0) DEFAULT 0 NOT NULL
+    notify_jabber_when bigint DEFAULT 0 NOT NULL
 );
 
 
@@ -590,7 +590,7 @@ CREATE TABLE flyspray_registrations (
     real_name text DEFAULT ''::text NOT NULL,
     email_address text DEFAULT ''::text NOT NULL,
     jabber_id text DEFAULT ''::text NOT NULL,
-    notify_type numeric(1,0) DEFAULT 0::numeric NOT NULL,
+    notify_type bigint DEFAULT 0::numeric NOT NULL,
     magic_url text DEFAULT ''::text NOT NULL
 );
 
@@ -620,8 +620,8 @@ SELECT pg_catalog.setval('flyspray_registrations_reg_id_seq', 1, false);
 
 CREATE TABLE flyspray_related (
     related_id bigint DEFAULT nextval('"flyspray_related_related_id_seq"'::text) NOT NULL,
-    this_task numeric(10,0) DEFAULT 0::numeric NOT NULL,
-    related_task numeric(10,0) DEFAULT 0::numeric NOT NULL
+    this_task bigint DEFAULT 0::numeric NOT NULL,
+    related_task bigint DEFAULT 0::numeric NOT NULL
 );
 
 
@@ -650,11 +650,11 @@ SELECT pg_catalog.setval('flyspray_related_related_id_seq', 1, false);
 
 CREATE TABLE flyspray_reminders (
     reminder_id bigint DEFAULT nextval('"flyspray_reminders_reminder_id_seq"'::text) NOT NULL,
-    task_id numeric(10,0) DEFAULT 0::numeric NOT NULL,
-    to_user_id numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    from_user_id numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    task_id bigint DEFAULT 0::numeric NOT NULL,
+    to_user_id bigint DEFAULT 0::numeric NOT NULL,
+    from_user_id bigint DEFAULT 0::numeric NOT NULL,
     start_time text DEFAULT '0'::text NOT NULL,
-    how_often numeric(12,0) DEFAULT 0::numeric NOT NULL,
+    how_often bigint DEFAULT 0::numeric NOT NULL,
     last_sent text DEFAULT '0'::text NOT NULL,
     reminder_message text NOT NULL
 );
@@ -685,29 +685,29 @@ SELECT pg_catalog.setval('flyspray_reminders_reminder_id_seq', 1, false);
 
 CREATE TABLE flyspray_tasks (
     task_id bigint DEFAULT nextval('"flyspray_tasks_task_id_seq"'::text) NOT NULL,
-    attached_to_project numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    task_type numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    attached_to_project bigint DEFAULT 0::numeric NOT NULL,
+    task_type bigint DEFAULT 0::numeric NOT NULL,
     date_opened text DEFAULT ''::text NOT NULL,
-    opened_by numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    is_closed numeric(1,0) DEFAULT 0::numeric NOT NULL,
+    opened_by bigint DEFAULT 0::numeric NOT NULL,
+    is_closed bigint DEFAULT 0::numeric NOT NULL,
     date_closed text DEFAULT ''::text NOT NULL,
-    closed_by numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    closed_by bigint DEFAULT 0::numeric NOT NULL,
     closure_comment text,
     item_summary text DEFAULT ''::text NOT NULL,
     detailed_desc text NOT NULL,
-    item_status numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    assigned_to numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    resolution_reason numeric(3,0) DEFAULT 1::numeric NOT NULL,
-    product_category numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    product_version numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    closedby_version numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    operating_system numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    task_severity numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    task_priority numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    last_edited_by numeric(3,0) DEFAULT 0::numeric NOT NULL,
+    item_status bigint DEFAULT 0::numeric NOT NULL,
+    assigned_to bigint DEFAULT 0::numeric NOT NULL,
+    resolution_reason bigint DEFAULT 1::numeric NOT NULL,
+    product_category bigint DEFAULT 0::numeric NOT NULL,
+    product_version bigint DEFAULT 0::numeric NOT NULL,
+    closedby_version bigint DEFAULT 0::numeric NOT NULL,
+    operating_system bigint DEFAULT 0::numeric NOT NULL,
+    task_severity bigint DEFAULT 0::numeric NOT NULL,
+    task_priority bigint DEFAULT 0::numeric NOT NULL,
+    last_edited_by bigint DEFAULT 0::numeric NOT NULL,
     last_edited_time text DEFAULT '0'::text NOT NULL,
-    percent_complete numeric(3,0) DEFAULT 0::numeric NOT NULL,
-    mark_private numeric(1,0) DEFAULT 0::numeric NOT NULL,
+    percent_complete bigint DEFAULT 0::numeric NOT NULL,
+    mark_private bigint DEFAULT 0::numeric NOT NULL,
     due_date text DEFAULT ''::text NOT NULL
 );
 
@@ -742,8 +742,8 @@ CREATE TABLE flyspray_users (
     real_name text DEFAULT ''::text NOT NULL,
     jabber_id text DEFAULT ''::text NOT NULL,
     email_address text DEFAULT ''::text NOT NULL,
-    notify_type numeric(1,0) DEFAULT 0::numeric NOT NULL,
-    account_enabled numeric(1,0) DEFAULT 0::numeric NOT NULL,
+    notify_type bigint DEFAULT 0::numeric NOT NULL,
+    account_enabled bigint DEFAULT 0::numeric NOT NULL,
     dateformat text DEFAULT ''::text NOT NULL,
     dateformat_extended text DEFAULT ''::text NOT NULL,
     magic_url text DEFAULT ''::text NOT NULL,
@@ -758,8 +758,8 @@ CREATE TABLE flyspray_users (
 
 CREATE TABLE flyspray_users_in_groups (
     record_id bigint DEFAULT nextval('"flyspray_users_in_groups_record_id_seq"'::text) NOT NULL,
-    user_id numeric(5,0) DEFAULT 0::numeric NOT NULL,
-    group_id numeric(3,0) DEFAULT 0::numeric NOT NULL
+    user_id bigint DEFAULT 0::numeric NOT NULL,
+    group_id bigint DEFAULT 0::numeric NOT NULL
 );
 
 
