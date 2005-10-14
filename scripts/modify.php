@@ -12,13 +12,13 @@ $notify = new Notifications;
 
 
 // FIXME: only temporary workaround
-if (!empty($_POST['default_cat_owner']) )
+if (isset($_POST['default_cat_owner']) && !empty($_POST['default_cat_owner']) )
    $_POST['default_cat_owner'] = $db->emptyToZero($_POST['default_cat_owner']);
 
-if (!empty($_POST['category_owner']) )
+if (isset($_POST['category_owner']) && !empty($_POST['category_owner']) )
    $_POST['category_owner'] = $db->emptyToZero($_POST['category_owner']);
 
-if (!empty($_POST['list_type']) )
+if (isset($_POST['list_type']) && !empty($_POST['list_type']) )
 {
    $list_table_name = "{$dbprefix}list_".addslashes($_POST['list_type']);
    $list_column_name = addslashes($_POST['list_type'])."_name";
