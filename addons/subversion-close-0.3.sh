@@ -1,4 +1,4 @@
-#!/usr/bin/php4 -q
+#!/usr/bin/php -q
 <?php
 # subversion-close.sh - Subversion<->Flyspray middleware to allow SVN commits to close Flyspray tasks
 #
