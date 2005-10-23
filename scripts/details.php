@@ -90,17 +90,19 @@ if ($task_details['project_is_active'] == '1'
          // or, if the user is logged in
          } elseif (isset($_COOKIE['flyspray_userid']))
          {
-               $get_projects = $db->Query("SELECT p.*
-                                          FROM {$dbprefix}projects p
-                                          LEFT JOIN {$dbprefix}groups g ON p.project_id = g.belongs_to_project
-                                          LEFT JOIN {$dbprefix}users_in_groups uig ON g.group_id = uig.group_id
-                                          WHERE ((uig.user_id = ?
-                                          AND g.view_tasks = '1')
-                                          OR p.others_view = '1')
-                                          AND p.project_is_active = '1'
-					  GROUP BY p.project_id",
-                                          array($current_user['user_id'])
-                                        );
+
+                     $get_projects = $db->Query("SELECT DISTINCT p.*
+                                     FROM {$dbprefix}users_in_groups uig
+                                     LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id,
+                                     {$dbprefix}projects p
+                                     WHERE ((uig.user_id = ?
+                                     AND g.view_tasks = '1')
+                                     OR p.others_view = '1')
+                                     AND p.project_is_active = '1'
+                                     ORDER BY p.project_title",
+                                     array($current_user['user_id'])
+                                   );
+
          } else
          {
             // Anonymous users

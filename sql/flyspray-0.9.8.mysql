@@ -97,7 +97,7 @@ CREATE TABLE `flyspray_history` (
   PRIMARY KEY  (`history_id`)
 ) TYPE=MyISAM AUTO_INCREMENT=1 ;
 
-INSERT INTO `flyspray_history` VALUES (1, 1, 1, '1122784578', 1, '', '', '');
+INSERT INTO `flyspray_history` VALUES (1, 1, 1, '1130024797', 1, '', '', '');
 
 CREATE TABLE `flyspray_list_category` (
   `category_id` mediumint(3) NOT NULL auto_increment,
@@ -239,7 +239,7 @@ CREATE TABLE `flyspray_projects` (
   PRIMARY KEY  (`project_id`)
 ) TYPE=MyISAM COMMENT='Details on multiple Flyspray projects' AUTO_INCREMENT=2 ;
 
-INSERT INTO `flyspray_projects` VALUES (1, 'Default Project', 'Bluey', 1, 0, 0, 'This message can be customised under the <b>Projects</b> admin menu...', 1, 'id category tasktype severity summary status progress', 1, 0, '', 0, '', 0);
+INSERT INTO `flyspray_projects` VALUES (1, 'Default Project', 'Bluey', 1, 0, 0, 'Welcome to your first Flyspray project!  We hope that Flyspray provides you with many hours of increased productivity.  If you have any issues, please read <a href="http://flyspray.rocks.cc/manual/toc">the documentation</a> and <a href="http://flyspray.rocks.cc/faq">Frequently Asked Questions</a>. <br /><br />You can customise this message by clicking the <b>Manage Project</b> link in the menu above...', 1, 'id category tasktype severity summary status progress', 1, 0, '', 0, '', 0);
 
 CREATE TABLE `flyspray_registrations` (
   `reg_id` mediumint(10) NOT NULL auto_increment,
@@ -302,7 +302,7 @@ CREATE TABLE `flyspray_tasks` (
   PRIMARY KEY  (`task_id`)
 ) TYPE=MyISAM COMMENT='Bugs and feature requests for the Flyspray bug killer' AUTO_INCREMENT=2 ;
 
-INSERT INTO `flyspray_tasks` VALUES (1, 1, 1, '1122784578', 1, 0, '', 1, ' ', 'Sample Task', 'This isn''t a real task.  You should close it and start opening some real tasks.', 2, 0, 1, 1, 1, 0, 1, 1, 2, 0, '', 0, 0, '');
+INSERT INTO `flyspray_tasks` VALUES (1, 1, 1, '1130024797', 1, 0, '', 1, ' ', 'Sample Task', 'This isn''t a real task.  You should close it and start opening some real tasks.', 2, 0, 1, 1, 1, 0, 1, 1, 2, 0, '', 0, 0, '');
 
 CREATE TABLE `flyspray_users` (
   `user_id` mediumint(3) NOT NULL auto_increment,

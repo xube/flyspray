@@ -122,7 +122,8 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    if (isset($permissions['global_view']) && $permissions['global_view'] == '1')
    {
       $check_projects = $db->Query("SELECT p.project_id
-                                       FROM {$dbprefix}projects p"
+                                    FROM {$dbprefix}projects p
+                                    ORDER BY p.project_title"
                                     );
 
    // Those who aren't super users get this more restrictive query
@@ -130,12 +131,13 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
    {
        $check_projects = $db->Query("SELECT p.project_id
                                      FROM {$dbprefix}users_in_groups uig
-                                     LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id
-                                     LEFT JOIN {$dbprefix}projects p ON g.belongs_to_project = p.project_id
+                                     LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id,
+                                     {$dbprefix}projects p
                                      WHERE ((uig.user_id = ?
                                      AND g.view_tasks = '1')
                                      OR p.others_view = '1')
-                                     AND p.project_is_active = '1'",
+                                     AND p.project_is_active = '1'
+                                     ORDER BY p.project_title",
                                      array($current_user['user_id'])
                                    );
 
@@ -145,7 +147,8 @@ if (isset($_GET['project']) && $_GET['project'] == '0')
       $check_projects = $db->Query("SELECT p.project_id
                                        FROM {$dbprefix}projects p
                                        WHERE p.others_view = '1'
-                                       AND p.project_is_active = '1'"
+                                       AND p.project_is_active = '1'
+                                       ORDER BY p.project_title"
                                     );
 
    // End of checking Admin status for the query

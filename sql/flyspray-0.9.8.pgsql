@@ -847,7 +847,7 @@ INSERT INTO flyspray_groups (group_id, group_name, group_desc, belongs_to_projec
 -- Data for Name: flyspray_history; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-INSERT INTO flyspray_history (history_id, task_id, user_id, event_date, event_type, field_changed, old_value, new_value) VALUES (1, 1, 1, '1103430560', 1, '', '', '');
+INSERT INTO flyspray_history (history_id, task_id, user_id, event_date, event_type, field_changed, old_value, new_value) VALUES (1, 1, 1, '1130024797', 1, '', '', '');
 
 
 --
@@ -946,7 +946,7 @@ INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (2
 -- Data for Name: flyspray_projects; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-INSERT INTO flyspray_projects (project_id, project_title, theme_style, show_logo, inline_images, default_cat_owner, intro_message, project_is_active, visible_columns, others_view, anon_open, notify_email, notify_email_when, notify_jabber, notify_jabber_when) VALUES (1, 'Default Project', 'Bluey', 1, 0, 0, 'This message can be customised under the <b>Projects</b> admin menu...', 1, 'id category tasktype severity summary status progress', 1, 0, '', 0, '', 0);
+INSERT INTO flyspray_projects (project_id, project_title, theme_style, show_logo, inline_images, default_cat_owner, intro_message, project_is_active, visible_columns, others_view, anon_open, notify_email, notify_email_when, notify_jabber, notify_jabber_when) VALUES (1, 'Default Project', 'Bluey', 1, 0, 0, 'Welcome to your first Flyspray project!  We hope that Flyspray provides you with many hours of increased productivity.  If you have any issues, please read <a href="http://flyspray.rocks.cc/manual/toc">the documentation</a> and <a href="http://flyspray.rocks.cc/faq">Frequently Asked Questions</a>. <br /><br />You can customise this message by clicking the <b>Manage Project</b> link in the menu above', 1, 'id category tasktype severity summary status progress', 1, 0, '', 0, '', 0);
 
 
 --
@@ -971,7 +971,7 @@ INSERT INTO flyspray_projects (project_id, project_title, theme_style, show_logo
 -- Data for Name: flyspray_tasks; Type: TABLE DATA; Schema: public; Owner: cr
 --
 
-INSERT INTO flyspray_tasks (task_id, attached_to_project, task_type, date_opened, opened_by, is_closed, date_closed, closed_by, closure_comment, item_summary, detailed_desc, item_status, assigned_to, resolution_reason, product_category, product_version, closedby_version, operating_system, task_severity, task_priority, last_edited_by, last_edited_time, percent_complete, mark_private, due_date) VALUES (1, 1, 1, '1103430560', 1, 0, '', 1, ' ', 'Sample Task', 'This isn''t a real task.  You should close it and start opening some real tasks.', 2, 0, 1, 1, 1, 0, 1, 1, 2, 0, '', 0, 0, '');
+INSERT INTO flyspray_tasks (task_id, attached_to_project, task_type, date_opened, opened_by, is_closed, date_closed, closed_by, closure_comment, item_summary, detailed_desc, item_status, assigned_to, resolution_reason, product_category, product_version, closedby_version, operating_system, task_severity, task_priority, last_edited_by, last_edited_time, percent_complete, mark_private, due_date) VALUES (1, 1, 1, '1130024797', 1, 0, '', 1, ' ', 'Sample Task', 'This isn''t a real task.  You should close it and start opening some real tasks.', 2, 0, 1, 1, 1, 0, 1, 1, 2, 0, '', 0, 0, '');
 
 
 --

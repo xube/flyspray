@@ -9,6 +9,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == "logout")
    // Set cookie expiry time to the past, thus removing them
    setcookie('flyspray_userid', '', time()-60, '/');
    setcookie('flyspray_passhash', '', time()-60, '/');
+   setcookie('flyspray_project', '', time()-60, '/');
    if (isset($_COOKIE[session_name()])) {
       setcookie(session_name(), '', time()-60, '/');
    }

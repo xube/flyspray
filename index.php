@@ -386,12 +386,13 @@ if (isset($_SESSION['SUCCESS']))
       {
          $get_projects = $db->Query("SELECT DISTINCT p.*
                                      FROM {$dbprefix}users_in_groups uig
-                                     LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id
-                                     LEFT JOIN {$dbprefix}projects p ON g.belongs_to_project = p.project_id
+                                     LEFT JOIN {$dbprefix}groups g ON uig.group_id = g.group_id,
+                                     {$dbprefix}projects p
                                      WHERE ((uig.user_id = ?
                                      AND g.view_tasks = '1')
                                      OR p.others_view = '1')
-                                     AND p.project_is_active = '1'",
+                                     AND p.project_is_active = '1'
+                                     GROUP BY p.project_id",
                                      array($current_user['user_id'])
                                    );
       // Anonymous users
