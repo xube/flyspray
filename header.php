@@ -8,7 +8,7 @@
 // PHP NOTICE errors.  We are in the process of making Flyspray stop making
 // these errors, but this will help hide them until we are finished.
 
-//error_reporting(E_ALL & -E_NOTICE);
+//error_reporting(E_ALL & ~E_NOTICE);
 
 // Check PHP Version (Must Be at least 4.3)
 // For 0.9.9, this should redirect to the error page

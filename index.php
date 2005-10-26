@@ -34,6 +34,18 @@ $fs->get_language_pack($lang, 'main');
 // Set the locale
 setlocale(LC_ALL, str_replace('-','_',$language['locale']));
 
+// Run all user-submitted variables through a filter
+if (isset($_GET))
+{
+   foreach ($_GET as $key => $val)
+      $_GET[$key] = htmlspecialchars($val);
+}
+if (isset($_POST))
+{
+   foreach ($_POST as $key => $val)
+      $_POST[$key] = htmlspecialchars($val);
+}
+
 // Get user permissions
 $permissions = array();
 if (isset($_COOKIE['flyspray_userid']) && isset($_COOKIE['flyspray_passhash']))
