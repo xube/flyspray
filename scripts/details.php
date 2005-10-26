@@ -242,7 +242,7 @@ if ($task_details['project_is_active'] == '1'
                   <select id="status" name="item_status">
                   <?php
                   // let's get a list of statuses and compare it to the saved one
-                  require("lang/$lang/status.php");
+                  $fs->get_language_pack($lang, 'status');
                   foreach($status_list as $key => $val)
                   {
                      if ($task_details['item_status'] == $key)
@@ -319,7 +319,7 @@ if ($task_details['project_is_active'] == '1'
                   <select id="severity" name="task_severity">
                   <?php
                   // Get list of severities
-                  require("lang/$lang/severity.php");
+                  $fs->get_language_pack($lang, 'severity');
                   foreach($severity_list as $key => $val)
                   {
                      if ($task_details['task_severity'] == $key)
@@ -340,7 +340,7 @@ if ($task_details['project_is_active'] == '1'
                   <select id="priority" name="task_priority">
                   <?php
                   // Get list of priorities
-                  require("lang/$lang/priority.php");
+                  $fs->get_language_pack($lang, 'priority');
                   foreach($priority_list as $key => $val)
                   {
                      if ($task_details['task_priority'] == $key)

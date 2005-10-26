@@ -564,6 +564,7 @@ function closeTask($args)
 {
    global $fs;
    global $db;
+   global $dbprefix;
    include_once('includes/notify.inc.php');
    $notify = new Notifications;
 
