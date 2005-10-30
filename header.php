@@ -53,10 +53,10 @@ if (!($res = $db->dbOpenFast($conf['database']))) {
 $flyspray_prefs = $fs->getGlobalPrefs();
 
 // Any "do" mode that accepts a task_id or id field should be added here.
-if (in_array(Req::get('do'), array('details', 'depends', 'modify')))
+if (in_array(Req::val('do'), array('details', 'depends', 'modify')))
 {
     // If we've gone directly to a task, we want to override the project_id set in the function below
-    $id = Req::get('task_id', Req::get('id'));
+    $id = Req::val('task_id', Req::val('id'));
 
     if (!is_null($id) && is_numeric($id)) {
         $result = $db->Query("SELECT  attached_to_project
@@ -67,20 +67,29 @@ if (in_array(Req::get('do'), array('details', 'depends', 'modify')))
 
 // Determine which project we want to see
 if (!isset($project_id)) {
-    if (Req::get('project', '0') != '0' && Req::get('project')) {
-        $project_id = Req::get('project');
+    if (Req::val('project', '0') != '0' && Req::val('project')) {
+        $project_id = Req::val('project');
     }
     elseif (Req::has('project_id')) {
-        $project_id = Req::get('project_id');
+        $project_id = Req::val('project_id');
     }
     elseif (Cookie::has('flyspray_project')) {
-        $project_id = Cookie::get('flyspray_project');
+        $project_id = Cookie::val('flyspray_project');
     }
     else {
         $project_id = $flyspray_prefs['default_project'];
     }
 }
 setcookie('flyspray_project', $project_id, time()+60*60*24*30, '/');
+
+// Check that the requested project actually exists
+$proj_exists = $db->Query("SELECT  *
+                             FROM  {$dbprefix}projects
+                            WHERE  project_id = ?", array($project_id));
+
+if (!$db->CountRows($proj_exists)) {
+    $fs->redirect("index.php?project=" . $flyspray_prefs['default_project']);
+}
 
 $project_prefs = $fs->getProjectPrefs($project_id);
 

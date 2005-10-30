@@ -8,7 +8,7 @@ class Req
         return isset($_REQUEST[$key]);
     }
     
-    function get($key, $default = null)
+    function val($key, $default = null)
     {
         return isset($_REQUEST[$key]) ? $_REQUEST[$key] : $default;
     }
@@ -24,7 +24,7 @@ class Post
         return isset($_POST[$key]);
     }
     
-    function get($key, $default = null)
+    function val($key, $default = null)
     {
         return isset($_POST[$key]) ? $_POST[$key] : $default;
     }
@@ -40,7 +40,7 @@ class Get
         return isset($_GET[$key]);
     }
     
-    function get($key, $default = null)
+    function val($key, $default = null)
     {
         return isset($_GET[$key]) ? $_GET[$key] : $default;
     }
@@ -56,7 +56,7 @@ class Cookie
         return isset($_COOKIE[$key]);
     }
     
-    function get($key, $default = null)
+    function val($key, $default = null)
     {
         return isset($_COOKIE[$key]) ? $_COOKIE[$key] : $default;
     }
