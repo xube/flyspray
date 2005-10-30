@@ -10,7 +10,7 @@
 class Flyspray {
 
     // Change this for each release.  Don't forget!
-    var $version = '0.9.8 (devel)';
+    var $version = '0.9.9 (devel)';
 
     /** Get translation for specified language and page.  It loads default
       language (en) and then merges with requested one. Thus it makes English

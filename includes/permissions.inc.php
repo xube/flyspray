@@ -68,6 +68,24 @@ function can_view_task($user, $perms, $project, $task)
         );
 }
 
+function can_modify_task($user, $perms, $task)
+{
+   return @$perms['modify_all_tasks'] == '1' ||
+       ($perms['modify_own_tasks'] == '1' && $task['assigned_to'] == $user['user_id']);
+}
+
+function can_take_ownership($user, $perms, $task)
+{
+    return (@$perms['assign_to_self'] == '1' && empty($task['assigned_to']))
+        || (@$perms['assign_others_to_self'] == '1' && $task['assigned_to'] != $user['user_id']);
+}
+
+function can_close_task($user, $perms, $task)
+{
+    return (@$perms['close_own_tasks'] == '1' && $task['assigned_to'] == $user['user_id'])
+        || @$perms['close_other_tasks'] == '1';
+}
+
 function can_create_user($perms, $flyspray) {
     // Make sure that only admins are using this page, unless
     // The application preferences allow anonymous signups
