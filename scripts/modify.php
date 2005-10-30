@@ -1231,7 +1231,7 @@ $message = "{$register_text['noticefrom']} {$fs->prefs['project_title']}\n
             // If the user is changing their password, better update their cookie hash
             if ($_COOKIE['flyspray_userid'] == $_POST['user_id'])
             {
-               setcookie('flyspray_passhash', crypt("$new_pass_hash", $cookiesalt), time()+60*60*24*30, "/");
+               $fs->setcookie('flyspray_passhash', crypt($new_pass_hash, $cookiesalt), time()+60*60*24*30);
             }
 
          } else

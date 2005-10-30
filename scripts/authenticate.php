@@ -7,11 +7,11 @@ if (Req::val('action') == 'logout') {
     // If logout was requested, log the user out.
 
     // Set cookie expiry time to the past, thus removing them
-    setcookie('flyspray_userid',   '', time()-60, '/');
-    setcookie('flyspray_passhash', '', time()-60, '/');
-    setcookie('flyspray_project',  '', time()-60, '/');
+    $fs->setcookie('flyspray_userid',   '', time()-60);
+    $fs->setcookie('flyspray_passhash', '', time()-60);
+    $fs->setcookie('flyspray_project',  '', time()-60);
     if (Cookie::has(session_name())) {
-        setcookie(session_name(), '', time()-60, '/');
+        $fs->setcookie(session_name(), '', time()-60);
     }
 
     // Unset all of the session variables.
@@ -44,8 +44,8 @@ if (Req::has('user_name') && Req::has('password')) {
         $user = $fs->getUserDetails($user_id);
 
         // Set a couple of cookies
-        setcookie('flyspray_userid',   $user['user_id'], $cookie_time, '/');
-        setcookie('flyspray_passhash', crypt($user['user_pass'], $cookiesalt), $cookie_time, '/');
+        $fs->setcookie('flyspray_userid',   $user['user_id'], $cookie_time);
+        $fs->setcookie('flyspray_passhash', crypt($user['user_pass'], $cookiesalt), $cookie_time);
 
         // If the user had previously requested a password change, remove the magic url
         $remove_magic = $db->Query(

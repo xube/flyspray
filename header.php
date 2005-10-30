@@ -77,7 +77,8 @@ if (!isset($project_id)) {
         $project_id = $fs->prefs['default_project'];
     }
 }
-setcookie('flyspray_project', $project_id, time()+60*60*24*30, '/');
+
+$fs->setCookie('flyspray_project', $project_id, time()+60*60*24*30);
 
 // Check that the requested project actually exists
 $proj_exists = $db->Query("SELECT  *

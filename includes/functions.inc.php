@@ -14,7 +14,7 @@ class Flyspray
 
     var $prefs   = array();
 
-    function Flyspray()
+    function Flyspray() // {{{
     {
         global $db;
 
@@ -24,6 +24,7 @@ class Flyspray
             $this->prefs[$row['pref_name']] = $row['pref_value'];
         }
     }
+    // }}}
 
     /** Get translation for specified language and page.  It loads default
       language (en) and then merges with requested one. Thus it makes English
@@ -52,10 +53,10 @@ class Flyspray
                 ${$new_var_name}[$key] = $val;
             }
         }
-    } // }}}
+    }
+    // }}}
 
-    /**   Redirects the browser to the page in $url
-     */
+    //  Redirects the browser to the page in $url
     function Redirect($url) // {{{
     {
         @ob_clean();
@@ -78,14 +79,15 @@ class Flyspray
 </html>
 <?php
         exit;
-    } // }}}
+    }
+    // }}}
 
     /** Test to see if user resubmitted a form.
       Checks only newtask and addcomment actions.
       @return   true if user has submitted the same action within less than
       6 hours, false otherwise
      */
-    function requestDuplicated()
+    function requestDuplicated() // {{{
     {
         // garbage collection -- clean entries older than 6 hrs
         $now = time();
@@ -110,8 +112,9 @@ class Flyspray
         }
         return false;
     }
+    // }}}
 
-    function getProjectPrefs($project)
+    function getProjectPrefs($project) // {{{
     {
         global $db;
 
@@ -119,12 +122,11 @@ class Flyspray
 
         return $db->FetchArray($get_prefs);
     }
-
-
+    // }}}
 
     // Thanks to Mr Lance Conry for this query that saved me a lot of effort.
     // Check him out at http://www.rhinosw.com/
-    function GetTaskDetails($task_id)
+    function GetTaskDetails($task_id) // {{{
     {
         global $db;
         global $project_prefs;
@@ -173,10 +175,10 @@ class Flyspray
        
         return $get_details;
     }
-
+    // }}}
 
     // This function generates a query of users for the "Assigned To" list
-    function listUsers($current, $in_project)
+    function listUsers($current, $in_project) // {{{
     {
         global $db;
         global $conf;
@@ -239,11 +241,11 @@ class Flyspray
             echo "</optgroup>\n";
         }
     }
-
+    // }}}
 
     // This provides funky page numbering
     // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-    function pagenums($pagenum, $perpage, $totalcount, $extraurl)
+    function pagenums($pagenum, $perpage, $totalcount, $extraurl) // {{{
     {
         global $db;
         global $functions_text;
@@ -290,34 +292,9 @@ class Flyspray
 
         return $output;
     }
+    // }}}
 
-
-    function formatDate($timestamp, $extended)
-    {
-        global $db;
-        global $conf;
-
-        $dateformat = '';
-        $format_id  = $extended ? "dateformat_extended" : "dateformat";
-
-        if(isset($_SESSION['userid'])) {
-            $get_user_details = $db->Query("SELECT {$format_id} FROM {users} WHERE user_id = " . $_SESSION['userid']);
-            $user_details     = $db->FetchArray($get_user_details);
-            $dateformat       = $user_details[$format_id];
-        }
-
-        if($dateformat == '') {
-            $dateformat = $this->prefs[$format_id];
-        }
-
-        if($dateformat == '')
-            $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
-
-        return strftime($dateformat, $timestamp);
-    }
-
-
-    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
+    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '') // {{{
     {
         global $db;
 
@@ -357,51 +334,25 @@ class Flyspray
                                 VALUES(?, ?, ?, ?, ?, ?, ?)",
                 array($task, Cookie::val('flyspray_userid', 0), date('U'), $type, $field, $oldvalue, $newvalue));
     }
-
-
-    function LinkedUsername($user_id)
-    {
-        global $db;
-
-        $result = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($user_id));
-        if ($db->CountRows($result) == 0)
-            return '';
-
-        $result = $db->FetchRow($result);
-
-        return '<a href="' . $this->CreateURL('user', $user_id) . '">' . stripslashes($result['real_name']) . ' (' . $result['user_name'] . ')</a>';
-    }
-
-
-    // To stop some browsers showing a blank box when an image doesn't exist
-    function ShowImg($path, $alt_text)
-    {
-        global $conf;
-
-        if (file_exists($path)) {
-            list($width, $height, $type, $attr) = getimagesize($path);
-            return "<img src=\"{$conf['general']['baseurl']}$path\" width=\"$width\" height=\"$height\" alt=\"$alt_text\" title=\"$alt_text\" />";
-        }
-    }
-
+    // }}}
 
     // Log a request for an admin/project manager to do something
-    // Types are:
-    //  1: Task close
-    //  2: Task re-open
-    //  3: Application for project membership (not implemented yet)
-    function AdminRequest($type, $project, $task, $submitter, $reason)
+    function AdminRequest($type, $project, $task, $submitter, $reason) // {{{
     {
         global $db;
+        // Types are:
+        //  1: Task close
+        //  2: Task re-open
+        //  3: Application for project membership (not implemented yet)
 
         $db->Query("INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
                 VALUES(?, ?, ?, ?, ?, ?)",
                 array($project, $task, $submitter, $type, $reason, date(U)));
     }
-
+    // }}}
 
     // Check for an existing admin request for a task and event type
-    function AdminRequestCheck($type, $task)
+    function AdminRequestCheck($type, $task) // {{{
     {
         global $db;
 
@@ -410,9 +361,10 @@ class Flyspray
                 array($type, $task));
         return (bool)($db->CountRows($check));
     }
+    // }}}
 
     // Get the current user's details
-    function getUserDetails($user_id)
+    function getUserDetails($user_id) // {{{
     {
         global $db;
 
@@ -420,10 +372,10 @@ class Flyspray
         $result = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($user_id));
         return $db->FetchArray($result);
     }
-
+    // }}}
 
     // Get the permissions for the current user
-    function getPermissions($user_id, $project_id)
+    function getPermissions($user_id, $project_id) // {{{
     {
         global $db;
 
@@ -491,56 +443,10 @@ class Flyspray
 
         return $permissions;
     }
-
-
-
-    // This function removes html, slashes and other nasties
-    function formatText($text)
-    {
-        if (get_magic_quotes_gpc()) {
-            $text = stripslashes($text);
-        }
-
-        $text = htmlspecialchars($text);
-        $text = nl2br($text);
-
-        // Change URLs into hyperlinks
-        $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
-
-        // Change FS#123 into hyperlinks to tasks
-        if (preg_match_all("/\b(FS#|bug )(\d+)\b/", $text, $hits, PREG_SET_ORDER)) {
-            foreach ($hits as $n => $hit) {
-                $tasks[$hit[2]] = $hit[0];
-            }
-            foreach ($tasks as $id => $str) {
-                $link = "<a href=\"" . $this->CreateURL('details', $id) .
-                    "\" title=\"" . $this->taskTitle($id) . "\">$str</a>";
-                $text = preg_replace("/\b$str\b/",$link,$text);
-            }
-        }
-
-        return $text;
-    }
-
-
-    function taskTitle($taskid)
-    {
-        global $details_text;
-
-        $task_details = $this->GetTaskDetails($taskid);
-
-        if ($task_details['is_closed'] == '1') {
-            $status = $details_text['closed'] . ':: ' . $task_details['resolution_name'];
-        } else {
-            $status = $details_text['open'] . ':: ' . $task_details['status_name'];
-        }
-
-        return $status . ': ' . htmlspecialchars(stripslashes(substr($task_details['item_summary'],0,40)));
-    }
-
+    // }}}
 
     // Crypt a password with the method set in the configfile
-    function cryptPassword($password)
+    function cryptPassword($password) // {{{
     {
         global $conf;
         $pwcrypt = $conf['general']['passwdcrypt'];
@@ -554,10 +460,10 @@ class Flyspray
         $letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return crypt($password, substr($letters, rand(0, 52), 1).substr($letters, rand(0, 52), 1) );
     }
-
+    // }}}
 
     // This function checks if a user provided the right credentials
-    function checkLogin($username, $password)
+    function checkLogin($username, $password) // {{{
     {
         global $db;
 
@@ -596,8 +502,16 @@ class Flyspray
 
         return false;
     }
+    // }}}
 
-    function startReminderDaemon()
+    function setCookie($name, $val, $time) // {{{
+    {
+        global $baseurl;
+        $url = parse_url($baseurl);
+        setcookie($name, $val, $time, $url['path']);
+    } // }}}
+
+    function startReminderDaemon() // {{{
     {
         $script  = 'scripts/daemon.php';
         $include = 'schedule.php';
@@ -622,11 +536,12 @@ class Flyspray
             exec("$php $script $include $timeout ../$runfile >/dev/null &");
         }
     }
+    // }}}
 
     /* Check if we should use address rewriting
        and return an appropriate URL
      */
-    function CreateURL($type, $arg1, $arg2=0, $arg3=0)
+    function CreateURL($type, $arg1, $arg2=0, $arg3=0) // {{{
     {
         global $conf;
 
@@ -687,10 +602,99 @@ class Flyspray
             case 'reports':   return $url;
         }
     }
+    // }}}
 
-///////////////////////////
-// End of Flyspray class //
-///////////////////////////
+// FIXME: TEMPLATING FUNCTIONS, SHOULD MOVE AWAY AT SOME POINT
+    
+    function LinkedUsername($user_id) // {{{
+    {
+        global $db;
+
+        $result = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($user_id));
+        if ($db->CountRows($result) == 0)
+            return '';
+
+        $result = $db->FetchRow($result);
+
+        return '<a href="' . $this->CreateURL('user', $user_id) . '">' . stripslashes($result['real_name']) . ' (' . $result['user_name'] . ')</a>';
+    }
+    // }}}
+    function formatDate($timestamp, $extended) // {{{
+    {
+        global $db;
+        global $conf;
+
+        $dateformat = '';
+        $format_id  = $extended ? "dateformat_extended" : "dateformat";
+
+        if(isset($_SESSION['userid'])) {
+            $get_user_details = $db->Query("SELECT {$format_id} FROM {users} WHERE user_id = " . $_SESSION['userid']);
+            $user_details     = $db->FetchArray($get_user_details);
+            $dateformat       = $user_details[$format_id];
+        }
+
+        if($dateformat == '') {
+            $dateformat = $this->prefs[$format_id];
+        }
+
+        if($dateformat == '')
+            $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
+
+        return strftime($dateformat, $timestamp);
+    }
+    // }}}
+    function ShowImg($path, $alt_text) // {{{
+    {
+        global $conf;
+        // To stop some browsers showing a blank box when an image doesn't exist
+        if (file_exists($path)) {
+            return "<img src=\"{$conf['general']['baseurl']}$path\" alt=\"$alt_text\" title=\"$alt_text\" />";
+        }
+    }
+    // }}}
+    function formatText($text) // {{{
+    {
+        // This function removes html, slashes and other nasties
+        if (get_magic_quotes_gpc()) {
+            $text = stripslashes($text);
+        }
+
+        $text = htmlspecialchars($text);
+        $text = nl2br($text);
+
+        // Change URLs into hyperlinks
+        $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
+
+        // Change FS#123 into hyperlinks to tasks
+        return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
+                array($this, 'fastTaskLink'), $text);
+    }
+    // }}}
+    function fastTaskLink($arr) // {{{
+    {
+        return $this->taskLink($arr[0], $arr[1]);
+    }
+    // }}}
+    function taskLink($text, $id) // {{{
+    {
+        global $details_text;
+
+        $details = $this->GetTaskDetails($id);
+
+        if ($details['is_closed'] == '1') {
+            $status = $details['resolution_name'];
+        } else {
+            $status = $details['status_name'];
+        }
+        $title = $status . ': ' .  htmlspecialchars(stripslashes(substr($details['item_summary'], 0, 64)));
+        $link  = sprintf('<a href="%s" title="%s">%s</a>', $this->CreateURL('details', $id), $title, $text);
+
+        if ($details['is_closed'] == '1') {
+            $link = "<strike>&nbsp;".$link."&nbsp;</strike>";
+        }
+        return $link;
+    }
+    // }}}
 }
 
 ?>

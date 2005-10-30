@@ -198,8 +198,8 @@ if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
             || $permissions['account_enabled'] != '1' || $permissions['group_open'] != '1')
     {
         // If the user's account is closed
-        setcookie('flyspray_userid',   '', time()-60, '/');
-        setcookie('flyspray_passhash', '', time()-60, '/');
+        $fs->setcookie('flyspray_userid',   '', time()-60);
+        $fs->setcookie('flyspray_passhash', '', time()-60);
         $fs->Redirect($fs->CreateURL('logout', null));
     }
 
