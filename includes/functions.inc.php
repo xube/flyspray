@@ -21,7 +21,7 @@ class Flyspray
         $res = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
 
         while ($row = $db->FetchRow($res)) {
-            $$this->prefs[$row['pref_name']] = $row['pref_value'];
+            $this->prefs[$row['pref_name']] = $row['pref_value'];
         }
     }
 
