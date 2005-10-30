@@ -5,7 +5,7 @@ $fs->get_language_pack('register');
 // confirmation codes, use this script
 if ($fs->prefs['spam_proof'] != '1'
     || $fs->prefs['anon_reg'] != '1'
-    || !$COOKIE['flyspray_userid'])
+    || !Cookie::has('flyspray_userid'))
 {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
@@ -28,7 +28,7 @@ if (Get::has('magic')):
           <td colspan="2">
           <input type="hidden" name="do" value="modify" />
           <input type="hidden" name="action" value="registeruser" />
-          <input type="hidden" name="magic_url" value="<?php echo $_GET['magic'];?>" />
+          <input type="hidden" name="magic_url" value="<?php echo Get::val('magic');?>" />
           <?php echo $register_text['entercode']; ?>
           </td>
         </tr>

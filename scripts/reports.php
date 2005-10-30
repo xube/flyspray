@@ -58,7 +58,7 @@ function changelog_report()
   <p><em>$reports_text[changeloggen]</em></p>
     <div class="tabentry">
   
-    <form name="changelog_form" action="index.php?do=reports&report=changelog" method="POST">
+    <form name="changelog_form" action="index.php?do=reports&report=changelog" method="post">
       <?php echo $reports_text['listfrom']?>
   
       <input id="startdate" type="text" name="startdate" size="10" value="<?php echo $startdate?>" />
@@ -310,29 +310,29 @@ function events_report()
             <table>
               <tr>
                 <td><?php echo $reports_text['tasks'];?></td>
-                <td><label class="inline"><input type="checkbox" name="open" <?php if (isset($_REQUEST['open'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="open" <?php if (Req::has('open')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['opened'];?></label></td>
-                <td><label class="inline"><input type="checkbox" name="close" <?php if (isset($_REQUEST['close'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="close" <?php if (Req::has('close')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['closed'];?></label></td>
-                <td><label class="inline"><input type="checkbox" name="edit" <?php if (isset($_REQUEST['edit'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="edit" <?php if (Req::has('edit')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['edited'];?></label></td>
               </tr>
               <tr>
                 <td></td>
-                <td><label class="inline"><input type="checkbox" name="assign" <?php if (isset($_REQUEST['assign'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="assign" <?php if (Req::has('assign')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['assigned'];?></label></td>
-                <td><label class="inline"><input type="checkbox" name="comments" <?php if (isset($_REQUEST['comments'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="comments" <?php if (Req::has('comments')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['comments'];?></label></td>
-                <td><label class="inline"><input type="checkbox" name="attachments" <?php if (isset($_REQUEST['attachments'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="attachments" <?php if (Req::has('attachments')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['attachments'];?></label></td>
               </tr>
               <tr>
                 <td></td>
-                <td><label class="inline"><input type="checkbox" name="related" <?php if (isset($_REQUEST['related'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="related" <?php if (Req::has('related')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['relatedtasks'];?></label></td>
-                <td><label class="inline"><input type="checkbox" name="notifications" <?php if (isset($_REQUEST['notifications'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="notifications" <?php if (Req::has('notifications')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['notifications'];?></label></td>
-                <td><label class="inline"><input type="checkbox" name="reminders" <?php if (isset($_REQUEST['reminders'])) echo 'checked';?> />
+                <td><label class="inline"><input type="checkbox" name="reminders" <?php if (Req::has('reminders')) echo 'checked="checked"';?> />
                     <?php echo $reports_text['reminders'];?></label></td>
               </tr>
             </table>
@@ -340,7 +340,7 @@ function events_report()
           <td><b><?php echo $reports_text['date'];?></b><br />
             <table border="0">
               <tr>
-                <td><label class="inline"><input type="radio" name="date" value="within" <?php if ($date == 'within') echo 'checked';?> />
+                <td><label class="inline"><input type="radio" name="date" value="within" <?php if ($date == 'within') echo 'checked="checked"';?> />
                     <?php echo $reports_text['within'];?></label></td>
                 <td colspan="6">
                   <select name="within">
@@ -354,7 +354,7 @@ function events_report()
               </tr>
 
               <tr>
-                <td><label class="inline"><input type="radio" name="date" value="from" <?php if($date == 'from') echo 'checked';?> />
+                <td><label class="inline"><input type="radio" name="date" value="from" <?php if($date == 'from') echo 'checked="checked"';?> />
                     <?php echo $reports_text['from'];?></label></td>
                 <td>
                   <input id="fromdate" type="text" name="fromdate" size="10" value="<?php if(isset($fromdate)) echo $fromdate?>" />
@@ -379,7 +379,7 @@ function events_report()
                 </td>
               </tr>
               <tr>
-                <td><label class="inline"><input type="radio" name="date" value="duein" <?php if($date == 'duein') echo 'checked';?> />
+                <td><label class="inline"><input type="radio" name="date" value="duein" <?php if($date == 'duein') echo 'checked="checked"';?> />
                     <?php echo $reports_text['duein'];?></label></td>
                 <td colspan="6">
                   <select name="duein">

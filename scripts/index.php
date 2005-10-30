@@ -196,8 +196,8 @@ if (Get::val('project') !== '0'
 <map id="projectsearchform" name="projectsearchform">
   <form action="index.php" method="get">
     <div>
-      <input type="hidden" name="tasks" value="<?php echo $_GET['tasks']; ?>" />
-      <input type="hidden" name="project" value="<?php if(isset($_GET['project']) && $_GET['project'] == '0') { echo '0'; } else { echo $project_id; }?>" />
+      <input type="hidden" name="tasks" value="<?php echo Get::val('tasks'); ?>" />
+      <input type="hidden" name="project" value="<?php if(Get::val('project') == '0') { echo '0'; } else { echo $project_id; }?>" />
       <em><?php echo $index_text['searchthisproject'];?>:</em>
       <input id="searchtext" name="string" type="text" size="20"
       maxlength="100" value="<?php echo htmlspecialchars(Get::val('string')); ?>" accesskey="q" />
@@ -343,7 +343,7 @@ $columns = array('id', 'project', 'tasktype', 'category', 'severity', 'priority'
                  'reportedin', 'dueversion', 'duedate', 'comments', 'attachments', 'progress');
 $column_visible = array_map(create_function('$x', 'return false;'), $columns);
 
-$project = isset($_GET['project']) ? $_GET['project'] : $project_id;
+$project = Get::val('project', $project_id);
 $visible = explode(' ', $project == '0' ? $fs->prefs['visible_columns'] : $project_prefs['visible_columns']);
 
 foreach ($visible as $column) {
@@ -390,7 +390,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 
             // Sort indicator arrows
             if (Get::val('order') == $orderkey) {
-                echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . $_GET['sort'] . '.png" />';
+                echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . Get::val('sort') . '.png" />';
             }
 
             echo "</a></th>\n";
@@ -635,7 +635,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
                echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">' . $index_text['toggleselected'] . '</a>';
            }
    
-           echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . $_GET['order']) . "</td>";
+           echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . Get::val('order')) . "</td>";
        } else {
            echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";
        }

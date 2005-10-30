@@ -300,7 +300,7 @@ elseif ($area == 'users' && Get::val('id')): // {{{
     ////////////////////////////
 
 
-    $get_user_details = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($_GET['id']));
+    $get_user_details = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array(Get::val('id')));
     $user_details = $db->FetchArray($get_user_details);
 
     echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['edituser'] . ': ' . $user_details['user_name'] . '</h3>';
@@ -496,7 +496,7 @@ elseif ($area == 'editgroup'): // {{{
     /////////////////////////////
     echo '<h3>' . $admin_text['admintoolbox'] . ':: ' . $admin_text['editgroup'] . '</h3>';
 
-    $get_group_details = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($_GET['id']));
+    $get_group_details = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array(Get::val('id')));
     $group_details = $db->FetchArray($get_group_details);
 ?>
 <form action="<?php echo $conf['general']['baseurl'];?>index.php?project=<?php echo $group_details['belongs_to_project'];?>" method="post">
@@ -938,7 +938,7 @@ elseif ($area == 'cat'): // {{{
                                     ORDER BY  list_position");
               while ($row = $db->FetchArray($cat_list)) {
                   $category_name = stripslashes($row['category_name']);
-                  if (isset($_GET['cat']) && $_GET['cat'] == $row['category_id']) {
+                  if (Get::val('cat') == $row['category_id']) {
                       echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
                   } else {
                       echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";

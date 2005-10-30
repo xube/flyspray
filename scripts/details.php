@@ -369,7 +369,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
 <?php
 // }}}
 // {{{ view mode
-elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR !isset($GET['edit']))
+elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR !Get::has('edit')))
         && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $current_user['user_id'])
             OR @$permissions['manage_project'] == '1' OR $task_details['mark_private'] != '1')):
     //////////////////////////////////////
@@ -605,7 +605,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     }
 
     if ($db->CountRows($attachments)
-                && ((!isset($_COOKIE['flyspray_userid']) || @$permissions['view_attachments'] != '1')
+                && ((!Cookie::has('flyspray_userid') || @$permissions['view_attachments'] != '1')
                     && $project_prefs['others_view'] != '1')
     ) {
         echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';

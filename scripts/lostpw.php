@@ -29,7 +29,7 @@ elseif (!Get::has('magic') && !Cookie::has('flyspray_userid')): // Step Two: use
     // Check that the magic url is valid
     $check_magic = $db->Query(
             "SELECT * FROM {users} WHERE magic_url = ?",
-            array($_GET['magic']));
+            array(Get::val('magic')));
 
     if (!$db->CountRows($check_magic)) {
         $_SESSION['ERROR'] = $admin_text['badmagic'];

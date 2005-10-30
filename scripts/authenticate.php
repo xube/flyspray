@@ -10,7 +10,7 @@ if (Req::val('action') == 'logout') {
     setcookie('flyspray_userid',   '', time()-60, '/');
     setcookie('flyspray_passhash', '', time()-60, '/');
     setcookie('flyspray_project',  '', time()-60, '/');
-    if (isset($_COOKIE[session_name()])) {
+    if (Cookie::has(session_name())) {
         setcookie(session_name(), '', time()-60, '/');
     }
 
@@ -28,7 +28,7 @@ if (Req::has('user_name') && Req::has('password')) {
     // Run the username and password through the login checker
     if (!$fs->checkLogin($username, $password)) {
         $_SESSION['ERROR'] = $authenticate_text['loginfailed'];
-        $fs->redirect($_REQUEST['prev_page']);
+        $fs->redirect(Req::get('prev_page'));
     }
     else {
         $user_id = $fs->checkLogin($username, $password);

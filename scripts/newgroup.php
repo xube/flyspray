@@ -9,7 +9,7 @@ if (!can_create_group($permissions)) {
 
 if (Get::val('project')) {
     $result = $db->Query("SELECT  * FROM {projects}
-                           WHERE  project_id = ?", array($_GET['project']));
+                           WHERE  project_id = ?", array(Get::val('project')));
     $project_details = $db->FetchArray($result);
     $forproject = $project_details['project_title'];
 }
@@ -27,7 +27,7 @@ else {
       <td>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="newgroup" />
-      <input type="hidden" name="project" value="<?php echo $_GET['project'];?>" />
+      <input type="hidden" name="project" value="<?php echo Get::val('project');?>" />
       <label for="groupname">
       <?php echo $newgroup_text['groupname'];?></label></td>
       <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" /> <strong>*</strong></td>

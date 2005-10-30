@@ -10,12 +10,10 @@
 
 $fs->get_language_pack('admin');
 
-if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
-{
+if (Get::has('id') && $permissions['edit_comments'] == '1') {
    // Get the comment details
-   $getcomments = $db->Query("SELECT * FROM {comments} WHERE comment_id = ?", array($_GET['id']));
-   while ($row = $db->FetchArray($getcomments))
-   {
+   $getcomments = $db->Query("SELECT * FROM {comments} WHERE comment_id = ?", array(Get::has('id')));
+   while ($row = $db->FetchArray($getcomments)):
       $getusername = $db->Query("SELECT real_name FROM {users} WHERE user_id = ?", array($row['user_id']));
       list($user_name) = $db->FetchArray($getusername);
 
@@ -35,7 +33,7 @@ if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="editcomment" />
             <input type="hidden" name="task_id" value="<?php echo $row['task_id'];?>" />
-            <input type="hidden" name="comment_id" value="<?php echo $_GET['id'];?>" />
+            <input type="hidden" name="comment_id" value="<?php echo Get::has('id');?>" />
             <input type="hidden" name="previous_text" value="<?php echo $comment_text;?>" />
             <input class="adminbutton" type="submit" value="<?php echo $admin_text['saveeditedcomment'];?>" />
          </p>
@@ -43,8 +41,6 @@ if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
    </form>
 
 <?php
-   // End of looping
-   }
-// End of editing a comment
+   endwhile;
 }
 ?>

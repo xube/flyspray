@@ -322,7 +322,7 @@ elseif ($area == "editgroup"): // {{{
     /////////////////////////////
     echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $project_prefs['project_title'] . ': ' . $admin_text['editgroup'] . '</h3>';
 
-    $get_group_details = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($_GET['id']));
+    $get_group_details = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array(Get::val('id')));
     $group_details     = $db->FetchArray($get_group_details);
 
     // PMs are only allowed to edit groups in their project
