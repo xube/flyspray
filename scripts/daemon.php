@@ -6,8 +6,7 @@ $runfile = $_SERVER['argv'][3];
 
 chdir(dirname(__FILE__));
 
-while (touch($runfile))
-{
+while (touch($runfile)) {
     run($include);
     sleep($sleep);
 }
@@ -15,9 +14,6 @@ while (touch($runfile))
 function run($include)
 {
     global $db, $fs;
-
-    $lang = 'en';
-
     include $include;
 }
 
