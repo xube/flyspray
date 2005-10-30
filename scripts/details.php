@@ -908,17 +908,19 @@ while ($row = $db->FetchArray($getcomments)) {
         echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/menu/comment.png" title="' . $details_text['commentlink'] . '" alt="" /></a>';
         echo $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
 
+        echo '<span class="DoNotPrint">';
+
         if (@$permissions['edit_comments'] == '1') {
-            echo '<span class="DoNotPrint">&nbsp; - <a href="' . $conf['general']['baseurl'] . '?do=editcomment&amp;task_id=' 
+            echo '&nbsp; - <a href="' . $conf['general']['baseurl'] . '?do=editcomment&amp;task_id=' 
                 . Get::val('id') . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
         }
 
         if (@$permissions['delete_comments'] == '1'):
         ?>
         &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deletecomment&amp;task_id=<?php echo Get::val('id');?>&amp;comment_id=<?php echo $row['comment_id'];?>"
-          onclick="return confirm('<?php echo $details_text['confirmdeletecomment'];?>');"><?php echo $details_text['delete'] ?></a></span>
+          onclick="return confirm('<?php echo $details_text['confirmdeletecomment'];?>');"><?php echo $details_text['delete'] ?></a>
         <?php endif ?>
-
+        </span>
         <p class="comment"><?php echo $comment_text; ?></p>
 
         <?php

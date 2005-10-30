@@ -142,6 +142,7 @@ if (file_exists("themes/$themestyle/favicon.ico")) {
   <head>
     <title>Flyspray::&nbsp;&nbsp;<?php echo $project_prefs['project_title'] ?>:&nbsp;&nbsp;</title>
     <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="icon" type="image/png" href="<?php echo $ico_path ?>" />
     <link href="<?php echo $baseurl . 'themes/' . $themestyle ?>/theme.css" rel="stylesheet" type="text/css" />
     <link rel="alternate" type="application/rss+xml" title="Flyspray RSS Feed" href="<?php echo $baseurl . 'scripts/rss.php?proj=' . $project_id ?>" />

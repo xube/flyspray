@@ -285,9 +285,10 @@ class Flyspray
             }
 
             if ($pagenum < $pages)
-                $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a></span> ";
+                $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a>";
             if ($finish < $pages)
-                $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a></span>";
+                $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
+            $output .= '</span>';
         }
 
         return $output;
