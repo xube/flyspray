@@ -106,28 +106,6 @@ else {
 
 $do = Req::val('do', 'index');
 
-if ($do == 'index') {
-    // When viewing the task list, take down each value that the search form
-    // may have passed
-    $keys  = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date', 'project');
-    $keys2 = array('tasks', 'pagenum', 'order', 'order2', 'sort', 'sort2');
-
-    function keep($key) {
-        return !is_null(Get::val($key)) ? $key."=".Get::val($key) : null;
-    }
-
-    $keys  = array_map('keep', $keys);
-    $keys2 = array_map('keep', $keys2);
-    $keys  = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
-    $keys2 = array_filter($keys2, create_function('$x', 'return !is_null($x);'));
-
-    $extraurl  = join('&amp;', $keys);
-    $extraurl2 = join('&amp;', $keys2);
-    
-    $_SESSION['lastindexfilter'] = $baseurl . 'index.php?' .
-        join('&amp;', array($extraurl, $extraurl2));
-}
-
 if (file_exists("themes/$themestyle/favicon.ico")) {
     $ico_path = "{$baseurl}themes/$themestyle/favicon.ico";
 } else {

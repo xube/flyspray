@@ -175,14 +175,17 @@ elseif ( isset($current_user) && empty($permissions['manage_project']) ) {
     $sql_params[] = $current_user['user_id'];
 }
 
-if (Get::val('project') === '0') {
-    $get = "project=0";
-} else {
-    $get = "project={$project_id}";
-}
-
 // for 'sort by this column' links
-$get = join('&amp;', array($get, $extraurl, 'task=' . Get::val('tasks')));
+function keep($key) {
+    return Get::val($key) ? $key."=".Get::val($key) : null;
+}
+$keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
+        'project', 'task');
+$keys   = array_map('keep', $keys);
+$keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
+$keys[] = Get::val('project') === '0' ? "project=0" : "project=$project_id";
+$get    = htmlentities(join('&', $keys));
+
 
 if (Get::val('project') !== '0'
         && $project_prefs['project_is_active'] != '1'
@@ -635,7 +638,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
                echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">' . $index_text['toggleselected'] . '</a>';
            }
    
-           echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $extraurl . '&amp;order=' . Get::val('order')) . "</td>";
+           echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order')) . "</td>";
        } else {
            echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";
        }
