@@ -7,10 +7,10 @@
 */
 
 
-$fs->get_language_pack($lang, 'reports');
-$fs->get_language_pack($lang, 'details');
-$fs->get_language_pack($lang, 'admin');
-$fs->get_language_pack($lang, 'index');
+$fs->get_language_pack('reports');
+$fs->get_language_pack('details');
+$fs->get_language_pack('admin');
+$fs->get_language_pack('index');
 
 // Only allow those with permission to view this page
 if ($permissions['view_reports'] != '1') {

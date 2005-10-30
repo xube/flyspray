@@ -12,7 +12,7 @@ if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
-$fs->get_language_pack($lang, 'details');
+$fs->get_language_pack('details');
 
 // Configuration information:
 // [FIXME: in the future, this will come from the initial configuration.]

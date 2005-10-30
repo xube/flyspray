@@ -1,5 +1,5 @@
 <?php
-$fs->get_language_pack($lang, 'loginbox');
+$fs->get_language_pack('loginbox');
 ?>
 
 <div id="loginbox">

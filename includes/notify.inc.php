@@ -10,9 +10,8 @@
 $debug = true;
 
 // Define the language packs used
-$lang = $fs->prefs['lang_code'];
-$fs->get_language_pack($lang, 'notify.inc');
-$fs->get_language_pack($lang, 'details');
+$fs->get_language_pack('notify.inc');
+$fs->get_language_pack('details');
 
 function debug_print($message){
    global $debug;

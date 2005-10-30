@@ -10,10 +10,9 @@
    --------------------------------------------------
 */
 
-$lang = $fs->prefs['lang_code'];
-$fs->get_language_pack($lang, 'admin');
-$fs->get_language_pack($lang, 'index');
-$fs->get_language_pack($lang, 'newproject');
+$fs->get_language_pack('admin');
+$fs->get_language_pack('index');
+$fs->get_language_pack('newproject');
 
 $this_page = htmlspecialchars($_SERVER["REQUEST_URI"]);
 $area      = Get::val('area', 'prefs');
@@ -79,7 +78,7 @@ if     ($area == 'prefs'): // {{{
                 $lang_array = array();
                 while (false !== ($file = readdir($handle))) {
                     if ($file != "." && $file != ".." && file_exists("lang/$file/main.php")) {
-                        array_push($lang_array, $file);
+                        $lang_array[] = $file;
                     }
                 }
                 closedir($handle);

@@ -1,5 +1,5 @@
 <?php
-$fs->get_language_pack($lang, 'newuser');
+$fs->get_language_pack('newuser');
 
 if (!can_create_user($permissions)) {
     $fs->redirect('./');

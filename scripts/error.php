@@ -5,7 +5,7 @@
    illegal URL and it was caught by a regexp.
 */
 
-$fs->get_language_pack($lang, 'main');
+$fs->get_language_pack('main');
 
 echo '<div id="error">';
 echo $language['errorpage'];

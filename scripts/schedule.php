@@ -5,8 +5,9 @@ $path = dirname(dirname(__FILE__));
 require_once("$path/header.php");
 require_once("$path/includes/notify.inc.php");
 
-$notify = new Notifications;
+$fs->get_language_pack('functions');
 
+$notify = new Notifications;
 $now = date(U);
 
 $get_reminders = $db->Query("SELECT  * FROM {reminders} r
@@ -19,8 +20,6 @@ while ($row = $db->FetchRow($get_reminders)) {
     // Check to see if it's time to send a reminder
     if (($row['start_time'] < $now) && (($row['last_sent'] + $row['how_often']) < $now)) {
         // Send the reminder
-        $lang = $fs->prefs['lang_code'];
-        require_once("$path/lang/$lang/functions.inc.php");
 
         $jabber_users = array();
         $email_users  = array();

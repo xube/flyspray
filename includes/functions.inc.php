@@ -29,7 +29,7 @@ class Flyspray
       language (en) and then merges with requested one. Thus it makes English
       messages available even if translation is not present.
      */
-    function get_language_pack($lang, $module)
+    function get_language_pack($module)
     {
         global $basedir;
 
@@ -37,6 +37,7 @@ class Flyspray
             $module .= '.inc';
         }
 
+        $lang     = $this->prefs['lang_code'];
         $before   = get_defined_vars();
         require("$basedir/lang/en/$module.php");
         $after_en = get_defined_vars();
@@ -129,52 +130,49 @@ class Flyspray
         global $db;
         global $project_prefs;
         global $status_list, $severity_list, $priority_list;
-        $this->get_language_pack($lang, 'status');
-        $this->get_language_pack($lang, 'severity');
-        $this->get_language_pack($lang, 'priority');
+        $this->get_language_pack('status');
+        $this->get_language_pack('severity');
+        $this->get_language_pack('priority');
 
-
-       $lang = $this->prefs['lang_code'];
-
-       $get_details = $db->Query("SELECT t.*, p.*,
-                                         c.category_name, c.category_owner, c.parent_id,
-                                         o.os_name,
-                                         r.resolution_name,
-                                         tt.tasktype_name,
-                                         vr.version_name   AS reported_version_name,
-                                         vd.version_name   AS due_in_version_name,
-                                         uo.real_name      AS opened_by_name,
-                                         ue.real_name      AS last_edited_by_name,
-                                         uc.real_name      AS closed_by_name,
-                                         ua.real_name      AS assigned_to_name
-                                   FROM  {tasks}              t
-                              LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
-                              LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
-                              LEFT JOIN  {list_os}            o  ON t.operating_system = o.os_id
-                              LEFT JOIN  {list_resolution}    r  ON t.resolution_reason = r.resolution_id
-                              LEFT JOIN  {list_tasktype}      tt ON t.task_type = tt.tasktype_id
-                              LEFT JOIN  {list_version}       vr ON t.product_version = vr.version_id
-                              LEFT JOIN  {list_version}       vd ON t.closedby_version = vd.version_id
-                              LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
-                              LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
-                              LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
-                              LEFT JOIN  {users}              ua ON t.assigned_to = ua.user_id
-                                  WHERE  t.task_id = ?", array($task_id));
-
-       if (!$db->CountRows($get_details)) {
-          return false;
-       }
-
-       if ($get_details = $db->FetchArray($get_details)) {
-           $status_id    = $get_details['item_status'];
-           $severity_id  = $get_details['task_severity'];
-           $priority_id  = $get_details['task_priority'];
-           $get_details += array('status_name'   => $status_list[$status_id]);
-           $get_details += array('severity_name' => $severity_list[$severity_id]);
-           $get_details += array('priority_name' => $priority_list[$priority_id]);
-       }
-
-       return $get_details;
+        $get_details = $db->Query("SELECT t.*, p.*,
+                                          c.category_name, c.category_owner, c.parent_id,
+                                          o.os_name,
+                                          r.resolution_name,
+                                          tt.tasktype_name,
+                                          vr.version_name   AS reported_version_name,
+                                          vd.version_name   AS due_in_version_name,
+                                          uo.real_name      AS opened_by_name,
+                                          ue.real_name      AS last_edited_by_name,
+                                          uc.real_name      AS closed_by_name,
+                                          ua.real_name      AS assigned_to_name
+                                    FROM  {tasks}              t
+                               LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
+                               LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
+                               LEFT JOIN  {list_os}            o  ON t.operating_system = o.os_id
+                               LEFT JOIN  {list_resolution}    r  ON t.resolution_reason = r.resolution_id
+                               LEFT JOIN  {list_tasktype}      tt ON t.task_type = tt.tasktype_id
+                               LEFT JOIN  {list_version}       vr ON t.product_version = vr.version_id
+                               LEFT JOIN  {list_version}       vd ON t.closedby_version = vd.version_id
+                               LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
+                               LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
+                               LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
+                               LEFT JOIN  {users}              ua ON t.assigned_to = ua.user_id
+                                   WHERE  t.task_id = ?", array($task_id));
+       
+        if (!$db->CountRows($get_details)) {
+           return false;
+        }
+       
+        if ($get_details = $db->FetchArray($get_details)) {
+            $status_id    = $get_details['item_status'];
+            $severity_id  = $get_details['task_severity'];
+            $priority_id  = $get_details['task_priority'];
+            $get_details += array('status_name'   => $status_list[$status_id]);
+            $get_details += array('severity_name' => $severity_list[$severity_id]);
+            $get_details += array('priority_name' => $priority_list[$priority_id]);
+        }
+       
+        return $get_details;
     }
 
 
@@ -249,10 +247,9 @@ class Flyspray
     function pagenums($pagenum, $perpage, $totalcount, $extraurl)
     {
         global $db;
-        global $lang;
         global $functions_text;
 
-        $this->get_language_pack($lang, 'functions');
+        $this->get_language_pack('functions');
 
         $extraurl = '&amp;' . $extraurl;
 

@@ -1,5 +1,5 @@
 <?php
-$fs->get_language_pack($lang, 'newgroup');
+$fs->get_language_pack('newgroup');
 
 // Make sure that only admins are using this page
 if (!can_create_group($permissions)) {

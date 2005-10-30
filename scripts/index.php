@@ -10,11 +10,11 @@
 // already set. This is a whole convoluted bunch of crap, but it works.
 
 // First, the obligatory language packs
-$fs->get_language_pack($lang, 'index');
-$fs->get_language_pack($lang, 'details');
-$fs->get_language_pack($lang, 'severity');
-$fs->get_language_pack($lang, 'status');
-$fs->get_language_pack($lang, 'priority');
+$fs->get_language_pack('index');
+$fs->get_language_pack('details');
+$fs->get_language_pack('severity');
+$fs->get_language_pack('status');
+$fs->get_language_pack('priority');
 
 $perpage = '20';
 if (@$current_user['tasks_perpage'] > 0) {

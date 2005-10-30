@@ -6,12 +6,12 @@
    attachments, notifications etc.
 */
 
-$fs->get_language_pack($lang, 'details');
-$fs->get_language_pack($lang, 'newtask');
-$fs->get_language_pack($lang, 'index');
-$fs->get_language_pack($lang, 'status');
-$fs->get_language_pack($lang, 'severity');
-$fs->get_language_pack($lang, 'priority');
+$fs->get_language_pack('details');
+$fs->get_language_pack('newtask');
+$fs->get_language_pack('index');
+$fs->get_language_pack('status');
+$fs->get_language_pack('severity');
+$fs->get_language_pack('priority');
 
 // Only load this page if a valid task was actually requested
 if ( !($task_details = $fs->GetTaskDetails(Get::val('id')))

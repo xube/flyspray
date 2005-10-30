@@ -16,8 +16,7 @@ if ($conf['general']['reminder_daemon'] == '1') {
 }
 
 // Get the translation for the wrapper page (this page)
-$lang = $fs->prefs['lang_code'];
-$fs->get_language_pack($lang, 'main');
+$fs->get_language_pack('main');
 setlocale(LC_ALL, str_replace('-','_',$language['locale']));
 
 // Get user permissions

@@ -3,8 +3,7 @@
    This script performs all database modifications/
 */
 
-$fs->get_language_pack($lang, 'modify');
-
+$fs->get_language_pack('modify');
 
 // Include the notifications class
 include_once ( "$basedir/includes/notify.inc.php" );

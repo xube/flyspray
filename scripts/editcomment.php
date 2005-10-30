@@ -8,9 +8,7 @@
    --------------------------------------------------
 */
 
-
-$lang = $fs->prefs['lang_code'];
-$fs->get_language_pack($lang, 'admin');
+$fs->get_language_pack('admin');
 
 if (isset($_GET['id']) && $permissions['edit_comments'] == '1')
 {

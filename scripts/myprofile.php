@@ -5,9 +5,8 @@
    -------------------------------------------------------
 */
 
-$lang = $fs->prefs['lang_code'];
-$fs->get_language_pack($lang, 'admin');
-$fs->get_language_pack($lang, 'index');
+$fs->get_language_pack('admin');
+$fs->get_language_pack('index');
 
 if (!Cookie::has('flyspray_userid')) {
     echo $admin_text['nopermission'];
