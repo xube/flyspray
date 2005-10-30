@@ -275,7 +275,7 @@ if (isset($_SESSION['SUCCESS'])) {
           <option value="0" <?php if (Get::val('project') == '0') echo 'selected="selected"';?>><?php echo $language['allprojects'];?></option>
           <?php
 
-          if (isset($permissions['global_view']) && $permissions['global_view'] == '1') {
+          if (@$permissions['global_view'] == '1') {
               // If the user has permission to view all projects
               $get_projects = $db->Query("SELECT * FROM {$dbprefix}projects ORDER BY project_title");
           }
@@ -357,53 +357,14 @@ if ($fs->requestDuplicated())
 }
 
 // Show the page the user wanted
-require("scripts/$do.php");
+require("$basedir/includes/permissions.inc.php");
+require("$basedir/scripts/$do.php");
 
 // Show the user's permissions
 if (Cookie::has('flyspray_userid')) {
-?>
-      <div id="permslink">
-      <a href="#" onclick="showhidestuff('permissions');"><?php echo $language['permissions'] ?></a>
-      </div>
-      <div id="permissions">
-        <table border="1">
-<?php
-
-   $perm_fields = array('is_admin',
-                        'manage_project',
-                        'view_tasks',
-                        'open_new_tasks',
-                        'modify_own_tasks',
-                        'modify_all_tasks',
-                        'view_comments',
-                        'add_comments',
-                        'edit_comments',
-                        'delete_comments',
-                        'view_attachments',
-                        'create_attachments',
-                        'delete_attachments',
-                        'view_history',
-                        'close_own_tasks',
-                        'close_other_tasks',
-                        'assign_to_self',
-                        'assign_others_to_self',
-                        'view_reports',
-                        'global_view');
-
-    foreach ($permissions as $key => $val) {
-        if (in_array($key, $perm_fields)) {
-            echo '<tr><td>' . str_replace('_', ' ', $key) . '</td>';
-            if ($val == '0') {
-                echo '<td style="color: red;">No</td></tr>';
-            } else {
-                echo '<td style="color: green;">Yes</td></tr>';
-            }
-        }
-    }
+    tpl_draw_perms($permissions);
 }
 ?>
-        </table>
-      </div>
     </div>
     <p id="footer">
        <!-- Please don't remove this line - it helps promote Flyspray -->
