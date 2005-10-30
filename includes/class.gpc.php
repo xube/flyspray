@@ -5,7 +5,7 @@ class Req
 {
     function has($key)
     {
-        return isset($_REQUEST[$key]);
+        return isset($_REQUEST[$key]) && $_REQUEST[$key] != '';
     }
     
     function val($key, $default = null)
@@ -21,7 +21,7 @@ class Post
 {
     function has($key)
     {
-        return isset($_POST[$key]);
+        return isset($_POST[$key]) && $_REQUEST[$key] != '';
     }
     
     function val($key, $default = null)
@@ -53,7 +53,7 @@ class Cookie
 {
     function has($key)
     {
-        return isset($_COOKIE[$key]);
+        return isset($_COOKIE[$key]) && $_COOKIE[$key] != '';
     }
     
     function val($key, $default = null)
