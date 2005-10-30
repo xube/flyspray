@@ -387,3 +387,8 @@ if (Cookie::has('flyspray_userid')) {
     <?php @include ("$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php"); ?>
   </body>
 </html>
+<?php
+if ($conf['debug']) {
+    require ($basedir . '/includes/debug.inc.php');
+}
+?>
