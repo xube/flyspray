@@ -1,5 +1,16 @@
 <?php
 
+// Checks if a function is disabled
+function function_disabled($func_name)
+{
+	$disabled_functions = explode(',',ini_get('disable_functions'));
+	if(in_array($func_name,$disabled_functions))
+	{
+		return true;
+	}
+	return false;
+}
+
 /*
    This script displays a task dependancy graph.
 */
@@ -178,25 +189,32 @@ foreach ($edge_list as $src => $dstlist) {
 // all done
 $dotgraph .= "}\n";
 
-// All done with the graph. Save it to a temp file.
-$tname = tempnam("","fs_depends_dot_");
-$tmp = fopen($tname,"w");
-fwrite($tmp,$dotgraph);
-fclose($tmp);
-
-// Now run dot on it:
-$out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
-$cmd = "$path_to_dot -T $fmt -o$basedir/$out $tname";
-$rv = system($cmd,$stat);
-if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
-
-$cmd = "$path_to_dot -T cmapx $tname";
-$rv = system($cmd,$stat);
-if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
-
-unlink($tname);
-
-echo "<img src='{$baseurl}$out' alt='task $id dependencies' usemap='#$graphname'>\n";
+if(!function_disabled('system'))
+{
+	// All done with the graph. Save it to a temp file.
+	$tname = tempnam("","fs_depends_dot_");
+	$tmp = fopen($tname,"w");
+	fwrite($tmp,$dotgraph);
+	fclose($tmp);
+	
+	// Now run dot on it:
+	$out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
+	$cmd = "$path_to_dot -T $fmt -o$basedir/$out $tname";
+	$rv = system($cmd,$stat);
+	if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
+	
+	$cmd = "$path_to_dot -T cmapx $tname";
+	$rv = system($cmd,$stat);
+	if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
+	
+	unlink($tname);
+	
+	echo "<img src='{$baseurl}$out' alt='task $id dependencies' usemap='#$graphname'>\n";
+}
+else
+{
+	echo '<strong>Error: The graph cannot be displayed because of the server\'s security settings.</strong>';
+}
 
 #echo "<pre>$dotgraph</pre>\n";
 
