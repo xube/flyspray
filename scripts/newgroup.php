@@ -2,23 +2,23 @@
 $fs->get_language_pack($lang, 'newgroup');
 
 // Make sure that only admins are using this page
-if (@$permissions['is_admin'] == '1'
-     OR ($permissions['manage_project'] == '1' && !empty($_GET['project']) ) ) {
+if (!can_create_group($permissions)) {
+    echo $newgroup_text['nopermission'];
+    exit;
+}
 
-if (empty($_GET['project']) )
-{
-   $forproject = $newgroup_text['globalgroups'];
-} else
-{
-   $result = $db->Query("SELECT * FROM {$dbprefix}projects
-                         WHERE project_id = ?",
-                         array($_GET['project']));
-   $project_details = $db->FetchArray($result);
-   $forproject = $project_details['project_title'];
+if (Get::val('project')) {
+    $result = $db->Query("SELECT  * FROM {$dbprefix}projects
+                           WHERE  project_id = ?", array($_GET['project']));
+    $project_details = $db->FetchArray($result);
+    $forproject = $project_details['project_title'];
+}
+else {
+    $forproject = $newgroup_text['globalgroups'];
 }
 ?>
 
-<form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="newgroup">
+<form action="<?php echo $baseurl;?>index.php" method="post" id="newgroup">
 <h1><?php echo $newgroup_text['createnewgroup'] . ' - ' . $forproject;?></h1>
 <p><em><?php echo $newgroup_text['requiredfields'];?></em> <strong>*</strong></p>
 
@@ -114,10 +114,4 @@ if (empty($_GET['project']) )
       </td>
     </tr>
   </table>
-  </form>
-
-<?php
-} else {
-  echo $newgroup_text['nopermission'];
-};
-?>
+</form>

@@ -77,4 +77,9 @@ function can_create_user($perms, $flyspray) {
            );
 }
 
+function can_create_group($perms) {
+    return @$perms['is_admin'] == '1'
+        || (@$perms['manage_project'] == '1' && !Get::val('project'));
+}
+
 ?>
