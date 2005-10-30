@@ -259,16 +259,15 @@ function events_report()
             break;
 
         case 'from':
-            $fromdate  = Req::val('fromdate');
-            $todate    = Req::val('todate');
+            $date      = 'from';
+            $fromdate  = Req::val('fromdate', date("d-M-Y"););
+            $todate    = Req::val('todate', date("d-M-Y"););
 
-            if ($fromdate && $todate) {
-                $date      = 'from';
-                $ufromdate = strtotime($fromdate);
-                $utodate   = strtotime($todate);
+            $ufromdate = strtotime($fromdate);
+            // Add 24 hours to the end to make it include that date
+            $utodate   = strtotime($todate) + 86400;
 
-                $wheredate = "AND h.event_date > {$ufromdate} AND h.event_date < {$utodate}";
-            }
+            $wheredate = "AND h.event_date > {$ufromdate} AND h.event_date < {$utodate}";
             break;
 
         case 'duein':

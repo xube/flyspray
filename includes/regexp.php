@@ -7,7 +7,7 @@
 */
 
 $numeric = array('getfile', 'project', 'page', 'perpage', 'pagenum', 'cat',
-        'sev', 'notify_type');
+        'sev', 'notify_type', 'type', 'due');
 
 foreach ($numeric as $key) {
     if (Get::has($key) && !is_numeric(Get::val($key))) {
@@ -37,6 +37,7 @@ $regexps   = array(
         'sort'          => $sort_ok,
         'sort2'         => $sort_ok,
         'status'        => '/^(\d+|all|closed)$/',
+        'tasks'         => '/^(all|assigned|reported|watched)$/',
         'user_name'     => '/^[a-zA-Z0-9_.-]+$/',
 );
 
@@ -61,4 +62,9 @@ if ($id = Get::val('id')) {
     }
 }
 
+if (Get::has('PHPSESSID')) {
+    if (preg_match ('!<.*>!', Get::val('PHPSESSID'))) {
+        $fs->Redirect($fs->CreateURL('error', null));
+    }
+}
 ?>

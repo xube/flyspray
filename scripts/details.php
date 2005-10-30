@@ -63,13 +63,12 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
         }
         elseif (Cookie::has('flyspray_userid')) {
             // or, if the user is logged in
-            $get_projects = $db->Query("SELECT  DISTINCT p.*
-                                          FROM  {users_in_groups} uig
-                                     LEFT JOIN  {groups} g ON uig.group_id = g.group_id, {projects} p
-                                         WHERE  ((uig.user_id = ?  AND g.view_tasks = '1') OR p.others_view = '1')
-                                                AND p.project_is_active = '1'
+            $get_projects = $db->Query("SELECT  p.*
+                                          FROM  {projects}        p
+                                     LEFT JOIN  {groups}          g   ON p.project_id=g.belongs_to_project AND g.view_tasks=1
+                                     LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
+                                         WHERE  p.project_is_active='1' AND (p.others_view OR uig.user_id IS NOT NULL)
                                       ORDER BY  p.project_title", array($current_user['user_id']));
-
         }
         else {
             // Anonymous users
