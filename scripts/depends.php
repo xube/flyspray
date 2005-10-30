@@ -38,9 +38,11 @@ $selfurl   = $fs->CreateURL('depends',$id);
 $pmodes    = array('None', 'Prune Closed Links', 'Prune Closed Tasks');
 
 foreach ($pmodes as $mode => $desc) {
-    $strlist[] =
-        ($mode==$prunemode ? $desc :
-         "<a href='$selfurl".($mode!=0 ? "&prune=$mode" : "")."'>$desc</a>\n");
+    if ($mode == $prunemode) {
+        $strlist[] = $desc;
+    } else {
+        $strlist[] = "<a href='$selfurl".($mode!=0 ? "&amp;prune=$mode" : "")."'>$desc</a>\n";
+    }
 }
 echo "<p><b>Pruning Level: </b>\n". implode(" &nbsp;|&nbsp; \n",$strlist)."</p>\n";
 
@@ -183,9 +185,8 @@ fwrite($tmp,$dotgraph);
 fclose($tmp);
 
 // Now run dot on it:
-$out = "$path_for_images/depends_$id".
-    ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
-$cmd = "$path_to_dot -T $fmt -o$out $tname";
+$out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
+$cmd = "$path_to_dot -T $fmt -o$basedir/$out $tname";
 $rv = system($cmd,$stat);
 if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
 
@@ -195,7 +196,7 @@ if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
 
 unlink($tname);
 
-echo "<img src='$out' alt='task $id dependencies' usemap='#$graphname'>\n";
+echo "<img src='{$baseurl}$out' alt='task $id dependencies' usemap='#$graphname'>\n";
 
 #echo "<pre>$dotgraph</pre>\n";
 
