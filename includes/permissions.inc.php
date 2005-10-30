@@ -5,6 +5,7 @@
 
 function tpl_draw_perms($perms)
 {
+    global $language;
     $perm_fields = array('is_admin',
                          'manage_project',
                          'view_tasks',
@@ -32,7 +33,7 @@ function tpl_draw_perms($perms)
     <div id="permissions">
     <table border="1">
 <?php
-    foreach ($permissions as $key => $val) {
+    foreach ($perms as $key => $val) {
         if (in_array($key, $perm_fields)) {
             echo '<tr><td>' . str_replace('_', ' ', $key) . '</td>';
             if ($val == '0') {
