@@ -17,7 +17,6 @@ require_once ( "$basedir/includes/functions.inc.php" );
 require_once ( "$basedir/includes/db.inc.php" );
 require_once ( "$basedir/includes/backend.inc.php" );
 require_once ( "$basedir/includes/markdown.php" );
-require_once ( "$basedir/includes/regexp.php" );
 
 // Change this line if you move flyspray.conf.php elsewhere
 $conf_file = $basedir . DIRECTORY_SEPARATOR . 'flyspray.conf.php';
@@ -43,6 +42,8 @@ if ($baseurl{strlen($baseurl)-1} != '/') {
 $fs = new Flyspray;
 $db = new Database;
 $be = new Backend;
+
+require_once ( "$basedir/includes/regexp.php" );
 
 session_start();
 
