@@ -97,10 +97,6 @@ function changelog_report()
         $closure_comment = $row['closure_comment'];
         $real_name       = $row['real_name'];
         $event_date      = $fs->formatDate($row['date_closed'], false);
-        if (get_magic_quotes_gpc()) {
-            $item_summary    = stripslashes($item_summary);
-            $closure_comment = stripslashes($closure_comment);
-        }
 
         if($closure_comment) {
             echo "<tr><td>$event_date: <a href=\"" . $fs->CreateURL('details', $task_id) . "\">$item_summary</a>. <b>$task_resolution :</b> $closure_comment</td><td>$real_name</td></tr>";
@@ -430,7 +426,7 @@ function events_report()
         <?php while ($history = $db->FetchRow($query_history)): ?>
         <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('<?php echo $fs->CreateURL('details', $history['task_id']);?>')">
           <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . "\">FS#{$history['task_id']}</a></td>";?>
-          <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . '">' . htmlspecialchars(stripslashes($history['item_summary'])) . '</a></td>';?>
+          <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . '">' . htmlspecialchars($history['item_summary']) . '</a></td>';?>
           <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
           <td><?php echo $history['user_id'] ? $fs->LinkedUserName($history['user_id']) : $details_text['anonymous']; ?></td>
           <td><?php echo EventDescription($history);?></td>
@@ -466,8 +462,8 @@ function EventDescription($history)
         switch ($field) {
         case 'item_summary':
             $field = $details_text['summary'];
-            $oldvalue = htmlspecialchars(stripslashes($oldvalue));
-            $newvalue = htmlspecialchars(stripslashes($newvalue));
+            $oldvalue = htmlspecialchars($oldvalue);
+            $newvalue = htmlspecialchars($newvalue);
             break;
         case 'attached_to_project':
             $field = $details_text['attachedtoproject'];
@@ -622,13 +618,13 @@ function EventDescription($history)
     } elseif ($history['event_type'] == 15) {      //Task added to related list of another task
         $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
         list($related) = $db->FetchRow($result);
-        $related = htmlspecialchars(stripslashes($related));
+        $related = htmlspecialchars($related);
         $description = "{$details_text['addedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
     } elseif ($history['event_type'] == 16) {      //Task deleted from related list of another task
         $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
         list($related) = $db->FetchRow($result);
-        $related = htmlspecialchars(stripslashes($related));
+        $related = htmlspecialchars($related);
         $description = "{$details_text['deletedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
     } elseif ($history['event_type'] == 17) {      //Reminder added

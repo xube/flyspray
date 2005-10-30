@@ -47,11 +47,6 @@ echo '<?xml version="1.0"?>'."\n";
         while ($row = $db->FetchArray($task_details)):
             $item_summary  = htmlspecialchars($row['item_summary']);
             $detailed_desc = htmlspecialchars($row['detailed_desc']);
-
-            if (get_magic_quotes_gpc()) {
-                $item_summary  = stripslashes($item_summary);
-                $detailed_desc = stripslashes($detailed_desc);
-            }
 ?>
     <item>
       <title><?php echo $item_summary ?></title>

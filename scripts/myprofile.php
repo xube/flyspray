@@ -28,7 +28,7 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
 
                <label for="realname"><?php echo $admin_text['realname'];?></label>
                </td>
-            <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo stripslashes($current_user['real_name']);?>" /></td>
+            <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo $current_user['real_name'];?>" /></td>
          </tr>
          <tr>
             <td><label for="emailaddress"><?php echo $admin_text['emailaddress'];?></label></td>

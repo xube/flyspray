@@ -174,8 +174,8 @@ class Notifications {
       // loop through notifications
       while ( $notification = $db->FetchRow($notifications) )
       {
-         $subject = stripslashes($notification['message_subject']);
-         $body = stripslashes($notification['message_body']);
+         $subject = $notification['message_subject'];
+         $body    = $notification['message_body'];
 
          debug_print("Processing notification {" . $notification['message_id'] . "}");
 
@@ -249,8 +249,6 @@ class Notifications {
 
       $project_prefs = $fs->GetProjectPrefs($project_id);
 
-      //$subject = stripslashes($subject);
-      //$body = stripslashes($body);
       $body = str_replace('&amp;', '&', $body);
 
       if (empty($to) OR $to == Cookie::val('flyspray_userid'))
@@ -326,8 +324,6 @@ class Notifications {
       global $details_text;
       global $current_user;
 
-
-
       // Get the task details
       $task_details = $fs->getTaskDetails($task_id);
       $project_prefs = $fs->GetProjectPrefs($task_details['attached_to_project']);
@@ -391,8 +387,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
       }
 
@@ -426,8 +420,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
 
       }
@@ -455,8 +447,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
 
       }
@@ -475,8 +465,6 @@ class Notifications {
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
-
-         $body = stripslashes($body);
 
          return array($subject, $body);
       }
@@ -497,8 +485,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
 
       }
@@ -518,8 +504,6 @@ class Notifications {
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
-
-         $body = stripslashes($body);
 
          return array($subject, $body);
 
@@ -558,8 +542,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . '#comment' . $comment['comment_id'] . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
 
       }
@@ -579,8 +561,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
       }
 
@@ -599,8 +579,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
       }
 
@@ -618,8 +596,6 @@ class Notifications {
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
-
-         $body = stripslashes($body);
 
          return array($subject, $body);
       }
@@ -656,8 +632,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
       }
 
@@ -676,8 +650,6 @@ class Notifications {
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
-         $body = stripslashes($body);
-
          return array($subject, $body);
       }
 
@@ -695,8 +667,6 @@ class Notifications {
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
-
-         $body = stripslashes($body);
 
          return array($subject, $body);
       }

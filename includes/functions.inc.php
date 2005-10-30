@@ -203,12 +203,12 @@ class Flyspray
                                        WHERE  group_id = ? AND u.account_enabled = '1'
                                     ORDER BY  u.real_name ASC", array($group_details['group_id']));
 
-            echo '<optgroup label="' . stripslashes($group_details['group_name']) . "\">\n";
+            echo '<optgroup label="' . $group_details['group_name'] . "\">\n";
             while ($row = $db->FetchArray($user_query)) {
                 if ($current == $row['user_id']) {
-                    echo '<option value="' . $row['user_id'] . '" selected="selected">' . stripslashes($row['real_name']) . "</option>\n";
+                    echo '<option value="' . $row['user_id'] . '" selected="selected">' . $row['real_name'] . "</option>\n";
                 } else {
-                    echo '<option value="' . $row['user_id'] . '">' . stripslashes($row['real_name']) . "</option>\n";
+                    echo '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
                 }
             }
             echo "</optgroup>\n";
@@ -233,9 +233,9 @@ class Flyspray
             echo "<optgroup label=\"{$group_details['group_name']}\">\n";
             while ($row = $db->FetchArray($user_query)) {
                 if ($current == $row['user_id']) {
-                    echo '<option value="' . $row['user_id'] . '" selected="selected">' . stripslashes($row['real_name']) . "</option>\n";
+                    echo '<option value="' . $row['user_id'] . '" selected="selected">' . $row['real_name'] . "</option>\n";
                 } else {
-                    echo '<option value="' . $row['user_id'] . '">' . stripslashes($row['real_name']) . "</option>\n";
+                    echo '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
                 }
             }
             echo "</optgroup>\n";
@@ -617,7 +617,7 @@ class Flyspray
 
         $result = $db->FetchRow($result);
 
-        return '<a href="' . $this->CreateURL('user', $user_id) . '">' . stripslashes($result['real_name']) . ' (' . $result['user_name'] . ')</a>';
+        return '<a href="' . $this->CreateURL('user', $user_id) . '">' . $result['real_name'] . ' (' . $result['user_name'] . ')</a>';
     }
     // }}}
     function formatDate($timestamp, $extended) // {{{
@@ -655,11 +655,7 @@ class Flyspray
     // }}}
     function formatText($text) // {{{
     {
-        // This function removes html, slashes and other nasties
-        if (get_magic_quotes_gpc()) {
-            $text = stripslashes($text);
-        }
-
+        // This function removes html, and other nasties
         $text = htmlspecialchars($text);
         $text = nl2br($text);
 
@@ -687,7 +683,7 @@ class Flyspray
         } else {
             $status = $details['status_name'];
         }
-        $title = $status . ': ' .  htmlspecialchars(stripslashes(substr($details['item_summary'], 0, 64)));
+        $title = $status . ': ' .  htmlspecialchars(substr($details['item_summary'], 0, 64));
         $link  = sprintf('<a href="%s" title="%s">%s</a>', $this->CreateURL('details', $id), $title, $text);
 
         if ($details['is_closed'] == '1') {

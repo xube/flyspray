@@ -165,8 +165,8 @@ elseif (Post::val('action') == 'update'
             <input type="hidden" name="edit_start_time" value="999999999999" />
             <input type="hidden" name="attached_to_project" value="<?php echo Post::val('attached_to_project');?>" />
             <input type="hidden" name="task_type" value="<?php echo Post::val('task_type');?>" />
-            <input type="hidden" name="item_summary" value="<?php echo htmlspecialchars(stripslashes(Post::val('item_summary')),ENT_COMPAT,'utf-8');?>" />
-            <input type="hidden" name="detailed_desc" value="<?php echo htmlspecialchars(stripslashes(Post::val('detailed_desc')),ENT_COMPAT,'utf-8');?>" />
+            <input type="hidden" name="item_summary" value="<?php echo htmlspecialchars(Post::val('item_summary'),ENT_COMPAT,'utf-8');?>" />
+            <input type="hidden" name="detailed_desc" value="<?php echo htmlspecialchars(Post::val('detailed_desc'),ENT_COMPAT,'utf-8');?>" />
             <input type="hidden" name="item_status" value="<?php echo Post::val('item_status');?>" />
             <input type="hidden" name="assigned_to" value="<?php echo Post::val('assigned_to');?>" />
             <input type="hidden" name="product_category" value="<?php echo Post::val('product_category');?>" />
@@ -309,7 +309,6 @@ elseif (Post::val('action') == 'close'
         // Get the item summary for the notifications
         $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array(Post::val('task_id')));
         list($item_summary) = $db->FetchArray($result);
-        $item_summary = stripslashes($item_summary);
 
         // Create notification
         $notify->Create('3', Post::val('task_id'));
@@ -880,8 +879,7 @@ elseif (Post::val('action') == "update_list"
     $redirectmessage = $modify_text['listupdated'];
 
     for($i = 0; $i < count($listname); $i++) {
-        $listname[$i] = stripslashes($listname[$i]);
-        if ($listname[$i] != '' && is_numeric($listposition[$i])) {
+        if (is_numeric($listposition[$i])) {
             $update = $db->Query("UPDATE  $list_table_name
                                      SET  $list_column_name = ?, list_position = ?, show_in_list = ?
                                    WHERE  $list_id = '{$listid[$i]}'",
@@ -930,8 +928,7 @@ elseif (Post::val('action') == "update_version_list"
     $redirectmessage = $modify_text['listupdated'];
 
     for($i = 0; $i < count($listname); $i++) {
-        $listname[$i] = stripslashes($listname[$i]);
-        if ($listname[$i] != '' && is_numeric($listposition[$i])) {
+        if (is_numeric($listposition[$i])) {
 
             $update = $db->Query("UPDATE  $list_table_name
                                      SET  $list_column_name = ?, list_position = ?,
@@ -982,8 +979,7 @@ elseif (Post::val('action') == "update_category"
     $redirectmessage = $modify_text['listupdated'];
 
     for ($i = 0; $i < count($listname); $i++) {
-        $listname[$i] = stripslashes($listname[$i]);
-        if ($listname[$i] != '' && is_numeric($listposition[$i])) {
+        if (is_numeric($listposition[$i])) {
             $update = $db->Query("UPDATE  {list_category}
                                      SET  category_name = ?, list_position = ?,
                                           show_in_list = ?, category_owner = ?

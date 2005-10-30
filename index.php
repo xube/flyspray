@@ -313,10 +313,10 @@ if (isset($_SESSION['SUCCESS'])) {
               // Ensure that the selected project matches the one we are currently looking at
               if ( $project_id == $row['project_id'] && (!Get::has('project') || Get::val('project')) )
               {
-                  echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
+                  echo '<option value="' . $row['project_id'] . '" selected="selected">' . $row['project_title'] . '</option>';
               }
               else {
-                  echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
+                  echo '<option value="' . $row['project_id'] . '">' . $row['project_title'] . '</option>';
               }
               $project_list[] = $row['project_id'];
           }
@@ -355,7 +355,7 @@ if ($project_prefs['project_is_active'] == '1'
     && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))
     OR (Get::val('project') == '0'))
 {
-    $intro_message = Markdown(stripslashes($project_prefs['intro_message']));
+    $intro_message = Markdown($project_prefs['intro_message']);
     echo '<div id="intromessage">' . $intro_message . '</div>';
 }
 

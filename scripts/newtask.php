@@ -17,7 +17,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
 }
 
 ?>
-<h3><?php echo htmlspecialchars(stripslashes($project_prefs['project_title'])) . ':: ' . $newtask_text['newtask'];?></h3>
+<h3><?php echo htmlspecialchars($project_prefs['project_title']) . ':: ' . $newtask_text['newtask'];?></h3>
 
 <div id="taskdetails">
   <form enctype="multipart/form-data" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
@@ -70,7 +70,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
                                     ORDER BY  list_position", array($project_id));
 
               while ($row = $db->FetchArray($cat_list)) {
-                  $category_name = stripslashes($row['category_name']);
+                  $category_name = $row['category_name'];
                   echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
 
                   $subcat_list = $db->Query("SELECT  category_id, category_name
@@ -79,7 +79,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
                                            ORDER BY  list_position", array($row['category_id']));
 
                   while ($subrow = $db->FetchArray($subcat_list)) {
-                      $subcategory_name = stripslashes($subrow['category_name']);
+                      $subcategory_name = $subrow['category_name'];
                       echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
                   }
               }

@@ -41,7 +41,7 @@ if     ($area == 'prefs'): // {{{
     // Start the main project preferences area //
     /////////////////////////////////////////////
 
-    echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . htmlspecialchars(stripslashes($project_prefs['project_title'])) . ': ' . $admin_text['preferences'] . '</h3>';
+    echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . htmlspecialchars($project_prefs['project_title']) . ': ' . $admin_text['preferences'] . '</h3>';
 ?>
   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
     <fieldset class="admin">
@@ -54,7 +54,7 @@ if     ($area == 'prefs'): // {{{
         <tr>
           <td><label for="projecttitle"><?php echo $admin_text['projecttitle'];?></label></td>
           <td>
-            <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo stripslashes($project_prefs['project_title']);?>" />
+            <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" value="<?php echo $project_prefs['project_title'];?>" />
           </td>
         </tr>
 
@@ -70,7 +70,7 @@ if     ($area == 'prefs'): // {{{
         <tr>
           <td><label for="intromessage"><?php echo $admin_text['intromessage'];?></label></td>
           <td>
-            <textarea id="intromessage" name="intro_message" rows="12" cols="70"><?php echo htmlspecialchars(stripslashes($project_prefs['intro_message']));?></textarea>
+            <textarea id="intromessage" name="intro_message" rows="12" cols="70"><?php echo htmlspecialchars($project_prefs['intro_message']);?></textarea>
           </td>
         </tr>
         <tr>
@@ -216,8 +216,8 @@ elseif ($area == 'groups'): // {{{
     <p><a href="<?php echo $fs->CreateURL('newgroup', $project_id) ?>"><?php echo $admin_text['newgroup'] ?></a></p>
 
 <?php while ($group = $db->FetchArray($get_groups)): ?>
-    <a class="grouptitle" href="<?php echo $fs->CreateURL('projgroup', $group['group_id']) ?>"><?php echo stripslashes($group['group_name']) ?></a>
-    <p><?php echo stripslashes($group['group_desc']) ?></p>
+    <a class="grouptitle" href="<?php echo $fs->CreateURL('projgroup', $group['group_id']) ?>"><?php echo $group['group_name'] ?></a>
+    <p><?php echo $group['group_desc'] ?></p>
     <form action="<?php echo $conf['general']['baseurl'] ?>index.php" method="post">
       <div>
         <input type="hidden" name="do" value="modify" />
@@ -266,7 +266,7 @@ elseif ($area == 'groups'): // {{{
                                  array($project_id));
     
             while ($group = $db->FetchArray($groups)) {
-                echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name']),ENT_COMPAT,'utf-8') . "</option>\n";
+                echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars($group['group_name'],ENT_COMPAT,'utf-8') . "</option>\n";
             }
             ?>
           </select>
@@ -308,7 +308,7 @@ elseif ($area == 'groups'): // {{{
           $get_groups = $db->Query("SELECT  * FROM {groups}
                                      WHERE  belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
           while ($group = $db->FetchArray($get_groups)) {
-              echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name']),ENT_COMPAT,'utf-8') . "</option>\n";
+              echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars($group['group_name'],ENT_COMPAT,'utf-8') . "</option>\n";
           }
           ?>
         </select>
@@ -342,11 +342,11 @@ elseif ($area == "editgroup"): // {{{
           <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
           <label for="groupname"><?php echo $admin_text['groupname'];?></label>
         </td>
-        <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']),ENT_COMPAT,'utf-8');?>" /></td>
+        <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars($group_details['group_name'],ENT_COMPAT,'utf-8');?>" /></td>
       </tr>
       <tr>
         <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
-        <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']),ENT_COMPAT,'utf-8');?>" /></td>
+        <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars($group_details['group_desc'],ENT_COMPAT,'utf-8');?>" /></td>
       </tr>
       <tr>
         <td><label for="projectmanager"><?php echo $admin_text['projectmanager'];?></label></td>
@@ -461,7 +461,7 @@ elseif ($area == 'tt'): // {{{
           <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>" />
           <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
           <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]"
-              value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']),ENT_COMPAT,'utf-8');?>" />
+              value="<?php echo htmlspecialchars($row['tasktype_name'],ENT_COMPAT,'utf-8');?>" />
         </td>
         <td title="The order these items will appear in the TaskType list">
           <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
@@ -548,7 +548,7 @@ elseif ($area == 'res'): // {{{
           <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>" />
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
           <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]"
-              value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']),ENT_COMPAT,'utf-8');?>" />
+              value="<?php echo htmlspecialchars($row['resolution_name'],ENT_COMPAT,'utf-8');?>" />
         </td>
         <td title="The order these items will be shown in the Resolution list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -646,7 +646,7 @@ elseif ($area == 'cat'): // {{{
             <input type="hidden" name="id[]" value="<?php echo $row['category_id'];?>" />
             <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
             <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" 
-                value="<?php echo htmlspecialchars(stripslashes($row['category_name']),ENT_COMPAT,'utf-8');?>" />
+                value="<?php echo htmlspecialchars($row['category_name'],ENT_COMPAT,'utf-8');?>" />
           </td>
           <td title="<?php echo $admin_text['listordertip'];?>">
             <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -683,7 +683,7 @@ elseif ($area == 'cat'): // {{{
             <input type="hidden" name="id[]" value="<?php echo $subrow['category_id'];?>" />
             &rarr;
             <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-            <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo stripslashes($subrow['category_name']);?>" />
+            <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo $subrow['category_name'];?>" />
           </td>
           <td title="<?php echo $admin_text['listordertip'];?>">
             <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -759,7 +759,7 @@ elseif ($area == 'cat'): // {{{
                                     ORDER BY  list_position", array($project_id, '1', '1'));
 
               while ($row = $db->FetchArray($cat_list)) {
-                  $category_name = stripslashes($row['category_name']);
+                  $category_name = $row['category_name'];
                   if (Get::val('cat') == $row['category_id']) {
                       echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
                   } else {
@@ -810,7 +810,7 @@ elseif ($area == 'os'): // {{{
           <td>
             <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>" />
             <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']),ENT_COMPAT,'utf-8');?>" />
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars($row['os_name'],ENT_COMPAT,'utf-8');?>" />
           </td>
           <td title="The order these items will appear in the Operating System list">
             <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -905,7 +905,7 @@ elseif ($area == 'ver'): // {{{
           <td>
             <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>" />
             <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']),ENT_COMPAT,'utf-8');?>" />
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars($row['version_name'],ENT_COMPAT,'utf-8');?>" />
           </td>
           <td title="<?php echo $admin_text['listordertip'];?>">
             <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -1011,9 +1011,9 @@ elseif ($area == 'pendingreq' && $permissions['manage_project'] == '1'): // {{{
     <?php
     while($pending_req = $db->FetchRow($get_pending)):
         switch($pending_req['request_type']) {
-            case "1": $request_type = $admin_text['closetask'] . ' - <a href="' . $fs->CreateURL('details', $pending_req['task_id']) . '">FS#' . $pending_req['task_id'] . ': ' . stripslashes($pending_req['item_summary']) . '</a>';
+            case "1": $request_type = $admin_text['closetask'] . ' - <a href="' . $fs->CreateURL('details', $pending_req['task_id']) . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
             break;
-            case "2": $request_type = $admin_text['reopentask'] . ' - <a href="' . $fs->CreateURL('details', $pending_req['task_id']) . '">FS#' . $pending_req['task_id'] . ': ' . stripslashes($pending_req['item_summary']) . '</a>';
+            case "2": $request_type = $admin_text['reopentask'] . ' - <a href="' . $fs->CreateURL('details', $pending_req['task_id']) . '">FS#' . $pending_req['task_id'] . ': ' . $pending_req['item_summary'] . '</a>';
             break;
             case "3": $request_type = $admin_text['applymember'];
             break;
@@ -1023,7 +1023,7 @@ elseif ($area == 'pendingreq' && $permissions['manage_project'] == '1'): // {{{
       <td>$request_type</td>";
       <td><?php echo $fs->LinkedUserName($pending_req['user_id']) ?></td>
       <td><?php echo $fs->formatDate($pending_req['time_submitted'], true) ?></td>
-      <td><?php echo stripslashes($pending_req['reason_given']) ?></td>
+      <td><?php echo $pending_req['reason_given'] ?></td>
       <td>
         <a href="#" class="button" onclick="showhidestuff(\'denyform<?php echo $pending_req['request_id'] ?>\');"><?php echo $pm_text['deny'] ?></a>
         <div id="denyform<?php echo $pending_req['request_id'] ?>" class="denyform">

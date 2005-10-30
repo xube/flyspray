@@ -40,11 +40,6 @@ echo '<?xml version="1.0"?>'."\n";
         foreach ($tasklist AS $key => $val):
             $item_summary = htmlspecialchars($val['item_summary']);
             $detailed_desc = htmlspecialchars($val['detailed_desc']);
-
-            if (get_magic_quotes_gpc()) {
-                $item_summary  = stripslashes($item_summary);
-                $detailed_desc = stripslashes($detailed_desc);
-            }
 ?>
     <item>
       <title><?php echo $item_summary ?></title>

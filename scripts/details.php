@@ -44,8 +44,8 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
     <div>
       <h2 class="severity<?php echo $task_details['task_severity'];?>">
       <?php echo 'FS#' . $task_details['task_id'];?> &mdash;
-      <input class="severity<?php echo stripslashes($task_details['task_severity']);?>" type="text" name="item_summary" size="50" maxlength="100"
-          value="<?php echo htmlspecialchars(stripslashes($task_details['item_summary']),ENT_COMPAT,'utf-8');?>" />
+      <input class="severity<?php echo $task_details['task_severity'];?>" type="text" name="item_summary" size="50" maxlength="100"
+          value="<?php echo htmlspecialchars($task_details['item_summary'],ENT_COMPAT,'utf-8');?>" />
       </h2>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="update" />
@@ -80,9 +80,9 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
 
         while ($row = $db->FetchArray($get_projects)) {
             if ($project_id == $row['project_id']) {
-                echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
+                echo '<option value="' . $row['project_id'] . '" selected="selected">' . $row['project_title'] . '</option>';
             } else {
-                echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
+                echo '<option value="' . $row['project_id'] . '">' . $row['project_title'] . '</option>';
             }
         }
         ?>
@@ -148,7 +148,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                                       ORDER BY  list_position", array($project_id));
 
                 while ($row = $db->FetchArray($cat_list)) {
-                    $category_name = stripslashes($row['category_name']);
+                    $category_name = $row['category_name'];
 
                     if ($task_details['product_category'] == $row['category_id']) {
                         echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
@@ -162,7 +162,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                                             ORDER BY  list_position", array($row['category_id']));
 
                     while ($subrow = $db->FetchArray($subcat_list)) {
-                        $subcategory_name = stripslashes($subrow['category_name']);
+                        $subcategory_name = $subrow['category_name'];
                         if ($task_details['product_category'] == $subrow['category_id']) {
                             echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
                         } else {
@@ -349,7 +349,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
 
       <div id="taskdetailsfull">
         <label for="details"><?php echo $details_text['details'];?></label>
-        <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo htmlspecialchars(stripslashes($task_details['detailed_desc']));?></textarea>
+        <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo htmlspecialchars($task_details['detailed_desc']);?></textarea>
         <table class="taskdetails">
           <tr>
             <td> </td>
@@ -404,7 +404,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
                                         WHERE  task_id = ? OR task_id = ?", array($previous_id, $next_id));
 
             while ($row = $db->FetchRow($get_summary)) {
-                $summary[$row['task_id']] = htmlentities(stripslashes($row['item_summary']),ENT_COMPAT,'utf-8');
+                $summary[$row['task_id']] = htmlentities($row['item_summary'],ENT_COMPAT,'utf-8');
             }
 
             echo "<span id=\"navigation\">";
@@ -428,7 +428,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
   <div id="fineprint">
     <?php
     echo $details_text['attachedtoproject'] . '&mdash; <a href="' . $conf['general']['baseurl'] . '?project=' .  $task_details['attached_to_project'] . '">'
-        . stripslashes($task_details['project_title']) . '</a><br />';
+        . $task_details['project_title'] . '</a><br />';
 
     // Get the user details of the person who opened this task
     if ($task_details['opened_by']) {
@@ -498,7 +498,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
           if (!$task_details['assigned_to']) {
               echo $details_text['noone'];
           } else {
-              echo stripslashes($task_details['assigned_to_name']);
+              echo $task_details['assigned_to_name'];
           }
           ?>
         </td>
@@ -634,9 +634,9 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
       // Show tasks that this task depends upon
       while ($dependency = $db->FetchArray($check_deps)) {
           if ($dependency['is_closed'] == '1') {
-              echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . stripslashes($dependency['item_summary']) . "</a>";
+              echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
           } else {
-              echo '<a href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . stripslashes($dependency['item_summary']) . "</a>\n";
+              echo '<a href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
           }
 
           // If the user has permission, show a link to remove a dependency
@@ -675,9 +675,9 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
       while ($block = $db->FetchArray($check_blocks)) {
           if ($block['is_closed'] == '1') {
               // Put a line through the blocking task if it's closed
-              echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . stripslashes($block['item_summary']) . "</a><br />\n";
+              echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
           } else {
-              echo '<a href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . stripslashes($block['item_summary']) . "</a><br />\n";
+              echo '<a href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
           }
       }
       ?>
@@ -1006,7 +1006,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                               WHERE  r.this_task = ?", array(Get::val('id')));
 
   while ($row = $db->FetchArray($get_related)) {
-      $summary = stripslashes($row['item_summary']);
+      $summary = $row['item_summary'];
 
       if (@$eff_perms['can_edit'] == '1' && $task_details['is_closed'] != '1') {
       ?>
@@ -1024,7 +1024,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
       </div>
       <?php
       }
-      echo '<p><a href="' . $fs->CreateURL('details', $row['related_task']) . '">FS#' . $row['related_task'] . ' &mdash; ' . stripslashes($row['item_summary']) . '</a></p>';
+      echo '<p><a href="' . $fs->CreateURL('details', $row['related_task']) . '">FS#' . $row['related_task'] . ' &mdash; ' . $row['item_summary'] . '</a></p>';
   }
 
   if (@$eff_perms['can_edit'] == "1" && $task_details['is_closed'] != '1'):
@@ -1050,7 +1050,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
   while ($row = $db->FetchArray($get_related)):
   ?>
   <p>
-    <a href="<?php echo $fs->CreateURL('details', $row['this_task']) ?>">FS#<?php echo $row['this_task'] ?> &mdash; <?php echo htmlspecialchars(stripslashes($row['item_summary'])) ?></a>
+    <a href="<?php echo $fs->CreateURL('details', $row['this_task']) ?>">FS#<?php echo $row['this_task'] ?> &mdash; <?php echo htmlspecialchars($row['item_summary']) ?></a>
     <br />
   </p>
   <?php endwhile; // }}} ?>
@@ -1232,10 +1232,6 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                     $field = $details_text['summary'];
                     $oldvalue = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
                     $newvalue = htmlspecialchars($newvalue,ENT_COMPAT,'utf-8');
-                    if (get_magic_quotes_gpc()) {
-                        $oldvalue = stripslashes($oldvalue);
-                        $newvalue = stripslashes($oldvalue);
-                    }
                     break;
                 case 'attached_to_project':
                     $field = $details_text['attachedtoproject'];
@@ -1331,10 +1327,6 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                     if (!empty($details)) {
                         $details_previous = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
                         $details_new = htmlspecialchars($newvalue,ENT_COMPAT,'utf-8');
-                        if (get_magic_quotes_gpc()) {
-                            $details_previous = stripslashes($details_previous);
-                            $details_new      = stripslashes($details_new);
-                        }
                         $details_previous = nl2br($details_previous);
                         $details_new      = nl2br($details_new);
                     }
@@ -1377,10 +1369,6 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             if ($details != '') {
                 $details_previous = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
                 $details_new = htmlspecialchars($newvalue,ENT_COMPAT,'utf-8');
-                if (get_magic_quotes_gpc()) {
-                    $details_previous = stripslashes($details_previous);
-                    $details_new      = stripslashes($details_new);
-                }
                 $details_previous = nl2br($details_previous);
                 $details_new      = nl2br($details_new);
             }
@@ -1392,9 +1380,6 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             }
             if (!empty($details)) {
                 $details_previous = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
-                if (get_magic_quotes_gpc()) {
-                    $details_previous = stripslashes($details_previous);
-                }
                 $details_previous = nl2br($details_previous);
                 $details_new = '';
             }
@@ -1422,13 +1407,11 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
         } elseif ($history['event_type'] == '11') {  //Related task added
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($related) = $db->FetchRow($result);
-            $related = stripslashes($related);
             echo "{$details_text['relatedadded']}: <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
 
         } elseif ($history['event_type'] == '12') {  //Related task deleted
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($related) = $db->FetchRow($result);
-            $related = stripslashes($related);
             echo "{$details_text['relateddeleted']}: <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
 
         } elseif ($history['event_type'] == '13') {  //Task reopened
@@ -1446,13 +1429,11 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
         } elseif ($history['event_type'] == '15') { //Task added to related list of another task
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($related) = $db->FetchRow($result);
-            $related = stripslashes($related);
             echo "{$details_text['addedasrelated']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
 
         } elseif ($history['event_type'] == '16') { //Task deleted from related list of another task
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($related) = $db->FetchRow($result);
-            $related = stripslashes($related);
             echo "{$details_text['deletedasrelated']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
 
         } elseif ($history['event_type'] == '17') { //Reminder added
@@ -1465,33 +1446,29 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             echo "{$details_text['ownershiptaken']}: " . $fs->LinkedUsername($newvalue);
 
         } elseif ($history['event_type'] == '20') { //User requested task closure
-            echo $details_text['closerequestmade'] . ' - ' . stripslashes($newvalue);
+            echo $details_text['closerequestmade'] . ' - ' . $newvalue;
 
         } elseif ($history['event_type'] == '21') { //User requested task
-            echo $details_text['reopenrequestmade'] . ' - ' . stripslashes($newvalue);
+            echo $details_text['reopenrequestmade'] . ' - ' . $newvalue;
 
         } elseif ($history['event_type'] == '22') { // Dependency added
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($dependency) = $db->FetchRow($result);
-            $dependency = stripslashes($dependency);
             echo "{$details_text['depadded']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
         } elseif ($history['event_type'] == '23') { // Dependency added to other task
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($dependency) = $db->FetchRow($result);
-            $dependency = stripslashes($dependency);
             echo "{$details_text['depaddedother']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
         } elseif ($history['event_type'] == '24') { // Dependency removed
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($dependency) = $db->FetchRow($result);
-            $dependency = stripslashes($dependency);
             echo "{$details_text['depremoved']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
         } elseif ($history['event_type'] == '25') { // Dependency removed from other task
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($dependency) = $db->FetchRow($result);
-            $dependency = stripslashes($dependency);
             echo "{$details_text['depremovedother']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
         } elseif ($history['event_type'] == '26') { // Task marked private
@@ -1501,7 +1478,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             echo $details_text['taskmadepublic'];
 
         } elseif ($history['event_type'] == '28') { // PM request denied
-            echo $details_text['pmreqdenied'] . ' - ' . stripslashes($newvalue);
+            echo $details_text['pmreqdenied'] . ' - ' . $newvalue;
         }
 
         ?>

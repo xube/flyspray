@@ -60,9 +60,9 @@ if     ($area == 'prefs'): // {{{
             $get_projects = $db->Query("SELECT * FROM {projects}");
             while ($row = $db->FetchArray($get_projects)) {
                 if ($fs->prefs['default_project'] == $row['project_id']) {
-                    echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
+                    echo '<option value="' . $row['project_id'] . '" selected="selected">' . $row['project_title'] . '</option>';
                 } else {
-                    echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
+                    echo '<option value="' . $row['project_id'] . '">' . $row['project_title'] . '</option>';
                 }
             }
             ?>
@@ -317,7 +317,7 @@ elseif ($area == 'users' && Get::val('id')): // {{{
           <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
           <label for="realname"><?php echo $admin_text['realname'];?></label>
         </td>
-        <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo stripslashes($user_details['real_name']);?>" /></td>
+        <td><input id="realname" type="text" name="real_name" size="50" maxlength="100" value="<?php echo $user_details['real_name'];?>" /></td>
       </tr>
       <tr>
         <td><label for="emailaddress"><?php echo $admin_text['emailaddress'];?></label></td>
@@ -436,8 +436,8 @@ elseif ($area == 'groups'): // {{{
   // Cycle through the global groups
   while ($group = $db->FetchArray($get_groups)):
   ?>
-  <a class="grouptitle" href="<?php echo $fs->CreateURL('group', $group['group_id']) ?>"><?php echo stripslashes($group['group_name']) ?></a>
-  <p><?php echo stripslashes($group['group_desc']) ?></p>
+  <a class="grouptitle" href="<?php echo $fs->CreateURL('group', $group['group_id']) ?>"><?php echo $group['group_name'] ?></a>
+  <p><?php echo $group['group_desc'] ?></p>
   <form action="<?php echo $conf['general']['baseurl'] ?>index.php" method="post">
     <div>
       <input type="hidden" name="do" value="modify" />
@@ -478,7 +478,7 @@ elseif ($area == 'groups'): // {{{
               <?php
               $groups = $db->Query("SELECT * FROM {groups} WHERE belongs_to_project = '0' ORDER BY group_id ASC");
               while ($group = $db->FetchArray($groups)) {
-                  echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name']),ENT_COMPAT,'utf-8') . "</option>\n";
+                  echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars($group['group_name'],ENT_COMPAT,'utf-8') . "</option>\n";
               }
               ?>
             </select>
@@ -509,11 +509,11 @@ elseif ($area == 'editgroup'): // {{{
         <input type="hidden" name="prev_page" value="<?php echo $this_page;?>" />
         <label for="groupname"><?php echo $admin_text['groupname'];?></label>
       </td>
-      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars(stripslashes($group_details['group_name']),ENT_COMPAT,'utf-8');?>" /></td>
+      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="<?php echo htmlspecialchars($group_details['group_name'],ENT_COMPAT,'utf-8');?>" /></td>
     </tr>
     <tr>
       <td><label for="groupdesc"><?php echo $admin_text['description'];?></label></td>
-      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars(stripslashes($group_details['group_desc']),ENT_COMPAT,'utf-8');?>" /></td>
+      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="<?php echo htmlspecialchars($group_details['group_desc'],ENT_COMPAT,'utf-8');?>" /></td>
     </tr>
     <?php
     // We don't need this stuff shown for the admin group
@@ -638,7 +638,7 @@ elseif ($area == 'tt'): // {{{
           <input type="hidden" name="id[]" value="<?php echo $row['tasktype_id'];?>" />
           <label for="listname<?php echo $countlines?>"><?php echo $admin_text['name'];?></label>
           <input id="listname<?php echo $countlines?>" type="text" size="15" maxlength="40" name="list_name[]" 
-              value="<?php echo htmlspecialchars(stripslashes($row['tasktype_name']),ENT_COMPAT,'utf-8');?>" />
+              value="<?php echo htmlspecialchars($row['tasktype_name'],ENT_COMPAT,'utf-8');?>" />
         </td>
         <td title="The order these items will appear in the TaskType list">
           <label for="listposition<?php echo $countlines?>"><?php echo $admin_text['order'];?></label>
@@ -724,7 +724,7 @@ elseif ($area == 'res'): // {{{
         <td>
           <input type="hidden" name="id[]" value="<?php echo $row['resolution_id'];?>" />
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['resolution_name']),ENT_COMPAT,'utf-8');?>" />
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars($row['resolution_name'],ENT_COMPAT,'utf-8');?>" />
         </td>
         <td title="The order these items will be shown in the Resolution list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -824,7 +824,7 @@ elseif ($area == 'cat'): // {{{
             <input type="hidden" name="id[]" value="<?php echo $row['category_id'];?>" />
             <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
             <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]"
-                value="<?php echo htmlspecialchars(stripslashes($row['category_name']),ENT_COMPAT,'utf-8');?>" />
+                value="<?php echo htmlspecialchars($row['category_name'],ENT_COMPAT,'utf-8');?>" />
           </td>
           <td title="<?php echo $admin_text['listordertip'];?>">
             <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -860,7 +860,7 @@ elseif ($area == 'cat'): // {{{
             <input type="hidden" name="id[]" value="<?php echo $subrow['category_id'];?>" />
             &rarr;
             <label for="categoryname<?php echo $countlines; ?>"><?php echo $admin_text['name'];?></label>
-            <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo stripslashes($subrow['category_name']);?>" />
+            <input id="categoryname<?php echo $countlines; ?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo $subrow['category_name'];?>" />
           </td>
           <td title="<?php echo $admin_text['listordertip'];?>">
             <label for="listposition<?php echo $countlines; ?>"><?php echo $admin_text['order'];?></label>
@@ -937,7 +937,7 @@ elseif ($area == 'cat'): // {{{
                                        WHERE  project_id= 0 AND show_in_list= 1 AND parent_id < 1
                                     ORDER BY  list_position");
               while ($row = $db->FetchArray($cat_list)) {
-                  $category_name = stripslashes($row['category_name']);
+                  $category_name = $row['category_name'];
                   if (Get::val('cat') == $row['category_id']) {
                       echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
                   } else {
@@ -983,7 +983,7 @@ elseif ($area == 'os'): // {{{
         <td>
           <input type="hidden" name="id[]" value="<?php echo $row['os_id'];?>" />
           <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['os_name']),ENT_COMPAT,'utf-8');?>" />
+          <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="40" name="list_name[]" value="<?php echo htmlspecialchars($row['os_name'],ENT_COMPAT,'utf-8');?>" />
         </td>
         <td title="The order these items will appear in the Operating System list">
           <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>
@@ -1073,7 +1073,7 @@ elseif ($area == 'ver'): // {{{
           <td>
             <input type="hidden" name="id[]" value="<?php echo $row['version_id'];?>" />
             <label for="listname<?php echo $countlines;?>"><?php echo $admin_text['name'];?></label>
-            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars(stripslashes($row['version_name']),ENT_COMPAT,'utf-8');?>" />
+            <input id="listname<?php echo $countlines;?>" type="text" size="15" maxlength="20" name="list_name[]" value="<?php echo htmlspecialchars($row['version_name'],ENT_COMPAT,'utf-8');?>" />
           </td>
           <td title="<?php echo $admin_text['listordertip'];?>">
             <label for="listposition<?php echo $countlines;?>"><?php echo $admin_text['order'];?></label>

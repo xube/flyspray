@@ -268,7 +268,7 @@ if (Get::val('project') !== '0'
                              ORDER BY  list_position", array($project_id));
 
         while ($row = $db->FetchArray($cat_list)) {
-           $category_name = stripslashes($row['category_name']);
+           $category_name = $row['category_name'];
            if (Get::val('cat') == $row['category_id']) {
                echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
            } else {
@@ -281,7 +281,7 @@ if (Get::val('project') !== '0'
                                     ORDER BY  list_position", array($row['category_id']));
 
            while ($subrow = $db->FetchArray($subcat_list)) {
-               $subcategory_name = stripslashes($subrow['category_name']);
+               $subcategory_name = $subrow['category_name'];
                if (Get::val('cat') == $subrow['category_id']) {
                    echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
                } else {
@@ -419,7 +419,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
     if ($column_visible[$colname]) {
         // We have a problem with these conversions applied to the progress cell
         if($colname != 'progress') {
-            $cellvalue = stripslashes(htmlspecialchars($cellvalue));
+            $cellvalue = htmlspecialchars($cellvalue);
         }
 
         if ($colname == 'duedate' && !empty($cellvalue)) {
