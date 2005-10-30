@@ -113,12 +113,23 @@ $do = Req::val('do', 'index');
 if ($do == 'index') {
     // When viewing the task list, take down each value that the search form
     // may have passed
-    $keys = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status',
-            'order', 'order2', 'sort', 'sort2', 'date', 'project');
+    $keys  = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date', 'project');
+    $keys2 = array('tasks', 'pagenum', 'order', 'order2', 'sort', 'sort2');
 
-    $keys = array_map(create_function('$k', 'return $k."=".Get::val($k);'), $keys);
+    function keep($key) {
+        return !is_null(Get::val($key)) ? $key."=".Get::val($key) : null;
+    }
+
+    $keys  = array_map('keep', $keys);
+    $keys2 = array_map('keep', $keys2);
+    $keys  = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
+    $keys2 = array_filter($keys2, create_function('$x', 'return !is_null($x);'));
+
+    $extraurl  = join('&amp;', $keys);
+    $extraurl2 = join('&amp;', $keys2);
     
-    $_SESSION['lastindexfilter'] = $baseurl . 'index.php?' .  join('&amp;', $keys);
+    $_SESSION['lastindexfilter'] = $baseurl . 'index.php?' .
+        join('&amp;', array($extraurl, $extraurl2));
 }
 
 if (file_exists("themes/$themestyle/favicon.ico")) {
@@ -180,7 +191,7 @@ if(!Cookie::has('flyspray_userid')) {
 ////////////////////////////////////////////////
 
 // If the user has the right name cookies
-if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
+if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
     // Check that the user hasn't spoofed the cookie contents somehow
     // And that their account is enabled
     // and that their group is enabled
@@ -188,8 +199,9 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
             || $permissions['account_enabled'] != '1' || $permissions['group_open'] != '1')
     {
         // If the user's account is closed
+        setcookie('flyspray_userid',   '', time()-60, '/');
+        setcookie('flyspray_passhash', '', time()-60, '/');
         $fs->Redirect($fs->CreateURL('logout', null));
-        exit;
     }
 
     $things = array();
@@ -277,7 +289,10 @@ if (isset($_SESSION['SUCCESS'])) {
 
           if (@$permissions['global_view'] == '1') {
               // If the user has permission to view all projects
-              $get_projects = $db->Query("SELECT * FROM {$dbprefix}projects ORDER BY project_title");
+              $get_projects = $db->Query("SELECT  *
+                                            FROM  {$dbprefix}projects
+                                           WHERE  project_is_active = '1'
+                                        ORDER BY  project_title");
           }
           elseif (isset($_COOKIE['flyspray_userid'])) {
               // or, if the user is logged in

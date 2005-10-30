@@ -282,6 +282,8 @@ function GetTaskDetails($task_id)
       global $dbprefix;
       global $lang;
 
+      $extraurl = '&amp;' . $extraurl;
+
       require("lang/$lang/functions.inc.php");
 
       // Just in case $perpage is something weird, like 0, fix it here:
