@@ -369,7 +369,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
 <?php
 // }}}
 // {{{ view mode
-elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR !Get::has('edit')))
+elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR !Get::has('edit'))
         && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $current_user['user_id'])
             OR @$permissions['manage_project'] == '1' OR $task_details['mark_private'] != '1')):
     //////////////////////////////////////

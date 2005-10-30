@@ -39,7 +39,7 @@ while ($row = $db->FetchRow($get_reminders)) {
             elseif (($fs->prefs['user_notify'] == '1' && $subrow['notify_type'] == '2')
                     OR ($fs->prefs['user_notify'] == '3'))
             {
-                $jabber_users[] = $subrow['jabber_id']);
+                $jabber_users[] = $subrow['jabber_id'];
             }
         }
 
