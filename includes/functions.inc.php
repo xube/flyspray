@@ -737,21 +737,6 @@ function GetTaskDetails($task_id)
    // End of startReminderDaemon function
    }
 
-   // set empty values for $_GET[...] variables
-   function fixMissingIndices()
-   {
-      $indexes = 'project index date order class order order2 sort sort2 tasks permissions sev dev due string pagenum type cat status';
-      $indexes = split(' ', $indexes);
-      foreach ($indexes as $index)
-      {
-         if (!isset($_GET[$index]) && !isset($_GET['do']))
-            $_GET[$index] = '';
-         if (!isset($_REQUEST[$index]) && !isset($_GET['do']))
-            $_REQUEST[$index] = '';
-      }
-   }
-
-
    /* Check if we should use address rewriting
       and return an appropriate URL
    */

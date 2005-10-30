@@ -8,169 +8,80 @@
 // PHP NOTICE errors.  We are in the process of making Flyspray stop making
 // these errors, but this will help hide them until we are finished.
 
-//error_reporting(E_ALL & -E_NOTICE);
+//error_reporting(E_ALL & ~E_NOTICE);
 
-// Check PHP Version (Must Be at least 4.3)
-// For 0.9.9, this should redirect to the error page
-if (PHP_VERSION  < '4.3.0')
-   die('Your version of PHP is not compatible with Flyspray, please upgrade to at least PHP version 4.3.0');
+$basedir = dirname(__FILE__);
+require_once ( "$basedir/includes/fix.inc.php" );
+require_once ( "$basedir/includes/class.gpc.php" );
+require_once ( "$basedir/includes/functions.inc.php" );
+require_once ( "$basedir/includes/db.inc.php" );
+require_once ( "$basedir/includes/backend.inc.php" );
+require_once ( "$basedir/includes/markdown.php" );
+require_once ( "$basedir/includes/regexp.php" );
 
-// This line gets the operating system so that we know which way to put slashes in the path
-strstr( PHP_OS, "WIN") ? $slash = "\\" : $slash = "/";
+// Change this line if you move flyspray.conf.php elsewhere
+$conf_file = $basedir . DIRECTORY_SEPARATOR . 'flyspray.conf.php';
+$conf      = @parse_ini_file($conf_file, true);
 
-// Check if we're upgrading, modify the path to the config file accordingly
-if (ereg("sql|scripts", $_SERVER['PHP_SELF']))
-{
-   $path_append = '..';
-} else
-{
-   $path_append = '';
+// If it is empty, or lacks 0.9.8 variables, take the user to the setup page
+if (count($conf) == 0 || !isset($conf['general']['baseurl'])) {
+    header('Location: setup/index.php');
+    exit;
 }
 
-// Get the path to the Flyspray directory
-$path = realpath('./' . $path_append);
+require_once ( $conf['general']['adodbpath'] );
 
-// Modify PHP's include path to add the Flyspray directory
-set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+// Set useful values from the config file.
+$baseurl    = $conf['general']['baseurl'];
+$cookiesalt = $conf['general']['cookiesalt'];
+$dbprefix   = $conf['database']['dbprefix'];
 
-// This line was used in testing
-//echo get_include_path();
-
-// Define the path to the config file.  Change this line if you move flyspray.conf.php elsewhere
-$conf_file = $path . $slash . "flyspray.conf.php";
-
-// Check if config file exists and its not empty.
-// If it doesn't exist or is empty, take the user to the setup page
-if (!file_exists($conf_file) || (count($config = parse_ini_file($conf_file, true)) == 0) )
-{
-  header("Location: setup/index.php");
-  exit;
+if ($baseurl{strlen($baseurl)-1} != '/') {
+    $baseurl .= '/';
 }
 
-// Load the config file
-$conf = @parse_ini_file($conf_file, true);
-
-// Detect for lack of variables that would be in a 0.9.8 installation,
-// and redirect to the setup script
-if (!isset($conf['general']['baseurl']))
-{
-  header("Location: setup/index.php");
-  exit;
-}
-
-// Set values from the config file. Once these settings are loaded a connection
-// is made to the database to retrieve all the other preferences.
-$basedir     = $conf['general']['basedir'];
-$baseurl     = $conf['general']['baseurl'];
-$adodbpath   = $conf['general']['adodbpath'];
-$cookiesalt  = $conf['general']['cookiesalt'];
-$dbtype      = $conf['database']['dbtype'];
-$dbhost      = $conf['database']['dbhost'];
-$dbname      = $conf['database']['dbname'];
-$dbprefix    = $conf['database']['dbprefix'];
-$dbuser      = $conf['database']['dbuser'];
-$dbpass      = $conf['database']['dbpass'];
-
-   /*
-   Not required since you are already adding a slash in the include statements below.
-   I have updated other locations for the same scenario. ~ Jeffery
-   if (substr($basedir,-1,1) != '/')
-   {
-      $basedir .= '/';
-   }*/
-
-   if (substr($baseurl,-1,1) != '/')
-   {
-      $baseurl .= '/';
-   }
-
-include_once ( $adodbpath );
-include_once ( "$basedir/includes/functions.inc.php" );
-include_once ( "$basedir/includes/db.inc.php" );
-include_once ( "$basedir/includes/backend.inc.php" );
-
-// Define our functions classes
 $fs = new Flyspray;
 $db = new Database;
 $be = new Backend;
 
-include_once ( "$basedir/includes/markdown.php" );
-include_once ( "$basedir/includes/regexp.php" );
-
 session_start();
 
+if (!($res = $db->dbOpenFast($conf['database']))) {
+    die("Flyspray was unable to connect to the database.  Check your settings in flyspray.conf.php");
+}
 
-// Open a connection to the database
-$res = $db->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);
-if (!$res)
-   die("Flyspray was unable to connect to the database.  Check your settings in flyspray.conf.php");
-
-
-// Retrieve the global application preferences
 $flyspray_prefs = $fs->getGlobalPrefs();
 
-// Stop php NOTICE messages by defining a whole bunch of stuff
-$fs->fixMissingIndices();
-
-// If we've gone directly to a task, we want to override the project_id set in the function below
 // Any "do" mode that accepts a task_id or id field should be added here.
-if ( (isset($_REQUEST['do'])  && $_REQUEST['do']  == 'details') ||
-     (isset($_REQUEST['do'])  && $_REQUEST['do']  == 'depends') ||
-     (isset($_REQUEST['do']) && $_REQUEST['do'] == 'modify') )
+if (in_array(Req::get('do'), array('details', 'depends', 'modify')))
 {
-   unset($id);
-   if ( isset($_REQUEST['task_id']) ) { $id = $_REQUEST['task_id']; }
-   elseif ( isset($_REQUEST['id']) && !is_array($_REQUEST['id']) ) { $id = $_REQUEST['id']; }
-   if ( isset($id) )
-   {
-     $result = $db->Query("SELECT attached_to_project FROM {$dbprefix}tasks WHERE task_id = ?", array($id));
-     $project_id = $db->FetchOne($result);
-     setcookie('flyspray_project', $project_id, time()+60*60*24*30, "/");
-   }
+    // If we've gone directly to a task, we want to override the project_id set in the function below
+    $id = Req::get('task_id', Req::get('id'));
+
+    if (!is_null($id) && is_numeric($id)) {
+        $result = $db->Query("SELECT  attached_to_project
+                                FROM  {$dbprefix}tasks WHERE task_id = ?", array($id));
+        $project_id = $db->FetchOne($result);
+    }
 }
 
 // Determine which project we want to see
-if ( !isset($project_id) )
-{
-   if ( isset($_REQUEST['project']) && $_REQUEST['project'] != '0' && !empty($_REQUEST['project']))
-   {
-      $project_id = $_REQUEST['project'];
-      setcookie('flyspray_project', $_REQUEST['project'], time()+60*60*24*30, "/");
-
-   } elseif ( isset($_REQUEST['project_id']) )
-   {
-      $project_id = $_REQUEST['project_id'];
-      setcookie('flyspray_project', $_REQUEST['project_id'], time()+60*60*24*30, "/");
-
-   } elseif ( isset($_COOKIE['flyspray_project']) )
-   {
-      $project_id = $_COOKIE['flyspray_project'];
-
-   } else
-   {
-      $project_id = $flyspray_prefs['default_project'];
-      setcookie('flyspray_project', $flyspray_prefs['default_project'], time()+60*60*24*30, "/");
-   }
+if (!isset($project_id)) {
+    if (Req::get('project', '0') != '0' && Req::get('project')) {
+        $project_id = Req::get('project');
+    }
+    elseif (Req::has('project_id')) {
+        $project_id = Req::get('project_id');
+    }
+    elseif (Cookie::has('flyspray_project')) {
+        $project_id = Cookie::get('flyspray_project');
+    }
+    else {
+        $project_id = $flyspray_prefs['default_project'];
+    }
 }
+setcookie('flyspray_project', $project_id, time()+60*60*24*30, '/');
 
-// Get the preferences for the currently selected project
 $project_prefs = $fs->getProjectPrefs($project_id);
-
-// This to stop PHP being retarded and using the '&' char for session id delimiters
-ini_set("arg_separator.output","&amp;");
-
-// This is for retarded Windows servers not having REQUEST_URI
-if(!isset($_SERVER['REQUEST_URI']))
-{
-   if(isset($_SERVER['SCRIPT_NAME']))
-      $_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
-   else
-      $_SERVER['REQUEST_URI'] = $_SERVER['PHP_SELF'];
-
-   if($_SERVER['QUERY_STRING'])
-   {
-      $_SERVER['REQUEST_URI'] .=  '?'.$_SERVER['QUERY_STRING'];
-   }
-}
 
 ?>

@@ -10,6 +10,11 @@
 
 class Database {
 
+   function dbOpenFast($conf) {
+      extract($conf);
+      return $this->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype);
+   }
+
    function dbOpen($dbhost = '', $dbuser = '', $dbpass = '', $dbname = '', $dbtype = '') {
 
       $this->dbtype = $dbtype;
