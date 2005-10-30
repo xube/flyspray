@@ -101,10 +101,9 @@ class Flyspray {
     function getGlobalPrefs()
     {
         global $db;
-        global $dbprefix;
         global $conf;
 
-        $get_prefs    = $db->Query("SELECT pref_name, pref_value FROM {$dbprefix}prefs");
+        $get_prefs    = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
         $global_prefs = array();
 
         while ($row = $db->FetchRow($get_prefs)) {
@@ -117,9 +116,8 @@ class Flyspray {
     function getProjectPrefs($project)
     {
         global $db;
-        global $dbprefix;
 
-        $get_prefs = $db->Query("SELECT * FROM {$dbprefix}projects WHERE project_id = ?", array($project));
+        $get_prefs = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($project));
 
         return $db->FetchArray($get_prefs);
     }
@@ -131,7 +129,6 @@ class Flyspray {
     function GetTaskDetails($task_id)
     {
         global $db;
-        global $dbprefix;
         global $flyspray_prefs;
         global $project_prefs;
         global $status_list, $severity_list, $priority_list;
@@ -153,18 +150,18 @@ class Flyspray {
                                          ue.real_name      AS last_edited_by_name,
                                          uc.real_name      AS closed_by_name,
                                          ua.real_name      AS assigned_to_name
-                                   FROM  {$dbprefix}tasks           t
-                              LEFT JOIN  {$dbprefix}projects        p  ON t.attached_to_project = p.project_id
-                              LEFT JOIN  {$dbprefix}list_category   c  ON t.product_category = c.category_id
-                              LEFT JOIN  {$dbprefix}list_os         o  ON t.operating_system = o.os_id
-                              LEFT JOIN  {$dbprefix}list_resolution r  ON t.resolution_reason = r.resolution_id
-                              LEFT JOIN  {$dbprefix}list_tasktype   tt ON t.task_type = tt.tasktype_id
-                              LEFT JOIN  {$dbprefix}list_version    vr ON t.product_version = vr.version_id
-                              LEFT JOIN  {$dbprefix}list_version    vd ON t.closedby_version = vd.version_id
-                              LEFT JOIN  {$dbprefix}users           uo ON t.opened_by = uo.user_id
-                              LEFT JOIN  {$dbprefix}users           ue ON t.last_edited_by = ue.user_id
-                              LEFT JOIN  {$dbprefix}users           uc ON t.closed_by = uc.user_id
-                              LEFT JOIN  {$dbprefix}users           ua ON t.assigned_to = ua.user_id
+                                   FROM  {tasks}              t
+                              LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
+                              LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
+                              LEFT JOIN  {list_os}            o  ON t.operating_system = o.os_id
+                              LEFT JOIN  {list_resolution}    r  ON t.resolution_reason = r.resolution_id
+                              LEFT JOIN  {list_tasktype}      tt ON t.task_type = tt.tasktype_id
+                              LEFT JOIN  {list_version}       vr ON t.product_version = vr.version_id
+                              LEFT JOIN  {list_version}       vd ON t.closedby_version = vd.version_id
+                              LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
+                              LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
+                              LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
+                              LEFT JOIN  {users}              ua ON t.assigned_to = ua.user_id
                                   WHERE  t.task_id = ?", array($task_id));
 
        if (!$db->CountRows($get_details)) {
@@ -188,7 +185,6 @@ class Flyspray {
     function listUsers($current, $in_project)
     {
         global $db;
-        global $dbprefix;
         global $flyspray_prefs;
         global $conf;
 
@@ -198,17 +194,17 @@ class Flyspray {
             if (empty($val))
                 continue;
 
-            $result = $db->Query("SELECT * FROM {$dbprefix}groups WHERE group_id = ?", array($val));
+            $result = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($val));
             $group_details = $db->FetchArray($result);
 
             // Check that there is a user in the selected group prior to display
-            $check_group = $db->Query("SELECT * FROM {$dbprefix}users_in_groups WHERE group_id = ?", array($group_details['group_id']));
+            $check_group = $db->Query("SELECT * FROM {users_in_groups} WHERE group_id = ?", array($group_details['group_id']));
             if (!$db->CountRows($check_group))
                 continue;
 
             $user_query = $db->Query("SELECT  *
-                                        FROM  {$dbprefix}users_in_groups uig
-                                   LEFT JOIN  {$dbprefix}users u on uig.user_id = u.user_id
+                                        FROM  {users_in_groups} uig
+                                   LEFT JOIN  {users} u on uig.user_id = u.user_id
                                        WHERE  group_id = ? AND u.account_enabled = '1'
                                     ORDER BY  u.real_name ASC", array($group_details['group_id']));
 
@@ -227,16 +223,16 @@ class Flyspray {
             continue;
 
         // Now, we get the users from groups in the current project
-        $get_group_details = $db->Query("SELECT * FROM {$dbprefix}groups WHERE belongs_to_project = ?", array($in_project));
+        $get_group_details = $db->Query("SELECT * FROM {groups} WHERE belongs_to_project = ?", array($in_project));
         while ($group_details = $db->FetchArray($get_group_details)) {
             // Check that there is a user in the selected group prior to display
-            $check_group = $db->Query("SELECT * FROM {$dbprefix}users_in_groups WHERE group_id = ?", array($group_details['group_id']));
+            $check_group = $db->Query("SELECT * FROM {users_in_groups} WHERE group_id = ?", array($group_details['group_id']));
             if (!$db->CountRows($check_group))
                 continue;
 
             $user_query = $db->Query("SELECT  *
-                                        FROM  {$dbprefix}users_in_groups uig
-                                   LEFT JOIN  {$dbprefix}users u on uig.user_id = u.user_id
+                                        FROM  {users_in_groups} uig
+                                   LEFT JOIN  {users} u on uig.user_id = u.user_id
                                        WHERE  group_id = ?", array($group_details['group_id']));
 
             echo "<optgroup label=\"{$group_details['group_name']}\">\n";
@@ -257,7 +253,6 @@ class Flyspray {
     function pagenums($pagenum, $perpage, $totalcount, $extraurl)
     {
         global $db;
-        global $dbprefix;
         global $lang;
         global $functions_text;
 
@@ -308,7 +303,6 @@ class Flyspray {
     function formatDate($timestamp, $extended)
     {
         global $db;
-        global $dbprefix;
         global $conf;
         global $flyspray_prefs;
 
@@ -316,7 +310,7 @@ class Flyspray {
         $format_id  = $extended ? "dateformat_extended" : "dateformat";
 
         if(isset($_SESSION['userid'])) {
-            $get_user_details = $db->Query("SELECT {$format_id} FROM {$dbprefix}users WHERE user_id = " . $_SESSION['userid']);
+            $get_user_details = $db->Query("SELECT {$format_id} FROM {users} WHERE user_id = " . $_SESSION['userid']);
             $user_details     = $db->FetchArray($get_user_details);
             $dateformat       = $user_details[$format_id];
         }
@@ -335,7 +329,6 @@ class Flyspray {
     function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
     {
         global $db;
-        global $dbprefix;
 
         // This function creates entries in the history table.  These are the event types:
         //  0: Fields changed in a task
@@ -369,7 +362,7 @@ class Flyspray {
         // 28: PM request denied
 
 
-        $db->Query("INSERT INTO {$dbprefix}history (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
+        $db->Query("INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                                 VALUES(?, ?, ?, ?, ?, ?, ?)",
                 array($task, $db->emptyToZero($_COOKIE['flyspray_userid']), date('U'), $type, $field, $oldvalue, $newvalue));
     }
@@ -378,9 +371,8 @@ class Flyspray {
     function LinkedUsername($user_id)
     {
         global $db;
-        global $dbprefix;
 
-        $result = $db->Query("SELECT user_name, real_name FROM {$dbprefix}users WHERE user_id = ?", array($user_id));
+        $result = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($user_id));
         if ($db->CountRows($result) == 0)
             return '';
 
@@ -410,9 +402,8 @@ class Flyspray {
     function AdminRequest($type, $project, $task, $submitter, $reason)
     {
         global $db;
-        global $dbprefix;
 
-        $db->Query("INSERT INTO {$dbprefix}admin_requests (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
+        $db->Query("INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
                 VALUES(?, ?, ?, ?, ?, ?)",
                 array($project, $task, $submitter, $type, $reason, date(U)));
     }
@@ -422,9 +413,8 @@ class Flyspray {
     function AdminRequestCheck($type, $task)
     {
         global $db;
-        global $dbprefix;
 
-        $check = $db->Query("SELECT * FROM {$dbprefix}admin_requests
+        $check = $db->Query("SELECT * FROM {admin_requests}
                 WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
                 array($type, $task));
         return (bool)($db->CountRows($check));
@@ -434,10 +424,9 @@ class Flyspray {
     function getUserDetails($user_id)
     {
         global $db;
-        global $dbprefix;
 
         // Get current user details.  We need this to see if their account is enabled or disabled
-        $result = $db->Query("SELECT * FROM {$dbprefix}users WHERE user_id = ?", array($user_id));
+        $result = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($user_id));
         return $db->FetchArray($result);
     }
 
@@ -446,26 +435,25 @@ class Flyspray {
     function getPermissions($user_id, $project_id)
     {
         global $db;
-        global $dbprefix;
 
         $current_user = $this->getUserDetails($user_id);
 
         // Get the global group permissions for the current user
         $result = $db->Query("SELECT  *
-                                FROM  {$dbprefix}groups g
-                           LEFT JOIN  {$dbprefix}users_in_groups uig ON g.group_id = uig.group_id
+                                FROM  {groups} g
+                           LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
                                WHERE  uig.user_id = ? and g.belongs_to_project = '0'", array($user_id));
 
         $global_permissions = $db->FetchArray($result);
 
         // Get the project-level group for this user, and put the permissions into an array
-        $search_project_group = $db->Query("SELECT * FROM {$dbprefix}groups
+        $search_project_group = $db->Query("SELECT * FROM {groups}
                                              WHERE belongs_to_project = ?", array($project_id));
 
         // Default to the global permissions, but allow it to override if we find a match
         $project_permissions = $global_permissions;
         while ($row = $db->FetchRow($search_project_group)) {
-            $check_in = $db->Query("SELECT * FROM {$dbprefix}users_in_groups
+            $check_in = $db->Query("SELECT * FROM {users_in_groups}
                                      WHERE user_id = ? AND group_id = ?",
                                      array($user_id, $row['group_id']));
 
@@ -581,13 +569,13 @@ class Flyspray {
     function checkLogin($username, $password)
     {
         global $db;
-        global $dbprefix;
 
-        $result = $db->Query("SELECT   uig.*, g.group_open, u.account_enabled, u.user_pass FROM {$dbprefix}users_in_groups uig
-                            LEFT JOIN  {$dbprefix}groups g ON uig.group_id = g.group_id
-                            LEFT JOIN  {$dbprefix}users u ON uig.user_id = u.user_id
-                                WHERE  u.user_name = ? AND g.belongs_to_project = ?
-                             ORDER BY  g.group_id ASC", array($username, '0'));
+        $result = $db->Query("SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass
+                                FROM  {users_in_groups} uig
+                           LEFT JOIN  {groups} g ON uig.group_id = g.group_id
+                           LEFT JOIN  {users} u ON uig.user_id = u.user_id
+                               WHERE  u.user_name = ? AND g.belongs_to_project = ?
+                            ORDER BY  g.group_id ASC", array($username, '0'));
 
         $auth_details = $db->FetchArray($result);
 

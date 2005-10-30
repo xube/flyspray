@@ -33,7 +33,6 @@ require_once ( $conf['general']['adodbpath'] );
 // Set useful values from the config file.
 $baseurl    = $conf['general']['baseurl'];
 $cookiesalt = $conf['general']['cookiesalt'];
-$dbprefix   = $conf['database']['dbprefix'];
 
 if ($baseurl{strlen($baseurl)-1} != '/') {
     $baseurl .= '/';
@@ -61,7 +60,7 @@ if (in_array(Req::val('do'), array('details', 'depends', 'modify')))
 
     if (!is_null($id) && is_numeric($id)) {
         $result = $db->Query("SELECT  attached_to_project
-                                FROM  {$dbprefix}tasks WHERE task_id = ?", array($id));
+                                FROM  {tasks} WHERE task_id = ?", array($id));
         $project_id = $db->FetchOne($result);
     }
 }
@@ -85,7 +84,7 @@ setcookie('flyspray_project', $project_id, time()+60*60*24*30, '/');
 
 // Check that the requested project actually exists
 $proj_exists = $db->Query("SELECT  *
-                             FROM  {$dbprefix}projects
+                             FROM  {projects}
                             WHERE  project_id = ?", array($project_id));
 
 if (!$db->CountRows($proj_exists)) {

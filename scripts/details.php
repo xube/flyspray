@@ -57,15 +57,15 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
           <?php
           if (@$permissions['global_view'] == '1') {
               // If the user has permission to view all projects
-              $get_projects = $db->Query("SELECT  * FROM {$dbprefix}projects
+              $get_projects = $db->Query("SELECT  * FROM {projects}
                                            WHERE  project_is_active = '1'
                                         ORDER BY  project_title");
           }
           elseif (Cookie::has('flyspray_userid')) {
               // or, if the user is logged in
               $get_projects = $db->Query("SELECT  DISTINCT p.*
-                                            FROM  {$dbprefix}users_in_groups uig
-                                       LEFT JOIN  {$dbprefix}groups g ON uig.group_id = g.group_id, {$dbprefix}projects p
+                                            FROM  {users_in_groups} uig
+                                       LEFT JOIN  {groups} g ON uig.group_id = g.group_id, {projects} p
                                            WHERE  ((uig.user_id = ?  AND g.view_tasks = '1') OR p.others_view = '1')
                                                   AND p.project_is_active = '1'
                                         ORDER BY  p.project_title", array($current_user['user_id']));
@@ -73,7 +73,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
           }
           else {
               // Anonymous users
-              $get_projects = $db->Query("SELECT  * FROM {$dbprefix}projects
+              $get_projects = $db->Query("SELECT  * FROM {projects}
                                            WHERE  project_is_active = '1' AND others_view = '1'
                                         ORDER BY  project_title");
           }
@@ -92,7 +92,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
           <?php
           // Get the user details of the person who opened this item
           if ($task_details['opened_by']) {
-              $get_user_name = $db->Query("SELECT user_name, real_name FROM {$dbprefix}users WHERE user_id = ?", array($task_details['opened_by']));
+              $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['opened_by']));
               list($user_name, $real_name) = $db->FetchArray($get_user_name);
           } else {
               $user_name = $details_text['anonymous'];
@@ -104,7 +104,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
 
           if ($task_details['last_edited_by']) {
               // If it's been edited, get the details
-              $get_user_name = $db->Query("SELECT user_name, real_name FROM {$dbprefix}users WHERE user_id = ?", array($task_details['last_edited_by']));
+              $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['last_edited_by']));
               list($user_name, $real_name) = $db->FetchArray($get_user_name);
 
               $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
@@ -122,7 +122,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                 <select id="tasktype" name="task_type">
                   <?php
                   // Get list of task types
-                  $get_tasktypes = $db->Query("SELECT  tasktype_id, tasktype_name FROM {$dbprefix}list_tasktype
+                  $get_tasktypes = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
                                                 WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
                                              ORDER BY  list_position", array($project_id));
 
@@ -143,7 +143,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                 <select id="category" name="product_category">
                   <?php
                   $cat_list = $db->Query("SELECT  category_id, category_name
-                                            FROM  {$dbprefix}list_category
+                                            FROM  {list_category}
                                            WHERE  show_in_list = '1' AND parent_id < '1' AND (project_id = '0' OR project_id = ?)
                                         ORDER BY  list_position", array($project_id));
 
@@ -157,7 +157,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                       }
 
                       $subcat_list = $db->Query("SELECT  category_id, category_name
-                                                  FROM  {$dbprefix}list_category
+                                                  FROM  {list_category}
                                                  WHERE  show_in_list = '1' AND parent_id = ?
                                               ORDER BY  list_position", array($row['category_id']));
 
@@ -216,7 +216,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                   <?php
                   // Get list of operating systems
                   $get_os = $db->Query("SELECT  os_id, os_name
-                                          FROM  {$dbprefix}list_os
+                                          FROM  {list_os}
                                          WHERE  (project_id = ?  OR project_id = '0') AND show_in_list = '1'
                                       ORDER BY  list_position", array($project_id));
 
@@ -285,7 +285,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                   echo "<option value=\"\">{$details_text['undecided']}</option>\n";
 
                   $get_version = $db->Query("SELECT  version_id, version_name
-                                               FROM  {$dbprefix}list_version
+                                               FROM  {list_version}
                                               WHERE  show_in_list = '1' AND version_tense = '3' AND (project_id = '0' OR project_id = ?)
                                            ORDER BY  list_position", array($project_id,));
 
@@ -401,7 +401,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
             // Get the summary of the next/previous task for use as tooltips
             $summary = array();
             $get_summary = $db->Query("SELECT  task_id, item_summary
-                                         FROM  {$dbprefix}tasks
+                                         FROM  {tasks}
                                         WHERE  task_id = ? OR task_id = ?", array($previous_id, $next_id));
 
             while ($row = $db->FetchRow($get_summary)) {
@@ -433,7 +433,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
 
     // Get the user details of the person who opened this task
     if ($task_details['opened_by']) {
-        $get_user_name = $db->Query("SELECT user_name, real_name FROM {$dbprefix}users WHERE user_id = ?", array($task_details['opened_by']));
+        $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['opened_by']));
         list($user_name, $real_name) = $db->FetchArray($get_user_name);
     } else {
         $user_name = $details_text['anonymous'];
@@ -446,7 +446,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
 
     // If it's been edited, get the details
     if ($task_details['last_edited_by']) {
-        $get_user_name = $db->Query("SELECT user_name, real_name FROM {$dbprefix}users WHERE user_id = ?", array($task_details['last_edited_by']));
+        $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['last_edited_by']));
         list($user_name, $real_name) = $db->FetchArray($get_user_name);
 
         $date_edited = $task_details['last_edited_time'];
@@ -469,7 +469,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
           <?php
           if ($task_details['parent_id'] > '0') {
               $result = $db->Query("SELECT  category_name
-                                      FROM  {$dbprefix}list_category
+                                      FROM  {list_category}
                                      WHERE  category_id = ?", array($task_details['parent_id']));
               $get_parent_cat = $db->FetchArray($result);
 
@@ -569,7 +569,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     <?php
     echo $fs->formatText($task_details['detailed_desc']);
 
-    $attachments = $db->Query("SELECT  * FROM {$dbprefix}attachments
+    $attachments = $db->Query("SELECT  * FROM {attachments}
                                 WHERE  task_id = ?  AND comment_id = '0'
                              ORDER BY  attachment_id ASC", array($task_details['task_id']));
 
@@ -620,14 +620,14 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
       <?php
       // Check for task dependencies that block closing this task
       $check_deps = $db->Query("SELECT  *
-                                  FROM  {$dbprefix}dependencies d
-                             LEFT JOIN  {$dbprefix}tasks t on d.dep_task_id = t.task_id
+                                  FROM  {dependencies} d
+                             LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
                                  WHERE  d.task_id = ?", array(Get::val('id')));
 
       // Check for tasks that this task blocks
       $check_blocks = $db->Query("SELECT *
-                                    FROM {$dbprefix}dependencies d
-                               LEFT JOIN {$dbprefix}tasks t on d.task_id = t.task_id
+                                    FROM {dependencies} d
+                               LEFT JOIN {tasks} t on d.task_id = t.task_id
                                    WHERE d.dep_task_id = ?", array(Get::val('id')));
 
       $total = $db->CountRows($check_deps) + $db->CountRows($check_blocks);
@@ -689,7 +689,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
   <?php
      // If the task is closed, show the closure reason
      if ($task_details['is_closed'] == '1') {
-         $get_closedby_name = $db->Query("SELECT user_name, real_name FROM {$dbprefix}users WHERE user_id = ?", array($task_details['closed_by']));
+         $get_closedby_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['closed_by']));
          list($closedby_username, $closedby_realname) = $db->FetchArray($get_closedby_name);
          $date_closed = $task_details['date_closed'];
          $date_closed = $fs->formatDate($date_closed, true);
@@ -707,7 +707,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
 
      // Check for pending PM requests
      $get_pending = $db->Query("SELECT  *
-                                  FROM  {$dbprefix}admin_requests
+                                  FROM  {admin_requests}
                                  WHERE  task_id = ?  AND resolved_by = '0'", array($task_details['task_id']));
 
      if ($db->CountRows($get_pending)) {
@@ -745,8 +745,8 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
 
     // Get info on the dependencies again
     $check_deps = $db->Query("SELECT  *
-                                FROM  {$dbprefix}dependencies d
-                           LEFT JOIN  {$dbprefix}tasks t on d.dep_task_id = t.task_id
+                                FROM  {dependencies} d
+                           LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
                                WHERE  d.task_id = ?", array(Get::val('id')));
     // Cycle through the dependencies, checking if any are still open
     while ($deps_details = $db->FetchArray($check_deps)) {
@@ -772,7 +772,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
             <option value="0"><?php echo $details_text['selectareason']; ?></option>
             <?php
             $get_resolution = $db->Query("SELECT  resolution_id, resolution_name
-                                            FROM  {$dbprefix}list_resolution
+                                            FROM  {list_resolution}
                                            WHERE  (project_id = '0' OR project_id = ?) AND show_in_list = '1'
                                         ORDER BY  list_position", array($project_id));
 
@@ -833,7 +833,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
 
     if (!empty($current_user['user_id']) && $task_details['is_closed'] != '1') {
         $result = $db->Query("SELECT  *
-                                FROM  {$dbprefix}notifications
+                                FROM  {notifications}
                                WHERE  task_id = ?  AND user_id = ?", array(Get::val('id'), $current_user['user_id']));
         if (!$db->CountRows($result)) {
             echo '<a id="addnotif" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=add_notification&amp;ids='
@@ -853,19 +853,19 @@ endif;
 // Start the tabbed areas //
 ////////////////////////////
 
-$result       = $db->Query("SELECT * FROM {$dbprefix}comments WHERE task_id = ?", array($task_details['task_id']));
+$result       = $db->Query("SELECT * FROM {comments} WHERE task_id = ?", array($task_details['task_id']));
 $num_comments = $db->CountRows($result);
 
-$result      = $db->Query("SELECT * FROM {$dbprefix}related WHERE this_task = ?", array($task_details['task_id']));
+$result      = $db->Query("SELECT * FROM {related} WHERE this_task = ?", array($task_details['task_id']));
 $num_related = $db->CountRows($result);
 
-$result         = $db->Query("SELECT * FROM {$dbprefix}related WHERE related_task = ?", array($task_details['task_id']));
+$result         = $db->Query("SELECT * FROM {related} WHERE related_task = ?", array($task_details['task_id']));
 $num_related_to = $db->CountRows($result);
 
-$result            = $db->Query("SELECT * FROM {$dbprefix}notifications WHERE task_id = ?", array(Get::val('id')));
+$result            = $db->Query("SELECT * FROM {notifications} WHERE task_id = ?", array(Get::val('id')));
 $num_notifications = $db->CountRows($result);
 
-$result        = $db->Query("SELECT * FROM {$dbprefix}reminders WHERE task_id = ?", array(Get::val('id')));
+$result        = $db->Query("SELECT * FROM {reminders} WHERE task_id = ?", array(Get::val('id')));
 $num_reminders = $db->CountRows($result);
 
 ?>
@@ -892,7 +892,7 @@ $num_reminders = $db->CountRows($result);
 <?php // {{{
 // if there are comments, show them
 $getcomments = $db->Query("SELECT  *
-                             FROM  {$dbprefix}comments
+                             FROM  {comments}
                             WHERE  task_id = ?
                          ORDER BY  date_added ASC", array($task_details['task_id']));
 
@@ -923,7 +923,7 @@ while ($row = $db->FetchArray($getcomments)) {
 
         <?php
         $attachments = $db->Query("SELECT  *
-                                     FROM  {$dbprefix}attachments
+                                     FROM  {attachments}
                                     WHERE  comment_id = ?
                                  ORDER BY  attachment_id ASC", array($row['comment_id']));
 
@@ -984,7 +984,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
       <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />
       <?php
       $check_watch = $db->Query("SELECT  user_id
-                                   FROM  {$dbprefix}notifications
+                                   FROM  {notifications}
                                   WHERE  user_id = ?  AND task_id = ?",
                                   array($current_user['user_id'], $task_details['task_id']));
       if ( !$db->CountRows($check_watch) ) {
@@ -1000,8 +1000,8 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
   <p><em><?php echo $details_text['thesearerelated'];?></em></p>
   <?php // {{{
   $get_related = $db->Query("SELECT  *
-                               FROM  {$dbprefix}related r
-                          LEFT JOIN  {$dbprefix}tasks t ON r.related_task = t.task_id
+                               FROM  {related} r
+                          LEFT JOIN  {tasks} t ON r.related_task = t.task_id
                               WHERE  r.this_task = ?", array(Get::val('id')));
 
   while ($row = $db->FetchArray($get_related)) {
@@ -1042,8 +1042,8 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
   <p><em><?php echo $details_text['otherrelated'];?></em></p>
   <?php
   $get_related = $db->Query("SELECT  *
-                               FROM  {$dbprefix}related r
-                          LEFT JOIN  {$dbprefix}tasks t ON r.this_task = t.task_id
+                               FROM  {related} r
+                          LEFT JOIN  {tasks} t ON r.this_task = t.task_id
                               WHERE  r.related_task = ?", array(Get::val('id')));
 
   while ($row = $db->FetchArray($get_related)):
@@ -1061,8 +1061,8 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
   <p><em><?php echo $details_text['theseusersnotify'];?></em></p>
   <?php
   $get_user_ids = $db->Query("SELECT  *
-                                FROM  {$dbprefix}notifications n
-                           LEFT JOIN  {$dbprefix}users u ON n.user_id = u.user_id
+                                FROM  {notifications} n
+                           LEFT JOIN  {users} u ON n.user_id = u.user_id
                                WHERE  n.task_id = ?", array(Get::val('id')));
 
   while ($row = $db->FetchArray($get_user_ids)) {
@@ -1092,8 +1092,8 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
 <div id="remind" class="tab">
   <?php // {{{
   $get_reminders = $db->Query("SELECT  *
-                                 FROM  {$dbprefix}reminders r
-                            LEFT JOIN  {$dbprefix}users u ON r.to_user_id = u.user_id
+                                 FROM  {reminders} r
+                            LEFT JOIN  {users} u ON r.to_user_id = u.user_id
                                 WHERE  task_id = ?
                              ORDER BY  reminder_id", array(Get::val('id')));
 
@@ -1192,8 +1192,8 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
     }
 
     $query_history = $db->Query("SELECT  h.*, u.user_name, u.real_name
-                                   FROM  {$dbprefix}history h
-                              LEFT JOIN  {$dbprefix}users u ON h.user_id = u.user_id
+                                   FROM  {history} h
+                              LEFT JOIN  {users} u ON h.user_id = u.user_id
                                   WHERE  h.task_id = ? {$details}
                                ORDER BY  h.event_date ASC, h.event_type ASC", array(Get::val('id')));
 
@@ -1238,25 +1238,25 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                     break;
                 case 'attached_to_project':
                     $field = $details_text['attachedtoproject'];
-                    $result = $db->Query("SELECT project_title FROM {$dbprefix}projects WHERE project_id = ?", array($oldvalue));
+                    $result = $db->Query("SELECT project_title FROM {projects} WHERE project_id = ?", array($oldvalue));
                     list($oldprojecttitle) = $db->FetchRow($result);
-                    $result = $db->Query("SELECT project_title FROM {$dbprefix}projects WHERE project_id = ?", array($newvalue));
+                    $result = $db->Query("SELECT project_title FROM {projects} WHERE project_id = ?", array($newvalue));
                     list($newprojecttitle) = $db->FetchRow($result);
                     $oldvalue = "<a href=\"?project={$oldvalue}\">{$oldprojecttitle}</a>";
                     $newvalue = "<a href=\"?project={$newvalue}\">{$newprojecttitle}</a>";
                     break;
                 case 'task_type':
                     $field = $details_text['tasktype'];
-                    $result = $db->Query("SELECT tasktype_name FROM {$dbprefix}list_tasktype WHERE tasktype_id = ?", array($oldvalue));
+                    $result = $db->Query("SELECT tasktype_name FROM {list_tasktype} WHERE tasktype_id = ?", array($oldvalue));
                     list($oldvalue) = $db->FetchRow($result);
-                    $result = $db->Query("SELECT tasktype_name FROM {$dbprefix}list_tasktype WHERE tasktype_id = ?", array($newvalue));
+                    $result = $db->Query("SELECT tasktype_name FROM {list_tasktype} WHERE tasktype_id = ?", array($newvalue));
                     list($newvalue) = $db->FetchRow($result);
                     break;
                 case 'product_category':
                     $field = $details_text['category'];
-                    $result = $db->Query("SELECT category_name FROM {$dbprefix}list_category WHERE category_id = ?", array($oldvalue));
+                    $result = $db->Query("SELECT category_name FROM {list_category} WHERE category_id = ?", array($oldvalue));
                     list($oldvalue) = $db->FetchRow($result);
-                    $result = $db->Query("SELECT category_name FROM {$dbprefix}list_category WHERE category_id = ?", array($newvalue));
+                    $result = $db->Query("SELECT category_name FROM {list_category} WHERE category_id = ?", array($newvalue));
                     list($newvalue) = $db->FetchRow($result);
                     break;
                 case 'item_status':
@@ -1271,9 +1271,9 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                     break;
                 case 'operating_system':
                     $field = $details_text['operatingsystem'];
-                    $result = $db->Query("SELECT os_name FROM {$dbprefix}list_os WHERE os_id = ?", array($oldvalue));
+                    $result = $db->Query("SELECT os_name FROM {list_os} WHERE os_id = ?", array($oldvalue));
                     list($oldvalue) = $db->FetchRow($result);
-                    $result = $db->Query("SELECT os_name FROM {$dbprefix}list_os WHERE os_id = ?", array($newvalue));
+                    $result = $db->Query("SELECT os_name FROM {list_os} WHERE os_id = ?", array($newvalue));
                     list($newvalue) = $db->FetchRow($result);
                     break;
                 case 'task_severity':
@@ -1283,9 +1283,9 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                     break;
                 case 'product_version':
                     $field = $details_text['reportedversion'];
-                    $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($oldvalue));
+                    $result = $db->Query("SELECT version_name FROM {list_version} WHERE version_id = ?", array($oldvalue));
                     list($oldvalue) = $db->FetchRow($result);
-                    $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($newvalue));
+                    $result = $db->Query("SELECT version_name FROM {list_version} WHERE version_id = ?", array($newvalue));
                     list($newvalue) = $db->FetchRow($result);
                     break;
                 case 'closedby_version':
@@ -1294,7 +1294,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                         $oldvalue = $details_text['undecided'];
                     } else {
                         $result = $db->Query("SELECT version_name
-                                FROM {$dbprefix}list_version
+                                FROM {list_version}
                                 WHERE version_id = ?", array($db->emptyToZero($oldvalue)));
                         list($oldvalue) = $db->FetchRow($result);
                     }
@@ -1302,7 +1302,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                         $newvalue = $details_text['undecided'];
                     } else {
                         $result = $db->Query("SELECT version_name
-                                FROM {$dbprefix}list_version
+                                FROM {list_version}
                                 WHERE version_id = ?", array($db->emptyToZero($newvalue)));
                         list($newvalue) = $db->FetchRow($result);
                     }
@@ -1352,7 +1352,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
 
         } elseif ($history['event_type'] == '2') {      //Task closed
             echo $details_text['taskclosed'];
-            $result = $db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($newvalue));
+            $result = $db->Query("SELECT resolution_name FROM {list_resolution} WHERE resolution_id = ?", array($newvalue));
             $res_name = $db->FetchRow($result);
             echo " ({$res_name['resolution_name']}";
             if (!empty($oldvalue)) {
@@ -1368,7 +1368,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
 
         } elseif ($history['event_type'] == '5') {      //Comment edited
             echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}#history\">{$details_text['commentedited']}</a>";
-            $comment = $db->Query("SELECT user_id, date_added FROM {$dbprefix}comments WHERE comment_id = ?", array($history['field_changed']));
+            $comment = $db->Query("SELECT user_id, date_added FROM {comments} WHERE comment_id = ?", array($history['field_changed']));
             if ($db->CountRows($comment) != 0) {
                 $comment = $db->FetchRow($comment);
                 echo " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
@@ -1400,7 +1400,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
 
         } elseif ($history['event_type'] == '7') {    //Attachment added
             echo $details_text['attachmentadded'];
-            $attachment = $db->Query("SELECT orig_name, file_desc FROM {$dbprefix}attachments WHERE attachment_id = ?", array($newvalue));
+            $attachment = $db->Query("SELECT orig_name, file_desc FROM {attachments} WHERE attachment_id = ?", array($newvalue));
             if ($db->CountRows($attachment) != 0) {
                 $attachment = $db->FetchRow($attachment);
                 echo ": <a href=\"{$baseurl}?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
@@ -1419,13 +1419,13 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
            echo "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
 
         } elseif ($history['event_type'] == '11') {  //Related task added
-            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($related) = $db->FetchRow($result);
             $related = stripslashes($related);
             echo "{$details_text['relatedadded']}: <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
 
         } elseif ($history['event_type'] == '12') {  //Related task deleted
-            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($related) = $db->FetchRow($result);
             $related = stripslashes($related);
             echo "{$details_text['relateddeleted']}: <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
@@ -1443,13 +1443,13 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             }
 
         } elseif ($history['event_type'] == '15') { //Task added to related list of another task
-            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($related) = $db->FetchRow($result);
             $related = stripslashes($related);
             echo "{$details_text['addedasrelated']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
 
         } elseif ($history['event_type'] == '16') { //Task deleted from related list of another task
-            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($related) = $db->FetchRow($result);
             $related = stripslashes($related);
             echo "{$details_text['deletedasrelated']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
@@ -1470,25 +1470,25 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             echo $details_text['reopenrequestmade'] . ' - ' . stripslashes($newvalue);
 
         } elseif ($history['event_type'] == '22') { // Dependency added
-            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($dependency) = $db->FetchRow($result);
             $dependency = stripslashes($dependency);
             echo "{$details_text['depadded']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
         } elseif ($history['event_type'] == '23') { // Dependency added to other task
-            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($dependency) = $db->FetchRow($result);
             $dependency = stripslashes($dependency);
             echo "{$details_text['depaddedother']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
         } elseif ($history['event_type'] == '24') { // Dependency removed
-            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($dependency) = $db->FetchRow($result);
             $dependency = stripslashes($dependency);
             echo "{$details_text['depremoved']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$dependency}</a>";
 
         } elseif ($history['event_type'] == '25') { // Dependency removed from other task
-            $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
             list($dependency) = $db->FetchRow($result);
             $dependency = stripslashes($dependency);
             echo "{$details_text['depremovedother']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$dependency}</a>";

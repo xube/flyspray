@@ -28,8 +28,8 @@ switch (Req::val('type')) {
 $project_prefs = $fs->getProjectPrefs($proj);
 
 $task_details = $db->Query("SELECT  task_id, item_summary, detailed_desc
-                              FROM  {$dbprefix}tasks t
-                         LEFT JOIN  {$dbprefix}projects p ON t.attached_to_project = p.project_id
+                              FROM  {tasks} t
+                         LEFT JOIN  {projects} p ON t.attached_to_project = p.project_id
                              WHERE  t.is_closed <> '1' AND p.project_id = ?
                                     AND p.project_is_active = '1' AND t.mark_private <> '1'
                           ORDER BY  $orderby DESC", array($proj), $limit);

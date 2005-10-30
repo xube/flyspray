@@ -56,7 +56,7 @@ if (!can_create_user($permissions, $flyspray_prefs)) {
       <select id="groupin" class="adminlist" name="group_in">
         <?php // Get the group names
         $get_group_details = $db->Query("SELECT  group_id, group_name
-                                           FROM  {$dbprefix}groups
+                                           FROM  {groups}
                                           WHERE  belongs_to_project = '0'
                                        ORDER BY  group_id ASC");
         while ($row = $db->FetchArray($get_group_details)) {

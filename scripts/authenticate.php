@@ -49,7 +49,7 @@ if (Req::has('user_name') && Req::has('password')) {
 
         // If the user had previously requested a password change, remove the magic url
         $remove_magic = $db->Query(
-                "UPDATE {$dbprefix}users SET magic_url = '' WHERE user_id = ?",
+                "UPDATE {users} SET magic_url = '' WHERE user_id = ?",
                 array($user['user_id'])
             );
 

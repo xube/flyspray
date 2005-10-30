@@ -54,9 +54,9 @@ $sql = "SELECT  t1.task_id AS id1, t1.item_summary AS sum1,
                 t2.task_id AS id2, t2.item_summary AS sum2,
                 t2.percent_complete as pct2, t2.is_closed AS clsd2,
                 t2.item_status AS stat2
-          FROM  {$dbprefix}dependencies AS d
-          JOIN  {$dbprefix}tasks AS t1 ON d.task_id=t1.task_id
-          JOIN  {$dbprefix}tasks AS t2 ON d.dep_task_id=t2.task_id
+          FROM  {dependencies} AS d
+          JOIN  {tasks} AS t1 ON d.task_id=t1.task_id
+          JOIN  {tasks} AS t2 ON d.dep_task_id=t2.task_id
          WHERE  t1.attached_to_project='$project_id'
       ORDER BY  d.task_id, d.dep_task_id";
 

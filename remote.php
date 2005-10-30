@@ -327,17 +327,11 @@ function dueInVersionArray()
 **/
 function assignedUserListArray()
 {
+   global $project_id;
 
-
-   global $project_id,$dbprefix;
-
-   $query = "SELECT user_id, real_name from {$dbprefix}users";
-
-
+   $query = "SELECT user_id, real_name from {users}";
 
    return arrayForQuery($query,'user_id','real_name');
-
-
 }
 
 /**
@@ -596,8 +590,8 @@ function closeTask($args)
    }
 
     // Get info on the dependencies
-    $check_deps = $db->Query("SELECT * FROM {$dbprefix}dependencies d
-                                LEFT JOIN {$dbprefix}tasks t on d.dep_task_id = t.task_id
+    $check_deps = $db->Query("SELECT * FROM {dependencies} d
+                                LEFT JOIN {tasks} t on d.dep_task_id = t.task_id
                                 WHERE d.task_id = ?",
                                 array($task_id));
 
@@ -628,7 +622,7 @@ function closeTask($args)
    // Check if we should mark the task 100% complete
    if(!empty($mark100))
    {
-      $db->Query("UPDATE {$dbprefix}tasks
+      $db->Query("UPDATE {tasks}
                   SET percent_complete = '100'
                   WHERE task_id = ?",
                   array($task_id)
@@ -636,7 +630,7 @@ function closeTask($args)
    }
 
    //Do it.  Do it.  Close the task, now!
-   $db->Query("UPDATE {$dbprefix}tasks
+   $db->Query("UPDATE {tasks}
                SET is_closed = '1',
                resolution_reason = ?,
                closure_comment = ?,

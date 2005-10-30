@@ -34,7 +34,6 @@ function summary_report() { ?>
 function changelog_report()
 {
     global $db; 
-    global $dbprefix;
     global $fs;
     global $flyspray_prefs;
     global $reports_text;
@@ -48,9 +47,9 @@ function changelog_report()
     $uenddate   = strtotime("$enddate + 1 day");
 
     $get_changes = $db->Query("SELECT  t.*, u.*, r.*
-                                 FROM  {$dbprefix}tasks t
-                            LEFT JOIN  {$dbprefix}users u on t.closed_by = u.user_id
-                            LEFT JOIN  {$dbprefix}list_resolution r on t.resolution_reason = r.resolution_id
+                                 FROM  {tasks} t
+                            LEFT JOIN  {users} u on t.closed_by = u.user_id
+                            LEFT JOIN  {list_resolution} r on t.resolution_reason = r.resolution_id
                                 WHERE  t.is_closed = 1 AND t.attached_to_project = ?
                                        AND t.date_closed >= ?  AND t.date_closed <= ?
                              ORDER BY  t.date_closed $sort", array($project_id,$ustartdate,$uenddate));
@@ -122,7 +121,6 @@ function changelog_report()
 function severity_report()
 {
     global $db;
-    global $dbprefix;
     global $fs;
     global $severity_list;
     global $reports_text;
@@ -131,7 +129,7 @@ function severity_report()
     $severity_colours = array('','ffe9b4','efca80','edb98a','ffb2ac','f3a29b');
 
     $get_severity_count = $db->Query("SELECT  task_type,task_severity,COUNT(*) AS severity_count
-                                        FROM  {$dbprefix}tasks
+                                        FROM  {tasks}
                                        WHERE  attached_to_project = ? AND !is_closed
                                     GROUP BY  task_severity
                                     ORDER BY  task_severity DESC", array($project_id));
@@ -170,7 +168,6 @@ function severity_report()
 function age_report()
 {
     global $db;
-    global $dbprefix;
     global $fs;
     global $flyspray_prefs;
     global $reports_text;
@@ -180,7 +177,7 @@ function age_report()
     $bracket_count = 1;
    
     $age_list = $db->Query("SELECT  task_severity, date_opened
-                              FROM  {$dbprefix}tasks
+                              FROM  {tasks}
                              WHERE  attached_to_project = ? AND is_closed = 0
                           ORDER BY  date_opened", array($project_id));
    
@@ -222,7 +219,6 @@ function age_report()
 function events_report()
 {
     global $db;
-    global $dbprefix;
     global $fs;
     global $conf;
     global $flyspray_prefs;
@@ -392,7 +388,7 @@ function events_report()
                   <select name="duein">
                   <?php
                   $ver_list = $db->Query("SELECT  version_id, version_name
-                                            FROM  {$dbprefix}list_version
+                                            FROM  {list_version}
                                            WHERE  project_id = ?  AND show_in_list = '1' AND version_tense = '3'
                                         ORDER BY  list_position", array($project_id));
 
@@ -416,9 +412,9 @@ function events_report()
 
       <?php
       $query_history = $db->Query("SELECT  h.*, u.user_name, u.real_name, t.item_summary, t.task_severity
-                                      FROM  {$dbprefix}history h
-                                 LEFT JOIN  {$dbprefix}users u ON h.user_id = u.user_id
-                                 LEFT JOIN  {$dbprefix}tasks t ON h.task_id = t.task_id
+                                      FROM  {history} h
+                                 LEFT JOIN  {users} u ON h.user_id = u.user_id
+                                 LEFT JOIN  {tasks} t ON h.task_id = t.task_id
                                      WHERE  t.attached_to_project = ? {$type} {$wheredate}
                                   ORDER BY  {$orderby}", array($project_id));
 
@@ -458,7 +454,6 @@ function events_report()
 function EventDescription($history)
 {
     global $db;
-    global $dbprefix;
     global $fs;
     global $details_text;
 
@@ -479,25 +474,25 @@ function EventDescription($history)
             break;
         case 'attached_to_project':
             $field = $details_text['attachedtoproject'];
-            $result = $db->Query("SELECT project_title FROM {$dbprefix}projects WHERE project_id = ?", array($oldvalue));
+            $result = $db->Query("SELECT project_title FROM {projects} WHERE project_id = ?", array($oldvalue));
             list($oldprojecttitle) = $db->FetchRow($result);
-            $result = $db->Query("SELECT project_title FROM {$dbprefix}projects WHERE project_id = ?", array($newvalue));
+            $result = $db->Query("SELECT project_title FROM {projects} WHERE project_id = ?", array($newvalue));
             list($newprojecttitle) = $db->FetchRow($result);
             $oldvalue = "<a href=\"?project={$oldvalue}\">{$oldprojecttitle}</a>";
             $newvalue = "<a href=\"?project={$newvalue}\">{$newprojecttitle}</a>";
             break;
         case 'task_type':
             $field = $details_text['tasktype'];
-            $result = $db->Query("SELECT tasktype_name FROM {$dbprefix}list_tasktype WHERE tasktype_id = ?", array($oldvalue));
+            $result = $db->Query("SELECT tasktype_name FROM {list_tasktype} WHERE tasktype_id = ?", array($oldvalue));
             list($oldvalue) = $db->FetchRow($result);
-            $result = $db->Query("SELECT tasktype_name FROM {$dbprefix}list_tasktype WHERE tasktype_id = ?", array($newvalue));
+            $result = $db->Query("SELECT tasktype_name FROM {list_tasktype} WHERE tasktype_id = ?", array($newvalue));
             list($newvalue) = $db->FetchRow($result);
             break;
         case 'product_category':
             $field = $details_text['category'];
-            $result = $db->Query("SELECT category_name FROM {$dbprefix}list_category WHERE category_id = ?", array($oldvalue));
+            $result = $db->Query("SELECT category_name FROM {list_category} WHERE category_id = ?", array($oldvalue));
             list($oldvalue) = $db->FetchRow($result);
-            $result = $db->Query("SELECT category_name FROM {$dbprefix}list_category WHERE category_id = ?", array($newvalue));
+            $result = $db->Query("SELECT category_name FROM {list_category} WHERE category_id = ?", array($newvalue));
             list($newvalue) = $db->FetchRow($result);
             break;
         case 'item_status':
@@ -507,9 +502,9 @@ function EventDescription($history)
             break;
         case 'operating_system':
             $field = $details_text['operatingsystem'];
-            $result = $db->Query("SELECT os_name FROM {$dbprefix}list_os WHERE os_id = ?", array($oldvalue));
+            $result = $db->Query("SELECT os_name FROM {list_os} WHERE os_id = ?", array($oldvalue));
             list($oldvalue) = $db->FetchRow($result);
-            $result = $db->Query("SELECT os_name FROM {$dbprefix}list_os WHERE os_id = ?", array($newvalue));
+            $result = $db->Query("SELECT os_name FROM {list_os} WHERE os_id = ?", array($newvalue));
             list($newvalue) = $db->FetchRow($result);
             break;
         case 'task_severity':
@@ -519,9 +514,9 @@ function EventDescription($history)
             break;
         case 'product_version':
             $field = $details_text['reportedversion'];
-            $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($oldvalue));
+            $result = $db->Query("SELECT version_name FROM {list_version} WHERE version_id = ?", array($oldvalue));
             list($oldvalue) = $db->FetchRow($result);
-            $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($newvalue));
+            $result = $db->Query("SELECT version_name FROM {list_version} WHERE version_id = ?", array($newvalue));
             list($newvalue) = $db->FetchRow($result);
             break;
         case 'closedby_version':
@@ -529,13 +524,13 @@ function EventDescription($history)
             if (empty($oldvalue)) {
                 $oldvalue = $details_text['undecided'];
             } else {
-                $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($oldvalue));
+                $result = $db->Query("SELECT version_name FROM {list_version} WHERE version_id = ?", array($oldvalue));
                 list($oldvalue) = $db->FetchRow($result);
             };
             if (empty($newvalue)) {
                 $newvalue = $details_text['undecided'];
             } else {
-                $result = $db->Query("SELECT version_name FROM {$dbprefix}list_version WHERE version_id = ?", array($newvalue));
+                $result = $db->Query("SELECT version_name FROM {list_version} WHERE version_id = ?", array($newvalue));
                 list($newvalue) = $db->FetchRow($result);
             };
             break;
@@ -561,7 +556,7 @@ function EventDescription($history)
 
     } elseif ($history['event_type'] == 2) {      //Task closed
         $description = $details_text['taskclosed'];
-        $result = $db->Query("SELECT resolution_name FROM {$dbprefix}list_resolution WHERE resolution_id = ?", array($newvalue));
+        $result = $db->Query("SELECT resolution_name FROM {list_resolution} WHERE resolution_id = ?", array($newvalue));
         $res_name = $db->FetchRow($result);
         $description .= " ({$res_name['resolution_name']})";
 
@@ -574,7 +569,7 @@ function EventDescription($history)
     } elseif ($history['event_type'] == 5) {      //Comment edited
         $commentid = $history['field_changed'];
         $description = "<a href=\"?do=details&amp;id={$history['task_id']}&amp;area=comments#{$commentid}\">{$details_text['commentedited']}</a>";
-        $comment = $db->Query("SELECT user_id, date_added FROM {$dbprefix}comments WHERE comment_id = ?", array($commentid));
+        $comment = $db->Query("SELECT user_id, date_added FROM {comments} WHERE comment_id = ?", array($commentid));
         if ($db->CountRows($comment) != 0) {
             $comment = $db->FetchRow($comment);
             $description .= " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
@@ -588,7 +583,7 @@ function EventDescription($history)
 
     } elseif ($history['event_type'] == 7) {      //Attachment added
         $description = $details_text['attachmentadded'];
-        $attachment = $db->Query("SELECT orig_name, file_desc FROM {$dbprefix}attachments WHERE attachment_id = ?", array($newvalue));
+        $attachment = $db->Query("SELECT orig_name, file_desc FROM {attachments} WHERE attachment_id = ?", array($newvalue));
         if ($db->CountRows($attachment) != 0) {
             $attachment = $db->FetchRow($attachment);
             $description .= ": <a href=\"?getfile={$newvalue}\">{$attachment['orig_name']}</a>";
@@ -607,12 +602,12 @@ function EventDescription($history)
         $description = "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
 
     } elseif ($history['event_type'] == 11) {      //Related task added
-        $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+        $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
         list($related) = $db->FetchRow($result);
         $description = "{$details_text['relatedadded']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
     } elseif ($history['event_type'] == 12) {      //Related task deleted
-        $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+        $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
         list($related) = $db->FetchRow($result);
         $description = "{$details_text['relateddeleted']}: {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
@@ -628,13 +623,13 @@ function EventDescription($history)
             $description = "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
         };
     } elseif ($history['event_type'] == 15) {      //Task added to related list of another task
-        $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+        $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
         list($related) = $db->FetchRow($result);
         $related = htmlspecialchars(stripslashes($related));
         $description = "{$details_text['addedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
     } elseif ($history['event_type'] == 16) {      //Task deleted from related list of another task
-        $result = $db->Query("SELECT item_summary FROM {$dbprefix}tasks WHERE task_id = ?", array($newvalue));
+        $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
         list($related) = $db->FetchRow($result);
         $related = htmlspecialchars(stripslashes($related));
         $description = "{$details_text['deletedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";

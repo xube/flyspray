@@ -29,7 +29,7 @@ if (!Get::has('magic') && !Cookie::has('flyspray_userid')):     // Step One: use
 elseif (!Get::has('magic') && !Cookie::has('flyspray_userid')): // Step Two: user enters new password
     // Check that the magic url is valid
     $check_magic = $db->Query(
-            "SELECT * FROM {$dbprefix}users WHERE magic_url = ?",
+            "SELECT * FROM {users} WHERE magic_url = ?",
             array($_GET['magic']));
 
     if (!$db->CountRows($check_magic)) {

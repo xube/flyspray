@@ -8,7 +8,7 @@
 include_once('../header.php');
 
 // Get a list of the attachments
-$attachments = $db->Query("SELECT * FROM {$dbprefix}attachments
+$attachments = $db->Query("SELECT * FROM {attachments}
                            WHERE comment_id < '1'
                            AND date_added > '0'"
                          );
@@ -17,20 +17,20 @@ $attachments = $db->Query("SELECT * FROM {$dbprefix}attachments
 while($row = $db->FetchArray($attachments))
 {
    // Create a comment
-   $db->Query("INSERT INTO {$dbprefix}comments
+   $db->Query("INSERT INTO {comments}
                (task_id, date_added, user_id, comment_text)
                VALUES ( ?, ?, ?, ? )",
                array($row['task_id'], $row['date_added'], $row['added_by'], $row['file_desc']));
 
    // Retrieve the comment ID
-   $result = $db->Query("SELECT * FROM {$dbprefix}comments
+   $result = $db->Query("SELECT * FROM {comments}
                          WHERE comment_text = ?
                          ORDER BY comment_id DESC",
                          array($row['file_desc']), 1);
    $comment = $db->FetchRow($result);
 
    // Update the attachment entry to point it to the comment ID
-   $db->Query("UPDATE {$dbprefix}attachments
+   $db->Query("UPDATE {attachments}
                SET comment_id = ?
                WHERE attachment_id = ?",
                array($comment['comment_id'], $row['attachment_id'])

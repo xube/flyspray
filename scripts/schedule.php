@@ -9,9 +9,9 @@ $notify = new Notifications;
 
 $now = date(U);
 
-$get_reminders = $db->Query("SELECT  * FROM {$dbprefix}reminders r
-                          LEFT JOIN  {$dbprefix}tasks t ON r.task_id = t.task_id
-                          LEFT JOIN  {$dbprefix}projects p ON t.attached_to_project = p.project_id
+$get_reminders = $db->Query("SELECT  * FROM {reminders} r
+                          LEFT JOIN  {tasks} t ON r.task_id = t.task_id
+                          LEFT JOIN  {projects} p ON t.attached_to_project = p.project_id
                               WHERE  t.is_closed = '0'
                            ORDER BY  r.reminder_id");
 
@@ -27,7 +27,7 @@ while ($row = $db->FetchRow($get_reminders)) {
 
         // Get the user's notification type and address
         $get_details  = $db->Query("SELECT  notify_type, jabber_id, email_address
-                                      FROM  {$dbprefix}users
+                                      FROM  {users}
                                      WHERE  user_id = ?", array($row['to_user_id']));
 
         while ($subrow = $db->FetchArray($get_details)) {
@@ -52,7 +52,7 @@ while ($row = $db->FetchRow($get_reminders)) {
         $notify->StoreJabber($jabber_users, $subject, $message);
 
         // Update the database with the time sent
-        $update_db = $db->Query("UPDATE  {$dbprefix}reminders
+        $update_db = $db->Query("UPDATE  {reminders}
                                     SET  last_sent = ?
                                   WHERE  reminder_id = ?",
                               array($now, $row['reminder_id']));

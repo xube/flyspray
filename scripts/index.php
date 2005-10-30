@@ -56,14 +56,14 @@ if (Get::val('project') === '0') {
     if (isset($permissions['global_view']) && $permissions['global_view'] == '1') {
         // If the user has the global 'view tasks' permission, view all projects unrestricted
         $check_projects = $db->Query("SELECT  p.project_id
-                                        FROM  {$dbprefix}projects p
+                                        FROM  {projects} p
                                     ORDER BY  p.project_title");
     }
     elseif (Cookie::has('flyspray_userid')) {
         // Those who aren't super users get this more restrictive query
         $check_projects = $db->Query("SELECT  p.project_id
-                                        FROM  {$dbprefix}users_in_groups uig
-                                   LEFT JOIN  {$dbprefix}groups g ON uig.group_id = g.group_id, {$dbprefix}projects p
+                                        FROM  {users_in_groups} uig
+                                   LEFT JOIN  {groups} g ON uig.group_id = g.group_id, {projects} p
                                        WHERE  ((uig.user_id = ?  AND g.view_tasks = '1') OR p.others_view = '1')
                                               AND p.project_is_active = '1'
                                     ORDER BY  p.project_title", array($current_user['user_id']));
@@ -71,7 +71,7 @@ if (Get::val('project') === '0') {
     else {
         // Anonymous users also need a query here
         $check_projects = $db->Query("SELECT  p.project_id
-                                        FROM  {$dbprefix}projects p
+                                        FROM  {projects} p
                                        WHERE  p.others_view = '1' AND p.project_is_active = '1'
                                     ORDER BY  p.project_title");
     }
@@ -124,7 +124,7 @@ if (is_numeric($cat = Get::val('cat'))) {
 
     // Do some weird stuff to add the subcategories to the query
     $get_subs = $db->Query('SELECT  category_id
-                              FROM  {$dbprefix}list_category
+                              FROM  {list_category}
                              WHERE  parent_id = ?', array($cat));
 
     while ($row = $db->FetchArray($get_subs)) {
@@ -205,7 +205,7 @@ if (Get::val('project') !== '0'
       <select name="type">
         <option value=""><?php echo $index_text['alltasktypes'];?></option>
         <?php
-        $tasktype_list = $db->Query("SELECT  tasktype_id, tasktype_name FROM {$dbprefix}list_tasktype
+        $tasktype_list = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
                                       WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
                                    ORDER BY  list_position", array($project_id));
         while ($row = $db->FetchArray($tasktype_list)) {
@@ -235,7 +235,7 @@ if (Get::val('project') !== '0'
         <option value=""><?php echo $index_text['dueanyversion'];?></option>
         <?php
         $ver_list = $db->Query("SELECT  version_id, version_name
-                                  FROM  {$dbprefix}list_version
+                                  FROM  {list_version}
                                  WHERE  show_in_list = '1' AND version_tense = '3'
                                         AND (project_id = '0' OR project_id = ?)
                               ORDER BY  list_position", array($project_id,));
@@ -262,7 +262,7 @@ if (Get::val('project') !== '0'
         <option value=""><?php echo $index_text['allcategories'];?></option>
         <?php
         $cat_list = $db->Query("SELECT  category_id, category_name
-                                  FROM  {$dbprefix}list_category
+                                  FROM  {list_category}
                                  WHERE  show_in_list = '1' AND parent_id < '1'
                                         AND (project_id = '0' OR project_id = ?)
                              ORDER BY  list_position", array($project_id));
@@ -276,7 +276,7 @@ if (Get::val('project') !== '0'
            }
 
            $subcat_list = $db->Query("SELECT  category_id, category_name
-                                        FROM  {$dbprefix}list_category
+                                        FROM  {list_category}
                                        WHERE  show_in_list = '1' AND parent_id = ?
                                     ORDER BY  list_position", array($row['category_id']));
 
@@ -485,24 +485,24 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
     <?php
     
     $where = join(' AND ', $where);
-    $from  = "{$dbprefix}tasks t";
+    $from  = "{tasks} t";
     
     if (Get::val('tasks') == 'watched') {
         //join the notification table to get watched tasks
-        $from        .= " RIGHT JOIN {$dbprefix}notifications fsn ON t.task_id = fsn.task_id";
+        $from        .= " RIGHT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
         $where[]      = 'fsn.user_id = ?';
         $sql_params[] = $current_user['user_id'];
     }
     
     // This SQL courtesy of Lance Conry http://www.rhinosw.com/
     $from .= "
-            LEFT JOIN  {$dbprefix}projects      p   ON t.attached_to_project = p.project_id
-            LEFT JOIN  {$dbprefix}list_tasktype lt  ON t.task_type = lt.tasktype_id
-            LEFT JOIN  {$dbprefix}list_category lc  ON t.product_category = lc.category_id
-            LEFT JOIN  {$dbprefix}list_version  lv  ON t.product_version = lv.version_id
-            LEFT JOIN  {$dbprefix}list_version  lvc ON t.closedby_version = lvc.version_id
-            LEFT JOIN  {$dbprefix}users         u   ON t.assigned_to = u.user_id
-            LEFT JOIN  {$dbprefix}users         uo  ON t.opened_by = uo.user_id";
+            LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
+            LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
+            LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
+            LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
+            LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
+            LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
+            LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id";
     
     $get_total = $db->Query("SELECT  t.task_id
                                FROM  $from
@@ -579,12 +579,12 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
    
         // get the number of comments and attachments
         if ($column_visible['comments']) {
-            $getcomments    = $db->Query("SELECT COUNT(*) AS num_comments FROM {$dbprefix}comments WHERE task_id = ?", array($task_id));
+            $getcomments    = $db->Query("SELECT COUNT(*) AS num_comments FROM {comments} WHERE task_id = ?", array($task_id));
             list($comments) = $db->FetchRow($getcomments);
         }
    
         if ($column_visible['attachments']) {
-            $getattachments    = $db->Query("SELECT COUNT(*) AS num_attachments FROM {$dbprefix}attachments WHERE task_id = ?", array($task_id));
+            $getattachments    = $db->Query("SELECT COUNT(*) AS num_attachments FROM {attachments} WHERE task_id = ?", array($task_id));
             list($attachments) = $db->FetchRow($getattachments);
         }
    

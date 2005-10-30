@@ -32,7 +32,7 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     // Only logged in users get to use the 'last search' functionality
     foreach (array('string','type','sev','due','dev','cat','status') as $key) {
         if (Get::has($key)) {
-            $db->Query("UPDATE  {$dbprefix}users
+            $db->Query("UPDATE  {users}
                            SET  last_search = ?
                          WHERE  user_id = ?",
                     array($this_page, $user_id)
@@ -56,7 +56,7 @@ if (Req::val('project') == '0') {
 if (Get::has('getfile') && Get::val('getfile')) {
     // If a file was requested, deliver it
     $result = $db->Query("SELECT  task_id, orig_name, file_name, file_type
-                            FROM  {$dbprefix}attachments
+                            FROM  {attachments}
                            WHERE  attachment_id = ?", array($_GET['getfile']));
     list($task_id, $orig_name, $file_name, $file_type) = $db->FetchArray($result);
 
@@ -245,7 +245,7 @@ if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
 
     if ($permissions['manage_project'] == '1') {
         // Find out if there are any PM requests wanting attention
-        $get_req = $db->Query("SELECT * FROM {$dbprefix}admin_requests WHERE project_id = ? AND resolved_by = '0'",
+        $get_req = $db->Query("SELECT * FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
                 array($project_id));
 
         $num_req = $db->CountRows($get_req);
@@ -290,15 +290,15 @@ if (isset($_SESSION['SUCCESS'])) {
           if (@$permissions['global_view'] == '1') {
               // If the user has permission to view all projects
               $get_projects = $db->Query("SELECT  *
-                                            FROM  {$dbprefix}projects
+                                            FROM  {projects}
                                            WHERE  project_is_active = '1'
                                         ORDER BY  project_title");
           }
           elseif (isset($_COOKIE['flyspray_userid'])) {
               // or, if the user is logged in
               $get_projects = $db->Query("SELECT  DISTINCT p.*
-                                            FROM  {$dbprefix}users_in_groups uig
-                                       LEFT JOIN  {$dbprefix}groups g ON uig.group_id = g.group_id, {$dbprefix}projects p
+                                            FROM  {users_in_groups} uig
+                                       LEFT JOIN  {groups} g ON uig.group_id = g.group_id, {projects} p
                                            WHERE  ( (uig.user_id = ?  AND g.view_tasks = '1') OR p.others_view = '1')
                                                   AND p.project_is_active = '1'
                                         GROUP BY  p.project_id", array($current_user['user_id']));
@@ -306,7 +306,7 @@ if (isset($_SESSION['SUCCESS'])) {
           else {
               // Anonymous users
               $get_projects = $db->Query("SELECT  *
-                                            FROM  {$dbprefix}projects
+                                            FROM  {projects}
                                            WHERE  project_is_active = '1' AND others_view = '1'
                                            ORDER  BY project_title");
           }

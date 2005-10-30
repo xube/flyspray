@@ -13,7 +13,7 @@ if ($flyspray_prefs['spam_proof'] != '1'
 // If the user came here from their notification link
 if (Get::has('magic')):
    // Check that the magic url is valid
-    $check_magic = $db->Query("SELECT * FROM {$dbprefix}registrations
+    $check_magic = $db->Query("SELECT * FROM {registrations}
                                WHERE magic_url = ?",
                                array(Get::val('magic')));
 

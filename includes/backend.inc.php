@@ -15,7 +15,6 @@ class Backend {
    function AddToNotifyList($user_id, $tasks)
    {
       global $db;
-      global $dbprefix;
       global $fs;
 
       foreach ($tasks AS $key => $task_id)
@@ -23,7 +22,7 @@ class Backend {
          // We can't add a user to a notif list if they're already on it, so...
          // Get a list of users who are on the notif list for this task
          $notify_list = $db->Query("SELECT user_id
-                                    FROM {$dbprefix}notifications
+                                    FROM {notifications}
                                     WHERE task_id = ?
                                     AND user_id = ?",
                                     array($task_id, $user_id)
@@ -33,7 +32,7 @@ class Backend {
          if (!$db->CountRows($notify_list))
          {
             //  Add them to the notif list
-            $db->Query("INSERT INTO {$dbprefix}notifications
+            $db->Query("INSERT INTO {notifications}
                         (task_id, user_id)
                         VALUES(?,?)",
                         array($task_id, $user_id)
@@ -59,13 +58,12 @@ class Backend {
    function RemoveFromNotifyList($user_id, $tasks)
    {
       global $db;
-      global $dbprefix;
       global $fs;
 
       foreach ($tasks AS $key => $task_id)
       {
          // Remove the notif entry
-         $db->Query("DELETE FROM {$dbprefix}notifications
+         $db->Query("DELETE FROM {notifications}
                      WHERE task_id = ?
                      AND user_id = ?",
                      array($task_id, $user_id)
@@ -89,7 +87,6 @@ class Backend {
    function AssignToMe($user_id, $tasks)
    {
       global $db;
-      global $dbprefix;
       global $fs;
       global $notify;
 
@@ -111,7 +108,7 @@ class Backend {
            && $task_details['assigned_to'] != $user_id )
          {
             // Make the change in assignment
-            $db->Query("UPDATE {$dbprefix}tasks
+            $db->Query("UPDATE {tasks}
                         SET assigned_to = ?, item_status = '3'
                         WHERE task_id = ?",
                         array($user_id, $task_id));
@@ -143,7 +140,6 @@ class Backend {
          return "We were not given an array of arguments to process.";
 
       global $db;
-      global $dbprefix;
       global $fs;
       global $flyspray_prefs;
 
@@ -304,8 +300,8 @@ class Backend {
 
       // Alrighty.  We should be ok to build the query now!
       $search = $db->Query("SELECT DISTINCT t.task_id
-                            FROM {$dbprefix}tasks t
-                            LEFT JOIN {$dbprefix}notifications fsn ON t.task_id = fsn.task_id
+                            FROM {tasks} t
+                            LEFT JOIN {notifications} fsn ON t.task_id = fsn.task_id
                             WHERE t.task_id > ?
                             AND $sql_where
                             ORDER BY t.task_severity DESC, t.task_id ASC
@@ -334,7 +330,6 @@ class Backend {
    function CreateTask($args)
    {
       global $db;
-      global $dbprefix;
       global $fs;
       global $flyspray_prefs;
       //global $notify;
@@ -403,7 +398,7 @@ class Backend {
 
 
       // Here comes the database insert!
-      $db->Query("INSERT INTO {$dbprefix}tasks
+      $db->Query("INSERT INTO {tasks}
                   (attached_to_project,
                   task_type,
                   date_opened,
@@ -439,7 +434,7 @@ class Backend {
 
       // Get the task id back
       $result = $db->Query("SELECT task_id, item_summary, product_category
-                                                FROM {$dbprefix}tasks
+                                                FROM {tasks}
                                                 WHERE item_summary = ?
                                                 AND detailed_desc = ?
                                                 ORDER BY task_id DESC",
@@ -451,7 +446,7 @@ class Backend {
       // Log that the task was opened
       $fs->logEvent($task_details['task_id'], 1);
 
-      $result = $db->Query("SELECT * FROM {$dbprefix}list_category
+      $result = $db->Query("SELECT * FROM {list_category}
                                                  WHERE category_id = ?",
                                                  array($category)
                                     );
@@ -465,7 +460,7 @@ class Backend {
       } elseif (!empty($cat_details['parent_id']))
       {
          $result = $db->Query("SELECT category_owner
-                               FROM {$dbprefix}list_category
+                               FROM {list_category}
                                WHERE category_id = ?",
                                array($cat_details['parent_id']));
          $parent_cat_details = $db->FetchArray($result);
@@ -482,7 +477,7 @@ class Backend {
       if (!empty($owner))
       {
          // Category owners now get auto-added to the notification list for new tasks
-         $insert = $db->Query("INSERT INTO {$dbprefix}notifications
+         $insert = $db->Query("INSERT INTO {notifications}
                               (task_id, user_id)
                               VALUES(?, ?)",
                               array($taskid, $owner)
@@ -523,7 +518,6 @@ class Backend {
    function UploadFiles($userid, $taskid, $files, $commentid = '0')
    {
       global $db;
-      global $dbprefix;
       global $fs;
       global $flyspray_prefs;
       global $notify;
@@ -557,7 +551,7 @@ class Backend {
             // Only add the listing to the database if the file was actually uploaded successfully
             if (file_exists($path))
             {
-               $db->Query("INSERT INTO {$dbprefix}attachments
+               $db->Query("INSERT INTO {attachments}
                            (task_id, comment_id, orig_name, file_name,
                             file_type, file_size, added_by, date_added)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -573,7 +567,7 @@ class Backend {
 
                // Fetch the attachment id for the history log
                $result = $db->Query("SELECT attachment_id
-                                     FROM {$dbprefix}attachments
+                                     FROM {attachments}
                                      WHERE task_id = ?
                                      ORDER BY attachment_id DESC",
                                      array($taskid), 1);

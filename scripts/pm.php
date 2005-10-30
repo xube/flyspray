@@ -206,7 +206,7 @@ elseif ($area == 'groups'): // {{{
     ////////////////////////////////////////////////
 
     $user_checklist = array();
-    $get_groups = $db->Query("SELECT  * FROM {$dbprefix}groups
+    $get_groups = $db->Query("SELECT  * FROM {groups}
                                WHERE  belongs_to_project = ?
                                ORDER  BY group_id ASC", array($project_id));
 
@@ -236,8 +236,8 @@ elseif ($area == 'groups'): // {{{
         <th><?php echo $admin_text['accountenabled'] ?></th>
       </tr>
       <?php
-      $get_user_list = $db->Query("SELECT  * FROM {$dbprefix}users_in_groups uig
-                                LEFT JOIN  {$dbprefix}users u on uig.user_id = u.user_id
+      $get_user_list = $db->Query("SELECT  * FROM {users_in_groups} uig
+                                LEFT JOIN  {users} u on uig.user_id = u.user_id
                                     WHERE  uig.group_id = ? ORDER BY u.user_name ASC", array($group['group_id'])); 
     
       while ($row = $db->FetchArray($get_user_list)) {
@@ -261,7 +261,7 @@ elseif ($area == 'groups'): // {{{
           <select class="adminlist" name="switch_to_group">
             <option value="0"><?php echo $admin_text['nogroup'] ?></option>
             <?php
-            $groups = $db->Query("SELECT * FROM {$dbprefix}groups
+            $groups = $db->Query("SELECT * FROM {groups}
                                  WHERE belongs_to_project = ?
                                  ORDER BY group_id ASC",
                                  array($project_id));
@@ -287,9 +287,9 @@ elseif ($area == 'groups'): // {{{
         <select class="adminlist" name="user_list[]" multiple="multiple" size="15">
           <?php
           $user_query = $db->Query("SELECT  *
-                                      FROM  {$dbprefix}users_in_groups uig
-                                 LEFT JOIN  {$dbprefix}users u on uig.user_id = u.user_id
-                                 LEFT JOIN  {$dbprefix}groups g on uig.group_id = g.group_id
+                                      FROM  {users_in_groups} uig
+                                 LEFT JOIN  {users} u on uig.user_id = u.user_id
+                                 LEFT JOIN  {groups} g on uig.group_id = g.group_id
                                      WHERE  g.belongs_to_project <> ? AND u.account_enabled = ?
                                     ORDER BY  user_name ASC", array($project_id, '1'));
         
@@ -306,7 +306,7 @@ elseif ($area == 'groups'): // {{{
         <input class="adminbutton" type="submit" value="<?php echo $admin_text['addtogroup'] ?>" />
         <select class="adminbutton" name="add_to_group">
           <?php
-          $get_groups = $db->Query("SELECT  * FROM {$dbprefix}groups
+          $get_groups = $db->Query("SELECT  * FROM {groups}
                                      WHERE  belongs_to_project = ? ORDER BY group_id ASC", array($project_id));
           while ($group = $db->FetchArray($get_groups)) {
               echo '<option value="' . $group['group_id'] . '">' . htmlspecialchars(stripslashes($group['group_name']),ENT_COMPAT,'utf-8') . "</option>\n";
@@ -323,7 +323,7 @@ elseif ($area == "editgroup"): // {{{
     /////////////////////////////
     echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $project_prefs['project_title'] . ': ' . $admin_text['editgroup'] . '</h3>';
 
-    $get_group_details = $db->Query("SELECT * FROM {$dbprefix}groups WHERE group_id = ?", array($_GET['id']));
+    $get_group_details = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($_GET['id']));
     $group_details     = $db->FetchArray($get_group_details);
 
     // PMs are only allowed to edit groups in their project
@@ -449,8 +449,8 @@ elseif ($area == 'tt'): // {{{
     <table class="list">
       <?php
       $get_tasktypes = $db->Query("SELECT  tt.*, count(t.task_id) AS used_in_tasks
-                                     FROM  {$dbprefix}list_tasktype tt
-                                LEFT JOIN  {$dbprefix}tasks         t  ON ( t.task_type = tt.tasktype_id )
+                                     FROM  {list_tasktype} tt
+                                LEFT JOIN  {tasks}         t  ON ( t.task_type = tt.tasktype_id )
                                     WHERE  project_id = ?
                                  GROUP BY  tt.tasktype_id, tt.tasktype_name, tt.list_position, tt.show_in_list, tt.project_id
                                  ORDER BY  list_position", array($project_id));
@@ -536,8 +536,8 @@ elseif ($area == 'res'): // {{{
     <table class="list">
       <?php
       $get_resolution = $db->Query("SELECT  r.*, count(t.task_id) AS used_in_tasks
-                                      FROM  {$dbprefix}list_resolution r
-                                 LEFT JOIN  {$dbprefix}tasks t ON ( t.resolution_reason = r.resolution_id )
+                                      FROM  {list_resolution} r
+                                 LEFT JOIN  {tasks} t ON ( t.resolution_reason = r.resolution_id )
                                      WHERE  project_id = ?
                                   GROUP BY  r.resolution_id, r.resolution_name, r.list_position, r.show_in_list, r.project_id
                                   ORDER BY  list_position", array($project_id));
@@ -626,8 +626,8 @@ elseif ($area == 'cat'): // {{{
       <table class="list">
         <?php
         $get_categories = $db->Query("SELECT  c.*, count(t.task_id) AS used_in_tasks
-                                        FROM  {$dbprefix}list_category c
-                                   LEFT JOIN  {$dbprefix}tasks t ON (t.product_category = c.category_id)
+                                        FROM  {list_category} c
+                                   LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
                                        WHERE  project_id = ? AND parent_id < ?
                                     GROUP BY  c.category_id, c.project_id, c.category_name,
                                               c.list_position, c.show_in_list, c.category_owner, c.parent_id
@@ -635,8 +635,8 @@ elseif ($area == 'cat'): // {{{
         $countlines = 0;
         while ($row = $db->FetchArray($get_categories)):
             $get_subcategories = $db->Query("SELECT  c.*, count(t.task_id) AS used_in_tasks
-                                               FROM  {$dbprefix}list_category c
-                                          LEFT JOIN  {$dbprefix}tasks t ON (t.product_category = c.category_id)
+                                               FROM  {list_category} c
+                                          LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
                                               WHERE  project_id = ? AND parent_id = ?
                                            GROUP BY  c.category_id, c.project_id, c.category_name,
                                                      c.list_position, c.show_in_list, c.category_owner, c.parent_id
@@ -755,7 +755,7 @@ elseif ($area == 'cat'): // {{{
               <option value=""><?php echo $admin_text['notsubcategory'];?></option>
               <?php
               $cat_list = $db->Query("SELECT  category_id, category_name
-                                        FROM  {$dbprefix}list_category
+                                        FROM  {list_category}
                                        WHERE  project_id=? AND show_in_list=? AND parent_id < ?
                                     ORDER BY  list_position", array($project_id, '1', '1'));
 
@@ -799,8 +799,8 @@ elseif ($area == 'os'): // {{{
       <table class="list">
         <?php
         $get_os = $db->Query("SELECT  os.*, count(t.task_id) AS used_in_tasks
-                                FROM  {$dbprefix}list_os os
-                           LEFT JOIN  {$dbprefix}tasks t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
+                                FROM  {list_os} os
+                           LEFT JOIN  {tasks} t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
                                WHERE  os.project_id = ?
                             GROUP BY  os.os_id, os.project_id, os.os_name, os.list_position, os.show_in_list
                             ORDER BY  list_position", array($project_id));
@@ -893,8 +893,8 @@ elseif ($area == 'ver'): // {{{
       <table class="list">
         <?php
         $get_version = $db->Query("SELECT  v.*, count(t.task_id) AS used_in_tasks
-                                     FROM  {$dbprefix}list_version v
-                                LEFT JOIN  {$dbprefix}tasks t ON ((t.product_version = v.version_id OR t.closedby_version = v.version_id)
+                                     FROM  {list_version} v
+                                LEFT JOIN  {tasks} t ON ((t.product_version = v.version_id OR t.closedby_version = v.version_id)
                                                                     AND t.attached_to_project = v.project_id)
                                     WHERE  v.project_id = ?
                                  GROUP BY  v.version_id, v.project_id, v.version_name, v.list_position, v.show_in_list, v.version_tense
@@ -990,9 +990,9 @@ elseif ($area == 'pendingreq' && $permissions['manage_project'] == '1'): // {{{
     echo '<h3>' . $pm_text['pmtoolbox'] . ':: ' . $pm_text['pendingreq'] . '</h3>';
 
     $get_pending = $db->Query("SELECT  *
-                                 FROM  {$dbprefix}admin_requests ar
-                            LEFT JOIN  {$dbprefix}tasks t ON ar.task_id = t.task_id
-                            LEFT JOIN  {$dbprefix}users u ON ar.submitted_by = u.user_id
+                                 FROM  {admin_requests} ar
+                            LEFT JOIN  {tasks} t ON ar.task_id = t.task_id
+                            LEFT JOIN  {users} u ON ar.submitted_by = u.user_id
                                 WHERE  project_id = ? AND resolved_by = '0'
                              ORDER BY  ar.time_submitted ASC", array($project_id));
 

@@ -45,7 +45,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
             <select name="task_type" id="tasktype">
             <?php
             // Get list of task types
-            $get_tasktype = $db->Query("SELECT  tasktype_id, tasktype_name FROM {$dbprefix}list_tasktype
+            $get_tasktype = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
                                          WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
                                       ORDER BY  list_position", array($project_id));
 
@@ -64,7 +64,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
               <?php
               // Get list of categories
               $cat_list = $db->Query("SELECT  category_id, category_name
-                                        FROM  {$dbprefix}list_category
+                                        FROM  {list_category}
                                        WHERE  show_in_list = '1' AND parent_id < '1'
                                               AND (project_id = '0' OR project_id = ?)
                                     ORDER BY  list_position", array($project_id));
@@ -74,7 +74,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
                   echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
 
                   $subcat_list = $db->Query("SELECT  category_id, category_name
-                                               FROM  {$dbprefix}list_category
+                                               FROM  {list_category}
                                               WHERE  show_in_list = '1' AND parent_id = ?
                                            ORDER BY  list_position", array($row['category_id']));
 
@@ -130,7 +130,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
               <select id="operatingsystem" name="operating_system">
               <?php // Get list of operating systems
               $get_os = $db->Query("SELECT  os_id, os_name
-                                      FROM  {$dbprefix}list_os
+                                      FROM  {list_os}
                                      WHERE  (project_id = ?  OR project_id = '0')
                                             AND show_in_list = '1'
                                   ORDER BY  list_position", array($project_id));
@@ -185,7 +185,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
             <select class="adminlist" name="product_version" id="productversion">
             <?php // Get list of versions
             $get_version = $db->Query("SELECT  version_id, version_name
-                                         FROM  {$dbprefix}list_version
+                                         FROM  {list_version}
                                         WHERE  show_in_list = '1' AND version_tense = '2'
                                                AND (project_id = '0' OR project_id = ?)
                                      ORDER BY  list_position", array($project_id,));
@@ -205,7 +205,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
             echo "<option value=\"\">{$newtask_text['undecided']}</option>\n";
 
             $get_version = $db->Query("SELECT  version_id, version_name
-                                         FROM  {$dbprefix}list_version
+                                         FROM  {list_version}
                                         WHERE  show_in_list = '1' AND version_tense = '3'
                                                AND (project_id = '0' OR project_id = ?)
                                      ORDER BY  list_position", array($project_id,));

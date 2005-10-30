@@ -8,7 +8,7 @@ if (!can_create_group($permissions)) {
 }
 
 if (Get::val('project')) {
-    $result = $db->Query("SELECT  * FROM {$dbprefix}projects
+    $result = $db->Query("SELECT  * FROM {projects}
                            WHERE  project_id = ?", array($_GET['project']));
     $project_details = $db->FetchArray($result);
     $forproject = $project_details['project_title'];
