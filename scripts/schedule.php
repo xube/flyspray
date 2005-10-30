@@ -19,7 +19,7 @@ while ($row = $db->FetchRow($get_reminders)) {
     // Check to see if it's time to send a reminder
     if (($row['start_time'] < $now) && (($row['last_sent'] + $row['how_often']) < $now)) {
         // Send the reminder
-        $lang = $flyspray_prefs['lang_code'];
+        $lang = $fs->prefs['lang_code'];
         require_once("$path/lang/$lang/functions.inc.php");
 
         $jabber_users = array();
@@ -31,14 +31,14 @@ while ($row = $db->FetchRow($get_reminders)) {
                                      WHERE  user_id = ?", array($row['to_user_id']));
 
         while ($subrow = $db->FetchArray($get_details)) {
-            if (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
-                    OR ($flyspray_prefs['user_notify'] == '2'))
+            if (($fs->prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
+                    OR ($fs->prefs['user_notify'] == '2'))
             {
                 $email_users[] = $subrow['email_address'];
 
             }
-            elseif (($flyspray_prefs['user_notify'] == '1' && $subrow['notify_type'] == '2')
-                    OR ($flyspray_prefs['user_notify'] == '3'))
+            elseif (($fs->prefs['user_notify'] == '1' && $subrow['notify_type'] == '2')
+                    OR ($fs->prefs['user_notify'] == '3'))
             {
                 $jabber_users[] = $subrow['jabber_id']);
             }

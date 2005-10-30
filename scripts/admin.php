@@ -10,7 +10,7 @@
    --------------------------------------------------
 */
 
-$lang = $flyspray_prefs['lang_code'];
+$lang = $fs->prefs['lang_code'];
 $fs->get_language_pack($lang, 'admin');
 $fs->get_language_pack($lang, 'index');
 $fs->get_language_pack($lang, 'newproject');
@@ -60,7 +60,7 @@ if     ($area == 'prefs'): // {{{
             <?php
             $get_projects = $db->Query("SELECT * FROM {projects}");
             while ($row = $db->FetchArray($get_projects)) {
-                if ($flyspray_prefs['default_project'] == $row['project_id']) {
+                if ($fs->prefs['default_project'] == $row['project_id']) {
                     echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
                 } else {
                     echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
@@ -87,7 +87,7 @@ if     ($area == 'prefs'): // {{{
             sort($lang_array);
 
             while (list($key, $val) = each($lang_array)) {
-                if ($val == $flyspray_prefs['lang_code']) {
+                if ($val == $fs->prefs['lang_code']) {
                     echo "<option class=\"adminlist\" selected=\"selected\">$val</option>\n";
                 } else {
                     echo "<option class=\"adminlist\">$val</option>\n";
@@ -100,13 +100,13 @@ if     ($area == 'prefs'): // {{{
       <tr>
         <td><label id="dateformatlabel" for="dateformat"><?php echo $admin_text['dateformat'];?></label></td>
         <td>
-          <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat'];?>" />
+          <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="<?php echo $fs->prefs['dateformat'];?>" />
         </td>
       </tr>
       <tr>
         <td><label id="dateformatextendedlabel" for="dateformat_extended"><?php echo $admin_text['dateformat_extended'];?></label></td>
         <td>
-          <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $flyspray_prefs['dateformat_extended'];?>" />
+          <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="<?php echo $fs->prefs['dateformat_extended'];?>" />
         </td>
       </tr>
     </table>
@@ -118,13 +118,13 @@ if     ($area == 'prefs'): // {{{
       <tr>
         <td><label id="allowusersignupslabel" for="allowusersignups"><?php echo $admin_text['anonreg'];?></label></td>
         <td>
-          <input id="allowusersignups" type="checkbox" name="anon_reg" value="1" <?php if ($flyspray_prefs['anon_reg'] == '1') { echo "checked=\"checked\"";};?> />
+          <input id="allowusersignups" type="checkbox" name="anon_reg" value="1" <?php if ($fs->prefs['anon_reg'] == '1') { echo "checked=\"checked\"";};?> />
         </td>
       </tr>
       <tr>
         <td><label id="spamprooflabel" for="spamproof"><?php echo $admin_text['spamproof']; ?></label></td>
         <td>
-          <input id="spamproof" type="checkbox" name="spam_proof" value="1" <?php if ($flyspray_prefs['spam_proof'] == '1') { echo "checked=\"checked\"";};?> />
+          <input id="spamproof" type="checkbox" name="spam_proof" value="1" <?php if ($fs->prefs['spam_proof'] == '1') { echo "checked=\"checked\"";};?> />
         </td>
       </tr>
       <tr>
@@ -134,7 +134,7 @@ if     ($area == 'prefs'): // {{{
             <?php // Get the group names
             $get_group_details = $db->Query("SELECT group_id, group_name FROM {groups} WHERE belongs_to_project = '0' ORDER BY group_id ASC");
             while ($row = $db->FetchArray($get_group_details)) {
-                if ($flyspray_prefs['anon_group'] == $row['group_id']) {
+                if ($fs->prefs['anon_group'] == $row['group_id']) {
                     echo "<option value=\"{$row['group_id']}\" selected=\"selected\">{$row['group_name']}</option>";
                 } else {
                     echo "<option value=\"{$row['group_id']}\">{$row['group_name']}</option>";
@@ -150,7 +150,7 @@ if     ($area == 'prefs'): // {{{
           <?php // Get the group names
           $get_group_details = $db->Query("SELECT group_id, group_name FROM {groups} WHERE belongs_to_project = '0' ORDER BY group_id ASC");
           while ($row = $db->FetchArray($get_group_details)) {
-              if (ereg($row['group_id'], $flyspray_prefs['assigned_groups'])) {
+              if (ereg($row['group_id'], $fs->prefs['assigned_groups'])) {
                   echo "<input type=\"checkbox\" name=\"assigned_groups[{$row['group_id']}]\" value=\"1\" checked=\"checked\" />{$row['group_name']}<br />\n";
               } else {
                   echo "<input type=\"checkbox\" name=\"assigned_groups[{$row['group_id']}]\" value=\"1\" />{$row['group_name']}<br />\n";
@@ -169,10 +169,10 @@ if     ($area == 'prefs'): // {{{
         <td><label id="usernotifylabel" for="usernotify"><?php echo $admin_text['forcenotify'];?></label></td>
         <td>
           <select id="usernotify" name="user_notify">
-            <option value="0" <?php if ($flyspray_prefs['user_notify'] == "0") { echo "selected=\"selected\"";};?>><?php echo $admin_text['none'];?></option>
-            <option value="1" <?php if ($flyspray_prefs['user_notify'] == "1") { echo "selected=\"selected\"";};?>><?php echo $admin_text['userchoose'];?></option>
-            <option value="2" <?php if ($flyspray_prefs['user_notify'] == "2") { echo "selected=\"selected\"";};?>><?php echo $admin_text['email'];?></option>
-            <option value="3" <?php if ($flyspray_prefs['user_notify'] == "3") { echo "selected=\"\"";};?>><?php echo $admin_text['jabber'];?></option>
+            <option value="0" <?php if ($fs->prefs['user_notify'] == "0") { echo "selected=\"selected\"";};?>><?php echo $admin_text['none'];?></option>
+            <option value="1" <?php if ($fs->prefs['user_notify'] == "1") { echo "selected=\"selected\"";};?>><?php echo $admin_text['userchoose'];?></option>
+            <option value="2" <?php if ($fs->prefs['user_notify'] == "2") { echo "selected=\"selected\"";};?>><?php echo $admin_text['email'];?></option>
+            <option value="3" <?php if ($fs->prefs['user_notify'] == "3") { echo "selected=\"\"";};?>><?php echo $admin_text['jabber'];?></option>
           </select>
         </td>
       </tr>
@@ -184,25 +184,25 @@ if     ($area == 'prefs'): // {{{
       <tr>
         <td><label id="adminemaillabel" for="adminemail"><?php echo $admin_text['fromaddress'];?></label></td>
         <td>
-          <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['admin_email'];?>" />
+          <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="<?php echo $fs->prefs['admin_email'];?>" />
         </td>
       </tr>
       <tr>
         <td><label id="smtpservlabel" for="smtpserv"><?php echo $admin_text['smtpserver'];?></label></td>
         <td>
-          <input id="smtpserv" name="smtp_server" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['smtp_server'];?>" />
+          <input id="smtpserv" name="smtp_server" type="text" size="40" maxlength="100" value="<?php echo $fs->prefs['smtp_server'];?>" />
         </td>
       </tr>
       <tr>
         <td><label id="smtpuserlabel" for="smtpuser"><?php echo $admin_text['smtpuser'];?></label></td>
         <td>
-          <input id="smtpuser" name="smtp_user" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['smtp_user'];?>" />
+          <input id="smtpuser" name="smtp_user" type="text" size="40" maxlength="100" value="<?php echo $fs->prefs['smtp_user'];?>" />
         </td>
       </tr>
       <tr>
         <td><label id="smtppasslabel" for="smtppass"><?php echo $admin_text['smtppass'];?></label></td>
         <td>
-          <input id="smtppass" name="smtp_pass" type="text" size="40" maxlength="100" value="<?php echo $flyspray_prefs['smtp_pass'];?>" />
+          <input id="smtppass" name="smtp_pass" type="text" size="40" maxlength="100" value="<?php echo $fs->prefs['smtp_pass'];?>" />
         </td>
       </tr>
       <tr>
@@ -213,25 +213,25 @@ if     ($area == 'prefs'): // {{{
       <tr>
         <td><label id="jabservlabel" for="jabberserver"><?php echo $admin_text['jabberserver'];?></label></td>
         <td>
-          <input id="jabberserver" name="jabber_server" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_server'];?>" />
+          <input id="jabberserver" name="jabber_server" size="40" maxlength="100" value="<?php echo $fs->prefs['jabber_server'];?>" />
         </td>
       </tr>
       <tr>
         <td><label id="jabportlabel" for="jabberport"><?php echo $admin_text['jabberport'];?></label></td>
         <td>
-          <input id="jabberport" name="jabber_port" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_port'];?>" />
+          <input id="jabberport" name="jabber_port" size="40" maxlength="100" value="<?php echo $fs->prefs['jabber_port'];?>" />
         </td>
       </tr>
       <tr>
         <td><label id="jabuserlabel" for="jabberusername"><?php echo $admin_text['jabberuser'];?></label></td>
         <td>
-          <input id="jabberusername" name="jabber_username" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_username'];?>" />
+          <input id="jabberusername" name="jabber_username" size="40" maxlength="100" value="<?php echo $fs->prefs['jabber_username'];?>" />
         </td>
       </tr>
       <tr>
         <td><label id="jabpasslabel" for="jabberpassword"><?php echo $admin_text['jabberpass'];?></label></td>
         <td>
-          <input id="jabberpassword" name="jabber_password" type="password" size="40" maxlength="100" value="<?php echo $flyspray_prefs['jabber_password'];?>" />
+          <input id="jabberpassword" name="jabber_password" type="password" size="40" maxlength="100" value="<?php echo $fs->prefs['jabber_password'];?>" />
         </td>
       </tr>
     </table>
@@ -257,7 +257,7 @@ if     ($area == 'prefs'): // {{{
             sort($theme_array);
 
             while (list($key, $val) = each($theme_array)) {
-                if ($val == $flyspray_prefs['global_theme']) {
+                if ($val == $fs->prefs['global_theme']) {
                     echo "<option class=\"adminlist\" selected=\"selected\">$val</option>\n";
                 } else {
                     echo "<option class=\"adminlist\">$val</option>\n";
@@ -275,7 +275,7 @@ if     ($area == 'prefs'): // {{{
           array('id','project','tasktype','category','severity','priority','summary','dateopened','status','openedby','assignedto',
                   'lastedit','reportedin','dueversion','duedate','comments','attachments','progress');
           foreach ($columnnames AS $column) {
-              if (ereg($column, $flyspray_prefs['visible_columns']) ) {
+              if (ereg($column, $fs->prefs['visible_columns']) ) {
                   echo "<input type=\"checkbox\" name=\"visible_columns[{$column}]\" value=\"1\" checked=\"checked\" />$index_text[$column]<br />\n";
               } else {
                   echo "<input type=\"checkbox\" name=\"visible_columns[{$column}]\" value=\"1\" />$index_text[$column]<br />\n";
@@ -331,7 +331,7 @@ elseif ($area == 'users' && Get::val('id')): // {{{
       <tr>
         <td><label for="notifytype"><?php echo $admin_text['notifytype'];?></label></td>
         <td>
-          <?php if ($flyspray_prefs['user_notify'] == '1') { ?>
+          <?php if ($fs->prefs['user_notify'] == '1') { ?>
           <select id="notifytype" name="notify_type">
             <option value="0" <?php if ($user_details['notify_type'] == "0") {echo "selected=\"selected\"";};?>>None</option>
             <option value="1" <?php if ($user_details['notify_type'] == "1") {echo "selected=\"selected\"";};?>>Email</option>

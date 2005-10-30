@@ -70,7 +70,7 @@ $upgrade = $fs->dbQuery("CREATE TABLE flyspray_projects (
 $insert_project = $fs->dbQuery("INSERT INTO flyspray_projects
                                   VALUES (
                                           1,
-                                          '{$flyspray_prefs['project_title']}',
+                                          '{$fs->prefs['project_title']}',
                                           'Bluey',
                                           1,
                                           1,

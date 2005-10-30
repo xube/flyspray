@@ -16,7 +16,7 @@ if ($conf['general']['reminder_daemon'] == '1') {
 }
 
 // Get the translation for the wrapper page (this page)
-$lang = $flyspray_prefs['lang_code'];
+$lang = $fs->prefs['lang_code'];
 $fs->get_language_pack($lang, 'main');
 setlocale(LC_ALL, str_replace('-','_',$language['locale']));
 
@@ -48,7 +48,7 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
 
 // Set the theme
 if (Req::val('project') == '0') {
-   $themestyle = $flyspray_prefs['global_theme'];
+   $themestyle = $fs->prefs['global_theme'];
 } else {
    $themestyle = $project_prefs['theme_style'];
 }

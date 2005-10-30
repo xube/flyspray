@@ -5,7 +5,7 @@
 require_once(dirname(dirname(__FILE__)).'/header.php');
 
 $limit = intval(Req::val('num', 10));
-$proj  = intval(Req::val('proj', $flyspray_prefs['default_project']));
+$proj  = intval(Req::val('proj', $fs->prefs['default_project']));
 
 $project_prefs = $fs->GetProjectPrefs($projectid);
 

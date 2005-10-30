@@ -141,7 +141,6 @@ class Backend {
 
       global $db;
       global $fs;
-      global $flyspray_prefs;
 
       /*
       Since all variables will be passed to this function by Ander's
@@ -331,7 +330,6 @@ class Backend {
    {
       global $db;
       global $fs;
-      global $flyspray_prefs;
       //global $notify;
 
       $notify = new Notifications();
@@ -519,7 +517,6 @@ class Backend {
    {
       global $db;
       global $fs;
-      global $flyspray_prefs;
       global $notify;
 
       // Retrieve some important information

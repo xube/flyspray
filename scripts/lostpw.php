@@ -7,7 +7,7 @@
    ------------------------------------------------------
 */
 
-$lang = $flyspray_prefs['lang_code'];
+$lang = $fs->prefs['lang_code'];
 $fs->get_language_pack($lang, 'admin');
 
 if (!Get::has('magic') && !Cookie::has('flyspray_userid')):     // Step One: user requests magic url

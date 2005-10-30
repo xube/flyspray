@@ -344,7 +344,7 @@ $columns = array('id', 'project', 'tasktype', 'category', 'severity', 'priority'
 $column_visible = array_map(create_function('$x', 'return false;'), $columns);
 
 $project = isset($_GET['project']) ? $_GET['project'] : $project_id;
-$visible = explode(' ', $project == '0' ? $flyspray_prefs['visible_columns'] : $project_prefs['visible_columns']);
+$visible = explode(' ', $project == '0' ? $fs->prefs['visible_columns'] : $project_prefs['visible_columns']);
 
 foreach ($visible as $column) {
     $column_visible[$column] = true;

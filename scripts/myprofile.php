@@ -5,7 +5,7 @@
    -------------------------------------------------------
 */
 
-$lang = $flyspray_prefs['lang_code'];
+$lang = $fs->prefs['lang_code'];
 $fs->get_language_pack($lang, 'admin');
 $fs->get_language_pack($lang, 'index');
 
@@ -42,7 +42,7 @@ echo '<h2>' . $language['editmydetails'] . '</h2>';
          <tr>
             <td><label for="notifytype"><?php echo $admin_text['notifytype'];?></label></td>
             <td>
-            <?php if ($flyspray_prefs['user_notify'] == '1'): ?>
+            <?php if ($fs->prefs['user_notify'] == '1'): ?>
               <select id="notifytype" name="notify_type">
                  <option value="0" <?php if ($current_user['notify_type'] == "0") echo 'selected="selected"'; ?>>None</option>
                  <option value="1" <?php if ($current_user['notify_type'] == "1") echo 'selected="selected"'; ?>>Email</option>

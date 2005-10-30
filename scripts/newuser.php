@@ -1,7 +1,7 @@
 <?php
 $fs->get_language_pack($lang, 'newuser');
 
-if (!can_create_user($permissions, $flyspray_prefs)) {
+if (!can_create_user($permissions)) {
     $fs->redirect('./');
 }
 ?>

@@ -10,8 +10,7 @@
 $debug = true;
 
 // Define the language packs used
-$flyspray_prefs = $fs->getGlobalPrefs();
-$lang = $flyspray_prefs['lang_code'];
+$lang = $fs->prefs['lang_code'];
 $fs->get_language_pack($lang, 'notify.inc');
 $fs->get_language_pack($lang, 'details');
 
@@ -49,16 +48,15 @@ class Notifications {
 //       global $notify_text;
 //       global $details_text;
 //       global $project_prefs;
-      global $flyspray_prefs;
       global $current_user;
 
       $subject = htmlspecialchars($subject);
       $body = htmlspecialchars($body);
 
-      if (empty($flyspray_prefs['jabber_server'])
-          OR empty($flyspray_prefs['jabber_port'])
-          OR empty($flyspray_prefs['jabber_username'])
-          OR empty($flyspray_prefs['jabber_password']))
+      if (empty($fs->prefs['jabber_server'])
+          OR empty($fs->prefs['jabber_port'])
+          OR empty($fs->prefs['jabber_username'])
+          OR empty($fs->prefs['jabber_password']))
             return false;
 
       if (empty($to))
@@ -109,15 +107,14 @@ class Notifications {
 //       global $notify_text;
 //       global $details_text;
       global $project_prefs;
-      global $flyspray_prefs;
 //       global $current_user;
 
       debug_print("Checking Flyspray Jabber configuration...");
 
-      if (empty($flyspray_prefs['jabber_server'])
-          OR empty($flyspray_prefs['jabber_port'])
-          OR empty($flyspray_prefs['jabber_username'])
-          OR empty($flyspray_prefs['jabber_password']))
+      if (empty($fs->prefs['jabber_server'])
+          OR empty($fs->prefs['jabber_port'])
+          OR empty($fs->prefs['jabber_username'])
+          OR empty($fs->prefs['jabber_password']))
             return false;
 
       debug_print("We are configured to use Jabber...");
@@ -125,10 +122,10 @@ class Notifications {
       require_once('class.jabber.php');
       $JABBER = new Jabber;
 
-      $JABBER->server      = $flyspray_prefs['jabber_server'];
-      $JABBER->port        = $flyspray_prefs['jabber_port'];
-      $JABBER->username    = $flyspray_prefs['jabber_username'];
-      $JABBER->password    = $flyspray_prefs['jabber_password'];
+      $JABBER->server      = $fs->prefs['jabber_server'];
+      $JABBER->port        = $fs->prefs['jabber_port'];
+      $JABBER->username    = $fs->prefs['jabber_username'];
+      $JABBER->password    = $fs->prefs['jabber_password'];
       $JABBER->resource    = 'Flyspray';
 
       // get listing of all pending jabber notifications
@@ -248,11 +245,9 @@ class Notifications {
 //       global $notify_text;
 //       global $details_text;
       global $project_prefs;
-      global $flyspray_prefs;
       global $project_id;
 //       global $current_user;
 
-      $flyspray_prefs = $fs->GetGlobalPrefs();
       $project_prefs = $fs->GetProjectPrefs($project_id);
 
       //$subject = stripslashes($subject);
@@ -268,22 +263,22 @@ class Notifications {
       // Define the class
       $mail = new PHPMailer();
 
-      $mail->From = $flyspray_prefs['admin_email'];
-      $mail->Sender = $flyspray_prefs['admin_email'];
+      $mail->From = $fs->prefs['admin_email'];
+      $mail->Sender = $fs->prefs['admin_email'];
       $mail->FromName = 'Flyspray';
       $mail->CharSet = "UTF-8";
 
       // Do we want to use a remote mail server?
-      if (!empty($flyspray_prefs['smtp_server']))
+      if (!empty($fs->prefs['smtp_server']))
       {
          $mail->IsSMTP();
-         $mail->Host = $flyspray_prefs['smtp_server'];
+         $mail->Host = $fs->prefs['smtp_server'];
 
-         if (!empty($flyspray_prefs['smtp_user']))
+         if (!empty($fs->prefs['smtp_user']))
          {
             $mail->SMTPAuth = true;     // turn on SMTP authentication
-            $mail->Username = $flyspray_prefs['smtp_user'];  // SMTP username
-            $mail->Password = $flyspray_prefs['smtp_pass']; // SMTP password
+            $mail->Username = $fs->prefs['smtp_user'];  // SMTP username
+            $mail->Password = $fs->prefs['smtp_pass']; // SMTP password
          }
 
       // Use php's built-in mail() function
@@ -330,7 +325,6 @@ class Notifications {
       global $fs;
       global $notify_text;
       global $details_text;
-      global $flyspray_prefs;
       global $current_user;
 
 
@@ -721,7 +715,6 @@ class Notifications {
 //       global $notify_text;
 //       global $details_text;
 //       global $project_prefs;
-      global $flyspray_prefs;
 //       global $current_user;
 
       $jabber_users = array();
@@ -732,13 +725,13 @@ class Notifications {
          // Get each user's notify prefs
          $user_details = $fs->getUserDetails($val);
 
-         if (($flyspray_prefs['user_notify'] == '1' && $user_details['notify_type'] == '1')
-            OR $flyspray_prefs['user_notify'] == '2')
+         if (($fs->prefs['user_notify'] == '1' && $user_details['notify_type'] == '1')
+            OR $fs->prefs['user_notify'] == '2')
          {
                array_push($email_users, $user_details['email_address']);
 
-         } elseif (($flyspray_prefs['user_notify'] == '1' && $user_details['notify_type'] == '2')
-            OR $flyspray_prefs['user_notify'] == '3')
+         } elseif (($fs->prefs['user_notify'] == '1' && $user_details['notify_type'] == '2')
+            OR $fs->prefs['user_notify'] == '3')
          {
                array_push($jabber_users, $user_details['jabber_id']);
          }
@@ -760,7 +753,6 @@ class Notifications {
 //       global $notify_text;
 //       global $details_text;
       global $project_prefs;
-      global $flyspray_prefs;
       global $current_user;
 
       $jabber_users = array();
@@ -779,13 +771,13 @@ class Notifications {
          // Check for current user
          if ($row['user_id'] != $current_user['user_id'] &&  $row['user_id'] != $task_details['assigned_to'])
          {
-            if (($flyspray_prefs['user_notify'] == '1' && $row['notify_type'] == '1')
-            OR $flyspray_prefs['user_notify'] == '2')
+            if (($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '1')
+            OR $fs->prefs['user_notify'] == '2')
             {
                array_push($email_users, $row['email_address']);
 
-            } elseif (($flyspray_prefs['user_notify'] == '1' && $row['notify_type'] == '2')
-            OR $flyspray_prefs['user_notify'] == '3')
+            } elseif (($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '2')
+            OR $fs->prefs['user_notify'] == '3')
             {
                array_push($jabber_users, $row['jabber_id']);
             }
@@ -802,15 +794,15 @@ class Notifications {
          $user_details = $fs->getUserDetails($task_details['assigned_to']);
 
          // Email
-         if ($flyspray_prefs['user_notify'] == '2'
-            OR ($flyspray_prefs['user_notify'] = '1' && $user_details['notify_type'] == '1')
+         if ($fs->prefs['user_notify'] == '2'
+            OR ($fs->prefs['user_notify'] = '1' && $user_details['notify_type'] == '1')
             && !in_array($user_details['email_address'], $email_users))
          {
             array_push($email_users, $user_details['email_address']);
 
          // Jabber
-         } elseif ($flyspray_prefs['user_notify'] == '3'
-            OR ($flyspray_prefs['user_notify'] = '1' && $user_details['notify_type'] == '2')
+         } elseif ($fs->prefs['user_notify'] == '3'
+            OR ($fs->prefs['user_notify'] = '1' && $user_details['notify_type'] == '2')
             && !in_array($user_details['jabber_id'], $jabber_users))
          {
             array_push($jabber_users, $user_details['jabber_id']);

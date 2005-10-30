@@ -22,9 +22,9 @@ $fs->get_language_pack($lang, 'loginbox');
 
       <span id="links">
         <?php
-        if (!Cookie::has('flyspray_userid') && $flyspray_prefs['anon_reg'] == '1') {
+        if (!Cookie::has('flyspray_userid') && $fs->prefs['anon_reg'] == '1') {
             // If we want to use confirmation codes in the signup form
-            if ($flyspray_prefs['spam_proof'] == '1') {
+            if ($fs->prefs['spam_proof'] == '1') {
                 echo '<a href="' . $fs->CreateURL('register','') . '">' . $language['register'] . '</a>';
 
             }

@@ -35,7 +35,6 @@ function changelog_report()
 {
     global $db; 
     global $fs;
-    global $flyspray_prefs;
     global $reports_text;
     global $project_id;
 
@@ -169,7 +168,6 @@ function age_report()
 {
     global $db;
     global $fs;
-    global $flyspray_prefs;
     global $reports_text;
     global $project_id;
    
@@ -193,9 +191,9 @@ function age_report()
         $last_age = $task_age;
     }
 ?>
-<div class=\"tabentries\">
+<div class="tabentries">
   <p><em>Age Report</em></p>
-  <div class=\"tabentry\">
+  <div class="tabentry">
     <p>
     This age report is a work in progress. At present it only shows a list of
     ages in days, with a count of open tasks in each age. Ultimately this should
@@ -221,7 +219,6 @@ function events_report()
     global $db;
     global $fs;
     global $conf;
-    global $flyspray_prefs;
     global $reports_text;
     global $details_text;
     global $project_id;

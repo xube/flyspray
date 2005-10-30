@@ -38,19 +38,16 @@ if ($baseurl{strlen($baseurl)-1} != '/') {
     $baseurl .= '/';
 }
 
-$fs = new Flyspray;
 $db = new Database;
+if (!$db->dbOpenFast($conf['database'])) {
+    die("Flyspray was unable to connect to the database.  Check your settings in flyspray.conf.php");
+}
+$fs = new Flyspray;
 $be = new Backend;
 
 require_once ( "$basedir/includes/regexp.php" );
 
 session_start();
-
-if (!($res = $db->dbOpenFast($conf['database']))) {
-    die("Flyspray was unable to connect to the database.  Check your settings in flyspray.conf.php");
-}
-
-$flyspray_prefs = $fs->getGlobalPrefs();
 
 // Any "do" mode that accepts a task_id or id field should be added here.
 if (in_array(Req::val('do'), array('details', 'depends', 'modify')))
@@ -77,7 +74,7 @@ if (!isset($project_id)) {
         $project_id = Cookie::val('flyspray_project');
     }
     else {
-        $project_id = $flyspray_prefs['default_project'];
+        $project_id = $fs->prefs['default_project'];
     }
 }
 setcookie('flyspray_project', $project_id, time()+60*60*24*30, '/');
@@ -88,7 +85,7 @@ $proj_exists = $db->Query("SELECT  *
                             WHERE  project_id = ?", array($project_id));
 
 if (!$db->CountRows($proj_exists)) {
-    $fs->redirect("index.php?project=" . $flyspray_prefs['default_project']);
+    $fs->redirect("index.php?project=" . $fs->prefs['default_project']);
 }
 
 $project_prefs = $fs->getProjectPrefs($project_id);

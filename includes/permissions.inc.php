@@ -52,7 +52,6 @@ function tpl_draw_perms($perms)
 // A policy function takes up to 5 arguments :
 //  $user     the current user
 //  $perms    the current permissions
-//  $flyspray the flyspray preferences
 //  $project  the current project prefs
 //  $task     the current task details
 
@@ -86,12 +85,12 @@ function can_close_task($user, $perms, $task)
         || @$perms['close_other_tasks'] == '1';
 }
 
-function can_create_user($perms, $flyspray) {
+function can_create_user($perms) {
     // Make sure that only admins are using this page, unless
     // The application preferences allow anonymous signups
     return @$perms['is_admin'] == '1'
-        || ( $flyspray['spam_proof'] != '1'
-                && $flyspray['anon_reg'] == '1'
+        || ( $fs->prefs['spam_proof'] != '1'
+                && $fs->prefs['anon_reg'] == '1'
                 && !Cookie::has('flyspray_userid')
            );
 }

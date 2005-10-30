@@ -9,7 +9,7 @@
 */
 
 
-$lang = $flyspray_prefs['lang_code'];
+$lang = $fs->prefs['lang_code'];
 $fs->get_language_pack($lang, 'admin');
 
 if (isset($_GET['id']) && $permissions['edit_comments'] == '1')

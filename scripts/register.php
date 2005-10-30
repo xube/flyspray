@@ -3,8 +3,8 @@ $fs->get_language_pack($lang, 'register');
 
 // If the application preferences require the use of
 // confirmation codes, use this script
-if ($flyspray_prefs['spam_proof'] != '1'
-    || $flyspray_prefs['anon_reg'] != '1'
+if ($fs->prefs['spam_proof'] != '1'
+    || $fs->prefs['anon_reg'] != '1'
     || !$COOKIE['flyspray_userid'])
 {
     $fs->Redirect( $fs->CreateURL('error', null) );

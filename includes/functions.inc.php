@@ -7,10 +7,23 @@
    ----------------------------------------------------------
 */
 
-class Flyspray {
-
+class Flyspray
+{
     // Change this for each release.  Don't forget!
     var $version = '0.9.9 (devel)';
+
+    var $prefs   = array();
+
+    function Flyspray()
+    {
+        global $db;
+
+        $res = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
+
+        while ($row = $db->FetchRow($res)) {
+            $$this->prefs[$row['pref_name']] = $row['pref_value'];
+        }
+    }
 
     /** Get translation for specified language and page.  It loads default
       language (en) and then merges with requested one. Thus it makes English
@@ -98,21 +111,6 @@ class Flyspray {
         return false;
     }
 
-    function getGlobalPrefs()
-    {
-        global $db;
-        global $conf;
-
-        $get_prefs    = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
-        $global_prefs = array();
-
-        while ($row = $db->FetchRow($get_prefs)) {
-            $global_prefs[$row['pref_name']] = $row['pref_value'];
-        }
-
-        return $global_prefs;
-    }
-
     function getProjectPrefs($project)
     {
         global $db;
@@ -129,7 +127,6 @@ class Flyspray {
     function GetTaskDetails($task_id)
     {
         global $db;
-        global $flyspray_prefs;
         global $project_prefs;
         global $status_list, $severity_list, $priority_list;
         $this->get_language_pack($lang, 'status');
@@ -137,7 +134,7 @@ class Flyspray {
         $this->get_language_pack($lang, 'priority');
 
 
-       $lang = $flyspray_prefs['lang_code'];
+       $lang = $this->prefs['lang_code'];
 
        $get_details = $db->Query("SELECT t.*, p.*,
                                          c.category_name, c.category_owner, c.parent_id,
@@ -185,10 +182,9 @@ class Flyspray {
     function listUsers($current, $in_project)
     {
         global $db;
-        global $flyspray_prefs;
         global $conf;
 
-        $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
+        $these_groups = explode(" ", $this->prefs['assigned_groups']);
 
         foreach ($these_groups as $key => $val) {
             if (empty($val))
@@ -304,7 +300,6 @@ class Flyspray {
     {
         global $db;
         global $conf;
-        global $flyspray_prefs;
 
         $dateformat = '';
         $format_id  = $extended ? "dateformat_extended" : "dateformat";
@@ -316,7 +311,7 @@ class Flyspray {
         }
 
         if($dateformat == '') {
-            $dateformat = $flyspray_prefs[$format_id];
+            $dateformat = $this->prefs[$format_id];
         }
 
         if($dateformat == '')

@@ -14,7 +14,7 @@ if ($permissions['manage_project'] != '1') {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
-$lang = $flyspray_prefs['lang_code'];
+$lang = $fs->prefs['lang_code'];
 $fs->get_language_pack($lang, 'index');
 $fs->get_language_pack($lang, 'admin');
 $fs->get_language_pack($lang, 'pm');

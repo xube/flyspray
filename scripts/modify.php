@@ -604,7 +604,7 @@ if ($_POST['action'] == 'newtask'
 
 $subject = $modify_text['noticefrom'] . ' Flyspray';
 
-$message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
+$message = "{$register_text['noticefrom']} {$fs->prefs['project_title']}\n
 {$modify_text['addressused']}\n
 {$conf['general']['baseurl']}index.php?do=register&magic=$magic_url \n
 {$modify_text['confirmcodeis']}\n
@@ -646,7 +646,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 // Start of new user self-registration with a confirmation code //
 //////////////////////////////////////////////////////////////////
 
-} elseif ($_POST['action'] == "registeruser" && $flyspray_prefs['anon_reg'] == '1')
+} elseif ($_POST['action'] == "registeruser" && $fs->prefs['anon_reg'] == '1')
 {
 
    // If they filled in all the required fields
@@ -700,7 +700,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
                                           (user_id,
                                           group_id)
                                           VALUES(?, ?)",
-                                          array($user_details['user_id'], $flyspray_prefs['anon_group']));
+                                          array($user_details['user_id'], $fs->prefs['anon_group']));
 
             // Let the user know what just happened
             echo "<div class=\"redirectmessage\"><p><em>{$modify_text['accountcreated']}</em></p>";
@@ -736,8 +736,8 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
 
 } elseif ($_POST['action'] == "newuser"
            && (@$permissions['is_admin'] == '1'
-                OR ($flyspray_prefs['anon_reg'] == '1'
-                    && $flyspray_prefs['spam_proof'] != '1')))
+                OR ($fs->prefs['anon_reg'] == '1'
+                    && $fs->prefs['spam_proof'] != '1')))
 {
 
   // If they filled in all the required fields
@@ -763,7 +763,7 @@ $message = "{$register_text['noticefrom']} {$flyspray_prefs['project_title']}\n
         if (@$permissions['is_admin'] == '1') {
           $group_in = $_POST['group_in'];
         } else {
-          $group_in = $flyspray_prefs['anon_group'];
+          $group_in = $fs->prefs['anon_group'];
         };
 
         $add_user = $db->Query("INSERT INTO {users}
