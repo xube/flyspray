@@ -43,328 +43,327 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
     <div>
       <h2 class="severity<?php echo $task_details['task_severity'];?>">
-        <?php echo 'FS#' . $task_details['task_id'];?> &mdash;
-        <input class="severity<?php echo stripslashes($task_details['task_severity']);?>" type="text" name="item_summary" size="50" maxlength="100"
-            value="<?php echo htmlspecialchars(stripslashes($task_details['item_summary']),ENT_COMPAT,'utf-8');?>" />
-        </h2>
-        <input type="hidden" name="do" value="modify" />
-        <input type="hidden" name="action" value="update" />
-        <input type="hidden" name="task_id" value="<?php echo Get::val('id');?>" />
-        <input type="hidden" name="edit_start_time" value="<?php echo date('U') ?>" />
+      <?php echo 'FS#' . $task_details['task_id'];?> &mdash;
+      <input class="severity<?php echo stripslashes($task_details['task_severity']);?>" type="text" name="item_summary" size="50" maxlength="100"
+          value="<?php echo htmlspecialchars(stripslashes($task_details['item_summary']),ENT_COMPAT,'utf-8');?>" />
+      </h2>
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="update" />
+      <input type="hidden" name="task_id" value="<?php echo Get::val('id');?>" />
+      <input type="hidden" name="edit_start_time" value="<?php echo date('U') ?>" />
 
-        <?php echo $details_text['attachedtoproject'] . ' &mdash; ';?>
-        <select name="attached_to_project">
-          <?php
-          if (@$permissions['global_view'] == '1') {
-              // If the user has permission to view all projects
-              $get_projects = $db->Query("SELECT  * FROM {projects}
-                                           WHERE  project_is_active = '1'
-                                        ORDER BY  project_title");
-          }
-          elseif (Cookie::has('flyspray_userid')) {
-              // or, if the user is logged in
-              $get_projects = $db->Query("SELECT  DISTINCT p.*
-                                            FROM  {users_in_groups} uig
-                                       LEFT JOIN  {groups} g ON uig.group_id = g.group_id, {projects} p
-                                           WHERE  ((uig.user_id = ?  AND g.view_tasks = '1') OR p.others_view = '1')
-                                                  AND p.project_is_active = '1'
-                                        ORDER BY  p.project_title", array($current_user['user_id']));
+      <?php echo $details_text['attachedtoproject'] . ' &mdash; ';?>
+      <select name="attached_to_project">
+        <?php
+        if (@$permissions['global_view'] == '1') {
+            // If the user has permission to view all projects
+            $get_projects = $db->Query("SELECT  * FROM {projects}
+                                         WHERE  project_is_active = '1'
+                                      ORDER BY  project_title");
+        }
+        elseif (Cookie::has('flyspray_userid')) {
+            // or, if the user is logged in
+            $get_projects = $db->Query("SELECT  DISTINCT p.*
+                                          FROM  {users_in_groups} uig
+                                     LEFT JOIN  {groups} g ON uig.group_id = g.group_id, {projects} p
+                                         WHERE  ((uig.user_id = ?  AND g.view_tasks = '1') OR p.others_view = '1')
+                                                AND p.project_is_active = '1'
+                                      ORDER BY  p.project_title", array($current_user['user_id']));
 
-          }
-          else {
-              // Anonymous users
-              $get_projects = $db->Query("SELECT  * FROM {projects}
-                                           WHERE  project_is_active = '1' AND others_view = '1'
-                                        ORDER BY  project_title");
-          }
+        }
+        else {
+            // Anonymous users
+            $get_projects = $db->Query("SELECT  * FROM {projects}
+                                         WHERE  project_is_active = '1' AND others_view = '1'
+                                      ORDER BY  project_title");
+        }
 
-          while ($row = $db->FetchArray($get_projects)) {
-              if ($project_id == $row['project_id']) {
-                  echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
-              } else {
-                  echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
-              }
-          }
-          ?>
-        </select>
+        while ($row = $db->FetchArray($get_projects)) {
+            if ($project_id == $row['project_id']) {
+                echo '<option value="' . $row['project_id'] . '" selected="selected">' . stripslashes($row['project_title']) . '</option>';
+            } else {
+                echo '<option value="' . $row['project_id'] . '">' . stripslashes($row['project_title']) . '</option>';
+            }
+        }
+        ?>
+      </select>
 
-        <div id="fineprint">
-          <?php
-          // Get the user details of the person who opened this item
-          if ($task_details['opened_by']) {
-              $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['opened_by']));
-              list($user_name, $real_name) = $db->FetchArray($get_user_name);
-          } else {
-              $user_name = $details_text['anonymous'];
-          }
+      <div id="fineprint">
+        <?php
+        // Get the user details of the person who opened this item
+        if ($task_details['opened_by']) {
+            $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['opened_by']));
+            list($user_name, $real_name) = $db->FetchArray($get_user_name);
+        } else {
+            $user_name = $details_text['anonymous'];
+        }
 
-          $date_opened = $fs->formatDate($task_details['date_opened'], true);
+        $date_opened = $fs->formatDate($task_details['date_opened'], true);
 
-          echo $details_text['openedby'] . ' ' . $fs->LinkedUserName($task_details['opened_by']) . ' - ' . $date_opened;
+        echo $details_text['openedby'] . ' ' . $fs->LinkedUserName($task_details['opened_by']) . ' - ' . $date_opened;
 
-          if ($task_details['last_edited_by']) {
-              // If it's been edited, get the details
-              $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['last_edited_by']));
-              list($user_name, $real_name) = $db->FetchArray($get_user_name);
+        if ($task_details['last_edited_by']) {
+            // If it's been edited, get the details
+            $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['last_edited_by']));
+            list($user_name, $real_name) = $db->FetchArray($get_user_name);
 
-              $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
+            $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
 
-              echo '<br />' . $details_text['editedby'] . ' ' . $fs->LinkedUserName($task_details['last_edited_by']) . ' - ' . $date_edited;
-          }
-          ?>
-        </div>
+            echo '<br />' . $details_text['editedby'] . ' ' . $fs->LinkedUserName($task_details['last_edited_by']) . ' - ' . $date_edited;
+        }
+        ?>
+      </div>
 
-        <div id="taskfields1">
-          <table class="taskdetails">
-            <tr>
-              <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
-              <td>
-                <select id="tasktype" name="task_type">
-                  <?php
-                  // Get list of task types
-                  $get_tasktypes = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
-                                                WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
-                                             ORDER BY  list_position", array($project_id));
-
-                  while ($row = $db->FetchArray($get_tasktypes)) {
-                      if ($row['tasktype_id'] == $task_details['task_type']) {
-                          echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>";
-                      } else {
-                          echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>";
-                      }
-                  }
-                  ?>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="category"><?php echo $details_text['category'];?></label></td>
-              <td>
-                <select id="category" name="product_category">
-                  <?php
-                  $cat_list = $db->Query("SELECT  category_id, category_name
-                                            FROM  {list_category}
-                                           WHERE  show_in_list = '1' AND parent_id < '1' AND (project_id = '0' OR project_id = ?)
-                                        ORDER BY  list_position", array($project_id));
-
-                  while ($row = $db->FetchArray($cat_list)) {
-                      $category_name = stripslashes($row['category_name']);
-
-                      if ($task_details['product_category'] == $row['category_id']) {
-                          echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
-                      } else {
-                          echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
-                      }
-
-                      $subcat_list = $db->Query("SELECT  category_id, category_name
-                                                  FROM  {list_category}
-                                                 WHERE  show_in_list = '1' AND parent_id = ?
-                                              ORDER BY  list_position", array($row['category_id']));
-
-                      while ($subrow = $db->FetchArray($subcat_list)) {
-                          $subcategory_name = stripslashes($subrow['category_name']);
-                          if ($task_details['product_category'] == $subrow['category_id']) {
-                              echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-                          } else {
-                              echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-                          }
-                      }
-                  }
-                  ?>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="status"><?php echo $details_text['status'];?></label></td>
-              <td>
-                <select id="status" name="item_status">
-                  <?php
-                  // let's get a list of statuses and compare it to the saved one
-                  foreach($status_list as $key => $val) {
-                      if ($task_details['item_status'] == $key) {
-                          echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-                      } else {
-                          echo "<option value=\"$key\">$val</option>\n";
-                      }
-                  }
-                  ?>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
-              <td>
-                <input type="hidden" name="old_assigned" value="<?php echo $task_details['assigned_to'];?>" />
-                <select id="assignedto" name="assigned_to">
-                  <?php
-                  // see if it's been assigned
-                  if ($task_details['assigned_to'] == "0") {
-                      echo "<option value=\"0\" selected=\"selected\">{$details_text['noone']}</option>\n";
-                  } else {
-                      echo "<option value=\"0\">{$details_text['noone']}</option>\n";
-                  }
-
-                  $fs->ListUsers($project_id, $task_details['assigned_to']);
-                  ?>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
-              <td>
-                <select id="os" name="operating_system">
-                  <?php
-                  // Get list of operating systems
-                  $get_os = $db->Query("SELECT  os_id, os_name
-                                          FROM  {list_os}
-                                         WHERE  (project_id = ?  OR project_id = '0') AND show_in_list = '1'
-                                      ORDER BY  list_position", array($project_id));
-
-                  while ($row = $db->FetchArray($get_os)) {
-                      if ($row['os_id'] == $task_details['operating_system']) {
-                          echo "<option value=\"{$row['os_id']}\" selected=\"selected\">{$row['os_name']}</option>";
-                      } else {
-                          echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
-                      }
-                  }
-                  ?>
-                </select>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <div id="taskfields2">
-          <table class="taskdetails">
-            <tr>
-              <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
-              <td>
-                <select id="severity" name="task_severity">
-                  <?php
-                  // Get list of severities
-                  foreach($severity_list as $key => $val) {
-                      if ($task_details['task_severity'] == $key) {
-                          echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-                      } else {
-                          echo "<option value=\"$key\">$val</option>\n";
-                      }
-                  }
-                  ?>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
-              <td>
-                <select id="priority" name="task_priority">
-                  <?php
-                  // Get list of priorities
-                  foreach($priority_list as $key => $val) {
-                      if ($task_details['task_priority'] == $key) {
-                          echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-                      } else {
-                          echo "<option value=\"$key\">$val</option>\n";
-                      }
-                  }
-                  ?>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label><span id="reportedver"></span></td>
-              <td>
-                <?php echo $task_details['reported_version_name']; ?>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
-              <td>
-                <select id="dueversion" name="closedby_version">
-                  <?php
-                  // if we don't have a fix-it version, show undecided
-                  echo "<option value=\"\">{$details_text['undecided']}</option>\n";
-
-                  $get_version = $db->Query("SELECT  version_id, version_name
-                                               FROM  {list_version}
-                                              WHERE  show_in_list = '1' AND version_tense = '3' AND (project_id = '0' OR project_id = ?)
-                                           ORDER BY  list_position", array($project_id,));
-
-                  while ($row = $db->FetchArray($get_version)) {
-                      if ($row['version_id'] == $task_details['closedby_version']) {
-                          echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
-                      } else {
-                          echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
-                      }
-                  }
-                  ?>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="duedate"><?php echo $details_text['duedate'];?></label></td>
-              <td id="duedate">
+      <div id="taskfields1">
+        <table class="taskdetails">
+          <tr>
+            <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
+            <td>
+              <select id="tasktype" name="task_type">
                 <?php
-                if (!empty($task_details['due_date']) ) {
-                    $due_date = $fs->formatDate($task_details['due_date'], false);
-                    $view_date = $fs->formatDate($task_details['due_date'], false);
-                } else {
-                    $due_date = '0';
-                    $view_date = $details_text['undecided'];
+                // Get list of task types
+                $get_tasktypes = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
+                                              WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
+                                           ORDER BY  list_position", array($project_id));
+
+                while ($row = $db->FetchArray($get_tasktypes)) {
+                    if ($row['tasktype_id'] == $task_details['task_type']) {
+                        echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>";
+                    } else {
+                        echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>";
+                    }
                 }
                 ?>
-                <input id="duedatehidden" type="hidden" name="due_date" value="<?php echo $due_date;?>" />
-                <span id="duedateview"><?php echo $view_date;?></span> <small>|</small>
-                <a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $details_text['undecided']?>'">X</a>
-                <script type="text/javascript">
-                  Calendar.setup({
-                     inputField  : "duedatehidden", // ID of the input field
-                     ifFormat    : "%d-%b-%Y",      // the date format
-                     displayArea : "duedateview",   // The display field
-                     daFormat    : "%d-%b-%Y",
-                     button      : "duedateview"    // ID of the button
-                  });
-                </script>
-              </td>
-            </tr>
-            <tr>
-              <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
-              <td>
-                <select id="percent" name="percent_complete">
-                  <option value="0" <?php if ($task_details['percent_complete'] == '0') { echo 'selected="selected"';};?>>0%</option>
-                  <option value="10" <?php if ($task_details['percent_complete'] == '10') { echo 'selected="selected"';};?>>10%</option>
-                  <option value="20" <?php if ($task_details['percent_complete'] == '20') { echo 'selected="selected"';};?>>20%</option>
-                  <option value="30" <?php if ($task_details['percent_complete'] == '30') { echo 'selected="selected"';};?>>30%</option>
-                  <option value="40" <?php if ($task_details['percent_complete'] == '40') { echo 'selected="selected"';};?>>40%</option>
-                  <option value="50" <?php if ($task_details['percent_complete'] == '50') { echo 'selected="selected"';};?>>50%</option>
-                  <option value="60" <?php if ($task_details['percent_complete'] == '60') { echo 'selected="selected"';};?>>60%</option>
-                  <option value="70" <?php if ($task_details['percent_complete'] == '70') { echo 'selected="selected"';};?>>70%</option>
-                  <option value="80" <?php if ($task_details['percent_complete'] == '80') { echo 'selected="selected"';};?>>80%</option>
-                  <option value="90" <?php if ($task_details['percent_complete'] == '90') { echo 'selected="selected"';};?>>90%</option>
-                  <option value="100" <?php if ($task_details['percent_complete'] == '100') { echo 'selected="selected"';};?>>100%</option>
-                </select>
-              </td>
-            </tr>
-          </table>
-        </div>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="category"><?php echo $details_text['category'];?></label></td>
+            <td>
+              <select id="category" name="product_category">
+                <?php
+                $cat_list = $db->Query("SELECT  category_id, category_name
+                                          FROM  {list_category}
+                                         WHERE  show_in_list = '1' AND parent_id < '1' AND (project_id = '0' OR project_id = ?)
+                                      ORDER BY  list_position", array($project_id));
 
-        <div id="taskdetailsfull">
-          <label for="details"><?php echo $details_text['details'];?></label>
-          <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo htmlspecialchars(stripslashes($task_details['detailed_desc']));?></textarea>
-          <table class="taskdetails">
-            <tr>
-              <td> </td>
-            </tr>
-            <tr>
-              <td class="buttons" colspan="2">
-                <input class="adminbutton" type="submit" accesskey="s" name="buSubmit" value="<?php echo $details_text['savedetails'];?>" />
-                <input class="adminbutton" type="reset" name="buReset" value="<?php echo $details_text['reset'];?>" />
-              </td>
-            </tr>
-          </table>
-        </div>
+                while ($row = $db->FetchArray($cat_list)) {
+                    $category_name = stripslashes($row['category_name']);
+
+                    if ($task_details['product_category'] == $row['category_id']) {
+                        echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
+                    } else {
+                        echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
+                    }
+
+                    $subcat_list = $db->Query("SELECT  category_id, category_name
+                                                FROM  {list_category}
+                                               WHERE  show_in_list = '1' AND parent_id = ?
+                                            ORDER BY  list_position", array($row['category_id']));
+
+                    while ($subrow = $db->FetchArray($subcat_list)) {
+                        $subcategory_name = stripslashes($subrow['category_name']);
+                        if ($task_details['product_category'] == $subrow['category_id']) {
+                            echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
+                        } else {
+                            echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
+                        }
+                    }
+                }
+                ?>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="status"><?php echo $details_text['status'];?></label></td>
+            <td>
+              <select id="status" name="item_status">
+                <?php
+                // let's get a list of statuses and compare it to the saved one
+                foreach($status_list as $key => $val) {
+                    if ($task_details['item_status'] == $key) {
+                        echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+                    } else {
+                        echo "<option value=\"$key\">$val</option>\n";
+                    }
+                }
+                ?>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
+            <td>
+              <input type="hidden" name="old_assigned" value="<?php echo $task_details['assigned_to'];?>" />
+              <select id="assignedto" name="assigned_to">
+                <?php
+                // see if it's been assigned
+                if ($task_details['assigned_to'] == "0") {
+                    echo "<option value=\"0\" selected=\"selected\">{$details_text['noone']}</option>\n";
+                } else {
+                    echo "<option value=\"0\">{$details_text['noone']}</option>\n";
+                }
+
+                $fs->ListUsers($project_id, $task_details['assigned_to']);
+                ?>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
+            <td>
+              <select id="os" name="operating_system">
+                <?php
+                // Get list of operating systems
+                $get_os = $db->Query("SELECT  os_id, os_name
+                                        FROM  {list_os}
+                                       WHERE  (project_id = ?  OR project_id = '0') AND show_in_list = '1'
+                                    ORDER BY  list_position", array($project_id));
+
+                while ($row = $db->FetchArray($get_os)) {
+                    if ($row['os_id'] == $task_details['operating_system']) {
+                        echo "<option value=\"{$row['os_id']}\" selected=\"selected\">{$row['os_name']}</option>";
+                    } else {
+                        echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
+                    }
+                }
+                ?>
+              </select>
+            </td>
+          </tr>
+        </table>
       </div>
-    </form>
-  </div>
+
+      <div id="taskfields2">
+        <table class="taskdetails">
+          <tr>
+            <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
+            <td>
+              <select id="severity" name="task_severity">
+                <?php
+                // Get list of severities
+                foreach($severity_list as $key => $val) {
+                    if ($task_details['task_severity'] == $key) {
+                        echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+                    } else {
+                        echo "<option value=\"$key\">$val</option>\n";
+                    }
+                }
+                ?>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
+            <td>
+              <select id="priority" name="task_priority">
+                <?php
+                // Get list of priorities
+                foreach($priority_list as $key => $val) {
+                    if ($task_details['task_priority'] == $key) {
+                        echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
+                    } else {
+                        echo "<option value=\"$key\">$val</option>\n";
+                    }
+                }
+                ?>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label><span id="reportedver"></span></td>
+            <td>
+              <?php echo $task_details['reported_version_name']; ?>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
+            <td>
+              <select id="dueversion" name="closedby_version">
+                <?php
+                // if we don't have a fix-it version, show undecided
+                echo "<option value=\"\">{$details_text['undecided']}</option>\n";
+
+                $get_version = $db->Query("SELECT  version_id, version_name
+                                             FROM  {list_version}
+                                            WHERE  show_in_list = '1' AND version_tense = '3' AND (project_id = '0' OR project_id = ?)
+                                         ORDER BY  list_position", array($project_id,));
+
+                while ($row = $db->FetchArray($get_version)) {
+                    if ($row['version_id'] == $task_details['closedby_version']) {
+                        echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>\n";
+                    } else {
+                        echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
+                    }
+                }
+                ?>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="duedate"><?php echo $details_text['duedate'];?></label></td>
+            <td id="duedate">
+              <?php
+              if (!empty($task_details['due_date']) ) {
+                  $due_date = $fs->formatDate($task_details['due_date'], false);
+                  $view_date = $fs->formatDate($task_details['due_date'], false);
+              } else {
+                  $due_date = '0';
+                  $view_date = $details_text['undecided'];
+              }
+              ?>
+              <input id="duedatehidden" type="hidden" name="due_date" value="<?php echo $due_date;?>" />
+              <span id="duedateview"><?php echo $view_date;?></span> <small>|</small>
+              <a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $details_text['undecided']?>'">X</a>
+              <script type="text/javascript">
+                Calendar.setup({
+                   inputField  : "duedatehidden", // ID of the input field
+                   ifFormat    : "%d-%b-%Y",      // the date format
+                   displayArea : "duedateview",   // The display field
+                   daFormat    : "%d-%b-%Y",
+                   button      : "duedateview"    // ID of the button
+                });
+              </script>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
+            <td>
+              <select id="percent" name="percent_complete">
+                <option value="0" <?php if ($task_details['percent_complete'] == '0') { echo 'selected="selected"';};?>>0%</option>
+                <option value="10" <?php if ($task_details['percent_complete'] == '10') { echo 'selected="selected"';};?>>10%</option>
+                <option value="20" <?php if ($task_details['percent_complete'] == '20') { echo 'selected="selected"';};?>>20%</option>
+                <option value="30" <?php if ($task_details['percent_complete'] == '30') { echo 'selected="selected"';};?>>30%</option>
+                <option value="40" <?php if ($task_details['percent_complete'] == '40') { echo 'selected="selected"';};?>>40%</option>
+                <option value="50" <?php if ($task_details['percent_complete'] == '50') { echo 'selected="selected"';};?>>50%</option>
+                <option value="60" <?php if ($task_details['percent_complete'] == '60') { echo 'selected="selected"';};?>>60%</option>
+                <option value="70" <?php if ($task_details['percent_complete'] == '70') { echo 'selected="selected"';};?>>70%</option>
+                <option value="80" <?php if ($task_details['percent_complete'] == '80') { echo 'selected="selected"';};?>>80%</option>
+                <option value="90" <?php if ($task_details['percent_complete'] == '90') { echo 'selected="selected"';};?>>90%</option>
+                <option value="100" <?php if ($task_details['percent_complete'] == '100') { echo 'selected="selected"';};?>>100%</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="taskdetailsfull">
+        <label for="details"><?php echo $details_text['details'];?></label>
+        <textarea id="details" name="detailed_desc" cols="70" rows="10"><?php echo htmlspecialchars(stripslashes($task_details['detailed_desc']));?></textarea>
+        <table class="taskdetails">
+          <tr>
+            <td> </td>
+          </tr>
+          <tr>
+            <td class="buttons" colspan="2">
+              <input class="adminbutton" type="submit" accesskey="s" name="buSubmit" value="<?php echo $details_text['savedetails'];?>" />
+              <input class="adminbutton" type="reset" name="buReset" value="<?php echo $details_text['reset'];?>" />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </form>
 </div>
 <?php
 // }}}
