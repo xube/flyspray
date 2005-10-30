@@ -681,7 +681,7 @@ elseif (Post::val('action') == "newproject" && $permissions['is_admin'] == '1') 
         $args = array_fill(0, count($cols), '1');
         array_unshift($args, 'Project Managers',
                 'Permission to do anything related to this project.',
-                $db->emptyToZero($newproject['project_id']));
+                intval($newproject['project_id']));
             
         $add_group = $db->Query("INSERT INTO  {groups}
                                               ( group_name, group_desc, belongs_to_project,
@@ -1016,12 +1016,12 @@ elseif (Post::val('action') == "add_category"
                                 show_in_list, category_owner, parent_id)
                                 VALUES (?, ?, ?, ?, ?, ?)",
                         array(
-			$db->emptyToZero(Post::val('project_id')),
+			Post::val('project_id', 0),
 			Post::val('list_name'),
                         Post::val('list_position'),
                         '1',
-                        $db->emptyToZero(Post::val('category_owner')),
-                        $db->emptyToZero(Post::val('parent_id'))));
+                        Post::val('category_owner', 0),
+                        Post::val('parent_id', 0)));
 
       $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
       $fs->redirect(Post::val('prev_page'));

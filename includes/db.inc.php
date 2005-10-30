@@ -56,14 +56,6 @@ class Database
         return $arr;
     }
 
-    /** Replace empty values with 0. Useful when inserting values from
-      checkboxes.
-     */
-    function emptyToZero($arg)
-    {
-        return empty($arg) ? 0 : $arg;
-    }
-
     function dbExec($sql, $inputarr=false, $numrows=-1, $offset=-1)
     {
         // auto add $dbprefix where we have {table}

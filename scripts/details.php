@@ -1296,7 +1296,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                     } else {
                         $result = $db->Query("SELECT version_name
                                 FROM {list_version}
-                                WHERE version_id = ?", array($db->emptyToZero($oldvalue)));
+                                WHERE version_id = ?", array(intval($oldvalue)));
                         list($oldvalue) = $db->FetchRow($result);
                     }
                     if ($newvalue == '0') {
@@ -1304,7 +1304,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                     } else {
                         $result = $db->Query("SELECT version_name
                                 FROM {list_version}
-                                WHERE version_id = ?", array($db->emptyToZero($newvalue)));
+                                WHERE version_id = ?", array(intval($newvalue)));
                         list($newvalue) = $db->FetchRow($result);
                     }
                     break;
