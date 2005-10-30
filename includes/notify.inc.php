@@ -253,7 +253,7 @@ class Notifications {
       //$body = stripslashes($body);
       $body = str_replace('&amp;', '&', $body);
 
-      if (empty($to) OR $to == $_COOKIE['flyspray_userid'])
+      if (empty($to) OR $to == Cookie::val('flyspray_userid'))
          return;
 
       // Get the new email class
@@ -788,7 +788,7 @@ class Notifications {
       };
 
       // Now we need to get the person assigned to this task, and add them to the correct address list
-      if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $_COOKIE['flyspray_userid'])
+      if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != Cookie::val('flyspray_userid'))
       {
          $user_details = $fs->getUserDetails($task_details['assigned_to']);
 

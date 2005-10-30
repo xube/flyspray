@@ -29,22 +29,21 @@ class Flyspray
       language (en) and then merges with requested one. Thus it makes English
       messages available even if translation is not present.
      */
-    function get_language_pack($module)
+    function get_language_pack($module) // {{{
     {
-        global $basedir;
-
-        if ($module == 'functions') {
+        if ($module == 'functions')
             $module .= '.inc';
-        }
 
         $lang     = $this->prefs['lang_code'];
+        $basedir  = dirname(dirname(__FILE__));
         $before   = get_defined_vars();
+
         require("$basedir/lang/en/$module.php");
         $after_en = get_defined_vars();
         $new_var  = array_keys(array_diff($after_en, $before));
 
-        if (isset($new_var[1])) {
-            list(, $new_var_name) = $new_var;
+        if ($lang != 'en' && isset($new_var[1])) {
+            $new_var_name   = $new_var[1];
             $new_var['en']  = $$new_var_name;
             @include("$basedir/lang/$lang/$module.php");
             $new_var[$lang] = $$new_var_name;
@@ -53,11 +52,11 @@ class Flyspray
                 ${$new_var_name}[$key] = $val;
             }
         }
-    }
+    } // }}}
 
     /**   Redirects the browser to the page in $url
      */
-    function Redirect($url)
+    function Redirect($url) // {{{
     {
         @ob_clean();
         header('Location: ' . $url);
@@ -79,7 +78,7 @@ class Flyspray
 </html>
 <?php
         exit;
-    }
+    } // }}}
 
     /** Test to see if user resubmitted a form.
       Checks only newtask and addcomment actions.
@@ -100,8 +99,8 @@ class Flyspray
 
         $requestarray = array_merge(array_keys($_POST), array_values($_POST));
 
-        if (isset($_POST['do']) && $_POST['do']=='modify'
-                and preg_match('/^newtask|addcomment$/',$_POST['action']))
+        if (Post::val('do') == 'modify' and preg_match('/^newtask|addcomment$/',
+                    Post::val('action')))
         {
             $currentrequest = md5(join(':', $requestarray));
             if (!empty($_SESSION['requests_hash'][$currentrequest])) {
@@ -356,7 +355,7 @@ class Flyspray
 
         $db->Query("INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                                 VALUES(?, ?, ?, ?, ?, ?, ?)",
-                array($task, $db->emptyToZero($_COOKIE['flyspray_userid']), date('U'), $type, $field, $oldvalue, $newvalue));
+                array($task, Cookie::val('flyspray_userid', 0), date('U'), $type, $field, $oldvalue, $newvalue));
     }
 
 
