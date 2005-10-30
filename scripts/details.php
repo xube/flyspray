@@ -204,7 +204,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                       echo "<option value=\"0\">{$details_text['noone']}</option>\n";
                   }
 
-                  $fs->ListUsers($task_details['assigned_to'], $project_id);
+                  $fs->ListUsers($project_id, $task_details['assigned_to']);
                   ?>
                 </select>
               </td>
@@ -314,7 +314,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                 ?>
                 <input id="duedatehidden" type="hidden" name="due_date" value="<?php echo $due_date;?>" />
                 <span id="duedateview"><?php echo $view_date;?></span> <small>|</small>
-                <a href="#" onClick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $details_text['undecided']?>'">X</a>
+                <a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $details_text['undecided']?>'">X</a>
                 <script type="text/javascript">
                   Calendar.setup({
                      inputField  : "duedatehidden", // ID of the input field
@@ -1075,7 +1075,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
     <p class="admin">
       <?php echo $details_text['addusertolist'];?>
       <select class="adminlist" name="user_id">
-        <?php $fs->listUsers($novar, $project_id); ?>
+        <?php $fs->listUsers($project_id); ?>
       </select>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="add_notification" />

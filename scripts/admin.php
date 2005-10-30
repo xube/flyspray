@@ -838,7 +838,7 @@ elseif ($area == 'cat'): // {{{
             <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
             <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
               <option value=""><?php echo $admin_text['selectowner'];?></option>
-              <?php $fs->listUsers($row['category_owner'], 0); ?>
+              <?php $fs->listUsers(0, $row['category_owner']); ?>
             </select>
           </td>
           <?php if ($row['used_in_tasks'] == 0 and $get_subcategories->RowCount() < 1): ?>
@@ -875,7 +875,7 @@ elseif ($area == 'cat'): // {{{
             <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
             <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
               <option value=""><?php echo $admin_text['selectowner'];?></option>
-              <?php $fs->listUsers($subrow['category_owner'], 0); ?>
+              <?php $fs->listUsers(0, $subrow['category_owner']); ?>
             </select>
           </td>
           <?php if ($subrow['used_in_tasks'] == 0): ?>
@@ -924,7 +924,7 @@ elseif ($area == 'cat'): // {{{
             <label for="categoryownernew" ><?php echo $admin_text['owner'];?></label>
             <select id="categoryownernew" name="category_owner">
               <option value=""><?php echo $admin_text['selectowner'];?></option>
-              <?php $fs->listUsers($novar, 0); ?>
+              <?php $fs->listUsers(0); ?>
             </select>
           </td>
           <td colspan="2" title="<?php echo $admin_text['categoryparenttip'];?>">

@@ -318,7 +318,7 @@ if (Get::val('project') !== '0'
 
       <input id="duedatehidden" type="hidden" name="date" value="<?php echo $due_date;?>" />
       <span id="duedateview"><?php echo $show_date;?></span> <small>|</small>
-      <a href="#" onClick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $index_text['selectduedate']?>'">X</a>
+      <a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $index_text['selectduedate']?>'">X</a>
      
       <script type="text/javascript">
          Calendar.setup({

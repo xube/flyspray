@@ -8,8 +8,6 @@
 
 include_once(dirname(__FILE__).'/header.php');
 
-$this_page = htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES);
-
 // Background daemon that does scheduled reminders
 if ($conf['general']['reminder_daemon'] == '1') {
     $fs->startReminderDaemon();
@@ -34,7 +32,7 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
             $db->Query("UPDATE  {users}
                            SET  last_search = ?
                          WHERE  user_id = ?",
-                    array($this_page, $user_id)
+                    array(htmlspecialchars($_SERVER['REQUEST_URI']), $user_id)
             );
         }
     }
@@ -259,12 +257,12 @@ if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
 }
 
 if (isset($_SESSION['ERROR'])) {
-    echo '<div id="errorbar" onClick="this.style.display = \'none\'">' . $_SESSION['ERROR'] . '</div>';
+    echo '<div id="errorbar" onclick="this.style.display = \'none\'">' . $_SESSION['ERROR'] . '</div>';
     unset($_SESSION['ERROR']);
 }
 
 if (isset($_SESSION['SUCCESS'])) {
-    echo '<div id="successbar" onClick="this.style.display = \'none\'">' . $_SESSION['SUCCESS'] . '</div>';
+    echo '<div id="successbar" onclick="this.style.display = \'none\'">' . $_SESSION['SUCCESS'] . '</div>';
     unset($_SESSION['SUCCESS']);
 }
 ?>

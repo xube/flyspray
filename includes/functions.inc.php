@@ -178,7 +178,7 @@ class Flyspray
     // }}}
 
     // This function generates a query of users for the "Assigned To" list
-    function listUsers($current, $in_project) // {{{
+    function listUsers($in_project, $current=null) // {{{
     {
         global $db;
         global $conf;
@@ -214,11 +214,11 @@ class Flyspray
             echo "</optgroup>\n";
         }
 
-        if ($in_project <= '0')
-            continue;
+        if (!$in_project)
+            return;
 
         // Now, we get the users from groups in the current project
-        $get_group_details = $db->Query("SELECT * FROM {groups} WHERE belongs_to_project = ?", array($in_project));
+        $get_group_details = $db->Query("SELECT group_id, group_name FROM {groups} WHERE belongs_to_project = ?", array($in_project));
         while ($group_details = $db->FetchArray($get_group_details)) {
             // Check that there is a user in the selected group prior to display
             $check_group = $db->Query("SELECT * FROM {users_in_groups} WHERE group_id = ?", array($group_details['group_id']));

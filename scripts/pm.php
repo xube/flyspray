@@ -63,7 +63,7 @@ if     ($area == 'prefs'): // {{{
           <td>
             <select id="defaultcatowner" name="default_cat_owner">
               <option value=""><?php echo $admin_text['noone'];?></option>
-              <?php $fs->listUsers($project_prefs['default_cat_owner'], $project_id); ?>
+              <?php $fs->listUsers($project_id, $project_prefs['default_cat_owner']); ?>
             </select>
           </td>
         </tr>
@@ -661,7 +661,7 @@ elseif ($area == 'cat'): // {{{
             <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
             <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
               <option value=""><?php echo $admin_text['selectowner'];?></option>
-              <?php $fs->listUsers($row['category_owner'], $project_id); ?>
+              <?php $fs->listUsers($project_id, $row['category_owner']); ?>
             </select>
           </td>
           <?php if ($row['used_in_tasks'] == 0 and $get_subcategories->RowCount() < 1): ?>
@@ -698,7 +698,7 @@ elseif ($area == 'cat'): // {{{
             <label for="categoryowner<?php echo $countlines; ?>"><?php echo $admin_text['owner'];?></label>
             <select id="categoryowner<?php echo $countlines; ?>" name="category_owner[]">
               <option value=""><?php echo $admin_text['selectowner'];?></option>
-              <?php $fs->listUsers($subrow['category_owner'], $project_id); ?>
+              <?php $fs->listUsers($project_id, $subrow['category_owner']); ?>
             </select>
           </td>
           <?php if ($subrow['used_in_tasks'] == 0): ?>
@@ -745,7 +745,7 @@ elseif ($area == 'cat'): // {{{
             <label for="categoryownernew" ><?php echo $admin_text['owner'];?></label>
             <select id="categoryownernew" name="category_owner">
               <option value=""><?php echo $admin_text['selectowner'];?></option>
-              <?php $fs->listUsers($novar, $project_id); ?>
+              <?php $fs->listUsers($project_id); ?>
             </select>
           </td>
           <td colspan="2" title="<?php echo $admin_text['categoryparenttip'];?>">
