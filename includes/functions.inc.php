@@ -690,7 +690,7 @@ class Flyspray
         $link  = sprintf('<a href="%s" title="%s">%s</a>', $this->CreateURL('details', $id), $title, $text);
 
         if ($details['is_closed'] == '1') {
-            $link = "<strike>&nbsp;".$link."&nbsp;</strike>";
+            $link = "<del>&nbsp;".$link."&nbsp;</del>";
         }
         return $link;
     }
