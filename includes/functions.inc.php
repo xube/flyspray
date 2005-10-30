@@ -658,14 +658,13 @@ class Flyspray {
                 && $conf['general']['address_rewriting'] == '1')
         {
             switch ($type) {
+                case 'depends':   return $url . 'task/' .  $arg1 . '/' . $type;
                 case 'details':   return $url . 'task/' . $arg1;
+                case 'edittask':  return $url . 'task/' .  $arg1 . '/edit';
                 case 'pm':        return $url . 'pm/proj' . $arg2 . '/' . $arg1;
 
                 case 'admin':
                 case 'user':      return $url . $type . '/' . $arg1;
-
-                case 'depends':
-                case 'edittask':  return $url . 'task/' .  $arg1 . '/' . $type;
 
                 case 'newgroup':
                 case 'newtask':   return $url . $type .  '/proj' . $arg1;
