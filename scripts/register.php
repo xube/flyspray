@@ -5,7 +5,7 @@ $fs->get_language_pack('register');
 // confirmation codes, use this script
 if ($fs->prefs['spam_proof'] != '1'
     || $fs->prefs['anon_reg'] != '1'
-    || !Cookie::has('flyspray_userid'))
+    || Cookie::has('flyspray_userid'))
 {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
