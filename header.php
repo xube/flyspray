@@ -13,10 +13,6 @@
 $basedir = dirname(__FILE__);
 require_once ( "$basedir/includes/fix.inc.php" );
 require_once ( "$basedir/includes/class.gpc.php" );
-require_once ( "$basedir/includes/functions.inc.php" );
-require_once ( "$basedir/includes/db.inc.php" );
-require_once ( "$basedir/includes/backend.inc.php" );
-require_once ( "$basedir/includes/markdown.php" );
 
 // Change this line if you move flyspray.conf.php elsewhere
 $conf_file = $basedir . DIRECTORY_SEPARATOR . 'flyspray.conf.php';
@@ -27,16 +23,11 @@ if (count($conf) == 0 || !isset($conf['general']['baseurl'])) {
     header('Location: setup/index.php');
     exit;
 }
+$baseurl = preg_replace('!//$!', '/', $conf['general']['baseurl'].'/');
 
-require_once ( $conf['general']['adodbpath'] );
-
-// Set useful values from the config file.
-$baseurl    = $conf['general']['baseurl'];
-$cookiesalt = $conf['general']['cookiesalt'];
-
-if ($baseurl{strlen($baseurl)-1} != '/') {
-    $baseurl .= '/';
-}
+require_once ( "$basedir/includes/db.inc.php" );
+require_once ( "$basedir/includes/functions.inc.php" );
+require_once ( "$basedir/includes/backend.inc.php" );
 
 $db = new Database;
 if (!$db->dbOpenFast($conf['database'])) {
@@ -46,8 +37,6 @@ $fs = new Flyspray;
 $be = new Backend;
 
 require_once ( "$basedir/includes/regexp.php" );
-
-session_start();
 
 // Any "do" mode that accepts a task_id or id field should be added here.
 if (in_array(Req::val('do'), array('details', 'depends', 'modify')))
@@ -64,7 +53,7 @@ if (in_array(Req::val('do'), array('details', 'depends', 'modify')))
 
 // Determine which project we want to see
 if (!isset($project_id)) {
-    if (Req::val('project', '0') != '0' && Req::val('project')) {
+    if (Req::val('project')) {
         $project_id = Req::val('project');
     }
     elseif (Req::has('project_id')) {

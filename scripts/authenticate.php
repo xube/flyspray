@@ -45,7 +45,7 @@ if (Req::has('user_name') && Req::has('password')) {
 
         // Set a couple of cookies
         $fs->setcookie('flyspray_userid',   $user['user_id'], $cookie_time);
-        $fs->setcookie('flyspray_passhash', crypt($user['user_pass'], $cookiesalt), $cookie_time);
+        $fs->setcookie('flyspray_passhash', crypt($user['user_pass'], $conf['general']['cookiesalt']), $cookie_time);
 
         // If the user had previously requested a password change, remove the magic url
         $remove_magic = $db->Query(

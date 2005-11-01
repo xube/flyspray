@@ -429,7 +429,7 @@ elseif (Post::val('action') == 'sendcode')
             $randval = mt_rand();
 
             // Convert those numbers to a seemingly random string using crypt
-            $confirm_code = crypt($randval, $cookiesalt);
+            $confirm_code = crypt($randval, $conf['general']['cookiesalt']);
 
             // Generate a looonnnnggg random string to send as an URL to complete this registration
             $magic_url = md5(microtime());
@@ -796,7 +796,7 @@ elseif (Post::val('action') == "edituser"
 
                 // If the user is changing their password, better update their cookie hash
                 if (Cookie::val('flyspray_userid') == Post::val('user_id')) {
-                    $fs->setcookie('flyspray_passhash', crypt($new_pass_hash, $cookiesalt), time()+60*60*24*30);
+                    $fs->setcookie('flyspray_passhash', crypt($new_pass_hash, $conf['general']['cookiesalt']), time()+60*60*24*30);
                 }
             } else {
                 echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passnomatch']}</em></p>";

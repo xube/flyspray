@@ -17,6 +17,7 @@ class Flyspray
     function Flyspray() // {{{
     {
         global $db;
+        session_start();
 
         $res = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
 

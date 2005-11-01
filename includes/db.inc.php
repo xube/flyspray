@@ -7,6 +7,7 @@
    ---------------------------------------
 */
 
+require_once ( $conf['general']['adodbpath'] );
 
 class Database
 {
@@ -87,33 +88,34 @@ class Database
 
     function CountRows($result)
     {
-        $num_rows = $result->RecordCount();
-        return $num_rows;
+        return $result->RecordCount();
     }
 
     function FetchRow(&$result)
     {
-        $row = $result->FetchRow();
-        return $row;
+        return $result->FetchRow();
     }
 
     /* compatibility functions */
     function Query($sql, $inputarr=false, $numrows=-1, $offset=-1)
     {
-        $result = $this->dbExec($sql, $inputarr, $numrows, $offset);
-        return $result;
+        return $this->dbExec($sql, $inputarr, $numrows, $offset);
     }
 
     function FetchArray(&$result)
     {
-        $row = $this->FetchRow($result);
-        return $row;
+        return $this->FetchRow($result);
     }
 
     function FetchOne(&$result)
     {
         $row = $this->FetchArray($result);
         return (count($row) > 0 ? $row[0] : null);
+    }
+
+    function FetchAllArray(&$result)
+    {
+        return $result->GetArray();
     }
 
     // End of Database Class

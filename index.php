@@ -6,18 +6,16 @@
    to see what they have access to.
 */
 
-include_once(dirname(__FILE__).'/header.php');
+require_once(dirname(__FILE__).'/header.php');
+require_once(dirname(__FILE__).'/includes/class.tpl.php');
+require_once(dirname(__FILE__).'/includes/permissions.inc.php');
 
 // Background daemon that does scheduled reminders
 if ($conf['general']['reminder_daemon'] == '1') {
     $fs->startReminderDaemon();
 }
 
-// Get the translation for the wrapper page (this page)
-$fs->get_language_pack('main');
-setlocale(LC_ALL, str_replace('-','_',$language['locale']));
-
-// Get user permissions
+/* permission stuff */
 if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     $user_id = Cookie::val('flyspray_userid');
 
@@ -32,22 +30,28 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
             $db->Query("UPDATE  {users}
                            SET  last_search = ?
                          WHERE  user_id = ?",
-                    array(htmlspecialchars($_SERVER['REQUEST_URI']), $user_id)
+                    array($_SERVER['REQUEST_URI'], $user_id)
             );
+            break;
         }
     }
 
     $current_user = $fs->getUserDetails($user_id);
-    $permissions  = $fs->getPermissions($current_user['user_id'], $project_id);
+    $permissions  = $fs->getPermissions($user_id, $project_id);
+
+    // Check that the user hasn't spoofed the cookie contents somehow
+    // And that their account/group are enabled
+    if (Cookie::val('flyspray_passhash') !=
+            crypt($current_user['user_pass'], $conf['general']['cookiesalt'])
+            || $permissions['account_enabled'] != '1'
+            || $permissions['group_open'] != '1')
+    {
+        $fs->setcookie('flyspray_userid',   '', time()-60);
+        $fs->setcookie('flyspray_passhash', '', time()-60);
+        $fs->Redirect($fs->CreateURL('logout', null));
+    }
 } else {
     $permissions  = array();
-}
-
-// Set the theme
-if (Req::val('project') == '0') {
-   $themestyle = $fs->prefs['global_theme'];
-} else {
-   $themestyle = $project_prefs['theme_style'];
 }
 
 if (Get::has('getfile') && Get::val('getfile')) {
@@ -64,7 +68,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
 
     // Check if file exists, and user permission to access it!
     if (file_exists("attachments/$file_name")
-            && ($project_prefs['others_view'] == '1' OR $user_permissions['view_attachments'] == '1'))
+            && ($project_prefs['others_view'] || $user_permissions['view_attachments']))
     {
         $path = "$basedir/attachments/$file_name";
 
@@ -83,242 +87,34 @@ if (Get::has('getfile') && Get::val('getfile')) {
 }
 
 /*******************************************************************************/
-/* Here begins the deep flyspray                                               */
+/* Here begins the deep flyspray : html rendering                              */
 /*******************************************************************************/
 
-// Note that server admins can override this, breaking Flyspray i18n.
-header('Content-type: text/html; charset=utf-8');
+// Get the translation for the wrapper page (this page)
+$fs->get_language_pack('main');
+setlocale(LC_ALL, str_replace('-','_',$language['locale']));
 
 // see http://www.w3.org/TR/html401/present/styles.html#h-14.2.1
 header('Content-Style-Type: text/css');
+header('Content-type: text/html; charset=utf-8');
 
 if ($conf['general']['output_buffering'] == 'gzip') {
     // Start Output Buffering and gzip encoding if setting is present.
     // This functionality provided Mariano D'Arcangelo
     include_once( 'includes/gzip_compress.php' );
-}
-else {
-    // ob_end_flush() isn't needed in MOST cases because it is called automatically
-    // at the end of script execution by PHP itself when output buffering is turned on
-    // either in the php.ini or by calling ob_start().
+} else {
     ob_start();
 }
 
-$do = Req::val('do', 'index');
-
-if (file_exists("themes/$themestyle/favicon.ico")) {
-    $ico_path = "{$baseurl}themes/$themestyle/favicon.ico";
+$page = new FSTpl();
+if (Req::val('project')) {
+    $page->setTheme($project_prefs['theme_style']);
 } else {
-    $ico_path = "{$baseurl}favicon.ico";
+    $page->setTheme($fs->prefs['global_theme']);
 }
 
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-  lang="<?php echo $language['locale'] ?>" xml:lang="<?php echo $language['locale'] ?>">
-  <head>
-    <title>Flyspray::&nbsp;&nbsp;<?php echo $project_prefs['project_title'] ?>:&nbsp;&nbsp;</title>
-    <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="icon" type="image/png" href="<?php echo $ico_path ?>" />
-    <link media="screen" href="<?php echo $baseurl . 'themes/' . $themestyle ?>/theme.css" rel="stylesheet" type="text/css" />
-    <link media="print" href="<?php echo $baseurl . 'themes/' . $themestyle ?>/theme_print.css" rel="stylesheet" type="text/css" />
-    <link rel="alternate" type="application/rss+xml" title="Flyspray RSS Feed" href="<?php echo $baseurl . 'scripts/rss.php?proj=' . $project_id ?>" />
-    <script type="text/javascript" src="<?php echo $baseurl ?>includes/styleswitcher.js"></script>
-    <script type="text/javascript" src="<?php echo $baseurl ?>includes/tabs.js"></script>
-    <script type="text/javascript" src="<?php echo $baseurl ?>includes/functions.js"></script>
-    <?php
-    // This allows theme authors to include other code/javascript/dhtml to make their theme funky
-    @include($baseurl . 'themes/' . $themestyle . '/header.php');
-    ?>
-    <!--[if IE 6]>
-    <script type="text/javascript" src="<?php echo $baseurl ?>includes/ie_hover.js"></script>
-    <![endif]-->
-
-    <style type="text/css">@import url(<?php echo $baseurl ?>includes/jscalendar/calendar-win2k-1.css);</style>
-    <script type="text/javascript" src="<?php echo $baseurl ?>includes/jscalendar/calendar_stripped.js"></script>
-    <script type="text/javascript" src="<?php echo $baseurl ?>includes/jscalendar/lang/calendar-en.js"></script>
-    <script type="text/javascript" src="<?php echo $baseurl ?>includes/jscalendar/calendar-setup.js"></script>
-  </head>
-  <body>
-  <?php
-  // People might like to define their own header files for their theme
-  @include("$basedir/themes/".$project_prefs['theme_style']."/header.inc.php");
-
-
-// If the admin wanted the Flyspray logo shown at the top of the page...
-if ($project_prefs['show_logo'] == '1') {
-    echo '<h1 id="title"><span>' . $project_prefs['project_title'] . '</span></h1>';
-}
-
-// if no-one's logged in, show the login box
-if(!Cookie::has('flyspray_userid')) {
-   require('scripts/loginbox.php');
-
-   // If we have allowed anonymous logging of new tasks
-   // Show the link to the Add Task form
-   if ($project_prefs['anon_open'] == '1') {
-       echo '<div id="anonopen"><a href="?do=newtask&amp;project=' . $project_id . '">' . $language['opentaskanon'] . '</a></div>';
-   }
-}
-
-////////////////////////////////////////////////
-// OK, now we start the new permissions stuff //
-////////////////////////////////////////////////
-
-// If the user has the right name cookies
-if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
-    // Check that the user hasn't spoofed the cookie contents somehow
-    // And that their account is enabled
-    // and that their group is enabled
-    if (Cookie::val('flyspray_passhash') != crypt($current_user['user_pass'], $cookiesalt)
-            || $permissions['account_enabled'] != '1' || $permissions['group_open'] != '1')
-    {
-        // If the user's account is closed
-        $fs->setcookie('flyspray_userid',   '', time()-60);
-        $fs->setcookie('flyspray_passhash', '', time()-60);
-        $fs->Redirect($fs->CreateURL('logout', null));
-    }
-
-    $things = array();
-
-    // Display "Logged in as - username"
-    $things[] = '<em>' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ')</em>';
-
-    if ($permissions['open_new_tasks'] == '1') {
-        // Display Add New Task link
-        $things[] = '<a id="newtasklink" href="' . $fs->CreateURL('newtask', $project_id) . '" accesskey="a">' . $language['addnewtask'] . "</a>\n";
-    }
-
-    if ($permissions['view_reports'] == '1' && $project_id != '0') {
-        // Reports link
-        $things[] = '<a id="reportslink" href="' . $fs->CreateURL('reports', null) . '" accesskey="r">' . $language['reports'] . "</a>\n";
-    }
-
-    // Edit My Details link
-    $things[] =  '<a id="editmydetailslink" href="' . $fs->CreateURL('myprofile', null) . '" accesskey="e">' . $language['editmydetails'] . "</a>\n";
-
-    // If the user has conducted a search, then show a link to the most recent task list filter
-    if ( !empty($current_user['last_search']) ) {
-        $things[] =  '<a id="lastsearchlink" href="' . $current_user['last_search'] . '" accesskey="m">' . $language['lastsearch'] . "</a>\n";
-    } else {
-        $things[] =  '<a id="lastsearchlink" href="' . $baseurl . 'index.php">' . $language['lastsearch'] . "</a>\n";
-    }
-
-    if ($permissions['is_admin'] == '1') {
-        // Administrator's Toolbox link
-        $things[] =  '<a id="optionslink" href="' . $fs->CreateURL('admin', 'prefs') . '">' . $language['admintoolbox'] . "</a>\n";
-    }
-
-    if ($permissions['manage_project'] == '1') {
-        // Project Manager's Toolbox link
-        $things[] =  '<a id="projectslink" href="' . $fs->CreateURL('pm', 'prefs', $project_id) . '">' . $language['manageproject'] . "</a>\n";
-    }
-
-    // Logout link
-    $things[] =  '<a id="logoutlink" href="' . $fs->CreateURL('logout', null)  . '" accesskey="l">' . $language['logout'] . "</a>\n";
-
-
-    if ($permissions['manage_project'] == '1') {
-        // Find out if there are any PM requests wanting attention
-        $get_req = $db->Query("SELECT * FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
-                array($project_id));
-
-        $num_req = $db->CountRows($get_req);
-
-        // Show the amount of admin requests waiting
-        if ($db->CountRows($get_req)) {
-            $things[] =  '<a id="pendingreq" class="attention" href="' . $fs->CreateURL('pm', 'pendingreq', $project_id) . '">' . $num_req . ' ' . $language['pendingreq'] . '</a>';
-        }
-    }
-    
-    echo '<p id="menu">'. join('<small> | </small>', $things) . '</p>';
-}
-
-if (isset($_SESSION['ERROR'])) {
-    echo '<div id="errorbar" onclick="this.style.display = \'none\'">' . $_SESSION['ERROR'] . '</div>';
-    unset($_SESSION['ERROR']);
-}
-
-if (isset($_SESSION['SUCCESS'])) {
-    echo '<div id="successbar" onclick="this.style.display = \'none\'">' . $_SESSION['SUCCESS'] . '</div>';
-    unset($_SESSION['SUCCESS']);
-}
-?>
-
-<div id="content">
-  <div id="projectselector">
-    <form action="<?php echo $baseurl;?>index.php" method="get">
-      <p>
-        <select name="tasks">
-          <option value="all"><?php echo $language['tasksall'];?></option>
-          <?php if (isset($_COOKIE['flyspray_userid'])): ?>
-          <option value="assigned" <?php if (Get::val('tasks') == 'assigned') echo 'selected="selected"'; ?>><?php echo $language['tasksassigned']; ?></option>
-          <option value="reported" <?php if (Get::val('tasks') == 'reported') echo 'selected="selected"'; ?>><?php echo $language['tasksreported']; ?></option>
-          <option value="watched"  <?php if (Get::val('tasks') == 'watched')  echo 'selected="selected"'; ?>><?php echo $language['taskswatched'];  ?></option>
-          <?php endif; ?>
-        </select>
-        <?php echo $language['selectproject']; ?>
-        <select name="project">
-          <option value="0" <?php if (Get::val('project') == '0') echo 'selected="selected"';?>><?php echo $language['allprojects'];?></option>
-          <?php
-
-          if (@$permissions['global_view'] == '1') {
-              // If the user has permission to view all projects
-              $get_projects = $db->Query("SELECT  *
-                                            FROM  {projects}
-                                           WHERE  project_is_active = '1'
-                                        ORDER BY  project_title");
-          }
-          elseif (isset($_COOKIE['flyspray_userid'])) {
-              // or, if the user is logged in
-              $get_projects = $db->Query("SELECT  p.*
-                                            FROM  {projects} p
-                                       LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
-                                       LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
-                                           WHERE  p.project_is_active='1' AND (p.others_view OR uig.user_id IS NOT NULL)
-                                        ORDER BY  p.project_title", array($current_user['user_id']));
-          }
-          else {
-              // Anonymous users
-              $get_projects = $db->Query("SELECT  *
-                                            FROM  {projects}
-                                           WHERE  project_is_active = '1' AND others_view = '1'
-                                           ORDER  BY project_title");
-          }
-
-          // Cycle through the results from whichever query above
-          while ($row = $db->FetchArray($get_projects)) {
-              // Ensure that the selected project matches the one we are currently looking at
-              if ( $project_id == $row['project_id'] && (!Get::has('project') || Get::val('project')) )
-              {
-                  echo '<option value="' . $row['project_id'] . '" selected="selected">' . $row['project_title'] . '</option>';
-              }
-              else {
-                  echo '<option value="' . $row['project_id'] . '">' . $row['project_title'] . '</option>';
-              }
-              $project_list[] = $row['project_id'];
-          }
-          ?>
-        </select>
-        <input class="mainbutton" type="submit" value="<?php echo $language['show'];?>" />
-      </p>
-    </form>
-  </div>
-
-  <form action="<?php echo $baseurl;?>index.php" method="get">
-    <p id="showtask">
-      <label><?php echo $language['showtask'];?> #
-      <input id="taskid" name="show_task" type="text" size="10" maxlength="10" accesskey="t" /></label>
-      <input class="mainbutton" type="submit" value="<?php echo $language['go'];?>" />
-    </p>
-  </form>
-
-<?php
-// If someone used the 'show task' form above, redirect them
-if ( Get::has('show_task') ) {
-    $show_task = Get::val('show_task');
-
+if ($show_task = Get::val('show_task')) {
+    // If someone used the 'show task' form, redirect them
     if (is_numeric($show_task)) {
         $fs->Redirect( $fs->CreateURL('details', $show_task) );
     }
@@ -327,44 +123,62 @@ if ( Get::has('show_task') ) {
     }
 }
 
+if ($fs->requestDuplicated()) {
+    // Check that this page isn't being submitted twice
+    $_SESSION['ERROR'] = $language['duplicated'];
+    $fs->Redirect( "?id=".$project_id );
+}
+
+if (Cookie::has('flyspray_userid') && empty($permissions['global_view'])) {
+    // or, if the user is logged in
+    $get_projects = $db->Query(
+            "SELECT  p.project_id, p.project_title
+               FROM  {projects} p
+          LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
+          LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
+              WHERE  p.project_is_active='1' AND (p.others_view OR uig.user_id IS NOT NULL)
+           ORDER BY  p.project_title", array($current_user['user_id']));
+}
+else {
+    // XXX kludge, to merge request for power users with anonymous ones.
+    $get_projects = $db->Query("SELECT  project_id, project_title
+                                  FROM  {projects}
+                                 WHERE  project_is_active = '1'
+                                        AND ('1' = ? OR others_view = '1')
+                              ORDER BY  project_title",
+                              array($permissions['global_view']));
+}
+
+if ($permissions['manage_project']) {
+    // Find out if there are any PM requests wanting attention
+    $get_req = $db->Query(
+            "SELECT * FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
+            array($project_id));
+
+    $page->assign('pm_pendingreq_num', $db->CountRows($get_req));
+}
+
 // Show the project blurb if the project manager defined one
+$do = Req::val('do', 'index');
 if ($project_prefs['project_is_active'] == '1'
     && ($project_prefs['others_view'] == '1' OR @$permissions['view_tasks'] == '1')
     && !empty($project_prefs['intro_message'])
     && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))
-    OR (Get::val('project') == '0'))
+    || (Get::val('project') == '0'))
 {
-    $intro_message = Markdown($project_prefs['intro_message']);
-    echo '<div id="intromessage">' . $intro_message . '</div>';
+    require_once ( "$basedir/includes/markdown.php" );
+    $page->assign('intro_message', Markdown($project_prefs['intro_message']));
 }
 
-// Check that this page isn't being submitted twice
-if ($fs->requestDuplicated())
-{
-    printf('<meta http-equiv="refresh" content="2; URL=?id=%s">', $project_id);
-    printf('<div class="redirectmessage"><p><em>%s</em></p></div>', $language['duplicated']);
-    echo '</body></html>';
-    exit;
-}
+$page->assign('project_list', $db->FetchAllArray($get_projects));
+$page->display('header.tpl');
+unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
 
 // Show the page the user wanted
-require("$basedir/includes/permissions.inc.php");
 require("$basedir/scripts/$do.php");
 
-// Show the user's permissions
-if (Cookie::has('flyspray_userid')) {
-    tpl_draw_perms($permissions);
-}
-?>
-    </div>
-    <p id="footer">
-       <!-- Please don't remove this line - it helps promote Flyspray -->
-       <a href="http://flyspray.rocks.cc/" class="offsite"><?php printf("%s %s", $language['poweredby'], $fs->version);?></a>
-    </p>
-    <?php @include ("$basedir/themes/".$project_prefs['theme_style']."/footer.inc.php"); ?>
-  </body>
-</html>
-<?php
+$page->display('footer.tpl');
+
 if ($conf['debug']) {
     require ($basedir . '/includes/debug.inc.php');
 }

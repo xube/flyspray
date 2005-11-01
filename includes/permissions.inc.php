@@ -26,27 +26,19 @@ function tpl_draw_perms($perms)
                          'assign_others_to_self',
                          'view_reports',
                          'global_view');
-?>
-    <div id="permslink">
-    <a href="#" onclick="showhidestuff('permissions');"><?php echo $language['permissions'] ?></a>
-    </div>
-    <div id="permissions">
-    <table border="1">
-<?php
+    $yesno = array(
+            '<td style="color: red;">No</td>',
+            '<td style="color: green;">Yes</td>');
+
+    $html = '<table border="1">';
+    
     foreach ($perms as $key => $val) {
         if (in_array($key, $perm_fields)) {
-            echo '<tr><td>' . str_replace('_', ' ', $key) . '</td>';
-            if ($val == '0') {
-                echo '<td style="color: red;">No</td></tr>';
-            } else {
-                echo '<td style="color: green;">Yes</td></tr>';
-            }
+            $html .= '<tr><td>' . str_replace('_', ' ', $key) . '</td>';
+            $html .= $yesno[(bool)$val];
         }
     }
-?>
-    </table>
-    </div>
-<?php
+    return $html . '</table>';
 }
 
 // A policy function takes up to 5 arguments :
