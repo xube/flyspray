@@ -260,8 +260,8 @@ function events_report()
 
         case 'from':
             $date      = 'from';
-            $fromdate  = Req::val('fromdate', date("d-M-Y"););
-            $todate    = Req::val('todate', date("d-M-Y"););
+            $fromdate  = Req::val('fromdate', date("d-M-Y"));
+            $todate    = Req::val('todate', date("d-M-Y"));
 
             $ufromdate = strtotime($fromdate);
             // Add 24 hours to the end to make it include that date
