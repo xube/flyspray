@@ -97,7 +97,7 @@ class FSTpl extends Tpl
 
 // {{{ some useful plugins
 
-function tpl_options($options, $selected, $labelIsValue = false, $attr = null)
+function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null)
 {
     $html = '';
 

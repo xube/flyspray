@@ -35,7 +35,7 @@ function tpl_draw_perms($perms)
     foreach ($perms as $key => $val) {
         if (in_array($key, $perm_fields)) {
             $html .= '<tr><td>' . str_replace('_', ' ', $key) . '</td>';
-            $html .= $yesno[(bool)$val];
+            $html .= $yesno[(bool)$val].'</tr>';
         }
     }
     return $html . '</table>';
