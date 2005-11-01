@@ -21,7 +21,10 @@ class Post
 {
     function has($key)
     {
-        return isset($_POST[$key]) && $_REQUEST[$key] != '';
+        // XXX semantics is different for POST, as POST of '' values is never
+        //     unintentionnal, whereas GET/COOKIE may have '' values for empty
+        //     ones.
+        return isset($_POST[$key]);
     }
     
     function val($key, $default = null)
