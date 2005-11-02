@@ -133,6 +133,28 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
     return $html;
 }
 
+function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null)
+{
+    if (is_array($attr)) {
+        $arr = array();
+        foreach ($attr as $key=>$val) {
+            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8");
+        }
+        $html_attr = join(' ', $arr);
+    }
+
+    $name  = htmlspecialchars($name,  ENT_QUOTES, "utf-8");
+    $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
+    $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
+    if ($id) {
+        $html .= 'id='.htmlspecialchars($id, ENT_QUOTES, "utf-8").' ';
+    }
+    if ($checked) {
+        $html .= 'checked="checked" ';
+    }
+
+    return $html.$html_attr.' />';
+}
 
 // }}}
 

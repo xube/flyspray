@@ -14,7 +14,7 @@ class Flyspray
 
     var $prefs   = array();
 
-    function Flyspray() // {{{
+    function Flyspray() 
     {
         global $db;
         session_start();
@@ -25,13 +25,13 @@ class Flyspray
             $this->prefs[$row['pref_name']] = $row['pref_value'];
         }
     }
-    // }}}
+
 
     /** Get translation for specified language and page.  It loads default
       language (en) and then merges with requested one. Thus it makes English
       messages available even if translation is not present.
      */
-    function get_language_pack($module) // {{{
+    function get_language_pack($module) 
     {
         if ($module == 'functions')
             $module .= '.inc';
@@ -55,10 +55,10 @@ class Flyspray
             }
         }
     }
-    // }}}
+
 
     //  Redirects the browser to the page in $url
-    function Redirect($url) // {{{
+    function Redirect($url) 
     {
         @ob_clean();
         header('Location: ' . $url);
@@ -81,14 +81,14 @@ class Flyspray
 <?php
         exit;
     }
-    // }}}
+
 
     /** Test to see if user resubmitted a form.
       Checks only newtask and addcomment actions.
       @return   true if user has submitted the same action within less than
       6 hours, false otherwise
      */
-    function requestDuplicated() // {{{
+    function requestDuplicated() 
     {
         // garbage collection -- clean entries older than 6 hrs
         $now = time();
@@ -113,21 +113,10 @@ class Flyspray
         }
         return false;
     }
-    // }}}
-
-    function getProjectPrefs($project) // {{{
-    {
-        global $db;
-
-        $get_prefs = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($project));
-
-        return $db->FetchArray($get_prefs);
-    }
-    // }}}
 
     // Thanks to Mr Lance Conry for this query that saved me a lot of effort.
     // Check him out at http://www.rhinosw.com/
-    function GetTaskDetails($task_id) // {{{
+    function GetTaskDetails($task_id) 
     {
         global $db;
         global $project_prefs;
@@ -176,10 +165,21 @@ class Flyspray
        
         return $get_details;
     }
-    // }}}
+
+
+    // {{{ functions that should go in a Project class
+
+    function getProjectPrefs($project) 
+    {
+        global $db;
+
+        $get_prefs = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($project));
+
+        return $db->FetchArray($get_prefs);
+    }
 
     // This function generates a query of users for the "Assigned To" list
-    function listUsers($in_project, $current=null) // {{{
+    function listUsers($in_project, $current=null) 
     {
         global $db;
         global $conf;
@@ -242,11 +242,137 @@ class Flyspray
             echo "</optgroup>\n";
         }
     }
+
+    function listGroupsIn($project_id)
+    {
+        global $db;
+        $get_groups = $db->Query("SELECT  * FROM {groups}
+                                   WHERE  belongs_to_project = ?
+                                   ORDER  BY group_id ASC", array($project_id));
+        return $db->fetchAllArray($get_groups);
+    }
+
+    function listTaskTypesIn($project_id)
+    {
+        global $db;
+        $sql = $db->Query("SELECT  tt.*, count(t.task_id) AS used_in_tasks
+                             FROM  {list_tasktype} tt
+                        LEFT JOIN  {tasks}         t  ON ( t.task_type = tt.tasktype_id )
+                            WHERE  project_id = ?
+                         GROUP BY  tt.tasktype_id, tt.tasktype_name, tt.list_position, tt.show_in_list, tt.project_id
+                         ORDER BY  list_position", array($project_id));
+        return $db->fetchAllArray($sql);
+    }
+
+    function listOsIn($project_id)
+    {
+        global $db;
+        $sql = $db->Query("SELECT  os.*, count(t.task_id) AS used_in_tasks
+                             FROM  {list_os} os
+                        LEFT JOIN  {tasks} t ON (t.operating_system = os.os_id AND t.attached_to_project = os.project_id)
+                            WHERE  os.project_id = ?
+                         GROUP BY  os.os_id, os.project_id, os.os_name, os.list_position, os.show_in_list
+                         ORDER BY  list_position", array($project_id));
+        return $db->fetchAllArray($sql);
+    }
+
+    function listCatsIn($project_id, $mother_cat = null)
+    {
+        global $db;
+        if (is_null($mother_cat)) {
+            $sql = $db->Query("SELECT  c.*, count(t.task_id) AS used_in_tasks
+                                 FROM  {list_category} c
+                            LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
+                                WHERE  project_id = ? AND parent_id < ?
+                             GROUP BY  c.category_id, c.project_id, c.category_name,
+                                       c.list_position, c.show_in_list, c.category_owner, c.parent_id
+                             ORDER BY  list_position", array($project_id, '1'));
+        } else {
+            $sql = $db->Query("SELECT  c.*, count(t.task_id) AS used_in_tasks
+                                 FROM  {list_category} c
+                            LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
+                                WHERE  project_id = ? AND parent_id = ?
+                             GROUP BY  c.category_id, c.project_id, c.category_name,
+                                       c.list_position, c.show_in_list, c.category_owner, c.parent_id
+                             ORDER BY  list_position", array($project_id, $mother_cat));
+        }
+        return $db->fetchAllArray($sql);
+    }
+
+    function listVersionsIn($project_id)
+    {
+        global $db;
+        $sql = $db->Query("SELECT  v.*, count(t.task_id) AS used_in_tasks
+                             FROM  {list_version} v
+                        LEFT JOIN  {tasks} t ON ((t.product_version = v.version_id OR t.closedby_version = v.version_id)
+                                                            AND t.attached_to_project = v.project_id)
+                            WHERE  v.project_id = ?
+                         GROUP BY  v.version_id, v.project_id, v.version_name, v.list_position, v.show_in_list, v.version_tense
+                         ORDER BY  list_position", array($project_id));
+
+        return $db->fetchAllArray($sql);
+    }
+
+    function listResolutionsIn($project_id)
+    {
+        global $db;
+        $sql = $db->Query("SELECT  r.*, count(t.task_id) AS used_in_tasks
+                             FROM  {list_resolution} r
+                        LEFT JOIN  {tasks} t ON ( t.resolution_reason = r.resolution_id )
+                            WHERE  project_id = ?
+                         GROUP BY  r.resolution_id, r.resolution_name, r.list_position, r.show_in_list, r.project_id
+                         ORDER BY  list_position", array($project_id));
+        return $db->fetchAllArray($sql);
+    }
+
+    function listUsersInGroup($proj_id, $group_id = null) 
+    {
+        global $db;
+
+        if (is_null($group_id)) {
+            // list of users in no group specific to that project
+            $user_query = $db->Query("SELECT  u.*, MAX(g.group_id) AS gid
+                                        FROM  {users}           u
+                                   LEFT JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
+                                   LEFT JOIN  {groups}          g   ON uig.group_id = g.group_id AND g.belongs_to_project = ?
+                                    GROUP BY  u.user_id
+                                      HAVING  gid IS NULL
+                                    ORDER BY  u.user_name ASC",
+                                    array($proj_id));
+        } else {
+            $user_query = $db->Query("SELECT  u.*
+                                        FROM  {users}           u
+                                  INNER JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
+                                  INNER JOIN  {groups}          g   ON uig.group_id = g.group_id
+                                       WHERE  g.belongs_to_project = ? AND g.group_id = ?
+                                    ORDER BY  u.user_name ASC",
+                                    array($proj_id, $group_id));
+        }
+        return $db->FetchAllArray($user_query);
+    }
+
+
+    function listThemes()
+    {
+        if ($handle = opendir(dirname(dirname(__FILE__)).'/themes/')) {
+            $theme_array = array();
+            while (false !== ($file = readdir($handle))) {
+                if ($file != "." && $file != ".." && file_exists("themes/$file/theme.css")) {
+                    $theme_array[] = $file;
+                }
+            }
+            closedir($handle);
+        }
+
+        sort($theme_array);
+        return $theme_array;
+    }
+
     // }}}
 
     // This provides funky page numbering
     // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-    function pagenums($pagenum, $perpage, $totalcount, $extraurl) // {{{
+    function pagenums($pagenum, $perpage, $totalcount, $extraurl) 
     {
         global $db;
         global $functions_text;
@@ -294,9 +420,9 @@ class Flyspray
 
         return $output;
     }
-    // }}}
 
-    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '') // {{{
+
+    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '') 
     {
         global $db;
 
@@ -336,10 +462,10 @@ class Flyspray
                                 VALUES(?, ?, ?, ?, ?, ?, ?)",
                 array($task, Cookie::val('flyspray_userid', 0), date('U'), $type, $field, $oldvalue, $newvalue));
     }
-    // }}}
+
 
     // Log a request for an admin/project manager to do something
-    function AdminRequest($type, $project, $task, $submitter, $reason) // {{{
+    function AdminRequest($type, $project, $task, $submitter, $reason) 
     {
         global $db;
         // Types are:
@@ -351,10 +477,10 @@ class Flyspray
                 VALUES(?, ?, ?, ?, ?, ?)",
                 array($project, $task, $submitter, $type, $reason, date(U)));
     }
-    // }}}
+
 
     // Check for an existing admin request for a task and event type
-    function AdminRequestCheck($type, $task) // {{{
+    function AdminRequestCheck($type, $task) 
     {
         global $db;
 
@@ -363,10 +489,10 @@ class Flyspray
                 array($type, $task));
         return (bool)($db->CountRows($check));
     }
-    // }}}
+
 
     // Get the current user's details
-    function getUserDetails($user_id) // {{{
+    function getUserDetails($user_id) 
     {
         global $db;
 
@@ -374,10 +500,17 @@ class Flyspray
         $result = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($user_id));
         return $db->FetchArray($result);
     }
-    // }}}
+
+    function getGroupDetails($group_id)
+    {
+        global $db;
+        $sql = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($group_id));
+        return $db->FetchArray($sql);
+    }
+
 
     // Get the permissions for the current user
-    function getPermissions($user_id, $project_id) // {{{
+    function getPermissions($user_id, $project_id) 
     {
         global $db;
 
@@ -445,10 +578,10 @@ class Flyspray
 
         return $permissions;
     }
-    // }}}
+
 
     // Crypt a password with the method set in the configfile
-    function cryptPassword($password) // {{{
+    function cryptPassword($password) 
     {
         global $conf;
         $pwcrypt = $conf['general']['passwdcrypt'];
@@ -462,10 +595,10 @@ class Flyspray
         $letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return crypt($password, substr($letters, rand(0, 52), 1).substr($letters, rand(0, 52), 1) );
     }
-    // }}}
+
 
     // This function checks if a user provided the right credentials
-    function checkLogin($username, $password) // {{{
+    function checkLogin($username, $password) 
     {
         global $db;
 
@@ -504,16 +637,16 @@ class Flyspray
 
         return false;
     }
-    // }}}
 
-    function setCookie($name, $val, $time) // {{{
+
+    function setCookie($name, $val, $time) 
     {
         global $baseurl;
         $url = parse_url($baseurl);
         setcookie($name, $val, $time, $url['path']);
-    } // }}}
+    }
 
-    function startReminderDaemon() // {{{
+    function startReminderDaemon() 
     {
         $script  = 'scripts/daemon.php';
         $include = 'schedule.php';
@@ -538,12 +671,12 @@ class Flyspray
             exec("$php $script $include $timeout ../$runfile >/dev/null &");
         }
     }
-    // }}}
+
 
     /* Check if we should use address rewriting
        and return an appropriate URL
      */
-    function CreateURL($type, $arg1, $arg2=0, $arg3=0) // {{{
+    function CreateURL($type, $arg1, $arg2=0, $arg3=0) 
     {
         global $conf;
 
@@ -604,11 +737,11 @@ class Flyspray
             case 'reports':   return $url;
         }
     }
-    // }}}
+
 
 // FIXME: TEMPLATING FUNCTIONS, SHOULD MOVE AWAY AT SOME POINT
     
-    function LinkedUsername($user_id) // {{{
+    function LinkedUsername($user_id) 
     {
         global $db;
 
@@ -620,8 +753,8 @@ class Flyspray
 
         return '<a href="' . $this->CreateURL('user', $user_id) . '">' . $result['real_name'] . ' (' . $result['user_name'] . ')</a>';
     }
-    // }}}
-    function formatDate($timestamp, $extended) // {{{
+
+    function formatDate($timestamp, $extended) 
     {
         global $db;
         global $conf;
@@ -644,8 +777,8 @@ class Flyspray
 
         return strftime($dateformat, $timestamp);
     }
-    // }}}
-    function ShowImg($path, $alt_text) // {{{
+
+    function ShowImg($path, $alt_text) 
     {
         global $conf;
         // To stop some browsers showing a blank box when an image doesn't exist
@@ -653,8 +786,8 @@ class Flyspray
             return "<img src=\"{$conf['general']['baseurl']}$path\" alt=\"$alt_text\" title=\"$alt_text\" />";
         }
     }
-    // }}}
-    function formatText($text) // {{{
+
+    function formatText($text) 
     {
         // This function removes html, and other nasties
         $text = htmlspecialchars($text);
@@ -667,13 +800,13 @@ class Flyspray
         return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
                 array($this, 'fastTaskLink'), $text);
     }
-    // }}}
-    function fastTaskLink($arr) // {{{
+
+    function fastTaskLink($arr) 
     {
         return $this->taskLink($arr[0], $arr[1]);
     }
-    // }}}
-    function taskLink($text, $id) // {{{
+
+    function taskLink($text, $id) 
     {
         global $details_text;
 
@@ -692,7 +825,6 @@ class Flyspray
         }
         return $link;
     }
-    // }}}
 }
 
 ?>

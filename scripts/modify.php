@@ -935,7 +935,7 @@ elseif (Post::val('action') == "update_version_list"
                                           show_in_list = ?, version_tense = ?
                                    WHERE  $list_id = '{$listid[$i]}'",
                     array($listname[$i], $listposition[$i],
-                        intval($listshow[$i]), $listtense[$i]));
+                        intval($listshow[$i]), intval($listtense[$i])));
         } else {
             $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
         }
