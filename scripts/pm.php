@@ -19,7 +19,7 @@ $fs->get_language_pack('admin');
 $fs->get_language_pack('pm');
 $page->uses('admin_text', 'pm_text', 'index_text');
 
-switch (Get::val('area', 'prefs')) {
+switch ($area = Get::val('area', 'prefs')) {
     case 'pendingreq':
         $sql = $db->Query("SELECT  *
                              FROM  {admin_requests} ar
