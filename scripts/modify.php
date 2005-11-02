@@ -29,7 +29,7 @@ $old_details = $fs->GetTaskDetails(Req::val('task_id'));
 
 // Adding a new task  {{{ 
 if (Post::val('action') == 'newtask'
-    && (@$permissions['open_new_tasks'] == '1' OR $proj->prefs['anon_open'] == '1'))
+    && ($user->perms['open_new_tasks'] || $proj->prefs['anon_open'] == '1'))
 {
 
     if (Post::val('item_summary') && Post::val('detailed_desc')) {
@@ -42,7 +42,7 @@ if (Post::val('action') == 'newtask'
                 'task_priority');
 
         $sql_values = array(Post::val('project_id'), $now, $now, $item_summary,
-                $detailed_desc, Cookie::val('flyspray_userid', 0), '0');
+                $detailed_desc, intval($user->id), '0');
 
         $sql_params = array();
         foreach ($param_names as $param_name) {
@@ -82,9 +82,8 @@ if (Post::val('action') == 'newtask'
         $fs->logEvent($task_details['task_id'], 1);
 
         // If the user uploaded one or more files
-        if ($permissions['create_attachments'] == '1') {
-            $files_added = $be->UploadFiles($current_user['user_id'],
-                    $task_details['task_id'], $_FILES);
+        if ($user->perms['create_attachments']) {
+            $files_added = $be->UploadFiles($user->id, $task_details['task_id'], $_FILES);
         }
 
         $result = $db->Query("SELECT  *
@@ -125,8 +124,8 @@ if (Post::val('action') == 'newtask'
         }
 
         // If the reporter wanted to be added to the notification list
-        if (Post::val('notifyme') == '1' && Cookie::val('flyspray_userid') != $owner) {
-            $be->AddToNotifyList($current_user['user_id'], array($task_details['task_id']));
+        if (Post::val('notifyme') == '1' && $user->id != $owner) {
+            $be->AddToNotifyList($user->id, array($task_details['task_id']));
         }
 
         // Status and redirect
@@ -143,10 +142,8 @@ if (Post::val('action') == 'newtask'
 
 } // }}}
 // Modifying an existing task {{{
-elseif (Post::val('action') == 'update'
-          && ($permissions['modify_all_tasks'] == '1'
-              OR ($permissions['modify_own_tasks'] == '1'
-                  && $current_user['user_id'] == $old_details['assigned_to'])))
+elseif (Post::val('action') == 'update' && ($user->perms['modify_all_tasks']
+              || ($user->perms['modify_own_tasks'] && $user->id == $old_details['assigned_to'])))
 {
 
     if (Post::val('item_summary') && Post::val('detailed_desc')) {
@@ -210,7 +207,7 @@ elseif (Post::val('action') == 'update'
                             array(Post::val('attached_to_project'), Post::val('task_type'), $item_summary,
                                 $detailed_desc, Post::val('item_status'), Post::val('assigned_to'),
                                 Post::val('product_category'), Post::val('closedby_version', 0), Post::val('operating_system'), 
-                                Post::val('task_severity'), Post::val('task_priority'), Cookie::val('flyspray_userid'),
+                                Post::val('task_severity'), Post::val('task_priority'), intval($user->id),
                                 $now, $due_date, Post::val('percent_complete'), Post::val('task_id'))
                     );
 
@@ -262,7 +259,7 @@ elseif (Post::val('action') == 'update'
                 $fs->logEvent(Post::val('task_id'), 14, Post::val('assigned_to'), Post::val('old_assigned'));
 
                 // Notify the new assignee what happened
-                if ($new_details['assigned_to'] != $current_user['user_id']) {
+                if ($new_details['assigned_to'] != $user->id) {
                     $to   = $notify->SpecificAddresses(array(Post::val('assigned_to')));
                     $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
                     $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
@@ -281,9 +278,8 @@ elseif (Post::val('action') == 'update'
 } // }}}
 // closing a task {{{
 elseif (Post::val('action') == 'close'
-        && ( (@$permissions['close_own_tasks'] == '1'
-                && $old_details['assigned_to'] == $current_user['user_id']
-                OR @$permissions['close_other_tasks'] == '1') ) )
+        && ( $user->perms['close_own_tasks'] && $old_details['assigned_to'] == $user->id
+                || $user->perms['close_other_tasks'] ) )
 {
 
     if (Post::val('resolution_reason')) {
@@ -291,7 +287,7 @@ elseif (Post::val('action') == 'close'
                 SET  date_closed = ?, closed_by = ?, closure_comment = ?,
                 is_closed = '1', resolution_reason = ?
                 WHERE  task_id = ?",
-                array($now, Cookie::val('flyspray_userid'), Post::val('closure_comment', 0),
+                array($now, intval($user->id), Post::val('closure_comment', 0),
                     Post::val('resolution_reason'),
                     Post::val('task_id')));
 
@@ -321,7 +317,7 @@ elseif (Post::val('action') == 'close'
             $db->Query("UPDATE  {admin_requests}
                     SET  resolved_by = ?, time_resolved = ?
                     WHERE  task_id = ? AND request_type = ?",
-                    array($current_user['user_id'], date('U'), Post::val('task_id'), 1));
+                    array($user->id, date('U'), Post::val('task_id'), 1));
         }
 
         $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
@@ -335,15 +331,14 @@ elseif (Post::val('action') == 'close'
 } // }}}
 // re-opening an task {{{
 elseif ( Get::val('action') == 'reopen'
-        && ( (@$permissions['close_own_tasks'] == '1'
-                && $old_details['assigned_to'] == $current_user['user_id']
-                OR @$permissions['close_other_tasks'] == '1') ) )
+        && ( $user->perms['close_own_tasks'] && $old_details['assigned_to'] == $user->id
+                || $user->perms['close_other_tasks']) )
 {
     $db->Query("UPDATE  {tasks}
                    SET  resolution_reason = '0', closure_comment = '0',
                         last_edited_time = ?, last_edited_by = ?, is_closed = '0'
                  WHERE  task_id = ?",
-                array($now, $current_user['user_id'], Get::val('task_id')));
+                array($now, $user->id, Get::val('task_id')));
 
     $notify->Create('4', Get::val('task_id'));
 
@@ -352,7 +347,7 @@ elseif ( Get::val('action') == 'reopen'
         $db->Query("UPDATE  {admin_requests}
                        SET  resolved_by = ?, time_resolved = ?
                      WHERE  task_id = ? AND request_type = ?",
-                  array($current_user['user_id'], date('U'), Get::val('task_id'), 2));
+                  array($user->id, date('U'), Get::val('task_id'), 2));
     }
 
     $fs->logEvent(Get::val('task_id'), 13);
@@ -361,7 +356,7 @@ elseif ( Get::val('action') == 'reopen'
     $fs->redirect($fs->CreateURL('details', Get::val('task_id')));
 } // }}}
 // adding a comment {{{
-elseif (Post::val('action') == 'addcomment' && $permissions['add_comments'] == '1')
+elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments'])
 {
 
     if (Post::val('comment_text')) {
@@ -370,7 +365,7 @@ elseif (Post::val('action') == 'addcomment' && $permissions['add_comments'] == '
         $db->Query("INSERT INTO  {comments}
                                  (task_id, date_added, user_id, comment_text)
                          VALUES  ( ?, ?, ?, ? )",
-                array(Post::val('task_id'), $now, Cookie::val('flyspray_userid'), $comment));
+                array(Post::val('task_id'), $now, intval($user->id), $comment));
 
         $result = $db->Query("SELECT  comment_id FROM {comments}
                                WHERE  task_id = ?
@@ -382,12 +377,12 @@ elseif (Post::val('action') == 'addcomment' && $permissions['add_comments'] == '
 
         if (Post::val('notifyme') == '1') {
             // If the user wanted to watch this task for changes
-            $be->AddToNotifyList($current_user['user_id'], array(Post::val('task_id')));
+            $be->AddToNotifyList($user->id, array(Post::val('task_id')));
         }
 
-        if ($permissions['create_attachments'] == '1') {
+        if ($user->perms['create_attachments']) {
             // If the user uploaded one or more files
-            $files_added = $be->UploadFiles($current_user['user_id'],
+            $files_added = $be->UploadFiles($user->id,
                     $old_details['task_id'], $_FILES, $comment['comment_id']);
         }
 
@@ -531,8 +526,7 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg'] == '1')
 } // }}}
 // user self-registration without confirmation code (Or, by an admin) {{{
 elseif (Post::val('action') == "newuser"
-           && (@$permissions['is_admin'] == '1'
-                OR ($fs->prefs['anon_reg'] == '1' && $fs->prefs['spam_proof'] != '1')))
+           && ($user->perms['is_admin'] OR ($fs->prefs['anon_reg'] == '1' && $fs->prefs['spam_proof'] != '1')))
 {
 
     if ( Post::val('user_name') && Post::val('user_pass') && Post::val('user_pass2')
@@ -550,7 +544,7 @@ elseif (Post::val('action') == "newuser"
 
                 $pass_hash = $fs->cryptPassword(Post::val('user_pass'));
 
-                if (@$permissions['is_admin'] == '1') {
+                if ($user->perms['is_admin']) {
                     $group_in = Post::val('group_in');
                 } else {
                     $group_in = $fs->prefs['anon_group'];
@@ -576,7 +570,7 @@ elseif (Post::val('action') == "newuser"
                                                      VALUES  ( ?, ?)",
                                                     array($user_details['user_id'], $group_in));
 
-                if (@$permissions['is_admin'] != '1') {
+                if (!$user->perms['is_admin']) {
                     echo "<p>{$modify_text['loginbelow']}</p>";
                     echo "<p>{$modify_text['newuserwarning']}</p></div>";
                 } else {
@@ -593,8 +587,8 @@ elseif (Post::val('action') == "newuser"
 } // }}}
 // adding a new group {{{
 elseif (Post::val('action') == "newgroup"
-          && ((Post::val('belongs_to_project') && $permissions['manage_project'] == '1')
-          OR $permissions['is_admin'] == '1') )
+          && ((Post::val('belongs_to_project') && $user->perms['manage_project'])
+          || $user->perms['is_admin']) )
 {
 
     if (Post::val('group_name') && Post::val('group_desc')) {
@@ -631,7 +625,7 @@ elseif (Post::val('action') == "newgroup"
     }
 } // }}}
 // Update the global application preferences {{{
-elseif (Post::val('action') == "globaloptions" && $permissions['is_admin'] == '1')
+elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin'])
 {
     $settings = array('jabber_server', 'jabber_port', 'jabber_username',
             'jabber_password', 'anon_group', 'user_notify', 'admin_email',
@@ -655,7 +649,7 @@ elseif (Post::val('action') == "globaloptions" && $permissions['is_admin'] == '1
     $fs->redirect($fs->CreateURL('admin','prefs'));
 } // }}}
 // adding a new project {{{
-elseif (Post::val('action') == "newproject" && $permissions['is_admin'] == '1') {
+elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
 
     if (Post::val('project_title') != '') {
 
@@ -712,7 +706,7 @@ elseif (Post::val('action') == "newproject" && $permissions['is_admin'] == '1') 
     }
 } // }}}
 // updating project preferences {{{
-elseif (Post::val('action') == 'updateproject' && $permissions['manage_project'] == '1') {
+elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']) {
 
     if (Post::val('project_title')) {
         $cols = array( 'project_title', 'theme_style', 'show_logo',
@@ -739,7 +733,7 @@ elseif (Post::val('action') == 'updateproject' && $permissions['manage_project']
 
 } // }}}
 // uploading an attachment {{{
-elseif (Post::val('action') == "addattachment" && $permissions['create_attachments'] == '1')
+elseif (Post::val('action') == "addattachment" && $user->perms['create_attachments'])
 {
     mt_srand(make_seed());
     $randval = mt_rand();
@@ -761,7 +755,7 @@ elseif (Post::val('action') == "addattachment" && $permissions['create_attachmen
                                           array(Post::val('task_id'), $_FILES['userfile']['name'],
                                               $file_name, $file_desc,
                                               $_FILES['userfile']['type'], $_FILES['userfile']['size'],
-                                              Cookie::val('flyspray_userid'), $now));
+                                              inval($user->id), $now));
 
             $notify->Create('8', Post::val('task_id'));
 
@@ -784,7 +778,7 @@ elseif (Post::val('action') == "addattachment" && $permissions['create_attachmen
 } // }}}
 // Start of modifying user details {{{
 elseif (Post::val('action') == "edituser"
-          && ($permissions['is_admin'] == '1' OR ($current_user['user_id'] == Post::val('user_id'))))
+          && ($user->perms['is_admin'] || $user->id == Post::val('user_id')))
 {
     if (Post::val('real_name') && (Post::val('email_address') OR Post::val('jabber_id'))) {
 
@@ -795,7 +789,7 @@ elseif (Post::val('action') == "edituser"
                 $update_pass = $db->Query("UPDATE {users} SET user_pass = '$new_pass_hash' WHERE user_id = ?", array(Post::val('user_id')));
 
                 // If the user is changing their password, better update their cookie hash
-                if (Cookie::val('flyspray_userid') == Post::val('user_id')) {
+                if ($user->id == Post::val('user_id')) {
                     $fs->setcookie('flyspray_passhash', crypt($new_pass_hash, $conf['general']['cookiesalt']), time()+60*60*24*30);
                 }
             } else {
@@ -817,7 +811,7 @@ elseif (Post::val('action') == "edituser"
                                        Post::val('dateformat'), Post::val('dateformat_extended'),
                                        Post::val('tasks_perpage'), Post::val('user_id')));
 
-            if ($permissions['is_admin'] == '1' && Post::val('group_in')) {
+            if ($user->perms['is_admin'] && Post::val('group_in')) {
                 $update = $db->Query("UPDATE {users} SET account_enabled = ?  WHERE user_id = ?",
                         array(Post::val('account_enabled'), Post::val('user_id')));
 
@@ -836,7 +830,7 @@ elseif (Post::val('action') == "edituser"
 } // }}}
 // updating a group definition {{{
 elseif (Post::val('action') == "editgroup"
-          && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1'))
+          && ($user->perms['is_admin'] || $user->perms['manage_project']))
 {
     if (Post::val('group_name') && Post::val('group_desc')) {
 
@@ -867,7 +861,7 @@ elseif (Post::val('action') == "editgroup"
 } // }}}
 // updating a list {{{
 elseif (Post::val('action') == "update_list"
-          && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1'))
+          && ($user->perms['is_admin'] || $user->perms['manage_project']))
 {
 
     $listname     = Post::val('list_name');
@@ -898,7 +892,7 @@ elseif (Post::val('action') == "update_list"
     $fs->redirect(Post::val('prev_page'));
 } // }}}
 // adding a list item {{{
-elseif (Post::val('action') == "add_to_list" && $permissions['manage_project'] == '1')
+elseif (Post::val('action') == "add_to_list" && $user->perms['manage_project'])
 {
     if (Post::val('list_name') && Post::val('list_position')) {
         $db->Query("INSERT INTO  $list_table_name
@@ -916,7 +910,7 @@ elseif (Post::val('action') == "add_to_list" && $permissions['manage_project'] =
 } // }}}
 // updating the version list {{{
 elseif (Post::val('action') == "update_version_list"
-        && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1'))
+        && ($user->perms['is_admin'] || $user->perms['manage_project']))
 {
     $listname     = Post::val('list_name');
     $listposition = Post::val('list_position');
@@ -950,7 +944,7 @@ elseif (Post::val('action') == "update_version_list"
     $fs->redirect(Post::val('prev_page'));
 } // }}}
 // adding a version list item {{{
-elseif (Post::val('action') == "add_to_version_list" && $permissions['manage_project'] == '1')
+elseif (Post::val('action') == "add_to_version_list" && $user->perms['manage_project'])
 {
    if (Post::val('list_name') && Post::val('list_position')) {
        $update = $db->Query("INSERT INTO  $list_table_name
@@ -967,7 +961,7 @@ elseif (Post::val('action') == "add_to_version_list" && $permissions['manage_pro
 } // }}}
 // updating the category list {{{
 elseif (Post::val('action') == "update_category"
-          && ($permissions['is_admin'] == '1' OR $permissions['manage_project'] == '1'))
+          && ($user->perms['is_admin'] || $user->perms['manage_project']))
 {
     $listname     = Post::val('list_name');
     $listposition = Post::val('list_position');
@@ -1001,12 +995,9 @@ elseif (Post::val('action') == "update_category"
 } // }}}
 // Start of adding a category list item {{{ TODO finish the review
 elseif (Post::val('action') == "add_category"
-          && ($permissions['is_admin'] == '1'
-              OR $permissions['manage_project'] == '1')) {
-
-  if (Post::val('list_name') != ''
-    && Post::val('list_position') != ''
-    ) {
+          && ($user->perms['is_admin'] || $user->perms['manage_project']))
+{
+  if (Post::val('list_name') && Post::val('list_position')) {
       $update = $db->Query("INSERT INTO {list_category}
                                 (project_id, category_name, list_position,
                                 show_in_list, category_owner, parent_id)
@@ -1033,8 +1024,8 @@ elseif (Post::val('action') == "add_category"
 //////////////////////////////////////////
 
 } elseif (Post::val('action') == 'add_related'
-          && ($permissions['modify_all_tasks'] == '1'
-               OR ($permissions['modify_own_tasks'] == '1' && $old_details['assigned_to'] == $current_user['user_id']))) {
+          && ($user->perms['modify_all_tasks']
+               || ($user->perms['modify_own_tasks'] && $old_details['assigned_to'] == $user->id))) {
 
   if (is_numeric(Post::val('related_task'))) {
     $check = $db->Query("SELECT * FROM {related}
@@ -1103,8 +1094,7 @@ elseif (Post::val('action') == "add_category"
 ///////////////////////////////////
 
 } elseif (Post::val('action') == "remove_related"
-          && ($permissions['modify_all_jobs'] == '1'
-               OR ($permissions['modify_own_tasks'] == '1'))) { // FIX THIS PERMISSION!!
+          && ($user->perms['modify_all_jobs'] || $user->perms['modify_own_tasks'])) { // FIX THIS PERMISSION!!
 
   $remove = $db->Query("DELETE FROM {related} WHERE related_id = ?", array(Post::val('related_id')));
 
@@ -1134,7 +1124,7 @@ elseif (Post::val('action') == "add_category"
          foreach ( $ids AS $key => $val )
             array_push($tasks, $key);
 
-         $be->AddToNotifyList($current_user['user_id'], $tasks);
+         $be->AddToNotifyList($user->id, $tasks);
       } else
       {
          $be->AddToNotifyList(Req::val('user_id'), array(Req::val('ids')));
@@ -1168,7 +1158,7 @@ elseif (Post::val('action') == "add_category"
          foreach ($ids AS $key => $val)
             array_push($tasks, $key);
 
-         $be->RemoveFromNotifyList($current_user['user_id'], $tasks);
+         $be->RemoveFromNotifyList($user->id, $tasks);
       }
 
    } else
@@ -1187,7 +1177,7 @@ elseif (Post::val('action') == "add_category"
 ////////////////////////////////
 
 } elseif (Post::val('action') == "editcomment"
-          && $permissions['edit_comments'] == '1')
+          && $user->perms['edit_comments'])
 {
    $update = $db->Query("UPDATE {comments}
                          SET comment_text = ?  WHERE comment_id = ?",
@@ -1204,8 +1194,7 @@ elseif (Post::val('action') == "add_category"
 // Start of deleting a comment //
 /////////////////////////////////
 
-} elseif (Get::val('action') == "deletecomment"
-&& $permissions['delete_comments'] == '1')
+} elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments'])
 {
    $result = $db->Query("SELECT comment_text, user_id, date_added
                                         FROM {comments}
@@ -1220,7 +1209,7 @@ elseif (Post::val('action') == "add_category"
                                     array(Req::val('comment_id'))
                                   );
 
-   if($db->CountRows($check_attachments) && $permissions['delete_attachments'] != '1')
+   if($db->CountRows($check_attachments) && !$user->perms['delete_attachments'])
    {
       $_SESSION['ERROR'] = $modify_text['commentattachperms'];
       $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
@@ -1259,7 +1248,7 @@ elseif (Post::val('action') == "add_category"
 /////////////////////////////////////
 
 } elseif (Req::val('action') == 'deleteattachment'
-          && $permissions['delete_attachments'] == '1')
+          && $user->perms['delete_attachments'])
 {
    // if an attachment needs to be deleted do it right now
    $result = $db->Query("SELECT * FROM {attachments}
@@ -1286,8 +1275,7 @@ elseif (Post::val('action') == "add_category"
 ////////////////////////////////
 
 } elseif (Post::val('action') == "addreminder"
-          && ($permissions['manage_project'] == '1'
-              OR $permissions['is_admin'] == '1')) {
+          && ($user->perms['manage_project'] || $user->perms['is_admin'])) {
 
   $now = date('U');
 
@@ -1298,7 +1286,7 @@ elseif (Post::val('action') == "add_category"
   $start_time = (Post::val('timeamount2') * Post::val('timetype2')) + $now;
   //echo "start time = $start_time";
 
-  $insert = $db->Query("INSERT INTO {reminders} (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array(Post::val('task_id'), Post::val('to_user_id'), $current_user['user_id'], $start_time, $how_often, Post::val('reminder_message')));
+  $insert = $db->Query("INSERT INTO {reminders} (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array(Post::val('task_id'), Post::val('to_user_id'), $user->id, $start_time, $how_often, Post::val('reminder_message')));
 
   $fs->logEvent(Post::val('task_id'), 17, Post::val('to_user_id'));
 
@@ -1311,8 +1299,7 @@ elseif (Post::val('action') == "add_category"
 // Start of removing a reminder //
 //////////////////////////////////
 } elseif (Post::val('action') == "deletereminder"
-          && ($permissions['manage_project'] == '1'
-              OR $permissions['is_admin'] == '1')) {
+          && ($user->perms['manage_project'] || $user->perms['is_admin'])) {
 
   $result = $db->Query("SELECT to_user_id FROM {reminders} WHERE reminder_id = ?", array(Post::val('reminder_id')));
   $reminder = $db->FetchRow($result);
@@ -1330,8 +1317,7 @@ elseif (Post::val('action') == "add_category"
 // Start of adding a bunch of users to a group //
 /////////////////////////////////////////////////
 } elseif (Post::val('action') == "addtogroup"
-          && ($permissions['manage_project'] == '1'
-              OR $permissions['is_admin'] == '1')) {
+          && ($user->perms['manage_project'] || $user->perms['is_admin'])) {
 
   // If no users were selected, throw an error
    if (!is_array(Post::val('user_list')))
@@ -1366,8 +1352,7 @@ elseif (Post::val('action') == "add_category"
 // Start of change a bunch of users' groups //
 //////////////////////////////////////////////
 } elseif (Post::val('action') == 'movetogroup'
-          && ($permissions['manage_project'] == '1'
-              OR $permissions['is_admin'] == '1'))
+          && ($user->perms['manage_project'] || $user->perms['is_admin']))
 {
    // Cycle through the array of user ids
    foreach (Post::val('users') AS $user_id => $val)
@@ -1412,12 +1397,12 @@ elseif (Post::val('action') == "add_category"
          foreach ($ids AS $key => $val)
             array_push($tasks, $key);
 
-         $be->AssignToMe($current_user['user_id'], $tasks);
+         $be->AssignToMe($user->id, $tasks);
       }
 
    } else
    {
-      $be->AssignToMe($current_user['user_id'], array(Req::val('ids')));
+      $be->AssignToMe($user->id, array(Req::val('ids')));
       $redirect_url = $redirect_url = $fs->CreateURL('details', Req::val('ids'));
    }
 
@@ -1437,7 +1422,7 @@ elseif (Post::val('action') == "add_category"
    $task_details = $fs->GetTaskDetails(Post::val('task_id'));
 
    // Log the admin request
-   $fs->AdminRequest(1, $task_details['attached_to_project'], Post::val('task_id'), $current_user['user_id'], Post::val('reason_given'));
+   $fs->AdminRequest(1, $task_details['attached_to_project'], Post::val('task_id'), $user->id, Post::val('reason_given'));
 
    // Log this event to the task history
    $fs->logEvent(Post::val('task_id'), 20, Post::val('reason_given'));
@@ -1479,7 +1464,7 @@ elseif (Post::val('action') == "add_category"
 } elseif (Post::val('action') == 'requestreopen')
 {
    // Log the admin request
-   $fs->AdminRequest(2, $proj->id, Post::val('task_id'), $current_user['user_id'], Post::val('reason_given'));
+   $fs->AdminRequest(2, $proj->id, Post::val('task_id'), $user->id, Post::val('reason_given'));
 
    // Log this event to the task history
    $fs->logEvent(Post::val('task_id'), 21, Post::val('reason_given'));
@@ -1488,15 +1473,15 @@ elseif (Post::val('action') == "add_category"
    $check_notify = $db->Query("SELECT * FROM {notifications}
                                WHERE task_id = ?
                                AND user_id = ?",
-                               array(Post::val('task_id'), $current_user['user_id'])
+                               array(Post::val('task_id'), $user->id)
                              );
 
    if (!$db->CountRows($check_notify))
    {
       // Add the requestor to the task notification list, so that they know when it has been re-opened
-      $be->AddToNotifyList($current_user['user_id'], array(Post::val('task_id')));
+      $be->AddToNotifyList($user->id, array(Post::val('task_id')));
 
-      $fs->logEvent(Post::val('task_id'), 9, $current_user['user_id']);
+      $fs->logEvent(Post::val('task_id'), 9, $user->id);
    }
 
    // Now, get the project managers details for this project
@@ -1534,7 +1519,7 @@ elseif (Post::val('action') == "add_category"
 // Start of denying a PM request //
 ///////////////////////////////////
 
-} elseif (Req::val('action') == 'denypmreq' && $permissions['manage_project'] == '1')
+} elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project'])
 {
    // Get info on the pm request
    $result = $db->Query("SELECT task_id
@@ -1548,7 +1533,7 @@ elseif (Post::val('action') == "add_category"
    $db->Query("UPDATE {admin_requests}
                SET resolved_by = ?, time_resolved = ?, deny_reason = ?
                WHERE request_id = ?",
-               array($current_user['user_id'], date('U'), Req::val('deny_reason'), Req::val('req_id')));
+               array($user->id, date('U'), Req::val('deny_reason'), Req::val('req_id')));
 
 
    // Log this event to the task's history
@@ -1569,10 +1554,9 @@ elseif (Post::val('action') == "add_category"
 //////////////////////////////////
 
 } elseif (Post::val('action') == 'newdep'
-   && (($permissions['modify_own_tasks'] == '1'
-   && $old_details['assigned_to'] == $current_user['user_id'])
-   OR $permissions['modify_all_tasks'] == '1')
-   && Post::val('dep_task_id'))
+        && (($user->perms['modify_own_tasks'] && $old_details['assigned_to'] == $user->id)
+            || $user->perms['modify_all_tasks'])
+        && Post::val('dep_task_id'))
 {
   // First check that the user hasn't tried to add this twice
   $check_dep = $db->Query("SELECT * FROM {dependencies}
@@ -1639,9 +1623,8 @@ elseif (Post::val('action') == "add_category"
 ////////////////////////////////////
 
 } elseif (Get::val('action') == 'removedep'
-          && (($permissions['modify_own_tasks'] == '1'
-               && $old_details['assigned_to'] == $current_user['user_id'])
-             OR $permissions['modify_all_tasks'] =='1')) {
+          && (($user->perms['modify_own_tasks'] && $old_details['assigned_to'] == $user->id)
+             || $user->perms['modify_all_tasks'])) {
 
   // We need some info about this dep for the task history
   $result = $db->Query("SELECT * FROM {dependencies}
@@ -1777,8 +1760,7 @@ elseif (Post::val('action') == "add_category"
 // Start of making a task private //
 ////////////////////////////////////
 
-} elseif (Get::val('action') == 'makeprivate'
-  && $permissions['manage_project'] == '1')
+} elseif (Get::val('action') == 'makeprivate' && $user->perms['manage_project'])
 {
    $update = $db->Query("UPDATE {tasks}
                          SET mark_private = '1'
@@ -1799,8 +1781,7 @@ elseif (Post::val('action') == "add_category"
 // Start of making a task public //
 ///////////////////////////////////
 
-} elseif (Get::val('action') == 'makepublic'
-  && $permissions['manage_project'] == '1')
+} elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project'])
 {
    $update = $db->Query("UPDATE {tasks}
                          SET mark_private = '0'

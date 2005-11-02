@@ -17,8 +17,8 @@ $fs->get_language_pack('status');
 $fs->get_language_pack('priority');
 
 $perpage = '20';
-if (@$current_user['tasks_perpage'] > 0) {
-    $perpage = $current_user['tasks_perpage'];
+if (@$user->infos['tasks_perpage'] > 0) {
+    $perpage = $user->infos['tasks_perpage'];
 }
 
 $order_keys = array (
@@ -53,20 +53,20 @@ $sql_params = array('1');
 if (Get::val('project') === '0') {
     // If the user wants to view tasks from all projects
 
-    if (isset($permissions['global_view']) && $permissions['global_view'] == '1') {
+    if ($user->perms['global_view']) {
         // If the user has the global 'view tasks' permission, view all projects unrestricted
         $check_projects = $db->Query("SELECT  p.project_id
                                         FROM  {projects} p
                                     ORDER BY  p.project_title");
     }
-    elseif (Cookie::has('flyspray_userid')) {
+    elseif (!$user->isAnon()) {
         // Those who aren't super users get this more restrictive query
         $check_projects = $db->Query("SELECT  p.*
                                         FROM  {projects} p
                                    LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
                                    LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
                                        WHERE  p.project_is_active='1' AND (p.others_view OR uig.user_id IS NOT NULL)
-                                    ORDER BY  p.project_title", array($current_user['user_id']));
+                                    ORDER BY  p.project_title", array($user->id));
     }
     else {
         // Anonymous users also need a query here
@@ -94,10 +94,10 @@ else {
 
 $dev = Get::val('dev');
 if (Get::val('tasks') == 'assigned') {
-    $dev = $current_user['user_id'];
+    $dev = $user->id;
 } elseif (Get::val('tasks') == 'reported') {
     $where[]      = 'opened_by = ?';
-    $sql_params[] = $current_user['user_id'];
+    $sql_params[] = $user->id;
 }
 
 if (is_numeric($dev)) {
@@ -167,12 +167,12 @@ if ($str = Get::val('string')) {
 }
 
 // Do this to hide private tasks from the list
-if (!isset($current_user)) {
+if ($user->isAnon()) {
     $where[] = "t.mark_private <> '1'";
 }
-elseif ( isset($current_user) && empty($permissions['manage_project']) ) {
+elseif (!$user->perms['manage_project']) {
     $where[]      = "(t.mark_private <> '1' OR t.assigned_to = ?)";
-    $sql_params[] = $current_user['user_id'];
+    $sql_params[] = $user->id;
 }
 
 // for 'sort by this column' links
@@ -189,7 +189,7 @@ $get    = htmlentities(join('&', $keys));
 
 if (Get::val('project') !== '0'
         && $proj->prefs['project_is_active'] != '1'
-        || ($proj->prefs['others_view'] != '1' && @$permissions['view_tasks'] != '1'))
+        || ($proj->prefs['others_view'] != '1' && !$user->perms['view_tasks']))
 {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
@@ -460,7 +460,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
        <tr>
        <?php
        // Spacer for the checkboxes beneath it
-       if (Cookie::has('flyspray_userid')) {
+       if (!$user->isAnon()) {
            echo '<th class="ttcolumn"></th>';
        }
   
@@ -494,7 +494,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
         //join the notification table to get watched tasks
         $from        .= " RIGHT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
         $where[]      = 'fsn.user_id = ?';
-        $sql_params[] = $current_user['user_id'];
+        $sql_params[] = $user->id;
     }
     
     // This SQL courtesy of Lance Conry http://www.rhinosw.com/
@@ -594,7 +594,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
         ////////////////////////////////////////////////////////////
         // display starts here 
         echo "<tr id=\"task$task_id\" class=\"severity{$task_details['task_severity']}\">\n";
-        if (Cookie::has('flyspray_userid')) {
+        if (!$user->isAnon()) {
             echo "<td class=\"ttcolumn\"><input class=\"ticktask\" type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
         }
    
@@ -634,7 +634,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
            echo "<td id=\"taskrange\">";
            printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
    
-           if (Cookie::has('flyspray_userid') && $total > 0) {
+           if (!$user->isAnon() && $total > 0) {
                echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">' . $index_text['toggleselected'] . '</a>';
            }
    
@@ -646,7 +646,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
        </tr>
     </table>
    
-    <?php if (Cookie::has('flyspray_userid') && $total > 0): ?>
+    <?php if (!$user->isAnon() && $total > 0): ?>
     <div id="massopsactions">
       <select name="action">
         <option value="add_notification"><?php echo $index_text['watchtasks'];?></option>

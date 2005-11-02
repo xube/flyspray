@@ -607,7 +607,7 @@ function closeTask($args)
          && ($task_details['others_view'] == '1' OR $permissions['view_tasks'] == '1')
          && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $user_id)
          OR ($permissions['manage_project'] == '1' OR $task_details['mark_private'] != '1'))
-         && (($permissions['close_own_tasks'] == '1' && $task_details['assigned_to'] == $current_user['user_id'])
+         && (($permissions['close_own_tasks'] == '1' && $task_details['assigned_to'] == $user->id)
          OR $permissions['close_other_tasks'] == '1')
        )
    {

@@ -1,10 +1,7 @@
 <?php
 // If the application preferences require the use of
 // confirmation codes, use this script
-if ($fs->prefs['spam_proof'] != '1'
-    || $fs->prefs['anon_reg'] != '1'
-    || Cookie::has('flyspray_userid'))
-{
+if (!$fs->prefs['spam_proof'] || !$fs->prefs['anon_reg'] || !$user->isAonon()) {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 

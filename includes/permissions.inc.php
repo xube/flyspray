@@ -41,55 +41,49 @@ function tpl_draw_perms($perms)
     return $html . '</table>';
 }
 
-// A policy function takes up to 5 arguments :
-//  $user     the current user
-//  $perms    the current permissions
-//  $project  the current project prefs
-//  $task     the current task details
-
-function can_view_task($user, $perms, $project, $task)
+function can_view_task($task)
 {
+    global $user, $proj;
     // permissions to view a task (or its dependencies)
-    return
-        $task['project_is_active'] == '1'
-        && ($project['others_view'] == '1' || @$perms['view_tasks'] == '1')
-        && ( ($task['mark_private'] == '1' && $task['assigned_to'] == $user['user_id'])
-                || @$perms['manage_project'] == '1'
-                || $task['mark_private'] != '1'
-        );
+    return $task['project_is_active']
+        && ($proj->prefs['others_view'] || $user->perms['view_tasks'])
+        && ( ($task['mark_private'] && $task['assigned_to'] == $user->id)
+                || $user->perms['manage_project'] || !$task['mark_private']);
 }
 
-function can_modify_task($user, $perms, $task)
+function can_modify_task($task)
 {
-   return @$perms['modify_all_tasks'] == '1' ||
-       ($perms['modify_own_tasks'] == '1' && $task['assigned_to'] == $user['user_id']);
+    global $user;
+    return $user->perms['modify_all_tasks'] ||
+        ($user->perms['modify_own_tasks'] && $task['assigned_to'] == $user->id);
 }
 
-function can_take_ownership($user, $perms, $task)
+function can_take_ownership($task)
 {
-    return (@$perms['assign_to_self'] == '1' && empty($task['assigned_to']))
-        || (@$perms['assign_others_to_self'] == '1' && $task['assigned_to'] != $user['user_id']);
+    global $user;
+    return ($user->perms['assign_to_self'] && empty($task['assigned_to']))
+        || ($user->perms['assign_others_to_self'] && $task['assigned_to'] != $user->id);
 }
 
-function can_close_task($user, $perms, $task)
+function can_close_task($task)
 {
-    return (@$perms['close_own_tasks'] == '1' && $task['assigned_to'] == $user['user_id'])
-        || @$perms['close_other_tasks'] == '1';
+    global $user;
+    return ($user->perms['close_own_tasks'] && $task['assigned_to'] == $user->id)
+        || $user->perms['close_other_tasks'];
 }
 
-function can_create_user($perms) {
+function can_create_user() {
     // Make sure that only admins are using this page, unless
     // The application preferences allow anonymous signups
-    return @$perms['is_admin'] == '1'
-        || ( $fs->prefs['spam_proof'] != '1'
-                && $fs->prefs['anon_reg'] == '1'
-                && !Cookie::has('flyspray_userid')
-           );
+    global $user;
+    return $user->perms['is_admin']
+        || ( !$fs->prefs['spam_proof'] && $fs->prefs['anon_reg'] && $user->isAnon() );
 }
 
-function can_create_group($perms) {
-    return @$perms['is_admin'] == '1'
-        || (@$perms['manage_project'] == '1' && !Get::val('project'));
+function can_create_group() {
+    global $user;
+    return $user->perms['is_admin'] == '1'
+        || ($user->perms['manage_project'] == '1' && !Get::val('project'));
 }
 
 ?>

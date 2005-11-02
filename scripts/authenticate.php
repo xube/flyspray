@@ -28,7 +28,7 @@ if (Req::has('user_name') && Req::has('password')) {
     // Run the username and password through the login checker
     if (!$fs->checkLogin($username, $password)) {
         $_SESSION['ERROR'] = $authenticate_text['loginfailed'];
-        $fs->redirect(Req::get('prev_page'));
+        $fs->redirect(Req::val('prev_page'));
     }
     else {
         $user_id = $fs->checkLogin($username, $password);
@@ -41,16 +41,16 @@ if (Req::has('user_name') && Req::has('password')) {
             $cookie_time = 0; // Set cookies to expire when session ends (browser closes)
         }
 
-        $user = $fs->getUserDetails($user_id);
+        $user = new User($user_id);
 
         // Set a couple of cookies
-        $fs->setcookie('flyspray_userid',   $user['user_id'], $cookie_time);
-        $fs->setcookie('flyspray_passhash', crypt($user['user_pass'], $conf['general']['cookiesalt']), $cookie_time);
+        $fs->setcookie('flyspray_userid',   $user->id, $cookie_time);
+        $fs->setcookie('flyspray_passhash', crypt($user->infos['user_pass'], $conf['general']['cookiesalt']), $cookie_time);
 
         // If the user had previously requested a password change, remove the magic url
         $remove_magic = $db->Query(
                 "UPDATE {users} SET magic_url = '' WHERE user_id = ?",
-                array($user['user_id'])
+                array($user->id)
             );
 
         $_SESSION['SUCCESS'] = $authenticate_text['loginsuccessful'];

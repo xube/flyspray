@@ -14,17 +14,16 @@ $fs->get_language_pack('severity');
 $fs->get_language_pack('priority');
 
 // Only load this page if a valid task was actually requested
-if ( !($task_details = $fs->GetTaskDetails(Get::val('id')))
-        || !can_view_task($user_name, $permissions, $proj->prefs, $task_details))
+if ( !($task_details = $fs->GetTaskDetails(Get::val('id'))) || !can_view_task($task_details))
 {
    $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
 // Create an array with effective permissions for this user on this task
 $eff_perms = array();
-$eff_perms['can_edit'] = can_modify_task($current_user, $permissions, $task_details);
-$eff_perms['can_take_ownership'] = can_take_ownership($current_user, $permissions, $task_details);
-$eff_perms['can_close'] = can_close_task($current_user, $permissions, $task_details);
+$eff_perms['can_edit'] = can_modify_task($task_details);
+$eff_perms['can_take_ownership'] = can_take_ownership($task_details);
+$eff_perms['can_close'] = can_close_task($task_details);
 
 ////////////////////////////
 // Start the details area //
@@ -55,20 +54,20 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
       <?php echo $details_text['attachedtoproject'] . ' &mdash; ';?>
       <select name="attached_to_project">
         <?php
-        if (@$permissions['global_view'] == '1') {
+        if ($user->perms['global_view']) {
             // If the user has permission to view all projects
             $get_projects = $db->Query("SELECT  * FROM {projects}
                                          WHERE  project_is_active = '1'
                                       ORDER BY  project_title");
         }
-        elseif (Cookie::has('flyspray_userid')) {
+        elseif (!$user->isAnon()) {
             // or, if the user is logged in
             $get_projects = $db->Query("SELECT  p.*
                                           FROM  {projects}        p
                                      LEFT JOIN  {groups}          g   ON p.project_id=g.belongs_to_project AND g.view_tasks=1
                                      LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
                                          WHERE  p.project_is_active='1' AND (p.others_view OR uig.user_id IS NOT NULL)
-                                      ORDER BY  p.project_title", array($current_user['user_id']));
+                                      ORDER BY  p.project_title", array($user->id));
         }
         else {
             // Anonymous users
@@ -368,8 +367,8 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
 // }}}
 // {{{ view mode
 elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR !Get::has('edit'))
-        && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $current_user['user_id'])
-            OR @$permissions['manage_project'] == '1' OR $task_details['mark_private'] != '1')):
+        && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $user->id)
+            OR $user->perms['manage_project'] OR $task_details['mark_private'] != '1')):
     //////////////////////////////////////
     // If the user isn't an admin,      //
     // OR if the task is in VIEW mode,  //
@@ -571,7 +570,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
                                 WHERE  task_id = ?  AND comment_id = '0'
                              ORDER BY  attachment_id ASC", array($task_details['task_id']));
 
-    if (@$permissions['view_attachments'] == '1' OR $proj->prefs['others_view'] == '1') {
+    if ($user->perms['view_attachments'] OR $proj->prefs['others_view'] == '1') {
 
         while ($attachment = $db->FetchArray($attachments)):
             echo '<span class="attachments">';
@@ -591,7 +590,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
             echo "</a>\n";
 
             // Delete link
-            if (@$permissions['delete_attachments'] == '1') {
+            if ($user->perms['delete_attachments']) {
             ?>
             &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
               onclick="return confirm('<?php echo $details_text['confirmdeleteattach'];?>'));"><?php echo $details_text['delete'] ?></a>
@@ -603,7 +602,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     }
 
     if ($db->CountRows($attachments)
-                && ((!Cookie::has('flyspray_userid') || @$permissions['view_attachments'] != '1')
+                && (($user->isAnon() || !$user->perms['view_attachments'])
                     && $proj->prefs['others_view'] != '1')
     ) {
         echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
@@ -721,7 +720,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     } elseif (@$eff_perms['can_close'] != '1'
             && $task_details['is_closed'] == '1'
             && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
-            && isset($current_user['user_id']))
+            && !$user->isAnon())
     {
         // If they can't re-open this, show a button to request a PM re-open it
     ?>
@@ -790,8 +789,8 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     <?php
     } elseif (@$eff_perms['can_close'] != '1'
             && !isset($deps_open)
-            && isset($current_user)
-            && $task_details['assigned_to'] == $current_user['user_id']
+            && !$user->isAnon()
+            && $task_details['assigned_to'] == $user->id
             && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1')
     {
         // If the user is assigned this task but can't close it, show a button to request closure
@@ -821,7 +820,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     }
 
     // Start of marking private/public
-    if (@$permissions['manage_project'] == '1' && $task_details['is_closed'] != '1') {
+    if ($user->perms['manage_project'] && $task_details['is_closed'] != '1') {
         if ($task_details['mark_private'] != '1') {
             echo '<a id="private" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=makeprivate&amp;id=' . Get::val('id') . '">' . $details_text['makeprivate'] . '</a> ';
         } else {
@@ -829,16 +828,16 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
         }
     }
 
-    if (!empty($current_user['user_id']) && $task_details['is_closed'] != '1') {
+    if (!$user->isAnon() && $task_details['is_closed'] != '1') {
         $result = $db->Query("SELECT  *
                                 FROM  {notifications}
-                               WHERE  task_id = ?  AND user_id = ?", array(Get::val('id'), $current_user['user_id']));
+                               WHERE  task_id = ?  AND user_id = ?", array(Get::val('id'), $user->id));
         if (!$db->CountRows($result)) {
             echo '<a id="addnotif" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=add_notification&amp;ids='
-                . Get::val('id') . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['watchtask'] . '</a>';
+                . Get::val('id') . '&amp;user_id=' . $user->id . '">' . $details_text['watchtask'] . '</a>';
         } else {
          echo '<a id="removenotif" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=remove_notification&amp;ids='
-             . Get::val('id') . '&amp;user_id=' . $current_user['user_id'] . '">' . $details_text['stopwatching'] . '</a>';
+             . Get::val('id') . '&amp;user_id=' . $user->id . '">' . $details_text['stopwatching'] . '</a>';
         }
     }
     ?>
@@ -869,18 +868,18 @@ $num_reminders = $db->CountRows($result);
 ?>
 <ul id="submenu">
   <?php
-  if (@$permissions['view_comments'] == '1' OR @$permissions['add_comments'] == '1' OR $proj->prefs['others_view'] == '1') {
+  if ($user->perms['view_comments'] OR $user->perms['add_comments'] OR $proj->prefs['others_view'] == '1') {
       echo '<li id="commentstab"><a href="#comments">'. $details_text['comments'] . " ($num_comments)" . '</a></li>';
   }
 
   echo '<li id="relatedtab"><a href="#related">' . $details_text['relatedtasks'] . " ($num_related/$num_related_to)" . '</a></li>';
 
-  if (@$permissions['manage_project'] == '1') {
+  if ($user->perms['manage_project']) {
       echo '<li id="notifytab"><a href="#notify">' . $details_text['notifications'] . " ($num_notifications) " . '</a></li>';
       echo '<li id="remindtab"><a href="#remind">' . $details_text['reminders'] . " ($num_reminders)" . '</a></li>';
   }
 
-  if (@$permissions['view_history'] == '1') {
+  if ($user->perms['view_history']) {
       echo '<li id="historytab"><a href="#history">' . $details_text['history'] . '</a></li>';
   }
   ?>
@@ -899,7 +898,7 @@ while ($row = $db->FetchArray($getcomments)) {
     $formatted_date = $fs->formatDate($row['date_added'], true);
     $comment_text   = tpl_formatText($row['comment_text']);
 
-    if (@$permissions['view_comments'] == '1' OR $proj->prefs['others_view'] == '1') {
+    if ($user->perms['view_comments'] || $proj->prefs['others_view'] == '1') {
         // If the user has permissions, show the comments already added
 
         echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">';
@@ -908,12 +907,12 @@ while ($row = $db->FetchArray($getcomments)) {
 
         echo '<span class="DoNotPrint">';
 
-        if (@$permissions['edit_comments'] == '1') {
+        if ($user->perms['edit_comments']) {
             echo '&nbsp; - <a href="' . $conf['general']['baseurl'] . '?do=editcomment&amp;task_id=' 
                 . Get::val('id') . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
         }
 
-        if (@$permissions['delete_comments'] == '1'):
+        if ($user->perms['delete_comments']):
         ?>
         &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deletecomment&amp;task_id=<?php echo Get::val('id');?>&amp;comment_id=<?php echo $row['comment_id'];?>"
           onclick="return confirm('<?php echo $details_text['confirmdeletecomment'];?>');"><?php echo $details_text['delete'] ?></a>
@@ -927,7 +926,7 @@ while ($row = $db->FetchArray($getcomments)) {
                                     WHERE  comment_id = ?
                                  ORDER BY  attachment_id ASC", array($row['comment_id']));
 
-        if (@$permissions['view_attachments'] == '1' OR $proj->prefs['others_view'] == '1') {
+        if ($user->perms['view_attachments'] || $proj->prefs['others_view'] == '1') {
             while ($attachment = $db->FetchArray($attachments)) {
                 echo '<span class="attachments">';
                 echo '<a href="' . $conf['general']['baseurl'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
@@ -944,7 +943,7 @@ while ($row = $db->FetchArray($getcomments)) {
 
                 echo '&nbsp;&nbsp;' . $attachment['orig_name'] . "</a>\n";
 
-                if (@$permissions['delete_attachments'] == '1'):
+                if ($user->perms['delete_attachments']):
                 ?>
                 &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
                   onclick="return confirm('<?php echo $details_text['confirmdeleteattach'];?>'); ?></a>"><?php echo $details_text['delete'] ?></a>
@@ -954,15 +953,15 @@ while ($row = $db->FetchArray($getcomments)) {
             echo '<br />';
         }
 
-        if ($db->CountRows($attachments)
-                && ((!Cookie::has('flyspray_userid') OR @$permissions['view_attachments'] != '1') && $proj->prefs['others_view'] != '1') )
+        if ($db->CountRows($attachments) && !$proj->prefs['others_view']
+                && ($user->isAnon() || !$user->perms['view_attachments']))
         {
             echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
         }
     }
 }
 
-if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
+if ($user->perms['add_comments'] && $task_details['is_closed'] != '1'):
 ?>
   <form enctype="multipart/form-data" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
     <div class="admin">
@@ -972,7 +971,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
       <?php echo $details_text['addcomment'];?>
       <textarea id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
 
-      <?php if (@$permissions['create_attachments'] == '1'): ?>
+      <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
         <?php echo $details_text['uploadafile'];?>
         <input type="file" size="55" name="userfile[]" /><br />
@@ -986,7 +985,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
       $check_watch = $db->Query("SELECT  user_id
                                    FROM  {notifications}
                                   WHERE  user_id = ?  AND task_id = ?",
-                                  array($current_user['user_id'], $task_details['task_id']));
+                                  array($user->id, $task_details['task_id']));
       if ( !$db->CountRows($check_watch) ) {
           echo "<input name=\"notifyme\" type=\"checkbox\" value=\"1\" checked=\"checked\" />{$newtask_text['notifyme']}";
       }
@@ -1055,7 +1054,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
   <?php endwhile; // }}} ?>
 </div>
 
-<?php if (@$permissions['manage_project'] == '1'): // {{{ ?>
+<?php if ($user->perms['manage_project']): // {{{ ?>
 
 <div id="notify" class="tab">
   <p><em><?php echo $details_text['theseusersnotify'];?></em></p>
@@ -1070,7 +1069,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
           . Get::val('id') . '&amp;user_id=' . $row['user_id'] . '">' . $details_text['remove'] . '</a></p>';
   }
 
-  if (@$permissions['manage_project'] == '1'): ?>
+  if ($user->perms['manage_project']): ?>
   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="get">
     <p class="admin">
       <?php echo $details_text['addusertolist'];?>
@@ -1098,7 +1097,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                              ORDER BY  reminder_id", array(Get::val('id')));
 
   while ($row = $db->FetchArray($get_reminders)) {
-      if ((@$permissions['is_admin'] == '1' OR @$permissions['manage_project'] == '1') && $task_details['is_closed'] != '1') {
+      if (($user->perms['is_admin'] || $user->perms['manage_project']) && $task_details['is_closed'] != '1') {
       ?>
       <div class="modifycomment">
         <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
@@ -1131,7 +1130,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
       echo "<br /><br />";
   }
 
-  if (@$permissions['is_admin'] == '1' && $task_details['is_closed'] != '1'):
+  if ($user->perms['is_admin'] && $task_details['is_closed'] != '1'):
   ?>
   <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="formaddreminder">
     <p class="admin">
@@ -1173,7 +1172,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
   <?php endif; // }}} ?>
 </div>
 
-<?php if (@$permissions['view_history'] == '1'): // {{{ ?>
+<?php if ($user->perms['view_history']): // {{{ ?>
 
 <div id="history" class="tab">
   <table class="history">

@@ -41,12 +41,8 @@ class Notifications {
    // They are sent by SendJabber(), below
    function StoreJabber( $to, $subject, $body )
    {
-      // not sure all of these are needed any longer
       global $db;
       global $fs;
-//       global $notify_text;
-//       global $details_text;
-      global $current_user;
 
       $subject = htmlspecialchars($subject);
       $body = htmlspecialchars($body);
@@ -102,9 +98,6 @@ class Notifications {
    {
       global $db;
       global $fs;
-//       global $notify_text;
-//       global $details_text;
-//       global $current_user;
 
       debug_print("Checking Flyspray Jabber configuration...");
 
@@ -240,10 +233,11 @@ class Notifications {
    {
       global $fs;
       global $proj;
+      global $user;
 
       $body = str_replace('&amp;', '&', $body);
 
-      if (empty($to) OR $to == Cookie::val('flyspray_userid'))
+      if (empty($to) || $to == $user->id)
          return;
 
       // Get the new email class
@@ -314,7 +308,7 @@ class Notifications {
       global $fs;
       global $notify_text;
       global $details_text;
-      global $current_user;
+      global $user;
 
       // Get the task details
       $task_details = $fs->getTaskDetails($task_id);
@@ -361,7 +355,7 @@ class Notifications {
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['newtaskopened'] . "\n\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $details_text['attachedtoproject'] . ' - ' .  $task_details['project_title'] . "\n";
          $body .= $details_text['summary'] . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $details_text['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
@@ -393,7 +387,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['taskchanged'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $details_text['attachedtoproject'] . ' - ' .  $task_details['project_title'] . "\n";
          $body .= $details_text['summary'] . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $details_text['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
@@ -427,7 +421,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['taskclosed'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $details_text['reasonforclosing'] . ' - ' . $task_details['resolution_name'] . "\n";
 
          if (!empty($task_details['closure_comment']))
@@ -453,7 +447,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['taskreopened'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] .  ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] .  ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -472,7 +466,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['depadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -492,7 +486,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['depremoved'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -512,7 +506,7 @@ class Notifications {
                                WHERE user_id = ?
                                AND task_id = ?
                                ORDER BY comment_id DESC",
-                               array($current_user['user_id'], $task_id), '1'
+                               array($user->id, $task_id), '1'
                              );
          $comment = $db->FetchArray($result);
 
@@ -522,7 +516,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['commentadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= "----------\n";
          $body .= $comment['comment_text'] . "\n";
          $body .= "----------\n\n";
@@ -548,7 +542,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['attachmentadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -566,7 +560,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['relatedadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -619,7 +613,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pendingreq'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -637,7 +631,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pmdeny'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -655,7 +649,7 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['assignedtoyou'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $current_user['real_name'] . ' (' . $current_user['user_name'] . ")\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -673,9 +667,6 @@ class Notifications {
 
       global $db;
       global $fs;
-//       global $notify_text;
-//       global $details_text;
-//       global $current_user;
 
       $jabber_users = array();
       $email_users = array();
@@ -710,10 +701,8 @@ class Notifications {
    {
       global $db;
       global $fs;
-//       global $notify_text;
-//       global $details_text;
       global $proj;
-      global $current_user;
+      global $user;
 
       $jabber_users = array();
       $email_users = array();
@@ -729,7 +718,7 @@ class Notifications {
       while ($row = $db->FetchArray($get_users))
       {
          // Check for current user
-         if ($row['user_id'] != $current_user['user_id'] &&  $row['user_id'] != $task_details['assigned_to'])
+         if ($row['user_id'] != $user->id &&  $row['user_id'] != $task_details['assigned_to'])
          {
             if (($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '1')
             OR $fs->prefs['user_notify'] == '2')
@@ -749,7 +738,7 @@ class Notifications {
       };
 
       // Now we need to get the person assigned to this task, and add them to the correct address list
-      if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != Cookie::val('flyspray_userid'))
+      if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $user->id)
       {
          $user_details = $fs->getUserDetails($task_details['assigned_to']);
 

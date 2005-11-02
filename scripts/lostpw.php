@@ -10,11 +10,11 @@
 $fs->get_language_pack('admin');
 $page->uses('admin_text');
 
-if (!Get::has('magic') && !Cookie::has('flyspray_userid')) {
+if (!Get::has('magic') && $user->isAnon()) {
     // Step One: user requests magic url
     $page->display('lostpw.step1.tpl');
 }
-elseif (!Get::has('magic') && !Cookie::has('flyspray_userid')) {
+elseif (!Get::has('magic') && $user->isAnon()) {
     // Step Two: user enters new password
 
     $check_magic = $db->Query("SELECT * FROM {users} WHERE magic_url = ?",

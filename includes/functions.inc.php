@@ -256,7 +256,7 @@ class Flyspray
 
     function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '') 
     {
-        global $db;
+        global $db, $user;
 
         // This function creates entries in the history table.  These are the event types:
         //  0: Fields changed in a task
@@ -292,7 +292,7 @@ class Flyspray
 
         $db->Query("INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                                 VALUES(?, ?, ?, ?, ?, ?, ?)",
-                array($task, Cookie::val('flyspray_userid', 0), date('U'), $type, $field, $oldvalue, $newvalue));
+                array($task, intval($user->id), date('U'), $type, $field, $oldvalue, $newvalue));
     }
 
 
@@ -338,77 +338,6 @@ class Flyspray
         global $db;
         $sql = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($group_id));
         return $db->FetchArray($sql);
-    }
-
-
-    // Get the permissions for the current user
-    function getPermissions($user_id, $project_id) 
-    {
-        global $db;
-
-        $current_user = $this->getUserDetails($user_id);
-
-        // Get the global group permissions for the current user
-        $result = $db->Query("SELECT  *
-                                FROM  {groups} g
-                           LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
-                               WHERE  uig.user_id = ? and g.belongs_to_project = '0'", array($user_id));
-
-        $global_permissions = $db->FetchArray($result);
-
-        // Get the project-level group for this user, and put the permissions into an array
-        $search_project_group = $db->Query("SELECT * FROM {groups}
-                                             WHERE belongs_to_project = ?", array($project_id));
-
-        // Default to the global permissions, but allow it to override if we find a match
-        $project_permissions = $global_permissions;
-        while ($row = $db->FetchRow($search_project_group)) {
-            $check_in = $db->Query("SELECT * FROM {users_in_groups}
-                                     WHERE user_id = ? AND group_id = ?",
-                                     array($user_id, $row['group_id']));
-
-            if ($db->CountRows($check_in) > '0') {
-                $project_permissions = $row;
-            }
-        }
-
-        // Define which fields we care about from the groups information
-        $field = array(
-                '1'  => 'is_admin',
-                '2'  => 'manage_project',
-                '3'  => 'view_tasks',
-                '4'  => 'open_new_tasks',
-                '5'  => 'modify_own_tasks',
-                '6'  => 'modify_all_tasks',
-                '7'  => 'view_comments',
-                '8'  => 'add_comments',
-                '9'  => 'edit_comments',
-                '10' => 'delete_comments',
-                '11' => 'view_attachments',
-                '12' => 'create_attachments',
-                '13' => 'delete_attachments',
-                '14' => 'view_history',
-                '15' => 'close_own_tasks',
-                '16' => 'close_other_tasks',
-                '17' => 'assign_to_self',
-                '18' => 'assign_others_to_self',
-                '19' => 'view_reports',
-            );
-
-        // Now, merge the two arrays, making the highest permission active (basically, use a boolean OR)
-        $permissions = array();
-
-        foreach ($field as $key => $val) {
-            $permissions[$val] =
-                intval($global_permissions[$val] == '1' OR $project_permissions[$val] == '1');
-        }
-
-        $permissions['account_enabled']  = $current_user['account_enabled'];
-        $permissions['user_pass']        = $current_user['user_pass'];
-        $permissions['group_open']       = $global_permissions['group_open'];
-        $permissions['global_view']      = $global_permissions['view_tasks'];
-
-        return $permissions;
     }
 
 

@@ -13,7 +13,7 @@ $fs->get_language_pack('admin');
 $fs->get_language_pack('index');
 
 // Only allow those with permission to view this page
-if ($permissions['view_reports'] != '1') {
+if (!$user->perms['view_reports']) {
     echo $admin_text['nopermission'];
     exit;
     $fs->Redirect( $fs->CreateURL('error', null) );

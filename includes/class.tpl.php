@@ -91,8 +91,7 @@ class Tpl
 
 class FSTpl extends Tpl
 {
-    var $_uses = array('fs', 'conf', 'baseurl', 'language', 'proj',
-            'permissions', 'current_user');
+    var $_uses = array('fs', 'conf', 'baseurl', 'language', 'proj', 'user');
 }
 
 // {{{ some useful plugins

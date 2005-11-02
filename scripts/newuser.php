@@ -2,10 +2,10 @@
 $fs->get_language_pack('newuser');
 $page->uses('newuser_text');
 
-if (!can_create_user($permissions)) {
+if (!can_create_user()) {
     $fs->redirect('./');
 }
-if (@$permissions['is_admin'] == '1') {
+if ($user->perms['is_admin']) {
     $sql = $db->Query("SELECT  group_id, group_name
                          FROM  {groups}
                         WHERE  belongs_to_project = '0'

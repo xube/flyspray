@@ -5,7 +5,7 @@
    -------------------------------------------------------
 */
 
-if (!Cookie::has('flyspray_userid')) {
+if ($user->isAnon()) {
     echo $admin_text['nopermission'];
     exit;
 }

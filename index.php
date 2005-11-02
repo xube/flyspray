@@ -17,12 +17,9 @@ if ($conf['general']['reminder_daemon'] == '1') {
 
 /* permission stuff */
 if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
-    $user_id = Cookie::val('flyspray_userid');
-
-    // Check to see if the user has been trying to hack their cookies to perform sql-injection
-    if (!is_numeric($user_id) || !is_numeric(Cookie::val('flyspray_project'))) {
-        $fs->Redirect( $fs->CreateURL('error', null) );
-    }
+    $user = new User(Cookie::val('flyspray_userid'));
+    $user->get_perms($proj);
+    $user->check_account_ok();
 
     // Only logged in users get to use the 'last search' functionality
     foreach (array('string','type','sev','due','dev','cat','status') as $key) {
@@ -36,22 +33,9 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
         }
     }
 
-    $current_user = $fs->getUserDetails($user_id);
-    $permissions  = $fs->getPermissions($user_id, $proj->id);
-
-    // Check that the user hasn't spoofed the cookie contents somehow
-    // And that their account/group are enabled
-    if (Cookie::val('flyspray_passhash') !=
-            crypt($current_user['user_pass'], $conf['general']['cookiesalt'])
-            || $permissions['account_enabled'] != '1'
-            || $permissions['group_open'] != '1')
-    {
-        $fs->setcookie('flyspray_userid',   '', time()-60);
-        $fs->setcookie('flyspray_passhash', '', time()-60);
-        $fs->Redirect($fs->CreateURL('logout', null));
-    }
 } else {
-    $permissions  = array();
+    $user = new User();
+    $user->get_perms($proj);
 }
 
 if (Get::has('getfile') && Get::val('getfile')) {
@@ -63,12 +47,12 @@ if (Get::has('getfile') && Get::val('getfile')) {
 
     // Retrieve permissions!
     $task_details = $fs->GetTaskDetails($task_id);
-    $proj_prefs   = $fs->GetProjectPrefs($task_details['attached_to_project']);
-    $user_permissions = @$fs->getPermissions(intval($current_user['user_id']), $task_details['attached_to_project']);
+    $proj         = new Project($task_details['attached_to_project']);
+    $user->get_perms($proj);
 
     // Check if file exists, and user permission to access it!
     if (file_exists("attachments/$file_name")
-            && ($proj->prefs['others_view'] || $user_permissions['view_attachments']))
+            && ($proj->prefs['others_view'] || $user->perms['view_attachments']))
     {
         $path = "$basedir/attachments/$file_name";
 
@@ -126,10 +110,32 @@ if ($show_task = Get::val('show_task')) {
 if ($fs->requestDuplicated()) {
     // Check that this page isn't being submitted twice
     $_SESSION['ERROR'] = $language['duplicated'];
-    $fs->Redirect( "?id=".$proj->id );
+    $fs->Redirect( '?id='.$proj->id );
 }
 
-if (Cookie::has('flyspray_userid') && empty($permissions['global_view'])) {
+if ($user->perms['manage_project']) {
+    // Find out if there are any PM requests wanting attention
+    $sql = $db->Query(
+            "SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
+            array($proj->id));
+    list($count) = $db->fetchRow($sql);
+
+    $page->assign('pm_pendingreq_num', $count);
+}
+
+// Show the project blurb if the project manager defined one
+$do = Req::val('do', 'index');
+if ($proj->prefs['project_is_active'] == '1'
+    && ($proj->prefs['others_view'] == '1' || $user->perms['view_tasks'])
+    && $proj->prefs['intro_message']
+    && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))
+    || (Get::val('project') == '0'))
+{
+    require_once ( "$basedir/includes/markdown.php" );
+    $page->assign('intro_message', Markdown($proj->prefs['intro_message']));
+}
+
+if (!$user->isAnon() && !$user->perms['global_view']) {
     // or, if the user is logged in
     $get_projects = $db->Query(
             "SELECT  p.project_id, p.project_title
@@ -137,7 +143,7 @@ if (Cookie::has('flyspray_userid') && empty($permissions['global_view'])) {
           LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
           LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
               WHERE  p.project_is_active='1' AND (p.others_view OR uig.user_id IS NOT NULL)
-           ORDER BY  p.project_title", array($current_user['user_id']));
+           ORDER BY  p.project_title", array($user->id));
 }
 else {
     // XXX kludge, to merge request for power users with anonymous ones.
@@ -146,31 +152,11 @@ else {
                                  WHERE  project_is_active = '1'
                                         AND ('1' = ? OR others_view = '1')
                               ORDER BY  project_title",
-                              array($permissions['global_view']));
+                              array($user->perms['global_view']));
 }
-
-if ($permissions['manage_project']) {
-    // Find out if there are any PM requests wanting attention
-    $get_req = $db->Query(
-            "SELECT * FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
-            array($proj->id));
-
-    $page->assign('pm_pendingreq_num', $db->CountRows($get_req));
-}
-
-// Show the project blurb if the project manager defined one
-$do = Req::val('do', 'index');
-if ($proj->prefs['project_is_active'] == '1'
-    && ($proj->prefs['others_view'] == '1' OR @$permissions['view_tasks'] == '1')
-    && !empty($proj->prefs['intro_message'])
-    && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))
-    || (Get::val('project') == '0'))
-{
-    require_once ( "$basedir/includes/markdown.php" );
-    $page->assign('intro_message', Markdown($proj->prefs['intro_message']));
-}
-
 $page->assign('project_list', $db->FetchAllArray($get_projects));
+
+
 $page->display('header.tpl');
 unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
 

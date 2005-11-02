@@ -17,7 +17,7 @@
 
       <span id="links">
         <?php
-        if (!Cookie::has('flyspray_userid') && $fs->prefs['anon_reg']):
+        if ($user->isAnon() && $fs->prefs['anon_reg']):
             if ($fs->prefs['spam_proof']):
         ?>
         <a href="{$fs->CreateURL('register','')}">{$language['register']}</a>

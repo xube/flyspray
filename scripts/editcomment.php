@@ -11,7 +11,7 @@
 $fs->get_language_pack('admin');
 $page->uses('admin_text');
 
-if (Get::has('id') && Get::has('task_id') && $permissions['edit_comments'] == '1') {
+if (Get::has('id') && Get::has('task_id') && $user->perms['edit_comments']) {
     // Get the comment details
     $res = $db->Query("SELECT  *
                          FROM  {comments}

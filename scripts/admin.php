@@ -18,7 +18,7 @@ $this_page = htmlspecialchars($_SERVER["REQUEST_URI"]);
 $area      = Get::val('area', 'prefs');
 
 // The user must be a member of the global "Admin" group to use this page
-if ($permissions['is_admin'] != '1') {
+if (!$user->perms['is_admin']) {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 // Show the menu that stays visible, regardless of which area we're in
@@ -358,7 +358,7 @@ elseif ($area == 'users' && Get::val('id')): // {{{
             // This should really share its list of values with myprofile.php...
             $perpagevals = array(10,25,50,100,250,500);
             foreach ($perpagevals as $n) {
-                $s = ($current_user['tasks_perpage'] == $n ? " selected=\"selected\"" : "");
+                $s = ($user_details['tasks_perpage'] == $n ? " selected=\"selected\"" : "");
                 echo "<option value=\"$n\"$s>$n</option>\n";
             }
             ?>
@@ -394,7 +394,7 @@ elseif ($area == 'users' && Get::val('id')): // {{{
       </tr>
       <tr>
         <td><label for="accountenabled"><?php echo $admin_text['accountenabled'];?></label></td>
-        <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled'] == "1") {echo "checked=\"checked\"";};?> /></td>
+        <td><input id="accountenabled" type="checkbox" name="account_enabled" value="1" <?php if ($user_details['account_enabled']) {echo "checked=\"checked\"";};?> /></td>
       </tr>
       <tr>
         <td colspan="2"><hr /></td>

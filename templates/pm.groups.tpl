@@ -28,7 +28,7 @@
           <td>{!tpl_checkbox('users['.$user['user_id'].']')}</td>
           <td><a href="{$fs->CreateURL('user', $user['user_id'])}">{$user['user_name']}</a></td>
           <td>{$user['real_name']}</td>
-          <?php if ($user['account_enabled']): ?>
+          <?php if ($user->infos['account_enabled']): ?>
           <td>{$admin_text['yes']}</td>
           <?php else: ?>
           <td>{$admin_text['no']}</td>

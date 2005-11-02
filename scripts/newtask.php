@@ -11,7 +11,7 @@ $fs->get_language_pack('status');
 $fs->get_language_pack('severity');
 $fs->get_language_pack('priority');
 
-if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
+if (!$user->perms['open_new_tasks'] && $proj->prefs['anon_open'] != '1') {
     // Check if the user has the right to open new tasks
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
@@ -90,7 +90,7 @@ if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
           <tr>
             <td><label for="itemstatus"><?php echo $newtask_text['status'];?></label></td>
             <td>
-              <select id="itemstatus" name="item_status" <?php if ($permissions['modify_all_tasks'] != "1") echo ' disabled="disabled"';?>>
+              <select id="itemstatus" name="item_status" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
               <?php
               // Get list of statuses
               foreach($status_list as $key => $val) {
@@ -107,7 +107,7 @@ if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
 
           <tr>
             <td>
-              <?php if ($permissions['modify_all_tasks'] != "1"):
+              <?php if (!$user->perms['modify_all_tasks']):
                   // If the user cant modify jobs, we will have to set a hidden field for the status and priority
               ?>
               <input type="hidden" name="item_status"   value="1" />
@@ -116,7 +116,7 @@ if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
               <label for="assignedto"><?php echo $newtask_text['assignedto'];?></label>
             </td>
             <td>
-              <select id="assignedto" name="assigned_to" <?php if ($permissions['modify_all_tasks'] != "1") echo ' disabled="disabled"';?>>
+              <select id="assignedto" name="assigned_to" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
               <?php // Get list of users
               echo "<option value=\"0\">{$newtask_text['noone']}</option>\n";
               $fs->ListUsers($proj->id);
@@ -166,7 +166,7 @@ if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
         <tr>
           <td><label for="task_priority"><?php echo $newtask_text['priority'];?></label></td>
           <td>
-            <select id="task_priority" name="task_priority" <?php if ($permissions['modify_all_tasks'] != "1") echo ' disabled="disabled"';?>>
+            <select id="task_priority" name="task_priority" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
             <?php // Get list of statuses
             foreach($priority_list as $key => $val) {
                if ($key == '2') {
@@ -200,7 +200,7 @@ if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
         <tr>
           <td><label for="closedbyversion"><?php echo $newtask_text['dueinversion'];?></label></td>
           <td>
-            <select id="closedbyversion" name="closedby_version" <?php if ($permissions['modify_all_tasks'] != "1") echo ' disabled="disabled"';?>>
+            <select id="closedbyversion" name="closedby_version" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
             <?php
             echo "<option value=\"\">{$newtask_text['undecided']}</option>\n";
 
@@ -242,7 +242,7 @@ if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
         <textarea id="details" name="detailed_desc" cols="70" rows="10"></textarea>
       </div>
 
-      <?php if (@$permissions['create_attachments'] == '1'): ?>
+      <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
          <?php echo $details_text['uploadafile'];?>
          <input type="file" size="55" name="userfile[]" /><br />
@@ -252,7 +252,7 @@ if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
 
       <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $newtask_text['addthistask'];?>" accesskey="s"/>
 
-      <?php if (Cookie::has('flyspray_userid')): ?>
+      <?php if (!$user->isAnon()): ?>
       &nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked="checked" />
       <?php echo $newtask_text['notifyme']; ?>
       <?php endif; ?>

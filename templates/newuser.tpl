@@ -40,7 +40,7 @@
         <input type="radio" name="notify_type" value="2" />{$newuser_text['jabber']} <br />
       </td>
     </tr>
-    <?php if (@$permissions['is_admin']): ?>
+    <?php if ($user->perms['is_admin']): ?>
     <tr>
       <td><label for="groupin">{$newuser_text['globalgroup']}</label></td>
       <td>

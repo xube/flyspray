@@ -30,6 +30,7 @@ require_once ( "$basedir/includes/functions.inc.php" );
 require_once ( "$basedir/includes/backend.inc.php" );
 
 require_once ( "$basedir/includes/class.project.php" );
+require_once ( "$basedir/includes/class.user.php" );
 
 $db = new Database;
 if (!$db->dbOpenFast($conf['database'])) {

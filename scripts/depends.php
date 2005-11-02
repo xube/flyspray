@@ -16,7 +16,7 @@ function function_disabled($func_name)
 */
 
 if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
-        || !can_view_task($current_user, $permissions, $proj->prefs, $task_details))
+        || !can_view_task($task_details))
 {
     // Only load this page if a valid task was actually requested
     // by an aknowledged user

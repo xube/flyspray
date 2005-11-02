@@ -1,7 +1,7 @@
 <?php
 
 // Make sure that only admins are using this page
-if (!can_create_group($permissions)) {
+if (!can_create_group()) {
     echo $newgroup_text['nopermission'];
     exit;
 }

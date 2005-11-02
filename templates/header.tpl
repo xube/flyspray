@@ -28,16 +28,16 @@
     <h1 id="title"><span>{$proj->prefs['project_title']}</span></h1>
     <?php endif; ?>
     <?php
-    if (!Cookie::has('flyspray_userid')):
+    if ($user->isAnon()):
         $this->display('loginbox.tpl');
-    elseif (Cookie::has('flyspray_passhash')):
+    else:
         $this->display('links.tpl');
     ?>
     <div id="permslink">
       <a href="#" onclick="showhidestuff('permissions');">{$language['permissions']}</a>
     </div>
     <div id="permissions" onclick="showhidestuff('permissions');">
-      {!tpl_draw_perms($permissions)}
+      {!tpl_draw_perms($user->perms)}
     </div>
     <?php endif; ?>
 
@@ -56,7 +56,7 @@
             <select name="tasks">
               <option value="all">{$language['tasksall']}</option>
               <?php
-              if (Cookie::has('flyspray_userid')) {
+              if (!$user->isAnon()) {
                   echo tpl_options(array(
                               'assigned' => $language['tasksassigned'],
                               'reported' => $language['tasksreported'],

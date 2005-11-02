@@ -10,7 +10,7 @@
   -------------------------------------------------------------
 */
 
-if ($permissions['manage_project'] != '1') {
+if (!$user->perms['manage_project']) {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
