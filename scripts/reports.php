@@ -427,7 +427,7 @@ function events_report()
           <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . "\">FS#{$history['task_id']}</a></td>";?>
           <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . '">' . htmlspecialchars($history['item_summary']) . '</a></td>';?>
           <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
-          <td><?php echo $history['user_id'] ? $fs->LinkedUserName($history['user_id']) : $details_text['anonymous']; ?></td>
+          <td><?php echo $history['user_id'] ? tpl_userlink($history['user_id']) : $details_text['anonymous']; ?></td>
           <td><?php echo EventDescription($history);?></td>
         </tr>
         <?php endwhile; ?>
@@ -564,13 +564,13 @@ function EventDescription($history)
         $comment = $db->Query("SELECT user_id, date_added FROM {comments} WHERE comment_id = ?", array($commentid));
         if ($db->CountRows($comment) != 0) {
             $comment = $db->FetchRow($comment);
-            $description .= " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
+            $description .= " ({$details_text['commentby']} " . tpl_userlink($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
         };
 
     } elseif ($history['event_type'] == 6) {      //Comment deleted
         $description = $details_text['commentdeleted'];
         if ($newvalue != '' && $oldvalue != '') {
-            $description .= " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($oldvalue, true) . ")";
+            $description .= " ({$details_text['commentby']} " . tpl_userlink($newvalue) . " - " . $fs->formatDate($oldvalue, true) . ")";
         };
 
     } elseif ($history['event_type'] == 7) {      //Attachment added
@@ -588,10 +588,10 @@ function EventDescription($history)
         $description = "{$details_text['attachmentdeleted']}: {$newvalue}";
 
     } elseif ($history['event_type'] == 9) {      //Notification added
-        $description = "{$details_text['notificationadded']}: " . $fs->LinkedUsername($newvalue);
+        $description = "{$details_text['notificationadded']}: " . tpl_userlink($newvalue);
 
     } elseif ($history['event_type'] == 10) {      //Notification deleted
-        $description = "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
+        $description = "{$details_text['notificationdeleted']}: " . tpl_userlink($newvalue);
 
     } elseif ($history['event_type'] == 11) {      //Related task added
         $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
@@ -608,11 +608,11 @@ function EventDescription($history)
 
     } elseif ($history['event_type'] == 14) {      //Task assigned
         if ($history['old_value'] == '0') {
-            $description = "{$details_text['taskassigned']} " . $fs->LinkedUsername($newvalue);
+            $description = "{$details_text['taskassigned']} " . tpl_userlink($newvalue);
         } elseif ($history['new_value'] == '0') {
             $description = $details_text['assignmentremoved'];
         } else {
-            $description = "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
+            $description = "{$details_text['taskreassigned']} " . tpl_userlink($newvalue);
         };
     } elseif ($history['event_type'] == 15) {      //Task added to related list of another task
         $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
@@ -627,10 +627,10 @@ function EventDescription($history)
         $description = "{$details_text['deletedasrelated']} {$details_text['task']} #{$newvalue} &mdash; <a href=\"?do=details&amp;id={$newvalue}\">{$related}</a>";
 
     } elseif ($history['event_type'] == 17) {      //Reminder added
-        $description = "{$details_text['reminderadded']}: " . $fs->LinkedUsername($newvalue);
+        $description = "{$details_text['reminderadded']}: " . tpl_userlink($newvalue);
 
     } elseif ($history['event_type'] == 18) {      //Reminder deleted
-        $description = "{$details_text['reminderdeleted']}: " . $fs->LinkedUsername($newvalue);
+        $description = "{$details_text['reminderdeleted']}: " . tpl_userlink($newvalue);
     };
 
    return $description;

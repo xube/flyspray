@@ -41,7 +41,7 @@ echo '<?xml version="1.0"?>'."\n";
 ?>
     <item>
       <title><?php echo $item_summary ?></title>
-      <description><?php echo $fs->FormatText($detailed_desc) ?></description>
+      <description><?php echo tpl_FormatText($detailed_desc) ?></description>
       <link><?php echo $fs->CreateURL('details', $row['task_id']) ?></link>
     </item>';
 

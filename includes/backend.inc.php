@@ -199,10 +199,10 @@ class Backend {
       if (!empty($userid))
          $permissions = @$fs->getPermissions($userid, $projectid);
 
-      $project_prefs = $fs->getProjectPrefs($projectid);
+      $project       = new Project($projectid);
 
       // Check if the user can view tasks from this project
-      if ($permissions['view_tasks'] == '1' OR $permissions['global_view'] == '1' OR $project_prefs['others_view'] == '1')
+      if ($permissions['view_tasks'] == '1' OR $permissions['global_view'] == '1' OR $project->prefs['others_view'] == '1')
       {
          // If they have permission, let's carry on.  Otherwise, give up.
       } else
@@ -364,11 +364,11 @@ class Backend {
 
 
       // Get some information about the project and the user's permissions
-      $project_prefs = $fs->GetProjectPrefs($projectid);
+      $project       = new Project($projectid);
       $permissions   = $fs->GetPermissions($userid, $projectid);
 
       // Check permissions for the specified user (or anonymous) to open tasks
-      if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
+      if ($permissions['open_new_tasks'] != '1' && $project->prefs['anon_open'] != '1')
          return false;
 
 
@@ -470,7 +470,7 @@ class Backend {
 
       // Otherwise send it to the default category owner
       if (empty($owner))
-         $owner = $project_prefs['default_cat_owner'];
+         $owner = $project->prefs['default_cat_owner'];
 
       if (!empty($owner))
       {

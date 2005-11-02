@@ -99,7 +99,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
 
         $date_opened = $fs->formatDate($task_details['date_opened'], true);
 
-        echo $details_text['openedby'] . ' ' . $fs->LinkedUserName($task_details['opened_by']) . ' - ' . $date_opened;
+        echo $details_text['openedby'] . ' ' . tpl_userlink($task_details['opened_by']) . ' - ' . $date_opened;
 
         if ($task_details['last_edited_by']) {
             // If it's been edited, get the details
@@ -108,7 +108,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
 
             $date_edited = $fs->formatDate($task_details['last_edited_time'], true);
 
-            echo '<br />' . $details_text['editedby'] . ' ' . $fs->LinkedUserName($task_details['last_edited_by']) . ' - ' . $date_edited;
+            echo '<br />' . $details_text['editedby'] . ' ' . tpl_userlink($task_details['last_edited_by']) . ' - ' . $date_edited;
         }
         ?>
       </div>
@@ -421,7 +421,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
 ?>
 <div id="taskdetails" ondblclick='openTask("<?php echo $fs->CreateURL('edittask', $task_details['task_id']);?>")'>
   <h2 class="severity<?php echo $task_details['task_severity'];?>">
-    <?php echo 'FS#' . $task_details['task_id'] . ' &mdash; ' . $fs->formatText($task_details['item_summary']);?>
+    <?php echo 'FS#' . $task_details['task_id'] . ' &mdash; ' . tpl_formatText($task_details['item_summary']);?>
   </h2>
 
   <div id="fineprint">
@@ -440,7 +440,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     $date_opened = $task_details['date_opened'];
     $date_opened = $fs->formatDate($date_opened, true);
 
-    echo $details_text['openedby'] . ' ' . $fs->LinkedUserName($task_details['opened_by']) . ' - ' . $date_opened;
+    echo $details_text['openedby'] . ' ' . tpl_userlink($task_details['opened_by']) . ' - ' . $date_opened;
 
     // If it's been edited, get the details
     if ($task_details['last_edited_by']) {
@@ -450,7 +450,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
         $date_edited = $task_details['last_edited_time'];
         $date_edited = $fs->formatDate($date_edited, true);
 
-        echo '<br />' . $details_text['editedby'] . ' ' . $fs->LinkedUserName($task_details['last_edited_by']) . ' - ' . $date_edited;
+        echo '<br />' . $details_text['editedby'] . ' ' . tpl_userlink($task_details['last_edited_by']) . ' - ' . $date_edited;
     }
     ?>
   </div>
@@ -565,7 +565,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
   <div id="taskdetailsfull">
     <label for="details"><?php echo $details_text['details'];?></label><span id="details"></span>
     <?php
-    echo $fs->formatText($task_details['detailed_desc']);
+    echo tpl_formatText($task_details['detailed_desc']);
 
     $attachments = $db->Query("SELECT  * FROM {attachments}
                                 WHERE  task_id = ?  AND comment_id = '0'
@@ -691,7 +691,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
          list($closedby_username, $closedby_realname) = $db->FetchArray($get_closedby_name);
          $date_closed = $task_details['date_closed'];
          $date_closed = $fs->formatDate($date_closed, true);
-         echo $details_text['closedby'] . '&nbsp;&nbsp;' . $fs->LinkedUserName($task_details['closed_by']) . '<br />';
+         echo $details_text['closedby'] . '&nbsp;&nbsp;' . tpl_userlink($task_details['closed_by']) . '<br />';
          echo $details_text['date'] . '&nbsp;&nbsp;' . $date_closed . '<br />';;
          echo $details_text['reasonforclosing'] . '&nbsp;&nbsp;';
          echo $task_details['resolution_name'];
@@ -699,7 +699,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
 
          if (!empty($task_details['closure_comment'])) {
              echo $details_text['closurecomment'] . '&nbsp;&nbsp;';
-             echo $fs->FormatText($task_details['closure_comment']);
+             echo tpl_FormatText($task_details['closure_comment']);
          }
      }
 
@@ -897,14 +897,14 @@ $getcomments = $db->Query("SELECT  *
 while ($row = $db->FetchArray($getcomments)) {
     $user_info      = $fs->getUserDetails($row['user_id']);
     $formatted_date = $fs->formatDate($row['date_added'], true);
-    $comment_text   = $fs->formatText($row['comment_text']);
+    $comment_text   = tpl_formatText($row['comment_text']);
 
     if (@$permissions['view_comments'] == '1' OR $proj->prefs['others_view'] == '1') {
         // If the user has permissions, show the comments already added
 
         echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">';
         echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/menu/comment.png" title="' . $details_text['commentlink'] . '" alt="" /></a>';
-        echo $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
+        echo $details_text['commentby']. ' ' . tpl_userlink($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
 
         echo '<span class="DoNotPrint">';
 
@@ -1066,7 +1066,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
                                WHERE  n.task_id = ?", array(Get::val('id')));
 
   while ($row = $db->FetchArray($get_user_ids)) {
-      echo '<p>' . $fs->LinkedUserName($row['user_id']) . ' &mdash; <a href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=remove_notification&amp;ids=' 
+      echo '<p>' . tpl_userlink($row['user_id']) . ' &mdash; <a href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=remove_notification&amp;ids=' 
           . Get::val('id') . '&amp;user_id=' . $row['user_id'] . '">' . $details_text['remove'] . '</a></p>';
   }
 
@@ -1212,7 +1212,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
         if ($history['user_id'] == 0) {
             echo $details_text['anonymous'];
         } else {
-            echo $fs->LinkedUserName($history['user_id']);
+            echo tpl_userlink($history['user_id']);
         }
         ?>
       </td>
@@ -1348,7 +1348,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             $res_name = $db->FetchRow($result);
             echo " ({$res_name['resolution_name']}";
             if (!empty($oldvalue)) {
-                echo ': ' . $fs->formatText($oldvalue);
+                echo ': ' . tpl_formatText($oldvalue);
             }
             echo ')';
 
@@ -1363,7 +1363,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             $comment = $db->Query("SELECT user_id, date_added FROM {comments} WHERE comment_id = ?", array($history['field_changed']));
             if ($db->CountRows($comment) != 0) {
                 $comment = $db->FetchRow($comment);
-                echo " ({$details_text['commentby']} " . $fs->LinkedUsername($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
+                echo " ({$details_text['commentby']} " . tpl_userlink($comment['user_id']) . " - " . $fs->formatDate($comment['date_added'], true) . ")";
             }
             if ($details != '') {
                 $details_previous = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
@@ -1375,7 +1375,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
         } elseif ($history['event_type'] == '6') {     //Comment deleted
             echo "<a href=\"?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}#history\">{$details_text['commentdeleted']}</a>";
             if ($newvalue != '' && $history['field_changed'] != '') {
-                echo " ({$details_text['commentby']} " . $fs->LinkedUsername($newvalue) . " - " . $fs->formatDate($history['field_changed'], true) . ")";
+                echo " ({$details_text['commentby']} " . tpl_userlink($newvalue) . " - " . $fs->formatDate($history['field_changed'], true) . ")";
             }
             if (!empty($details)) {
                 $details_previous = htmlspecialchars($oldvalue,ENT_COMPAT,'utf-8');
@@ -1398,10 +1398,10 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
            echo "{$details_text['attachmentdeleted']}: {$newvalue}";
 
         } elseif ($history['event_type'] == '9') {    //Notification added
-           echo "{$details_text['notificationadded']}: " . $fs->LinkedUsername($newvalue);
+           echo "{$details_text['notificationadded']}: " . tpl_userlink($newvalue);
 
         } elseif ($history['event_type'] == '10') {  //Notification deleted
-           echo "{$details_text['notificationdeleted']}: " . $fs->LinkedUsername($newvalue);
+           echo "{$details_text['notificationdeleted']}: " . tpl_userlink($newvalue);
 
         } elseif ($history['event_type'] == '11') {  //Related task added
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($newvalue));
@@ -1418,11 +1418,11 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
 
         } elseif ($history['event_type'] == '14') {  //Task assigned
             if ($oldvalue == '0') {
-                echo "{$details_text['taskassigned']} " . $fs->LinkedUsername($newvalue);
+                echo "{$details_text['taskassigned']} " . tpl_userlink($newvalue);
             } elseif ($newvalue == '0') {
                 echo $details_text['assignmentremoved'];
             } else {
-                echo "{$details_text['taskreassigned']} " . $fs->LinkedUsername($newvalue);
+                echo "{$details_text['taskreassigned']} " . tpl_userlink($newvalue);
             }
 
         } elseif ($history['event_type'] == '15') { //Task added to related list of another task
@@ -1436,13 +1436,13 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
             echo "{$details_text['deletedasrelated']} <a href=\"" . $fs->CreateURL('details', $newvalue) . "\">FS#{$newvalue} &mdash; {$related}</a>";
 
         } elseif ($history['event_type'] == '17') { //Reminder added
-            echo "{$details_text['reminderadded']}: " . $fs->LinkedUsername($newvalue);
+            echo "{$details_text['reminderadded']}: " . tpl_userlink($newvalue);
 
         } elseif ($history['event_type'] == '18') { //Reminder deleted
-            echo "{$details_text['reminderdeleted']}: " . $fs->LinkedUsername($newvalue);
+            echo "{$details_text['reminderdeleted']}: " . tpl_userlink($newvalue);
 
         } elseif ($history['event_type'] == '19') { //User took ownership
-            echo "{$details_text['ownershiptaken']}: " . $fs->LinkedUsername($newvalue);
+            echo "{$details_text['ownershiptaken']}: " . tpl_userlink($newvalue);
 
         } elseif ($history['event_type'] == '20') { //User requested task closure
             echo $details_text['closerequestmade'] . ' - ' . $newvalue;

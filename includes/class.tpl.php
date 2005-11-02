@@ -156,6 +156,70 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
     return $html.$html_attr.' />';
 }
 
+function tpl_img($src, $alt)
+{
+    global $baseurl;
+    if (file_exists(dirname(dirname(__FILE__)).'/'.$src)) {
+        return '<img src="'.$baseurl
+            .htmlspecialchars($src, ENT_QUOTES,'utf-8').'" alt="'
+            .htmlspecialchars($alt, ENT_QUOTES,'utf-8').'" />';
+    }
+}
+
+function tpl_formattext($text)
+{
+    $text = nl2br(htmlspecialchars($text));
+
+    // Change URLs into hyperlinks
+    $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
+
+    // Change FS#123 into hyperlinks to tasks
+    return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
+            'tpl_fast_tasklink', $text);
+}
+
+function tpl_tasklink($text, $id) 
+{
+    global $fs, $details_text;
+
+    $details = $fs->GetTaskDetails($id);
+
+    if ($details['is_closed'] == '1') {
+        $status = $details['resolution_name'];
+    } else {
+        $status = $details['status_name'];
+    }
+    $title = $status . ': '
+           .  htmlspecialchars(substr($details['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
+    $link  = sprintf('<a href="%s" title="%s">%s</a>',
+            $this->CreateURL('details', $id), $title, $text);
+
+    if ($details['is_closed'] == '1') {
+        $link = "<del>&nbsp;".$link."&nbsp;</del>";
+    }
+    return $link;
+}
+
+function tpl_userlink($uid)
+{
+    global $db, $fs;
+
+    $sql = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?",
+            array($uid));
+    if ($db->countRows($sql)) {
+        list($uname, $rname) = $db->fetchRow($sql);
+        return '<a href="'.$fs->createUrl('user', $uid).'">'
+            .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
+            .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
+    }
+}
+
+function tpl_fast_tasklink($arr)
+{
+    return tpl_tasklink($arr[0], $arr[1]);
+}
+
+
 // }}}
 
 ?>

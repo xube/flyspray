@@ -169,15 +169,6 @@ class Flyspray
 
     // {{{ functions that should go in a Project class
 
-    function getProjectPrefs($project) 
-    {
-        global $db;
-
-        $get_prefs = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($project));
-
-        return $db->FetchArray($get_prefs);
-    }
-
     // This function generates a query of users for the "Assigned To" list
     function listUsers($in_project, $current=null) 
     {
@@ -261,57 +252,6 @@ class Flyspray
     }
 
     // }}}
-
-    // This provides funky page numbering
-    // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-    function pagenums($pagenum, $perpage, $totalcount, $extraurl) 
-    {
-        global $db;
-        global $functions_text;
-
-        $this->get_language_pack('functions');
-
-        $extraurl = '&amp;' . $extraurl;
-
-        // Just in case $perpage is something weird, like 0, fix it here:
-        if ($perpage < 1) {
-            $perpage = $totalcount > 0 ? $totalcount : 1;
-        }
-        $pages  = ceil($totalcount / $perpage);
-        $output = sprintf($functions_text['page'], $pagenum, $pages);
-
-        if (!($totalcount / $perpage <= 1)) {
-            $output .= "<span class=\"DoNotPrint\"> &nbsp;&nbsp;--&nbsp;&nbsp; ";
-
-            $start  = max(1, $pagenum - 3);
-            $finish = min($pages, $pagenum + 3);
-
-            if ($start > 1)
-                $output .= "<a href=\"?pagenum=1" . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
-
-            if ($pagenum > 1)
-                $output .= "<a href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
-
-            for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
-                if ($pagelink != $start)
-                    $output .= " - ";
-
-                if ($pagelink == $pagenum) {
-                    $output .= "<strong>" . $pagelink . "</strong>";
-                } else {
-                    $output .= "<a href=\"?pagenum=" . $pagelink . $extraurl . "\">" . $pagelink . "</a>";
-                }
-            }
-
-            if ($pagenum < $pages)
-                $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a>";
-            if ($finish < $pages)
-                $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
-            $output .= '</span>';
-        }
-
-        return $output;
-    }
 
 
     function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '') 
@@ -565,6 +505,8 @@ class Flyspray
     }
 
 
+// FIXME: TEMPLATING FUNCTIONS, SHOULD MOVE AWAY AT SOME POINT
+
     /* Check if we should use address rewriting
        and return an appropriate URL
      */
@@ -575,9 +517,7 @@ class Flyspray
         $url = $conf['general']['baseurl'];
 
         // If we do want address rewriting
-        if(isset($conf['general']['address_rewriting'])
-                && $conf['general']['address_rewriting'] == '1')
-        {
+        if(!empty($conf['general']['address_rewriting'])) {
             switch ($type) {
                 case 'depends':   return $url . 'task/' .  $arg1 . '/' . $type;
                 case 'details':   return $url . 'task/' . $arg1;
@@ -606,17 +546,17 @@ class Flyspray
         $url .= '?do=' . $type;
 
         switch ($type) {
-            case 'admin':     return $url . '&amp;area=' . $arg1;
-            case 'edittask':  return $url . '&amp;id=' . $arg1 . '&amp;edit=yep';
-            case 'pm':        return $url . '&amp;area=' . $arg1 . '&amp;project=' . $arg2;
-            case 'user':      return $url . '&amp;area=users&amp;id=' . $arg1;
-            case 'logout':    return $url . '&amp;action=logout';
+            case 'admin':     return $url . '&area=' . $arg1;
+            case 'edittask':  return $url . '&id=' . $arg1 . '&edit=yep';
+            case 'pm':        return $url . '&area=' . $arg1 . '&project=' . $arg2;
+            case 'user':      return $url . '&area=users&id=' . $arg1;
+            case 'logout':    return $url . '&action=logout';
 
             case 'details':
-            case 'depends':   return $url . '&amp;id=' . $arg1;
+            case 'depends':   return $url . '&id=' . $arg1;
 
             case 'newgroup':
-            case 'newtask':   return $url . '&amp;project=' . $arg1;
+            case 'newtask':   return $url . '&project=' . $arg1;
 
             case 'group':
             case 'projgroup': return $url . '&area=editgroup&id=' . $arg1;
@@ -628,22 +568,6 @@ class Flyspray
             case 'register': 
             case 'reports':   return $url;
         }
-    }
-
-
-// FIXME: TEMPLATING FUNCTIONS, SHOULD MOVE AWAY AT SOME POINT
-    
-    function LinkedUsername($user_id) 
-    {
-        global $db;
-
-        $result = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($user_id));
-        if ($db->CountRows($result) == 0)
-            return '';
-
-        $result = $db->FetchRow($result);
-
-        return '<a href="' . $this->CreateURL('user', $user_id) . '">' . $result['real_name'] . ' (' . $result['user_name'] . ')</a>';
     }
 
     function formatDate($timestamp, $extended) 
@@ -670,52 +594,55 @@ class Flyspray
         return strftime($dateformat, $timestamp);
     }
 
-    function ShowImg($path, $alt_text) 
+    // This provides funky page numbering
+    // Thanks to Nathan Fritz for this.  http://www.netflint.net/
+    function pagenums($pagenum, $perpage, $totalcount, $extraurl) 
     {
-        global $conf;
-        // To stop some browsers showing a blank box when an image doesn't exist
-        if (file_exists($path)) {
-            return "<img src=\"{$conf['general']['baseurl']}$path\" alt=\"$alt_text\" title=\"$alt_text\" />";
+        global $db;
+        global $functions_text;
+
+        $this->get_language_pack('functions');
+
+        $extraurl = '&amp;' . $extraurl;
+
+        // Just in case $perpage is something weird, like 0, fix it here:
+        if ($perpage < 1) {
+            $perpage = $totalcount > 0 ? $totalcount : 1;
         }
-    }
+        $pages  = ceil($totalcount / $perpage);
+        $output = sprintf($functions_text['page'], $pagenum, $pages);
 
-    function formatText($text) 
-    {
-        // This function removes html, and other nasties
-        $text = htmlspecialchars($text);
-        $text = nl2br($text);
+        if (!($totalcount / $perpage <= 1)) {
+            $output .= "<span class=\"DoNotPrint\"> &nbsp;&nbsp;--&nbsp;&nbsp; ";
 
-        // Change URLs into hyperlinks
-        $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
+            $start  = max(1, $pagenum - 3);
+            $finish = min($pages, $pagenum + 3);
 
-        // Change FS#123 into hyperlinks to tasks
-        return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
-                array($this, 'fastTaskLink'), $text);
-    }
+            if ($start > 1)
+                $output .= "<a href=\"?pagenum=1" . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
 
-    function fastTaskLink($arr) 
-    {
-        return $this->taskLink($arr[0], $arr[1]);
-    }
+            if ($pagenum > 1)
+                $output .= "<a href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
 
-    function taskLink($text, $id) 
-    {
-        global $details_text;
+            for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
+                if ($pagelink != $start)
+                    $output .= " - ";
 
-        $details = $this->GetTaskDetails($id);
+                if ($pagelink == $pagenum) {
+                    $output .= "<strong>" . $pagelink . "</strong>";
+                } else {
+                    $output .= "<a href=\"?pagenum=" . $pagelink . $extraurl . "\">" . $pagelink . "</a>";
+                }
+            }
 
-        if ($details['is_closed'] == '1') {
-            $status = $details['resolution_name'];
-        } else {
-            $status = $details['status_name'];
+            if ($pagenum < $pages)
+                $output .= " - <a href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a>";
+            if ($finish < $pages)
+                $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
+            $output .= '</span>';
         }
-        $title = $status . ': ' .  htmlspecialchars(substr($details['item_summary'], 0, 64));
-        $link  = sprintf('<a href="%s" title="%s">%s</a>', $this->CreateURL('details', $id), $title, $text);
 
-        if ($details['is_closed'] == '1') {
-            $link = "<del>&nbsp;".$link."&nbsp;</del>";
-        }
-        return $link;
+        return $output;
     }
 }
 

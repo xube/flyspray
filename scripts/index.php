@@ -616,7 +616,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
         list_cell($task_id, 'comments',    $comments);
         list_cell($task_id, 'attachments', $attachments);
    
-        list_cell($task_id, 'progress',    $fs->ShowImg("themes/{$proj->prefs['theme_style']}/percent-{$task_details['percent_complete']}.png",
+        list_cell($task_id, 'progress',    tpl_img("themes/{$proj->prefs['theme_style']}/percent-{$task_details['percent_complete']}.png",
                     $task_details['percent_complete'] . '% ' . $index_text['complete']));
    
         echo "</tr>\n";
