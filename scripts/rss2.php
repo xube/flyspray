@@ -7,10 +7,8 @@ require_once(dirname(dirname(__FILE__)).'/header.php');
 $limit = intval(Req::val('num', 10));
 $proj  = intval(Req::val('proj', $fs->prefs['default_project']));
 
-$project_prefs = $fs->GetProjectPrefs($projectid);
-
 $args = array('0',                     // We're not passing a user id
-               $project_id,
+               $proj->id,
                Req::val('tasks', '0'),
                '0',                    // No search string, thanks
                Req::val('type', '0'),
@@ -34,7 +32,7 @@ echo '<?xml version="1.0"?>'."\n";
 <rss version="2.0">
   <channel>
     <title>Flyspray</title>
-    <description>Flyspray:: <?php echo $project_prefs['project_title'] . ': ' .  $title ?></description>
+    <description>Flyspray:: <?php echo $proj->prefs['project_title'] . ': ' .  $title ?></description>
     <link>http://flyspray.rocks.cc/</link>
 <?php
         foreach ($tasklist AS $key => $val):

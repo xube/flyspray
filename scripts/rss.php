@@ -25,8 +25,6 @@ switch (Req::val('type')) {
    break;
 }
 
-$project_prefs = $fs->getProjectPrefs($proj);
-
 $task_details = $db->Query("SELECT  task_id, item_summary, detailed_desc
                               FROM  {tasks} t
                          LEFT JOIN  {projects} p ON t.attached_to_project = p.project_id
@@ -41,7 +39,7 @@ echo '<?xml version="1.0"?>'."\n";
 <rss version="2.0">
   <channel>
     <title>Flyspray</title>
-    <description>Flyspray:: <?php echo $project_prefs['project_title'] . ': ' .  $title ?></description>
+    <description>Flyspray:: <?php echo $proj->prefs['project_title'] . ': ' .  $title ?></description>
     <link>http://flyspray.rocks.cc/</link>
 <?php
         while ($row = $db->FetchArray($task_details)):

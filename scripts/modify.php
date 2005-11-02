@@ -29,7 +29,7 @@ $old_details = $fs->GetTaskDetails(Req::val('task_id'));
 
 // Adding a new task  {{{ 
 if (Post::val('action') == 'newtask'
-    && (@$permissions['open_new_tasks'] == '1' OR $project_prefs['anon_open'] == '1'))
+    && (@$permissions['open_new_tasks'] == '1' OR $proj->prefs['anon_open'] == '1'))
 {
 
     if (Post::val('item_summary') && Post::val('detailed_desc')) {
@@ -110,7 +110,7 @@ if (Post::val('action') == 'newtask'
 
         // Otherwise send it to the default category owner
         if (empty($owner)) {
-            $owner = $project_prefs['default_cat_owner'];
+            $owner = $proj->prefs['default_cat_owner'];
         }
 
         if (!empty($owner)) {
@@ -732,7 +732,7 @@ elseif (Post::val('action') == 'updateproject' && $permissions['manage_project']
 
 
         $_SESSION['SUCCESS'] = $modify_text['projectupdated'];
-        $fs->redirect($fs->CreateURL('pm', 'prefs', $project_id));
+        $fs->redirect($fs->CreateURL('pm', 'prefs', $proj->id));
     } else {
         echo "<div class=\"redirectmessage\"><p><em>{$modify_text['emptytitle']}</em></p></div>";
     }
@@ -1057,7 +1057,7 @@ elseif (Post::val('action') == "add_category"
     } else
     {
         list($relatedproject) = $db->FetchRow($check2);
-        if ($project_id == $relatedproject || Post::has('allprojects')) {
+        if ($proj->id == $relatedproject || Post::has('allprojects')) {
             $insert = $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)", array(Post::val('this_task'), Post::val('related_task')));
 
             $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
@@ -1449,7 +1449,7 @@ elseif (Post::val('action') == "add_category"
                           LEFT JOIN {groups} g ON uig.group_id = g.group_id
                           WHERE g.belongs_to_project = ?
                           AND g.manage_project = '1'",
-                          array($project_id)
+                          array($proj->id)
                         );
 
    $pms = array();
@@ -1479,7 +1479,7 @@ elseif (Post::val('action') == "add_category"
 } elseif (Post::val('action') == 'requestreopen')
 {
    // Log the admin request
-   $fs->AdminRequest(2, $project_id, Post::val('task_id'), $current_user['user_id'], Post::val('reason_given'));
+   $fs->AdminRequest(2, $proj->id, Post::val('task_id'), $current_user['user_id'], Post::val('reason_given'));
 
    // Log this event to the task history
    $fs->logEvent(Post::val('task_id'), 21, Post::val('reason_given'));
@@ -1506,7 +1506,7 @@ elseif (Post::val('action') == "add_category"
                           LEFT JOIN {groups} g ON uig.group_id = g.group_id
                           WHERE g.belongs_to_project = ?
                           AND g.manage_project = '1'",
-                          array($project_id)
+                          array($proj->id)
                         );
 
    $pms = array();
@@ -1705,9 +1705,9 @@ elseif (Post::val('action') == "add_category"
                           );
 
       // Create notification message
-      $subject = $modify_text['noticefrom'] . ' ' . $project_prefs['project_title'];
+      $subject = $modify_text['noticefrom'] . ' ' . $proj->prefs['project_title'];
 
-      $message = "{$modify_text['noticefrom']} {$project_prefs['project_title']} \n
+      $message = "{$modify_text['noticefrom']} {$proj->prefs['project_title']} \n
 {$modify_text['magicurlmessage']} \n
 {$conf['general']['baseurl']}index.php?do=lostpw&amp;magic=$magic_url\n";
       // End of generating a message

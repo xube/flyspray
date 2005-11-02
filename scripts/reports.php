@@ -36,7 +36,7 @@ function changelog_report()
     global $db; 
     global $fs;
     global $reports_text;
-    global $project_id;
+    global $proj;
 
     $startdate  = Req::val('startdate', date('d-M-Y', strtotime('-1 month')));
     $enddate    = Req::val('enddate', date('d-M-Y'));
@@ -51,7 +51,7 @@ function changelog_report()
                             LEFT JOIN  {list_resolution} r on t.resolution_reason = r.resolution_id
                                 WHERE  t.is_closed = 1 AND t.attached_to_project = ?
                                        AND t.date_closed >= ?  AND t.date_closed <= ?
-                             ORDER BY  t.date_closed $sort", array($project_id,$ustartdate,$uenddate));
+                             ORDER BY  t.date_closed $sort", array($proj->id,$ustartdate,$uenddate));
 ?>
 
 <div class="tabentries">
@@ -119,7 +119,7 @@ function severity_report()
     global $fs;
     global $severity_list;
     global $reports_text;
-    global $project_id;
+    global $proj;
 
     $severity_colours = array('','ffe9b4','efca80','edb98a','ffb2ac','f3a29b');
 
@@ -127,7 +127,7 @@ function severity_report()
                                         FROM  {tasks}
                                        WHERE  attached_to_project = ? AND !is_closed
                                     GROUP BY  task_severity
-                                    ORDER BY  task_severity DESC", array($project_id));
+                                    ORDER BY  task_severity DESC", array($proj->id));
     $count      = $db->CountRows($get_severity_count);
     $counttotal = 0;
 
@@ -165,7 +165,7 @@ function age_report()
     global $db;
     global $fs;
     global $reports_text;
-    global $project_id;
+    global $proj;
    
     $today = time();
     $bracket_count = 1;
@@ -173,7 +173,7 @@ function age_report()
     $age_list = $db->Query("SELECT  task_severity, date_opened
                               FROM  {tasks}
                              WHERE  attached_to_project = ? AND is_closed = 0
-                          ORDER BY  date_opened", array($project_id));
+                          ORDER BY  date_opened", array($proj->id));
    
     while ($row = $db->FetchArray($age_list)) {
         $date_opened = $row['date_opened'];
@@ -217,7 +217,7 @@ function events_report()
     global $conf;
     global $reports_text;
     global $details_text;
-    global $project_id;
+    global $proj;
     global $index_text;
 
     strtoupper(Req::val('sort', 'desc'));
@@ -382,7 +382,7 @@ function events_report()
                   $ver_list = $db->Query("SELECT  version_id, version_name
                                             FROM  {list_version}
                                            WHERE  project_id = ?  AND show_in_list = '1' AND version_tense = '3'
-                                        ORDER BY  list_position", array($project_id));
+                                        ORDER BY  list_position", array($proj->id));
 
                   while ($row = $db->FetchArray($ver_list)) {
                       if (Req::val('duein') == $row['version_id']) {
@@ -408,7 +408,7 @@ function events_report()
                                  LEFT JOIN  {users} u ON h.user_id = u.user_id
                                  LEFT JOIN  {tasks} t ON h.task_id = t.task_id
                                      WHERE  t.attached_to_project = ? {$type} {$wheredate}
-                                  ORDER BY  {$orderby}", array($project_id));
+                                  ORDER BY  {$orderby}", array($proj->id));
 
       if (!$db->CountRows($query_history)):
           echo "$details_text[nohistory]\n";

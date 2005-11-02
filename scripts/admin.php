@@ -443,7 +443,7 @@ elseif ($area == 'groups'): // {{{
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="movetogroup" />
       <input type="hidden" name="old_group" value="<?php echo $group['group_id'] ?>" />
-      <input type="hidden" name="project_id" value="<?php echo $project_id ?>" />
+      <input type="hidden" name="project_id" value="<?php echo $proj->id ?>" />
       <input type="hidden" name="prev_page" value="<?php echo $this_page ?>" />
       <table class="userlist">
         <tr>

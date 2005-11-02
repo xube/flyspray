@@ -29,6 +29,8 @@ require_once ( "$basedir/includes/db.inc.php" );
 require_once ( "$basedir/includes/functions.inc.php" );
 require_once ( "$basedir/includes/backend.inc.php" );
 
+require_once ( "$basedir/includes/class.project.php" );
+
 $db = new Database;
 if (!$db->dbOpenFast($conf['database'])) {
     die("Flyspray was unable to connect to the database.  Check your settings in flyspray.conf.php");
@@ -67,17 +69,11 @@ if (!isset($project_id)) {
     }
 }
 
-$fs->setCookie('flyspray_project', $project_id, time()+60*60*24*30);
-
-// Check that the requested project actually exists
-$proj_exists = $db->Query("SELECT  *
-                             FROM  {projects}
-                            WHERE  project_id = ?", array($project_id));
-
-if (!$db->CountRows($proj_exists)) {
+$proj = new Project($project_id);
+if (!$proj->exists()) {
     $fs->redirect("index.php?project=" . $fs->prefs['default_project']);
 }
-
-$project_prefs = $fs->getProjectPrefs($project_id);
+$proj->setCookie();
+$proj->prefs;
 
 ?>

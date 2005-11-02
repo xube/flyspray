@@ -1,7 +1,7 @@
 <?php $fs->get_language_pack('loginbox'); global $loginbox_text; ?>
 <div id="loginbox">
   <em>{$loginbox_text['login']}</em>
-  <form action="{$baseurl}index.php?do=authenticate" method="post">
+  <form action="{$baseurl}?do=authenticate" method="post">
     <div>
       <label>{$loginbox_text['username']}</label>
       <input class="maintext" type="text" name="user_name" size="20" maxlength="20" />
@@ -30,6 +30,6 @@
     </div>
   </form>
 </div>
-<?php if ($project_prefs['anon_open']): ?>
-<div id="anonopen"><a href="?do=newtask&amp;project={$project_id}">{$language['opentaskanon']}</a></div>
+<?php if ($proj->prefs['anon_open']): ?>
+<div id="anonopen"><a href="?do=newtask&amp;project={$proj->id}">{$language['opentaskanon']}</a></div>
 <?php endif; ?>

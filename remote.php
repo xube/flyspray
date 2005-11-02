@@ -283,10 +283,10 @@ function priorityArray()
 **/
 function operatingSystemArray()
 {
-   global $project_id;
+   global $proj;
 
    return arrayForQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = ? ORDER BY list_position"
-                        ,'os_id','os_name',array($project_id, '1'));
+                        ,'os_id','os_name',array($proj->id, '1'));
 
 }
 
@@ -295,9 +295,9 @@ function operatingSystemArray()
 **/
 function reportedVersionArray()
 {
-    global $project_id;
+    global $proj;
 
-   return arrayForQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",'version_id','version_name',array($project_id, '1', '2'));
+   return arrayForQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",'version_id','version_name',array($proj->id, '1', '2'));
 
 }
 
@@ -309,9 +309,9 @@ function reportedVersionArray()
 **/
 function dueInVersionArray()
 {
-  global $project_id;
+  global $proj;
 
-   $result = arrayForQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",'version_id','version_name',array($project_id, '1', '3'));
+   $result = arrayForQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",'version_id','version_name',array($proj->id, '1', '3'));
    // note undecided should appear at the top of the list
    array_unshift($result,'undecided');
 
@@ -327,7 +327,7 @@ function dueInVersionArray()
 **/
 function assignedUserListArray()
 {
-   global $project_id;
+   global $proj;
 
    $query = "SELECT user_id, real_name from {users}";
 

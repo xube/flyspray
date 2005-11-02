@@ -15,7 +15,7 @@ $fs->get_language_pack('priority');
 
 // Only load this page if a valid task was actually requested
 if ( !($task_details = $fs->GetTaskDetails(Get::val('id')))
-        || !can_view_task($user_name, $permissions, $project_prefs, $task_details))
+        || !can_view_task($user_name, $permissions, $proj->prefs, $task_details))
 {
    $fs->Redirect( $fs->CreateURL('error', null) );
 }
@@ -78,7 +78,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
         }
 
         while ($row = $db->FetchArray($get_projects)) {
-            if ($project_id == $row['project_id']) {
+            if ($proj->id == $row['project_id']) {
                 echo '<option value="' . $row['project_id'] . '" selected="selected">' . $row['project_title'] . '</option>';
             } else {
                 echo '<option value="' . $row['project_id'] . '">' . $row['project_title'] . '</option>';
@@ -123,7 +123,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                 // Get list of task types
                 $get_tasktypes = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
                                               WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
-                                           ORDER BY  list_position", array($project_id));
+                                           ORDER BY  list_position", array($proj->id));
 
                 while ($row = $db->FetchArray($get_tasktypes)) {
                     if ($row['tasktype_id'] == $task_details['task_type']) {
@@ -144,7 +144,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                 $cat_list = $db->Query("SELECT  category_id, category_name
                                           FROM  {list_category}
                                          WHERE  show_in_list = '1' AND parent_id < '1' AND (project_id = '0' OR project_id = ?)
-                                      ORDER BY  list_position", array($project_id));
+                                      ORDER BY  list_position", array($proj->id));
 
                 while ($row = $db->FetchArray($cat_list)) {
                     $category_name = $row['category_name'];
@@ -203,7 +203,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                     echo "<option value=\"0\">{$details_text['noone']}</option>\n";
                 }
 
-                $fs->ListUsers($project_id, $task_details['assigned_to']);
+                $fs->ListUsers($proj->id, $task_details['assigned_to']);
                 ?>
               </select>
             </td>
@@ -217,7 +217,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                 $get_os = $db->Query("SELECT  os_id, os_name
                                         FROM  {list_os}
                                        WHERE  (project_id = ?  OR project_id = '0') AND show_in_list = '1'
-                                    ORDER BY  list_position", array($project_id));
+                                    ORDER BY  list_position", array($proj->id));
 
                 while ($row = $db->FetchArray($get_os)) {
                     if ($row['os_id'] == $task_details['operating_system']) {
@@ -286,7 +286,7 @@ if ($eff_perms['can_edit'] && $task_details['is_closed'] != '1' && Get::val('edi
                 $get_version = $db->Query("SELECT  version_id, version_name
                                              FROM  {list_version}
                                             WHERE  show_in_list = '1' AND version_tense = '3' AND (project_id = '0' OR project_id = ?)
-                                         ORDER BY  list_position", array($project_id,));
+                                         ORDER BY  list_position", array($proj->id,));
 
                 while ($row = $db->FetchArray($get_version)) {
                     if ($row['version_id'] == $task_details['closedby_version']) {
@@ -553,7 +553,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
         <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
         <td id="percent">
           <?php
-          echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style']
+          echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style']
               . '/percent-' . $task_details['percent_complete'] . '.png" title="' . $task_details['percent_complete'] . '% '
               . $details_text['complete'] . '" alt="' . $task_details['percent_complete'] . '%" />';
           ?>
@@ -571,7 +571,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
                                 WHERE  task_id = ?  AND comment_id = '0'
                              ORDER BY  attachment_id ASC", array($task_details['task_id']));
 
-    if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1') {
+    if (@$permissions['view_attachments'] == '1' OR $proj->prefs['others_view'] == '1') {
 
         while ($attachment = $db->FetchArray($attachments)):
             echo '<span class="attachments">';
@@ -580,11 +580,11 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
             // Let's strip the mimetype to get the icon image name
             list($main, $specific) = split('[/]', $attachment['file_type']);
 
-            $imgpath = $basedir . "themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png";
+            $imgpath = $basedir . "themes/{$proj->prefs['theme_style']}/mime/{$attachment['file_type']}.png";
             if (file_exists($imgpath)) {
-                echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/mime/' . $attachment['file_type'] . '.png" title="' . $attachment['file_type'] . '" />';
+                echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/mime/' . $attachment['file_type'] . '.png" title="' . $attachment['file_type'] . '" />';
             }else {
-                echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/mime/' . $main . '.png" title="' . $attachment['file_type'] . '" />';
+                echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/mime/' . $main . '.png" title="' . $attachment['file_type'] . '" />';
             }
 
             echo '&nbsp;&nbsp;' . $attachment['orig_name'];
@@ -604,7 +604,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
 
     if ($db->CountRows($attachments)
                 && ((!Cookie::has('flyspray_userid') || @$permissions['view_attachments'] != '1')
-                    && $project_prefs['others_view'] != '1')
+                    && $proj->prefs['others_view'] != '1')
     ) {
         echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
     }
@@ -772,7 +772,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
             $get_resolution = $db->Query("SELECT  resolution_id, resolution_name
                                             FROM  {list_resolution}
                                            WHERE  (project_id = '0' OR project_id = ?) AND show_in_list = '1'
-                                        ORDER BY  list_position", array($project_id));
+                                        ORDER BY  list_position", array($proj->id));
 
             while ($row = $db->FetchArray($get_resolution)) {
                 echo "<option value=\"{$row['resolution_id']}\">{$row['resolution_name']}</option>\n";
@@ -869,7 +869,7 @@ $num_reminders = $db->CountRows($result);
 ?>
 <ul id="submenu">
   <?php
-  if (@$permissions['view_comments'] == '1' OR @$permissions['add_comments'] == '1' OR $project_prefs['others_view'] == '1') {
+  if (@$permissions['view_comments'] == '1' OR @$permissions['add_comments'] == '1' OR $proj->prefs['others_view'] == '1') {
       echo '<li id="commentstab"><a href="#comments">'. $details_text['comments'] . " ($num_comments)" . '</a></li>';
   }
 
@@ -899,11 +899,11 @@ while ($row = $db->FetchArray($getcomments)) {
     $formatted_date = $fs->formatDate($row['date_added'], true);
     $comment_text   = $fs->formatText($row['comment_text']);
 
-    if (@$permissions['view_comments'] == '1' OR $project_prefs['others_view'] == '1') {
+    if (@$permissions['view_comments'] == '1' OR $proj->prefs['others_view'] == '1') {
         // If the user has permissions, show the comments already added
 
         echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">';
-        echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/menu/comment.png" title="' . $details_text['commentlink'] . '" alt="" /></a>';
+        echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/menu/comment.png" title="' . $details_text['commentlink'] . '" alt="" /></a>';
         echo $details_text['commentby']. ' ' . $fs->LinkedUserName($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
 
         echo '<span class="DoNotPrint">';
@@ -927,7 +927,7 @@ while ($row = $db->FetchArray($getcomments)) {
                                     WHERE  comment_id = ?
                                  ORDER BY  attachment_id ASC", array($row['comment_id']));
 
-        if (@$permissions['view_attachments'] == '1' OR $project_prefs['others_view'] == '1') {
+        if (@$permissions['view_attachments'] == '1' OR $proj->prefs['others_view'] == '1') {
             while ($attachment = $db->FetchArray($attachments)) {
                 echo '<span class="attachments">';
                 echo '<a href="' . $conf['general']['baseurl'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
@@ -935,11 +935,11 @@ while ($row = $db->FetchArray($getcomments)) {
                 // Let's strip the mimetype to get the icon image name
                 list($main, $specific) = explode('/', $attachment['file_type']);
 
-                $imgpath = $basedir . "{$conf['general']['baseurl']}themes/{$project_prefs['theme_style']}/mime/{$attachment['file_type']}.png";
+                $imgpath = $basedir . "{$conf['general']['baseurl']}themes/{$proj->prefs['theme_style']}/mime/{$attachment['file_type']}.png";
                 if (file_exists($imgpath)) {
-                    echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/mime/' . $attachment['file_type'] . '.png" title="' . $attachment['file_type'] . '" />';
+                    echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/mime/' . $attachment['file_type'] . '.png" title="' . $attachment['file_type'] . '" />';
                 } else {
-                    echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $project_prefs['theme_style'] . '/mime/' . $main . '.png" title="' . $attachment['file_type'] . '" />';
+                    echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/mime/' . $main . '.png" title="' . $attachment['file_type'] . '" />';
                 }
 
                 echo '&nbsp;&nbsp;' . $attachment['orig_name'] . "</a>\n";
@@ -955,7 +955,7 @@ while ($row = $db->FetchArray($getcomments)) {
         }
 
         if ($db->CountRows($attachments)
-                && ((!Cookie::has('flyspray_userid') OR @$permissions['view_attachments'] != '1') && $project_prefs['others_view'] != '1') )
+                && ((!Cookie::has('flyspray_userid') OR @$permissions['view_attachments'] != '1') && $proj->prefs['others_view'] != '1') )
         {
             echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
         }
@@ -1075,7 +1075,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
     <p class="admin">
       <?php echo $details_text['addusertolist'];?>
       <select class="adminlist" name="user_id">
-        <?php $fs->listUsers($project_id); ?>
+        <?php $fs->listUsers($proj->id); ?>
       </select>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="add_notification" />
@@ -1141,7 +1141,7 @@ if (@$permissions['add_comments'] == "1" && $task_details['is_closed'] != '1'):
 
       <em><?php echo $details_text['remindthisuser'];?></em>
       <select class="adminlist" name="to_user_id">
-        <?php $fs->listUsers($novar, $project_id); ?>
+        <?php $fs->listUsers($novar, $proj->id); ?>
       </select>
 
       <br />

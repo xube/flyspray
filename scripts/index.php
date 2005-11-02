@@ -87,7 +87,7 @@ if (Get::val('project') === '0') {
 else {
     // If we're not selecting all projects
     $where[]       = "attached_to_project = ?";
-    $sql_params[]  = $project_id;
+    $sql_params[]  = $proj->id;
 }
 
 // Check for special tasks to display
@@ -183,13 +183,13 @@ $keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
         'project', 'task');
 $keys   = array_map('keep', $keys);
 $keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
-$keys[] = Get::val('project') === '0' ? "project=0" : "project=$project_id";
+$keys[] = Get::val('project') === '0' ? "project=0" : "project=".$proj->id;
 $get    = htmlentities(join('&', $keys));
 
 
 if (Get::val('project') !== '0'
-        && $project_prefs['project_is_active'] != '1'
-        || ($project_prefs['others_view'] != '1' && @$permissions['view_tasks'] != '1'))
+        && $proj->prefs['project_is_active'] != '1'
+        || ($proj->prefs['others_view'] != '1' && @$permissions['view_tasks'] != '1'))
 {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
@@ -200,7 +200,7 @@ if (Get::val('project') !== '0'
   <form action="index.php" method="get">
     <div>
       <input type="hidden" name="tasks" value="<?php echo Get::val('tasks'); ?>" />
-      <input type="hidden" name="project" value="<?php if(Get::val('project') == '0') { echo '0'; } else { echo $project_id; }?>" />
+      <input type="hidden" name="project" value="<?php if(Get::val('project') == '0') { echo '0'; } else { echo $proj->id; }?>" />
       <em><?php echo $index_text['searchthisproject'];?>:</em>
       <input id="searchtext" name="string" type="text" size="20"
       maxlength="100" value="<?php echo htmlspecialchars(Get::val('string')); ?>" accesskey="q" />
@@ -210,7 +210,7 @@ if (Get::val('project') !== '0'
         <?php
         $tasktype_list = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
                                       WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
-                                   ORDER BY  list_position", array($project_id));
+                                   ORDER BY  list_position", array($proj->id));
         while ($row = $db->FetchArray($tasktype_list)) {
             if (Get::val('type') == $row['tasktype_id']) {
                 echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>\n";
@@ -241,7 +241,7 @@ if (Get::val('project') !== '0'
                                   FROM  {list_version}
                                  WHERE  show_in_list = '1' AND version_tense = '3'
                                         AND (project_id = '0' OR project_id = ?)
-                              ORDER BY  list_position", array($project_id,));
+                              ORDER BY  list_position", array($proj->id,));
 
         while ($row = $db->FetchArray($ver_list)) {
             if (Get::val('due') == $row['version_id']) {
@@ -257,7 +257,7 @@ if (Get::val('project') !== '0'
         <option value=""><?php echo $index_text['alldevelopers'];?></option>
         <option value="notassigned" <?php if ($dev == "notassigned") echo 'selected="selected"';?>><?php echo $index_text['notyetassigned'];?></option>
         <?php
-        $fs->ListUsers($dev, $project_id);
+        $fs->ListUsers($dev, $proj->id);
         ?>
       </select>
 
@@ -268,7 +268,7 @@ if (Get::val('project') !== '0'
                                   FROM  {list_category}
                                  WHERE  show_in_list = '1' AND parent_id < '1'
                                         AND (project_id = '0' OR project_id = ?)
-                             ORDER BY  list_position", array($project_id));
+                             ORDER BY  list_position", array($proj->id));
 
         while ($row = $db->FetchArray($cat_list)) {
            $category_name = $row['category_name'];
@@ -346,8 +346,8 @@ $columns = array('id', 'project', 'tasktype', 'category', 'severity', 'priority'
                  'reportedin', 'dueversion', 'duedate', 'comments', 'attachments', 'progress');
 $column_visible = array_map(create_function('$x', 'return false;'), $columns);
 
-$project = Get::val('project', $project_id);
-$visible = explode(' ', $project == '0' ? $fs->prefs['visible_columns'] : $project_prefs['visible_columns']);
+$project = Get::val('project', $proj->id);
+$visible = explode(' ', $project == '0' ? $fs->prefs['visible_columns'] : $proj->prefs['visible_columns']);
 
 foreach ($visible as $column) {
     $column_visible[$column] = true;
@@ -365,7 +365,7 @@ foreach ($visible as $column) {
 function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 {
     global $column_visible;
-    global $project_prefs;
+    global $proj;
     global $index_text;
     global $get;
 
@@ -393,7 +393,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 
             // Sort indicator arrows
             if (Get::val('order') == $orderkey) {
-                echo '&nbsp;&nbsp;<img src="themes/' . $project_prefs['theme_style'] . '/' . Get::val('sort') . '.png" />';
+                echo '&nbsp;&nbsp;<img src="themes/' . $proj->prefs['theme_style'] . '/' . Get::val('sort') . '.png" />';
             }
 
             echo "</a></th>\n";
@@ -479,8 +479,8 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
        list_heading('reportedin',  'reportedin');
        list_heading('dueversion',  'due');
        list_heading('duedate',     'duedate');
-       list_heading('comments',    '', '', "themes/{$project_prefs['theme_style']}/comment.png");
-       list_heading('attachments', '', '', "themes/{$project_prefs['theme_style']}/attachment.png");
+       list_heading('comments',    '', '', "themes/{$proj->prefs['theme_style']}/comment.png");
+       list_heading('attachments', '', '', "themes/{$proj->prefs['theme_style']}/attachment.png");
        list_heading('progress',    'prog');
        ?>
        </tr>
@@ -616,7 +616,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
         list_cell($task_id, 'comments',    $comments);
         list_cell($task_id, 'attachments', $attachments);
    
-        list_cell($task_id, 'progress',    $fs->ShowImg("themes/{$project_prefs['theme_style']}/percent-{$task_details['percent_complete']}.png",
+        list_cell($task_id, 'progress',    $fs->ShowImg("themes/{$proj->prefs['theme_style']}/percent-{$task_details['percent_complete']}.png",
                     $task_details['percent_complete'] . '% ' . $index_text['complete']));
    
         echo "</tr>\n";

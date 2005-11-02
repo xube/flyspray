@@ -1,5 +1,5 @@
 <div id="toolbox">
-  <h3>{$pm_text['pmtoolbox']} :: {$project_prefs['project_title']} : {$pm_text['catlisted']}</h3>
+  <h3>{$pm_text['pmtoolbox']} :: {$proj->prefs['project_title']} : {$pm_text['catlisted']}</h3>
   <fieldset class="admin">
     <legend>{$admin_text['categories']}</legend>
     <p>{$admin_text['listnote']}</p>
@@ -8,11 +8,10 @@
         <table class="list">
           <?php
           $countlines = -1;
-          $cats = $fs->listCatsIn($project_id);
 
-          foreach ($cats as $row):
+          foreach ($proj->listCatsIn() as $row):
               $countlines++;
-              $subrows = $fs->listCatsIn($project_id, $row['category_id']);
+              $subrows = $proj->listCatsIn($row['category_id']);
           ?>
           <tr>
             <td>
@@ -33,7 +32,7 @@
               <label for="categoryowner{$countlines}">{$admin_text['owner']}</label>
               <select id="categoryowner{$countlines}" name="category_owner[]">
                 <option value="">{$admin_text['selectowner']}</option>
-                <?php $fs->listUsers($project_id, $row['category_owner']); ?>
+                <?php $fs->listUsers($proj->id, $row['category_owner']); ?>
               </select>
             </td>
             <td title="{$admin_text['listdeletetip']}">
@@ -64,7 +63,7 @@
               <label for="categoryowner{$countlines}">{$admin_text['owner']}</label>
               <select id="categoryowner{$countlines}" name="category_owner[]">
                 <option value="">{$admin_text['selectowner']}</option>
-                <?php $fs->listUsers($project_id, $subrow['category_owner']); ?>
+                <?php $fs->listUsers($proj->id, $subrow['category_owner']); ?>
               </select>
             </td>
             <td title="{$admin_text['listdeletetip']}">
@@ -81,7 +80,7 @@
               <input type="hidden" name="do" value="modify" />
               <input type="hidden" name="action" value="update_category" />
               <input type="hidden" name="list_type" value="category" />
-              <input type="hidden" name="project_id" value="{$project_id}" />
+              <input type="hidden" name="project_id" value="{$proj->id}" />
               <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
               <input class="adminbutton" type="submit" value="{$admin_text['update']}" />
             </td>
@@ -107,7 +106,7 @@
               <label for="categoryownernew" >{$admin_text['owner']}</label>
               <select id="categoryownernew" name="category_owner">
                 <option value="">{$admin_text['selectowner']}</option>
-                <?php $fs->listUsers($project_id); ?>
+                <?php $fs->listUsers($proj->id); ?>
               </select>
             </td>
             <td colspan="2" title="{$admin_text['categoryparenttip']}">
@@ -116,7 +115,7 @@
                 <option value="">{$admin_text['notsubcategory']}</option>
                 <?php $cat_opts = array_map(
                 create_function('$x', 'return array($x["category_id"], $x["category_name"]);'),
-                $cats);
+                $proj->listCatsIn());
                 ?>
                 {!tpl_options($cat_opts, Get::val('cat'))}
               </select>
@@ -124,7 +123,7 @@
             <td class="buttons">
               <input type="hidden" name="do" value="modify" />
               <input type="hidden" name="action" value="add_category" />
-              <input type="hidden" name="project_id" value="{$project_id}" />
+              <input type="hidden" name="project_id" value="{$proj->id}" />
               <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
               <input class="adminbutton" type="submit" value="{$admin_text['addnew']}" />
             </td>

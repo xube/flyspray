@@ -46,7 +46,6 @@ class Notifications {
       global $fs;
 //       global $notify_text;
 //       global $details_text;
-//       global $project_prefs;
       global $current_user;
 
       $subject = htmlspecialchars($subject);
@@ -105,7 +104,6 @@ class Notifications {
       global $fs;
 //       global $notify_text;
 //       global $details_text;
-      global $project_prefs;
 //       global $current_user;
 
       debug_print("Checking Flyspray Jabber configuration...");
@@ -241,13 +239,7 @@ class Notifications {
    function SendEmail($to, $subject, $body)
    {
       global $fs;
-//       global $notify_text;
-//       global $details_text;
-      global $project_prefs;
-      global $project_id;
-//       global $current_user;
-
-      $project_prefs = $fs->GetProjectPrefs($project_id);
+      global $proj;
 
       $body = str_replace('&amp;', '&', $body);
 
@@ -683,7 +675,6 @@ class Notifications {
       global $fs;
 //       global $notify_text;
 //       global $details_text;
-//       global $project_prefs;
 //       global $current_user;
 
       $jabber_users = array();
@@ -721,7 +712,7 @@ class Notifications {
       global $fs;
 //       global $notify_text;
 //       global $details_text;
-      global $project_prefs;
+      global $proj;
       global $current_user;
 
       $jabber_users = array();
@@ -785,8 +776,8 @@ class Notifications {
       $task_details = $fs->getTaskDetails($task_id);
       if ($task_details['mark_private'] != '1')
       {
-         $proj_emails = explode(",", $project_prefs['notify_email']);
-         $proj_jids = explode(",", $project_prefs['notify_jabber']);
+         $proj_emails = explode(",", $proj->prefs['notify_email']);
+         $proj_jids = explode(",", $proj->prefs['notify_jabber']);
 
          foreach ($proj_emails AS $key => $val)
          {

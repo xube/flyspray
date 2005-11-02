@@ -37,7 +37,7 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     }
 
     $current_user = $fs->getUserDetails($user_id);
-    $permissions  = $fs->getPermissions($user_id, $project_id);
+    $permissions  = $fs->getPermissions($user_id, $proj->id);
 
     // Check that the user hasn't spoofed the cookie contents somehow
     // And that their account/group are enabled
@@ -68,7 +68,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
 
     // Check if file exists, and user permission to access it!
     if (file_exists("attachments/$file_name")
-            && ($project_prefs['others_view'] || $user_permissions['view_attachments']))
+            && ($proj->prefs['others_view'] || $user_permissions['view_attachments']))
     {
         $path = "$basedir/attachments/$file_name";
 
@@ -108,7 +108,7 @@ if ($conf['general']['output_buffering'] == 'gzip') {
 
 $page = new FSTpl();
 if (Req::val('project')) {
-    $page->setTheme($project_prefs['theme_style']);
+    $page->setTheme($proj->prefs['theme_style']);
 } else {
     $page->setTheme($fs->prefs['global_theme']);
 }
@@ -126,7 +126,7 @@ if ($show_task = Get::val('show_task')) {
 if ($fs->requestDuplicated()) {
     // Check that this page isn't being submitted twice
     $_SESSION['ERROR'] = $language['duplicated'];
-    $fs->Redirect( "?id=".$project_id );
+    $fs->Redirect( "?id=".$proj->id );
 }
 
 if (Cookie::has('flyspray_userid') && empty($permissions['global_view'])) {
@@ -153,21 +153,21 @@ if ($permissions['manage_project']) {
     // Find out if there are any PM requests wanting attention
     $get_req = $db->Query(
             "SELECT * FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
-            array($project_id));
+            array($proj->id));
 
     $page->assign('pm_pendingreq_num', $db->CountRows($get_req));
 }
 
 // Show the project blurb if the project manager defined one
 $do = Req::val('do', 'index');
-if ($project_prefs['project_is_active'] == '1'
-    && ($project_prefs['others_view'] == '1' OR @$permissions['view_tasks'] == '1')
-    && !empty($project_prefs['intro_message'])
+if ($proj->prefs['project_is_active'] == '1'
+    && ($proj->prefs['others_view'] == '1' OR @$permissions['view_tasks'] == '1')
+    && !empty($proj->prefs['intro_message'])
     && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))
     || (Get::val('project') == '0'))
 {
     require_once ( "$basedir/includes/markdown.php" );
-    $page->assign('intro_message', Markdown($project_prefs['intro_message']));
+    $page->assign('intro_message', Markdown($proj->prefs['intro_message']));
 }
 
 $page->assign('project_list', $db->FetchAllArray($get_projects));

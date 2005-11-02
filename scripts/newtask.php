@@ -11,13 +11,13 @@ $fs->get_language_pack('status');
 $fs->get_language_pack('severity');
 $fs->get_language_pack('priority');
 
-if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1') {
+if ($permissions['open_new_tasks'] != '1' && $proj->prefs['anon_open'] != '1') {
     // Check if the user has the right to open new tasks
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
 ?>
-<h3><?php echo htmlspecialchars($project_prefs['project_title']) . ':: ' . $newtask_text['newtask'];?></h3>
+<h3><?php echo htmlspecialchars($proj->prefs['project_title']) . ':: ' . $newtask_text['newtask'];?></h3>
 
 <div id="taskdetails">
   <form enctype="multipart/form-data" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
@@ -27,7 +27,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
         <td>
           <input type="hidden" name="do" value="modify" />
           <input type="hidden" name="action" value="newtask" />
-          <input type="hidden" name="project_id" value="<?php echo $project_id;?>" />
+          <input type="hidden" name="project_id" value="<?php echo $proj->id;?>" />
           <label for="itemsummary"><?php echo $newtask_text['summary'];?></label>
         </td>
         <td>
@@ -47,7 +47,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
             // Get list of task types
             $get_tasktype = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
                                          WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
-                                      ORDER BY  list_position", array($project_id));
+                                      ORDER BY  list_position", array($proj->id));
 
             while ($row = $db->FetchArray($get_tasktype)) {
                 echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>";
@@ -67,7 +67,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
                                         FROM  {list_category}
                                        WHERE  show_in_list = '1' AND parent_id < '1'
                                               AND (project_id = '0' OR project_id = ?)
-                                    ORDER BY  list_position", array($project_id));
+                                    ORDER BY  list_position", array($proj->id));
 
               while ($row = $db->FetchArray($cat_list)) {
                   $category_name = $row['category_name'];
@@ -119,7 +119,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
               <select id="assignedto" name="assigned_to" <?php if ($permissions['modify_all_tasks'] != "1") echo ' disabled="disabled"';?>>
               <?php // Get list of users
               echo "<option value=\"0\">{$newtask_text['noone']}</option>\n";
-              $fs->ListUsers($novar, $project_id);
+              $fs->ListUsers($proj->id);
               ?>
               </select>
             </td>
@@ -133,7 +133,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
                                       FROM  {list_os}
                                      WHERE  (project_id = ?  OR project_id = '0')
                                             AND show_in_list = '1'
-                                  ORDER BY  list_position", array($project_id));
+                                  ORDER BY  list_position", array($proj->id));
 
               while ($row = $db->FetchArray($get_os)) {
                   echo "<option value=\"{$row['os_id']}\">{$row['os_name']}</option>";
@@ -188,7 +188,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
                                          FROM  {list_version}
                                         WHERE  show_in_list = '1' AND version_tense = '2'
                                                AND (project_id = '0' OR project_id = ?)
-                                     ORDER BY  list_position", array($project_id,));
+                                     ORDER BY  list_position", array($proj->id,));
 
             while ($row = $db->FetchArray($get_version)) {
                 echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";
@@ -208,7 +208,7 @@ if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1')
                                          FROM  {list_version}
                                         WHERE  show_in_list = '1' AND version_tense = '3'
                                                AND (project_id = '0' OR project_id = ?)
-                                     ORDER BY  list_position", array($project_id,));
+                                     ORDER BY  list_position", array($proj->id,));
 
             while ($row = $db->FetchArray($get_version)) {
                 echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>\n";

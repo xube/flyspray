@@ -16,7 +16,7 @@ function function_disabled($func_name)
 */
 
 if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
-        || !can_view_task($current_user, $permissions, $project_prefs, $task_details))
+        || !can_view_task($current_user, $permissions, $proj->prefs, $task_details))
 {
     // Only load this page if a valid task was actually requested
     // by an aknowledged user
@@ -68,10 +68,10 @@ $sql = "SELECT  t1.task_id AS id1, t1.item_summary AS sum1,
           FROM  {dependencies} AS d
           JOIN  {tasks} AS t1 ON d.task_id=t1.task_id
           JOIN  {tasks} AS t2 ON d.dep_task_id=t2.task_id
-         WHERE  t1.attached_to_project='$project_id'
+         WHERE  t1.attached_to_project= ?
       ORDER BY  d.task_id, d.dep_task_id";
 
-$get_edges = $db->Query($sql);
+$get_edges = $db->Query($sql, array($proj->id));
 
 $edge_list = array();
 $rvrs_list = array();
