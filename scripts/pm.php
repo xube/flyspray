@@ -19,12 +19,7 @@ $fs->get_language_pack('admin');
 $fs->get_language_pack('pm');
 $page->uses('admin_text', 'pm_text', 'index_text');
 
-$this_page = htmlspecialchars($this_page);
-$area      = Get::val('area', 'prefs');
-
-$page->display('pm.menu.tpl');
-
-switch ($area) {
+switch (Get::val('area', 'prefs')) {
     case 'pendingreq':
         $sql = $db->Query("SELECT  *
                              FROM  {admin_requests} ar
@@ -43,6 +38,7 @@ switch ($area) {
     case 'os':
     case 'ver':
     case 'cat':
+        $page->display('pm.menu.tpl');
         $page->display('pm.'.$area.'.tpl');
         break;
 
