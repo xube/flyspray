@@ -1,5 +1,12 @@
 <?php
 
+function microtime_float()
+{
+    list($usec, $sec) = explode(" ", microtime());
+    return ((float)$usec + (float)$sec);
+}
+
+
 class Tpl
 {
     var $_uses  = array();
@@ -36,16 +43,15 @@ class Tpl
         return $baseurl.'themes/'.$this->_theme;
     }
 
-    function _compile($matches)
+    function compile(&$item)
     {
-        list(, $bang, $expr, $br) = $matches;
-        if ($bang) {
-            return '<?php echo ('.$expr.'); ?>'.$br.$br;
-        } else {
-            return '<?php echo htmlspecialchars('.$expr.', ENT_QUOTES, "utf-8"); ?>'.$br.$br;
+        if (strncmp($item, '<?', 2)) {
+            $item = preg_replace( '/{!([^{}]*)}(\n?)/', '<?php echo \1; ?>\2\2', $item);
+            $item = preg_replace( '/{([^{}]*)}(\n?)/', 
+                    '<?php echo htmlspecialchars(\1, ENT_QUOTES, "utf-8"); ?>\2\2', $item);
         }
     }
-    
+
     function display($_tpl, $_arg0 = null, $_arg1 = null)
     {
         // theming part
@@ -57,17 +63,13 @@ class Tpl
         }
 
         // compilation part
-        preg_match_all('!<\?php.*?\?>!s', $_tpl_data, $_php_blocks);
-        $_tpl_data = preg_replace('!<\?php.*?\?>!s', '&&&php&&&', $_tpl_data);
-
-        $_tpl_data = preg_replace_callback(
-                '/{(!?)([^ &{][^{]*?)}(\n?)/',
-                array($this, '_compile'), $_tpl_data);
+        $_tpl_data = preg_split('!(<\?php.*\?>)!sU', $_tpl_data, -1, 
+                PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        array_walk($_tpl_data, array($this, 'compile'));
+        $_tpl_data = join('', $_tpl_data);
 
         $_tpl_data = str_replace('&lbrace;', '{', $_tpl_data);
         $_tpl_data = str_replace('&rbrace;', '}', $_tpl_data);
-
-        $_tpl_data = preg_replace('!&&&php&&&!e', 'array_shift($_php_blocks[0])', $_tpl_data);
 
         // variables part
         if (!is_null($_arg0)) {
