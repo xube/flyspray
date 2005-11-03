@@ -1,10 +1,13 @@
 <?php
-// This script authenticates the user, and sets up a session.
+
+  /********************************************************\
+  | User authentication (no output)                        |
+  | ~~~~~~~~~~~~~~~~~~~                                    |
+  \********************************************************/
 
 $fs->get_language_pack('authenticate');
 
 if (Req::val('action') == 'logout') {
-    // If logout was requested, log the user out.
 
     // Set cookie expiry time to the past, thus removing them
     $fs->setcookie('flyspray_userid',   '', time()-60);

@@ -1,13 +1,12 @@
 <?php
-/*
-   -------------------------------------------------------
-   | This script allows users to edit their user profile |
-   -------------------------------------------------------
-*/
+
+  /*********************************************************\
+  | User Profile Edition                                    |
+  | ~~~~~~~~~~~~~~~~~~~~                                    |
+  \*********************************************************/
 
 if ($user->isAnon()) {
-    echo $admin_text['nopermission'];
-    exit;
+    $fs->redirect($fs->createUrl('error'));
 }
 
 $fs->get_language_pack('admin');

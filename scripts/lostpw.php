@@ -1,11 +1,9 @@
 <?php
 
-/*
-   ------------------------------------------------------
-   | This script allows users to request a notification |
-   | that contains a link to a new password             |
-   ------------------------------------------------------
-*/
+  /*********************************************************\
+  | Deal with lost passwords                                |
+  | ~~~~~~~~~~~~~~~~~~~~~~~~                                |
+  \*********************************************************/
 
 $fs->get_language_pack('admin');
 $page->uses('admin_text');
@@ -22,7 +20,7 @@ elseif (!Get::has('magic') && $user->isAnon()) {
 
     if (!$db->CountRows($check_magic)) {
         $_SESSION['ERROR'] = $admin_text['badmagic'];
-        $fs->redirect('./');
+        $fs->redirect($fs->createUrl('error'));
     }
     $page->display('lostpw.step2.tpl');
 }

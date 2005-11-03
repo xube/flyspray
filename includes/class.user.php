@@ -114,8 +114,15 @@ class User
 
     function can_edit_comment($comment)
     {
-        return $this->perms['edit_comments']
-            || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
+        return $this->perms['edit_comments'];
+        // TODO : do we want users to be able to edit their own comments ?
+        //  || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
+    }
+
+    function can_register()
+    {
+        global $fs;
+        return $this->isAnon() && $fs->prefs['spam_proof'] && $fs->['anon_reg'];
     }
 
     /* }}} */
