@@ -10,16 +10,29 @@ class User
     {
         global $db;
 
-        if ($uid) {
-            $sql = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($uid));
-            if ($db->countRows($sql)) {
-                $this->infos = $db->FetchArray($sql);
-            }
+        $sql = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($uid));
+        if ($db->countRows($sql)) {
+            $this->infos = $db->FetchArray($sql);
         }
         $this->id = $uid;
     }
 
-    function get_perms($project)
+    function save_search()
+    {
+        // Only logged in users get to use the 'last search' functionality
+        foreach (array('string','type','sev','due','dev','cat','status') as $key) {
+            if (Get::has($key)) {
+                $db->Query("UPDATE  {users}
+                               SET  last_search = ?
+                             WHERE  user_id = ?",
+                        array($_SERVER['REQUEST_URI'], $user_id)
+                );
+                break;
+            }
+        }
+    }
+
+    function get_perms($proj)
     {
         global $db;
 
@@ -31,19 +44,30 @@ class User
                 'close_other_tasks', 'assign_to_self', 'assign_others_to_self',
                 'view_reports', 'group_open');
 
-        $max = array_map(create_function('$x', 'return "MAX($x) AS $x";'),
-                $fields);
+        $this->perms = array();
 
-        // Get the global group permissions for the current user
-        $sql = $db->Query("SELECT  ".join(', ', $max).",
-                                   MAX(IF(g.belongs_to_project, view_tasks, 0)) AS global_view
-                             FROM  {groups} g
-                        LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
-                            WHERE  uig.user_id = ?  AND 
-                                   (g.belongs_to_project = '0' OR g.belongs_to_project = ?)",
-                            array($this->id, $project->id));
+        if ($this->isAnon()) {
+            foreach ($fields as $key) {
+                $this->perms[$key] = false;
+            }
+        } else {
+            $max = array_map(create_function('$x', 'return "MAX($x) AS $x";'),
+                    $fields);
 
-        $this->perms = $db->fetchArray($sql);
+            // Get the global group permissions for the current user
+            $sql = $db->Query("SELECT  ".join(', ', $max).",
+                                       MAX(IF(g.belongs_to_project, view_tasks, 0)) AS global_view
+                                 FROM  {groups} g
+                            LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
+                                WHERE  uig.user_id = ?  AND 
+                                       (g.belongs_to_project = '0' OR g.belongs_to_project = ?)",
+                                array($this->id, $proj->id));
+
+            $this->perms = $db->fetchArray($sql);
+            if ($this->perms['is_admin']) {
+                $this->perms = array_map(create_function('$x', 'return 1;'), $this->perms);
+            }
+        }
     }
 
     function check_account_ok()

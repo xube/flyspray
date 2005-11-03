@@ -312,7 +312,7 @@ class Notifications {
 
       // Get the task details
       $task_details = $fs->getTaskDetails($task_id);
-      $project_prefs = $fs->GetProjectPrefs($task_details['attached_to_project']);
+      $proj = new Project($task_details['attached_to_project']);
 
       // Set the due date correctly
       if ($task_details['due_date'] == '0')
@@ -351,7 +351,7 @@ class Notifications {
       ///////////////////////////////////////////////////////////////
       if ($type == '1')
       {
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['newtaskopened'] . "\n\n";
@@ -382,7 +382,7 @@ class Notifications {
       if ($type == '2')
       {
          // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['taskchanged'] . "\n\n";
@@ -416,7 +416,7 @@ class Notifications {
       if ($type == '3')
       {
          // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['taskclosed'] . "\n\n";
@@ -442,7 +442,7 @@ class Notifications {
       ////////////////////
       if ($type == '4')
       {
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['taskreopened'] . "\n\n";
@@ -461,7 +461,7 @@ class Notifications {
       if ($type == '5')
       {
          // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['depadded'] . "\n\n";
@@ -481,7 +481,7 @@ class Notifications {
       if ($type == '6')
       {
          // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['depremoved'] . "\n\n";
@@ -511,7 +511,7 @@ class Notifications {
          $comment = $db->FetchArray($result);
 
          // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['commentadded'] . "\n\n";
@@ -537,7 +537,7 @@ class Notifications {
       //////////////////////
       if ($type == '8')
       {
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['attachmentadded'] . "\n\n";
@@ -555,7 +555,7 @@ class Notifications {
       ////////////////////////
       if ($type == '9')
       {
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['relatedadded'] . "\n\n";
@@ -574,7 +574,7 @@ class Notifications {
       if ($type == '10')
       {
 
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $task_details['assigned_to_name'] . ' ' . $notify_text['takenownership'] . "\n\n";
@@ -594,7 +594,7 @@ class Notifications {
          // We need to work out how to move the confirmation code message generation
          // from scripts/modify.php to here.
 
-         $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          // Confirmation code message goes here
@@ -608,7 +608,7 @@ class Notifications {
       ////////////////////////
       if ($type == '12')
       {
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pendingreq'] . "\n\n";
@@ -626,7 +626,7 @@ class Notifications {
       ///////////////////////
       if ($type == '13')
       {
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pmdeny'] . "\n\n";
@@ -644,7 +644,7 @@ class Notifications {
       //////////////////
       if ($type == '14')
       {
-         $subject = $notify_text['notifyfrom'] . $project_prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['assignedtoyou'] . "\n\n";

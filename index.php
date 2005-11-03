@@ -20,19 +20,7 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     $user = new User(Cookie::val('flyspray_userid'));
     $user->get_perms($proj);
     $user->check_account_ok();
-
-    // Only logged in users get to use the 'last search' functionality
-    foreach (array('string','type','sev','due','dev','cat','status') as $key) {
-        if (Get::has($key)) {
-            $db->Query("UPDATE  {users}
-                           SET  last_search = ?
-                         WHERE  user_id = ?",
-                    array($_SERVER['REQUEST_URI'], $user_id)
-            );
-            break;
-        }
-    }
-
+    $user->save_search();
 } else {
     $user = new User();
     $user->get_perms($proj);
@@ -40,14 +28,15 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
 
 if (Get::has('getfile') && Get::val('getfile')) {
     // If a file was requested, deliver it
-    $result = $db->Query("SELECT  task_id, orig_name, file_name, file_type
-                            FROM  {attachments}
+    $result = $db->Query("SELECT  t.task_id, t.attached_to_project,
+                                  a.orig_name, a.file_name, a.file_type
+                            FROM  {attachments} a
+                      INNER JOIN  {tasks}       t ON a.task_id = t.task_id
                            WHERE  attachment_id = ?", array($_GET['getfile']));
-    list($task_id, $orig_name, $file_name, $file_type) = $db->FetchArray($result);
+    list($task_id, $proj_id, $orig_name, $file_name, $file_type) = $db->FetchArray($result);
 
     // Retrieve permissions!
-    $task_details = $fs->GetTaskDetails($task_id);
-    $proj         = new Project($task_details['attached_to_project']);
+    $proj = new Project($proj_id);
     $user->get_perms($proj);
 
     // Check if file exists, and user permission to access it!

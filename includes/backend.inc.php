@@ -62,22 +62,16 @@ class Backend {
 
       foreach ($tasks AS $key => $task_id)
       {
-         // Remove the notif entry
          $db->Query("DELETE FROM {notifications}
                      WHERE task_id = ?
                      AND user_id = ?",
                      array($task_id, $user_id)
                     );
 
-         // Log this event to the task history
          $fs->logEvent($task_id, 10, $user_id);
-
-      // End of cycling through the tasks
       }
 
       return true;
-
-   // End of RemoveFromNotifyList() function
    }
 
 
@@ -94,40 +88,29 @@ class Backend {
       {
          // Get the task details
          $task_details = @$fs->getTaskDetails($task_id);
+         $proj = new Project($task_details['attached_to_project']);
+         $user = new User($user_id);
+         $user->get_perms($proj);
 
-         // Get the user's permissions for the project this task belongs to
-         $perms = $fs->getPermissions($user_id, $task_details['attached_to_project']);
-
-         // Check permissions first
-         if ($task_details['project_is_active'] == '1'
-           && ($task_details['others_view'] == '1' OR $perms['view_tasks'] == '1')
-           && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $user_id)
-             OR $perms['manage_project'] == '1' OR $task_details['mark_private'] != '1')
-           && (($perms['assign_to_self'] == '1' && empty($task_details['assigned_to']))
-             OR $perms['assign_others_to_self'] == '1')
-           && $task_details['assigned_to'] != $user_id )
+         if ($task_details['project_is_active']
+                 && ($task_details['others_view'] || $user->perms['view_tasks'])
+                 && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $user->id)
+                     || $user->perms['manage_project'] || !$task_details['mark_private'])
+                 && (($user->perms['assign_to_self'] && !$task_details['assigned_to'])
+                     || $user->perms['assign_others_to_self'])
+                 && $task_details['assigned_to'] != $user->id )
          {
-            // Make the change in assignment
             $db->Query("UPDATE {tasks}
                         SET assigned_to = ?, item_status = '3'
                         WHERE task_id = ?",
                         array($user_id, $task_id));
 
-            // Log this event to the task history
-            $fs->logEvent($task_details['task_id'], 19, $user_id, $task_details['assigned_to']);
-
-            // Get the notifications going
+            $fs->logEvent($task_details['task_id'], 19, $user->id, $task_details['assigned_to']);
             $notify->Create('10', $task_id);
-
-         // End of permission check
          }
-
-      // End of cycling through the tasks
       }
 
       return true;
-
-   // End of AssignToMe() function
    }
 
 
@@ -196,13 +179,12 @@ class Backend {
                         'closedby_version'   => $due,
                        );
 
-      if (!empty($userid))
-         $permissions = @$fs->getPermissions($userid, $projectid);
-
-      $project       = new Project($projectid);
+      $project = new Project($projectid);
+      $user = new User($userid);
+      $user->get_perms($project);
 
       // Check if the user can view tasks from this project
-      if ($permissions['view_tasks'] == '1' OR $permissions['global_view'] == '1' OR $project->prefs['others_view'] == '1')
+      if ($user->perms['view_tasks'] == '1' OR $user->perms['global_view'] == '1' OR $project->prefs['others_view'] == '1')
       {
          // If they have permission, let's carry on.  Otherwise, give up.
       } else
@@ -237,7 +219,7 @@ class Backend {
       }
 
       // Restrict query results based upon (lack of) PM permissions
-      if (!empty($userid) && $permissions['manage_project'] != '1')
+      if (!$user->isAnon() && $user->perms['manage_project'] != '1')
       {
          $where[] = "(t.mark_private = '0' OR t.assigned_to = ?)";
          $params[] = $userid;
@@ -365,15 +347,16 @@ class Backend {
 
       // Get some information about the project and the user's permissions
       $project       = new Project($projectid);
-      $permissions   = $fs->GetPermissions($userid, $projectid);
+      $user          = new User($userid);
+      $user->get_perms($project);
 
       // Check permissions for the specified user (or anonymous) to open tasks
-      if ($permissions['open_new_tasks'] != '1' && $project->prefs['anon_open'] != '1')
+      if ($user->perms['open_new_tasks'] != '1' && $project->prefs['anon_open'] != '1')
          return false;
 
 
       // Some fields can have default values set
-      if (empty($assigned) OR $permissions['modify_all_tasks'] != '1')
+      if (empty($assigned) OR $user->perms['modify_all_tasks'] != '1')
       {
          $assigned = 0;
          $duever = 0;
@@ -520,11 +503,13 @@ class Backend {
       global $notify;
 
       // Retrieve some important information
-      $task_details  = $fs->GetTaskDetails($taskid);
-      $permissions   = $fs->GetPermissions($userid, $task_details['attached_to_project']);
+      $task_details = $fs->GetTaskDetails($taskid);
+      $project = new Project($task_details['attached_to_project']);
+      $user    = new User($userid);
+      $user->get_perms($project);
 
       // If the user hasn't permission, give up.
-      if ($permissions['create_attachments'] != '1')
+      if (!$user->perms['create_attachments'])
          return false;
 
       foreach ($files['userfile']['error'] as $key => $error)

@@ -26,6 +26,7 @@ function tpl_draw_perms($perms)
                          'assign_others_to_self',
                          'view_reports',
                          'global_view');
+
     $yesno = array(
             '<td style="color: red;">No</td>',
             '<td style="color: green;">Yes</td>');
@@ -33,7 +34,7 @@ function tpl_draw_perms($perms)
     $html = '<table border="1">';
     
     foreach ($perms as $key => $val) {
-        if (in_array($key, $perm_fields)) {
+        if (!is_numeric($key) && in_array($key, $perm_fields)) {
             $html .= '<tr><td>' . str_replace('_', ' ', $key) . '</td>';
             $html .= $yesno[(bool)$val].'</tr>';
         }
