@@ -1,14 +1,12 @@
 <?php
 
-/*
-  -------------------------------------------------------------
-  | Project Managers Toolbox                                  |
-  | ------------------------                                  |
-  | This script is for Project Managers to modify settings    |
-  | for their project, including general permissions,         |
-  | members, group permissions, and dropdown list items.      |
-  -------------------------------------------------------------
-*/
+  /********************************************************\
+  | Project Managers Toolbox                               |
+  | ~~~~~~~~~~~~~~~~~~~~~~~~                               |
+  | This script is for Project Managers to modify settings |
+  | for their project, including general permissions,      |
+  | members, group permissions, and dropdown list items.   |
+  \********************************************************/
 
 if (!$user->perms['manage_project']) {
     $fs->Redirect( $fs->CreateURL('error', null) );

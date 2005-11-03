@@ -19,9 +19,11 @@ class Project
         }
     }
 
-    function exists()
+    function checkExists()
     {
+        global $fs;
         return !is_null($this->id);
+        $fs->redirect('index.php?project=' . $fs->prefs['default_project']);
     }
 
     function setCookie()

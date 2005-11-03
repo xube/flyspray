@@ -16,7 +16,7 @@ class Database
     function dbOpenFast($conf)
     {
         extract($conf);
-        return $this->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype, $dbprefix);
+        $this->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype, $dbprefix);
     }
 
     function dbOpen($dbhost = '', $dbuser = '', $dbpass = '', $dbname = '', $dbtype = '', $dbprefix = '')
@@ -28,7 +28,10 @@ class Database
         $res = $this->dblink->Connect($dbhost, $dbuser, $dbpass, $dbname);
         $this->dblink->SetFetchMode(ADODB_FETCH_BOTH);
 
-        return $res;
+        if (!$res) {
+            die('Flyspray was unable to connect to the database.  '
+               .'Check your settings in flyspray.conf.php');
+        }
     }
 
     function dbClose()

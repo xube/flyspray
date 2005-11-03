@@ -6,16 +6,20 @@ class User
     var $perms = array();
     var $infos = array();
 
-    function User($uid = -1)
+    function User($uid = 0)
     {
         global $db;
 
         $sql = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($uid));
         if ($db->countRows($sql)) {
             $this->infos = $db->FetchArray($sql);
+            $this->id = $uid;
+        } else {
+            $this->id = -1;
         }
-        $this->id = $uid;
     }
+
+    /* misc functions {{{ */
 
     function save_search()
     {
@@ -89,6 +93,32 @@ class User
     {
         return $this->id < 0;
     }
+
+    /* }}} */
+    /* permission related {{{ */
+
+    function can_create_user()
+    {
+        global $fs;
+
+        return $this->perms['is_admin']
+            || ( $this->isAnon() && !$fs->prefs['spam_proof']
+                    && $fs->prefs['anon_reg']);
+    }
+
+    function can_create_group()
+    {
+        return $this->perms['is_admin']
+            || ($this->perms['manage_project'] && !Get::val('project'));
+    }
+
+    function can_edit_comment($comment)
+    {
+        return $this->perms['edit_comments']
+            || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
+    }
+
+    /* }}} */
 }
 
 ?>

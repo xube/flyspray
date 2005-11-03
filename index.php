@@ -35,9 +35,11 @@ if (Get::has('getfile') && Get::val('getfile')) {
                            WHERE  attachment_id = ?", array($_GET['getfile']));
     list($task_id, $proj_id, $orig_name, $file_name, $file_type) = $db->FetchArray($result);
 
-    // Retrieve permissions!
-    $proj = new Project($proj_id);
-    $user->get_perms($proj);
+    if ($proj_id != $proj->id) {
+        // XXX project_id comes from the cookie
+        $proj = new Project($proj_id);
+        $user->get_perms($proj);
+    }
 
     // Check if file exists, and user permission to access it!
     if (file_exists("attachments/$file_name")
@@ -90,8 +92,7 @@ if ($show_task = Get::val('show_task')) {
     // If someone used the 'show task' form, redirect them
     if (is_numeric($show_task)) {
         $fs->Redirect( $fs->CreateURL('details', $show_task) );
-    }
-    else {
+    } else {
         $fs->Redirect( $fs->CreateURL('error', null) );
     }
 }
@@ -114,11 +115,9 @@ if ($user->perms['manage_project']) {
 
 // Show the project blurb if the project manager defined one
 $do = Req::val('do', 'index');
-if ($proj->prefs['project_is_active'] == '1'
-    && ($proj->prefs['others_view'] == '1' || $user->perms['view_tasks'])
-    && $proj->prefs['intro_message']
-    && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))
-    || (Get::val('project') == '0'))
+if ($proj->prefs['project_is_active']
+    && ($proj->prefs['others_view'] || $user->perms['view_tasks'])
+    && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends')))
 {
     require_once ( "$basedir/includes/markdown.php" );
     $page->assign('intro_message', Markdown($proj->prefs['intro_message']));

@@ -1,18 +1,19 @@
 <?php
 
-// Make sure that only admins are using this page
-if (!can_create_group()) {
-    echo $newgroup_text['nopermission'];
-    exit;
+  /*******************************************\
+  | Create group (global or in project)       |
+  | ~~~~~~~~~~~~                              |
+  | Restricted to admins and project managers |
+  \*******************************************/
+
+if (!$user->can_create_group()) {
+    $fs->redirect($fs->createUrl('error'));
 }
 
 $fs->get_language_pack('newgroup');
 
 if (Get::val('project')) {
-    $result = $db->Query("SELECT  * FROM {projects}
-                           WHERE  project_id = ?", array(Get::val('project')));
-    $project_details = $db->FetchArray($result);
-    $forproject = $project_details['project_title'];
+    $forproject = $proj->prefs['project_title'];
 } else {
     $forproject = $newgroup_text['globalgroups'];
 }

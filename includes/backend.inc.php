@@ -94,7 +94,7 @@ class Backend {
 
          if ($task_details['project_is_active']
                  && ($task_details['others_view'] || $user->perms['view_tasks'])
-                 && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $user->id)
+                 && (($task_details['mark_private'] && $task_details['assigned_to'] == $user->id)
                      || $user->perms['manage_project'] || !$task_details['mark_private'])
                  && (($user->perms['assign_to_self'] && !$task_details['assigned_to'])
                      || $user->perms['assign_others_to_self'])

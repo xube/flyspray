@@ -1,7 +1,7 @@
 <?php
 // If the application preferences require the use of
 // confirmation codes, use this script
-if (!$fs->prefs['spam_proof'] || !$fs->prefs['anon_reg'] || !$user->isAonon()) {
+if (!$fs->prefs['spam_proof'] || !$fs->prefs['anon_reg'] || !$user->isAnon()) {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 

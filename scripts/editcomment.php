@@ -1,31 +1,27 @@
 <?php
-/*
-   --------------------------------------------------
-   | Edit comment                                   |
-   | =======================                        |
-   | This script allows users with the appropriate  |
-   | permissions to edit comments attached to tasks |
-   --------------------------------------------------
-*/
+
+  /************************************\
+  | Edit comment                       |
+  | ~~~~~~~~~~~~                       |
+  | This script allows users           |
+  | to edit comments attached to tasks |
+  \************************************/
+
+$sql = $db->Query("SELECT  c.*, u.real_name
+                     FROM  {comments} c
+               INNER JOIN  {users}    u ON c.user_id = u.user_id
+                    WHERE  comment_id = ? AND task_id = ?",
+                    array(Get::val('id', 0), Get::val('task_id', 0)));
+
+$page->assign('comment', $comment = $db->FetchArray($sql));
+
+if (!$user->can_edit_comment($comment)) {
+    $fs->Redirect( $fs->createURL('error') );
+}
 
 $fs->get_language_pack('admin');
 $page->uses('admin_text');
 
-if (Get::has('id') && Get::has('task_id') && $user->perms['edit_comments']) {
-    // Get the comment details
-    $res = $db->Query("SELECT  *
-                         FROM  {comments}
-                        WHERE  comment_id = ? AND task_id = ?",
-                        array(Get::val('id'), Get::val('task_id')));
-    $comment = $db->FetchArray($res);
-    $page->assign('comment', $comment);
+$page->display('editcomment.tpl');
 
-    $res = $db->Query("SELECT real_name FROM {users} WHERE user_id = ?", array($row['user_id']));
-    $page->assign('user_name', $db->FetchArray($res));
-
-
-    $page->display('editcomment.tpl');
-} else {
-    $fs->Redirect( $fs->createURL('error', null) );
-}
 ?>

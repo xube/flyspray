@@ -73,18 +73,4 @@ function can_close_task($task)
         || $user->perms['close_other_tasks'];
 }
 
-function can_create_user() {
-    // Make sure that only admins are using this page, unless
-    // The application preferences allow anonymous signups
-    global $user;
-    return $user->perms['is_admin']
-        || ( !$fs->prefs['spam_proof'] && $fs->prefs['anon_reg'] && $user->isAnon() );
-}
-
-function can_create_group() {
-    global $user;
-    return $user->perms['is_admin'] == '1'
-        || ($user->perms['manage_project'] == '1' && !Get::val('project'));
-}
-
 ?>
