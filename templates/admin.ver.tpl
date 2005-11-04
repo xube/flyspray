@@ -1,6 +1,5 @@
 <div id="toolbox">
-  <h3>{$pm_text['pmtoolbox']} :: {$proj->prefs['project_title']} : {$pm_text['verlisted']}</h3>
-
+  <h3>{$admin_text['admintoolbox']} :: {$admin_text['verlisted']}</h3>
   <fieldset class="admin">
     <legend>{$admin_text['versions']}</legend>
     <?php

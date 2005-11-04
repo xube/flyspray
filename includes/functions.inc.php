@@ -235,6 +235,15 @@ class Flyspray
     }
 
 
+    function listProjects()
+    {
+        global $db;
+        
+        $sql = $db->Query("SELECT  project_id, project_title FROM {projects}
+                            WHERE  project_is_active = 1");
+        return $db->fetchAllArray($sql);
+    }
+
     function listThemes()
     {
         if ($handle = opendir(dirname(dirname(__FILE__)).'/themes/')) {
@@ -249,6 +258,22 @@ class Flyspray
 
         sort($theme_array);
         return $theme_array;
+    }
+
+    function listLangs()
+    {
+        if ($handle = opendir(dirname(dirname(__FILE__)).'/lang/')) {
+            $lang_array = array();
+            while (false !== ($file = readdir($handle))) {
+                if ($file != "." && $file != ".." && file_exists("lang/$file/main.php")) {
+                    $lang_array[] = $file;
+                }
+            }
+            closedir($handle);
+        }
+
+        sort($lang_array);
+        return $lang_array;
     }
 
     // }}}

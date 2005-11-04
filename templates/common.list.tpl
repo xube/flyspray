@@ -64,7 +64,9 @@
         <input type="hidden" name="action" value="add_to_list" />
         <?php endif; ?>
         <input type="hidden" name="list_type" value="{$list_type}" />
+        <?php if ($proj->id): ?>
         <input type="hidden" name="project_id" value="{$proj->id}" />
+        <?php endif; ?>
         <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
         <label for="listnamenew">{$admin_text['name']}</label>
         <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />

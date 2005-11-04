@@ -5,9 +5,6 @@
     <fieldset class="admin">
       <legend>{$admin_text['general']}</legend>
 
-      <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="updateproject" />
-      <input type="hidden" name="project_id" value="{$proj->id}" />
       <table class="admin">
         <tr>
           <td><label for="projecttitle">{$admin_text['projecttitle']}</label></td>
@@ -103,8 +100,15 @@
 
     <table>
       <tr>
-        <td class="buttons"><input class="adminbutton" type="submit" value="{$admin_text['saveoptions']}" /></td>
-        <td class="buttons"><input class="adminbutton" type="reset" value="{$admin_text['resetoptions']}" /></td>
+        <td class="buttons">
+          <input type="hidden" name="do" value="modify" />
+          <input type="hidden" name="action" value="updateproject" />
+          <input type="hidden" name="project_id" value="{$proj->id}" />
+          <input class="adminbutton" type="submit" value="{$admin_text['saveoptions']}" />
+        </td>
+        <td class="buttons">
+          <input class="adminbutton" type="reset" value="{$admin_text['resetoptions']}" />
+        </td>
       </tr>
     </table>
   </form>

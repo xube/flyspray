@@ -42,7 +42,7 @@ $regexps   = array(
 );
 
 foreach ($regexps as $key => $regexp) {
-    if (Post::has($key) && !preg_match($regexp, Post::val($key))) {
+    if (Post::has($key) && Post::val($key) && !preg_match($regexp, Post::val($key))) {
         $fs->Redirect($fs->CreateURL('error', null));
     }
     if (Get::has($key) && !preg_match($regexp, Get::val($key))) {

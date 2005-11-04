@@ -11,6 +11,7 @@ if ($user->isAnon()) {
 
 $fs->get_language_pack('admin');
 $page->uses('admin_text');
+$page->assign('theuser', $user);
 $page->display('myprofile.tpl');
 
 ?>

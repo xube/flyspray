@@ -10,7 +10,12 @@ class User
     {
         global $db;
 
-        $sql = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($uid));
+        $sql = $db->Query("SELECT  *, g.group_id AS global_group
+                             FROM  {users}           u
+                       INNER JOIN  {users_in_groups} uig
+                       INNER JOIN  {groups}          g   ON uig.group_id = g.group_id
+                            WHERE  u.user_id = ? AND g.belongs_to_project = '0'",
+                    array($uid));
         if ($db->countRows($sql)) {
             $this->infos = $db->FetchArray($sql);
             $this->id = $uid;

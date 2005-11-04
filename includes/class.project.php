@@ -15,7 +15,7 @@ class Project
             $this->prefs = $db->fetchArray($sql);
             $this->id    = $id;
         } else {
-            $this->id    = null;
+            $this->id    = 0;
         }
     }
 
