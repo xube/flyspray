@@ -39,8 +39,8 @@ class Tpl
     function compile(&$item)
     {
         if (strncmp($item, '<?', 2)) {
-            $item = preg_replace( '/{!([^{}]*)}(\n?)/', '<?php echo \1; ?>\2\2', $item);
-            $item = preg_replace( '/{([^{}]*)}(\n?)/', 
+            $item = preg_replace( '/{!([^\s&][^{}]*)}(\n?)/', '<?php echo \1; ?>\2\2', $item);
+            $item = preg_replace( '/{([^\s&][^{}]*)}(\n?)/', 
                     '<?php echo htmlspecialchars(\1, ENT_QUOTES, "utf-8"); ?>\2\2', $item);
         }
     }
@@ -186,7 +186,7 @@ function tpl_tasklink($text, $id)
     $title = $status . ': '
            .  htmlspecialchars(substr($details['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
     $link  = sprintf('<a href="%s" title="%s">%s</a>',
-            $this->CreateURL('details', $id), $title, $text);
+            $fs->CreateURL('details', $id), $title, $text);
 
     if ($details['is_closed'] == '1') {
         $link = "<del>&nbsp;".$link."&nbsp;</del>";

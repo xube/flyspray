@@ -34,6 +34,8 @@ class Project
 
     /* cached list functions {{{ */
 
+    // helpers {{{
+
     function _cached_query($idx, $sql, $sqlargs = array())
     {
         global $db;
@@ -46,96 +48,122 @@ class Project
         return ($this->cache[$idx] = $db->fetchAllArray($sql));
     }
 
-    function listGroups()
+    function _pm_list_sql($type, $join)
     {
-        return $this->_cached_query(
-                'groups',
-                "SELECT  * FROM {groups}
-                  WHERE  belongs_to_project = ?
-                  ORDER  BY group_id ASC",
-                  array($this->id));
+        settype($join, 'array');
+        $join = 't.'.join(" = l.{$type}_id OR t.", $join)." = l.{$type}_id";
+        return "SELECT  l.*, count(t.task_id) AS used_in_tasks
+                  FROM  {list_{$type}} l
+             LEFT JOIN  {tasks}        t  ON ($join)
+                            AND t.attached_to_project = l.project_id
+                 WHERE  project_id = ?
+              GROUP BY  l.{$type}_id
+              ORDER BY  list_position";
     }
 
-    function listTaskTypes()
+    function _list_sql($type, $where = null)
     {
-        return $this->_cached_query(
-                'task_types',
-                "SELECT  tt.*, count(t.task_id) AS used_in_tasks
-                   FROM  {list_tasktype} tt
-              LEFT JOIN  {tasks}         t  ON ( t.task_type = tt.tasktype_id )
-                  WHERE  project_id = ?
-               GROUP BY  tt.tasktype_id
-               ORDER BY  list_position",
-                array($this->id));
+        return "SELECT  {$type}_id, {$type}_name
+                  FROM  {list_{$type}}
+                 WHERE  show_in_list = '1' AND ( project_id = ? OR project_id = '0' )
+                        $where
+              ORDER BY  list_position";
     }
 
-    function listOs()
+    // }}}
+    // PM dependant functions {{{
+
+    function listTaskTypes($pm = false)
     {
-        return $this->_cached_query(
-                'os',
-                "SELECT  os.*, count(t.task_id) AS used_in_tasks
-                   FROM  {list_os} os
-              LEFT JOIN  {tasks} t ON (t.operating_system = os.os_id
-                                       AND t.attached_to_project = os.project_id)
-                  WHERE  os.project_id = ?
-               GROUP BY  os.os_id, os.project_id, os.os_name, os.list_position, os.show_in_list
-               ORDER BY  list_position",
-                array($this->id));
+        if ($pm) {
+            return $this->_cached_query(
+                    'pm_task_types',
+                    $this->_pm_list_sql('tasktype', 'task_type'),
+                    array($this->id));
+        } else {
+            return $this->_cached_query(
+                    'task_types', $this->_list_sql('tasktype'), array($this->id));
+        }
     }
 
-    function listVersions()
+    function listOs($pm = false)
     {
-        return $this->_cached_query(
-                'version',
-                "SELECT  v.*, count(t.task_id) AS used_in_tasks
-                   FROM  {list_version} v
-              LEFT JOIN  {tasks} t ON ( ( t.product_version = v.version_id
-                                        OR t.closedby_version = v.version_id )
-                                      AND t.attached_to_project = v.project_id )
-                  WHERE  v.project_id = ?
-               GROUP BY  v.version_id
-               ORDER BY  list_position",
-                array($this->id));
+        if ($pm) {
+            return $this->_cached_query(
+                    'pm_os',
+                    $this->_pm_list_sql('os', 'operating_system'),
+                    array($this->id));
+        } else {
+            return $this->_cached_query('os', $this->_list_sql('os'),
+                    array($this->id));
+        }
     }
+
+    function listVersions($pm = false, $tense = 2)
+    {
+        if ($pm) {
+            return $this->_cached_query(
+                    'pm_version',
+                    $this->_pm_list_sql('version', array('product_version', 'closedby_version')),
+                    array($this->id));
+        } else {
+            return $this->_cached_query(
+                    'version_'.$tense,
+                    $this->_list_sql('version', "AND version_tense = '$tense'"),
+                    array($this->id));
+        }
+    }
+
+    function listCatsIn($pm = false, $mother_cat = null)
+    {
+        if ($pm) {
+            if (is_null($mother_cat)) {
+                return $this->_cached_query(
+                        'pm_cats_in'.$mother_cat,
+                        "SELECT  c.*, count(t.task_id) AS used_in_tasks
+                           FROM  {list_category} c
+                      LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
+                          WHERE  project_id = ? AND parent_id < 1
+                       GROUP BY  c.category_id, c.project_id, c.category_name,
+                                 c.list_position, c.show_in_list, c.category_owner, c.parent_id
+                       ORDER BY  list_position",
+                        array($this->id));
+            } else {
+                return $this->_cached_query(
+                        'pm_cats_in'.$mother_cat,
+                        "SELECT  c.*, count(t.task_id) AS used_in_tasks
+                           FROM  {list_category} c
+                      LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
+                          WHERE  project_id = ? AND parent_id = ?
+                       GROUP BY  c.category_id, c.project_id, c.category_name,
+                                 c.list_position, c.show_in_list, c.category_owner, c.parent_id
+                       ORDER BY  list_position",
+                        array($this->id, $mother_cat));
+            }
+        } else {
+            return $this->_cached_query('cats_in',
+                    "SELECT  a.category_id,
+                             IF(a.parent_id,
+                                 CONCAT('...', a.category_name),
+                                 a.category_name) AS category_name,
+                             IF(a.parent_id, b.list_position, a.list_position) AS main_pos
+                       FROM  {list_category} a
+                  LEFT JOIN  {list_category} b ON a.parent_id = b.category_id
+                      WHERE  a.show_in_list = '1'
+                             AND ( a.project_id = ? OR a.project_id = '0' )
+                   ORDER BY  main_pos, a.list_position",
+                       array($this->id));
+        }
+    }
+
+    // }}}
 
     function listResolutions()
     {
         return $this->_cached_query(
                 'resolutions',
-                "SELECT  r.*, count(t.task_id) AS used_in_tasks
-                   FROM  {list_resolution} r
-              LEFT JOIN  {tasks} t ON ( t.resolution_reason = r.resolution_id )
-                  WHERE  project_id = ?
-               GROUP BY  r.resolution_id
-               ORDER BY  list_position",
+                $this->_pm_list_sql('resolution', 'resolution_reason'),
                 array($this->id));
-    }
-
-    function listCatsIn($mother_cat = null)
-    {
-        if (is_null($mother_cat)) {
-            return $this->_cached_query(
-                    'cats_in'.$mother_cat,
-                    "SELECT  c.*, count(t.task_id) AS used_in_tasks
-                       FROM  {list_category} c
-                  LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
-                      WHERE  project_id = ? AND parent_id < 1
-                   GROUP BY  c.category_id, c.project_id, c.category_name,
-                             c.list_position, c.show_in_list, c.category_owner, c.parent_id
-                   ORDER BY  list_position",
-                    array($this->id));
-        } else {
-            return $this->_cached_query(
-                    'cats_in'.$mother_cat,
-                    "SELECT  c.*, count(t.task_id) AS used_in_tasks
-                       FROM  {list_category} c
-                  LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
-                      WHERE  project_id = ? AND parent_id = ?
-                   GROUP BY  c.category_id, c.project_id, c.category_name,
-                             c.list_position, c.show_in_list, c.category_owner, c.parent_id
-                   ORDER BY  list_position",
-                    array($this->id, $mother_cat));
-        }
     }
 
     function listUsersIn($group_id = null)
@@ -165,6 +193,16 @@ class Project
                    ORDER BY  u.user_name ASC",
                     array($this->id, $group_id));
         }
+    }
+
+    function listGroups()
+    {
+        return $this->_cached_query(
+                'groups',
+                "SELECT  * FROM {groups}
+                  WHERE  belongs_to_project = ?
+                  ORDER  BY group_id ASC",
+                  array($this->id));
     }
 
     /* }}} */

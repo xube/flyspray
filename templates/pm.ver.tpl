@@ -5,7 +5,7 @@
     <legend>{$admin_text['versions']}</legend>
     <?php
     $this->assign('list_type', 'version');
-    $this->assign('rows', $proj->listVersions());
+    $this->assign('rows', $proj->listVersions(true));
     $this->display('pm._list.tpl');
     ?>
   </fieldset>

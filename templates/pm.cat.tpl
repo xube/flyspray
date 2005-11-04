@@ -9,9 +9,9 @@
           <?php
           $countlines = -1;
 
-          foreach ($proj->listCatsIn() as $row):
+          foreach ($proj->listCatsIn(true) as $row):
               $countlines++;
-              $subrows = $proj->listCatsIn($row['category_id']);
+              $subrows = $proj->listCatsIn(true, $row['category_id']);
           ?>
           <tr>
             <td>
@@ -115,7 +115,7 @@
                 <option value="">{$admin_text['notsubcategory']}</option>
                 <?php $cat_opts = array_map(
                 create_function('$x', 'return array($x["category_id"], $x["category_name"]);'),
-                $proj->listCatsIn());
+                $proj->listCatsIn(true));
                 ?>
                 {!tpl_options($cat_opts, Get::val('cat'))}
               </select>

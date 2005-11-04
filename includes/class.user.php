@@ -122,7 +122,13 @@ class User
     function can_register()
     {
         global $fs;
-        return $this->isAnon() && $fs->prefs['spam_proof'] && $fs->['anon_reg'];
+        return $this->isAnon() && $fs->prefs['spam_proof'] && $fs->prefs['anon_reg'];
+    }
+
+    function can_open_task()
+    {
+        global $proj;
+        return $user->perms['open_new_tasks'] || $proj->prefs['anon_open'];
     }
 
     /* }}} */
