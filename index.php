@@ -8,7 +8,6 @@
 
 require_once(dirname(__FILE__).'/header.php');
 require_once(dirname(__FILE__).'/includes/class.tpl.php');
-require_once(dirname(__FILE__).'/includes/permissions.inc.php');
 
 // Background daemon that does scheduled reminders
 if ($conf['general']['reminder_daemon'] == '1') {

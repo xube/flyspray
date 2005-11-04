@@ -124,6 +124,33 @@ class User
         //  || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
     }
 
+    function can_view_task($task)
+    {
+        global $proj;
+        return $task['project_is_active']
+            && ($proj->prefs['others_view'] || $this->perms['view_tasks'])
+            && ($this->perms['manage_project'] || !$task['mark_private']
+                    || $task['assigned_to'] == $this->id);
+    }
+
+    function can_edit_task($task)
+    {
+        return $this->perms['modify_all_tasks'] ||
+            ($this->perms['modify_own_tasks'] && $task['assigned_to'] == $this->id);
+    }
+
+    function can_take_ownership($task)
+    {
+        return ($this->perms['assign_to_self'] && !$task['assigned_to'])
+            || ($this->perms['assign_others_to_self'] && $task['assigned_to'] != $this->id);
+    }
+
+    function can_close_task($task)
+    {
+        return ($this->perms['close_own_tasks'] && $task['assigned_to'] == $this->id)
+            || $this->perms['close_other_tasks'];
+    }
+
     function can_register()
     {
         global $fs;

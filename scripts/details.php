@@ -14,16 +14,16 @@ $fs->get_language_pack('severity');
 $fs->get_language_pack('priority');
 
 // Only load this page if a valid task was actually requested
-if ( !($task_details = $fs->GetTaskDetails(Get::val('id'))) || !can_view_task($task_details))
-{
+if ( !($task_details = $fs->GetTaskDetails(Get::val('id')))
+        || !$user->can_view_task($task_details)) {
    $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
 // Create an array with effective permissions for this user on this task
 $eff_perms = array();
-$eff_perms['can_edit'] = can_modify_task($task_details);
-$eff_perms['can_take_ownership'] = can_take_ownership($task_details);
-$eff_perms['can_close'] = can_close_task($task_details);
+$eff_perms['can_edit'] = $user->can_edit_task($task_details);
+$eff_perms['can_take_ownership'] = $user->can_take_ownership($task_details);
+$eff_perms['can_close'] = $user->can_close_task($task_details);
 
 ////////////////////////////
 // Start the details area //
