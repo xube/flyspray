@@ -28,7 +28,7 @@
       </td>
     </tr>
     <tr>
-      <td colspan="2">{$register_text['note']}</td>
+      <td colspan="2">{!$register_text['note']}</td>
     </tr>
     <tr>
       <td colspan="2" class="buttons">

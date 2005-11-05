@@ -68,6 +68,11 @@ if (Get::has('getfile') && Get::val('getfile')) {
 $fs->get_language_pack('main');
 setlocale(LC_ALL, str_replace('-','_',$language['locale']));
 
+// make browsers back button work
+header('Expires: -1');
+header('Pragma: no-cache');
+header('Cache-Control: no-cache, must-revalidate, post-check=0, pre-check=0');
+
 // see http://www.w3.org/TR/html401/present/styles.html#h-14.2.1
 header('Content-Style-Type: text/css');
 header('Content-type: text/html; charset=utf-8');

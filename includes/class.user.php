@@ -160,7 +160,7 @@ class User
     function can_open_task()
     {
         global $proj;
-        return $user->perms['open_new_tasks'] || $proj->prefs['anon_open'];
+        return $this->perms['open_new_tasks'] || $proj->prefs['anon_open'];
     }
 
     /* }}} */

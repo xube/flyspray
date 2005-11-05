@@ -3,14 +3,14 @@
   <em>{$loginbox_text['login']}</em>
   <form action="{$baseurl}?do=authenticate" method="post">
     <div>
-      <label>{$loginbox_text['username']}</label>
-      <input class="maintext" type="text" name="user_name" size="20" maxlength="20" />
+      <label for="lbl_user_name">{$loginbox_text['username']}</label>
+      <input class="maintext" type="text" id="lbl_user_name" name="user_name" size="20" maxlength="20" />
 
-      <label>{$loginbox_text['password']}</label>
-      <input class="maintext" type="password" name="password" size="20" maxlength="20" />
+      <label for="lbl_password">{$loginbox_text['password']}</label>
+      <input class="maintext" type="password" id="lbl_password" name="password" size="20" maxlength="20" />
 
-      <label>{$loginbox_text['rememberme']}</label>
-      <input type="checkbox" name="remember_login" />
+      <label for="lbl_remember">{$loginbox_text['rememberme']}</label>
+      <input type="checkbox" id="lbl_remember" name="remember_login" />
 
       <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
       <input class="mainbutton" type="submit" value="{$loginbox_text['login']}" />
