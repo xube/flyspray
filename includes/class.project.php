@@ -156,15 +156,20 @@ class Project
         }
     }
 
-    // }}}
-
-    function listResolutions()
+    function listResolutions($pm = false)
     {
-        return $this->_cached_query(
-                'resolutions',
-                $this->_pm_list_sql('resolution', 'resolution_reason'),
-                array($this->id));
+        if ($pm) {
+            return $this->_cached_query(
+                    'pm_resolutions',
+                    $this->_pm_list_sql('resolution', 'resolution_reason'),
+                    array($this->id));
+        } else {
+            return $this->_cached_query('resolution',
+                    $this->_list_sql('resolution'), array($this->id));
+        }
     }
+
+    // }}}
 
     function listUsersIn($group_id = null)
     {

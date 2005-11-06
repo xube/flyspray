@@ -135,8 +135,10 @@ class User
 
     function can_edit_task($task)
     {
-        return $this->perms['modify_all_tasks'] ||
-            ($this->perms['modify_own_tasks'] && $task['assigned_to'] == $this->id);
+        return !$task_details['is_closed']
+            && ($this->perms['modify_all_tasks'] ||
+                    ($this->perms['modify_own_tasks']
+                     && $task['assigned_to'] == $this->id));
     }
 
     function can_take_ownership($task)

@@ -127,6 +127,7 @@ class Flyspray
 
         $get_details = $db->Query("SELECT t.*, p.*,
                                           c.category_name, c.category_owner, c.parent_id,
+                                          pc.category_name AS parent_category_name,
                                           o.os_name,
                                           r.resolution_name,
                                           tt.tasktype_name,
@@ -139,6 +140,7 @@ class Flyspray
                                     FROM  {tasks}              t
                                LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
                                LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
+                               LEFT JOIN  {list_category}      pc ON c.parent_id = pc.category_id
                                LEFT JOIN  {list_os}            o  ON t.operating_system = o.os_id
                                LEFT JOIN  {list_resolution}    r  ON t.resolution_reason = r.resolution_id
                                LEFT JOIN  {list_tasktype}      tt ON t.task_type = tt.tasktype_id

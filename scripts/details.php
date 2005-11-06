@@ -375,475 +375,57 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     // OR if the job is closed          //
     //////////////////////////////////////
 
-    // Display the next/previous navigation links
-    if (isset($_SESSION['tasklist'])) {
-        $previous_id = 0;
-        $next_id = 0;
+    $previous_id = 0;
+    $next_id = 0;
 
-        $id_list = $_SESSION['tasklist'];
-        $n = count($id_list);
-
-        // Search for current task to get the adjacent IDs
-        for ($i = 0; $i < $n; $i++) {
-            if ($id_list[$i] == $task_details['task_id']) {
-                if ($i > 0)
-                    $previous_id = $id_list[$i - 1];
-                if ($i < $n - 1)
-                    $next_id = $id_list[$i + 1];
-                break;
-            }
-        }
-
-        if ($previous_id > 0 || $next_id > 0) {
-            // Get the summary of the next/previous task for use as tooltips
-            $summary = array();
-            $get_summary = $db->Query("SELECT  task_id, item_summary
-                                         FROM  {tasks}
-                                        WHERE  task_id = ? OR task_id = ?", array($previous_id, $next_id));
-
-            while ($row = $db->FetchRow($get_summary)) {
-                $summary[$row['task_id']] = htmlentities($row['item_summary'],ENT_COMPAT,'utf-8');
-            }
-
-            echo "<span id=\"navigation\">";
-            if ($previous_id > 0) {
-                echo "<a id=\"prev\" title=\"FS#{$previous_id} &mdash; {$summary[$previous_id]}\" href=\"" . $fs->CreateURL('details', $previous_id) . "\">{$details_text['previoustask']}</a>";
-                if ($next_id > 0)
-                    echo ' | ';
-            }
-            if ($next_id > 0) {
-                echo "<a id=\"next\" title=\"FS#{$next_id} &mdash; {$summary[$next_id]}\" href=\"" . $fs->CreateURL('details', $next_id) . "\">{$details_text['nexttask']}</a>";
-            }
-            echo '</span>';
+    if ($id_list = @$_SESSION['tasklist']) {
+        if (($i = array_search($task_details['task_id'], $id_list)) !== false) {
+            if ($i > 0)
+                $previous_id = $id_list[$i - 1];
+            if ($i < count($id_list) - 1)
+                $next_id = $id_list[$i + 1];
         }
     }
-?>
-<div id="taskdetails" ondblclick='openTask("<?php echo $fs->CreateURL('edittask', $task_details['task_id']);?>")'>
-  <h2 class="severity<?php echo $task_details['task_severity'];?>">
-    <?php echo 'FS#' . $task_details['task_id'] . ' &mdash; ' . tpl_formatText($task_details['item_summary']);?>
-  </h2>
 
-  <div id="fineprint">
-    <?php
-    echo $details_text['attachedtoproject'] . '&mdash; <a href="' . $conf['general']['baseurl'] . '?project=' .  $task_details['attached_to_project'] . '">'
-        . $task_details['project_title'] . '</a><br />';
-
-    // Get the user details of the person who opened this task
-    if ($task_details['opened_by']) {
-        $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['opened_by']));
-        list($user_name, $real_name) = $db->FetchArray($get_user_name);
-    } else {
-        $user_name = $details_text['anonymous'];
-    }
-
-    $date_opened = $task_details['date_opened'];
-    $date_opened = $fs->formatDate($date_opened, true);
-
-    echo $details_text['openedby'] . ' ' . tpl_userlink($task_details['opened_by']) . ' - ' . $date_opened;
-
-    // If it's been edited, get the details
-    if ($task_details['last_edited_by']) {
-        $get_user_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['last_edited_by']));
-        list($user_name, $real_name) = $db->FetchArray($get_user_name);
-
-        $date_edited = $task_details['last_edited_time'];
-        $date_edited = $fs->formatDate($date_edited, true);
-
-        echo '<br />' . $details_text['editedby'] . ' ' . tpl_userlink($task_details['last_edited_by']) . ' - ' . $date_edited;
-    }
-    ?>
-  </div>
-
-  <div id="taskfields1">
-    <table>
-      <tr>
-        <td><label for="tasktype"><?php echo $details_text['tasktype'];?></label></td>
-        <td id="tasktype"><?php echo $task_details['tasktype_name'];?></td>
-      </tr>
-      <tr>
-        <td><label for="category"><?php echo $details_text['category'];?></label></td>
-        <td id="category">
-          <?php
-          if ($task_details['parent_id'] > '0') {
-              $result = $db->Query("SELECT  category_name
-                                      FROM  {list_category}
-                                     WHERE  category_id = ?", array($task_details['parent_id']));
-              $get_parent_cat = $db->FetchArray($result);
-
-              echo $get_parent_cat['category_name'] . " &nbsp;&nbsp;&rarr; ";
-          }
-          echo $task_details['category_name'];
-          ?>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="status"><?php echo $details_text['status'];?></label></td>
-        <td id="status">
-          <?php
-          if($task_details['is_closed'] == '1') {
-              echo $details_text['closed'];
-          } else {
-              echo $task_details['status_name'];
-          }
-          ?>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="assignedto"><?php echo $details_text['assignedto'];?></label></td>
-        <td id="assignedto">
-          <?php
-          // see if it's been assigned
-          if (!$task_details['assigned_to']) {
-              echo $details_text['noone'];
-          } else {
-              echo $task_details['assigned_to_name'];
-          }
-          ?>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="os"><?php echo $details_text['operatingsystem'];?></label></td>
-        <td id="os"><?php echo $task_details['os_name'];?></td>
-      </tr>
-    </table>
-  </div>
-
-  <div id="taskfields2">
-    <table>
-      <tr>
-        <td><label for="severity"><?php echo $details_text['severity'];?></label></td>
-        <td id="severity"><?php echo $task_details['severity_name'];?></td>
-      </tr>
-      <tr>
-        <td><label for="priority"><?php echo $details_text['priority'];?></label></td>
-        <td id="priority">
-          <?php echo $task_details['priority_name'];?>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="reportedver"><?php echo $details_text['reportedversion'];?></label></td>
-        <td id="reportedver"><?php echo $task_details['reported_version_name'];?></td>
-      </tr>
-      <tr>
-        <td><label for="dueversion"><?php echo $details_text['dueinversion'];?></label></td>
-        <td id="dueversion">
-          <?php
-          if (isset($task_details['due_in_version_name'])) {
-              echo $task_details['due_in_version_name'];
-          } else {
-              echo $details_text['undecided'];
-          }
-          ?>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="duedate"><?php echo $details_text['duedate'];?></label></td>
-        <td id="duedate">
-          <?php
-          if (!empty($task_details['due_date'])) {
-              echo $fs->formatDate($task_details['due_date'], false);
-          } else {
-              echo $details_text['undecided'];
-          }
-          ?>
-        </td>
-      </tr>
-      <tr>
-        <td><label for="percent"><?php echo $details_text['percentcomplete'];?></label></td>
-        <td id="percent">
-          <?php
-          echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style']
-              . '/percent-' . $task_details['percent_complete'] . '.png" title="' . $task_details['percent_complete'] . '% '
-              . $details_text['complete'] . '" alt="' . $task_details['percent_complete'] . '%" />';
-          ?>
-        </td>
-      </tr>
-    </table>
-  </div>
-
-  <div id="taskdetailsfull">
-    <label for="details"><?php echo $details_text['details'];?></label><span id="details"></span>
-    <?php
-    echo tpl_formatText($task_details['detailed_desc']);
-
-    $attachments = $db->Query("SELECT  * FROM {attachments}
-                                WHERE  task_id = ?  AND comment_id = '0'
-                             ORDER BY  attachment_id ASC", array($task_details['task_id']));
-
-    if ($user->perms['view_attachments'] OR $proj->prefs['others_view'] == '1') {
-
-        while ($attachment = $db->FetchArray($attachments)):
-            echo '<span class="attachments">';
-            echo '<a href="' . $conf['general']['baseurl'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
-
-            // Let's strip the mimetype to get the icon image name
-            list($main, $specific) = split('[/]', $attachment['file_type']);
-
-            $imgpath = $basedir . "themes/{$proj->prefs['theme_style']}/mime/{$attachment['file_type']}.png";
-            if (file_exists($imgpath)) {
-                echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/mime/' . $attachment['file_type'] . '.png" title="' . $attachment['file_type'] . '" />';
-            }else {
-                echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/mime/' . $main . '.png" title="' . $attachment['file_type'] . '" />';
-            }
-
-            echo '&nbsp;&nbsp;' . $attachment['orig_name'];
-            echo "</a>\n";
-
-            // Delete link
-            if ($user->perms['delete_attachments']) {
-            ?>
-            &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
-              onclick="return confirm('<?php echo $details_text['confirmdeleteattach'];?>'));"><?php echo $details_text['delete'] ?></a>
-            <?php
-            }
-            echo '</span>';
-        endwhile;
-        echo '<br />';
-    }
-
-    if ($db->CountRows($attachments)
-                && (($user->isAnon() || !$user->perms['view_attachments'])
-                    && $proj->prefs['others_view'] != '1')
-    ) {
-        echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
-    }
-    ?>
-  </div>
-
-  <div id="deps">
-    <div id="taskdeps">
-      <b><?php echo $details_text['taskdependson'] ?></b>
-      <br />
-      <?php
-      // Check for task dependencies that block closing this task
-      $check_deps = $db->Query("SELECT  *
+    // Check for task dependencies that block closing this task
+    $check_deps   = $db->Query("SELECT  *
                                   FROM  {dependencies} d
                              LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
                                  WHERE  d.task_id = ?", array(Get::val('id')));
 
-      // Check for tasks that this task blocks
-      $check_blocks = $db->Query("SELECT *
-                                    FROM {dependencies} d
-                               LEFT JOIN {tasks} t on d.task_id = t.task_id
-                                   WHERE d.dep_task_id = ?", array(Get::val('id')));
+    // Check for tasks that this task blocks
+    $check_blocks = $db->Query("SELECT  *
+                                  FROM  {dependencies} d
+                             LEFT JOIN  {tasks} t on d.task_id = t.task_id
+                                 WHERE  d.dep_task_id = ?", array(Get::val('id')));
 
-      $total = $db->CountRows($check_deps) + $db->CountRows($check_blocks);
-
-      // Show tasks that this task depends upon
-      while ($dependency = $db->FetchArray($check_deps)) {
-          if ($dependency['is_closed'] == '1') {
-              echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>";
-          } else {
-              echo '<a href="' . $fs->CreateURL('details', $dependency['dep_task_id']) . '">FS#' . $dependency['task_id'] . ' - ' . $dependency['item_summary'] . "</a>\n";
-          }
-
-          // If the user has permission, show a link to remove a dependency
-          if (@$eff_perms['can_edit'] == '1' && $task_details['is_closed'] != '1')
-          {
-              echo '<span class="DoNotPrint">&nbsp;&mdash;&nbsp;<a class="removedeplink" href="' . $conf['general']['baseurl'] 
-                  . '?do=modify&amp;action=removedep&amp;depend_id=' . $dependency['depend_id'] . '">' . $details_text['remove'] . "</a></span>\n";
-          }
-
-          echo '<br />';
-      }
-      echo "<br class=\"DoNotPrint\" />\n";
-
-      // If there are dependencies, show a link for the dependency graph
-      if ($total>0) {
-          echo '<a class="DoNotPrint" href="' . $fs->CreateURL('depends', $id) . '">' . $details_text['depgraph'] . '</a><br />&nbsp;<br />';
-      }
-      // If the user has permission, show a form to add a new dependency
-      if ($eff_perms['can_edit'] == '1' && $task_details['is_closed'] != '1'): ?>
-      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
-        <div>
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="newdep" />
-          <input type="hidden" name="task_id" value="<?php echo Get::val('id');?>" />
-          <input class="admintext" type="text" name="dep_task_id" size="5" maxlength="10" />
-          <input class="adminbutton" type="submit" name="submit" value="<?php echo $details_text['addnew'];?>" />
-        </div>
-      </form>
-      <?php endif; ?>
-    </div>
-
-    <div id="taskblocks">
-      <b><?php echo $details_text['taskblocks'] ?></b>
-      <br />
-      <?php
-      while ($block = $db->FetchArray($check_blocks)) {
-          if ($block['is_closed'] == '1') {
-              // Put a line through the blocking task if it's closed
-              echo '<a class="closedtasklink" href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
-          } else {
-              echo '<a href="' . $fs->CreateURL('details', $block['task_id']) . '">FS#' . $block['task_id'] . ' - ' . $block['item_summary'] . "</a><br />\n";
-          }
-      }
-      ?>
-
-    </div>
-  </div>
-
-  <?php
-     // If the task is closed, show the closure reason
-     if ($task_details['is_closed'] == '1') {
-         $get_closedby_name = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?", array($task_details['closed_by']));
-         list($closedby_username, $closedby_realname) = $db->FetchArray($get_closedby_name);
-         $date_closed = $task_details['date_closed'];
-         $date_closed = $fs->formatDate($date_closed, true);
-         echo $details_text['closedby'] . '&nbsp;&nbsp;' . tpl_userlink($task_details['closed_by']) . '<br />';
-         echo $details_text['date'] . '&nbsp;&nbsp;' . $date_closed . '<br />';;
-         echo $details_text['reasonforclosing'] . '&nbsp;&nbsp;';
-         echo $task_details['resolution_name'];
-         echo '<br />';
-
-         if (!empty($task_details['closure_comment'])) {
-             echo $details_text['closurecomment'] . '&nbsp;&nbsp;';
-             echo tpl_FormatText($task_details['closure_comment']);
-         }
-     }
-
-     // Check for pending PM requests
-     $get_pending = $db->Query("SELECT  *
+    // Check for pending PM requests
+    $get_pending  = $db->Query("SELECT  *
                                   FROM  {admin_requests}
-                                 WHERE  task_id = ?  AND resolved_by = '0'", array($task_details['task_id']));
-
-     if ($db->CountRows($get_pending)) {
-         echo '<span id="pendingreq">' . $details_text['taskpendingreq'] . '</span>';
-     }
-  ?>
-
-  <div id="actionbuttons">
-    <?php
-    // Check permissions and task status, then show the "re-open task" button
-    if (@$eff_perms['can_close'] == '1' && $task_details['is_closed'] == '1') {
-        echo '<a href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=reopen&amp;task_id=' . Get::val('id') . '">' . $details_text['reopenthistask'] . '</a>';
-    } elseif (@$eff_perms['can_close'] != '1'
-            && $task_details['is_closed'] == '1'
-            && $fs->AdminRequestCheck(2, $task_details['task_id']) != '1'
-            && !$user->isAnon())
-    {
-        // If they can't re-open this, show a button to request a PM re-open it
-    ?>
-    <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');"><?php echo $details_text['reopenrequest']; ?></a>
-    <div id="closeform">
-      <form name="form3" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="formclosetask">
-        <div>
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="requestreopen" />
-          <input type="hidden" name="task_id" value="<?php echo Get::val('id');?>" />
-          <label for="reason"><?php echo $details_text['givereason'];?></label>
-          <textarea id="reason" name="reason_given"></textarea><br />
-          <input class="adminbutton" type="submit" value="<?php echo $details_text['submitreq'];?>" />
-        </div>
-      </form>
-    </div>
-    <?php
-    }
-
+                                 WHERE  task_id = ?  AND resolved_by = '0'",
+                                 array($task_details['task_id']));
+                 
     // Get info on the dependencies again
-    $check_deps = $db->Query("SELECT  *
-                                FROM  {dependencies} d
-                           LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
-                               WHERE  d.task_id = ?", array(Get::val('id')));
-    // Cycle through the dependencies, checking if any are still open
-    while ($deps_details = $db->FetchArray($check_deps)) {
-        if ($deps_details['is_closed'] != '1') {
-            $deps_open = 'yes';
-        };
-    };
+    $open_deps    = $db->Query("SELECT  COUNT(*) - SUM(is_closed)
+                                  FROM  {dependencies} d
+                             LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
+                                 WHERE  d.task_id = ?", array(Get::val('id')));
+                
+    $watching     =  $db->Query("SELECT  COUNT(*)
+                                   FROM  {notifications}
+                                  WHERE  task_id = ?  AND user_id = ?",
+                                  array(Get::val('id'), $user->id));
 
-    // Check permissions and task status, then show the "close task" form
-    if (@$eff_perms['can_close'] == '1'
-            && $task_details['is_closed'] != '1'
-            && $deps_open != 'yes')
-    {
-    ?>
-    <a href="#close" id="closetask" class="button" onclick="showhidestuff('closeform');"><?php echo $details_text['closetask']; ?></a><div id="closeform">
-      <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="formclosetask">
-        <div>
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="close" />
-          <input type="hidden" name="assigned_to" value="<?php echo $task_details['assigned_to'];?>" />
-          <input type="hidden" name="task_id" value="<?php echo Get::val('id');?>" />
-          <select class="adminlist" name="resolution_reason">
-            <option value="0"><?php echo $details_text['selectareason']; ?></option>
-            <?php
-            $get_resolution = $db->Query("SELECT  resolution_id, resolution_name
-                                            FROM  {list_resolution}
-                                           WHERE  (project_id = '0' OR project_id = ?) AND show_in_list = '1'
-                                        ORDER BY  list_position", array($proj->id));
+    $page->uses('task_details', 'details_text');
+    $page->assign('previous_id', $previous_id);
+    $page->assign('next_id', $next_id);
+    $page->assign('deps',    $db->fetchAllArray($check_deps));
+    $page->assign('blocks',  $db->fetchAllArray($check_blocks));
+    $page->assign('penreqs', $db->fetchAllArray($get_pending));
+    $page->assign('d_open',  $db->fetchOne($open_deps));
+    $page->assign('watched', $db->fetchOne($watching));
+    $page->display('details.view.tpl');
 
-            while ($row = $db->FetchArray($get_resolution)) {
-                echo "<option value=\"{$row['resolution_id']}\">{$row['resolution_name']}</option>\n";
-            }
-            ?>
-          </select>
-          <input class="adminbutton" type="submit" name="buSubmit" value="<?php echo $details_text['closetask'];?>" />
-          <?php echo $details_text['closurecomment'];?>
-          <textarea class="admintext" name="closure_comment" rows="3" cols="30"></textarea>
-          <input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;<?php echo $details_text['mark100'];?>
-        </div>
-      </form>
-    </div>
-
-    <?php
-    } elseif (@$eff_perms['can_close'] != '1'
-            && !isset($deps_open)
-            && !$user->isAnon()
-            && $task_details['assigned_to'] == $user->id
-            && $fs->AdminRequestCheck(1, $task_details['task_id']) != '1')
-    {
-        // If the user is assigned this task but can't close it, show a button to request closure
-    ?>
-    <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');"><?php echo $details_text['requestclose']; ?></a>
-    <div id="closeform">
-      <form name="form3" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="formclosetask">
-        <div>
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="requestclose" />
-          <input type="hidden" name="task_id" value="<?php echo Get::val('id');?>" />
-          <label for="reason"><?php echo $details_text['givereason'];?></label>
-          <textarea id="reason" name="reason_given"></textarea><br />
-          <input class="adminbutton" type="submit" value="<?php echo $details_text['submitreq'];?>" />
-        </div>
-      </form>
-    </div>
-    <?php
-    }
-
-    if (@$eff_perms['can_take_ownership'] == '1' && $task_details['is_closed'] != '1') {
-        echo '<a id="own" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=takeownership&amp;ids=' . Get::val('id') . '">' . $details_text['assigntome'] . '</a> ';
-    }
-
-    if (@$eff_perms['can_edit'] == '1' && $task_details['is_closed'] != '1') {
-        echo '<a id="edittask" class="button" href="' . $fs->CreateURL('edittask', Get::val('id')) . '">' . $details_text['edittask'] . '</a> ';
-    }
-
-    // Start of marking private/public
-    if ($user->perms['manage_project'] && $task_details['is_closed'] != '1') {
-        if ($task_details['mark_private'] != '1') {
-            echo '<a id="private" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=makeprivate&amp;id=' . Get::val('id') . '">' . $details_text['makeprivate'] . '</a> ';
-        } else {
-            echo '<a id="public" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=makepublic&amp;id=' . Get::val('id') . '">' . $details_text['makepublic'] . '</a> ';
-        }
-    }
-
-    if (!$user->isAnon() && $task_details['is_closed'] != '1') {
-        $result = $db->Query("SELECT  *
-                                FROM  {notifications}
-                               WHERE  task_id = ?  AND user_id = ?", array(Get::val('id'), $user->id));
-        if (!$db->CountRows($result)) {
-            echo '<a id="addnotif" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=add_notification&amp;ids='
-                . Get::val('id') . '&amp;user_id=' . $user->id . '">' . $details_text['watchtask'] . '</a>';
-        } else {
-         echo '<a id="removenotif" class="button" href="' . $conf['general']['baseurl'] . '?do=modify&amp;action=remove_notification&amp;ids='
-             . Get::val('id') . '&amp;user_id=' . $user->id . '">' . $details_text['stopwatching'] . '</a>';
-        }
-    }
-    ?>
-  </div>
-</div>
-<?php // }}}
 endif;
 
 ////////////////////////////

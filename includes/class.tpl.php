@@ -103,7 +103,7 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
     if (is_array($attr)) {
         $arr = array();
         foreach ($attr as $key=>$val) {
-            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8");
+            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8").'"';
         }
         $html_attr = join(' ', $arr);
     }
@@ -132,7 +132,7 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
     if (is_array($attr)) {
         $arr = array();
         foreach ($attr as $key=>$val) {
-            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8");
+            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8").'"';
         }
         $html_attr = join(' ', $arr);
     }
@@ -172,9 +172,17 @@ function tpl_formattext($text)
             'tpl_fast_tasklink', $text);
 }
 
-function tpl_tasklink($text, $id) 
+function tpl_tasklink($text, $id, $attr = null) 
 {
     global $fs, $details_text;
+
+    if (is_array($attr)) {
+        $arr = array();
+        foreach ($attr as $key=>$val) {
+            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8").'"';
+        }
+        $html_attr = join(' ', $arr);
+    }
 
     $details = $fs->GetTaskDetails($id);
 
@@ -185,8 +193,8 @@ function tpl_tasklink($text, $id)
     }
     $title = $status . ': '
            .  htmlspecialchars(substr($details['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
-    $link  = sprintf('<a href="%s" title="%s">%s</a>',
-            $fs->CreateURL('details', $id), $title, $text);
+    $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
+            $fs->CreateURL('details', $id), $title, $html_attr, $text);
 
     if ($details['is_closed'] == '1') {
         $link = "<del>&nbsp;".$link."&nbsp;</del>";
@@ -197,6 +205,7 @@ function tpl_tasklink($text, $id)
 function tpl_userlink($uid)
 {
     global $db, $fs;
+    global $details_text;
 
     $sql = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?",
             array($uid));
@@ -205,6 +214,8 @@ function tpl_userlink($uid)
         return '<a href="'.$fs->createUrl('user', $uid).'">'
             .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
             .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
+    } else {
+        return $details_text['anonymous'];
     }
 }
 

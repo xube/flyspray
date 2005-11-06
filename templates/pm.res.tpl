@@ -5,7 +5,7 @@
     <legend>{$admin_text['resolutions']}</legend>
     <?php
     $this->assign('list_type', 'resolution');
-    $this->assign('rows', $proj->listResolutions());
+    $this->assign('rows', $proj->listResolutions(true));
     $this->display('common.list.tpl');
     ?>
   </fieldset>
