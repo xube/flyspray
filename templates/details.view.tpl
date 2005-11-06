@@ -1,8 +1,8 @@
 <span id="navigation">
-  <?php if ($previous_id): ?>
-  {!tpl_tasklink($details_text['previoustask'], $previous_id, array('id'=>'prev'))}
+  <?php if ($prev_id): ?>
+  {!tpl_tasklink($details_text['previoustask'], $prev_id, array('id'=>'prev'))}
   <?php endif; ?>
-  <?php if ($previous_id && $next_id): ?> | <?php endif; ?>
+  <?php if ($prev_id && $next_id): ?> | <?php endif; ?>
   <?php if ($next_id): ?>
   {!tpl_tasklink($details_text['nexttask'], $next_id, array('id'=>'next'))}
   <?php endif; ?>
@@ -96,11 +96,7 @@
       <tr>
         <td><label for="duedate">{$details_text['duedate']}</label></td>
         <td id="duedate">
-          <?php if ($task_details['due_date']): ?>
-          {$fs->formatDate($task_details['due_date'], false)}
-          <?php else: ?>
-          {$details_text['undecided']}
-          <?php endif; ?>
+          {$fs->formatDate($task_details['due_date'], false, $details_text['undecided'])}
         </td>
       </tr>
       <tr>

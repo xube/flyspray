@@ -17,22 +17,22 @@ if (substr($baseurl = $conf['general']['baseurl'], -1) != '/') {
     $baseurl .= '/';
 }
 
-require_once ( "$basedir/includes/fix.inc.php" );
-require_once ( "$basedir/includes/class.gpc.php" );
+require_once "$basedir/includes/fix.inc.php";
+require_once "$basedir/includes/class.gpc.php";
 
-require_once ( "$basedir/includes/db.inc.php" );
-require_once ( "$basedir/includes/functions.inc.php" );
-require_once ( "$basedir/includes/backend.inc.php" );
+require_once "$basedir/includes/db.inc.php";
+require_once "$basedir/includes/functions.inc.php";
+require_once "$basedir/includes/backend.inc.php";
 
-require_once ( "$basedir/includes/class.project.php" );
-require_once ( "$basedir/includes/class.user.php" );
+require_once "$basedir/includes/class.project.php";
+require_once "$basedir/includes/class.user.php";
 
 $db = new Database;
 $db->dbOpenFast($conf['database']);
 $fs = new Flyspray;
 $be = new Backend;
 
-require_once ( "$basedir/includes/regexp.php" );
+require_once "$basedir/includes/regexp.php";
 
 // Any "do" mode that accepts a task_id or id field should be added here.
 if (in_array(Req::val('do'), array('details', 'depends', 'modify'))) {

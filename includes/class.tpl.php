@@ -89,6 +89,59 @@ class FSTpl extends Tpl
     var $_uses = array('fs', 'conf', 'baseurl', 'language', 'proj', 'user');
 }
 
+// {{{ costful templating functions, TODO: optimize them
+
+function tpl_tasklink($text, $id, $attr = null)
+{
+    global $fs, $details_text;
+
+    $details = $fs->GetTaskDetails($id);
+
+    if ($details['is_closed'] == '1') {
+        $status = $details['resolution_name'];
+    } else {
+        $status = $details['status_name'];
+    }
+    $title = $status . ': '
+           .  htmlspecialchars(substr($details['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
+    $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
+            $fs->CreateURL('details', $id), $title, join_attrs($attr), $text);
+
+    if ($details['is_closed']) {
+        $link = "<del>&nbsp;".$link."&nbsp;</del>";
+    }
+    return $link;
+}
+
+function tpl_userlink($uid)
+{
+    global $db, $fs;
+    global $details_text;
+
+    static $cache = array();
+
+    if (empty($cache[$uid])) {
+        $sql = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?",
+                array($uid));
+        if ($db->countRows($sql)) {
+            list($uname, $rname) = $db->fetchRow($sql);
+            $cache[$uid] = '<a href="'.$fs->createUrl('user', $uid).'">'
+                .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
+                .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
+        } else {
+            $cache[$uid] = $details_text['anonymous'];
+        }
+    }
+
+    return $cache[$uid];
+}
+
+function tpl_fast_tasklink($arr)
+{
+    return tpl_tasklink($arr[0], $arr[1]);
+}
+
+// }}}
 // {{{ some useful plugins
 
 function join_attrs($attr = null) {
@@ -165,50 +218,6 @@ function tpl_formattext($text)
     // Change FS#123 into hyperlinks to tasks
     return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
             'tpl_fast_tasklink', $text);
-}
-
-function tpl_tasklink($text, $id, $attr = null)
-{
-    global $fs, $details_text;
-
-    $details = $fs->GetTaskDetails($id);
-
-    if ($details['is_closed'] == '1') {
-        $status = $details['resolution_name'];
-    } else {
-        $status = $details['status_name'];
-    }
-    $title = $status . ': '
-           .  htmlspecialchars(substr($details['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
-    $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
-            $fs->CreateURL('details', $id), $title, join_attrs($attr), $text);
-
-    if ($details['is_closed'] == '1') {
-        $link = "<del>&nbsp;".$link."&nbsp;</del>";
-    }
-    return $link;
-}
-
-function tpl_userlink($uid)
-{
-    global $db, $fs;
-    global $details_text;
-
-    $sql = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?",
-            array($uid));
-    if ($db->countRows($sql)) {
-        list($uname, $rname) = $db->fetchRow($sql);
-        return '<a href="'.$fs->createUrl('user', $uid).'">'
-            .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
-            .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
-    } else {
-        return $details_text['anonymous'];
-    }
-}
-
-function tpl_fast_tasklink($arr)
-{
-    return tpl_tasklink($arr[0], $arr[1]);
 }
 
 function tpl_draw_perms($perms)

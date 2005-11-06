@@ -146,7 +146,7 @@ else {
                                  WHERE  project_is_active = '1'
                                         AND ('1' = ? OR others_view = '1')
                               ORDER BY  project_title",
-                              array($user->perms['global_view']));  // FIXME: this line generates a NOTICE
+                              array($user->perms['global_view']));
 }
 $page->assign('project_list', $db->FetchAllArray($get_projects));
 

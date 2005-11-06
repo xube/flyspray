@@ -28,13 +28,14 @@ class User
 
     function save_search()
     {
+        global $db;
         // Only logged in users get to use the 'last search' functionality
         foreach (array('string','type','sev','due','dev','cat','status','order','sort') as $key) {
             if (Get::has($key)) {
                 $db->Query("UPDATE  {users}
                                SET  last_search = ?
                              WHERE  user_id = ?",
-                        array($_SERVER['REQUEST_URI'], $user_id)
+                        array($_SERVER['REQUEST_URI'], $this->id)
                 );
                 break;
             }
@@ -59,6 +60,7 @@ class User
             foreach ($fields as $key) {
                 $this->perms[$key] = false;
             }
+            $this->perms['global_view'] = false;
         } else {
             $max = array_map(create_function('$x', 'return "MAX($x) AS $x";'),
                     $fields);
