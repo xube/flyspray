@@ -416,7 +416,7 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
                                   WHERE  task_id = ?  AND user_id = ?",
                                   array(Get::val('id'), $user->id));
 
-    $page->uses('task_details', 'details_text');
+    $page->uses('task_details', 'details_text', 'newtask_text');
     $page->assign('previous_id', $previous_id);
     $page->assign('next_id', $next_id);
     $page->assign('deps',    $db->fetchAllArray($check_deps));
@@ -426,215 +426,41 @@ elseif (($task_details['is_closed'] == '1' OR @$eff_perms['can_edit'] == '0' OR 
     $page->assign('watched', $db->fetchOne($watching));
     $page->display('details.view.tpl');
 
-endif;
+endif; // }}}
 
 ////////////////////////////
 // Start the tabbed areas //
 ////////////////////////////
 
-$result       = $db->Query("SELECT * FROM {comments} WHERE task_id = ?", array($task_details['task_id']));
-$num_comments = $db->CountRows($result);
+$sql = $db->Query("SELECT * FROM {comments} WHERE task_id = ?", array($task_details['task_id']));
+$page->assign('comments', $db->fetchAllArray($sql));
 
-$result      = $db->Query("SELECT * FROM {related} WHERE this_task = ?", array($task_details['task_id']));
-$num_related = $db->CountRows($result);
+$sql = $db->Query("SELECT  *
+                     FROM  {related} r
+                LEFT JOIN  {tasks} t ON r.related_task = t.task_id
+                    WHERE  r.this_task = ?", array(Get::val('id')));
+$page->assign('related', $db->fetchAllArray($sql));
 
-$result         = $db->Query("SELECT * FROM {related} WHERE related_task = ?", array($task_details['task_id']));
-$num_related_to = $db->CountRows($result);
+$sql = $db->Query("SELECT  *
+                     FROM  {related} r
+                LEFT JOIN  {tasks} t ON r.this_task = t.task_id
+                    WHERE  r.related_task = ?", array(Get::val('id')));
+$page->assign('related_to', $db->fetchAllArray($sql));
 
-$result            = $db->Query("SELECT * FROM {notifications} WHERE task_id = ?", array(Get::val('id')));
-$num_notifications = $db->CountRows($result);
+$sql = $db->Query("SELECT * FROM {notifications} WHERE task_id = ?", array(Get::val('id')));
+$page->assign('notifications', $db->fetchAllArray($sql));
 
-$result        = $db->Query("SELECT * FROM {reminders} WHERE task_id = ?", array(Get::val('id')));
-$num_reminders = $db->CountRows($result);
+$sql = $db->Query("SELECT * FROM {reminders} WHERE task_id = ?", array(Get::val('id')));
+$page->assign('reminders', $db->fetchAllArray($sql));
 
-?>
-<ul id="submenu">
-  <?php
-  if ($user->perms['view_comments'] OR $user->perms['add_comments'] OR $proj->prefs['others_view'] == '1') {
-      echo '<li id="commentstab"><a href="#comments">'. $details_text['comments'] . " ($num_comments)" . '</a></li>';
-  }
+$page->display('details.tabs.tpl');
 
-  echo '<li id="relatedtab"><a href="#related">' . $details_text['relatedtasks'] . " ($num_related/$num_related_to)" . '</a></li>';
-
-  if ($user->perms['manage_project']) {
-      echo '<li id="notifytab"><a href="#notify">' . $details_text['notifications'] . " ($num_notifications) " . '</a></li>';
-      echo '<li id="remindtab"><a href="#remind">' . $details_text['reminders'] . " ($num_reminders)" . '</a></li>';
-  }
-
-  if ($user->perms['view_history']) {
-      echo '<li id="historytab"><a href="#history">' . $details_text['history'] . '</a></li>';
-  }
-  ?>
-</ul>
-
-<div id="comments" class="tab">
-<?php // {{{
-// if there are comments, show them
-$getcomments = $db->Query("SELECT  *
-                             FROM  {comments}
-                            WHERE  task_id = ?
-                         ORDER BY  date_added ASC", array($task_details['task_id']));
-
-while ($row = $db->FetchArray($getcomments)) {
-    $user_info      = $fs->getUserDetails($row['user_id']);
-    $formatted_date = $fs->formatDate($row['date_added'], true);
-    $comment_text   = tpl_formatText($row['comment_text']);
-
-    if ($user->perms['view_comments'] || $proj->prefs['others_view'] == '1') {
-        // If the user has permissions, show the comments already added
-
-        echo '<em><a name="comment' . $row['comment_id'] . '" id="comment' . $row['comment_id'] . '" href="' . $fs->CreateURL('details', $task_details['task_id']) . '#comment' . $row['comment_id'] . '">';
-        echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/menu/comment.png" title="' . $details_text['commentlink'] . '" alt="" /></a>';
-        echo $details_text['commentby']. ' ' . tpl_userlink($row['user_id']) . ' - ' . $formatted_date . "</em>\n";
-
-        echo '<span class="DoNotPrint">';
-
-        if ($user->perms['edit_comments']) {
-            echo '&nbsp; - <a href="' . $conf['general']['baseurl'] . '?do=editcomment&amp;task_id=' 
-                . Get::val('id') . '&amp;id=' . $row['comment_id'] . '">' . $details_text['edit'] . '</a>';
-        }
-
-        if ($user->perms['delete_comments']):
-        ?>
-        &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deletecomment&amp;task_id=<?php echo Get::val('id');?>&amp;comment_id=<?php echo $row['comment_id'];?>"
-          onclick="return confirm('<?php echo $details_text['confirmdeletecomment'];?>');"><?php echo $details_text['delete'] ?></a>
-        <?php endif ?>
-        </span>
-        <p class="comment"><?php echo $comment_text; ?></p>
-
-        <?php
-        $attachments = $db->Query("SELECT  *
-                                     FROM  {attachments}
-                                    WHERE  comment_id = ?
-                                 ORDER BY  attachment_id ASC", array($row['comment_id']));
-
-        if ($user->perms['view_attachments'] || $proj->prefs['others_view'] == '1') {
-            while ($attachment = $db->FetchArray($attachments)) {
-                echo '<span class="attachments">';
-                echo '<a href="' . $conf['general']['baseurl'] . '?getfile=' . $attachment['attachment_id'] . '" title="' . $attachment['file_type'] . '">';
-
-                // Let's strip the mimetype to get the icon image name
-                list($main, $specific) = explode('/', $attachment['file_type']);
-
-                $imgpath = $basedir . "{$conf['general']['baseurl']}themes/{$proj->prefs['theme_style']}/mime/{$attachment['file_type']}.png";
-                if (file_exists($imgpath)) {
-                    echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/mime/' . $attachment['file_type'] . '.png" title="' . $attachment['file_type'] . '" />';
-                } else {
-                    echo '<img src="' . $conf['general']['baseurl'] . 'themes/' . $proj->prefs['theme_style'] . '/mime/' . $main . '.png" title="' . $attachment['file_type'] . '" />';
-                }
-
-                echo '&nbsp;&nbsp;' . $attachment['orig_name'] . "</a>\n";
-
-                if ($user->perms['delete_attachments']):
-                ?>
-                &nbsp;-&nbsp;<a href="<?php echo $conf['general']['baseurl'];?>?do=modify&amp;action=deleteattachment&amp;id=<?php echo $attachment['attachment_id'];?>"
-                  onclick="return confirm('<?php echo $details_text['confirmdeleteattach'];?>'); ?></a>"><?php echo $details_text['delete'] ?></a>
-                <?php endif;
-                echo '</span>';
-            }
-            echo '<br />';
-        }
-
-        if ($db->CountRows($attachments) && !$proj->prefs['others_view']
-                && ($user->isAnon() || !$user->perms['view_attachments']))
-        {
-            echo '<span class="attachments">' . $details_text['attachnoperms'] . '</span><br />';
-        }
-    }
+if ($user->perms['view_comments'] || $proj->prefs['others_view']) {
+    $page->display('details.tabs.comment.tpl');
 }
 
-if ($user->perms['add_comments'] && $task_details['is_closed'] != '1'):
+$page->display('details.tabs.related.tpl');
 ?>
-  <form enctype="multipart/form-data" action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
-    <div class="admin">
-      <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="addcomment" />
-      <input type="hidden" name="task_id" value="<?php echo Get::val('id');?>" />
-      <?php echo $details_text['addcomment'];?>
-      <textarea id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
-
-      <?php if ($user->perms['create_attachments']): ?>
-      <div id="uploadfilebox">
-        <?php echo $details_text['uploadafile'];?>
-        <input type="file" size="55" name="userfile[]" /><br />
-      </div>
-
-      <input class="adminbutton" type="button" onclick="addUploadFields()" value="<?php echo $details_text['selectmorefiles'];?>" />
-      <?php endif; ?>
-
-      <input class="adminbutton" type="submit" value="<?php echo $details_text['addcomment'];?>" />
-      <?php
-      $check_watch = $db->Query("SELECT  user_id
-                                   FROM  {notifications}
-                                  WHERE  user_id = ?  AND task_id = ?",
-                                  array($user->id, $task_details['task_id']));
-      if ( !$db->CountRows($check_watch) ) {
-          echo "<input name=\"notifyme\" type=\"checkbox\" value=\"1\" checked=\"checked\" />{$newtask_text['notifyme']}";
-      }
-      ?>
-    </div>
-  </form>
-<?php endif; // }}} ?>
-</div>
-
-<div id="related" class="tab">
-  <p><em><?php echo $details_text['thesearerelated'];?></em></p>
-  <?php // {{{
-  $get_related = $db->Query("SELECT  *
-                               FROM  {related} r
-                          LEFT JOIN  {tasks} t ON r.related_task = t.task_id
-                              WHERE  r.this_task = ?", array(Get::val('id')));
-
-  while ($row = $db->FetchArray($get_related)) {
-      $summary = $row['item_summary'];
-
-      if (@$eff_perms['can_edit'] == '1' && $task_details['is_closed'] != '1') {
-      ?>
-      <div class="modifycomment">
-        <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post">
-          <p>
-            <input type="hidden" name="do" value="modify" />
-            <input type="hidden" name="action" value="remove_related" />
-            <input type="hidden" name="id" value="<?php echo Get::val('id');?>" />
-            <input type="hidden" name="related_id" value="<?php echo $row['related_id'];?>" />
-            <input type="hidden" name="related_task" value="<?php echo $row['related_task'];?>" />
-            <input class="adminbutton" type="submit" value="<?php echo $details_text['remove'];?>" />
-          </p>
-        </form>
-      </div>
-      <?php
-      }
-      echo '<p><a href="' . $fs->CreateURL('details', $row['related_task']) . '">FS#' . $row['related_task'] . ' &mdash; ' . $row['item_summary'] . '</a></p>';
-  }
-
-  if (@$eff_perms['can_edit'] == "1" && $task_details['is_closed'] != '1'):
-  ?>
-  <form action="<?php echo $conf['general']['baseurl'];?>index.php" method="post" id="formaddrelatedtask">
-    <p class="admin">
-      <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="add_related" />
-      <input type="hidden" name="this_task" value="<?php echo Get::val('id');?>" />
-      <label><?php echo $details_text['addnewrelated'];?>
-        <input name="related_task" size="10" maxlength="10" /></label>
-      <input class="adminbutton" type="submit" value="<?php echo $details_text['add'];?>" />
-    </p>
-  </form>
-  <?php endif; ?>
-  <p><em><?php echo $details_text['otherrelated'];?></em></p>
-  <?php
-  $get_related = $db->Query("SELECT  *
-                               FROM  {related} r
-                          LEFT JOIN  {tasks} t ON r.this_task = t.task_id
-                              WHERE  r.related_task = ?", array(Get::val('id')));
-
-  while ($row = $db->FetchArray($get_related)):
-  ?>
-  <p>
-    <a href="<?php echo $fs->CreateURL('details', $row['this_task']) ?>">FS#<?php echo $row['this_task'] ?> &mdash; <?php echo htmlspecialchars($row['item_summary']) ?></a>
-    <br />
-  </p>
-  <?php endwhile; // }}} ?>
-</div>
 
 <?php if ($user->perms['manage_project']): // {{{ ?>
 

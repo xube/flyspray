@@ -210,6 +210,17 @@ class Project
                   array($this->id));
     }
 
+    function listAttachments($cid)
+    {
+        return $this->_cached_query(
+                'attach_'.$cid,
+                "SELECT  *
+                   FROM  {attachments}
+                  WHERE  comment_id = ?
+               ORDER BY  attachment_id ASC",
+               array($cid));
+    }
+
     /* }}} */
 }
 
