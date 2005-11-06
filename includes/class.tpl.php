@@ -91,6 +91,17 @@ class FSTpl extends Tpl
 
 // {{{ some useful plugins
 
+function join_attrs($attr = null) {
+    if (is_array($attr)) {
+        $arr = array();
+        foreach ($attr as $key=>$val) {
+            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8").'"';
+        }
+        return ' '.join(' ', $arr);
+    }
+    return '';
+}
+
 function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null)
 {
     $html = '';
@@ -99,14 +110,6 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
     // this allows multi-selects to have multiple selected options.
     settype($selected, 'array');
     settype($options, 'array');
-
-    if (is_array($attr)) {
-        $arr = array();
-        foreach ($attr as $key=>$val) {
-            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8").'"';
-        }
-        $html_attr = join(' ', $arr);
-    }
 
     foreach ($options as $value=>$label)
     {
@@ -121,7 +124,7 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         if (in_array($value, $selected)) {
             $html .= ' selected="selected"';
         }
-        $html .= ' '.$html_attr.'>'.$label.'</option>';
+        $html .= join_attrs($attr).'>'.$label.'</option>';
     }
 
     return $html;
@@ -129,14 +132,6 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
 
 function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null)
 {
-    if (is_array($attr)) {
-        $arr = array();
-        foreach ($attr as $key=>$val) {
-            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8").'"';
-        }
-        $html_attr = join(' ', $arr);
-    }
-
     $name  = htmlspecialchars($name,  ENT_QUOTES, "utf-8");
     $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
     $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
@@ -147,7 +142,7 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
         $html .= 'checked="checked" ';
     }
 
-    return $html.$html_attr.' />';  // FIXME: this line generates a NOTICE
+    return $html.join_attrs($attr).' />';
 }
 
 function tpl_img($src, $alt)
@@ -176,14 +171,6 @@ function tpl_tasklink($text, $id, $attr = null)
 {
     global $fs, $details_text;
 
-    if (is_array($attr)) {
-        $arr = array();
-        foreach ($attr as $key=>$val) {
-            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8").'"';
-        }
-        $html_attr = join(' ', $arr);
-    }
-
     $details = $fs->GetTaskDetails($id);
 
     if ($details['is_closed'] == '1') {
@@ -194,7 +181,7 @@ function tpl_tasklink($text, $id, $attr = null)
     $title = $status . ': '
            .  htmlspecialchars(substr($details['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
-            $fs->CreateURL('details', $id), $title, $html_attr, $text);
+            $fs->CreateURL('details', $id), $title, join_attrs($attr), $text);
 
     if ($details['is_closed'] == '1') {
         $link = "<del>&nbsp;".$link."&nbsp;</del>";

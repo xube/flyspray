@@ -41,7 +41,7 @@
       <table class="admin">
         <tr>
           <td><label for="allowusersignups">{$admin_text['anonreg']}</label></td>
-          <td>{!tpl_checkbox('anon_reg', $fs->prefs['anon_reg'], allowusersignups)}</td>
+          <td>{!tpl_checkbox('anon_reg', $fs->prefs['anon_reg'], 'allowusersignups')}</td>
         </tr>
         <tr>
           <td><label for="spamproof">{$admin_text['spamproof']}</label></td>

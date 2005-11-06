@@ -17,11 +17,11 @@
       <th>{$admin_text['realname']}</th>
       <th>{$admin_text['accountenabled']}</th>
     </tr>
-    <?php foreach($proj->listUsersIn($group['group_id']) as $user): ?>
+    <?php foreach($proj->listUsersIn($group['group_id']) as $usr): ?>
     <tr>
-      <td>{!tpl_checkbox('users['.$user['user_id'].']')}</td>
-      <td><a href="{$fs->CreateURL('user', $user['user_id'])}">{$user['user_name']}</a></td>
-      <td>{$user['real_name']}</td>
+      <td>{!tpl_checkbox('users['.$usr['user_id'].']')}</td>
+      <td><a href="{$fs->CreateURL('user', $usr['user_id'])}">{$usr['user_name']}</a></td>
+      <td>{$usr['real_name']}</td>
       <?php if ($user->infos['account_enabled']): ?>
       <td>{$admin_text['yes']}</td>
       <?php else: ?>
@@ -53,8 +53,8 @@
     <input type="hidden" name="project_id" value="{$proj->id}" />
     <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
     <select class="adminlist" name="user_list[]" multiple="multiple" size="15">
-      <?php foreach($proj->listUsersIn() as $user): ?>
-      <option value="{$user['user_id']}">{$user['user_name']} ({$user['real_name']})</option>
+      <?php foreach($proj->listUsersIn() as $usr): ?>
+      <option value="{$usr['user_id']}">{$usr['user_name']} ({$usr['real_name']})</option>
       <?php endforeach; ?>
     </select>
     <br />

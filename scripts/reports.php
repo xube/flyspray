@@ -220,7 +220,7 @@ function events_report()
     global $proj;
     global $index_text;
 
-    strtoupper(Req::val('sort', 'desc'));
+    $sort = strtoupper(Req::val('sort', 'desc'));
 
     switch (Req::val('order')) {
         case 'id':

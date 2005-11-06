@@ -137,9 +137,7 @@ class User
 
     function can_edit_task($task)
     {
-      global $task_details;
-
-        return !$task_details['is_closed']
+        return !$task['is_closed']
             && ($this->perms['modify_all_tasks'] ||
                     ($this->perms['modify_own_tasks']
                      && $task['assigned_to'] == $this->id));

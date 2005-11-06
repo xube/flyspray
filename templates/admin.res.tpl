@@ -1,5 +1,5 @@
 <div id="toolbox">
-  <h3>{$admin_text['admintoolbox']} :: {$admin_text['resed']}</h3>
+  <h3>{$admin_text['admintoolbox']} :: {$admin_text['resolutionlist']}</h3>
 
   <fieldset class="admin">
     <legend>{$admin_text['resolutions']}</legend>

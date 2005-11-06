@@ -82,4 +82,4 @@
         </p>
       </form>
 
-      <div id="intromessage">{!$intro_message}</div>
+      <div id="intromessage">{!@$intro_message}</div>

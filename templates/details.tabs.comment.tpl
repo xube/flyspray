@@ -79,7 +79,7 @@
       <?php endif; ?>
 
       <input class="adminbutton" type="submit" value="{$details_text['addcomment']}" />
-      <?php if (!$watching): ?>
+      <?php if (!$watched): ?>
       {!tpl_checkbox('notifyme')} {$newtask_text['notifyme']}
       <?php endif; ?>
     </div>

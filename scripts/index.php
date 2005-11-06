@@ -369,7 +369,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
     global $index_text;
     global $get;
 
-    if ($column_visible[$colname]) {
+    if (!empty($column_visible[$colname])) {
         if ($orderkey) {
             if (Get::val('order') == $orderkey)
             {
@@ -419,7 +419,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
     global $column_visible;
     global $fs;
 
-    if ($column_visible[$colname]) {
+    if (!empty($column_visible[$colname])) {
         // We have a problem with these conversions applied to the progress cell
         if($colname != 'progress') {
             $cellvalue = htmlspecialchars($cellvalue);
@@ -586,7 +586,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
             list($comments) = $db->FetchRow($getcomments);
         }
    
-        if ($column_visible['attachments']) {
+        if (!empty($column_visible['attachments'])) {
             $getattachments    = $db->Query("SELECT COUNT(*) AS num_attachments FROM {attachments} WHERE task_id = ?", array($task_id));
             list($attachments) = $db->FetchRow($getattachments);
         }
