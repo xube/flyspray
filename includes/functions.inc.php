@@ -14,7 +14,7 @@ class Flyspray
 
     var $prefs   = array();
 
-    function Flyspray() 
+    function Flyspray()
     {
         global $db;
         session_start();
@@ -31,7 +31,7 @@ class Flyspray
       language (en) and then merges with requested one. Thus it makes English
       messages available even if translation is not present.
      */
-    function get_language_pack($module) 
+    function get_language_pack($module)
     {
         if ($module == 'functions')
             $module .= '.inc';
@@ -58,7 +58,7 @@ class Flyspray
 
 
     //  Redirects the browser to the page in $url
-    function Redirect($url) 
+    function Redirect($url)
     {
         @ob_clean();
         header('Location: ' . $url);
@@ -88,7 +88,7 @@ class Flyspray
       @return   true if user has submitted the same action within less than
       6 hours, false otherwise
      */
-    function requestDuplicated() 
+    function requestDuplicated()
     {
         // garbage collection -- clean entries older than 6 hrs
         $now = time();
@@ -116,7 +116,7 @@ class Flyspray
 
     // Thanks to Mr Lance Conry for this query that saved me a lot of effort.
     // Check him out at http://www.rhinosw.com/
-    function GetTaskDetails($task_id) 
+    function GetTaskDetails($task_id)
     {
         global $db;
         global $project_prefs;
@@ -151,11 +151,11 @@ class Flyspray
                                LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
                                LEFT JOIN  {users}              ua ON t.assigned_to = ua.user_id
                                    WHERE  t.task_id = ?", array($task_id));
-       
+
         if (!$db->CountRows($get_details)) {
            return false;
         }
-       
+
         if ($get_details = $db->FetchArray($get_details)) {
             $status_id    = $get_details['item_status'];
             $severity_id  = $get_details['task_severity'];
@@ -164,7 +164,7 @@ class Flyspray
             $get_details += array('severity_name' => $severity_list[$severity_id]);
             $get_details += array('priority_name' => $priority_list[$priority_id]);
         }
-       
+
         return $get_details;
     }
 
@@ -172,7 +172,7 @@ class Flyspray
     // {{{ functions that should go in a Project class
 
     // This function generates a query of users for the "Assigned To" list
-    function listUsers($in_project, $current=null) 
+    function listUsers($in_project, $current=null)
     {
         global $db;
         global $conf;
@@ -240,7 +240,7 @@ class Flyspray
     function listProjects()
     {
         global $db;
-        
+
         $sql = $db->Query("SELECT  project_id, project_title FROM {projects}
                             WHERE  project_is_active = 1");
         return $db->fetchAllArray($sql);
@@ -281,7 +281,7 @@ class Flyspray
     // }}}
 
 
-    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '') 
+    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
     {
         global $db, $user;
 
@@ -324,7 +324,7 @@ class Flyspray
 
 
     // Log a request for an admin/project manager to do something
-    function AdminRequest($type, $project, $task, $submitter, $reason) 
+    function AdminRequest($type, $project, $task, $submitter, $reason)
     {
         global $db;
         // Types are:
@@ -339,7 +339,7 @@ class Flyspray
 
 
     // Check for an existing admin request for a task and event type
-    function AdminRequestCheck($type, $task) 
+    function AdminRequestCheck($type, $task)
     {
         global $db;
 
@@ -351,7 +351,7 @@ class Flyspray
 
 
     // Get the current user's details
-    function getUserDetails($user_id) 
+    function getUserDetails($user_id)
     {
         global $db;
 
@@ -369,7 +369,7 @@ class Flyspray
 
 
     // Crypt a password with the method set in the configfile
-    function cryptPassword($password) 
+    function cryptPassword($password)
     {
         global $conf;
         $pwcrypt = $conf['general']['passwdcrypt'];
@@ -386,7 +386,7 @@ class Flyspray
 
 
     // This function checks if a user provided the right credentials
-    function checkLogin($username, $password) 
+    function checkLogin($username, $password)
     {
         global $db;
 
@@ -427,14 +427,14 @@ class Flyspray
     }
 
 
-    function setCookie($name, $val, $time) 
+    function setCookie($name, $val, $time)
     {
         global $baseurl;
         $url = parse_url($baseurl);
         setcookie($name, $val, $time, $url['path']);
     }
 
-    function startReminderDaemon() 
+    function startReminderDaemon()
     {
         $script  = 'scripts/daemon.php';
         $include = 'schedule.php';
@@ -466,7 +466,7 @@ class Flyspray
     /* Check if we should use address rewriting
        and return an appropriate URL
      */
-    function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = null) 
+    function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = null)
     {
         global $conf;
 
@@ -506,7 +506,7 @@ class Flyspray
             case 'edittask':  return $url . '&id=' . $arg1 . '&edit=yep';
             case 'pm':        return $url . '&area=' . $arg1 . '&project=' . $arg2;
             case 'user':      return $url . '&area=users&id=' . $arg1;
-            case 'logout':    return $url . '&action=logout';
+            case 'logout':    return '?do=authenticate&action=logout';
 
             case 'details':
             case 'depends':   return $url . '&id=' . $arg1;
@@ -517,16 +517,16 @@ class Flyspray
             case 'group':
             case 'projgroup': return $url . '&area=editgroup&id=' . $arg1;
 
-            case 'error':    
-            case 'lostpw':   
+            case 'error':
+            case 'lostpw':
             case 'myprofile':
-            case 'newuser':  
-            case 'register': 
+            case 'newuser':
+            case 'register':
             case 'reports':   return $url;
         }
     }
 
-    function formatDate($timestamp, $extended) 
+    function formatDate($timestamp, $extended)
     {
         global $db;
         global $conf;
@@ -552,7 +552,7 @@ class Flyspray
 
     // This provides funky page numbering
     // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-    function pagenums($pagenum, $perpage, $totalcount, $extraurl) 
+    function pagenums($pagenum, $perpage, $totalcount, $extraurl)
     {
         global $db;
         global $functions_text;

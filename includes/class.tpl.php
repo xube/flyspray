@@ -5,7 +5,7 @@ class Tpl
     var $_uses  = array();
     var $_vars  = array();
     var $_theme = '';
-   
+
     function uses()
     {
         $args = func_get_args();
@@ -40,7 +40,7 @@ class Tpl
     {
         if (strncmp($item, '<?', 2)) {
             $item = preg_replace( '/{!([^\s&][^{}]*)}(\n?)/', '<?php echo \1; ?>\2\2', $item);
-            $item = preg_replace( '/{([^\s&][^{}]*)}(\n?)/', 
+            $item = preg_replace( '/{([^\s&][^{}]*)}(\n?)/',
                     '<?php echo htmlspecialchars(\1, ENT_QUOTES, "utf-8"); ?>\2\2', $item);
         }
     }
@@ -56,7 +56,7 @@ class Tpl
         }
 
         // compilation part
-        $_tpl_data = preg_split('!(<\?php.*\?>)!sU', $_tpl_data, -1, 
+        $_tpl_data = preg_split('!(<\?php.*\?>)!sU', $_tpl_data, -1,
                 PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         array_walk($_tpl_data, array($this, 'compile'));
         $_tpl_data = join('', $_tpl_data);
@@ -75,7 +75,7 @@ class Tpl
         extract($this->_vars);
         eval( '?>'.$_tpl_data );
     }
-    
+
     function fetch($tpl, $arg0 = null, $arg1 = null)
     {
         ob_start();
@@ -147,7 +147,7 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
         $html .= 'checked="checked" ';
     }
 
-    return $html.$html_attr.' />';
+    return $html.$html_attr.' />';  // FIXME: this line generates a NOTICE
 }
 
 function tpl_img($src, $alt)
@@ -172,7 +172,7 @@ function tpl_formattext($text)
             'tpl_fast_tasklink', $text);
 }
 
-function tpl_tasklink($text, $id, $attr = null) 
+function tpl_tasklink($text, $id, $attr = null)
 {
     global $fs, $details_text;
 
@@ -235,12 +235,14 @@ function tpl_draw_perms($perms)
             'assign_to_self', 'assign_others_to_self', 'view_reports',
             'global_view');
 
+    // FIXME: colours should be set in the stylesheet instead of the template class
     $yesno = array(
             '<td style="color: red;">No</td>',
             '<td style="color: green;">Yes</td>');
 
+    // FIXME: html belongs in a template, not in the template class
     $html = '<table border="1">';
-    
+
     foreach ($perms as $key => $val) {
         if (!is_numeric($key) && in_array($key, $perm_fields)) {
             $html .= '<tr><td>' . str_replace('_', ' ', $key) . '</td>';

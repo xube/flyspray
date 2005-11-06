@@ -29,7 +29,7 @@ class User
     function save_search()
     {
         // Only logged in users get to use the 'last search' functionality
-        foreach (array('string','type','sev','due','dev','cat','status') as $key) {
+        foreach (array('string','type','sev','due','dev','cat','status','order','sort') as $key) {
             if (Get::has($key)) {
                 $db->Query("UPDATE  {users}
                                SET  last_search = ?
@@ -68,7 +68,7 @@ class User
                                        MAX(IF(g.belongs_to_project, view_tasks, 0)) AS global_view
                                  FROM  {groups} g
                             LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
-                                WHERE  uig.user_id = ?  AND 
+                                WHERE  uig.user_id = ?  AND
                                        (g.belongs_to_project = '0' OR g.belongs_to_project = ?)",
                                 array($this->id, $proj->id));
 
@@ -121,6 +121,8 @@ class User
     {
         return $this->perms['edit_comments'];
         // TODO : do we want users to be able to edit their own comments ?
+        // Tony says: not really, as it destroys the proper flow of conversation between users and developers.
+        // Tony says: perhaps this could be made an project-level option in the future.
         //  || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
     }
 
@@ -135,6 +137,8 @@ class User
 
     function can_edit_task($task)
     {
+      global $task_details;
+
         return !$task_details['is_closed']
             && ($this->perms['modify_all_tasks'] ||
                     ($this->perms['modify_own_tasks']
@@ -163,6 +167,20 @@ class User
     {
         global $proj;
         return $this->perms['open_new_tasks'] || $proj->prefs['anon_open'];
+    }
+
+    function can_mark_private($task)
+    {
+       global $proj;
+       return ($this->perms['manage_project'] && !$task['mark_private'])
+           || ($task['assigned_to'] == $this->id && !$task['mark_private']);
+    }
+
+    function can_mark_public($task)
+    {
+       global $proj;
+       return ($this->perms['manage_project'] && $task['mark_private'])
+           || ($task['assigned_to'] == $this->id && $task['mark_private']);
     }
 
     /* }}} */

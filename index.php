@@ -123,8 +123,10 @@ if ($proj->prefs['project_is_active']
     && ($proj->prefs['others_view'] || $user->perms['view_tasks'])
     && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends')))
 {
-    require_once ( "$basedir/includes/markdown.php" );
-    $page->assign('intro_message', Markdown($proj->prefs['intro_message']));
+    // Tony says: PHP Markdown no longer used
+    //require_once ( "$basedir/includes/markdown.php" );
+    //$page->assign('intro_message', Markdown($proj->prefs['intro_message']));
+   $page->assign('intro_message', $proj->prefs['intro_message']);
 }
 
 if (!$user->isAnon() && !$user->perms['global_view']) {
@@ -144,7 +146,7 @@ else {
                                  WHERE  project_is_active = '1'
                                         AND ('1' = ? OR others_view = '1')
                               ORDER BY  project_title",
-                              array($user->perms['global_view']));
+                              array($user->perms['global_view']));  // FIXME: this line generates a NOTICE
 }
 $page->assign('project_list', $db->FetchAllArray($get_projects));
 
@@ -157,7 +159,7 @@ require("$basedir/scripts/$do.php");
 
 $page->display('footer.tpl');
 
-if ($conf['debug']) {
+if (!empty($conf['debug'])) {
     require ($basedir . '/includes/debug.inc.php');
 }
 ?>

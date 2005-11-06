@@ -265,12 +265,12 @@
       {$details_text['edittask']}</a>
     <?php endif; ?>
 
-    <?php if ($user->perms['mark_private']): ?>
-    <a id="public" class="button" 
+    <?php if ($user->can_mark_public($task_details)): ?>
+    <a id="public" class="button"
       href="{$baseurl}?do=modify&amp;action=makepublic&amp;id={Get::val('id')}">
       {$details_text['makepublic']}</a>
-    <?php else: ?>
-    <a id="private" class="button" 
+    <?php elseif ($user->can_mark_private($task_details)): ?>
+    <a id="private" class="button"
       href="{$baseurl}?do=modify&amp;action=makeprivate&amp;id={Get::val('id')}">
       {$details_text['makeprivate']}</a>
     <?php endif; ?>

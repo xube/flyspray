@@ -159,12 +159,11 @@
             'priority', 'summary', 'dateopened', 'status', 'openedby',
             'assignedto', 'lastedit', 'reportedin', 'dueversion', 'duedate',
             'comments', 'attachments', 'progress');
-            foreach ($columnnames as $column):
+            $selectedcolumns = explode(" ", $fs->prefs['visible_columns']);
             ?>
-            {!tpl_checkbox("visible_columns[$column]",
-              strstr($fs->prefs['visible_columns'], $column) !== false)}
-            {$index_text[$column]}<br />
-            <?php endforeach; ?>
+            <select id="visiblecolumns" name="visible_columns[]" multiple="multiple">
+            {!tpl_options($columnnames, $selectedcolumns, true)}
+            </select>
           </td>
         </tr>
       </table>
