@@ -499,7 +499,11 @@ class Flyspray
             }
         }
 
-        $url .= '?do=' . $type;
+        if ($type == 'edittask') {
+            $url .= '?do=details';
+        } else {
+            $url .= '?do=' . $type;
+        }
 
         switch ($type) {
             case 'admin':     return $url . '&area=' . $arg1;

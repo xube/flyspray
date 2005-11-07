@@ -6,15 +6,15 @@
    allowed to view.
 */
 
-// First, set a whole bunch of DEFAULT variables if they're not
-// already set. This is a whole convoluted bunch of crap, but it works.
-
 // First, the obligatory language packs
 $fs->get_language_pack('index');
 $fs->get_language_pack('details');
 $fs->get_language_pack('severity');
 $fs->get_language_pack('status');
 $fs->get_language_pack('priority');
+
+$page->uses('index_text', 'details_text', 'severity_list', 'priority_list',
+        'status_list');
 
 $perpage = '20';
 if (@$user->infos['tasks_perpage'] > 0) {
@@ -38,11 +38,9 @@ $order_keys = array (
         'reportedin' => 't.product_version',
         'assignedto' => 'u.real_name',
 );
-$orderby = array();
-$orderby[] = $order_keys[Get::val('order',  'sev')];
-$orderby[] = $order_keys[Get::val('order2', 'pri')];
-$sort      = array(Get::val('sort', 'desc'), Get::val('sort2', 'desc'));
-$sortorder = "{$orderby[0]} {$sort[0]}, {$orderby[1]} {$sort[1]}, t.task_id ASC";
+$sortorder  = sprintf("%s %s, %s %s, t.task_id ASC",
+        $order_keys[Get::val('order',  'sev')],  Get::val('sort', 'desc'),
+        $order_keys[Get::val('order2',  'sev')], Get::val('sort2', 'desc'));
 
 $pagenum    = intval(Get::val('pagenum', 1));
 $offset     = $perpage * ($pagenum - 1);
@@ -50,35 +48,13 @@ $where      = array();
 $where[]    = 'project_is_active = ?';
 $sql_params = array('1');
 
-if (Get::val('project') === '0') {
+if (Get::val('project') == '0') {
     // If the user wants to view tasks from all projects
-
-    if ($user->perms['global_view']) {
-        // If the user has the global 'view tasks' permission, view all projects unrestricted
-        $check_projects = $db->Query("SELECT  p.project_id
-                                        FROM  {projects} p
-                                    ORDER BY  p.project_title");
-    }
-    elseif (!$user->isAnon()) {
-        // Those who aren't super users get this more restrictive query
-        $check_projects = $db->Query("SELECT  p.*
-                                        FROM  {projects} p
-                                   LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
-                                   LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
-                                       WHERE  p.project_is_active='1' AND (p.others_view OR uig.user_id IS NOT NULL)
-                                    ORDER BY  p.project_title", array($user->id));
-    }
-    else {
-        // Anonymous users also need a query here
-        $check_projects = $db->Query("SELECT  p.project_id
-                                        FROM  {projects} p
-                                       WHERE  p.others_view = '1' AND p.project_is_active = '1'
-                                    ORDER BY  p.project_title");
-    }
+    // XXX take $project_list from index.php
 
     $temp_where   = 'attached_to_project = ?';
     $sql_params[] = '0';
-    while ($this_project = $db->FetchArray($check_projects)) {
+    foreach ($project_list as $this_project) {
         $temp_where  .= ' OR attached_to_project = ?';
         $sql_params[] = $this_project['project_id'];
     }
@@ -177,7 +153,7 @@ elseif (!$user->perms['manage_project']) {
 
 // for 'sort by this column' links
 function keep($key) {
-    return Get::val($key) ? $key."=".Get::val($key) : null;
+    return Get::val($key) ? $key.'='.Get::val($key) : null;
 }
 $keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
         'project', 'task');
@@ -186,160 +162,13 @@ $keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
 $keys[] = Get::val('project') === '0' ? "project=0" : "project=".$proj->id;
 $get    = htmlentities(join('&', $keys));
 
-
 if (Get::val('project') !== '0'
         && $proj->prefs['project_is_active'] != '1'
         || ($proj->prefs['others_view'] != '1' && !$user->perms['view_tasks']))
 {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
-?>
-<!-- Query line {{{ -->
-<div id="search">
-<map id="projectsearchform" name="projectsearchform">
-  <form action="index.php" method="get">
-    <div>
-      <input type="hidden" name="tasks" value="<?php echo Get::val('tasks'); ?>" />
-      <input type="hidden" name="project" value="<?php if(Get::val('project') == '0') { echo '0'; } else { echo $proj->id; }?>" />
-      <em><?php echo $index_text['searchthisproject'];?>:</em>
-      <input id="searchtext" name="string" type="text" size="20"
-      maxlength="100" value="<?php echo htmlspecialchars(Get::val('string')); ?>" accesskey="q" />
 
-      <select name="type">
-        <option value=""><?php echo $index_text['alltasktypes'];?></option>
-        <?php
-        $tasktype_list = $db->Query("SELECT  tasktype_id, tasktype_name FROM {list_tasktype}
-                                      WHERE  show_in_list = '1' AND (project_id = '0' OR project_id = ?)
-                                   ORDER BY  list_position", array($proj->id));
-        while ($row = $db->FetchArray($tasktype_list)) {
-            if (Get::val('type') == $row['tasktype_id']) {
-                echo "<option value=\"{$row['tasktype_id']}\" selected=\"selected\">{$row['tasktype_name']}</option>\n";
-            } else {
-                echo "<option value=\"{$row['tasktype_id']}\">{$row['tasktype_name']}</option>\n";
-            }
-        }
-        ?>
-      </select>
-
-      <select name="sev">
-        <option value=""><?php echo $index_text['allseverities'];?></option>
-        <?php
-        foreach($severity_list as $key => $val) {
-           if (Get::val('sev') === (string)$key) {
-               echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-           } else {
-              echo "<option value=\"$key\">$val</option>\n";
-           }
-        }
-        ?>
-      </select>
-
-      <select name="due" <?php if (Get::val('project') === '0') echo 'disabled="disabled"';?>>
-        <option value=""><?php echo $index_text['dueanyversion'];?></option>
-        <?php
-        $ver_list = $db->Query("SELECT  version_id, version_name
-                                  FROM  {list_version}
-                                 WHERE  show_in_list = '1' AND version_tense = '3'
-                                        AND (project_id = '0' OR project_id = ?)
-                              ORDER BY  list_position", array($proj->id,));
-
-        while ($row = $db->FetchArray($ver_list)) {
-            if (Get::val('due') == $row['version_id']) {
-                echo "<option value=\"{$row['version_id']}\" selected=\"selected\">{$row['version_name']}</option>";
-            } else {
-                echo "<option value=\"{$row['version_id']}\">{$row['version_name']}</option>";
-            }
-        }
-        ?>
-      </select>
-
-      <select name="dev">
-        <option value=""><?php echo $index_text['alldevelopers'];?></option>
-        <option value="notassigned" <?php if ($dev == "notassigned") echo 'selected="selected"';?>><?php echo $index_text['notyetassigned'];?></option>
-        <?php
-        $fs->ListUsers($dev, $proj->id);
-        ?>
-      </select>
-
-      <select name="cat" <?php if (Get::val('project') === '0') echo 'disabled="disabled"';?>>
-        <option value=""><?php echo $index_text['allcategories'];?></option>
-        <?php
-        $cat_list = $db->Query("SELECT  category_id, category_name
-                                  FROM  {list_category}
-                                 WHERE  show_in_list = '1' AND parent_id < '1'
-                                        AND (project_id = '0' OR project_id = ?)
-                             ORDER BY  list_position", array($proj->id));
-
-        while ($row = $db->FetchArray($cat_list)) {
-           $category_name = $row['category_name'];
-           if (Get::val('cat') == $row['category_id']) {
-               echo "<option value=\"{$row['category_id']}\" selected=\"selected\">$category_name</option>\n";
-           } else {
-               echo "<option value=\"{$row['category_id']}\">$category_name</option>\n";
-           }
-
-           $subcat_list = $db->Query("SELECT  category_id, category_name
-                                        FROM  {list_category}
-                                       WHERE  show_in_list = '1' AND parent_id = ?
-                                    ORDER BY  list_position", array($row['category_id']));
-
-           while ($subrow = $db->FetchArray($subcat_list)) {
-               $subcategory_name = $subrow['category_name'];
-               if (Get::val('cat') == $subrow['category_id']) {
-                   echo "<option value=\"{$subrow['category_id']}\" selected=\"selected\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-               } else {
-                   echo "<option value=\"{$subrow['category_id']}\">&nbsp;&nbsp;&rarr;$subcategory_name</option>\n";
-              }
-           }
-        }
-        ?>
-      </select>
-
-      <select name="status">
-        <option value="all" <?php if (Get::val('status') == 'all') echo 'selected="selected"';?>><?php echo $index_text['allstatuses'];?></option>
-        <option value="" <?php if (!Get::val('status')) echo 'selected="selected"'; ?>><?php echo $index_text['allopentasks'];?></option>
-        <?php
-        foreach($status_list as $key => $val) {
-            if (Get::val('status') === (string)$key) {
-                echo "<option value=\"$key\" selected=\"selected\">$val</option>\n";
-            } else {
-                echo "<option value=\"$key\">$val</option>\n";
-            }
-        }
-        ?>
-        <option value="closed" <?php if (Get::val('status') == "closed") echo 'selected="selected"';?>><?php echo $index_text['closed'];?></option>
-      </select>
-
-      <?php
-      if ($due_date = Get::val('date')) {
-          $show_date = $index_text['due'] . ' ' . $due_date;
-      } else {
-          $due_date  = '0';
-          $show_date = $index_text['selectduedate'];
-      }
-      ?>
-
-      <input id="duedatehidden" type="hidden" name="date" value="<?php echo $due_date;?>" />
-      <span id="duedateview"><?php echo $show_date;?></span> <small>|</small>
-      <a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '<?php echo $index_text['selectduedate']?>'">X</a>
-     
-      <script type="text/javascript">
-         Calendar.setup({
-            inputField  : "duedatehidden",  // ID of the input field
-            ifFormat    : "%d-%b-%Y",       // the date format
-            displayArea : "duedateview",    // The display field
-            daFormat    : "%d-%b-%Y",
-            button      : "duedateview"     // ID of the button
-         });
-      </script>
-     
-      <input class="mainbutton" type="submit" value="<?php echo $index_text['search'];?>" />
-    </div>
-  </form>
-</map>
-</div>
-<!-- }}} -->
-<?php
 // Get the visibility state of all columns
 $columns = array('id', 'project', 'tasktype', 'category', 'severity', 'priority',
                  'summary', 'dateopened', 'status', 'openedby', 'assignedto', 'lastedit',
@@ -347,11 +176,12 @@ $columns = array('id', 'project', 'tasktype', 'category', 'severity', 'priority'
 $column_visible = array_map(create_function('$x', 'return false;'), $columns);
 
 $project = Get::val('project', $proj->id);
-$visible = explode(' ', $project == '0' ? $fs->prefs['visible_columns'] : $proj->prefs['visible_columns']);
+$visible = explode(' ', $project ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']);
 
 foreach ($visible as $column) {
     $column_visible[$column] = true;
 }
+
 /**
  * Displays header cell for report list
  *
@@ -360,8 +190,8 @@ foreach ($visible as $column) {
  * @param string $defaultsort The default sort order
  * @param string $image    An image to display instead of the column name
  */
+// {{{
 
-//function list_heading($colname, $orderkey, $image = '')
 function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 {
     global $column_visible;
@@ -369,10 +199,11 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
     global $index_text;
     global $get;
 
+    $html = '';
+
     if (!empty($column_visible[$colname])) {
         if ($orderkey) {
-            if (Get::val('order') == $orderkey)
-            {
+            if (Get::val('order') == $orderkey) {
                 $class  = ' class="orderby"';
                 $sort1  = Get::val('sort', 'desc') == 'desc' ? 'asc' : 'desc';
                 $sort2  = Get::val('sort2', 'desc');
@@ -388,22 +219,25 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
             $title = $index_text['sortthiscolumn'];
             $link  = "?order=$orderkey&amp;$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
 
-            echo "<th$class><a title=\"$title\" href=\"$link\">";
-            echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" />\n";
+            $html  = "<th$class><a title=\"$title\" href=\"$link\">";
+            $html .= $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" />";
 
             // Sort indicator arrows
             if (Get::val('order') == $orderkey) {
-                echo '&nbsp;&nbsp;<img src="themes/' . $proj->prefs['theme_style'] . '/' . Get::val('sort') . '.png" />';
+                $html .= '&nbsp;&nbsp;<img src="themes/' .
+                    $proj->prefs['theme_style'] . '/' . Get::val('sort') . '.png" />';
             }
 
-            echo "</a></th>\n";
+            return $html . '</a></th>';
         } else {
-            echo "<th>";
-            echo $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\" />";
-            echo "</th>\n";
+            $html  = '<th>';
+            $html .= $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\" />";
+            return $html.'</th>';
         }
     }
 }
+
+// }}}
 
 /**
  * Displays data cell for report list
@@ -413,6 +247,7 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
  * @param integer $nowrap       Whether to force the cell contents not to wrap
  * @param string $url           A URL to wrap around the cell contents
  */
+// {{{
 
 function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
 {
@@ -444,221 +279,68 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
     }
 }
 
+// }}}
+
+$where = join(' AND ', $where);
+$from  = "{tasks} t";
+
+if (Get::val('tasks') == 'watched') {
+    //join the notification table to get watched tasks
+    $from        .= " RIGHT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
+    $where[]      = 'fsn.user_id = ?';
+    $sql_params[] = $user->id;
+}
+
+// This SQL courtesy of Lance Conry http://www.rhinosw.com/
+$from .= "
+        LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
+        LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
+        LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
+        LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
+        LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
+        LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
+        LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
+";
+
+$get_total = $db->Query("SELECT  t.task_id
+                           FROM  $from
+                          WHERE  $where
+                       ORDER BY  $sortorder", $sql_params);
+
+// Store the order of the tasks returned for the next/previous links in the task details
+$id_list = array();
+while ($row = $db->FetchRow($get_total)) {
+    $id_list[] = $row['task_id'];
+}
+$_SESSION['tasklist'] = $id_list;
+$page->assign('total', count($id_list));
+
+// Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
+$sql = $db->Query("
+     SELECT  DISTINCT
+             t.*,
+             p.project_title, p.project_is_active,
+             lt.tasktype_name         AS task_type,
+             lc.category_name         AS product_category,
+             lv.version_name          AS product_version,
+             lvc.version_name         AS closedby_version,
+             u.real_name              AS assigned_to,
+             uo.real_name             AS opened_by,
+             COUNT(DISTINCT com.comment_id)    AS num_comments,
+             COUNT(DISTINCT att.attachment_id) AS num_attachments
+     FROM
+             $from
+             LEFT JOIN  {comments}      com ON t.task_id = com.task_id
+             LEFT JOIN  {attachments}   att ON t.task_id = att.task_id
+     WHERE
+             $where
+     GROUP BY
+             t.task_id
+     ORDER BY
+             $sortorder", $sql_params, $perpage, $offset);
+
+$page->assign('tasks', $db->fetchAllArray($sql));
+$page->uses('offset', 'perpage', 'pagenum', 'get');
+$page->display('index.tpl');
+
 ?>
-
-<div id="tasklist">
-
-<!-- This form for mass operations on tasks currently displayed -->
-<form action="index.php" id="massops" method="post">
-  <div>
-    <input type="hidden" name="do" value="modify" />
-    <input type="hidden" name="prev_page" value="<?php echo htmlentities($_SERVER['REQUEST_URI']);?>" />
-  
-    <!--  Summary headings, followed by the query results -->
-    <table id="tasklist_table">
-    <thead>
-       <tr>
-       <?php
-       // Spacer for the checkboxes beneath it
-       if (!$user->isAnon()) {
-           echo '<th class="ttcolumn"></th>';
-       }
-  
-       list_heading('id',          'id');
-       list_heading('project',     'proj', 'asc');
-       list_heading('tasktype',    'type', 'asc');
-       list_heading('category',    'cat', 'asc');
-       list_heading('severity',    'sev');
-       list_heading('priority',    'pri');
-       list_heading('summary',     '');
-       list_heading('dateopened',  'date');
-       list_heading('status',      'status');
-       list_heading('openedby',    'openedby', 'asc');
-       list_heading('assignedto',  'assignedto', 'asc');
-       list_heading('lastedit',    'lastedit');
-       list_heading('reportedin',  'reportedin');
-       list_heading('dueversion',  'due');
-       list_heading('duedate',     'duedate');
-       list_heading('comments',    '', '', "themes/{$proj->prefs['theme_style']}/comment.png");
-       list_heading('attachments', '', '', "themes/{$proj->prefs['theme_style']}/attachment.png");
-       list_heading('progress',    'prog');
-       ?>
-       </tr>
-    </thead>
-    <?php
-    
-    $where = join(' AND ', $where);
-    $from  = "{tasks} t";
-    
-    if (Get::val('tasks') == 'watched') {
-        //join the notification table to get watched tasks
-        $from        .= " RIGHT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
-        $where[]      = 'fsn.user_id = ?';
-        $sql_params[] = $user->id;
-    }
-    
-    // This SQL courtesy of Lance Conry http://www.rhinosw.com/
-    $from .= "
-            LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
-            LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
-            LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
-            LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
-            LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
-            LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
-            LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id";
-    
-    $get_total = $db->Query("SELECT  t.task_id
-                               FROM  $from
-                              WHERE  $where
-                           ORDER BY  $sortorder", $sql_params);
-    
-    $total = $db->CountRows($get_total);
-    
-    // Store the order of the tasks returned for the next/previous links in the task details
-    $id_list = array();
-    while ($row = $db->FetchRow($get_total)) {
-        $id_list[] = $row['task_id'];
-    }
-    $_SESSION['tasklist'] = $id_list;
-   
-    // Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
-    $get_details = $db->Query("
-             SELECT
-                     t.*,
-                     p.project_title, p.project_is_active,
-                 lt.tasktype_name AS task_type,
-                 lc.category_name AS product_category,
-                 lv.version_name  AS product_version,
-                 lvc.version_name AS closedby_version,
-                 u.real_name      AS assigned_to,
-                 uo.real_name     AS opened_by
-         FROM
-                 $from
-         WHERE
-                 $where
-         ORDER BY
-                 $sortorder", $sql_params, $perpage, $offset);
-   
-    $comments = 0;
-    $attachments = 0;
-   
-    while ($task_details = $db->FetchArray($get_details)) {
-        $task_id = $task_details['task_id'];
-   
-        if ($task_details['is_closed'] == "1") {
-            // Set the status text to 'closed' if this task is closed
-            $status = $index_text['closed'];
-        }
-        else {
-            // Get the full status name
-            $status_id = $task_details['item_status'];
-            $status    = $status_list[$status_id];
-        }
-   
-        // Get the full severity name
-        $severity_id = $task_details['task_severity'];
-        $severity    = $severity_list[$severity_id];
-   
-        // Get the full priority name
-        $priority_id = $task_details['task_priority'];
-        $priority    = $priority_list[$priority_id];
-   
-        // see if it's been assigned
-        if (!$task_details['assigned_to']) {
-            $assigned_to = $details_text['noone'];
-        }
-        else {
-            $assigned_to = $task_details['assigned_to'];
-        }
-   
-        // Convert the date_opened to a human-readable format
-        $date_opened = $fs->formatDate($task_details['date_opened'], false);
-   
-        // Convert the last_edited_time to a human-readable format
-        $last_edited_time = '';
-        if ($task_details['last_edited_time'] > 0) {
-            $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
-        }
-   
-        // get the number of comments and attachments
-        if ($column_visible['comments']) {
-            $getcomments    = $db->Query("SELECT COUNT(*) AS num_comments FROM {comments} WHERE task_id = ?", array($task_id));
-            list($comments) = $db->FetchRow($getcomments);
-        }
-   
-        if (!empty($column_visible['attachments'])) {
-            $getattachments    = $db->Query("SELECT COUNT(*) AS num_attachments FROM {attachments} WHERE task_id = ?", array($task_id));
-            list($attachments) = $db->FetchRow($getattachments);
-        }
-   
-        ////////////////////////////////////////////////////////////
-        // display starts here 
-        echo "<tr id=\"task$task_id\" class=\"severity{$task_details['task_severity']}\">\n";
-        if (!$user->isAnon()) {
-            echo "<td class=\"ttcolumn\"><input class=\"ticktask\" type=\"checkbox\" name=\"ids[{$task_details['task_id']}]\" value=\"1\"/></td>";
-        }
-   
-        list_cell($task_id, 'id',          $task_id, 1, $fs->CreateURL('details', $task_id));
-        list_cell($task_id, 'project',     $task_details['project_title'], 1);
-        list_cell($task_id, 'tasktype',    $task_details['task_type'], 1);
-        list_cell($task_id, 'category',    $task_details['product_category'], 1);
-        list_cell($task_id, 'severity',    $severity, 1);
-        list_cell($task_id, 'priority',    $priority, 1);
-        list_cell($task_id, 'summary',     $task_details['item_summary'], 0, $fs->CreateURL('details', $task_id));
-        list_cell($task_id, 'dateopened',  $date_opened);
-        list_cell($task_id, 'status',      $status, 1);
-        list_cell($task_id, 'openedby',    $task_details['opened_by'], 0);
-        list_cell($task_id, 'assignedto',  $task_details['assigned_to'], 0);
-        list_cell($task_id, 'lastedit',    $last_edited_time);
-        list_cell($task_id, 'reportedin',  $task_details['product_version']);
-        list_cell($task_id, 'dueversion',  $task_details['closedby_version'], 1);
-        list_cell($task_id, 'duedate',     $task_details['due_date'], 1);
-        list_cell($task_id, 'comments',    $comments);
-        list_cell($task_id, 'attachments', $attachments);
-   
-        list_cell($task_id, 'progress',    tpl_img("themes/{$proj->prefs['theme_style']}/percent-{$task_details['percent_complete']}.png",
-                    $task_details['percent_complete'] . '% ' . $index_text['complete']));
-   
-        echo "</tr>\n";
-        //
-        ////////////////////////////////////////////////////////////
-    }
-    ?>
-    <!--</tbody>-->
-    </table>
-   
-    <table id="pagenumbers">
-       <tr>
-       <?php
-       if ($total > 0) {
-           echo "<td id=\"taskrange\">";
-           printf($index_text['taskrange'], $offset + 1, ($offset + $perpage > $total ? $total : $offset + $perpage), $total);
-   
-           if (!$user->isAnon() && $total > 0) {
-               echo '&nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">' . $index_text['toggleselected'] . '</a>';
-           }
-   
-           echo "</td><td id=\"numbers\">" . $fs->pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order')) . "</td>";
-       } else {
-           echo "<td id=\"taskrange\"><strong>{$index_text['noresults']}</strong></td>";
-       }
-       ?>
-       </tr>
-    </table>
-   
-    <?php if (!$user->isAnon() && $total > 0): ?>
-    <div id="massopsactions">
-      <select name="action">
-        <option value="add_notification"><?php echo $index_text['watchtasks'];?></option>
-        <option value="remove_notification"><?php echo $index_text['stopwatching'];?></option>
-        <option value="takeownership"><?php echo $index_text['assigntome'];?></option>
-      </select>
-   
-      <input class="mainbutton" type="submit" value="<?php echo $index_text['takeaction'];?>" />
-    </div>
-    <?php endif ?>
-    <!-- End of form to do mass operations on shown tasks -->
-  </div> <!-- dummy div for xtml comliance -->
-</form>
-
-</div>

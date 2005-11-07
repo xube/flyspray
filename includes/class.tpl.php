@@ -248,6 +248,13 @@ function tpl_draw_perms($perms)
     return $html . '</table>';
 }
 
+function tpl_disableif($if)
+{
+    if ($if) {
+        return 'disabled="disabled"';
+    }
+}
+
 // }}}
 
 ?>

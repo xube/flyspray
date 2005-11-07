@@ -131,7 +131,7 @@ if ($proj->prefs['project_is_active']
 
 if (!$user->isAnon() && !$user->perms['global_view']) {
     // or, if the user is logged in
-    $get_projects = $db->Query(
+    $sql = $db->Query(
             "SELECT  p.project_id, p.project_title
                FROM  {projects} p
           LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
@@ -141,14 +141,14 @@ if (!$user->isAnon() && !$user->perms['global_view']) {
 }
 else {
     // XXX kludge, to merge request for power users with anonymous ones.
-    $get_projects = $db->Query("SELECT  project_id, project_title
-                                  FROM  {projects}
-                                 WHERE  project_is_active = '1'
-                                        AND ('1' = ? OR others_view = '1')
-                              ORDER BY  project_title",
-                              array($user->perms['global_view']));
+    $sql = $db->Query("SELECT  project_id, project_title
+                         FROM  {projects}
+                        WHERE  project_is_active = '1'
+                               AND ('1' = ? OR others_view = '1')
+                     ORDER BY  project_title",
+                     array($user->perms['global_view']));
 }
-$page->assign('project_list', $db->FetchAllArray($get_projects));
+$page->assign('project_list', $project_list = $db->FetchAllArray($sql));
 
 
 $page->display('header.tpl');
