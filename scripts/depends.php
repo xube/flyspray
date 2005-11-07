@@ -1,25 +1,21 @@
 <?php
 
+  /********************************************************\
+  | Task Dependancy Graph                                  |
+  | ~~~~~~~~~~~~~~~~~~~~~                                  |
+  \********************************************************/
+
+
 // Checks if a function is disabled
 function function_disabled($func_name)
 {
-	$disabled_functions = explode(',',ini_get('disable_functions'));
-	if(in_array($func_name,$disabled_functions))
-	{
-		return true;
-	}
-	return false;
+    $disabled_functions = explode(', ', ini_get('disable_functions'));
+    return in_array($func_name, $disabled_functions);
 }
-
-/*
-   This script displays a task dependancy graph.
-*/
 
 if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
         || !$user->can_view_task($task_details))
 {
-    // Only load this page if a valid task was actually requested
-    // by an aknowledged user
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
@@ -31,12 +27,12 @@ $path_to_dot = "/usr/local/bin/dot"; // Where's the dot executable?
 $path_for_images = "attachments"; // What directory do we use for output?
 $fmt = "png"; 
 
-// Minor(?) FIXME: we save the graphs into a directory (attachments),
+// Minor(?) FIXME: we save the graphs into a directory (attachments), 
 // but they never get deleted. Once there, they'll be overwritten but
 // never removed, except for manually.
 
 // ASAP Todo items:
-// - Hook in WebDot method, so if you don't have system() or dot,
+// - Hook in WebDot method, so if you don't have system() or dot, 
 //   you can still see the pretty pictures
 // - Need to get the configuration options put into the installer/configurator
 //   (someone who knows them well should probably do it)
@@ -45,7 +41,7 @@ $fmt = "png";
 // - Put the pruning strings into the details language pack, once they're set
 
 $prunemode = Req::val('prune', 0);
-$selfurl   = $fs->CreateURL('depends',$id);
+$selfurl   = $fs->CreateURL('depends', $id);
 $pmodes    = array('None', 'Prune Closed Links', 'Prune Closed Tasks');
 
 foreach ($pmodes as $mode => $desc) {
@@ -55,15 +51,15 @@ foreach ($pmodes as $mode => $desc) {
         $strlist[] = "<a href='$selfurl".($mode!=0 ? "&amp;prune=$mode" : "")."'>$desc</a>\n";
     }
 }
-echo "<p><b>Pruning Level: </b>\n". implode(" &nbsp;|&nbsp; \n",$strlist)."</p>\n";
+echo "<p><b>Pruning Level: </b>\n". implode(" &nbsp;|&nbsp; \n", $strlist)."</p>\n";
 
 $starttime = microtime();
 
-$sql = "SELECT  t1.task_id AS id1, t1.item_summary AS sum1,
-                t1.percent_complete as pct1, t1.is_closed AS clsd1,
-                t1.item_status AS stat1,
-                t2.task_id AS id2, t2.item_summary AS sum2,
-                t2.percent_complete as pct2, t2.is_closed AS clsd2,
+$sql = "SELECT  t1.task_id AS id1, t1.item_summary AS sum1, 
+                t1.percent_complete as pct1, t1.is_closed AS clsd1, 
+                t1.item_status AS stat1, 
+                t2.task_id AS id2, t2.item_summary AS sum2, 
+                t2.percent_complete as pct2, t2.is_closed AS clsd2, 
                 t2.item_status AS stat2
           FROM  {dependencies} AS d
           JOIN  {tasks} AS t1 ON d.task_id=t1.task_id
@@ -80,9 +76,9 @@ while ($row = $db->FetchArray($get_edges)) {
     extract($row);
     $edge_list[$id1][] = $id2;
     $rvrs_list[$id2][] = $id1;
-    $node_list[$id1] = array('id'=>$id1, 'sum'=>$sum1, 'pct'=>$pct1,
+    $node_list[$id1] = array('id'=>$id1, 'sum'=>$sum1, 'pct'=>$pct1, 
             'clsd'=>$clsd1, 'stat'=>$stat1);
-    $node_list[$id2] = array('id'=>$id2, 'sum'=>$sum2, 'pct'=>$pct2,
+    $node_list[$id2] = array('id'=>$id2, 'sum'=>$sum2, 'pct'=>$pct2, 
             'clsd'=>$clsd2, 'stat'=>$stat2);
 }
 
@@ -95,7 +91,7 @@ while ($row = $db->FetchArray($get_edges)) {
 $connected  = array();
 $levelsdown = 0;
 $levelsup   = 0;
-function ConnectsTo($id,$down,$up) {
+function ConnectsTo($id, $down, $up) {
     global $connected, $edge_list, $rvrs_list, $levelsdown, $levelsup;
     global $prunemode, $node_list;
     if (!isset($connected[$id])) { $connected[$id]=1; }
@@ -109,7 +105,7 @@ function ConnectsTo($id,$down,$up) {
             if (!isset($connected[$neighbor]) &&
                     !($prunemode==1 && $selfclosed && $neighborclosed) &&
                     !($prunemode==2 && $neighborclosed)) {
-                ConnectsTo($neighbor,$down,$up+1);
+                ConnectsTo($neighbor, $down, $up+1);
             }
         }
     }
@@ -119,17 +115,17 @@ function ConnectsTo($id,$down,$up) {
             if (!isset($connected[$neighbor]) &&
                     !($prunemode==1 && $selfclosed && $neighborclosed) &&
                     !($prunemode==2 && $neighborclosed)) {
-                ConnectsTo($neighbor,$down+1,$up);
+                ConnectsTo($neighbor, $down+1, $up);
             }
         }
     }
 }
 
-ConnectsTo($id,0,0);
+ConnectsTo($id, 0, 0);
 $connected_nodes = array_keys($connected);
 sort($connected_nodes);
 
-//echo "<pre>".implode(", ",$connected_nodes)."</pre>\n";
+//echo "<pre>".implode(", ", $connected_nodes)."</pre>\n";
 
 // Now lets get rid of the extra junk in our arrays.
 // In prunemode 0, we know we're only going to have to get rid of
@@ -137,7 +133,7 @@ sort($connected_nodes);
 // in the list, they'd be connected, so we wouldn't be removing them.
 // In prunemode 1 or 2, we may have to remove stuff from the list, because
 // you can have an edge to a node that didn't end up connected.
-foreach (array("edge_list","rvrs_list","node_list") as $l) {
+foreach (array("edge_list", "rvrs_list", "node_list") as $l) {
     foreach (${$l} as $n => $list) {
         if (!isset($connected[$n])) {
             unset(${$l}[$n]);
@@ -145,15 +141,15 @@ foreach (array("edge_list","rvrs_list","node_list") as $l) {
         }
         if ($prunemode!=0 && $l!="node_list" && isset(${$l}[$n])) {
             // Only keep entries that appear in the $connected_nodes list
-#echo "${l}[$n] = ".print_r(${$l}[$n],1)."<br>\n";
-            ${$l}[$n] = array_intersect(${$l}[$n],$connected_nodes);
+#echo "${l}[$n] = ".print_r(${$l}[$n], 1)."<br>\n";
+            ${$l}[$n] = array_intersect(${$l}[$n], $connected_nodes);
         }
     }
 }
-#echo "<pre>".print_r($edge_list,1)."</pre>\n";
-#echo "<pre>".implode(", ",array_keys($edge_list))."</pre>\n";
-#echo "<pre>".print_r($rvrs_list,1)."</pre>\n";
-#echo "<pre>".print_r($node_list,1)."</pre>\n";
+#echo "<pre>".print_r($edge_list, 1)."</pre>\n";
+#echo "<pre>".implode(", ", array_keys($edge_list))."</pre>\n";
+#echo "<pre>".print_r($rvrs_list, 1)."</pre>\n";
+#echo "<pre>".print_r($node_list, 1)."</pre>\n";
 
 // Now we've got everything we need... let's draw the pretty pictures
 
@@ -161,8 +157,8 @@ foreach (array("edge_list","rvrs_list","node_list") as $l) {
 $lj = "l"; // label justification - l, r, or n (for center)
 $graphname = "task_${id}_dependencies";
 $dotgraph = "digraph $graphname {\n".
-    "node [width=1.5,shape=rectangle,style=\"filled\",".
-    "fontsize=7.0,pencolor=black,margin=\"0.1,0.0\"];\n";
+    "node [width=1.5, shape=rectangle, style=\"filled\", ".
+    "fontsize=7.0, pencolor=black, margin=\"0.1, 0.0\"];\n";
 // define the nodes
 foreach ($node_list as $n => $r) {
     $col = "";
@@ -174,10 +170,10 @@ foreach ($node_list as $n => $r) {
     $label = "FS#$n - ".
         ($r['clsd'] ? $details_text['closed'] :
          "$r[pct]% ".$details_text['complete']).#" status $r[stat]".
-        "\n".wordwrap($r['sum'],20)."\n";
-    $dotgraph .= "FS$n [label=\"".str_replace("\n","\\$lj",$label)."\",".
-        "href=\"".$fs->CreateURL("details",$n)."\",".
-        "tooltip=\"".str_replace("\n"," ",$label)."\",".
+        "\n".wordwrap($r['sum'], 20)."\n";
+    $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
+        "href=\"".$fs->CreateURL("details", $n)."\", ".
+        "tooltip=\"".str_replace("\n", " ", $label)."\", ".
         "fillcolor=\"$col\"];\n";
 }
 // Add edges
@@ -189,40 +185,38 @@ foreach ($edge_list as $src => $dstlist) {
 // all done
 $dotgraph .= "}\n";
 
-if(!function_disabled('system'))
-{
-	// All done with the graph. Save it to a temp file.
-	$tname = tempnam("","fs_depends_dot_");
-	$tmp = fopen($tname,"w");
-	fwrite($tmp,$dotgraph);
-	fclose($tmp);
-	
-	// Now run dot on it:
-	$out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
-	$cmd = "$path_to_dot -T $fmt -o$basedir/$out $tname";
-	$rv = system($cmd,$stat);
-	if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
-	
-	$cmd = "$path_to_dot -T cmapx $tname";
-	$rv = system($cmd,$stat);
-	if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
-	
-	unlink($tname);
-	
-	echo "<img src='{$baseurl}$out' alt='task $id dependencies' usemap='#$graphname'>\n";
+if (!function_disabled('system')) {
+    // All done with the graph. Save it to a temp file.
+    $tname = tempnam("", "fs_depends_dot_");
+    $tmp   = fopen($tname, "w");
+    fwrite($tmp, $dotgraph);
+    fclose($tmp);
+
+    // Now run dot on it:
+    $out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
+    $cmd = "$path_to_dot -T $fmt -o$basedir/$out $tname";
+    $rv  = system($cmd, $stat);
+    if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
+
+    $cmd = "$path_to_dot -T cmapx $tname";
+    $rv = system($cmd, $stat);
+    if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
+
+    unlink($tname);
+
+    echo "<img src='{$baseurl}$out' alt='task $id dependencies' usemap='#$graphname'>\n";
 }
-else
-{
-	echo '<strong>Error: The graph cannot be displayed because of the server\'s security settings.</strong>';
+else {
+    echo '<strong>Error: The graph cannot be displayed because of the server\'s security settings.</strong>';
 }
 
 #echo "<pre>$dotgraph</pre>\n";
 
 $endtime = microtime();
 
-list($startusec,$startsec) = explode(" ",$starttime);
-list($endusec,$endsec) = explode(" ",$endtime);
+list($startusec, $startsec) = explode(" ", $starttime);
+list($endusec, $endsec) = explode(" ", $endtime);
 $diff = ($endsec - $startsec) + ($endusec - $startusec);
-echo "\n<p>\nPage and image generated in ".round($diff,2). " seconds.\n<p>\n";
+echo "\n<p>\nPage and image generated in ".round($diff, 2). " seconds.\n<p>\n";
 
 ?>
