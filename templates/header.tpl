@@ -81,11 +81,13 @@
       </div>
 
       <div id="showtask">
-		  <form action="{$baseurl}index.php" method="get"><div>
-			  <label>{$language['showtask']} #
-			  <input id="taskid" name="show_task" type="text" size="10" maxlength="10" accesskey="t" /></label>
-			  <input class="mainbutton" type="submit" value="{$language['go']}" />
-		  </div></form>
+        <form action="{$baseurl}index.php" method="get">
+          <div>
+            <label>{$language['showtask']} #
+              <input id="taskid" name="show_task" type="text" size="10" maxlength="10" accesskey="t" /></label>
+            <input class="mainbutton" type="submit" value="{$language['go']}" />
+          </div>
+        </form>
       </div>
 
       <div id="intromessage">{!@$intro_message}</div>
