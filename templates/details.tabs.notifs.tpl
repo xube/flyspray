@@ -17,7 +17,7 @@
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="add_notification" />
       <input type="hidden" name="ids" value="{Get::val('id')}" />
-      <input type="hidden" name="prev_page" value="{$this_page}" />
+      <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
       <input class="adminbutton" type="submit" value="{$details_text['addtolist']}" />
     </p>
   </form>

@@ -140,7 +140,7 @@
       <br class="DoNotPrint" />
 
       <?php if (count($deps) || count($blocks)): ?>
-      <a class="DoNotPrint" href="{$fs->CreateURL('depends', $id)}">{$details_text['depgraph']}</a>
+      <a class="DoNotPrint" href="{$fs->CreateURL('depends', Get::val('id'))}">{$details_text['depgraph']}</a>
       <br />
       <br />
       <?php endif; ?>

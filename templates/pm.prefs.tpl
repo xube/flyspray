@@ -24,9 +24,9 @@
           </td>
         </tr>
         <tr>
-          <td><label for="intromessage">{$admin_text['intromessage']}</label></td>
+          <td><label for="intromesg">{$admin_text['intromessage']}</label></td>
           <td>
-            <textarea id="intromessage" name="intro_message" rows="12" cols="70">{$proj->prefs['intro_message']}</textarea>
+            <textarea id="intromesg" name="intro_message" rows="12" cols="70">{$proj->prefs['intro_message']}</textarea>
           </td>
         </tr>
         <tr>

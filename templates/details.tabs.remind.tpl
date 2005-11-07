@@ -41,7 +41,7 @@
 
       <em>{$details_text['remindthisuser']}</em>
       <select class="adminlist" name="to_user_id">
-        <?php $fs->listUsers($novar, $proj->id); ?>
+        <?php $fs->listUsers($proj->id); ?>
       </select>
 
       <br />

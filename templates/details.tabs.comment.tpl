@@ -61,7 +61,7 @@
   <?php endforeach; ?>
 
   <?php if ($user->perms['add_comments'] && !$task_details['is_closed']): ?>
-  <form enctype="multipart/form-data" action="{$baseur}" method="post">
+  <form enctype="multipart/form-data" action="{$baseurl}" method="post">
     <div class="admin">
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />

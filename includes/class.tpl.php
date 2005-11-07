@@ -189,7 +189,7 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
     $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
     $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
     if ($id) {
-        $html .= 'id='.htmlspecialchars($id, ENT_QUOTES, "utf-8").' ';
+        $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, "utf-8").'" ';
     }
     if ($checked) {
         $html .= 'checked="checked" ';
