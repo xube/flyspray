@@ -93,7 +93,12 @@ class Database
     {
         return $result->RecordCount();
     }
-
+    
+    function Affected_Rows()
+    {
+		return $this->dblink->Affected_Rows();
+    }
+    
     function FetchRow(&$result)
     {
         return $result->FetchRow();

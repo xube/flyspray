@@ -33,6 +33,14 @@
             <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="{$fs->prefs['dateformat_extended']}" />
           </td>
         </tr>
+        <tr>
+          <td><label for="cache_feeds">{$admin_text['cache_feeds']}</label></td>
+          <td>
+            <select id="cache_feeds" name="cache_feeds">
+            {!tpl_options(array('0' => $admin_text['no_cache'], '1' => $admin_text['cache_disk'], '2' => $admin_text['cache_db']), $fs->prefs['cache_feeds'])}
+            </select>
+          </td>
+        </tr>
       </table>
     </fieldset>
 

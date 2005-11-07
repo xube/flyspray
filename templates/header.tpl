@@ -12,6 +12,12 @@
     <link media="screen" href="{$this->themeUrl()}/theme.css" rel="stylesheet" type="text/css" />
     <link media="print"  href="{$this->themeUrl()}/theme_print.css" rel="stylesheet" type="text/css" />
     <style type="text/css">@import url({$baseurl}includes/jscalendar/calendar-win2k-1.css);</style>
+    <link rel="alternate" type="application/rss+xml" title="Flyspray RSS 1.0 Feed"
+          href="{$baseurl}feed.php?feed_type=rss1&amp;project={$proj->id}" />
+    <link rel="alternate" type="application/rss+xml" title="Flyspray RSS 2.0 Feed"
+          href="{$baseurl}feed.php?feed_type=rss2&amp;project={$proj->id}" />
+	<link rel="alternate" type="application/atom+xml" title="Flyspray Atom 0.3 Feed"
+	      href="{$baseurl}feed.php?feed_type=atom&amp;project={$proj->id}" />
 
     <script type="text/javascript" src="{$baseurl}includes/styleswitcher.js"></script>
     <script type="text/javascript" src="{$baseurl}includes/tabs.js"></script>

@@ -108,7 +108,7 @@ function tpl_tasklink($text, $id, $attr = null)
             $fs->CreateURL('details', $id), $title, join_attrs($attr), $text);
 
     if ($details['is_closed']) {
-        $link = "<del>&nbsp;".$link."&nbsp;</del>";
+        $link = "<del>&#160;".$link."&#160;</del>";
     }
     return $link;
 }

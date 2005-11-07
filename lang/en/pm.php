@@ -30,6 +30,8 @@ $pm_text = array (
 'notifiedwhen'             =>    'Notified when',
 'onlynewtasks'             =>    'New tasks are opened',
 'allevents'                =>    'Any event occurs in any task',
-
+'feeds'                    =>    'Feeds',
+'feeddescription'          =>    'Feed description',
+'feedimgurl'               =>    'Feed image URL (leave blank for no image)'
 );
 ?>

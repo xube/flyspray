@@ -110,3 +110,28 @@ UPDATE flyspray_users SET
     last_search = REPLACE(REPLACE(last_search, "\\'", "'"), '\\"', '"');
 
 -- =========================================================================}}}=
+
+-- =============================================================================
+-- 
+-- Florian Schmitz, Added on 05 November 05
+-- 
+-- RSS/Atom feeds
+-- 
+-- =============================================================================
+
+ALTER TABLE `flyspray_projects` ADD `feed_img_url` TEXT NOT NULL ;
+ALTER TABLE `flyspray_projects` ADD `feed_description` TEXT NOT NULL ;
+
+INSERT INTO `flyspray_prefs` VALUES (NULL, 'cache_feeds', '0', '0 = do not cache feeds, 1 = cache feeds on disk, 2 = cache feeds in DB');
+
+CREATE TABLE `flyspray_cache` (
+  `id` smallint(6) NOT NULL auto_increment,
+  `type` varchar(4) NOT NULL default '',
+  `content` text NOT NULL,
+  `topic` varchar(30) NOT NULL default '',
+  `last_updated` int(11) NOT NULL default '0',
+  `project` int(11) NOT NULL default '0',
+  `limit` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM COMMENT='Table to cache RSS/atom feeds' AUTO_INCREMENT=1 ;
+

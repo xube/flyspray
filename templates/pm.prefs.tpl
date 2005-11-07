@@ -97,6 +97,25 @@
       </table>
     </fieldset>
 
+    <fieldset class="admin">
+      <legend>{$pm_text['feeds']}</legend>
+
+      <table class="admin">
+        <tr>
+          <td><label for="feed_description">{$pm_text['feeddescription']}</label></td>
+          <td>
+            <input id="feed_description" name="feed_description" type="text" value="{$proj->prefs['feed_description']}" />
+          </td>
+        </tr>
+        <tr>
+          <td><label for="feed_img_url">{$pm_text['feedimgurl']}</label></td>
+          <td>
+            <input id="feed_img_url" name="feed_img_url" type="text" value="{$proj->prefs['feed_img_url']}" />
+          </td>
+        </tr>
+      </table>
+    </fieldset>
+    
     <table>
       <tr>
         <td class="buttons">

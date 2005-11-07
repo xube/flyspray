@@ -631,7 +631,7 @@ elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin'])
             'jabber_password', 'anon_group', 'user_notify', 'admin_email',
             'lang_code', 'spam_proof', 'default_project', 'dateformat',
             'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server',
-            'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon');
+            'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds');
     foreach ($settings as $setting) {
         $update = $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = '$setting'",
                 array(Post::val($setting)));
@@ -712,7 +712,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
         $cols = array( 'project_title', 'theme_style', 'show_logo',
                 'inline_images', 'default_cat_owner', 'intro_message',
                 'project_is_active', 'others_view', 'anon_open', 'notify_email',
-                'notify_email_when', 'notify_jabber', 'notify_jabber_when');
+                'notify_email_when', 'notify_jabber', 'notify_jabber_when', 'feed_description', 'feed_img_url');
         $args = array_map('Post_to0', $cols);
         $args[] = Post::val('project_id', 0);
 
