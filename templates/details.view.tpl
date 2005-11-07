@@ -29,11 +29,11 @@
 
   <div id="taskfields1">
     <table>
-      <tr>
+      <tr class="tasktype">
         <td><label for="tasktype">{$details_text['tasktype']}</label></td>
         <td id="tasktype">{$task_details['tasktype_name']}</td>
       </tr>
-      <tr>
+      <tr class="category">
         <td><label for="category">{$details_text['category']}</label></td>
         <td id="category">
           <?php if ($task_details['parent_category_name']): ?>
@@ -42,7 +42,7 @@
           {$task_details['category_name']}
         </td>
       </tr>
-      <tr>
+      <tr class="status">
         <td><label for="status">{$details_text['status']}</label></td>
         <td id="status">
           <?php if ($task_details['is_closed']): ?>
@@ -52,7 +52,7 @@
           <?php endif; ?>
         </td>
       </tr>
-      <tr>
+      <tr class="assignedto">
         <td><label for="assignedto">{$details_text['assignedto']}</label></td>
         <td id="assignedto">
           <?php if (!$task_details['assigned_to']): ?>
@@ -62,7 +62,7 @@
           <?php endif; ?>
         </td>
       </tr>
-      <tr>
+      <tr class="os">
         <td><label for="os">{$details_text['operatingsystem']}</label></td>
         <td id="os">{$task_details['os_name']}</td>
       </tr>
@@ -71,19 +71,19 @@
 
   <div id="taskfields2">
     <table>
-      <tr>
+      <tr class="severity">
         <td><label for="severity">{$details_text['severity']}</label></td>
         <td id="severity">{$task_details['severity_name']}</td>
       </tr>
-      <tr>
+      <tr class="priority">
         <td><label for="priority">{$details_text['priority']}</label></td>
         <td id="priority">{$task_details['priority_name']}</td>
       </tr>
-      <tr>
+      <tr class="reportedver">
         <td><label for="reportedver">{$details_text['reportedversion']}</label></td>
         <td id="reportedver">{$task_details['reported_version_name']}</td>
       </tr>
-      <tr>
+      <tr class="dueversion">
         <td><label for="dueversion">{$details_text['dueinversion']}</label></td>
         <td id="dueversion">
           <?php if ($task_details['due_in_version_name']): ?>
@@ -93,13 +93,13 @@
           <?php endif; ?>
         </td>
       </tr>
-      <tr>
+      <tr class="duedate">
         <td><label for="duedate">{$details_text['duedate']}</label></td>
         <td id="duedate">
           {$fs->formatDate($task_details['due_date'], false, $details_text['undecided'])}
         </td>
       </tr>
-      <tr>
+      <tr class="percent">
         <td><label for="percent">{$details_text['percentcomplete']}</label></td>
         <td id="percent">
           <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/percent-{$task_details['percent_complete']}.png"

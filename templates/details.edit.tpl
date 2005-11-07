@@ -29,7 +29,7 @@
 
       <div id="taskfields1">
         <table class="taskdetails">
-          <tr>
+          <tr class="tasktype">
             <td><label for="tasktype">{$details_text['tasktype']}</label></td>
             <td>
               <select id="tasktype" name="task_type">
@@ -37,7 +37,7 @@
               </select>
             </td>
           </tr>
-          <tr>
+          <tr class="category">
             <td><label for="category">{$details_text['category']}</label></td>
             <td>
               <select id="category" name="product_category">
@@ -45,7 +45,7 @@
               </select>
             </td>
           </tr>
-          <tr>
+          <tr class="status">
             <td><label for="status">{$details_text['status']}</label></td>
             <td>
               <select id="status" name="item_status">
@@ -53,7 +53,7 @@
               </select>
             </td>
           </tr>
-          <tr>
+          <tr class="assignedto">
             <td><label for="assignedto">{$details_text['assignedto']}</label></td>
             <td>
               <input type="hidden" name="old_assigned" value="{$task_details['assigned_to']}" />
@@ -63,7 +63,7 @@
               </select>
             </td>
           </tr>
-          <tr>
+          <tr class="os">
             <td><label for="os">{$details_text['operatingsystem']}</label></td>
             <td>
               <select id="os" name="operating_system">
@@ -76,7 +76,7 @@
 
       <div id="taskfields2">
         <table class="taskdetails">
-          <tr>
+          <tr class="severity">
             <td><label for="severity">{$details_text['severity']}</label></td>
             <td>
               <select id="severity" name="task_severity">
@@ -84,7 +84,7 @@
               </select>
             </td>
           </tr>
-          <tr>
+          <tr class="priority">
             <td><label for="priority">{$details_text['priority']}</label></td>
             <td>
               <select id="priority" name="task_priority">
@@ -92,11 +92,11 @@
               </select>
             </td>
           </tr>
-          <tr>
-            <td><label>{$details_text['reportedversion']}</label></td>
-            <td>{$task_details['reported_version_name']}</td>
+          <tr class="reportedver">
+            <td><label for="reportedver">{$details_text['reportedversion']}</label></td>
+            <td id="reportedver">{$task_details['reported_version_name']}</td>
           </tr>
-          <tr>
+          <tr class="dueversion">
             <td><label for="dueversion">{$details_text['dueinversion']}</label></td>
             <td>
               <select id="dueversion" name="closedby_version">
@@ -105,7 +105,7 @@
               </select>
             </td>
           </tr>
-          <tr>
+          <tr class="duedate">
             <td><label for="duedate">{$details_text['duedate']}</label></td>
             <td id="duedate">
               <?php
@@ -126,7 +126,7 @@
               </script>
             </td>
           </tr>
-          <tr>
+          <tr class="percent">
             <td><label for="percent">{$details_text['percentcomplete']}</label></td>
             <td>
               <select id="percent" name="percent_complete">

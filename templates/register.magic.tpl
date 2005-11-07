@@ -3,10 +3,10 @@
 <form action="{$baseurl}" name="form2" method="post" id="registernewuser">
   <table class="admin">
     <tr>
-      <td colspan="2">{$register_text['entercode']; ?></td>
+      <td colspan="2">{$register_text['entercode']}</td>
     </tr>
     <tr>
-      <td><label for="confirmation_code">{$register_text['confirmationcode']; ?></label></td>
+      <td><label for="confirmation_code">{$register_text['confirmationcode']}</label></td>
       <td><input id="confirmation_code" name="confirmation_code" type="text" size="20" maxlength="20" /><strong>*</strong></td>
     </tr>
     <tr>

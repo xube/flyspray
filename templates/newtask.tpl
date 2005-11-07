@@ -24,17 +24,17 @@
         </tr>
 
         <tr>
-          <td><label for="productcategory">{$newtask_text['category']}</label></td>
+          <td><label for="category">{$newtask_text['category']}</label></td>
           <td>
-            <select class="adminlist" name="product_category" id="productcategory">
+            <select class="adminlist" name="product_category" id="category">
               {!tpl_options($proj->listCatsIn())}
             </select>
           </td>
         </tr>
         <tr>
-          <td><label for="itemstatus">{$newtask_text['status']}</label></td>
+          <td><label for="status">{$newtask_text['status']}</label></td>
           <td>
-            <select id="itemstatus" name="item_status" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
+            <select id="status" name="item_status" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
               {!tpl_options($status_list, 2)}
             </select>
           </td>
@@ -56,9 +56,9 @@
           </td>
         </tr>
         <tr>
-          <td><label for="operatingsystem">{$newtask_text['operatingsystem']}</label></td>
+          <td><label for="os">{$newtask_text['operatingsystem']}</label></td>
           <td>
-            <select id="operatingsystem" name="operating_system">
+            <select id="os" name="operating_system">
               {!tpl_options($proj->listOs())}
             </select>
           </td>
@@ -69,34 +69,34 @@
     <div id="taskfields2">
       <table>
         <tr>
-          <td><label for="taskseverity">{$newtask_text['severity']}</label></td>
+          <td><label for="severity">{$newtask_text['severity']}</label></td>
           <td>
-            <select id="taskseverity" class="adminlist" name="task_severity">
+            <select id="severity" class="adminlist" name="task_severity">
               {!tpl_options($severity_list, 2)}
             </select>
           </td>
         </tr>
         <tr>
-          <td><label for="task_priority">{$newtask_text['priority']}</label></td>
+          <td><label for="priority">{$newtask_text['priority']}</label></td>
           <td>
-            <select id="task_priority" name="task_priority" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
+            <select id="priority" name="task_priority" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
               {!tpl_options($priority_list, 2)}
             </select>
           </td>
         </tr>
         <tr>
-          <td><label for="productversion">{$newtask_text['reportedversion']}</label></td>
+          <td><label for="reportedver">{$newtask_text['reportedversion']}</label></td>
           <td>
-            <select class="adminlist" name="product_version" id="productversion">
+            <select class="adminlist" name="product_version" id="reportedver">
               {!tpl_options($proj->listVersions(false, 2))}
             </select>
           </td>
         </tr>
         <tr>
-          <td><label for="closedbyversion">{$newtask_text['dueinversion']}</label></td>
+          <td><label for="dueversion">{$newtask_text['dueinversion']}</label></td>
           <td>
-            <select id="closedbyversion" name="closedby_version" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
-              <option value=\"\">{$newtask_text['undecided']}</option>
+            <select id="dueversion" name="closedby_version" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
+              <option value="">{$newtask_text['undecided']}</option>
               {!tpl_options($proj->listVersions(false, 3))}
             </select>
           </td>
@@ -130,7 +130,7 @@
     <div id="uploadfilebox">
       {$details_text['uploadafile']}
       <input type="file" size="55" name="userfile[]" /><br />
-    </div>
+    </div><div>
     <input class="adminbutton" type="button" onclick="addUploadFields()" value="{$details_text['selectmorefiles']}" />
     <?php endif; ?>
 
@@ -140,9 +140,10 @@
     <input class="adminbutton" type="submit" name="buSubmit" value="{$newtask_text['addthistask']}" accesskey="s"/>
 
     <?php if (!$user->isAnon()): ?>
-    &nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked="checked" />
-    {$newtask_text['notifyme']}
+    &nbsp;&nbsp;<input class="admintext" type="checkbox" id="notifyme" name="notifyme" value="1" checked="checked" />
+    <label class="default" for="notifyme">{$newtask_text['notifyme']}</label>
     <?php endif; ?>
+    </div>
   </form>
 </div>
 

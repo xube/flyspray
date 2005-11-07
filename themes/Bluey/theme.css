@@ -77,6 +77,13 @@ label {
 	white-space:nowrap;
 }
 
+label.default {
+	text-align:left;
+	display:inline;
+	font-weight:700;
+	white-space:nowrap;
+}
+
 /* div.admin and p.admin is used for areas that only administrators can use
 p.admin for instance for adding comments
 table.admin serves the same purpose 
@@ -220,11 +227,10 @@ table.userlist td,table.userlist th {
 	border:1px solid #ccc;
 }
 
-/* p#showtask contains the form to search for a specific task number */
-p#showtask {
+/* div#showtask contains the form to search for a specific task number */
+div#showtask {
 	text-align:right;
-	width:40%;
-	margin-left:auto;
+	float:right;
 	position:relative;
 	top:-2em;
 }
@@ -532,7 +538,10 @@ table.history td {
 }
 
 div#intromessage {
-	margin:-20px 1px 10px;
+	margin:0 1px -0.5em 1px;
+	clear:both;
+	position:relative;
+	top:-1em;
 }
 
 map#formselecttasks {
@@ -921,7 +930,7 @@ td,th {
 	vertical-align:top;
 }
 
-label.inline,table.list label,p#showtask label,p.admin label,form#formaddrelatedtask label {
+label.inline,table.list label,div#showtask label,p.admin label,form#formaddrelatedtask label {
 	display:inline;
 }
 

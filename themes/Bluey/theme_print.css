@@ -6,8 +6,8 @@ h1 {
 	margin:0.5em 0;
 }
 
-p#menu,div#loginbox,
-div#projectselector,p#showtask,
+div#menu,div#loginbox,
+div#projectselector,div#showtask,
 div#search,div#comments a img,
 input.ticktask,div#permissions,
 select,div#permslink,div#massopsactions,
