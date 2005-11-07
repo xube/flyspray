@@ -11,7 +11,8 @@ $status_list = array (
 '6'	=>	'Requires testing',
 '7'	=>	'Reopened',
 // Removed in version 0.9.6
-//'8'	=>	'Closed',
+// though it has to be here for backward compatibility
+'8'	=>	'Closed',
 
 );
 ?>
