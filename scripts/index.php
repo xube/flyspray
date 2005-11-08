@@ -6,6 +6,14 @@
    allowed to view.
 */
 
+if (Get::val('project') !== '0' && !$user->can_view_project()) {
+    $fs->Redirect( $fs->CreateURL('error', null) );
+}
+
+if (Get::val('project') === '0' && !$user->perms['global_view']) {
+    $fs->Redirect( $fs->CreateURL('error', null) );
+}
+
 // First, the obligatory language packs
 $fs->get_language_pack('index');
 $fs->get_language_pack('details');
@@ -22,7 +30,7 @@ if (@$user->infos['tasks_perpage'] > 0) {
 }
 
 $order_keys = array (
-        'id'         =>'task_id',
+        'id'         => 'task_id',
         'proj'       => 'project_title',
         'type'       => 'tasktype_name',
         'date'       => 'date_opened',
@@ -44,6 +52,26 @@ $sortorder  = sprintf("%s %s, %s %s, t.task_id ASC",
 
 $pagenum    = intval(Get::val('pagenum', 1));
 $offset     = $perpage * ($pagenum - 1);
+
+// for 'sort by this column' links
+function keep($key) {
+    return Get::val($key) ? $key.'='.Get::val($key) : null;
+}
+$keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
+        'project', 'task');
+$keys   = array_map('keep', $keys);
+$keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
+$keys[] = Get::val('project') === '0' ? "project=0" : "project=".$proj->id;
+$get    = htmlentities(join('&', $keys));
+
+// Get the visibility state of all columns
+$project = Get::val('project', $proj->id);
+$visible = explode(' ', $project ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']);
+
+$page->uses('offset', 'perpage', 'pagenum', 'get', 'visible');
+
+/* build SQL statement {{{ */
+
 $where      = array();
 $where[]    = 'project_is_active = ?';
 $sql_params = array('1');
@@ -65,8 +93,6 @@ else {
     $where[]       = "attached_to_project = ?";
     $sql_params[]  = $proj->id;
 }
-
-// Check for special tasks to display
 
 $dev = Get::val('dev');
 if (Get::val('tasks') == 'assigned') {
@@ -110,8 +136,7 @@ if (is_numeric($cat = Get::val('cat'))) {
     $where[] = "($temp_where)";
 }
 
-$status = Get::val('status');
-if (is_numeric($status)) {
+if (is_numeric($status = Get::val('status'))) {
     $where[]      = "item_status = ? AND is_closed <> '1'";
     $sql_params[] = $status;
 }
@@ -142,99 +167,125 @@ if ($str = Get::val('string')) {
     array_push($sql_params, $str, $str, $str);
 }
 
-// Do this to hide private tasks from the list
-if ($user->isAnon()) {
-    $where[] = "t.mark_private <> '1'";
-}
-elseif (!$user->perms['manage_project']) {
+if (!$user->perms['manage_project']) {
     $where[]      = "(t.mark_private <> '1' OR t.assigned_to = ?)";
     $sql_params[] = $user->id;
 }
 
-// for 'sort by this column' links
-function keep($key) {
-    return Get::val($key) ? $key.'='.Get::val($key) : null;
+if (Get::val('tasks') == 'watched') {
+    //join the notification table to get watched tasks
+    $from        .= " RIGHT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
+    $where[]      = 'fsn.user_id = ?';
+    $sql_params[] = $user->id;
 }
-$keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
-        'project', 'task');
-$keys   = array_map('keep', $keys);
-$keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
-$keys[] = Get::val('project') === '0' ? "project=0" : "project=".$proj->id;
-$get    = htmlentities(join('&', $keys));
 
-if (Get::val('project') !== '0'
-        && $proj->prefs['project_is_active'] != '1'
-        || ($proj->prefs['others_view'] != '1' && !$user->perms['view_tasks']))
+// This SQL courtesy of Lance Conry http://www.rhinosw.com/
+$from  = "
+                        {tasks}         t
+             LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
+             LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
+             LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
+             LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
+             LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
+             LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
+             LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
+";
+$where = join(' AND ', $where);
+
+/* }}} */
+
+$sql = $db->Query("SELECT  t.task_id
+                     FROM  $from
+                    WHERE  $where
+                 ORDER BY  $sortorder", $sql_params);
+
+// Store the order of the tasks returned for the next/previous links in the task details
+$_SESSION['tasklist'] = $id_list = $db->fetchCol($sql);
+$page->assign('total', count($id_list));
+
+// Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
+$sql = $db->Query("
+     SELECT
+             t.*,
+             p.project_title, p.project_is_active,
+             lt.tasktype_name         AS task_type,
+             lc.category_name         AS product_category,
+             lv.version_name          AS product_version,
+             lvc.version_name         AS closedby_version,
+             u.real_name              AS assigned_to,
+             uo.real_name             AS opened_by,
+             COUNT(DISTINCT com.comment_id)    AS num_comments,
+             COUNT(DISTINCT att.attachment_id) AS num_attachments
+     FROM
+             $from
+             LEFT JOIN  {comments}      com ON t.task_id = com.task_id
+             LEFT JOIN  {attachments}   att ON t.task_id = att.task_id
+     WHERE
+             $where
+     GROUP BY
+             t.task_id
+     ORDER BY
+             $sortorder", $sql_params, $perpage, $offset);
+
+// tpl function that Displays a header cell for report list {{{
+
+function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 {
-    $fs->Redirect( $fs->CreateURL('error', null) );
-}
+    global $proj , $index_text, $get;
 
-// Get the visibility state of all columns
-$columns = array('id', 'project', 'tasktype', 'category', 'severity', 'priority',
-                 'summary', 'dateopened', 'status', 'openedby', 'assignedto', 'lastedit',
-                 'reportedin', 'dueversion', 'duedate', 'comments', 'attachments', 'progress');
-$column_visible = array_map(create_function('$x', 'return false;'), $columns);
+    $order_keys = array (
+            'id'         => 'id',
+            'project'    => 'proj',
+            'tasktype'   => 'type',
+            'category'   => 'cat',
+            'severity'   => 'sev',
+            'priority'   => 'pri',
+            'summary'    => '',
+            'dateopened' => 'date',
+            'status'     => 'status',
+            'openedby'   => 'openedby',
+            'assignedto' => 'assignedto',
+            'lastedit'   => 'lastedit',
+            'reportedin' => 'reportedin',
+            'dueversion' => 'due',
+            'duedate'    => 'duedate',
+            'comments'   => '',
+            'attachments'=> '',
+            'progress'   => 'prog',
+    );
 
-$project = Get::val('project', $proj->id);
-$visible = explode(' ', $project ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']);
-
-foreach ($visible as $column) {
-    $column_visible[$column] = true;
-}
-
-/**
- * Displays header cell for report list
- *
- * @param string $colname       The name of the column
- * @param string $orderkey      The actual key to use when ordering the list
- * @param string $defaultsort The default sort order
- * @param string $image    An image to display instead of the column name
- */
-// {{{
-
-function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
-{
-    global $column_visible;
-    global $proj;
-    global $index_text;
-    global $get;
-
-    $html = '';
-
-    if (!empty($column_visible[$colname])) {
-        if ($orderkey) {
-            if (Get::val('order') == $orderkey) {
-                $class  = ' class="orderby"';
-                $sort1  = Get::val('sort', 'desc') == 'desc' ? 'asc' : 'desc';
-                $sort2  = Get::val('sort2', 'desc');
-                $order2 = Get::val('order2');
-            }
-            else {
-                $class  = '';
-                $sort1  = $defaultsort;
-                $sort2  = Get::val('sort', 'desc');
-                $order2 = Get::val('order');
-            }
-
-            $title = $index_text['sortthiscolumn'];
-            $link  = "?order=$orderkey&amp;$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
-
-            $html  = "<th$class><a title=\"$title\" href=\"$link\">";
-            $html .= $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" />";
-
-            // Sort indicator arrows
-            if (Get::val('order') == $orderkey) {
-                $html .= '&nbsp;&nbsp;<img src="themes/' .
-                    $proj->prefs['theme_style'] . '/' . Get::val('sort') . '.png" />';
-            }
-
-            return $html . '</a></th>';
-        } else {
-            $html  = '<th>';
-            $html .= $image == '' ? $index_text[$colname] : "<img src=\"{$image}\" alt=\"{$index_text[$colname]}\" />";
-            return $html.'</th>';
-        }
+    $imgbase = '<img src="themes/'.$proj->prefs['theme_style'].'/%s.png" alt="%s" />';
+    $class   = '';
+    $html    = $index_text[$colname];
+    if ($colname == 'comments' || $colname == 'attachments') {
+        $html = sprintf($imgbase, substr($colname, 0, -1), $html);
     }
+
+    if ($orderkey = $order_keys[$colname]) {
+        if (Get::val('order') == $orderkey) {
+            $class  = ' class="orderby"';
+            $sort1  = Get::val('sort', 'desc') == 'desc' ? 'asc' : 'desc';
+            $sort2  = Get::val('sort2', 'desc');
+            $order2 = Get::val('order2');
+            $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, Get::val('sort'), Get::val('sort'));
+        }
+        else {
+            $sort1  = 'desc';
+            if (in_array($orderkey,
+                        array('proj', 'type', 'cat', 'openedby', 'assignedto')))
+            {
+                $sort1 = 'asc';
+            }
+            $sort2  = Get::val('sort', 'desc');
+            $order2 = Get::val('order');
+        }
+
+        $link = "?order=$orderkey&amp;$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
+        $html = sprintf('<a title="%s" href="%s">%s</a>',
+                $index_text['sortthiscolumn'], $link, $html);
+    }
+
+    return sprintf($format, $class, $html);
 }
 
 // }}}
@@ -251,10 +302,10 @@ function list_heading($colname, $orderkey, $defaultsort = 'desc', $image = '')
 
 function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
 {
-    global $column_visible;
+    global $visible;
     global $fs;
 
-    if (!empty($column_visible[$colname])) {
+    if (in_array($colname, $visible)) {
         // We have a problem with these conversions applied to the progress cell
         if($colname != 'progress') {
             $cellvalue = htmlspecialchars($cellvalue);
@@ -281,66 +332,7 @@ function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
 
 // }}}
 
-$where = join(' AND ', $where);
-$from  = "{tasks} t";
-
-if (Get::val('tasks') == 'watched') {
-    //join the notification table to get watched tasks
-    $from        .= " RIGHT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
-    $where[]      = 'fsn.user_id = ?';
-    $sql_params[] = $user->id;
-}
-
-// This SQL courtesy of Lance Conry http://www.rhinosw.com/
-$from .= "
-        LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
-        LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
-        LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
-        LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
-        LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
-        LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
-        LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
-";
-
-$get_total = $db->Query("SELECT  t.task_id
-                           FROM  $from
-                          WHERE  $where
-                       ORDER BY  $sortorder", $sql_params);
-
-// Store the order of the tasks returned for the next/previous links in the task details
-$id_list = array();
-while ($row = $db->FetchRow($get_total)) {
-    $id_list[] = $row['task_id'];
-}
-$_SESSION['tasklist'] = $id_list;
-$page->assign('total', count($id_list));
-
-// Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
-$sql = $db->Query("
-     SELECT  DISTINCT
-             t.*,
-             p.project_title, p.project_is_active,
-             lt.tasktype_name         AS task_type,
-             lc.category_name         AS product_category,
-             lv.version_name          AS product_version,
-             lvc.version_name         AS closedby_version,
-             u.real_name              AS assigned_to,
-             uo.real_name             AS opened_by,
-             COUNT(DISTINCT com.comment_id)    AS num_comments,
-             COUNT(DISTINCT att.attachment_id) AS num_attachments
-     FROM
-             $from
-             LEFT JOIN  {comments}      com ON t.task_id = com.task_id
-             LEFT JOIN  {attachments}   att ON t.task_id = att.task_id
-     WHERE
-             $where
-     GROUP BY
-             t.task_id
-     ORDER BY
-             $sortorder", $sql_params, $perpage, $offset);
-
 $page->assign('tasks', $db->fetchAllArray($sql));
-$page->uses('offset', 'perpage', 'pagenum', 'get');
 $page->display('index.tpl');
 
 ?>

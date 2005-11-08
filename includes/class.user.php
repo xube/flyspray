@@ -122,17 +122,27 @@ class User
     function can_edit_comment($comment)
     {
         return $this->perms['edit_comments'];
-        // TODO : do we want users to be able to edit their own comments ?
-        // Tony says: not really, as it destroys the proper flow of conversation between users and developers.
-        // Tony says: perhaps this could be made an project-level option in the future.
-        //  || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
+        /*  || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
+         * 
+         * TODO : do we want users to be able to edit their own comments ?
+         *
+         * Tony says: not really, as it destroys the proper flow of conversation
+         *            between users and developers.
+         *            perhaps this could be made an project-level option in the future.
+         */
+    }
+
+    function can_view_project()
+    {
+        global $proj;
+        return $proj->prefs['project_is_active']
+            && ($proj->prefs['others_view'] || $this->perms['view_tasks']);
     }
 
     function can_view_task($task)
     {
         global $proj;
-        return $task['project_is_active']
-            && ($proj->prefs['others_view'] || $this->perms['view_tasks'])
+        return $this->can_view_project()
             && ($this->perms['manage_project'] || !$task['mark_private']
                     || $task['assigned_to'] == $this->id);
     }

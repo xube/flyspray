@@ -87,24 +87,9 @@
             <?php if (!$user->isAnon()): ?>
             <th class="ttcolumn"></th>
             <?php endif; ?>
-            {!list_heading('id',          'id')}
-            {!list_heading('project',     'proj', 'asc')}
-            {!list_heading('tasktype',    'type', 'asc')}
-            {!list_heading('category',    'cat', 'asc')}
-            {!list_heading('severity',    'sev')}
-            {!list_heading('priority',    'pri')}
-            {!list_heading('summary',     '')}
-            {!list_heading('dateopened',  'date')}
-            {!list_heading('status',      'status')}
-            {!list_heading('openedby',    'openedby', 'asc')}
-            {!list_heading('assignedto',  'assignedto', 'asc')}
-            {!list_heading('lastedit',    'lastedit')}
-            {!list_heading('reportedin',  'reportedin')}
-            {!list_heading('dueversion',  'due')}
-            {!list_heading('duedate',     'duedate')}
-            {!list_heading('comments',    '', '', "themes/".$proj->prefs['theme_style']."/comment.png")}
-            {!list_heading('attachments', '', '', "themes/".$proj->prefs['theme_style']."/attachment.png")}
-            {!list_heading('progress',    'prog')}
+            <?php foreach ($visible as $col): ?>
+            {!tpl_list_heading($col, "<th%s>%s</th>")}
+            <?php endforeach; ?>
           </tr>
         </thead>
         <?php foreach ($tasks as $task_details):

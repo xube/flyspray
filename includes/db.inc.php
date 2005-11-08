@@ -89,19 +89,24 @@ class Database
         return $result;
     }
 
-    function CountRows($result)
+    function CountRows(&$result)
     {
         return $result->RecordCount();
     }
     
     function Affected_Rows()
     {
-		return $this->dblink->Affected_Rows();
+        return $this->dblink->Affected_Rows();
     }
     
     function FetchRow(&$result)
     {
         return $result->FetchRow();
+    }
+
+    function fetchCol(&$result)
+    {
+        return $this->dblink->GetCol($result);
     }
 
     /* compatibility functions */
