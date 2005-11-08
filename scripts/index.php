@@ -233,7 +233,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 {
     global $proj , $index_text, $get;
 
-    $order_keys = array (
+    $keys = array (
             'id'         => 'id',
             'project'    => 'proj',
             'tasktype'   => 'type',
@@ -261,7 +261,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
         $html = sprintf($imgbase, substr($colname, 0, -1), $html);
     }
 
-    if ($orderkey = $order_keys[$colname]) {
+    if ($orderkey = $keys[$colname]) {
         if (Get::val('order') == $orderkey) {
             $class  = ' class="orderby"';
             $sort1  = Get::val('sort', 'desc') == 'desc' ? 'asc' : 'desc';
@@ -289,45 +289,75 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 }
 
 // }}}
+// tpl function that draws a cell {{{
 
-/**
- * Displays data cell for report list
- *
- * @param string $colname       The name of the column
- * @param string $cellvalue     The value to display in the cell
- * @param integer $nowrap       Whether to force the cell contents not to wrap
- * @param string $url           A URL to wrap around the cell contents
- */
-// {{{
+function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
+    global $fs, $proj, $index_text, $priority_list,
+           $severity_list, $status_list;
 
-function list_cell($task_id, $colname, $cellvalue='', $nowrap=0, $url=0)
-{
-    global $visible;
-    global $fs;
+    $indexes = array (
+            'id'         => 'task_id',
+            'project'    => 'project_title',
+            'tasktype'   => 'task_type',
+            'category'   => 'product_category',
+            'severity'   => '',
+            'priority'   => '',
+            'summary'    => 'item_summary',
+            'dateopened' => 'date_opened',
+            'status'     => '',
+            'openedby'   => 'opened_by',
+            'assignedto' => 'assigned_to',
+            'lastedit'   => 'last_edited_time',
+            'reportedin' => 'product_version',
+            'dueversion' => 'closedby_version',
+            'duedate'    => 'due_date',
+            'comments'   => 'num_comments',
+            'attachments'=> 'num_attachments',
+            'progress'   => '',
+    );
 
-    if (in_array($colname, $visible)) {
-        // We have a problem with these conversions applied to the progress cell
-        if($colname != 'progress') {
-            $cellvalue = htmlspecialchars($cellvalue);
-        }
+    switch ($colname) {
+        case 'id':
+        case 'summary':
+            $value = htmlentities($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+            $value = sprintf('<a href="%s">%s</a>',
+                    $fs->createUrl('details', $task['task_id']), $value);
+            break;
 
-        if ($colname == 'duedate' && !empty($cellvalue)) {
-            $cellvalue = $fs->FormatDate($cellvalue, false);
-        }
+        case 'severity':
+            $value = $severity_list[$task['task_severity']];
+            break;
 
-        // Check if we're meant to force this cell not to wrap
-        if ($nowrap) {
-            $cellvalue = str_replace(" ", "&nbsp;", $cellvalue);
-        }
+        case 'priority':
+            $value = $priority_list[$task['task_priority']];
+            break;
 
-        echo "<td class=\"task_$colname\" >";
-        if($url) {
-            echo "<a href=\"$url\">$cellvalue</a>";
-        } else {
-            echo $cellvalue;
-        }
-        echo "</td>\n";
+        case 'duedate':
+        case 'dateopened':
+        case 'lastedit':
+            $value = $fs->formatDate($task[$indexes[$colname]], false);
+            break;
+
+        case 'status':
+            if ($task['is_closed']) {
+                $value = $index_text['closed'];
+            } else {
+                $value = $status_list[$task['item_status']];
+            }
+            break;
+
+        case 'progress':
+            $value = tpl_img("themes/".$proj->prefs['theme_style']
+                    ."/percent-".$task['percent_complete'].".png",
+                    $task['percent_complete'].'% '.$index_text['complete']);
+            break;
+
+        default:
+            $value = htmlentities($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+            break;
     }
+
+    return sprintf($format, 'task_'.$colname, $value);
 }
 
 // }}}

@@ -104,9 +104,13 @@ class Database
         return $result->FetchRow();
     }
 
-    function fetchCol(&$result)
+    function fetchCol(&$result, $col=0)
     {
-        return $this->dblink->GetCol($result);
+        $tab = array();
+        while ($tmp = $result->fetchRow()) {
+            $tab[] = $tmp[$col];
+        }
+        return $tab;
     }
 
     /* compatibility functions */

@@ -1,4 +1,3 @@
-<!-- Query line {{{ -->
 <div id="search">
   <map id="projectsearchform" name="projectsearchform">
     <form action="index.php" method="get">
@@ -74,7 +73,6 @@
     </form>
   </map>
 </div>
-<!-- }}} -->
 
 <div id="tasklist">
   <form action="index.php" id="massops" method="post">
@@ -92,55 +90,16 @@
             <?php endforeach; ?>
           </tr>
         </thead>
-        <?php foreach ($tasks as $task_details):
-        $task_id = intval($task_details['task_id']);
-        $last_edited_time = '';
-        if ($task_details['last_edited_time'] > 0) {
-        $last_edited_time = $fs->formatDate($task_details['last_edited_time'], false);
-        }
-        ?>
+        <?php foreach ($tasks as $task_details): ?>
         <tr id="task{!$task_id}" class="severity{$task_details['task_severity']}">
           <?php if (!$user->isAnon()): ?>
           <td class="ttcolumn">
             <input class="ticktask" type="checkbox" name="ids[{!$task_id}]" value="1" />
           </td>
           <?php endif; ?>
-
-          {!list_cell($task_id, 'id',          $task_id, 1, $fs->CreateURL('details', $task_id))}
-          {!list_cell($task_id, 'project',     $task_details['project_title'], 1)}
-          {!list_cell($task_id, 'tasktype',    $task_details['task_type'], 1)}
-          {!list_cell($task_id, 'category',    $task_details['product_category'], 1)}
-          {!list_cell($task_id, 'severity',
-            $severity_list[$task_details['task_severity']], 1)}
-          {!list_cell($task_id, 'priority',
-            $priority_list[$task_details['task_priority']], 1)}
-          {!list_cell($task_id, 'summary',     $task_details['item_summary'], 0,
-            $fs->CreateURL('details', $task_id))}
-          {!list_cell($task_id, 'dateopened',
-            $fs->formatDate($task_details['date_opened'], false))}
-          <?php if ($task_details['is_closed']): ?>
-          {!list_cell($task_id, 'status',      $index_text['closed'], 1)}
-          <?php else: ?>
-          {!list_cell($task_id, 'status',
-            $status_list[$task_details['item_status']], 1)}
-          <?php endif; ?>
-          {!list_cell($task_id, 'openedby',    $task_details['opened_by'], 0)}
-          <?php if ($task_details['assigned_to']): ?>
-          {!list_cell($task_id, 'assignedto',  $task_details['assigned_to'], 0)}
-          <?php else: ?>
-          {!list_cell($task_id, 'assignedto',  '', 0)}
-          <?php endif; ?>
-          {!list_cell($task_id, 'lastedit',    $last_edited_time)}
-          {!list_cell($task_id, 'reportedin',  $task_details['product_version'])}
-          {!list_cell($task_id, 'dueversion',  $task_details['closedby_version'], 1)}
-          {!list_cell($task_id, 'duedate',     $task_details['due_date'], 1)}
-          {!list_cell($task_id, 'comments',    $task_details['num_comments'])}
-          {!list_cell($task_id, 'attachments', $task_details['num_attachments'])}
-          {!list_cell($task_id, 'progress',
-            tpl_img("themes/".$proj->prefs['theme_style']
-            ."/percent-".$task_details['percent_complete'].".png",
-            $task_details['percent_complete'] . '% ' .  $index_text['complete']))}
-
+          <?php foreach ($visible as $col): ?>
+          {!tpl_draw_cell($task_details, $col)}
+          <?php endforeach; ?>
         </tr>
         <?php endforeach; ?>
       </table>
@@ -176,4 +135,3 @@
     </div>
   </form>
 </div>
-
