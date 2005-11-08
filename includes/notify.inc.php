@@ -351,7 +351,7 @@ class Notifications {
       ///////////////////////////////////////////////////////////////
       if ($type == '1')
       {
-         $subject = $notify_text['notifyfrom'] . $project->prefs['project_title'];
+         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['newtaskopened'] . "\n\n";
