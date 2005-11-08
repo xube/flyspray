@@ -128,7 +128,7 @@
           <?php if ($task_details['assigned_to']): ?>
           {!list_cell($task_id, 'assignedto',  $task_details['assigned_to'], 0)}
           <?php else: ?>
-          {!list_cell($task_id, 'assignedto',  $details_text['noone'], 0)}
+          {!list_cell($task_id, 'assignedto',  '', 0)}
           <?php endif; ?>
           {!list_cell($task_id, 'lastedit',    $last_edited_time)}
           {!list_cell($task_id, 'reportedin',  $task_details['product_version'])}
