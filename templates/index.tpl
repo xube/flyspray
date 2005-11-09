@@ -29,6 +29,7 @@
           <option value="notassigned" <?php
             if (Get::val('dev') == "notassigned") echo 'selected="selected"';
             ?>>{$index_text['notyetassigned']}</option>
+          <option value="{$user->id}">{$index_text['assignedtome']}</option>
           <?php $fs->ListUsers($proj->id, Get::val('dev')); ?>
         </select>
 
