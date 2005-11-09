@@ -119,7 +119,7 @@ $modify_text = array (
 'customiseproject'  =>  'Dieses Projekt anpassen',
 'projectupdated'    =>  'Projekteinstellungen gespeichert.',
 'emptytitle'        =>  'Bitte geben Sie einen Projekttitel an.',
-'loginbelow'        =>  'Sie können sich nun über das Formular unten auf dieser Seite einloggen.',
+'loginbelow'        =>  'Sie können sich nun einloggen.',
 'attachmentdeleted' =>  'Anhang wurde gelöscht.',
 
 
