@@ -530,12 +530,12 @@ class Flyspray
         }
     }
 
-    function formatDate($timestamp, $extended, $default = null) 
+    function formatDate($timestamp, $extended, $default = '') 
     {
         global $db;
         global $conf;
 
-        if (!$timestamp && !is_null($default)) {
+        if (!$timestamp) {
             return $default;
         }
 

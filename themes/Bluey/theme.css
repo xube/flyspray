@@ -15,6 +15,25 @@ a {
 	text-decoration:none;
 }
 
+/* fancy dual selects */
+.double_select td {
+    vertical-align: middle;
+    text-align: center;
+}
+.double_select select {
+    width: 12em;
+}
+.double_select .c1 select {
+    height: 24em;
+}
+.double_select .c3 select {
+    height: 20em;
+}
+.double_select .c3 input {
+    height: 1.5em;
+    width: 12em;
+}
+
 /* offsite is only used for the link to the Flyspray homepage */
 a.offsite:after {
 	content:"\2197";

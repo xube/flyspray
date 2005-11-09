@@ -142,3 +142,72 @@ function addUploadFields() {
   // The <br />
   el.appendChild(el.childNodes[2].cloneNode(false));
 }
+
+function updateDualSelectValue(id)
+{
+    var rt  = document.getElementById('r'+id);
+    var val = document.getElementById('v'+id);
+
+    val.value = '';
+
+    var i;
+    for (i=0; i < rt.options.length; i++) {
+        val.value += ' ' + rt.options[i].value;
+    }
+}
+
+function dualSelect(from, to, id) {
+    if (typeof(from) == 'string') {
+        from = document.getElementById(from+id);
+    }
+    if (typeof(to) == 'string') {
+        to = document.getElementById(to+id);
+    }
+
+    var i = 0;
+    var opt;
+
+    while (i < from.options.length) {
+        if (from.options[i].selected) {
+            opt = new Option(from.options[i].text, from.options[i].value);
+            try {
+                to.add(opt, null);
+            }
+            catch (ex) {
+                to.add(opt);
+            }
+            from.remove(i);
+            continue;
+        }
+        i++;
+    }
+    updateDualSelectValue(id);
+}
+
+function selectMove(id, step) {
+    var sel = document.getElementById('r'+id);
+
+    var i = 0;
+
+    while (i < sel.options.length) {
+        if (sel.options[i].selected) {
+            if (i+step < 0 || i+step > sel.options.length) {
+                return;
+            }
+            var opt = new Option(sel.options[i].text, sel.options[i].value);
+            sel.remove(i);
+            try {
+                sel.add(opt, sel.options[i+step]);
+            }
+            catch (ex) {
+                sel.add(opt, i+step);
+            }
+
+            opt.selected = true;
+
+            updateDualSelectValue(id);
+            return;
+        }
+        i++;
+    }
+}

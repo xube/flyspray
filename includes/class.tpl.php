@@ -183,6 +183,55 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
     return $html;
 }
 
+function tpl_double_select($name, $options, $selected = null, $labelIsValue = false)
+{
+    static $_id = 0;
+    static $tpl = null;
+    
+    if (!$tpl) {
+        // poor man's cache
+        $tpl = new FSTpl();
+    }
+
+    settype($selected, 'array');
+    settype($options, 'array');
+
+    $tpl->assign('id', '_task_id_'.($_id++));
+    $tpl->assign('name', $name);
+    $tpl->assign('selected', $selected);
+    $html = $tpl->fetch('common.dualselect.tpl');
+
+    $selectedones = array();
+
+    $opt1 = '';
+    foreach ($options as $value => $label) {
+        if (is_array($label)) {
+            list($value, $label) = $label;
+        }
+        if ($labelIsValue) {
+            $value = $label;
+        }
+        if (in_array($value, $selected)) {
+            $selectedones[$value] = $label;
+            continue;
+        }
+        $label = htmlspecialchars($label, ENT_QUOTES, "utf-8");
+        $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
+
+        $opt1 .= sprintf('<option value="%s">%s</option>', $value, $label);
+    }
+
+    $opt2 = '';
+    foreach ($selected as $value) {
+        $label = htmlspecialchars($selectedones[$value], ENT_QUOTES, "utf-8");
+        $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
+
+        $opt2 .= sprintf('<option value="%s">%s</option>', $value, $label);
+    }
+
+    return sprintf($html, $opt1, $opt2);
+}
+
 function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null)
 {
     $name  = htmlspecialchars($name,  ENT_QUOTES, "utf-8");

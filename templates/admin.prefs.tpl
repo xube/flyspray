@@ -169,9 +169,7 @@
             'comments', 'attachments', 'progress');
             $selectedcolumns = explode(" ", $fs->prefs['visible_columns']);
             ?>
-            <select id="visiblecolumns" name="visible_columns[]" multiple="multiple">
-            {!tpl_options($columnnames, $selectedcolumns, true)}
-            </select>
+            {!tpl_double_select('visible_columns', $columnnames, $selectedcolumns, true)}
           </td>
         </tr>
       </table>

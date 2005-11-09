@@ -62,7 +62,7 @@ $keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
 $keys   = array_map('keep', $keys);
 $keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
 $keys[] = Get::val('project') === '0' ? "project=0" : "project=".$proj->id;
-$get    = htmlentities(join('&', $keys));
+$get    = htmlspecialchars(join('&', $keys));
 
 // Get the visibility state of all columns
 $project = Get::val('project', $proj->id);
@@ -319,7 +319,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
     switch ($colname) {
         case 'id':
         case 'summary':
-            $value = htmlentities($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+            $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
             $value = sprintf('<a href="%s">%s</a>',
                     $fs->createUrl('details', $task['task_id']), $value);
             break;
@@ -353,7 +353,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             break;
 
         default:
-            $value = htmlentities($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+            $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
             break;
     }
 

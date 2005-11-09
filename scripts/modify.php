@@ -458,7 +458,7 @@ EOF;
                 $notify->SendEmail(Post::val('email_address'), $subject, $message);
             }
             elseif (Post::val('notify_type') == '2') {
-                $notify->StoreJabber(array(Post::val('jabber_id')), $subject, htmlentities($message),ENT_COMPAT,'utf-8');
+                $notify->StoreJabber(array(Post::val('jabber_id')), $subject, htmlspecialchars($message),ENT_COMPAT,'utf-8');
             }
 
             echo "<div class=\"redirectmessage\"><p><em>{$modify_text['codesent']}</em></p></div>";
@@ -641,9 +641,8 @@ elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin'])
     $assigned_groups = join(' ', array_keys(Post::val('assigned_groups', array())));
     $update = $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
 
-
-    $columnlist = join(' ', array_keys(Post::val('visible_columns', array())));
-    $update = $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = 'visible_columns'", array($columnlist));
+    $update = $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = 'visible_columns'",
+            array(trim(Post::val('visible_columns'))));
 
     $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
     $fs->redirect($fs->CreateURL('admin','prefs'));
@@ -720,9 +719,8 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
                                  SET  ".join('=?, ', $cols)."=?
                                WHERE  project_id = ?", $args);
 
-        // Process the list of visible columns into a format we can store
-        $columnlist = join(' ', array_keys(Post::val('visible_columns', array())));
-        $update = $db->Query("UPDATE {projects} SET visible_columns = ? WHERE project_id = ?", array($columnlist, Post::val('project_id')));
+        $update = $db->Query("UPDATE {projects} SET visible_columns = ? WHERE project_id = ?",
+                array(trim(Post::val('visible_columns')), Post::val('project_id')));
 
 
         $_SESSION['SUCCESS'] = $modify_text['projectupdated'];
