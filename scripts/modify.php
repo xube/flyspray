@@ -809,7 +809,7 @@ elseif (Post::val('action') == "edituser"
                                        Post::val('dateformat'), Post::val('dateformat_extended'),
                                        Post::val('tasks_perpage'), Post::val('user_id')));
 
-            if ($user->perms['is_admin'] && Post::val('group_in')) {
+            if ($user->perms['is_admin']) {
                 $update = $db->Query("UPDATE {users} SET account_enabled = ?  WHERE user_id = ?",
                         array(Post::val('account_enabled'), Post::val('user_id')));
 

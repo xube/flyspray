@@ -16,14 +16,20 @@ if (!$user->perms['is_admin']) {
 $fs->get_language_pack('admin');
 $fs->get_language_pack('index');
 $fs->get_language_pack('newproject');
+$fs->get_language_pack('newuser');
 
 $proj = new Project(0);
 
-$page->uses('admin_text', 'index_text', 'newproject_text');
+$page->uses('admin_text', 'index_text', 'newproject_text', 'newuser_text');
 $page->display('admin.menu.tpl');
 
 switch ($area = Get::val('area', 'prefs')) {
     case 'users':
+        $sql = $db->Query("SELECT  group_id, group_name
+                             FROM  {groups}
+                            WHERE  belongs_to_project = '0'
+                         ORDER BY  group_id ASC");
+        $page->assign('group_names', $db->fetchAllArray($sql));
         $page->assign('theuser', new User(Get::val('id')));
 
     case 'cat':

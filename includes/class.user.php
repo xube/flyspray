@@ -10,7 +10,8 @@ class User
     {
         global $db;
 
-        $sql = $db->Query("SELECT  *, g.group_id AS global_group
+        $sql = $db->Query("SELECT  *, g.group_id AS global_group,
+                                   uig.record_id AS global_record_id
                              FROM  {users}           u
                        INNER JOIN  {users_in_groups} uig
                        INNER JOIN  {groups}          g   ON uig.group_id = g.group_id

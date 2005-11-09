@@ -123,9 +123,6 @@ if ($proj->prefs['project_is_active']
     && ($proj->prefs['others_view'] || $user->perms['view_tasks'])
     && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends')))
 {
-    // Tony says: PHP Markdown no longer used
-    //require_once ( "$basedir/includes/markdown.php" );
-    //$page->assign('intro_message', Markdown($proj->prefs['intro_message']));
    $page->assign('intro_message', $proj->prefs['intro_message']);
 }
 

@@ -61,6 +61,15 @@
         <td><label for="accountenabled">{$admin_text['accountenabled']}</label></td>
         <td>{!tpl_checkbox('account_enabled', $theuser->infos['account_enabled'], 'accountenabled')}</td>
       </tr>
+      <tr>
+        <td><label for="groupin">{$newuser_text['globalgroup']}</label></td>
+        <td>
+          <select id="groupin" class="adminlist" name="group_in">
+            {!tpl_options($group_names, $theuser->infos['global_group'])}
+          </select>
+          <input type="hidden" name="record_id" value="{$theuser->infos['global_record_id']}" />
+        </td>
+      </tr>
       <?php endif; ?>
       <tr>
         <td colspan="2"><hr /></td>
