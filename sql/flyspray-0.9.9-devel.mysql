@@ -117,21 +117,28 @@ UPDATE flyspray_users SET
 -- 
 -- RSS/Atom feeds
 -- 
+-- (Updated 08 November 2005 by Mac Newbold - rename limit column to max_items,
+--  because limit is a reserved word in sql)
+--
 -- =============================================================================
 
-ALTER TABLE `flyspray_projects` ADD `feed_img_url` TEXT NOT NULL ;
-ALTER TABLE `flyspray_projects` ADD `feed_description` TEXT NOT NULL ;
+ALTER TABLE flyspray_projects ADD feed_img_url TEXT NOT NULL ;
+ALTER TABLE flyspray_projects ADD feed_description TEXT NOT NULL ;
 
-INSERT INTO `flyspray_prefs` VALUES (NULL, 'cache_feeds', '0', '0 = do not cache feeds, 1 = cache feeds on disk, 2 = cache feeds in DB');
+INSERT INTO flyspray_prefs VALUES (NULL, 'cache_feeds', '0', '0 = do not cache feeds, 1 = cache feeds on disk, 2 = cache feeds in DB');
 
-CREATE TABLE `flyspray_cache` (
-  `id` smallint(6) NOT NULL auto_increment,
-  `type` varchar(4) NOT NULL default '',
-  `content` text NOT NULL,
-  `topic` varchar(30) NOT NULL default '',
-  `last_updated` int(11) NOT NULL default '0',
-  `project` int(11) NOT NULL default '0',
-  `limit` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM COMMENT='Table to cache RSS/atom feeds' AUTO_INCREMENT=1 ;
+CREATE TABLE flyspray_cache (
+  id smallint(6) NOT NULL auto_increment,
+  type varchar(4) NOT NULL default '',
+  content text NOT NULL,
+  topic varchar(30) NOT NULL default '',
+  last_updated int(11) NOT NULL default '0',
+  project int(11) NOT NULL default '0',
+  max_items int(11) NOT NULL default '0',
+  PRIMARY KEY  (id)
+) TYPE=MyISAM COMMENT='Table to cache RSS/atom feeds';
 
+-- Mac Newbold, 08 November 2005
+-- Fix closure_comment from '0' to '' so they are properly blank.
+
+UPDATE flyspray_tasks SET closure_comment='' WHERE closure_comment='0';

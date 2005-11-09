@@ -20,6 +20,9 @@ if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
 }
 
 $fs->get_language_pack('details');
+$fs->get_language_pack('severity');
+$fs->get_language_pack('priority');
+$fs->get_language_pack('status');
 
 // Configuration information:
 // [FIXME: in the future, this will come from the initial configuration.]
@@ -55,17 +58,29 @@ echo "<p><b>Pruning Level: </b>\n". implode(" &nbsp;|&nbsp; \n", $strlist)."</p>
 
 $starttime = microtime();
 
-$sql = "SELECT  t1.task_id AS id1, t1.item_summary AS sum1, 
-                t1.percent_complete as pct1, t1.is_closed AS clsd1, 
-                t1.item_status AS stat1, 
-                t2.task_id AS id2, t2.item_summary AS sum2, 
-                t2.percent_complete as pct2, t2.is_closed AS clsd2, 
-                t2.item_status AS stat2
-          FROM  {dependencies} AS d
-          JOIN  {tasks} AS t1 ON d.task_id=t1.task_id
-          JOIN  {tasks} AS t2 ON d.dep_task_id=t2.task_id
-         WHERE  t1.attached_to_project= ?
-      ORDER BY  d.task_id, d.dep_task_id";
+$sql="SELECT t1.task_id AS id1, t1.item_summary AS sum1, 
+             t1.percent_complete AS pct1, t1.is_closed AS clsd1, 
+             t1.item_status AS stat1, t1.task_severity AS sev1,
+             t1.task_priority AS pri1, u1a.real_name AS assg1,
+             t1.closure_comment AS com1, u1c.real_name AS clsdby1,
+             r1.resolution_name as res1,
+             t2.task_id AS id2, t2.item_summary AS sum2, 
+             t2.percent_complete AS pct2, t2.is_closed AS clsd2, 
+             t2.item_status AS stat2, t2.task_severity AS sev2,
+             t2.task_priority AS pri2, u2a.real_name AS assg2,
+             t2.closure_comment AS com2, u2c.real_name AS clsdby2,
+             r2.resolution_name as res2
+       FROM  {dependencies} AS d
+       JOIN  {tasks} AS t1 ON d.task_id=t1.task_id
+  LEFT JOIN  {users} AS u1a ON t1.assigned_to=u1a.user_id
+  LEFT JOIN  {users} AS u1c ON t1.closed_by=u1c.user_id
+  LEFT JOIN  {list_resolution} AS r1 ON t1.resolution_reason=r1.resolution_id
+       JOIN  {tasks} AS t2 ON d.dep_task_id=t2.task_id
+  LEFT JOIN  {users} AS u2a ON t2.assigned_to=u2a.user_id
+  LEFT JOIN  {users} AS u2c ON t2.closed_by=u2c.user_id
+  LEFT JOIN  {list_resolution} AS r2 ON t2.resolution_reason=r2.resolution_id
+      WHERE  t1.attached_to_project= ?
+   ORDER BY  d.task_id, d.dep_task_id";
 
 $get_edges = $db->Query($sql, array($proj->id));
 
@@ -76,10 +91,18 @@ while ($row = $db->FetchArray($get_edges)) {
     extract($row);
     $edge_list[$id1][] = $id2;
     $rvrs_list[$id2][] = $id1;
-    $node_list[$id1] = array('id'=>$id1, 'sum'=>$sum1, 'pct'=>$pct1, 
-            'clsd'=>$clsd1, 'stat'=>$stat1);
-    $node_list[$id2] = array('id'=>$id2, 'sum'=>$sum2, 'pct'=>$pct2, 
-            'clsd'=>$clsd2, 'stat'=>$stat2);
+    if (!isset($node_list[$id1])) {
+        $node_list[$id1] =
+	  array('id'=>$id1, 'sum'=>$sum1, 'pct'=>$pct1, 'clsd'=>$clsd1,
+		'stat'=>$stat1, 'sev'=>$sev1, 'pri'=>$pri1, 'assg'=>$assg1,
+		'com'=>$com1, 'clsdby'=>$clsdby1, 'res'=>$res1);
+    }
+    if (!isset($node_list[$id2])) {
+        $node_list[$id2] =
+	  array('id'=>$id2, 'sum'=>$sum2, 'pct'=>$pct2, 'clsd'=>$clsd2,
+		'stat'=>$stat2, 'sev'=>$sev2, 'pri'=>$pri2, 'assg'=>$assg2,
+		'com'=>$com2, 'clsdby'=>$clsdby2, 'res'=>$res2);
+    }
 }
 
 // Now we have our lists of nodes and edges, along with a helper
@@ -170,11 +193,18 @@ foreach ($node_list as $n => $r) {
     $label = "FS#$n - ".
         ($r['clsd'] ? $details_text['closed'] :
          "$r[pct]% ".$details_text['complete']).#" status $r[stat]".
-        "\n".wordwrap($r['sum'], 20)."\n";
+         "\n".wordwrap(addslashes($r['sum']), 20)."\n";
+    $tooltip =
+      ($r['clsd'] ? "$details_text[closed]: $r[res]".
+       (!empty($r['clsdby']) ? " ($r[clsdby])" : "").
+       ($r['com']!='' ? " - $r[com]" : "")
+       : $severity_list[$r['sev']]." $details_text[severity]/".
+       $priority_list[$r['pri']]." $details_text[priority] - ".
+       "$details_text[status]: ".$status_list[$r['stat']].
+       ($r['assg'] ? " ($r[assg])" : ""));
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
         "href=\"".$fs->CreateURL("details", $n)."\", ".
-        "tooltip=\"".str_replace("\n", " ", $label)."\", ".
-        "fillcolor=\"$col\"];\n";
+        "tooltip=\"$tooltip\", fillcolor=\"$col\"];\n";
 }
 // Add edges
 foreach ($edge_list as $src => $dstlist) {
