@@ -227,7 +227,7 @@ class Project
                 'attach_'.$tid,
                 "SELECT  *
                    FROM  {attachments}
-                  WHERE  task_id = ?
+                  WHERE  task_id = ? AND comment_id = 0
                ORDER BY  attachment_id ASC",
                array($tid));
     }

@@ -26,10 +26,9 @@
   </span>
   <p class="comment">{!tpl_formatText($row['comment_text'])}</p>
 
-  <?php
-  $attachments = $proj->listAttachments($row['comment_id']);
+  <?php // XXX the same lives in details.view.tpl, keep in sync
   if ($user->perms['view_attachments'] || $proj->prefs['others_view']):
-  foreach ($attachments as $attachment):
+  foreach ($attachments = $proj->listAttachments($row['comment_id']) as $attachment):
   ?>
   <span class="attachments">
     <a href="{$baseurl}?getfile={$attachment['attachment_id']}" title="{$attachment['file_type']}">
