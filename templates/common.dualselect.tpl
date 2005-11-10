@@ -18,7 +18,7 @@
         ondblclick="dualSelect(this, 'l', '{!$id}')">%s</select>
       <br />
       <input type="button" value="v" onmouseup="selectMove('{!$id}', 1)" />
-      <input type="hidden" value="{join(' ', $selected)}" id="v{!$id}" name="'.$name.'" />
+      <input type="hidden" value="{join(' ', $selected)}" id="v{!$id}" name="{$name}" />
     </td>
   </tr>
 </table>
