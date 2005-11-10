@@ -709,7 +709,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
 
     if (Post::val('project_title')) {
         $cols = array( 'project_title', 'theme_style', 'show_logo',
-                'inline_images', 'default_cat_owner', 'intro_message',
+                'default_cat_owner', 'intro_message',
                 'project_is_active', 'others_view', 'anon_open', 'notify_email',
                 'notify_email_when', 'notify_jabber', 'notify_jabber_when', 'feed_description', 'feed_img_url');
         $args = array_map('Post_to0', $cols);

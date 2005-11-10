@@ -142,3 +142,8 @@ CREATE TABLE flyspray_cache (
 -- Fix closure_comment from '0' to '' so they are properly blank.
 
 UPDATE flyspray_tasks SET closure_comment='' WHERE closure_comment='0';
+
+-- Florian Schmitz, 10 November 2005
+-- FS#718
+
+ALTER TABLE `flyspray_projects` DROP `inline_images` 
