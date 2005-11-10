@@ -14,7 +14,7 @@ require_once("$path/includes/notify.inc.php");
 $fs->get_language_pack('functions');
 
 $notify = new Notifications;
-$now = date(U);
+$now = date('U');
 
 $get_reminders = $db->Query("SELECT  r.*, t.*, p.*
                                FROM  {reminders} r
