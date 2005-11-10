@@ -221,6 +221,16 @@ class Project
                array($cid));
     }
 
+    function listTaskAttachments($tid)
+    {
+        return $this->_cached_query(
+                'attach_'.$tid,
+                "SELECT  *
+                   FROM  {attachments}
+                  WHERE  task_id = ?
+               ORDER BY  attachment_id ASC",
+               array($tid));
+    }
     /* }}} */
 }
 

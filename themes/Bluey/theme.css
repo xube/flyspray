@@ -594,11 +594,11 @@ div#taskdetailsfull {
 	padding:15px 0 15px 8px;
 }
 
-div#taskdetailsfull label {
+div#taskdetailsfull label,div#taskattachments label {
 	text-align:left;
 }
 
-div#deps {
+div#taskinfo {
 	width:98%;
 	border-bottom:1px solid #ccc;
 	min-height:50px;
@@ -608,13 +608,13 @@ div#deps {
 
 div#taskdeps {
 	float:left;
-	width:45%;
+	width:32%;
 	margin-bottom:8px;
 }
 
-div#taskblocks {
+div#taskblocks,div#taskattachments {
 	float:left;
-	width:50%;
+	width:32%;
 }
 
 div#actionbuttons {

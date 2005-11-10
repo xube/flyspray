@@ -115,7 +115,41 @@
     {!tpl_formatText($task_details['detailed_desc'])}
   </div>
 
-  <div id="deps">
+  <div id="taskinfo">
+	<div id="taskattachments">
+		<label>{$details_text['attachments']}</label>
+		<?php
+		if ($user->perms['view_attachments'] || $proj->prefs['others_view']):
+		foreach ($attachments as $attachment):
+		?>
+		<a href="{$baseurl}?getfile={$attachment['attachment_id']}" title="{$attachment['file_type']}">
+		  <?php
+		  // Let's strip the mimetype to get the icon image name
+		  list($main) = explode('/', $attachment['file_type']);
+		  $imgpath = "{$baseurl}themes/{$proj->prefs['theme_style']}/mime/";
+		  if (file_exists($imgpath.$attachment['file_type'].".png")):
+		  ?>
+		  <img src="{$imgpath}{$attachment['file_type']}.png" alt="({$attachment['file_type']})" title="{$attachment['file_type']}" />
+		  <?php else: ?>
+		  <img src="{$imgpath}{$main}.png" alt="" title="{$attachment['file_type']}" />
+		  <?php endif; ?>
+		  &nbsp;&nbsp;{$attachment['orig_name']}
+		</a>
+		
+		<?php if ($user->perms['delete_attachments']): ?>
+		&mdash;
+		<a href="{$baseurl}?do=modify&amp;action=deleteattachment&amp;id={$attachment['attachment_id']}"
+		  onclick="return confirm('{$details_text['confirmdeleteattach']}');">
+		  {$details_text['delete']}</a>
+		<?php endif; ?>
+		<?php endforeach; ?>
+		<br />
+		<?php elseif (count($attachments)): ?>
+		<span class="attachments">{$details_text['attachnoperms']}</span>
+		<br />
+		<?php endif; ?>
+	</div>
+  
     <div id="taskdeps">
       <b>{$details_text['taskdependson']}</b>
       <br />

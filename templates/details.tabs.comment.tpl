@@ -39,9 +39,9 @@
       $imgpath = "{$baseurl}themes/{$proj->prefs['theme_style']}/mime/";
       if (file_exists($imgpath.$attachment['file_type'].".png")):
       ?>
-      <img src="{$imgpath}{$attachment['file_type']}.png" title="{$attachment['file_type']}" />
+      <img src="{$imgpath}{$attachment['file_type']}.png" alt="({$attachment['file_type']})" title="{$attachment['file_type']}" />
       <?php else: ?>
-      <img src="{$imgpath}{$main}.png" title="{$attachment['file_type']}" />
+      <img src="{$imgpath}{$main}.png" alt="" title="{$attachment['file_type']}" />
       <?php endif; ?>
       &nbsp;&nbsp;{$attachment['orig_name']}</a>
 

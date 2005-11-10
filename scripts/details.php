@@ -67,7 +67,10 @@ else {
                                    FROM  {notifications}
                                   WHERE  task_id = ?  AND user_id = ?",
                                   array($task_id, $user->id));
-
+    
+    // Attachments
+	$page->assign('attachments', $proj->listTaskAttachments($task_id));
+	
     $page->assign('prev_id', $prev_id);
     $page->assign('next_id', $next_id);
     $page->assign('deps',    $db->fetchAllArray($check_deps));
