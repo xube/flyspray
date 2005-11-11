@@ -4,6 +4,7 @@
 */
 
 $fs->get_language_pack('modify');
+$fs->get_language_pack('register');
 
 // Include the notifications class
 include_once ( "$basedir/includes/notify.inc.php" );
@@ -442,7 +443,7 @@ elseif (Post::val('action') == 'sendcode')
             $subject = $modify_text['noticefrom'] . ' Flyspray';
 
             $message = <<<EOF
-{$register_text['noticefrom']} {$fs->prefs['project_title']}
+{$register_text['noticefrom']} {$proj->prefs['project_title']}
 
 {$modify_text['addressused']}
 

@@ -211,3 +211,16 @@ function selectMove(id, step) {
         i++;
     }
 }
+
+function checknewtask(message)
+{
+	var itemsummary = document.getElementById("itemsummary").value;
+	var details = document.getElementById("details").value;
+	
+	if(itemsummary == "" || details == "")
+	{
+		alert(message);
+		return false;
+	}
+	return true;
+}

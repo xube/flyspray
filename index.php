@@ -48,7 +48,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
 
         header('Pragma: public');
         header("Content-type: $file_type");
-        header("Content-Disposition: filename=$orig_name");
+        header('Content-Disposition: filename="'.$orig_name.'"');
         header('Content-transfer-encoding: binary');
         header('Content-length: ' . filesize($path));
 

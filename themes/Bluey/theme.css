@@ -78,7 +78,7 @@ form {
 input,textarea,select,button {
 	background-color:#eef7ff;
 	color:#03008f;
-	border:1px ridge #000;
+	border:1px solid #000;
 	font-size:100%;
 	margin:2px;
 }
@@ -257,8 +257,9 @@ div#showtask {
 /* The paragraph containing the search form */
 div#search {
 	margin-bottom:1em;
-	border:1px solid #000;
+	border:1px solid gray;
 	background-color:#e6eef6;
+	padding:3px 0;
 }
 
 div#search span#date_d {
@@ -266,27 +267,29 @@ div#search span#date_d {
 	display:inline;
 	background-color:#eef7ff;
 	color:#03008f;
-	border:1px ridge #000;
+	border:1px solid gray;
 	font-size:100%;
 	margin:2px;
 	padding:0 5px;
 }
 
-div#search select {
+div#search select,div#search input {
 	background-color:#eef7ff;
 	color:#03008f;
-	border:1px ridge #000;
+	border:1px solid gray;
+	margin:0;
+}
+
+div#search input.mainbutton {
+	color:#FFF;
 }
 
 div#search em {
-	float:left;
-	display:block;
-	height:2.5em;
 	padding:0.5ex;
 }
 
 div#tasklist {
-	border:1px solid #000;
+	border:1px solid gray;
 	color:#000;
 	background-color:#e6eef6;
 }
@@ -713,6 +716,7 @@ div#errorbar {
 	background-color:red;
 	font-weight:700;
 	position:fixed !important;
+	position:absolute;
 	bottom:0;
 	left:0;
 	background-image:url(frown.png);
@@ -728,6 +732,7 @@ div#successbar {
 	background-color:green;
 	font-weight:700;
 	position:fixed !important;
+	position:absolute;
 	bottom:0;
 	left:0;
 	background-image:url(smile.png);
@@ -910,11 +915,11 @@ span#duedateview {
 	color:#47617b;
 	background-color:#eef7ff;
 	font-weight:700;
-	border:1px ridge #000;
+	border:1px solid gray;
 	font-size:100%;
 	white-space:nowrap;
-	margin:2px;
-	padding:4px 5px 2px;
+	padding:1px 5px 0;
+	cursor:hand;
 }
 
 span#duedateview:hover {

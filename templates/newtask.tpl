@@ -1,7 +1,7 @@
 <h3>{$proj->prefs['project_title']} :: {$newtask_text['newtask']}</h3>
 
 <div id="taskdetails">
-  <form enctype="multipart/form-data" action="{$baseurl}" method="post">
+  <form enctype="multipart/form-data" action="{$baseurl}" method="post" onsubmit="return checknewtask('{$modify_text['summaryanddetails']}')">
     <table>
       <tr>
         <td><label for="itemsummary">{$newtask_text['summary']}</label></td>

@@ -414,7 +414,8 @@ function events_report()
           echo "$details_text[nohistory]\n";
       elseif($search):
       ?>
-      <table id="tasklist">
+      <div id="tasklist">
+      <table>
         <tr>
           <th class="taskid"><a href="?do=history&amp;order=id&amp;sort=<?php echo (Req::val('order') == 'id' && $sort == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $index_text['id'];?></a></th>
           <th><?php echo $details_text['summary'];?></th>
@@ -432,6 +433,7 @@ function events_report()
         </tr>
         <?php endwhile; ?>
       </table>
+      </div>
       <?php endif; ?>
     </div>
 <?php
