@@ -1,7 +1,11 @@
 <div id="menu">
-  <em>{$user->infos['real_name']} ({$user->infos['user_name']})</em>
-
+  
 <ul id="menu-list">
+  <li>
+	<a href="{$fs->CreateURL('myprofile', null)}" title="{$language['editmydetails']}">
+	  <em>{$user->infos['real_name']} ({$user->infos['user_name']})</em>
+	</a>
+  </li>
 <?php
 if ($user->perms['open_new_tasks']): ?>
   <li>
@@ -18,10 +22,6 @@ if ($user->perms['view_reports']): ?>
   </li>
 <?php
 endif; ?>
-  <li>
-  <a id="editmydetailslink" href="{$fs->CreateURL('myprofile', null)}"
-    accesskey="e">{$language['editmydetails']}</a>
-  </li>
   <li>
 <?php if (!empty($user->infos['last_search'])): ?>
   <a id="lastsearchlink" href="{$user->infos['last_search']}"

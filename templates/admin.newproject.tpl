@@ -16,13 +16,9 @@
           <td><label for="themestyle">{$newproject_text['themestyle']}</label></td>
           <td>
             <select id="themestyle" name="theme_style">
-              {!tpl_options($fs->listThemes())}
+              {!tpl_options($fs->listThemes(), $proj->prefs['theme_style'], true)}
             </select>
           </td>
-        </tr>
-        <tr>
-          <td><label for="show_logo">{$newproject_text['showlogo']}</label></td>
-          <td><input id="show_logo" type="checkbox" name="show_logo" value="1" checked="checked" /></td>
         </tr>
         <tr>
           <td><label for="intro_message">{$newproject_text['intromessage']}</label></td>

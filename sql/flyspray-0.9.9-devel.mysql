@@ -147,3 +147,8 @@ UPDATE flyspray_tasks SET closure_comment='' WHERE closure_comment='0';
 -- FS#718
 
 ALTER TABLE `flyspray_projects` DROP `inline_images` 
+
+-- Florian Schmitz, 11 November 2005
+-- FS#610
+
+ALTER TABLE `flyspray_projects` DROP `show_logo` 

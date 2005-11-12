@@ -654,11 +654,11 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
     if (Post::val('project_title') != '') {
 
         $insert = $db->Query("INSERT INTO  {projects}
-                                           ( project_title, theme_style, show_logo,
+                                           ( project_title, theme_style,
                                              intro_message, others_view, anon_open,
                                              project_is_active, visible_columns)
-                                   VALUES  (?, ?, ?, ?, ?, ?, ?, ?)",
-                            array(Post::val('project_title'), Post::val('theme_style'), Post::val('show_logo', 0),
+                                   VALUES  (?, ?, ?, ?, ?, ?, ?)",
+                            array(Post::val('project_title'), Post::val('theme_style'), 
                                 Post::val('intro_message'), Post::val('others_view', 0), Post::val('anon_open', 0),
                                 '1', 'id tasktype severity summary status dueversion progress'));
 
@@ -679,7 +679,7 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
         $add_group = $db->Query("INSERT INTO  {groups}
                                               ( group_name, group_desc, belongs_to_project,
                                                 ".join(',', $cols).")
-                                      VALUES  ( ?, ?, ?".join(',', array_fill(0, count($cols), '?')).")",
+                                      VALUES  ( ?, ?, ?, ".join(',', array_fill(0, count($cols), '?')).")",
                                       $args);
 
         $insert = $db->Query("INSERT INTO  {list_category}
@@ -709,7 +709,7 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
 elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']) {
 
     if (Post::val('project_title')) {
-        $cols = array( 'project_title', 'theme_style', 'show_logo',
+        $cols = array( 'project_title', 'theme_style',
                 'default_cat_owner', 'intro_message',
                 'project_is_active', 'others_view', 'anon_open', 'notify_email',
                 'notify_email_when', 'notify_jabber', 'notify_jabber_when', 'feed_description', 'feed_img_url');

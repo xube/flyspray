@@ -57,10 +57,6 @@
           </td>
         </tr>
         <tr>
-          <td><label for="showlogo">{$admin_text['showlogo']}</label></td>
-          <td>{!tpl_checkbox('show_logo', $proj->prefs['show_logo'], 'showlogo')}</td>
-        </tr>
-        <tr>
           <td><label>{$admin_text['visiblecolumns']}</label></td>
           <td class="admintext">
             <?php // Set the selectable column names

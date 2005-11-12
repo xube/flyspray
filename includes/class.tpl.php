@@ -271,7 +271,8 @@ function tpl_formattext($text)
 
 function tpl_draw_perms($perms)
 {
-    global $language;
+    global $language,$proj;
+
     $perm_fields = array('is_admin', 'manage_project', 'view_tasks',
             'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
             'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
@@ -287,14 +288,15 @@ function tpl_draw_perms($perms)
 
     // FIXME: html belongs in a template, not in the template class
     $html = '<table border="1">';
+    $html .= '<thead><tr><th colspan="2">'.$language['permissionsforproject'].$proj->prefs['project_title'].'</th></tr></thead><tbody>';
 
     foreach ($perms as $key => $val) {
         if (!is_numeric($key) && in_array($key, $perm_fields)) {
-            $html .= '<tr><td>' . str_replace('_', ' ', $key) . '</td>';
+            $html .= '<tr><th>' . str_replace('_', ' ', $key) . '</th>';
             $html .= $yesno[(bool)$val].'</tr>';
         }
     }
-    return $html . '</table>';
+    return $html . '</tbody></table>';
 }
 
 function tpl_disableif($if)

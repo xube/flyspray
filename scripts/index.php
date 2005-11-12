@@ -320,8 +320,9 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
         case 'id':
         case 'summary':
             $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+            $url = htmlspecialchars($fs->createUrl('details', $task['task_id']),ENT_QUOTES, 'utf-8');
             $value = sprintf('<a href="%s">%s</a>',
-                    $fs->createUrl('details', $task['task_id']), $value);
+                    $url, $value);
             break;
 
         case 'severity':

@@ -91,11 +91,11 @@
             <?php endforeach; ?>
           </tr>
         </thead>
-        <?php foreach ($tasks as $task_details): ?>
-        <tr id="task{!$task_id}" class="severity{$task_details['task_severity']}">
+        <?php foreach ($tasks as $task_details):?>
+        <tr id="task{!$task_details['task_id']}" class="severity{$task_details['task_severity']}">
           <?php if (!$user->isAnon()): ?>
           <td class="ttcolumn">
-            <input class="ticktask" type="checkbox" name="ids[{!$task_id}]" value="1" />
+            <input class="ticktask" type="checkbox" name="ids[{!$task_details['task_id']}]" value="1" />
           </td>
           <?php endif; ?>
           <?php foreach ($visible as $col): ?>

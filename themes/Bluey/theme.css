@@ -45,12 +45,11 @@ h1 {
 
 /* the main title; h1 alone is also used in the popup windows. */
 h1#title {
-	background-color:#47617b;
-	background-image:url("title.png");
-	background-repeat:no-repeat;
+	background:#47617b url("title.png") no-repeat;
 	height:45px;
 	margin:0;
 	padding:1ex 0;
+	text-indent:-9000px;
 }
 
 h2 {
@@ -161,11 +160,12 @@ div#loginbox span#links a {
 /* The div containing the main menu */
 div#menu {
 	border:1px solid #ccc;
-	background-color:#e6eef6;
+	background:url(menu/editmydetails.png) #e6eef6 left no-repeat;
 	height:18px;
 	vertical-align:baseline;
 	margin:0;
-	padding:4px 0 0;
+	padding:4px 0 0 0;
+	position:relative;
 }
 
 div#menu a {
@@ -174,6 +174,9 @@ div#menu a {
 	font-size:12px;
 	font-weight:400;
 	vertical-align:baseline;
+}
+
+div#menu ul a {
 	padding:3px 1px 3px 20px;
 }
 
@@ -193,6 +196,10 @@ ul#menu-list li {
 
 ul#menu-list li.last {
 	border:0;
+}
+
+div#projectselector {
+	margin-bottom:-0.5em;
 }
 
 div#anonopen {
@@ -250,8 +257,6 @@ table.userlist td,table.userlist th {
 div#showtask {
 	text-align:right;
 	float:right;
-	position:relative;
-	top:-2em;
 }
 
 /* The paragraph containing the search form */
@@ -259,7 +264,7 @@ div#search {
 	margin-bottom:1em;
 	border:1px solid gray;
 	background-color:#e6eef6;
-	padding:3px 0;
+	padding:0 0 3px 0;
 }
 
 div#search span#date_d {
@@ -277,7 +282,7 @@ div#search select,div#search input {
 	background-color:#eef7ff;
 	color:#03008f;
 	border:1px solid gray;
-	margin:0;
+	margin:3px 0 0;
 }
 
 div#search input.mainbutton {
@@ -286,6 +291,9 @@ div#search input.mainbutton {
 
 div#search em {
 	padding:0.5ex;
+	float:left;
+	display:block;
+	height:2.5em;
 }
 
 div#tasklist {
@@ -560,10 +568,8 @@ table.history td {
 }
 
 div#intromessage {
-	margin:0 1px -0.5em 1px;
+	margin:0 1px 1em 1px;
 	clear:both;
-	position:relative;
-	top:-1em;
 }
 
 map#formselecttasks {
@@ -820,35 +826,29 @@ div.tab {
 	height:14em;
 }
 
-div#permslink {
-	position:absolute;
-	top:5px;
-	right:5px;
-	color:#fff;
-	background-color:transparent;
-}
-
-div#permissions {
-	visibility:hidden;
-	position:absolute;
-	top:25px;
-	right:5px;
-	margin-top:0;
-	overflow:auto;
-	z-index:5;
-	padding:5px;
-}
-
 div#permissions table {
-	color:#000;
-	background-color:#fff;
-	border:1px dotted #000;
-}
-
-div#permissions table td {
+	border-spacing:0;
+	margin:0.5em;
 	border:0;
 }
 
+div#permissions table thead th {
+	border:0;
+}
+
+div#permissions table tbody th {
+	font-weight:normal;
+	text-align:left;
+	border:0;
+	border-bottom:1px dotted #000;
+}
+
+div#permissions table td {
+	padding:0.1em 0.4em;
+	border:0;
+	border-bottom:1px dotted #000;
+	border-left:1px dotted #000;
+}
 div#fileupload {
 	margin:20px 0;
 }
@@ -919,7 +919,7 @@ span#duedateview {
 	font-size:100%;
 	white-space:nowrap;
 	padding:1px 5px 0;
-	cursor:hand;
+	cursor:pointer;
 }
 
 span#duedateview:hover {
@@ -946,7 +946,7 @@ a:hover,div#menu a:hover {
 	text-decoration:none;
 }
 
-h1 span,div#loginbox em,p#tabs small,div#toolboxmenu small,div.tab h2 {
+div#loginbox em,p#tabs small,div#toolboxmenu small,div.tab h2 {
 	display:none;
 }
 

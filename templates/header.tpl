@@ -30,22 +30,14 @@
     <![endif]-->
   </head>
   <body>
-    <?php if ($proj->prefs['show_logo']): ?>
-    <h1 id="title"><span>{$proj->prefs['project_title']}</span></h1>
-    <?php endif; ?>
+    <!-- Remove this to remove the logo -->
+    <h1 id="title">{$proj->prefs['project_title']}</h1>
     <?php
     if ($user->isAnon()):
         $this->display('loginbox.tpl');
     else:
         $this->display('links.tpl');
-    ?>
-    <div id="permslink">
-      <a href="#" onclick="showhidestuff('permissions');">{$language['permissions']}</a>
-    </div>
-    <div id="permissions" onclick="showhidestuff('permissions');">
-      {!tpl_draw_perms($user->perms)}
-    </div>
-    <?php endif; ?>
+    endif; ?>
 
     <?php if (!empty($_SESSION['ERROR'])): ?>
     <div id="errorbar" onclick="this.style.display='none'">{$_SESSION['ERROR']}</div>
