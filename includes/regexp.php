@@ -32,13 +32,11 @@ $regexps   = array(
         'magic'         => '/^[a-zA-Z0-9_-]+$/',
         'order'         => $order_ok,
         'order2'        => $order_ok,
-        'real_name'     => '/^[\sa-zA-Z0-9_-]+$/',
         'report'        => '/^(summary|changelog|events|severity|age)$/',
         'sort'          => $sort_ok,
         'sort2'         => $sort_ok,
         'status'        => '/^(\d+|all|closed)$/',
         'tasks'         => '/^(all|assigned|reported|watched)$/',
-        'user_name'     => '/^[a-zA-Z0-9_.-]+$/',
 );
 
 foreach ($regexps as $key => $regexp) {

@@ -409,9 +409,25 @@ elseif (Post::val('action') == 'sendcode')
             && ((Post::val('email_address') && Post::val('notify_type') == '1')
                 OR (Post::val('jabber_id') && Post::val('notify_type') == '2')))
     {
+		include_once( "$basedir/includes/utf8.inc.php" );
+		
+    	// Limit lengths
+		$_POST['user_name'] = substr(trim(Post::val('user_name')), 0, 32);
+		$_POST['real_name'] = substr(trim(Post::val('real_name')), 0, 100);
+		// Remove doubled up spaces and control chars
+		$_POST['user_name'] = preg_replace('![\x00-\x1f\s]+!u', ' ', Post::val('user_name'));
+		$_POST['real_name'] = preg_replace('![\x00-\x1f\s]+!u', ' ', Post::val('real_name'));
+		// Strip special chars
+		$_POST['user_name']  = utf8_keepalphanum($_POST['user_name']);
+		
+		$check_username = $db->Query("SELECT COUNT(*) FROM {users} WHERE user_name = ?", array(Post::val('user_name')));
+		
+		if(!Post::val('user_name') || !Post::val('real_name')) {
+			echo "<p class=\"admin\">{$register_text['registererror']}<br>";
+			echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></p>";
+		}
         // Check to see if the username is available
-        $check_username = $db->Query("SELECT * FROM {users} WHERE user_name = ?", array(Post::val('user_name')));
-        if ($db->CountRows($check_username)) {
+        else if ($db->fetchOne($check_username)) {
             echo "<p class=\"admin\">{$register_text['usernametaken']}<br>";
             echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></p>";
         } else {
@@ -442,17 +458,15 @@ elseif (Post::val('action') == 'sendcode')
 
             $subject = $modify_text['noticefrom'] . ' Flyspray';
 
-            $message = <<<EOF
-{$register_text['noticefrom']} {$proj->prefs['project_title']}
+            $message =  "{$register_text['noticefrom']} {$proj->prefs['project_title']}\n\n" .
+						
+						"{$modify_text['addressused']}\n\n".
+						
+						"{$conf['general']['baseurl']}index.php?do=register&magic=$magic_url\n\n".
+						
+						"{$register_text['username']}: ".Post::val('user_name')."\n". // In case that spaces in the username have been removed
+						"{$modify_text['confirmcodeis']} {$confirm_code}";
 
-{$modify_text['addressused']}
-
-{$conf['general']['baseurl']}index.php?do=register&magic=$magic_url
-
-{$modify_text['confirmcodeis']}
-
-{$confirm_code}
-EOF;
 
             // Check how they want to receive their code
             if (Post::val('notify_type') == '1') {

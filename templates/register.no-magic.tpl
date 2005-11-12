@@ -6,11 +6,11 @@
   <table class="admin">
     <tr>
       <td><label for="username">{$register_text['username']}</label></td>
-      <td><input id="username" name="user_name" type="text" size="20" maxlength="20" /><strong>*</strong></td>
+      <td><input id="username" name="user_name" type="text" size="20" maxlength="32" /><strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="realname">{$register_text['realname']}</label></td>
-      <td><input id="realname" name="real_name" type="text" size="20" maxlength="100" /><strong>*</strong></td>
+      <td><input id="realname" name="real_name" type="text" size="30" maxlength="100" /><strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="emailaddress">{$register_text['emailaddress']}</label></td>
