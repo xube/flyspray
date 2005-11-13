@@ -8,27 +8,27 @@
  * @see    unicode_to_utf8()
  */
 function utf8_to_unicode( &$str ) {
-  $unicode = array();  
-  $values = array();
-  $lookingFor = 1;
-  
-  for ($i = 0; $i < strlen( $str ); $i++ ) {
-    $thisValue = ord( $str[ $i ] );
-    if ( $thisValue < 128 ) $unicode[] = $thisValue;
-    else {
-      if ( count( $values ) == 0 ) $lookingFor = ( $thisValue < 224 ) ? 2 : 3;
-      $values[] = $thisValue;
-      if ( count( $values ) == $lookingFor ) {
-  $number = ( $lookingFor == 3 ) ?
-    ( ( $values[0] % 16 ) * 4096 ) + ( ( $values[1] % 64 ) * 64 ) + ( $values[2] % 64 ):
-  	( ( $values[0] % 32 ) * 64 ) + ( $values[1] % 64 );
-  $unicode[] = $number;
-  $values = array();
-  $lookingFor = 1;
-      }
+    $unicode = array();  
+    $values = array();
+    $lookingFor = 1;
+
+    for ($i = 0; $i < strlen( $str ); $i++ ) {
+        $thisValue = ord( $str[ $i ] );
+        if ( $thisValue < 128 ) $unicode[] = $thisValue;
+        else {
+            if ( count( $values ) == 0 ) $lookingFor = ( $thisValue < 224 ) ? 2 : 3;
+            $values[] = $thisValue;
+            if ( count( $values ) == $lookingFor ) {
+                $number = ( $lookingFor == 3 ) ?
+                    ( ( $values[0] % 16 ) * 4096 ) + ( ( $values[1] % 64 ) * 64 ) + ( $values[2] % 64 ):
+                        ( ( $values[0] % 32 ) * 64 ) + ( $values[1] % 64 );
+                $unicode[] = $number;
+                $values = array();
+                $lookingFor = 1;
+            }
+        }
     }
-  }
-  return $unicode;
+    return $unicode;
 }
 
 /**
@@ -39,22 +39,22 @@ function utf8_to_unicode( &$str ) {
  * @see    utf8_to_unicode()
  */
 function unicode_to_utf8( &$str ) {
-  if (!is_array($str)) return '';
- 
-  $utf8 = '';
-  foreach( $str as $unicode ) {
-    if ( $unicode < 128 ) {
-      $utf8.= chr( $unicode );
-    } elseif ( $unicode < 2048 ) {
-      $utf8.= chr( 192 +  ( ( $unicode - ( $unicode % 64 ) ) / 64 ) );
-      $utf8.= chr( 128 + ( $unicode % 64 ) );
-    } else {
-      $utf8.= chr( 224 + ( ( $unicode - ( $unicode % 4096 ) ) / 4096 ) );
-      $utf8.= chr( 128 + ( ( ( $unicode % 4096 ) - ( $unicode % 64 ) ) / 64 ) );
-      $utf8.= chr( 128 + ( $unicode % 64 ) );
+    if (!is_array($str)) return '';
+
+    $utf8 = '';
+    foreach( $str as $unicode ) {
+        if ( $unicode < 128 ) {
+            $utf8.= chr( $unicode );
+        } elseif ( $unicode < 2048 ) {
+            $utf8.= chr( 192 +  ( ( $unicode - ( $unicode % 64 ) ) / 64 ) );
+            $utf8.= chr( 128 + ( $unicode % 64 ) );
+        } else {
+            $utf8.= chr( 224 + ( ( $unicode - ( $unicode % 4096 ) ) / 4096 ) );
+            $utf8.= chr( 128 + ( ( ( $unicode % 4096 ) - ( $unicode % 64 ) ) / 64 ) );
+            $utf8.= chr( 128 + ( $unicode % 64 ) );
+        }
     }
-  }
-  return $utf8;
+    return $utf8;
 }
 
 // a-z A-Z . _ -, extended latin chars, Cyrillic and Greek
@@ -106,17 +106,19 @@ $UTF8_ALPHA_CHARS = array(
   0x04e8, 0x04ae, 0x04e9, 0x04af,     
 );
 
-function utf8_keepalphanum($string) {
-	global $UTF8_ALPHA_CHARS;
-	$chars = utf8_to_unicode($string);
-	
-	for($i = 0, $size = count($chars); $i < $size; ++$i)
-	{
-		if(!in_array($chars[$i],$UTF8_ALPHA_CHARS))
-		{
-			unset($chars[$i]);
-		}
-	}
-	return unicode_to_utf8($chars);
+function utf8_keepalphanum($string)
+{
+    global $UTF8_ALPHA_CHARS;
+    $chars = utf8_to_unicode($string);
+
+    for($i = 0, $size = count($chars); $i < $size; ++$i)
+    {
+        if(!in_array($chars[$i],$UTF8_ALPHA_CHARS))
+        {
+            unset($chars[$i]);
+        }
+    }
+    return unicode_to_utf8($chars);
 }
+
 ?>

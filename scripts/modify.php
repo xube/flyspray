@@ -409,23 +409,23 @@ elseif (Post::val('action') == 'sendcode')
             && ((Post::val('email_address') && Post::val('notify_type') == '1')
                 OR (Post::val('jabber_id') && Post::val('notify_type') == '2')))
     {
-		include_once( "$basedir/includes/utf8.inc.php" );
-		
-    	// Limit lengths
-		$_POST['user_name'] = substr(trim(Post::val('user_name')), 0, 32);
-		$_POST['real_name'] = substr(trim(Post::val('real_name')), 0, 100);
-		// Remove doubled up spaces and control chars
-		$_POST['user_name'] = preg_replace('![\x00-\x1f\s]+!u', ' ', Post::val('user_name'));
-		$_POST['real_name'] = preg_replace('![\x00-\x1f\s]+!u', ' ', Post::val('real_name'));
-		// Strip special chars
-		$_POST['user_name']  = utf8_keepalphanum($_POST['user_name']);
-		
-		$check_username = $db->Query("SELECT COUNT(*) FROM {users} WHERE user_name = ?", array(Post::val('user_name')));
-		
-		if(!Post::val('user_name') || !Post::val('real_name')) {
-			echo "<p class=\"admin\">{$register_text['registererror']}<br>";
-			echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></p>";
-		}
+        include_once( "$basedir/includes/utf8.inc.php" );
+
+        // Limit lengths
+        $user_name = substr(trim(Post::val('user_name')), 0, 32);
+        $real_name = substr(trim(Post::val('real_name')), 0, 100);
+        // Remove doubled up spaces and control chars
+        $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
+        $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
+        // Strip special chars
+        $user_name = utf8_keepalphanum(user_name);
+
+        $check_username = $db->Query("SELECT COUNT(*) FROM {users} WHERE user_name = ?", array($user_name));
+
+        if (!$user_name || !$real_name) {
+            echo "<p class=\"admin\">{$register_text['registererror']}<br>";
+            echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></p>";
+        }
         // Check to see if the username is available
         else if ($db->fetchOne($check_username)) {
             echo "<p class=\"admin\">{$register_text['usernametaken']}<br>";
@@ -452,7 +452,7 @@ elseif (Post::val('action') == 'sendcode')
                                                     email_address, jabber_id, notify_type,
                                                     magic_url )
                                           VALUES  (?,?,?,?,?,?,?,?)",
-                                array($now, $confirm_code, Post::val('user_name'), Post::val('real_name'),
+                                array($now, $confirm_code, $user_name, $real_name,
                                       Post::val('email_address'), Post::val('jabber_id'), Post::val('notify_type'),
                                       $magic_url));
 
@@ -464,7 +464,7 @@ elseif (Post::val('action') == 'sendcode')
 						
 						"{$conf['general']['baseurl']}index.php?do=register&magic=$magic_url\n\n".
 						
-						"{$register_text['username']}: ".Post::val('user_name')."\n". // In case that spaces in the username have been removed
+						"{$register_text['username']}: ".$user_name."\n". // In case that spaces in the username have been removed
 						"{$modify_text['confirmcodeis']} {$confirm_code}";
 
 
