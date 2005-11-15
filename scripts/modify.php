@@ -257,10 +257,7 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
 
 } // }}}
 // re-opening an task {{{
-elseif ( Get::val('action') == 'reopen'
-        && ( $user->perms['close_own_tasks'] && $old_details['assigned_to'] == $user->id
-                || $user->perms['close_other_tasks']) )
-{
+elseif (Get::val('action') == 'reopen' && $user->can_close_task($old_details)) {
     $db->Query("UPDATE  {tasks}
                    SET  resolution_reason = '0', closure_comment = '0',
                         last_edited_time = ?, last_edited_by = ?, is_closed = '0'
@@ -283,264 +280,262 @@ elseif ( Get::val('action') == 'reopen'
     $fs->redirect($fs->CreateURL('details', Get::val('task_id')));
 } // }}}
 // adding a comment {{{
-elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments'])
-{
+elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments']) {
 
-    if (Post::val('comment_text')) {
-        $comment = Post::val('comment_text');
-
-        $db->Query("INSERT INTO  {comments}
-                                 (task_id, date_added, user_id, comment_text)
-                         VALUES  ( ?, ?, ?, ? )",
-                array(Post::val('task_id'), $now, intval($user->id), $comment));
-
-        $result = $db->Query("SELECT  comment_id FROM {comments}
-                               WHERE  task_id = ?
-                            ORDER BY  comment_id DESC",
-                array(Post::val('task_id')), 1);
-        $comment = $db->FetchRow($result);
-
-        $fs->logEvent(Post::val('task_id'), 4, $comment['comment_id']);
-
-        if (Post::val('notifyme') == '1') {
-            // If the user wanted to watch this task for changes
-            $be->AddToNotifyList($user->id, array(Post::val('task_id')));
-        }
-
-        if ($user->perms['create_attachments']) {
-            // If the user uploaded one or more files
-            $files_added = $be->UploadFiles($user->id,
-                    $old_details['task_id'], $_FILES, $comment['comment_id']);
-        }
-
-        // Send the notification
-        if ($files_added) {
-            $notify->Create('7', Post::val('task_id'), 'files');
-        } else {
-            $notify->Create('7', Post::val('task_id'));
-        }
-
-        $_SESSION['SUCCESS'] = $modify_text['commentadded'];
-        $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
-    } else {
+    if (!($comment = Post::val('comment_text'))) {
         // If they pressed submit without actually typing anything
         $_SESSION['ERROR'] = $modify_text['nocommententered'];
         $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
     }
+
+    $db->Query("INSERT INTO  {comments}
+                             (task_id, date_added, user_id, comment_text)
+                     VALUES  ( ?, ?, ?, ? )",
+            array(Post::val('task_id'), $now, intval($user->id), $comment));
+
+    $result = $db->Query("SELECT  comment_id
+                            FROM  {comments}
+                           WHERE  task_id = ?
+                        ORDER BY  comment_id DESC",
+            array(Post::val('task_id')), 1);
+    $cid = $db->FetchOne($result);
+
+    $fs->logEvent(Post::val('task_id'), 4, $cid);
+
+    if (Post::val('notifyme') == '1') {
+        // If the user wanted to watch this task for changes
+        $be->AddToNotifyList($user->id, array(Post::val('task_id')));
+    }
+
+    if ($user->perms['create_attachments']) {
+        // If the user uploaded one or more files
+        $files_added = $be->UploadFiles($user->id, $old_details['task_id'],
+                $_FILES, $cid);
+    }
+
+    // Send the notification
+    if ($files_added) {
+        $notify->Create('7', Post::val('task_id'), 'files');
+    } else {
+        $notify->Create('7', Post::val('task_id'));
+    }
+
+    $_SESSION['SUCCESS'] = $modify_text['commentadded'];
+    $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
 } // }}}
 // sending a new user a confirmation code {{{
-elseif (Post::val('action') == 'sendcode')
-{ 
-    if (Post::val('user_name') && Post::val('real_name')
-            && ((Post::val('email_address') && Post::val('notify_type') == '1')
-                OR (Post::val('jabber_id') && Post::val('notify_type') == '2')))
-    {
-        include_once( "$basedir/includes/utf8.inc.php" );
+elseif (Post::val('action') == 'sendcode') { 
 
-        // Limit lengths
-        $user_name = substr(trim(Post::val('user_name')), 0, 32);
-        $real_name = substr(trim(Post::val('real_name')), 0, 100);
-        // Remove doubled up spaces and control chars
-        $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
-        $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
-        // Strip special chars
-        $user_name = utf8_keepalphanum(user_name);
-
-        $check_username = $db->Query("SELECT COUNT(*) FROM {users} WHERE user_name = ?", array($user_name));
-
-        if (!$user_name || !$real_name) {
-            echo "<p class=\"admin\">{$register_text['registererror']}<br>";
-            echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></p>";
-        }
-        // Check to see if the username is available
-        else if ($db->fetchOne($check_username)) {
-            echo "<p class=\"admin\">{$register_text['usernametaken']}<br>";
-            echo "<a href=\"javascript:history.back();\">{$register_text['goback']}</a></p>";
-        } else {
-            // Delete registration codes older than 24 hours
-            $now = date('U');
-            $yesterday = $now - '86400';
-            $remove = $db->Query("DELETE FROM {registrations} WHERE reg_time < ?", array($yesterday));
-
-            // Generate a random bunch of numbers for the confirmation code
-            mt_srand(make_seed());
-            $randval = mt_rand();
-
-            // Convert those numbers to a seemingly random string using crypt
-            $confirm_code = crypt($randval, $conf['general']['cookiesalt']);
-
-            // Generate a looonnnnggg random string to send as an URL to complete this registration
-            $magic_url = md5(microtime());
-
-            // Insert everything into the database
-            $save_code = $db->Query("INSERT INTO  {registrations}
-                                                  ( reg_time, confirm_code, user_name, real_name,
-                                                    email_address, jabber_id, notify_type,
-                                                    magic_url )
-                                          VALUES  (?,?,?,?,?,?,?,?)",
-                                array($now, $confirm_code, $user_name, $real_name,
-                                      Post::val('email_address'), Post::val('jabber_id'), Post::val('notify_type'),
-                                      $magic_url));
-
-            $subject = $modify_text['noticefrom'] . ' Flyspray';
-
-            $message =  "{$register_text['noticefrom']} {$proj->prefs['project_title']}\n\n" .
-						
-						"{$modify_text['addressused']}\n\n".
-						
-						"{$conf['general']['baseurl']}index.php?do=register&magic=$magic_url\n\n".
-						
-						"{$register_text['username']}: ".$user_name."\n". // In case that spaces in the username have been removed
-						"{$modify_text['confirmcodeis']} {$confirm_code}";
-
-
-            // Check how they want to receive their code
-            if (Post::val('notify_type') == '1') {
-                $notify->SendEmail(Post::val('email_address'), $subject, $message);
-            }
-            elseif (Post::val('notify_type') == '2') {
-                $notify->StoreJabber(array(Post::val('jabber_id')), $subject, htmlspecialchars($message),ENT_COMPAT,'utf-8');
-            }
-
-            echo "<div class=\"redirectmessage\"><p><em>{$modify_text['codesent']}</em></p></div>";
-        }
-    } else {
+    if (!Post::val('user_name') || !Post::val('real_name')
+            || !(  (Post::val('email_address') && Post::val('notify_type') == '1')
+                || (Post::val('jabber_id') && Post::val('notify_type') == '2')  )
+    ) {
         // If the form wasn't filled out correctly, show an error
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['erroronform']}</em></p>";
-        echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
+        $_SESSION['ERROR'] = $modify_text['erroronform'];
+        $fs->redirect($fs->createUrl('register'));
     }
+
+    // Limit lengths
+    $user_name = substr(trim(Post::val('user_name')), 0, 32);
+    $real_name = substr(trim(Post::val('real_name')), 0, 100);
+    // Remove doubled up spaces and control chars
+    $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
+    $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
+    // Strip special chars
+    require_once "$basedir/includes/utf8.inc.php";
+    $user_name = utf8_keepalphanum($user_name);
+
+    if (!$user_name || !$real_name) {
+        $_SESSION['ERROR'] = $register_text['registererror'];
+        $fs->redirect($fs->createUrl('register'));
+    }
+
+    $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE user_name = ?",
+            array($user_name));
+    if ($db->fetchOne($sql)) {
+        $_SESSION['ERROR'] = $register_text['usernametaken'];
+        $fs->redirect($fs->createUrl('register'));
+    }
+
+    // Delete registration codes older than 24 hours
+    $now = date('U');
+    $yesterday = $now - '86400';
+    $remove = $db->Query("DELETE FROM {registrations} WHERE reg_time < ?", array($yesterday));
+
+    // Generate a random bunch of numbers for the confirmation code
+    mt_srand(make_seed());
+    $randval = mt_rand();
+
+    // Convert those numbers to a seemingly random string using crypt
+    $confirm_code = crypt($randval, $conf['general']['cookiesalt']);
+
+    // Generate a looonnnnggg random string to send as an URL to complete this registration
+    $magic_url = md5(microtime());
+
+    // Insert everything into the database
+    $db->Query("INSERT INTO  {registrations}
+                             ( reg_time, confirm_code, user_name, real_name,
+                               email_address, jabber_id, notify_type,
+                               magic_url )
+                     VALUES  (?,?,?,?,?,?,?,?)",
+                array($now, $confirm_code, $user_name, $real_name,
+                    Post::val('email_address'), Post::val('jabber_id'),
+                    Post::val('notify_type'), $magic_url));
+
+    $subject = $modify_text['noticefrom'] . ' Flyspray';
+
+    $message = "{$register_text['noticefrom']} {$proj->prefs['project_title']}\n\n"
+             . "{$modify_text['addressused']}\n\n"
+             . "{$conf['general']['baseurl']}index.php?do=register&magic=$magic_url\n\n"
+               // In case that spaces in the username have been removed
+             . "{$register_text['username']}: ".$user_name."\n"
+             . "{$modify_text['confirmcodeis']} {$confirm_code}";
+
+    // Check how they want to receive their code
+    switch (Post::val('notify_type')) {
+        case '1':
+            $notify->SendEmail(Post::val('email_address'), $subject, $message);
+            break;
+
+        case '2':
+            $notify->StoreJabber(array(Post::val('jabber_id')), $subject,
+                    htmlspecialchars($message),ENT_COMPAT,'utf-8');
+            break;
+
+        default: ;
+    }
+
+    $_SESSION['SUCCESS'] = $modify_text['codesent'];
+    $fs->redirect('./');
 } // }}}
 // new user self-registration with a confirmation code {{{
-elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg'] == '1')
-{
+elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
 
-    if (Post::val('user_pass') && Post::val('user_pass2') 
-            && Post::val('confirmation_code'))
-    {
-       if (Post::val('user_pass') == Post::val('user_pass2')) {
-
-           // Check that the user entered the right confirmation code
-           $code_check = $db->Query("SELECT * FROM {registrations} WHERE magic_url = ?", array(Post::val('magic_url')));
-           $reg_details = $db->FetchArray($code_check);
-
-           if ($reg_details['confirm_code'] == Post::val('confirmation_code')) {
-               // Encrypt their password
-               $pass_hash = $fs->cryptPassword(Post::val('user_pass'));
-
-               // Add the user to the database
-               $add_user = $db->Query("INSERT INTO  {users}
-                                                    ( user_name, user_pass,
-                                                      real_name, jabber_id,
-                                                      email_address, notify_type,
-                                                      account_enabled, tasks_perpage)
-                                            VALUES  (?, ?, ?, ?, ?, ?, ?, ?)",
-                                        array($reg_details['user_name'], $pass_hash,
-                                            $reg_details['real_name'], $reg_details['jabber_id'],
-                                            $reg_details['email_address'], $reg_details['notify_type'],
-                                            '1', '25'));
-
-               // Get this user's id for the record
-               $result = $db->Query("SELECT * FROM {users} WHERE user_name = ?", array($reg_details['user_name']));
-               $user_details = $db->FetchArray($result);
-
-               // Now, create a new record in the users_in_groups table
-               $set_global_group = $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
-                                                    VALUES  (?, ?)", array($user_details['user_id'], $fs->prefs['anon_group']));
-
-               // Let the user know what just happened
-               echo "<div class=\"redirectmessage\"><p><em>{$modify_text['accountcreated']}</em></p>";
-               echo "<p>{$modify_text['loginbelow']}</p>";
-               echo "<p>{$modify_text['newuserwarning']}</p></div>";
-           } else {
-               // If they didn't enter the right confirmation code
-               echo "<div class=\"redirectmessage\"><p><em>{$modify_text['confirmwrong']}</em></p>";
-               echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-           }
-       } else {
-           // If passwords didn't match
-           echo "<div class=\"redirectmessage\"><p><em>{$modify_text['nomatchpass']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-       }
-    } else {
-        // If they didn't fill in all the fields
-        echo "<div class=\"redirectessage\"><p><em>{$modify_text['formnotcomplete']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+    if (!Post::val('user_pass') || !Post::val('confirmation_code')) {
+        $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
+        $fs->redirect($fs->createUrl('register'));
     }
+
+    if (Post::val('user_pass') != Post::val('user_pass2')) {
+        $_SESSION['ERROR'] = $modify_text['nomatchpass'];
+        $fs->redirect($fs->createUrl('register'));
+    }
+
+    // Check that the user entered the right confirmation code
+    $sql = $db->Query("SELECT * FROM {registrations} WHERE magic_url = ?",
+            array(Post::val('magic_url')));
+    $reg_details = $db->FetchArray($sql);
+
+    if ($reg_details['confirm_code'] != Post::val('confirmation_code')) {
+        $_SESSION['ERROR'] = $modify_text['confirmwrong'];
+        $fs->redirect($fs->createUrl('register'));
+    }
+
+    // Encrypt their password
+    $pass_hash = $fs->cryptPassword(Post::val('user_pass'));
+
+    // Add the user to the database
+    $db->Query("INSERT INTO  {users}
+                             ( user_name, user_pass, real_name, jabber_id,
+                               email_address, notify_type, account_enabled,
+                               tasks_perpage )
+                     VALUES  (?, ?, ?, ?, ?, ?, 1, 25)",
+            array($reg_details['user_name'], $pass_hash,
+                $reg_details['real_name'], $reg_details['jabber_id'],
+                $reg_details['email_address'], $reg_details['notify_type']));
+
+    // Get this user's id for the record
+    $uid = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
+            array($reg_details['user_name']));
+    $uid = $db->fetchOne($sql);
+
+    // Now, create a new record in the users_in_groups table
+    $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
+                     VALUES  (?, ?)", array($uid, $fs->prefs['anon_group']));
+
+    $_SESSION['SUCCESS'] = $modify_text['accountcreated'];
+    $page->uses('modify_text');
+    $page->display('register.ok.tpl');
+
 } // }}}
 // user self-registration without confirmation code (Or, by an admin) {{{
-elseif (Post::val('action') == "newuser"
-           && ($user->perms['is_admin'] OR ($fs->prefs['anon_reg'] == '1' && $fs->prefs['spam_proof'] != '1')))
+elseif (Post::val('action') == "newuser" &&
+        ($user->perms['is_admin'] || $user->can_self_register()))
 {
 
-    if ( Post::val('user_name') && Post::val('user_pass') && Post::val('user_pass2')
-            && Post::val('real_name') && (Post::val('email_address') OR Post::val('jabber_id')))
-    {
-
-        // Check to see if the username is available
-        $check_username = $db->Query("SELECT * FROM {users} WHERE user_name = ?", array(Post::val('user_name')));
-        if ($db->CountRows($check_username)) {
-            echo "<div class=\"redirectmessage\"><p><em>{$modify_text['usernametaken']}</em></p>";
-            echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-        } else {
-
-            if ((Post::val('user_pass') == Post::val('user_pass2')) && Post::val('user_pass')) {
-
-                $pass_hash = $fs->cryptPassword(Post::val('user_pass'));
-
-                if ($user->perms['is_admin']) {
-                    $group_in = Post::val('group_in');
-                } else {
-                    $group_in = $fs->prefs['anon_group'];
-                }
-
-                $add_user = $db->Query("INSERT INTO  {users}
-                                                     ( user_name, user_pass,
-                                                       real_name, jabber_id, 
-                                                       email_address, notify_type,
-                                                       account_enabled, tasks_perpage)
-                                             VALUES  ( ?, ?, ?, ?, ?, ?, ?, ?)",
-                                    array(Post::val('user_name'), $pass_hash,
-                                          Post::val('real_name'), Post::val('jabber_id'),
-                                          Post::val('email_address'), Post::val('notify_type'),
-                                          '1', '25'));
-
-                // Get this user's id for the record
-                $result = $db->Query("SELECT * FROM {users} WHERE user_name = ?", array(Post::val('user_name')));
-                $user_details = $db->FetchArray($result);
-
-                // Now, create a new record in the users_in_groups table
-                $set_global_group = $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
-                                                     VALUES  ( ?, ?)",
-                                                    array($user_details['user_id'], $group_in));
-
-                if (!$user->perms['is_admin']) {
-                    echo "<p>{$modify_text['loginbelow']}</p>";
-                    echo "<p>{$modify_text['newuserwarning']}</p></div>";
-                } else {
-                    $_SESSION['SUCCESS'] = $modify_text['newusercreated'];
-                    $fs->redirect($fs->CreateURL('admin', 'groups'));
-                }
-            } else {
-                echo "<div class=\"redirectmessage\"><p><em>{$modify_text['nomatchpass']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-            }
-        }
-    } else {
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['formnotcomplete']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+    if ( !Post::val('user_name') || !Post::val('user_pass') || !Post::val('real_name')
+            || (!Post::val('email_address') && !Post::val('jabber_id'))
+    ) {
+        $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
+        $fs->redirect($fs->createUrl('register'));
     }
+
+    if (Post::val('user_pass') != Post::val('user_pass2')) {
+        $_SESSION['ERROR'] = $modify_text['nomatchpass'];
+        $fs->redirect($fs->createUrl('register'));
+    }
+
+    // Check to see if the username is available
+    $sql = $db->Query("SELECT * FROM {users} WHERE user_name = ?",
+            array(Post::val('user_name')));
+    if ($db->CountRows($sql)) {
+        $_SESSION['ERROR'] = $modify_text['usernametaken'];
+        $fs->redirect($fs->createUrl('register'));
+    }
+
+    $pass_hash = $fs->cryptPassword(Post::val('user_pass'));
+
+    if ($user->perms['is_admin']) {
+        $group_in = Post::val('group_in');
+    } else {
+        $group_in = $fs->prefs['anon_group'];
+    }
+
+    $db->Query("INSERT INTO  {users}
+                             ( user_name, user_pass, real_name, jabber_id,
+                               email_address, notify_type, account_enabled,
+                               tasks_perpage)
+                     VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25)",
+            array(Post::val('user_name'), $pass_hash, Post::val('real_name'),
+                Post::val('jabber_id'), Post::val('email_address'),
+                Post::val('notify_type')));
+
+    // Get this user's id for the record
+    $sql = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
+            array(Post::val('user_name')));
+    $uid = $db->fetchOne($sql);
+
+    // Now, create a new record in the users_in_groups table
+    $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
+                     VALUES  ( ?, ?)", array($uid, $group_in));
+
+    if ($user->perms['is_admin']) {
+        $_SESSION['SUCCESS'] = $modify_text['newusercreated'];
+        $fs->redirect($fs->CreateURL('admin', 'groups'));
+    } else {
+        $_SESSION['SUCCESS'] = $modify_text['accountcreated'];
+        $page->uses('modify_text');
+        $page->display('register.ok.tpl');
+    }
+
 } // }}}
 // adding a new group {{{
 elseif (Post::val('action') == "newgroup"
           && ((Post::val('belongs_to_project') && $user->perms['manage_project'])
-          || $user->perms['is_admin']) )
-{
+              || $user->perms['is_admin'])
+) {
 
-    if (Post::val('group_name') && Post::val('group_desc')) {
+    if (!Post::val('group_name') || !Post::val('group_desc')) {
+        $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
+    } else {
         // Check to see if the group name is available
-        $check_groupname = $db->Query("SELECT  *
-                                         FROM  {groups}
-                                        WHERE  group_name = ?  AND belongs_to_project = ?",
-                                        array(Post::val('group_name'), Post::val('project')));
+        $sql = $db->Query("SELECT  COUNT(*)
+                             FROM  {groups}
+                            WHERE  group_name = ? AND belongs_to_project = ?",
+                array(Post::val('group_name'), Post::val('project')));
 
-        if ($db->CountRows($check_groupname)) {
-            echo "<div class=\"redirectmessage\"><p><em>{$modify_text['groupnametaken']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+        if ($db->fetchOne($sql)) {
+            $_SESSION['ERROR' = $modify_text['groupnametaken'];
         } else {
             $cols = array('project', 'group_name', 'group_desc', 'manage_project',
                     'view_tasks', 'open_new_tasks', 'modify_own_tasks',
@@ -555,34 +550,35 @@ elseif (Post::val('action') == "newgroup"
                                  array_map('Post_to0', $cols));
 
             $_SESSION['SUCCESS'] = $modify_text['newgroupadded'];
-            if (Post::val('project')) {
-                $fs->redirect($fs->CreateURL('pm', 'groups', Post::val('project')));
-            } else {
-                $fs->redirect($fs->CreateURL('admin', 'groups'));
-            }
         }
+    }
+
+    if (Post::val('project')) {
+        $fs->redirect($fs->CreateURL('pm', 'groups', Post::val('project')));
     } else {
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['formnotcomplete']}</em></p><p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+        $fs->redirect($fs->CreateURL('admin', 'groups'));
     }
 } // }}}
 // Update the global application preferences {{{
-elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin'])
-{
+elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin']) {
     $settings = array('jabber_server', 'jabber_port', 'jabber_username',
             'jabber_password', 'anon_group', 'user_notify', 'admin_email',
             'lang_code', 'spam_proof', 'default_project', 'dateformat',
             'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server',
             'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds');
     foreach ($settings as $setting) {
-        $update = $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = '$setting'",
-                array(Post::val($setting)));
+        $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?",
+                array(Post::val($setting), $setting));
     }
 
     // Process the list of groups into a format we can store
     $assigned_groups = join(' ', array_keys(Post::val('assigned_groups', array())));
-    $update = $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = 'assigned_groups'", array($assigned_groups));
+    $db->Query("UPDATE  {prefs} SET pref_value = ?
+                 WHERE  pref_name = 'assigned_groups'",
+            array($assigned_groups));
 
-    $update = $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = 'visible_columns'",
+    $db->Query("UPDATE  {prefs} SET pref_value = ?
+                 WHERE  pref_name = 'visible_columns'",
             array(trim(Post::val('visible_columns'))));
 
     $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
@@ -592,60 +588,58 @@ elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin'])
 elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
 
     if (Post::val('project_title') != '') {
-
-        $insert = $db->Query("INSERT INTO  {projects}
-                                           ( project_title, theme_style,
-                                             intro_message, others_view, anon_open,
-                                             project_is_active, visible_columns)
-                                   VALUES  (?, ?, ?, ?, ?, ?, ?)",
-                            array(Post::val('project_title'), Post::val('theme_style'), 
-                                Post::val('intro_message'), Post::val('others_view', 0), Post::val('anon_open', 0),
-                                '1', 'id tasktype severity summary status dueversion progress'));
-
-        $result = $db->Query("SELECT project_id FROM {projects} ORDER BY project_id DESC", false, 1);
-        $newproject = $db->FetchArray($result);
-
-        $cols = array( 'manage_project', 'view_tasks', 'open_new_tasks',
-                'modify_own_tasks', 'modify_all_tasks', 'view_comments',
-                'add_comments', 'edit_comments', 'delete_comments',
-                'create_attachments', 'delete_attachments', 'view_history',
-                'close_own_tasks', 'close_other_tasks', 'assign_to_self',
-                'assign_others_to_self', 'view_reports', 'group_open');
-        $args = array_fill(0, count($cols), '1');
-        array_unshift($args, 'Project Managers',
-                'Permission to do anything related to this project.',
-                intval($newproject['project_id']));
-            
-        $add_group = $db->Query("INSERT INTO  {groups}
-                                              ( group_name, group_desc, belongs_to_project,
-                                                ".join(',', $cols).")
-                                      VALUES  ( ?, ?, ?, ".join(',', array_fill(0, count($cols), '?')).")",
-                                      $args);
-
-        $insert = $db->Query("INSERT INTO  {list_category}
-                                           ( project_id, category_name, list_position,
-                                             show_in_list, category_owner )
-                                   VALUES  ( ?, ?, ?, ?, ?)",
-                                   array($newproject['project_id'], 'Backend / Core', '1', '1', '0'));
-
-        $insert = $db->Query("INSERT INTO  {list_os}
-                                           ( project_id, os_name, list_position, show_in_list )
-                                   VALUES  (?,?,?,?)",
-                                   array($newproject['project_id'], 'All', '1', '1'));
-
-        $insert = $db->Query("INSERT INTO  {list_version}
-                                           ( project_id, version_name, list_position,
-                                             show_in_list, version_tense )
-                                   VALUES  (?, ?, ?, ?, ?)",
-                                   array($newproject['project_id'], '1.0', '1', '1', '2'));
-
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['projectcreated']}";
-        echo "<br><br><a href=\"" . $fs->CreateURL('pm', 'prefs', $newproject['project_id']) . "\">{$modify_text['customiseproject']}</a></em></p></div>";
-    } else {
-        echo "<div class=\"errormessage\"><p><em>{$modify_text['emptytitle']}</em></p></div>";
+        $_SESSION['ERROR'] = $modify_text['emptytitle'];
+        $fs->redirect($fs->createURL('admin', 'newproject');
     }
+
+    $db->Query("INSERT INTO  {projects}
+                             ( project_title, theme_style, intro_message,
+                               others_view, anon_open, project_is_active,
+                               visible_columns)
+                     VALUES  (?, ?, ?, ?, ?, 1, ?)",
+              array(Post::val('project_title'), Post::val('theme_style'),
+                  Post::val('intro_message'), Post::val('others_view', 0),
+                  Post::val('anon_open', 0),
+                  'id tasktype severity summary status dueversion progress'));
+
+    $sql = $db->Query("SELECT project_id FROM {projects} ORDER BY project_id DESC", false, 1);
+    $pid = $db->fetchOne($sql);
+
+    $cols = array( 'manage_project', 'view_tasks', 'open_new_tasks',
+            'modify_own_tasks', 'modify_all_tasks', 'view_comments',
+            'add_comments', 'edit_comments', 'delete_comments',
+            'create_attachments', 'delete_attachments', 'view_history',
+            'close_own_tasks', 'close_other_tasks', 'assign_to_self',
+            'assign_others_to_self', 'view_reports', 'group_open');
+    $args = array_fill(0, count($cols), '1');
+    array_unshift($args, 'Project Managers',
+            'Permission to do anything related to this project.',
+            intval($newproject['project_id']));
+        
+    $db->Query("INSERT INTO  {groups}
+                             ( group_name, group_desc, belongs_to_project,
+                               ".join(',', $cols).")
+                     VALUES  ( ?, ?, ?, ".join(',', array_fill(0, count($cols), '?')).")",
+                     $args);
+
+    $db->Query("INSERT INTO  {list_category}
+                             ( project_id, category_name, list_position,
+                               show_in_list, category_owner )
+                     VALUES  ( ?, ?, 1, 1, 0)", array($pid, 'Backend / Core'));
+
+    $db->Query("INSERT INTO  {list_os}
+                             ( project_id, os_name, list_position, show_in_list )
+                     VALUES  (?, ?, 1, 1)", array($pid, 'All'));
+
+    $db->Query("INSERT INTO  {list_version}
+                             ( project_id, version_name, list_position,
+                               show_in_list, version_tense )
+                     VALUES  (?, ?, 1, 1, 2)", array($pid, '1.0'));
+
+    $_SESSION['SUCCESS'] = $modify_text['projectcreated'];
+    $fs->redirect($fs->createURL('pm', 'prefs', $pid);
 } // }}}
-// updating project preferences {{{
+// updating project preferences {{{ TODO lint phase 2
 elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']) {
 
     if (Post::val('project_title')) {
