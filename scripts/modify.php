@@ -1,13 +1,15 @@
 <?php
-/*
-   This script performs all database modifications/
-*/
+
+  /*************************\
+  | database modifications  |
+  | ~~~~~~~~~~~~~~~~~~~~~~  |
+  \*************************/
 
 $fs->get_language_pack('modify');
 $fs->get_language_pack('register');
 
 // Include the notifications class
-include_once ( "$basedir/includes/notify.inc.php" );
+include_once "$basedir/includes/notify.inc.php";
 $notify = new Notifications;
 
 if ($lt = Post::val('list_type')) {
@@ -1006,814 +1008,533 @@ elseif (Post::val('action') == "update_category"
     $_SESSION['SUCCESS'] = $redirectmessage;
     $fs->redirect(Post::val('prev_page'));
 } // }}}
-// Start of adding a category list item {{{ TODO finish the review
+// adding a category list item {{{
 elseif (Post::val('action') == "add_category"
           && ($user->perms['is_admin'] || $user->perms['manage_project']))
 {
-  if (Post::val('list_name') && Post::val('list_position')) {
-      $update = $db->Query("INSERT INTO {list_category}
-                                (project_id, category_name, list_position,
-                                show_in_list, category_owner, parent_id)
-                                VALUES (?, ?, ?, ?, ?, ?)",
-                        array(
-			Post::val('project_id', 0),
-			Post::val('list_name'),
-                        Post::val('list_position'),
-                        '1',
-                        Post::val('category_owner', 0),
-                        Post::val('parent_id', 0)));
+    if (Post::val('list_name') && Post::val('list_position')) {
+        $update = $db->Query("INSERT INTO  {list_category}
+                                           ( project_id, category_name, list_position,
+                                             show_in_list, category_owner, parent_id )
+                                   VALUES  (?, ?, ?, ?, ?, ?)",
+                array(
+                    Post::val('project_id', 0),
+                    Post::val('list_name'),
+                    Post::val('list_position'),
+                    '1',
+                    Post::val('category_owner', 0),
+                    Post::val('parent_id', 0)));
 
-      $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
-      $fs->redirect(Post::val('prev_page'));
-
-} else {
-    $_SESSION['ERROR'] = $modify_text['fillallfields'];
-    $fs->redirect(Post::val('prev_page'));
-};
-// End of adding a category list item
-
-//////////////////////////////////////////
-// Start of adding a related task entry //
-//////////////////////////////////////////
-
-} elseif (Post::val('action') == 'add_related'
+        $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
+        $fs->redirect(Post::val('prev_page'));
+    } else {
+        $_SESSION['ERROR'] = $modify_text['fillallfields'];
+        $fs->redirect(Post::val('prev_page'));
+    }
+} // }}}
+// adding a related task entry {{{
+elseif (Post::val('action') == 'add_related'
           && ($user->perms['modify_all_tasks']
                || ($user->perms['modify_own_tasks'] && $old_details['assigned_to'] == $user->id))) {
 
-  if (is_numeric(Post::val('related_task'))) {
-    $check = $db->Query("SELECT * FROM {related}
-        WHERE this_task = ?
-        AND related_task = ?",
-        array(Post::val('this_task'), Post::val('related_task')));
-    $check2 = $db->Query("SELECT attached_to_project FROM {tasks}
-        WHERE task_id = ?",
-        array(Post::val('related_task')));
+    if (is_numeric(Post::val('related_task'))) {
+        $check = $db->Query("SELECT  * FROM {related}
+                              WHERE  this_task = ?  AND related_task = ?",
+                        array(Post::val('this_task'), Post::val('related_task')));
+        $check2 = $db->Query("SELECT  attached_to_project
+                                FROM  {tasks}
+                               WHERE  task_id = ?",
+                        array(Post::val('related_task')));
 
-    if ($db->CountRows($check) > 0)
-    {
-        $_SESSION['ERROR'] = $modify_text['relatederror'];
-        $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
-
-    } elseif (!$db->CountRows($check2))
-    {
-        $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
-        $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
-    } else
-    {
-        list($relatedproject) = $db->FetchRow($check2);
-        if ($proj->id == $relatedproject || Post::has('allprojects')) {
-            $insert = $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)", array(Post::val('this_task'), Post::val('related_task')));
-
-            $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
-            $fs->logEvent(Post::val('related_task'), 15, Post::val('this_task'));
-
-            $notify->Create('9', Post::val('this_task'));
-
-
-            $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
+        if ($db->CountRows($check)) {
+            $_SESSION['ERROR'] = $modify_text['relatederror'];
             $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
+        }
+        elseif (!$db->CountRows($check2)) {
+            $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
+            $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
+        } 
+        else {
+            list($relatedproject) = $db->FetchRow($check2);
+            if ($proj->id == $relatedproject || Post::has('allprojects')) {
+                $insert = $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
+                        array(Post::val('this_task'), Post::val('related_task')));
 
-        } else {
+                $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
+                $fs->logEvent(Post::val('related_task'), 15, Post::val('this_task'));
+
+                $notify->Create('9', Post::val('this_task'));
+
+                $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
+                $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
+            } else {
             ?>
             <div class="redirectmessage">
-                <p><em><?php echo $modify_text['relatedproject'];?></em></p>
-                <form action="index.php" method="post">
-                    <input type="hidden" name="do" value="modify">
-                    <input type="hidden" name="action" value="add_related">
-                    <input type="hidden" name="this_task" value="<?php echo Post::val('this_task');?>">
-                    <input type="hidden" name="related_task" value="<?php echo Post::val('related_task');?>">
-                    <input type="hidden" name="allprojects" value="1">
-                    <input class="adminbutton" type="submit" value="<?php echo $modify_text['addanyway'];?>">
-                </form>
-                <form action="index.php" method="get">
-                    <input type="hidden" name="do" value="details">
-                    <input type="hidden" name="id" value="<?php echo Post::val('this_task');?>">
-                    <input type="hidden" name="area" value="related">
-                    <input class="adminbutton" type="submit" value="<?php echo $modify_text['cancel'];?>">
-                </form>
+              <p><em><?php echo $modify_text['relatedproject'];?></em></p>
+              <form action="index.php" method="post">
+                <input type="hidden" name="do" value="modify">
+                <input type="hidden" name="action" value="add_related">
+                <input type="hidden" name="this_task" value="<?php echo Post::val('this_task');?>">
+                <input type="hidden" name="related_task" value="<?php echo Post::val('related_task');?>">
+                <input type="hidden" name="allprojects" value="1">
+                <input class="adminbutton" type="submit" value="<?php echo $modify_text['addanyway'];?>">
+              </form>
+              <form action="index.php" method="get">
+                <input type="hidden" name="do" value="details">
+                <input type="hidden" name="id" value="<?php echo Post::val('this_task');?>">
+                <input type="hidden" name="area" value="related">
+                <input class="adminbutton" type="submit" value="<?php echo $modify_text['cancel'];?>">
+              </form>
             </div>
             <?php
-        };
-    };
-  } else {
-    $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
-    $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
-  };
+            }
+        }
+    } else {
+        $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
+        $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
+    }
+} // }}}
+// Removing a related task entry {{{
+elseif (Post::val('action') == "remove_related"
+        && ($user->perms['modify_all_jobs'] || $user->perms['modify_own_tasks'])) { // FIXME FIX THIS PERMISSION!!
 
-// End of adding a related task entry
+    $remove = $db->Query("DELETE FROM {related} WHERE related_id = ?", array(Post::val('related_id')));
 
-///////////////////////////////////
-// Removing a related task entry //
-///////////////////////////////////
+    $fs->logEvent(Post::val('id'), 12, Post::val('related_task'));
+    $fs->logEvent(Post::val('related_task'), 16, Post::val('id'));
 
-} elseif (Post::val('action') == "remove_related"
-          && ($user->perms['modify_all_jobs'] || $user->perms['modify_own_tasks'])) { // FIX THIS PERMISSION!!
+    $_SESSION['SUCCESS'] = $modify_text['relatedremoved'];
+    $fs->redirect($fs->CreateURL('details', Post::val('id')));
 
-  $remove = $db->Query("DELETE FROM {related} WHERE related_id = ?", array(Post::val('related_id')));
+} // }}}
+// adding a user to the notification list {{{
+elseif (Req::val('action') == "add_notification") {
+    if (Req::val('prev_page')) {
+        $ids = Req::val('ids');
+        settype($ids, 'array');
 
-  $fs->logEvent(Post::val('id'), 12, Post::val('related_task'));
-  $fs->logEvent(Post::val('related_task'), 16, Post::val('id'));
+        if (!empty($ids)) {
+            $tasks = array_keys($ids);
+            $be->AddToNotifyList($user->id, $tasks);
+        }
+    } else {
+        $be->AddToNotifyList(Req::val('user_id'), array(Req::val('ids')));
+        $redirect_url = $fs->CreateURL('details', Req::val('ids'));
+    }
 
-  $_SESSION['SUCCESS'] = $modify_text['relatedremoved'];
-  $fs->redirect($fs->CreateURL('details', Post::val('id')));
+    $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
+    $fs->redirect($redirect_url.'#notify');
+} // }}}
+// removing a notification entry {{{
+elseif (Req::val('action') == "remove_notification") {
+    if (Req::val('prev_page')) {
+        $ids = Req::val('ids');
+        settype($ids, 'array');
+        $redirect_url = Req::val('prev_page');
 
-// End of removing a related task entry
+        if (!empty($ids)) {
+            $be->RemoveFromNotifyList($user->id, array_keys($ids));
+        }
+    } else {
+        $be->RemoveFromNotifyList(Req::val('user_id'), array(Req::val('ids')));
+        $redirect_url = $fs->CreateURL('details', Req::val('ids'));
+    }
 
-/////////////////////////////////////////////////////
-// Start of adding a user to the notification list //
-/////////////////////////////////////////////////////
+    $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
+    $fs->redirect($redirect_url.'#notify');
+} // }}}
+// editing a comment {{{
+elseif (Post::val('action') == "editcomment" && $user->perms['edit_comments']) {
+    $update = $db->Query("UPDATE  {comments}
+                             SET  comment_text = ?
+                           WHERE  comment_id = ?",
+                    array(Post::val('comment_text'), Post::val('comment_id')));
 
-} elseif ( Req::val('action') == "add_notification" )
-{
+    $fs->logEvent(Post::val('task_id'), 5, Post::val('comment_text'),
+            Post::val('previous_text'), Post::val('comment_id'));
 
-   if ( Req::val('prev_page') )
-   {
-      $ids = Req::val('ids');
-      $tasks = array();
-      $redirect_url = Req::val('prev_page');
+    $_SESSION['SUCCESS'] = $modify_text['editcommentsaved'];
+    $fs->Redirect($fs->CreateURL('details', Req::val('task_id')));
+} // }}}
+// deleting a comment {{{
+elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments']) {
+    $result = $db->Query("SELECT  comment_text, user_id, date_added
+                            FROM  {comments}
+                           WHERE  comment_id = ?",
+                        array(Get::val('comment_id')));
+    $comment = $db->FetchRow($result);
 
-      if ( is_array($ids) && !empty($ids) )
-      {
-         foreach ( $ids AS $key => $val )
-            array_push($tasks, $key);
+    // Check for files attached to this comment
+    $check_attachments = $db->Query("SELECT  *
+                                       FROM  {attachments}
+                                      WHERE  comment_id = ?",
+                                    array(Req::val('comment_id')));
 
-         $be->AddToNotifyList($user->id, $tasks);
-      } else
-      {
-         $be->AddToNotifyList(Req::val('user_id'), array(Req::val('ids')));
-      }
+    if($db->CountRows($check_attachments) && !$user->perms['delete_attachments']) {
+        $_SESSION['ERROR'] = $modify_text['commentattachperms'];
+        $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
+    }
+    else {
+        $db->Query("DELETE FROM {comments} WHERE comment_id = ?",
+                array(Req::val('comment_id')));
 
-   } else
-   {
-      $be->AddToNotifyList(Req::val('user_id'), array(Req::val('ids')));
-      $redirect_url = $fs->CreateURL('details', Req::val('ids'));
-   }
+        $fs->logEvent(Req::val('task_id'), 6, $comment['user_id'],
+                $comment['comment_text'], $comment['date_added']);
 
-   $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
-   $fs->redirect($redirect_url.'#notify');
+        while ($attachment = $db->FetchRow($check_attachments)) {
+            $db->Query("DELETE from {attachments} WHERE attachment_id = ?",
+                    array($attachment['attachment_id']));
 
-// End of adding a user to the notification list
+            $fs->logEvent($attachment['task_id'], 8, $attachment['orig_name']);
+        }
 
-////////////////////////////////////////////
-// Start of removing a notification entry //
-////////////////////////////////////////////
+        $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
+        $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
+    }
+} // }}}
+// deleting an attachment {{{
+elseif (Req::val('action') == 'deleteattachment' && $user->perms['delete_attachments']) {
+    // if an attachment needs to be deleted do it right now
+    $result = $db->Query("SELECT  * FROM {attachments}
+                           WHERE  attachment_id = ?",
+            array(Req::val('id')));
+    $row = $db->FetchArray($result);
 
-} elseif (Req::val('action') == "remove_notification")
-{
-   if ( Req::val('prev_page') )
-   {
-      $ids = Req::val('ids');
-      $tasks = array();
-      $redirect_url = Req::val('prev_page');
+    @unlink("attachments/" . $row['file_name']);
+    $db->Query("DELETE FROM {attachments} WHERE attachment_id = ?",
+            array(Req::val('id')));
 
-      if (!empty($ids))
-      {
-         foreach ($ids AS $key => $val)
-            array_push($tasks, $key);
+    $fs->logEvent($row['task_id'], 8, $row['orig_name']);
 
-         $be->RemoveFromNotifyList($user->id, $tasks);
-      }
-
-   } else
-   {
-      $be->RemoveFromNotifyList(Req::val('user_id'), array(Req::val('ids')));
-      $redirect_url = $fs->CreateURL('details', Req::val('ids'));
-   }
-
-   $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
-   $fs->redirect($redirect_url.'#notify');
-
-// End of removing a notification entry
-
-////////////////////////////////
-// Start of editing a comment //
-////////////////////////////////
-
-} elseif (Post::val('action') == "editcomment"
-          && $user->perms['edit_comments'])
-{
-   $update = $db->Query("UPDATE {comments}
-                         SET comment_text = ?  WHERE comment_id = ?",
-                         array(Post::val('comment_text'), Post::val('comment_id')));
-
-   $fs->logEvent(Post::val('task_id'), 5, Post::val('comment_text'), Post::val('previous_text'), Post::val('comment_id'));
-
-   $_SESSION['SUCCESS'] = $modify_text['editcommentsaved'];
-   $fs->Redirect($fs->CreateURL('details', Req::val('task_id')));
-
-// End of editing a comment
-
-/////////////////////////////////
-// Start of deleting a comment //
-/////////////////////////////////
-
-} elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments'])
-{
-   $result = $db->Query("SELECT comment_text, user_id, date_added
-                                        FROM {comments}
-                                        WHERE comment_id = ?",
-                                        array(Get::val('comment_id'))
-                           );
-   $comment = $db->FetchRow($result);
-
-   // Check for files attached to this comment
-   $check_attachments = $db->Query("SELECT * FROM {attachments}
-                                    WHERE comment_id = ?",
-                                    array(Req::val('comment_id'))
-                                  );
-
-   if($db->CountRows($check_attachments) && !$user->perms['delete_attachments'])
-   {
-      $_SESSION['ERROR'] = $modify_text['commentattachperms'];
-      $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
-
-   } else
-   {
-      $db->Query("DELETE FROM {comments}
-                  WHERE comment_id = ?",
-                  array(Req::val('comment_id'))
-                );
-
-      $fs->logEvent(Req::val('task_id'), 6, $comment['user_id'], $comment['comment_text'], $comment['date_added']);
-
-      while ($attachment = $db->FetchRow($check_attachments))
-      {
-         // Delete the attachment
-         $db->Query("DELETE from {attachments}
-                     WHERE attachment_id = ?",
-                     array($attachment['attachment_id'])
-                   );
-
-         // Log to task history
-         $fs->logEvent($attachment['task_id'], 8, $attachment['orig_name']);
-      }
-
-      $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
-      $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
-
-   // End of permission check
-   }
-
-// End of deleting a comment
-
-/////////////////////////////////////
-// Start of deleting an attachment //
-/////////////////////////////////////
-
-} elseif (Req::val('action') == 'deleteattachment'
-          && $user->perms['delete_attachments'])
-{
-   // if an attachment needs to be deleted do it right now
-   $result = $db->Query("SELECT * FROM {attachments}
-                         WHERE attachment_id = ?",
-                         array(Req::val('id'))
-                       );
-   $row = $db->FetchArray($result);
-
-   @unlink("attachments/" . $row['file_name']);
-   $db->Query("DELETE FROM {attachments}
-               WHERE attachment_id = ?",
-               array(Req::val('id'))
-             );
-
-  $fs->logEvent($row['task_id'], 8, $row['orig_name']);
-
-  $_SESSION['SUCCESS'] = $modify_text['attachmentdeleted'];
-  $fs->redirect($fs->CreateURL('details', $row['task_id']));
-
-// End of deleting an attachment
-
-////////////////////////////////
-// Start of adding a reminder //
-////////////////////////////////
-
-} elseif (Post::val('action') == "addreminder"
+    $_SESSION['SUCCESS'] = $modify_text['attachmentdeleted'];
+    $fs->redirect($fs->CreateURL('details', $row['task_id']));
+} // }}}
+// adding a reminder {{{
+elseif (Post::val('action') == "addreminder"
           && ($user->perms['manage_project'] || $user->perms['is_admin'])) {
 
-  $now = date('U');
+    $how_often  = Post::val('timeamount1') * Post::val('timetype1');
+    $start_time = (Post::val('timeamount2') * Post::val('timetype2')) + $now;
 
-  $how_often = Post::val('timeamount1') * Post::val('timetype1');
-  //echo "how often = $how_often<br>";
-  //echo "now = $now<br>";
+    $db->Query("INSERT INTO  {reminders}
+                             ( task_id, to_user_id, from_user_id,
+                               start_time, how_often, reminder_message )
+                     VALUES  (?,?,?,?,?,?)",
+                    array(Post::val('task_id'), Post::val('to_user_id'),
+                        $user->id, $start_time, $how_often,
+                        Post::val('reminder_message')));
 
-  $start_time = (Post::val('timeamount2') * Post::val('timetype2')) + $now;
-  //echo "start time = $start_time";
+    $fs->logEvent(Post::val('task_id'), 17, Post::val('to_user_id'));
 
-  $insert = $db->Query("INSERT INTO {reminders} (task_id, to_user_id, from_user_id, start_time, how_often, reminder_message) VALUES(?,?,?,?,?,?)", array(Post::val('task_id'), Post::val('to_user_id'), $user->id, $start_time, $how_often, Post::val('reminder_message')));
-
-  $fs->logEvent(Post::val('task_id'), 17, Post::val('to_user_id'));
-
-  $_SESSION['SUCCESS'] = $modify_text['reminderadded'];
-  $fs->redirect($fs->CreateURL('details', Req::val('task_id')).'#remind');
-
-// End of adding a reminder
-
-//////////////////////////////////
-// Start of removing a reminder //
-//////////////////////////////////
-} elseif (Post::val('action') == "deletereminder"
+    $_SESSION['SUCCESS'] = $modify_text['reminderadded'];
+    $fs->redirect($fs->CreateURL('details', Req::val('task_id')).'#remind');
+} // }}}
+// removing a reminder {{{
+elseif (Post::val('action') == "deletereminder"
           && ($user->perms['manage_project'] || $user->perms['is_admin'])) {
 
-  $result = $db->Query("SELECT to_user_id FROM {reminders} WHERE reminder_id = ?", array(Post::val('reminder_id')));
-  $reminder = $db->FetchRow($result);
-  $db->Query("DELETE FROM {reminders} WHERE reminder_id = ?",
-                    array(Post::val('reminder_id')));
+    $sql = $db->Query("SELECT to_user_id FROM {reminders} WHERE reminder_id = ?",
+            array(Post::val('reminder_id')));
+    $reminder = $db->FetchRow($sql);
+    $db->Query("DELETE FROM {reminders} WHERE reminder_id = ?",
+            array(Post::val('reminder_id')));
 
-  $fs->logEvent(Post::val('task_id'), 18, $reminder['to_user_id']);
+    $fs->logEvent(Post::val('task_id'), 18, $reminder['to_user_id']);
 
-  $_SESSION['SUCCESS'] = $modify_text['reminderdeleted'];
-  $fs->redirect($fs->CreateURL('details', Req::val('task_id')).'#remind');
-
-// End of removing a reminder
-
-/////////////////////////////////////////////////
-// Start of adding a bunch of users to a group //
-/////////////////////////////////////////////////
-} elseif (Post::val('action') == "addtogroup"
+    $_SESSION['SUCCESS'] = $modify_text['reminderdeleted'];
+    $fs->redirect($fs->CreateURL('details', Req::val('task_id')).'#remind');
+} // }}}
+// adding a bunch of users to a group {{{
+elseif (Post::val('action') == "addtogroup"
           && ($user->perms['manage_project'] || $user->perms['is_admin'])) {
 
-  // If no users were selected, throw an error
-   if (!is_array(Post::val('user_list')))
-   {
-      $_SESSION['ERROR'] = $modify_text['nouserselected'];
-      $fs->redirect(Post::val('prev_page'));
+    if (!is_array(Post::val('user_list'))) {
+        $_SESSION['ERROR'] = $modify_text['nouserselected'];
+        $fs->redirect(Post::val('prev_page'));
+    } else {
+        foreach (Post::val('user_list') as $key => $val) {
+            $db->Query("INSERT INTO  {users_in_groups}
+                                     (user_id, group_id)
+                             VALUES  (?, ?)",
+                    array($val, Post::val('add_to_group')));
+        }
 
-   // If users were select, keep going
-   } else {
-
-      // Cycle through the users passed to us
-      //while (list($key, $val) = each(Post::val('user_list'))) {
-      foreach (Post::val('user_list') AS $key => $val)
-      {
-         // Create entries for them that point to the requested group
-         $create = $db->Query("INSERT INTO {users_in_groups}
-                               (user_id, group_id)
-                               VALUES(?, ?)",
-                               array($val, Post::val('add_to_group'))
-                             );
-      }
-
-   $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
-   $fs->redirect(Post::val('prev_page'));
-
-   }
-
-// End of adding a bunch of users to a group
-
-
-///////////////////////////////////////////////
-// Start of change a bunch of users' groups //
-//////////////////////////////////////////////
-} elseif (Post::val('action') == 'movetogroup'
+        $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
+        $fs->redirect(Post::val('prev_page'));
+    }
+} // }}}
+// change a bunch of users' groups {{{
+elseif (Post::val('action') == 'movetogroup'
           && ($user->perms['manage_project'] || $user->perms['is_admin']))
 {
-   // Cycle through the array of user ids
-   foreach (Post::val('users') AS $user_id => $val)
-   {
-      // To be removed from a project entirely
-      if (Post::val('switch_to_group') == '0')
-      {
-         $db->Query("DELETE FROM {users_in_groups}
-                     WHERE user_id = ? AND group_id = ?",
-                     array($user_id, Post::val('old_group'))
-                   );
-
-      // Otherwise moved to another project/global group
-      } else
-      {
-         $db->Query("UPDATE {users_in_groups}
-                     SET group_id = ?
-                     WHERE user_id = ? AND group_id = ?",
+    foreach (Post::val('users') as $user_id => $val) {
+        if (Post::val('switch_to_group') == '0') {
+            $db->Query("DELETE FROM  {users_in_groups}
+                              WHERE  user_id = ? AND group_id = ?",
+                    array($user_id, Post::val('old_group')));
+        } else {
+            $db->Query("UPDATE  {users_in_groups}
+                           SET  group_id = ?
+                         WHERE  user_id = ? AND group_id = ?",
                      array(Post::val('switch_to_group'), $user_id, Post::val('old_group')));
-      }
-   }
+        }
+    }
 
-  $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
-  $fs->redirect(Post::val('prev_page'));
-
-  // End of changing a bunch of users' groups
-
-///////////////////////////////
-// Start of taking ownership //
-///////////////////////////////
-
-} elseif (Req::val('action') == 'takeownership')
-{
-   if ( Req::val('prev_page') )
-   {
+    $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
+    $fs->redirect(Post::val('prev_page'));
+} // }}}
+// taking ownership {{{
+elseif (Req::val('action') == 'takeownership') {
+   if (Req::val('prev_page')) {
       $ids = Req::val('ids');
-      $tasks = array();
+      settype($ids, 'array');
       $redirect_url = Req::val('prev_page');
 
-      if (!empty($ids))
-      {
-         foreach ($ids AS $key => $val)
-            array_push($tasks, $key);
-
-         $be->AssignToMe($user->id, $tasks);
+      if (!empty($ids)) {
+          $be->AssignToMe($user->id, array_keys($ids));
       }
-
-   } else
-   {
-      $be->AssignToMe($user->id, array(Req::val('ids')));
-      $redirect_url = $redirect_url = $fs->CreateURL('details', Req::val('ids'));
+   } else {
+       $be->AssignToMe($user->id, array(Req::val('ids')));
+       $redirect_url = $redirect_url = $fs->CreateURL('details', Req::val('ids'));
    }
 
    $_SESSION['SUCCESS'] = $modify_text['takenownership'];
    $fs->redirect($redirect_url);
+} // }}}
+// requesting task closure {{{
+elseif (Post::val('action') == 'requestclose') {
+    $task_details = $fs->GetTaskDetails(Post::val('task_id'));
+    $fs->AdminRequest(1, $task_details['attached_to_project'], Post::val('task_id'), $user->id, Post::val('reason_given'));
+    $fs->logEvent(Post::val('task_id'), 20, Post::val('reason_given'));
 
-// End of taking ownership
+    // Now, get the project managers' details for this project
+    $sql = $db->Query("SELECT  u.user_id
+                         FROM  {users} u
+                    LEFT JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
+                    LEFT JOIN  {groups} g ON uig.group_id = g.group_id
+                        WHERE  g.belongs_to_project = ? AND g.manage_project = '1'",
+                      array($proj->id));
 
+    $pms = $db->fetchCol($sql);
 
-//////////////////////////////////////
-// Start of requesting task closure //
-//////////////////////////////////////
+    // Call the functions to create the address arrays, and send notifications
+    $to   = $notify->SpecificAddresses($pms);
+    $msg  = $notify->GenerateMsg('12', Post::val('task_id'));
+    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
-} elseif (Post::val('action') == 'requestclose')
-{
-   // Retrieve details on the task we want to close
-   $task_details = $fs->GetTaskDetails(Post::val('task_id'));
+    $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
+    $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
+} // }}}
+// requesting task re-opening {{{
+elseif (Post::val('action') == 'requestreopen') {
+    $fs->AdminRequest(2, $proj->id, Post::val('task_id'), $user->id, Post::val('reason_given'));
+    $fs->logEvent(Post::val('task_id'), 21, Post::val('reason_given'));
+   
+    // Check if the user is on the notification list
+    $sql = $db->Query("SELECT  COUNT(*) 
+                         FROM  {notifications}
+                        WHERE  task_id = ? AND user_id = ?",
+                       array(Post::val('task_id'), $user->id));
+   
+    if ($db->fetchOne($sql)) {
+        $be->AddToNotifyList($user->id, array(Post::val('task_id')));
+        $fs->logEvent(Post::val('task_id'), 9, $user->id);
+    }
 
-   // Log the admin request
-   $fs->AdminRequest(1, $task_details['attached_to_project'], Post::val('task_id'), $user->id, Post::val('reason_given'));
+    // Now, get the project managers' details for this project
+    $sql = $db->Query("SELECT  u.user_id
+                         FROM  {users} u
+                    LEFT JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
+                    LEFT JOIN  {groups} g ON uig.group_id = g.group_id
+                        WHERE  g.belongs_to_project = ? AND g.manage_project = '1'",
+                      array($proj->id));
 
-   // Log this event to the task history
-   $fs->logEvent(Post::val('task_id'), 20, Post::val('reason_given'));
+    $pms = $db->fetchCol($sql);
 
-   // Now, get the project managers' details for this project
-   $get_pms = $db->Query("SELECT u.user_id
-                          FROM {users} u
-                          LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
-                          LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                          WHERE g.belongs_to_project = ?
-                          AND g.manage_project = '1'",
-                          array($proj->id)
-                        );
-
-   $pms = array();
-
-   // Add each PM to the array
-   while ($row = $db->FetchArray($get_pms))
-   {
-      array_push($pms, $row['user_id']);
-   }
-
-   // Call the functions to create the address arrays, and send notifications
-   $to  = $notify->SpecificAddresses($pms);
-   $msg = $notify->GenerateMsg('12', Post::val('task_id'));
-   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-
-   $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
-   $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
-
-
-// End of requesting task closure
-
-/////////////////////////////////////////
-// Start of requesting task re-opening //
-/////////////////////////////////////////
-
-} elseif (Post::val('action') == 'requestreopen')
-{
-   // Log the admin request
-   $fs->AdminRequest(2, $proj->id, Post::val('task_id'), $user->id, Post::val('reason_given'));
-
-   // Log this event to the task history
-   $fs->logEvent(Post::val('task_id'), 21, Post::val('reason_given'));
-
-   // Check if the user is on the notification list
-   $check_notify = $db->Query("SELECT * FROM {notifications}
-                               WHERE task_id = ?
-                               AND user_id = ?",
-                               array(Post::val('task_id'), $user->id)
-                             );
-
-   if (!$db->CountRows($check_notify))
-   {
-      // Add the requestor to the task notification list, so that they know when it has been re-opened
-      $be->AddToNotifyList($user->id, array(Post::val('task_id')));
-
-      $fs->logEvent(Post::val('task_id'), 9, $user->id);
-   }
-
-   // Now, get the project managers details for this project
-   $get_pms = $db->Query("SELECT u.user_id
-                          FROM {users} u
-                          LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
-                          LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                          WHERE g.belongs_to_project = ?
-                          AND g.manage_project = '1'",
-                          array($proj->id)
-                        );
-
-   $pms = array();
-
-   // Add each PM to the array
-   while ($row = $db->FetchArray($get_pms))
-   {
-      array_push($pms, $row['user_id']);
-   }
-
-   // Call the functions to create the address arrays, and send notifications
-   $to  = $notify->SpecificAddresses($pms);
-   $msg = $notify->GenerateMsg('12', Post::val('task_id'));
-   $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-   $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+    // Call the functions to create the address arrays, and send notifications
+    $to   = $notify->SpecificAddresses($pms);
+    $msg  = $notify->GenerateMsg('12', Post::val('task_id'));
+    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
 
-   $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
-   $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
-
-// End of requesting task re-opening
-
-
-///////////////////////////////////
-// Start of denying a PM request //
-///////////////////////////////////
-
-} elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project'])
-{
+    $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
+    $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
+} // }}}
+// denying a PM request {{{
+elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project']) {
    // Get info on the pm request
-   $result = $db->Query("SELECT task_id
-                         FROM {admin_requests}
-                         WHERE request_id = ?",
-                         array(Req::val('req_id'))
-                        );
-   $req_details = $db->FetchArray($result);
+    $result = $db->Query("SELECT  task_id
+                            FROM  {admin_requests}
+                           WHERE  request_id = ?",
+                          array(Req::val('req_id')));
+    $req_details = $db->FetchArray($result);
+   
+    // Mark the PM request as 'resolved'
+    $db->Query("UPDATE  {admin_requests}
+                   SET  resolved_by = ?, time_resolved = ?, deny_reason = ?
+                 WHERE  request_id = ?",
+                array($user->id, date('U'), Req::val('deny_reason'), Req::val('req_id')));
+   
+    $fs->logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
+    $notify->Create('13', $req_details['task_id']);
 
-   // Mark the PM request as 'resolved'
-   $db->Query("UPDATE {admin_requests}
-               SET resolved_by = ?, time_resolved = ?, deny_reason = ?
-               WHERE request_id = ?",
-               array($user->id, date('U'), Req::val('deny_reason'), Req::val('req_id')));
-
-
-   // Log this event to the task's history
-   $fs->logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
-
-   // Send notifications
-   $notify->Create('13', $req_details['task_id']);
-
-   // Redirect
-   $_SESSION['SUCCESS'] = $modify_text['pmreqdenied'];
-   $fs->redirect(Req::val('prev_page'));
-
-// End of denying a PM request
-
-
-//////////////////////////////////
-// Start of adding a dependency //
-//////////////////////////////////
-
-} elseif (Post::val('action') == 'newdep'
+    $_SESSION['SUCCESS'] = $modify_text['pmreqdenied'];
+    $fs->redirect(Req::val('prev_page'));
+} // }}}
+// adding a dependency {{{
+elseif (Post::val('action') == 'newdep'
         && (($user->perms['modify_own_tasks'] && $old_details['assigned_to'] == $user->id)
             || $user->perms['modify_all_tasks'])
         && Post::val('dep_task_id'))
 {
-  // First check that the user hasn't tried to add this twice
-  $check_dep = $db->Query("SELECT * FROM {dependencies}
-                             WHERE task_id = ? AND dep_task_id = ?",
-                             array(Post::val('task_id'), Post::val('dep_task_id')));
+    // First check that the user hasn't tried to add this twice
+    $check_dep = $db->Query("SELECT * FROM {dependencies}
+                               WHERE task_id = ? AND dep_task_id = ?",
+                               array(Post::val('task_id'), Post::val('dep_task_id')));
 
-  // or that they are trying to reverse-depend the same task, creating a mutual-block
-  $check_dep2 = $db->Query("SELECT * FROM {dependencies}
-                             WHERE task_id = ? AND dep_task_id = ?",
-                             array(Post::val('dep_task_id'), Post::val('task_id')));
+    // or that they are trying to reverse-depend the same task, creating a mutual-block
+    $check_dep2 = $db->Query("SELECT * FROM {dependencies}
+                               WHERE task_id = ? AND dep_task_id = ?",
+                               array(Post::val('dep_task_id'), Post::val('task_id')));
 
-  // Check that the dependency actually exists!
-  $check_dep3 = $db->Query("SELECT * FROM {tasks}
-                              WHERE task_id = ?",
-                              array(Post::val('dep_task_id'))
-                            );
+    // Check that the dependency actually exists!
+    $check_dep3 = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?",
+            array(Post::val('dep_task_id')));
 
-   $notify->Create('5', Post::val('task_id'));
+    $notify->Create('5', Post::val('task_id'));
 
-//    $to  = $notify->Address(Post::val('task_id'));
-//    $msg = $notify->Create('5', Post::val('task_id'));
-//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+    if (!$db->CountRows($check_dep)
+            && !$db->CountRows($check_dep2)
+            && $db->CountRows($check_dep3)
+            // Check that the user hasn't tried to add the same task as a dependency
+            && Post::val('task_id') != Post::val('dep_task_id')) {
 
+        // Log this event to the task history, both ways
+        $fs->logEvent(Post::val('task_id'), 22, Post::val('dep_task_id'));
+        $fs->logEvent(Post::val('dep_task_id'), 23, Post::val('task_id'));
 
-   if (!$db->CountRows($check_dep)
-       && !$db->CountRows($check_dep2)
-       && $db->CountRows($check_dep3)
-       // Check that the user hasn't tried to add the same task as a dependency
-       && Post::val('task_id') != Post::val('dep_task_id')) {
+        // Add the dependency to the database
+        $add_dep = $db->Query("INSERT INTO {dependencies}
+                (task_id, dep_task_id)
+                VALUES(?,?)",
+                array(Post::val('task_id'), Post::val('dep_task_id')));
 
-    // Log this event to the task history, both ways
-    $fs->logEvent(Post::val('task_id'), 22, Post::val('dep_task_id'));
-    $fs->logEvent(Post::val('dep_task_id'), 23, Post::val('task_id'));
+        $_SESSION['SUCCESS'] = $modify_text['dependadded'];
+    } else {
+        $_SESSION['ERROR'] = $modify_text['dependaddfailed'];
+    }
 
-    // Add the dependency to the database
-    $add_dep = $db->Query("INSERT INTO {dependencies}
-                             (task_id, dep_task_id)
-                             VALUES(?,?)",
-                             array(Post::val('task_id'), Post::val('dep_task_id')));
-
-
-
-
-    // Redirect
-   $_SESSION['SUCCESS'] = $modify_text['dependadded'];
-   $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
-
-  // If the user tried to add the wrong task as a dependency
-  } else {
-
-    // If the user tried to add the 'wrong' task as a dependency,
-    // show error and redirect
-   $_SESSION['ERROR'] = $modify_text['dependaddfailed'];
-   $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
-
-  };
-
-// End of adding a dependency
-
-
-////////////////////////////////////
-// Start of removing a dependency //
-////////////////////////////////////
-
-} elseif (Get::val('action') == 'removedep'
+    $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
+} // }}}
+// removing a dependency {{{
+elseif (Get::val('action') == 'removedep'
           && (($user->perms['modify_own_tasks'] && $old_details['assigned_to'] == $user->id)
              || $user->perms['modify_all_tasks'])) {
 
-  // We need some info about this dep for the task history
-  $result = $db->Query("SELECT * FROM {dependencies}
-                        WHERE depend_id = ?",
+    // We need some info about this dep for the task history
+    $result = $db->Query("SELECT  * FROM {dependencies}
+                           WHERE  depend_id = ?",
                         array(Get::val('depend_id')));
-  $dep_info = $db->FetchArray($result);
+    $dep_info = $db->FetchArray($result);
 
-   $notify->Create('6', $dep_info['task_id']);
+    $notify->Create('6', $dep_info['task_id']);
 
-//    $to  = $notify->Address($dep_info['task_id']);
-//    $msg = $notify->Create('6', $dep_info['task_id']);
-//    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-//    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+    // Log this event to the task's history
+    $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
+    $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
 
-   // Log this event to the task's history
-   $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
-   $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
+    // Do the removal
+    $remove = $db->Query("DELETE FROM {dependencies} WHERE depend_id = ?",
+            array(Get::val('depend_id')));
 
-   // Do the removal
-   $remove = $db->Query("DELETE FROM {dependencies}
-                         WHERE depend_id = ?",
-                         array(Get::val('depend_id')));
+    $_SESSION['SUCCESS'] = $modify_text['depremoved'];
+    $fs->redirect($fs->CreateURL('details', $dep_info['task_id']));
+} // }}}
+// user requesting a password change {{{
+elseif (Post::val('action') == 'sendmagic') {
 
-   // Generate status message and redirect
-   $_SESSION['SUCCESS'] = $modify_text['depremoved'];
-   $fs->redirect($fs->CreateURL('details', $dep_info['task_id']));
+    // Check that the username exists
+    $sql = $db->Query("SELECT * FROM {users} WHERE user_name = ?",
+            array(Post::val('user_name')));
 
-// End of removing a dependency
+    // If the username doesn't exist, throw an error
+    if (!$db->CountRows($sql)) {
+       $_SESSION['ERROR'] = $modify_text['usernotexist'];
+       $fs->redirect($fs->CreateURL('lostpw', null));
+    } else {
+       $user_details = $db->FetchArray($sql);
+       $magic_url    = md5(microtime());
 
+       // Insert the random "magic url" into the user's profile
+       $update = $db->Query("UPDATE {users}
+                                SET magic_url = ?
+                              WHERE user_id = ?",
+                             array($magic_url, $user_details['user_id']));
 
-//////////////////////////////////////////////////
-// Start of a user requesting a password change //
-//////////////////////////////////////////////////
+       $subject = $modify_text['noticefrom'] . ' ' . $proj->prefs['project_title'];
 
-} elseif (Post::val('action') == 'sendmagic') {
+       $message = "{$modify_text['noticefrom']} {$proj->prefs['project_title']} \n"
+                . "{$modify_text['magicurlmessage']} \n"
+                . "{$conf['general']['baseurl']}index.php?do=lostpw&amp;magic=$magic_url\n";
 
-   // Check that the username exists
-   $check_details = $db->Query("SELECT * FROM {users}
-                                WHERE user_name = ?",
-                                array(Post::val('user_name')));
+       $to   = $notify->SpecificAddresses(array($user_details['user_id']));
+       $mail = $notify->SendEmail($to[0], $subject, $message);
+       $jabb = $notify->StoreJabber($to[1], $subject, $message);
 
-   // If the username doesn't exist, throw an error
-   if (!$db->CountRows($check_details))
-   {
-      $_SESSION['ERROR'] = $modify_text['usernotexist'];
-      $fs->redirect($fs->CreateURL('lostpw', null));
+       $_SESSION['SUCCESS'] = $modify_text['magicurlsent'];
+       $fs->redirect('./');
+    }
+} // }}}
+// Change the user's password {{{
+elseif (Post::val('action') == 'chpass') {
+    // Check that the user submitted both the fields, and they are the same
+    if (Post::val('pass1') && Post::val('pass2') && Post::val('magic_url')
+            && Post::val('pass2') == Post::val('pass2'))
+    {
+        // Get the user's details from the magic url
+        $result = $db->Query("SELECT * FROM {users} WHERE magic_url = ?",
+                array(Post::val('magic_url')));
+        $user_details = $db->FetchArray($result);
+       
+        // Encrypt the new password
+        $new_pass_hash = $fs->cryptPassword(Post::val('pass1'));
+       
+        // Change the password and clear the magic_url field
+        $update = $db->Query("UPDATE  {users} SET user_pass = ?, magic_url = ''
+                               WHERE  magic_url = ?",
+                              array($new_pass_hash, Post::val('magic_url')));
+       
+        $_SESSION['SUCCESS'] = $modify_text['passchanged'];
+    } else {
+        $_SESSION['ERROR'] = $modify_text['erroronform'];
+    }
+    $fs->redirect('./');
+} // }}}
+// making a task private {{{
+elseif (Get::val('action') == 'makeprivate' && $user->perms['manage_project']) {
+    $update = $db->Query("UPDATE  {tasks} SET mark_private = '1'
+                           WHERE  task_id = ?",
+                          array(Get::val('id')));
 
-   // ...otherwise get on with it
-   } else
-   {
-      $user_details = $db->FetchArray($check_details);
+    $fs->logEvent(Get::val('id'), 26);
 
-      // Generate a looonnnnggg random string to send as an URL
-      $magic_url = md5(microtime());
+    $_SESSION['SUCCESS'] = $modify_text['taskmadeprivate'];
+    $fs->redirect($fs->CreateURL('details', Req::val('id')));
+} // }}}
+// making a task public {{{
+elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project']) {
+    $update = $db->Query("UPDATE  {tasks}
+                             SET  mark_private = '0'
+                           WHERE  task_id = ?",
+                         array(Get::val('id')));
 
-      // Insert the random "magic url" into the user's profile
-      $update = $db->Query("UPDATE {users}
-                            SET magic_url = ?
-                            WHERE user_id = ?",
-                            array($magic_url, $user_details['user_id'])
-                          );
+    // Log to task history
+    $fs->logEvent(Get::val('id'), 27);
 
-      // Create notification message
-      $subject = $modify_text['noticefrom'] . ' ' . $proj->prefs['project_title'];
-
-      $message = "{$modify_text['noticefrom']} {$proj->prefs['project_title']} \n
-{$modify_text['magicurlmessage']} \n
-{$conf['general']['baseurl']}index.php?do=lostpw&amp;magic=$magic_url\n";
-      // End of generating a message
-
-      // Send the brief notification message
-
-      $to  = $notify->SpecificAddresses(array($user_details['user_id']));
-      $mail = $notify->SendEmail($to[0], $subject, $message);
-      $jabb = $notify->StoreJabber($to[1], $subject, $message);
-
-      // Let the user know what just happened
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['magicurlsent']}</em></p></div>";
-
-  // End of checking if the username exists
-  };
-
-// End of a user requesting a password change
-
-
-////////////////////////////////
-// Change the user's password //
-////////////////////////////////
-
-} elseif (Post::val('action') == 'chpass')
-{
-   // Check that the user submitted both the fields, and they are the same
-   if (Post::val('pass1') != ''
-     && Post::val('pass2') != ''
-     && Post::val('magic_url') != ''
-     && Post::val('pass2') == Post::val('pass2'))
-   {
-      // Get the user's details from the magic url
-      $result = $db->Query("SELECT * FROM {users}
-                            WHERE magic_url = ?",
-                            array(Post::val('magic_url'))
-                          );
-      $user_details = $db->FetchArray($result);
-
-      // Encrypt the new password
-      $new_pass_hash = $fs->cryptPassword(Post::val('pass1'));
-
-      // Change the password and clear the magic_url field
-      $update = $db->Query("UPDATE {users} SET
-                            user_pass = ?,
-                            magic_url = ''
-                            WHERE magic_url = ?",
-                            array($new_pass_hash, Post::val('magic_url'))
-                          );
-
-      // Let the user know what just happened
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['passchanged']}</em></p>";
-      echo "<p>{$modify_text['loginbelow']}</p></div>";
-
-   // If the fields were submitted incorrectly, show an error
-   } else
-   {
-      echo "<div class=\"redirectmessage\"><p><em>{$modify_text['erroronform']}</em></p>";
-      echo "<p><a href=\"javascript:history.back()\">{$modify_text['goback']}</a></p></div>";
-
-   // End of checking fields were submitted correctly
-   }
-
-// End of changing the user's password
-
-
-////////////////////////////////////
-// Start of making a task private //
-////////////////////////////////////
-
-} elseif (Get::val('action') == 'makeprivate' && $user->perms['manage_project'])
-{
-   $update = $db->Query("UPDATE {tasks}
-                         SET mark_private = '1'
-                         WHERE task_id = ?",
-                         array(Get::val('id'))
-                       );
-
-   // Log to task history
-   $fs->logEvent(Get::val('id'), 26);
-
-   $_SESSION['SUCCESS'] = $modify_text['taskmadeprivate'];
-   $fs->redirect($fs->CreateURL('details', Req::val('id')));
-
-// End of making a task private
-
-
-///////////////////////////////////
-// Start of making a task public //
-///////////////////////////////////
-
-} elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project'])
-{
-   $update = $db->Query("UPDATE {tasks}
-                         SET mark_private = '0'
-                         WHERE task_id = ?",
-                         array(Get::val('id'))
-                       );
-
-   // Log to task history
-   $fs->logEvent(Get::val('id'), 27);
-
-   $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];
-   $fs->redirect($fs->CreateURL('details', Req::val('id')));
-
-// End of making a task public
-
-
-/////////////////////
-// End of actions! //
-/////////////////////
-}
+    $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];
+    $fs->redirect($fs->CreateURL('details', Req::val('id')));
+} // }}}
 
 ?>
