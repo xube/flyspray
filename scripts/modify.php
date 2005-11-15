@@ -31,306 +31,230 @@ $now = date('U');
 $old_details = $fs->GetTaskDetails(Req::val('task_id'));
 
 // Adding a new task  {{{ 
-if (Post::val('action') == 'newtask'
-    && ($user->perms['open_new_tasks'] || $proj->prefs['anon_open'] == '1'))
-{
+if (Post::val('action') == 'newtask' && $user->can_open_task()) {
+    /* 
+     * TODO  : merge code with Backend::newTask
+     * FIXME : try to reset the form to the previous submited data
+     */
 
-    if (Post::val('item_summary') && Post::val('detailed_desc')) {
-        $item_summary  = Post::val('item_summary');
-        $detailed_desc = Post::val('detailed_desc');
+    if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
+        $_SESSION['ERROR'] = $modify_text['summaryanddetails'];
+        $this->redirect($fs->createUrl('newtask', $proj->id));
+    }
 
-        $param_names = array('task_type', 'item_status',
-                'assigned_to', 'product_category', 'product_version',
-                'closedby_version', 'operating_system', 'task_severity',
-                'task_priority');
+    $item_summary  = Post::val('item_summary');
+    $detailed_desc = Post::val('detailed_desc');
 
-        $sql_values = array(Post::val('project_id'), $now, $now, $item_summary,
-                $detailed_desc, intval($user->id), '0');
+    $param_names = array('task_type', 'item_status', 'assigned_to',
+            'product_category', 'product_version', 'closedby_version',
+            'operating_system', 'task_severity', 'task_priority');
 
-        $sql_params = array();
-        foreach ($param_names as $param_name) {
-            if (Post::has($param_name)) {
-                $sql_params[] = $param_name;
-                $sql_values[] = Post::val($param_name);
-            }
+    $sql_values = array(Post::val('project_id'), $item_summary, $detailed_desc,
+            intval($user->id), '0');
+
+    $sql_params = array();
+    foreach ($param_names as $param_name) {
+        if (Post::has($param_name)) {
+            $sql_params[] = $param_name;
+            $sql_values[] = Post::val($param_name);
         }
+    }
 
-        // Process the due_date
-        if ($due_date = Post::val('due_date', 0)) {
-            $due_date = strtotime("$due_date +23 hours 59 minutes 59 seconds");
-        }
+    // Process the due_date
+    if ($due_date = Post::val('due_date', 0)) {
+        $due_date = strtotime("$due_date +23 hours 59 minutes 59 seconds");
         $sql_params[] = 'due_date';
         $sql_values[] = $due_date;
-
-
-        $sql_params = join(', ', $sql_params);
-        $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
-
-        $add_item = $db->Query("INSERT INTO  {tasks}
-                                             ( attached_to_project, date_opened,
-                                               last_edited_time, item_summary, detailed_desc,
-                                               opened_by, percent_complete, $sql_params )
-                                     VALUES  ($sql_placeholder)", $sql_values);
-
-
-        // Now, let's get the task_id back, so that we can send a direct link
-        // URL in the notification message
-        $result = $db->Query("SELECT  task_id, item_summary, product_category
-                                FROM  {tasks}
-                               WHERE  item_summary = ?  AND detailed_desc = ?
-                            ORDER BY  task_id DESC", array($item_summary, $detailed_desc), 1);
-        $task_details = $db->FetchArray($result);
-
-        // Log that the task was opened
-        $fs->logEvent($task_details['task_id'], 1);
-
-        // If the user uploaded one or more files
-        if ($user->perms['create_attachments']) {
-            $files_added = $be->UploadFiles($user->id, $task_details['task_id'], $_FILES);
-        }
-
-        $result = $db->Query("SELECT  *
-                                FROM  {list_category}
-                               WHERE  category_id = ?", array(Post::val('product_category')));
-        $cat_details = $db->FetchArray($result);
-
-        // We need to figure out who is the category owner for this task
-        if (!empty($cat_details['category_owner'])) {
-            $owner = $cat_details['category_owner'];
-        }
-        elseif (!empty($cat_details['parent_id'])) {
-            $result = $db->Query("SELECT  category_owner
-                                    FROM  {list_category}
-                                   WHERE  category_id = ?", array($cat_details['parent_id']));
-            $parent_cat_details = $db->FetchArray($result);
-
-            // If there's a parent category owner, send to them
-            if (!empty($parent_cat_details['category_owner'])) {
-                $owner = $parent_cat_details['category_owner'];
-            }
-        }
-
-        // Otherwise send it to the default category owner
-        if (empty($owner)) {
-            $owner = $proj->prefs['default_cat_owner'];
-        }
-
-        if (!empty($owner)) {
-            // Category owners now get auto-added to the notification list for new tasks
-            $insert = $db->Query("INSERT INTO  {notifications} (task_id, user_id)
-                                       VALUES  (?, ?)", array($task_details['task_id'], $owner));
-
-            $fs->logEvent($task_details['task_id'], 9, $owner);
-
-            // Create the Notification
-            $notify->Create('1', $task_details['task_id']);
-        }
-
-        // If the reporter wanted to be added to the notification list
-        if (Post::val('notifyme') == '1' && $user->id != $owner) {
-            $be->AddToNotifyList($user->id, array($task_details['task_id']));
-        }
-
-        // Status and redirect
-        $_SESSION['SUCCESS'] = $modify_text['newtaskadded'];
-        $fs->redirect($fs->CreateURL('details', $task_details['task_id']));
-
     }
-    else {
-        // If they didn't fill in both the summary and detailed description, show an error
-        echo "<div class=\"redirectmessage\"><p>{$modify_text['summaryanddetails']}</p>";
-        echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
-    };
 
+    $sql_params = join(', ', $sql_params);
+    $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
+
+    $db->Query("INSERT INTO  {tasks}
+                             ( date_opened, last_edited_time,
+                               attached_to_project, item_summary,
+                               detailed_desc, opened_by,
+                               percent_complete, $sql_params )
+                     VALUES  ( NOW(), NOW(), $sql_placeholder)", $sql_values);
+
+    // Now, let's get the task_id back, so that we can send a direct link
+    // URL in the notification message
+    // [MC] : über-ugly ... we need to be better here.
+    $result = $db->Query("SELECT  task_id
+                            FROM  {tasks}
+                           WHERE  item_summary = ?  AND detailed_desc = ?
+                        ORDER BY  task_id DESC",
+                        array($item_summary, $detailed_desc), 1);
+    $task_id = $db->FetchOne($result);
+
+    // Log that the task was opened
+    $fs->logEvent($task_id, 1);
+
+    // If the user uploaded one or more files
+    if ($user->perms['create_attachments']) {
+        $files_added = $be->UploadFiles($user->id, $task_id, $_FILES);
+    }
+
+    $result = $db->Query("SELECT  *
+                            FROM  {list_category}
+                           WHERE  category_id = ?", array(Post::val('product_category')));
+    $cat_details = $db->FetchArray($result);
+
+    // We need to figure out who is the category owner for this task
+    if (!empty($cat_details['category_owner'])) {
+        $owner = $cat_details['category_owner'];
+    }
+    elseif (!empty($cat_details['parent_id'])) {
+        $result = $db->Query("SELECT  category_owner
+                                FROM  {list_category}
+                               WHERE  category_id = ?", array($cat_details['parent_id']));
+        $parent_cat_details = $db->FetchArray($result);
+
+        // If there's a parent category owner, send to them
+        if (!empty($parent_cat_details['category_owner'])) {
+            $owner = $parent_cat_details['category_owner'];
+        }
+    }
+
+    if (empty($owner)) {
+        $owner = $proj->prefs['default_cat_owner'];
+    }
+
+    if ($owner) {
+        $db->Query("INSERT INTO  {notifications} (task_id, user_id)
+                         VALUES  (?, ?)", array($task_id, $owner));
+
+        $fs->logEvent($task_id, 9, $owner);
+
+        // Create the Notification
+        $notify->Create('1', $task_id);
+    }
+
+    // If the reporter wanted to be added to the notification list
+    if (Post::val('notifyme') == '1' && $user->id != $owner) {
+        $be->AddToNotifyList($user->id, array($task_id));
+    }
+
+    // Status and redirect
+    $_SESSION['SUCCESS'] = $modify_text['newtaskadded'];
+    $fs->redirect($fs->CreateURL('details', $task_id));
 
 } // }}}
 // Modifying an existing task {{{
-elseif (Post::val('action') == 'update' && ($user->perms['modify_all_tasks']
-              || ($user->perms['modify_own_tasks'] && $user->id == $old_details['assigned_to'])))
-{
+elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 
-    if (Post::val('item_summary') && Post::val('detailed_desc')) {
+    if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
+        $_SESSION['ERROR'] = $modify_text['summaryanddetails'];
+        $fs->redirect($fs->CreateURL('edittask', $old_details['task_id']));
+    }
 
-        // Check to see if this task has already been modified before we clicked "save"...
-        // If so, we need to confirm that the we really wants to save our changes
-        if (Post::val('edit_start_time') < $old_details['last_edited_time']) {
-            echo $modify_text['alreadyedited'];
-        ?>
-        <br /><br />
-        <span>
-          <form name="form1" action="index.php" method="post">
-            <input type="hidden" name="do" value="modify" />
-            <input type="hidden" name="action" value="update" />
-            <input type="hidden" name="task_id" value="<?php echo Post::val('task_id');?>" />
-            <input type="hidden" name="edit_start_time" value="999999999999" />
-            <input type="hidden" name="attached_to_project" value="<?php echo Post::val('attached_to_project');?>" />
-            <input type="hidden" name="task_type" value="<?php echo Post::val('task_type');?>" />
-            <input type="hidden" name="item_summary" value="<?php echo htmlspecialchars(Post::val('item_summary'),ENT_COMPAT,'utf-8');?>" />
-            <input type="hidden" name="detailed_desc" value="<?php echo htmlspecialchars(Post::val('detailed_desc'),ENT_COMPAT,'utf-8');?>" />
-            <input type="hidden" name="item_status" value="<?php echo Post::val('item_status');?>" />
-            <input type="hidden" name="assigned_to" value="<?php echo Post::val('assigned_to');?>" />
-            <input type="hidden" name="product_category" value="<?php echo Post::val('product_category');?>" />
-            <input type="hidden" name="closedby_version" value="<?php echo Post::val('closedby_version');?>" />
-            <input type="hidden" name="due_date" value="<?php echo Post::val('due_date');?>" />
-            <input type="hidden" name="operating_system" value="<?php echo Post::val('operating_system');?>" />
-            <input type="hidden" name="task_severity" value="<?php echo Post::val('task_severity');?>" />
-            <input type="hidden" name="task_priority" value="<?php echo Post::val('task_priority');?>" />
-            <input type="hidden" name="percent_complete" value="<?php echo Post::val('percent_complete');?>" />
-            <input type="submit" class="adminbutton" value="<?php echo $modify_text['saveanyway']; ?>" />
-          </form>
-        </span>
-        &nbsp;&nbsp;&nbsp;
-        <span>
-          <form action="index.php" method="get">
-            <input type="hidden" name="do" value="details" />
-            <input type="hidden" name="id" value="<?php echo Post::val('task_id');?>" />
-            <input type="submit" class="adminbutton" value="<?php echo $modify_text['cancel'];?>" />
-          </form>
-        </span>
-        <?php
-        } else {
-
-            $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?", array(Post::val('task_id')));
-            $old_details_history = $db->FetchRow($result);
-
-            $item_summary  = Post::val('item_summary');
-            $detailed_desc = Post::val('detailed_desc');
-
-            if ($due_date = Post::val('due_date', 0)) {
-                $due_date = strtotime("{Post::val('due_date')} +23 hours 59 minutes 59 seconds");
-            }
-
-            $add_item = $db->Query("UPDATE  {tasks}
-                                       SET  attached_to_project = ?, task_type = ?, item_summary = ?,
-                                            detailed_desc = ?, item_status = ?, assigned_to = ?,
-                                            product_category = ?, closedby_version = ?, operating_system = ?,
-                                            task_severity = ?, task_priority = ?, last_edited_by = ?,
-                                            last_edited_time = ?, due_date = ?, percent_complete = ?
-                                     WHERE  task_id = ?",
-                            array(Post::val('attached_to_project'), Post::val('task_type'), $item_summary,
-                                $detailed_desc, Post::val('item_status'), Post::val('assigned_to'),
-                                Post::val('product_category'), Post::val('closedby_version', 0), Post::val('operating_system'), 
-                                Post::val('task_severity'), Post::val('task_priority'), intval($user->id),
-                                $now, $due_date, Post::val('percent_complete'), Post::val('task_id'))
-                    );
-
-            // Get the details of the task we just updated
-            // To generate the changed-task message
-            $new_details = $fs->GetTaskDetails(Post::val('task_id'));
-            $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?", array(Post::val('task_id')));
-            $new_details_history = $db->FetchRow($result);
-
-            // Now we compare old and new, mark the changed fields
-            $field = array(
-                    "{$modify_text['project']}"          =>  'project_title',
-                    "{$modify_text['summary']}"          =>  'item_summary',
-                    "{$modify_text['tasktype']}"         =>  'tasktype_name',
-                    "{$modify_text['category']}"         =>  'category_name',
-                    "{$modify_text['status']}"           =>  'status_name',
-                    "{$modify_text['operatingsystem']}"  =>  'os_name',
-                    "{$modify_text['severity']}"         =>  'severity_name',
-                    "{$modify_text['priority']}"         =>  'priority_name',
-                    "{$modify_text['reportedversion']}"  =>  'reported_version_name',
-                    "{$modify_text['dueinversion']}"     =>  'due_in_version_name',
-                    "{$modify_text['percentcomplete']}"  =>  'percent_complete',
-                    "{$modify_text['details']}"          =>  'detailed_desc',
-                    "{$modify_text['duedate']}"          =>  'due_date',
-                    "assigned_to"                        =>  'assigned_to',
-                );
-
-            foreach ($field as $key => $val) {
-                if ($old_details[$val] != $new_details[$val]) {
-                    $send_me = 'YES';
-                }
-            }
-
-            foreach ($old_details_history as $key => $val) {
-                if ($key != 'last_edited_time' && $key != 'last_edited_by' && $key != 'assigned_to'
-                        && !is_numeric($key) && $old_details_history[$key] != $new_details_history[$key])
-                {
-                    // Log the changed fields in the task history
-                    $fs->logEvent(Post::val('task_id'), 0, $new_details_history[$key], $old_details_history[$key], $key);
-                }
-            }
-
-            if ($send_me == 'YES') {
-                $notify->Create('2', $new_details['task_id']);
-            }
-
-            if (Post::val('old_assigned') != Post::val('assigned_to')) {
-                // Log to task history
-                $fs->logEvent(Post::val('task_id'), 14, Post::val('assigned_to'), Post::val('old_assigned'));
-
-                // Notify the new assignee what happened
-                if ($new_details['assigned_to'] != $user->id) {
-                    $to   = $notify->SpecificAddresses(array(Post::val('assigned_to')));
-                    $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
-                    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-                    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-                }
-            }
-
-            $_SESSION['SUCCESS'] = $modify_text['taskupdated'];
-            $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
+    if (Post::val('edit_start_time') < $old_details['last_edited_time']) {
+        // if this task has already been modified before we clicked "save"...
+        // we need to confirm that the we really wants to save our changes
+        $page->uses('modify_text');
+        $page->display('details.edit.conflict.tpl');
+    }
+    else {
+        if ($due_date = Post::val('due_date', 0)) {
+            $due_date = strtotime(Post::val('due_date')."+23 hours 59 minutes 59 seconds");
         }
-    } else {
-        // If they didn't fill in both the summary and detailed description, show an error
-        echo "<div class=\"redirectmessage\"><p><em>{$modify_text['summaryanddetails']}</em></p>";
-        echo "<p><a href=\"javascript:history.back();\">{$modify_text['goback']}</a></p></div>";
+
+        $db->Query("UPDATE  {tasks}
+                       SET  attached_to_project = ?, task_type = ?, item_summary = ?,
+                            detailed_desc = ?, item_status = ?, assigned_to = ?,
+                            product_category = ?, closedby_version = ?, operating_system = ?,
+                            task_severity = ?, task_priority = ?, last_edited_by = ?,
+                            last_edited_time = NOW(), due_date = ?, percent_complete = ?
+                     WHERE  task_id = ?",
+                array(Post::val('attached_to_project'), Post::val('task_type'),
+                    Post::val('item_summary'), Post::val('detailed_desc'),
+                    Post::val('item_status'), Post::val('assigned_to'),
+                    Post::val('product_category'), Post::val('closedby_version', 0),
+                    Post::val('operating_system'), Post::val('task_severity'),
+                    Post::val('task_priority'), intval($user->id), $due_date,
+                    Post::val('percent_complete'), Post::val('task_id')));
+
+        // Get the details of the task we just updated
+        // To generate the changed-task message
+        $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?",
+                array(Post::val('task_id')));
+        $new_details = $db->FetchRow($result);
+
+        $do_send = false;
+        foreach ($new_details as $key => $val) {
+            if (strstr($key, 'last_edited_') === 0 || $key == 'assigned_to'
+                    || is_numeric($key))
+            {
+                continue;
+            }
+            
+            if ($val != $old_details[$key]) {
+                // Log the changed fields in the task history
+                $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key);
+                $do_send = true;
+            }
+        }
+
+        if ($do_send) {
+            $notify->Create('2', $new_details['task_id']);
+        }
+
+        if (Post::val('old_assigned') != Post::val('assigned_to')) {
+            // Log to task history
+            $fs->logEvent(Post::val('task_id'), 14, Post::val('assigned_to'),
+                    Post::val('old_assigned'));
+
+            // Notify the new assignee what happened
+            if ($new_details['assigned_to'] != $user->id) {
+                $to   = $notify->SpecificAddresses(array(Post::val('assigned_to')));
+                $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
+                $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+                $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+            }
+        }
+
+        $_SESSION['SUCCESS'] = $modify_text['taskupdated'];
+        $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
     }
 } // }}}
 // closing a task {{{
-elseif (Post::val('action') == 'close'
-        && ( $user->perms['close_own_tasks'] && $old_details['assigned_to'] == $user->id
-                || $user->perms['close_other_tasks'] ) )
-{
+elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
 
-    if (Post::val('resolution_reason')) {
-        $db->Query("UPDATE  {tasks}
-                SET  date_closed = ?, closed_by = ?, closure_comment = ?,
-                is_closed = '1', resolution_reason = ?
-                WHERE  task_id = ?",
-                array($now, intval($user->id), Post::val('closure_comment', 0),
-                    Post::val('resolution_reason'),
-                    Post::val('task_id')));
-
-        if (Post::val('mark100') == '1') {
-            $db->Query("UPDATE {tasks} SET percent_complete = '100' WHERE task_id = ?",
-                    array(Post::val('task_id')));
-
-            $fs->logEvent(Post::val('task_id'), '0', '100', $old_details['percent_complete'], 'percent_complete');
-        }
-
-        // Get the resolution name for the notifications
-        $result = $db->Query("SELECT resolution_name FROM {list_resolution} WHERE resolution_id = ?", array(Post::val('resolution_reason')));
-        $get_res = $db->FetchArray($result);
-
-        // Get the item summary for the notifications
-        $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array(Post::val('task_id')));
-        list($item_summary) = $db->FetchArray($result);
-
-        // Create notification
-        $notify->Create('3', Post::val('task_id'));
-
-        // Log this to the task's history
-        $fs->logEvent(Post::val('task_id'), 2, Post::val('resolution_reason'), Post::val('closure_comment'));
-
-        // If there's an admin request related to this, close it
-        if ($fs->AdminRequestCheck(1, Post::val('task_id')) == '1') {
-            $db->Query("UPDATE  {admin_requests}
-                    SET  resolved_by = ?, time_resolved = ?
-                    WHERE  task_id = ? AND request_type = ?",
-                    array($user->id, date('U'), Post::val('task_id'), 1));
-        }
-
-        $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
-        $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
-
-    } else {
-        // If the user didn't select a closure reason
+    if (!Post::val('resolution_reason')) {
         $_SESSION['ERROR'] = $modify_text['noclosereason'];
         $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
     }
+
+    $db->Query("UPDATE  {tasks}
+                   SET  date_closed = ?, closed_by = ?, closure_comment = ?,
+                        is_closed = '1', resolution_reason = ?
+                 WHERE  task_id = ?",
+            array($now, intval($user->id), Post::val('closure_comment', 0),
+                Post::val('resolution_reason'), Post::val('task_id')));
+
+    if (Post::val('mark100')) {
+        $db->Query("UPDATE {tasks} SET percent_complete = '100' WHERE task_id = ?",
+                array(Post::val('task_id')));
+
+        $fs->logEvent(Post::val('task_id'), '0', '100',
+                $old_details['percent_complete'], 'percent_complete');
+    }
+
+    $notify->Create('3', Post::val('task_id'));
+    $fs->logEvent(Post::val('task_id'), 2, Post::val('resolution_reason'),
+            Post::val('closure_comment'));
+
+    if ($fs->AdminRequestCheck(1, Post::val('task_id'))) {
+        // If there's an admin request related to this, close it
+        $db->Query("UPDATE  {admin_requests}
+                       SET  resolved_by = ?, time_resolved = NOW()
+                     WHERE  task_id = ? AND request_type = ?",
+                array($user->id, Post::val('task_id'), 1));
+    }
+
+    $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
+    $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
+
 } // }}}
 // re-opening an task {{{
 elseif ( Get::val('action') == 'reopen'
