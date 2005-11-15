@@ -61,6 +61,9 @@ class Flyspray
     function Redirect($url)
     {
         @ob_clean();
+        if (count($_SESSION)) {
+            session_write_close();
+        }
         header('Location: ' . $url);
         header('Refresh: 0; URL=' . $url);
 ?>
