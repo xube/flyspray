@@ -1,7 +1,7 @@
 <div id="menu">
 
 <ul id="menu-list">
-  <li onmouseover='perms.show()' onmouseout='perms.hover()'>
+  <li onmouseover='perms.show()' onmouseout='perms.do_later("hide")'>
 	<a href="{$fs->CreateURL('myprofile', null)}" title="{$language['editmydetails']}">
 	  <em>{$user->infos['real_name']} ({$user->infos['user_name']})</em>
 	</a>

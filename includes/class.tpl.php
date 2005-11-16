@@ -317,7 +317,7 @@ function tpl_draw_perms($perms)
             '<td style="color: green;">Yes</td>');
 
     // FIXME: html belongs in a template, not in the template class
-    $html = '<table border="1" onmouseover="perms.hover()">';
+    $html = '<table border="1" onmouseover="perms.show()" onmouseout="perms.hide()">';
     $html .= '<thead><tr><th colspan="2">'.$language['permissionsforproject'].$proj->prefs['project_title'].'</th></tr></thead><tbody>';
 
     foreach ($perms as $key => $val) {
