@@ -209,11 +209,11 @@ class Flyspray
                     $content .= '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
                 }
             }
-            if(!$content) {
-				echo '<option>---</option>';
-			} else {
-				echo $content;
-			}
+            if (!$content) {
+                echo '<option>---</option>';
+            } else {
+                echo $content;
+            }
             echo "</optgroup>\n";
         }
 
@@ -242,11 +242,11 @@ class Flyspray
                     $content .= '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
                 }
             }
-            if(!$content) {
-				echo '<option>---</option>';
-			} else {
-				echo $content;
-			}
+            if (!$content) {
+                echo '<option>---</option>';
+            } else {
+                echo $content;
+            }
             echo "</optgroup>\n";
         }
     }

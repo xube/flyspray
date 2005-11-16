@@ -98,22 +98,20 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array())
     $fs->get_language_pack('status');
     global $modify_text, $status_list;
 
-    if (!is_array($task))
-    {
-		$task = $fs->GetTaskDetails($task);
-	}
-	
-	if($strict && !$user->can_view_task($task))
-	{
-		return '';
-	}
+    if (!is_array($task)) {
+        $task = $fs->GetTaskDetails($task);
+    }
 
-    if ($task['is_closed'] == '1') {
-		if (!isset($task['resolution_name'])) {
-			$result = $db->Query("SELECT resolution_name FROM {list_resolution} WHERE resolution_id = ?", array($task['resolution_reason']));
-			$status = $db->FetchOne($result);
-		} else {
-			$status = $task['resolution_name'];
+    if($strict && !$user->can_view_task($task)) {
+        return '';
+    }
+
+    if ($task['is_closed']) {
+        if (!isset($task['resolution_name'])) {
+            $result = $db->Query("SELECT resolution_name FROM {list_resolution} WHERE resolution_id = ?", array($task['resolution_reason']));
+            $status = $db->FetchOne($result);
+        } else {
+            $status = $task['resolution_name'];
         }
         $attrs['class'] = 'closedtasklink';
     } else {
@@ -121,17 +119,16 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array())
     }
     
     if ($user->can_view_task($task)) {
-		$summary = htmlspecialchars(substr($task['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
-	} else {
-		$summary = $modify_text['taskmadeprivate'];
-	}
-	
-	$title = $status . ': '.$summary;
-	
-	if ($text ===  null)
-	{
-		$text = 'FS#'.$task['task_id'].' - '.$summary;
-	}
+        $summary = htmlspecialchars(substr($task['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
+    } else {
+        $summary = $modify_text['taskmadeprivate'];
+    }
+
+    $title = $status . ': '.$summary;
+
+    if (is_null($text)) {
+        $text = 'FS#'.$task['task_id'].' - '.$summary;
+    }
 	
     $url = htmlspecialchars($fs->CreateURL('details', $task['task_id']));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
@@ -209,10 +206,9 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         }
         $html .= join_attrs($attr).'>'.$label.'</option>';
     }
-    if(!$html)
-    {
-		$html .= '<option>---</option>';
-	}
+    if (!$html) {
+        $html .= '<option>---</option>';
+    }
 
     return $html;
 }
