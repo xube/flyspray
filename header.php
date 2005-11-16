@@ -22,8 +22,8 @@ require_once "$basedir/includes/class.gpc.php";
 
 require_once "$basedir/includes/db.inc.php";
 require_once "$basedir/includes/functions.inc.php";
-require_once "$basedir/includes/backend.inc.php";
 
+require_once "$basedir/includes/class.backend.php";
 require_once "$basedir/includes/class.project.php";
 require_once "$basedir/includes/class.user.php";
 

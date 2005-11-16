@@ -18,12 +18,6 @@ if ($lt = Post::val('list_type')) {
     $list_id = addslashes($lt)."_id";
 }
 
-function make_seed()
-{
-    list($usec, $sec) = explode(' ', microtime());
-    return (float) $sec + ((float) $usec * 100000);
-}
-
 function Post_to0($key) { return Post::val($key, 0); }
 
 $old_details = $fs->GetTaskDetails(Req::val('task_id'));
@@ -88,10 +82,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     // Log that the task was opened
     $fs->logEvent($task_id, 1);
 
-    // If the user uploaded one or more files
-    if ($user->perms['create_attachments']) {
-        $files_added = $be->UploadFiles($user->id, $task_id, $_FILES);
-    }
+    $be->UploadFiles($user, $task_id);
 
     $result = $db->Query("SELECT  *
                             FROM  {list_category}
@@ -305,14 +296,7 @@ elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments']) {
         $be->AddToNotifyList($user->id, Post::val('task_id'));
     }
 
-    if ($user->perms['create_attachments']) {
-        // If the user uploaded one or more files
-        $files_added = $be->UploadFiles($user->id, $old_details['task_id'],
-                $_FILES, $cid);
-    }
-
-    // Send the notification
-    if ($files_added) {
+    if ($be->UploadFiles($user, $old_details['task_id'], $cid)) {
         $notify->Create('7', Post::val('task_id'), 'files');
     } else {
         $notify->Create('7', Post::val('task_id'));
@@ -360,7 +344,7 @@ elseif (Post::val('action') == 'sendcode') {
     $remove = $db->Query("DELETE FROM {registrations} WHERE reg_time < ?", array($yesterday));
 
     // Generate a random bunch of numbers for the confirmation code
-    mt_srand(make_seed());
+    mt_srand($fs->make_seed());
     $randval = mt_rand();
 
     // Convert those numbers to a seemingly random string using crypt
@@ -666,7 +650,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
 // uploading an attachment {{{
 elseif (Post::val('action') == "addattachment" && $user->perms['create_attachments'])
 {
-    mt_srand(make_seed());
+    mt_srand($fs->make_seed());
     $randval = mt_rand();
     $file_name = Post::val('task_id')."_$randval";
 

@@ -59,9 +59,9 @@ class User
 
         if ($this->isAnon()) {
             foreach ($fields as $key) {
-                $this->perms[$key] = false;
+                $this->perms[$key] = 0;
             }
-            $this->perms['global_view'] = false;
+            $this->perms['global_view'] = 0;
         } else {
             $max = array_map(create_function('$x', 'return "MAX($x) AS $x";'),
                     $fields);

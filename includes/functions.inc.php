@@ -623,6 +623,15 @@ class Flyspray
 
         return $output;
     }
+
+    /* This function came from the php function page for mt_srand()
+       seed with microseconds to create a random filename
+     */
+    function make_seed()
+    {
+        list($usec, $sec) = explode(' ', microtime());
+        return (float) $sec + ((float) $usec * 100000);
+    }
 }
 
 ?>
