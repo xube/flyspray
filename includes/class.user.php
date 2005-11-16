@@ -168,6 +168,12 @@ class User
             || $this->perms['close_other_tasks'];
     }
 
+    function can_self_register()
+    {
+        global $fs;
+        return $this->isAnon() && !$fs->prefs['spam_proof'] && $fs->prefs['anon_reg'];
+    }
+
     function can_register()
     {
         global $fs;
