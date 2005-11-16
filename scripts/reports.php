@@ -415,7 +415,8 @@ function events_report()
       elseif($search):
       ?>
       <div id="tasklist">
-      <table>
+      <table id="tasklist_table">
+       <thead>
         <tr>
           <th class="taskid"><a href="?do=history&amp;order=id&amp;sort=<?php echo (Req::val('order') == 'id' && $sort == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $index_text['id'];?></a></th>
           <th><?php echo $details_text['summary'];?></th>
@@ -423,6 +424,7 @@ function events_report()
           <th><a href="?do=history&amp;order=user&amp;sort=<?php echo (Req::val('order') == 'user' && $sort == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $details_text['user'];?></a></th>
           <th><a href="?do=history&amp;order=type&amp;sort=<?php echo (Req::val('order') == 'type' && $sort == 'desc' ? 'asc' : 'desc') . $get;?>"><?php echo $details_text['event'];?></a></th>
         </tr>
+       </thead>
         <?php while ($history = $db->FetchRow($query_history)): ?>
         <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('<?php echo $fs->CreateURL('details', $history['task_id']);?>')">
           <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . "\">FS#{$history['task_id']}</a></td>";?>

@@ -1,10 +1,13 @@
 <div id="menu">
-  
+
 <ul id="menu-list">
-  <li>
+  <li onmouseover='perms.show()' onmouseout='perms.hover()'>
 	<a href="{$fs->CreateURL('myprofile', null)}" title="{$language['editmydetails']}">
 	  <em>{$user->infos['real_name']} ({$user->infos['user_name']})</em>
 	</a>
+	<div id="permissions">
+	  {!tpl_draw_perms($user->perms)}
+	</div>
   </li>
 <?php
 if ($user->perms['open_new_tasks']): ?>

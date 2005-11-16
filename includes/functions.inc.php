@@ -201,13 +201,19 @@ class Flyspray
                                     ORDER BY  u.real_name ASC", array($group_details['group_id']));
 
             echo '<optgroup label="' . $group_details['group_name'] . "\">\n";
+            $content = '';
             while ($row = $db->FetchArray($user_query)) {
                 if ($current == $row['user_id']) {
-                    echo '<option value="' . $row['user_id'] . '" selected="selected">' . $row['real_name'] . "</option>\n";
+                    $content .= '<option value="' . $row['user_id'] . '" selected="selected">' . $row['real_name'] . "</option>\n";
                 } else {
-                    echo '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
+                    $content .= '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
                 }
             }
+            if(!$content) {
+				echo '<option>---</option>';
+			} else {
+				echo $content;
+			}
             echo "</optgroup>\n";
         }
 
@@ -228,13 +234,19 @@ class Flyspray
                                        WHERE  group_id = ?", array($group_details['group_id']));
 
             echo "<optgroup label=\"{$group_details['group_name']}\">\n";
+            $content = '';
             while ($row = $db->FetchArray($user_query)) {
                 if ($current == $row['user_id']) {
-                    echo '<option value="' . $row['user_id'] . '" selected="selected">' . $row['real_name'] . "</option>\n";
+                    $content .= '<option value="' . $row['user_id'] . '" selected="selected">' . $row['real_name'] . "</option>\n";
                 } else {
-                    echo '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
+                    $content .= '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
                 }
             }
+            if(!$content) {
+				echo '<option>---</option>';
+			} else {
+				echo $content;
+			}
             echo "</optgroup>\n";
         }
     }

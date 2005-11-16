@@ -9,14 +9,14 @@ h1 {
 div#menu,div#loginbox,
 div#projectselector,div#showtask,
 div#search,div#comments a img,
-input.ticktask,div#permissions,
+input,div#permissions,
 select,div#permslink,div#massopsactions,
 td#taskrange a,span#navigation,
 div#deps form,div#actionbuttons,
 div#comments form,td#numbers a,
 td#numbers strong,ul#submenu,
 .DoNotPrint,div#events form,
-.ttcolumn {
+#anonopen, .ttcolumn, .attachments {
 	display:none !important;
 }
 
@@ -32,16 +32,6 @@ a {
 
 p.comment a:after {
 	content:" (" attr(href) ") ";
-}
-
-table#tasklist {
-	width:100%;
-	border-collapse:collapse;
-}
-
-table#tasklist th {
-	border:solid 1px #000;
-	padding:0.1em 0.2em;
 }
 
 table#tasklist_table thead th {
@@ -102,7 +92,7 @@ table#pagenumbers,div#taskfields1 table,div#taskfields2 table {
 	width:100%;
 }
 
-table#tasklist td,table#tasklist_table td {
+table#tasklist_table td {
 	border:dotted 1px gray;
 	padding:0.1em 0.2em;
 }

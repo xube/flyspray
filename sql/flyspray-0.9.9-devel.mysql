@@ -152,3 +152,8 @@ ALTER TABLE `flyspray_projects` DROP `inline_images`
 -- FS#610
 
 ALTER TABLE `flyspray_projects` DROP `show_logo` 
+
+-- Florian Schmitz, 13 November 2005
+
+ALTER TABLE `flyspray_users` CHANGE `user_name` `user_name` VARCHAR( 32 ) NOT NULL
+ALTER TABLE `flyspray_registrations` CHANGE `user_name` `user_name` VARCHAR( 32 ) NOT NULL 

@@ -257,6 +257,7 @@ table.userlist td,table.userlist th {
 div#showtask {
 	text-align:right;
 	float:right;
+	margin-top:-1em;
 }
 
 /* The paragraph containing the search form */
@@ -568,7 +569,7 @@ table.history td {
 }
 
 div#intromessage {
-	margin:0 1px 1em 1px;
+	margin:1.5em 1px 1em 1px;
 	clear:both;
 }
 
@@ -826,29 +827,33 @@ div.tab {
 	height:14em;
 }
 
+div#permissions {
+	visibility:hidden;
+	position:absolute;
+	top:25px !important;
+	top:60px;
+	left:0;
+	margin:0;
+	z-index:5;
+	padding:5px;
+}
+
 div#permissions table {
-	border-spacing:0;
-	margin:0.5em;
+	color:#000;
+	background:#fff;
+	border:1px dotted #000;
+}
+
+div#permissions table td,div#permissions table th {
 	border:0;
+	text-align:left;
+	font-weight:400;
 }
 
 div#permissions table thead th {
-	border:0;
+	font-weight:700;
 }
 
-div#permissions table tbody th {
-	font-weight:normal;
-	text-align:left;
-	border:0;
-	border-bottom:1px dotted #000;
-}
-
-div#permissions table td {
-	padding:0.1em 0.4em;
-	border:0;
-	border-bottom:1px dotted #000;
-	border-left:1px dotted #000;
-}
 div#fileupload {
 	margin:20px 0;
 }
@@ -973,7 +978,7 @@ div#tasklist table td.taskid,div#tasklist table th.taskid,table.history td.taski
 	padding:2px 1ex;
 }
 
-p#footer a:link,p#footer a:visited,p#footer a:hover,div#permslink a {
+p#footer a:link,p#footer a:visited,p#footer a:hover {
 	color:#fff;
 	background-color:transparent;
 }

@@ -91,23 +91,53 @@ class FSTpl extends Tpl
 
 // {{{ costful templating functions, TODO: optimize them
 
-function tpl_tasklink($text, $id, $attr = null)
+function tpl_tasklink($task, $text = null, $strict = false, $attrs = array())
 {
-    global $fs, $details_text;
+    global $fs, $details_text, $user, $db;
+    $fs->get_language_pack('modify');
+    $fs->get_language_pack('status');
+    global $modify_text, $status_list;
 
-    $details = $fs->GetTaskDetails($id);
+    if (!is_array($task))
+    {
+		$task = $fs->GetTaskDetails($task);
+	}
+	
+	if($strict && !$user->can_view_task($task))
+	{
+		return '';
+	}
 
-    if ($details['is_closed'] == '1') {
-        $status = $details['resolution_name'];
+    if ($task['is_closed'] == '1') {
+		if (!isset($task['resolution_name'])) {
+			$result = $db->Query("SELECT resolution_name FROM {list_resolution} WHERE resolution_id = ?", array($task['resolution_reason']));
+			$status = $db->FetchOne($result);
+		} else {
+			$status = $task['resolution_name'];
+        }
+        $attrs['class'] = 'closedtasklink';
     } else {
-        $status = $details['status_name'];
+        $status = $status_list[$task['item_status']];
     }
-    $title = $status . ': '
-           .  htmlspecialchars(substr($details['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
+    
+    if ($user->can_view_task($task)) {
+		$summary = htmlspecialchars(substr($task['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
+	} else {
+		$summary = $modify_text['taskmadeprivate'];
+	}
+	
+	$title = $status . ': '.$summary;
+	
+	if ($text ===  null)
+	{
+		$text = 'FS#'.$task['task_id'].' - '.$summary;
+	}
+	
+    $url = htmlspecialchars($fs->CreateURL('details', $task['task_id']));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
-            $fs->CreateURL('details', $id), $title, join_attrs($attr), $text);
+            $url, $title, join_attrs($attrs), $text);
 
-    if ($details['is_closed']) {
+    if ($task['is_closed']) {
         $link = "<del>&#160;".$link."&#160;</del>";
     }
     return $link;
@@ -125,7 +155,7 @@ function tpl_userlink($uid)
                 array($uid));
         if ($db->countRows($sql)) {
             list($uname, $rname) = $db->fetchRow($sql);
-            $cache[$uid] = '<a href="'.$fs->createUrl('user', $uid).'">'
+            $cache[$uid] = '<a href="'.htmlspecialchars($fs->createUrl('user', $uid)).'">'
                 .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
                 .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
         } else {
@@ -138,7 +168,7 @@ function tpl_userlink($uid)
 
 function tpl_fast_tasklink($arr)
 {
-    return tpl_tasklink($arr[0], $arr[1]);
+    return tpl_tasklink($arr[1], $arr[0]);
 }
 
 // }}}
@@ -179,6 +209,10 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         }
         $html .= join_attrs($attr).'>'.$label.'</option>';
     }
+    if(!$html)
+    {
+		$html .= '<option>---</option>';
+	}
 
     return $html;
 }
@@ -287,7 +321,7 @@ function tpl_draw_perms($perms)
             '<td style="color: green;">Yes</td>');
 
     // FIXME: html belongs in a template, not in the template class
-    $html = '<table border="1">';
+    $html = '<table border="1" onmouseover="perms.hover()">';
     $html .= '<thead><tr><th colspan="2">'.$language['permissionsforproject'].$proj->prefs['project_title'].'</th></tr></thead><tbody>';
 
     foreach ($perms as $key => $val) {

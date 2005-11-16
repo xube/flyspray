@@ -22,9 +22,10 @@ $fs->get_language_pack('index');
 $fs->get_language_pack('status');
 $fs->get_language_pack('severity');
 $fs->get_language_pack('priority');
+$fs->get_language_pack('modify');
 
 $page->uses('status_list', 'priority_list', 'severity_list', 'task_details',
-        'details_text', 'newtask_text');
+        'details_text', 'newtask_text','modify_text');
 
 if (Get::val('edit') && $user->can_edit_task($task_details)) {
     $page->display('details.edit.tpl');
@@ -86,7 +87,10 @@ else {
     $sql = $db->Query("SELECT  *
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON r.related_task = t.task_id
-                        WHERE  r.this_task = ?", array($task_id));
+                        WHERE  r.this_task = ?
+                               AND t.mark_private = 0
+                                   OR {$user->perms['manage_project']} = 1
+                                   OR t.assigned_to = {$user->id}", array($task_id));
     $page->assign('related', $db->fetchAllArray($sql));
 
     $sql = $db->Query("SELECT  *
@@ -132,7 +136,7 @@ else {
         $page->assign('details', $details);
 
         $sql = $db->Query("SELECT  *
-                             FROM  {history}
+                             FROM  {history} h
                             WHERE  task_id = ? {$details}
                          ORDER BY  event_date ASC, event_type ASC", array($task_id));
         $page->assign('histories', $db->fetchAllArray($sql));

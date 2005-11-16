@@ -29,5 +29,8 @@ $register_text = array (
 // Added in version 0.9.7
 'badmagic'              =>      'That is not a valid magic key! Are you sure that you got that from your notification message?',
 
+// Added in version 0.9.9
+'validusername' 		=>		'(only alphanumeric chars and - _ . are allowed)',
+
 );
 ?>

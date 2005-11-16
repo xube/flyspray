@@ -177,13 +177,11 @@
         } elseif ($history['event_type'] == '10') {  //Notification deleted
            echo "{$details_text['notificationdeleted']}: " . tpl_userlink($new_value);
         } elseif ($history['event_type'] == '11') {  //Related task added
-            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($new_value));
-            $related = $db->fetchOne($result);
-            echo "{$details_text['relatedadded']}: <a href=\"" . $fs->CreateURL('details', $new_value) . "\">FS#{$new_value} &mdash; {$related}</a>";
+            echo "{$details_text['relatedadded']}: ".tpl_tasklink($new_value);
         } elseif ($history['event_type'] == '12') {  //Related task deleted
             $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($new_value));
             $related = $db->fetchOne($result);
-            echo "{$details_text['relateddeleted']}: <a href=\"" . $fs->CreateURL('details', $new_value) . "\">FS#{$new_value} &mdash; {$related}</a>";
+            echo "{$details_text['relateddeleted']}: ".tpl_tasklink($new_value);;
         } elseif ($history['event_type'] == '13') {  //Task reopened
             echo $details_text['taskreopened'];
         } elseif ($history['event_type'] == '14') {  //Task assigned
@@ -195,13 +193,9 @@
                 echo "{$details_text['taskreassigned']} " . tpl_userlink($new_value);
             }
         } elseif ($history['event_type'] == '15') { //Task added to related list of another task
-            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($new_value));
-            $related = $db->fetchOne($result);
-            echo "{$details_text['addedasrelated']} <a href=\"" . $fs->CreateURL('details', $new_value) . "\">FS#{$new_value} &mdash; {$related}</a>";
+            echo "{$details_text['addedasrelated']} ".tpl_tasklink($new_value);
         } elseif ($history['event_type'] == '16') { //Task deleted from related list of another task
-            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($new_value));
-            $related = $db->fetchOne($result);
-            echo "{$details_text['deletedasrelated']} <a href=\"" . $fs->CreateURL('details', $new_value) . "\">FS#{$new_value} &mdash; {$related}</a>";
+            echo "{$details_text['deletedasrelated']} ".tpl_tasklink($new_value);
         } elseif ($history['event_type'] == '17') { //Reminder added
             echo "{$details_text['reminderadded']}: " . tpl_userlink($new_value);
         } elseif ($history['event_type'] == '18') { //Reminder deleted
@@ -213,21 +207,13 @@
         } elseif ($history['event_type'] == '21') { //User requested task
             echo $details_text['reopenrequestmade'] . ' - ' . $new_value;
         } elseif ($history['event_type'] == '22') { // Dependency added
-            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($new_value));
-            $dependency = $db->fetchOne($result);
-            echo "{$details_text['depadded']} <a href=\"" . $fs->CreateURL('details', $new_value) . "\">FS#{$new_value} &mdash; {$dependency}</a>";
+            echo "{$details_text['depadded']} ".tpl_tasklink($new_value);
         } elseif ($history['event_type'] == '23') { // Dependency added to other task
-            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($new_value));
-            $dependency = $db->fetchOne($result);
-            echo "{$details_text['depaddedother']} <a href=\"" . $fs->CreateURL('details', $new_value) . "\">FS#{$new_value} &mdash; {$dependency}</a>";
+            echo "{$details_text['depaddedother']} ".tpl_tasklink($new_value);
         } elseif ($history['event_type'] == '24') { // Dependency removed
-            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($new_value));
-            $dependency = $db->fetchOne($result);
-            echo "{$details_text['depremoved']} <a href=\"" . $fs->CreateURL('details', $new_value) . "\">FS#{$new_value} &mdash; {$dependency}</a>";
+            echo "{$details_text['depremoved']} ".tpl_tasklink($new_value);
         } elseif ($history['event_type'] == '25') { // Dependency removed from other task
-            $result = $db->Query("SELECT item_summary FROM {tasks} WHERE task_id = ?", array($new_value));
-            $dependency = $db->fetchOne($result);
-            echo "{$details_text['depremovedother']} <a href=\"" . $fs->CreateURL('details', $new_value) . "\">FS#{$new_value} &mdash; {$dependency}</a>";
+            echo "{$details_text['depremovedother']} ".tpl_tasklink($new_value);
         } elseif ($history['event_type'] == '26') { // Task marked private
             echo $details_text['taskmadeprivate'];
         } elseif ($history['event_type'] == '27') { // Task privacy removed - task made public
@@ -249,8 +235,8 @@
       <th>{$details_text['newvalue']}</th>
     </tr>
     <tr>
-      <td>{$details_previous}</td>
-      <td>{$details_new}</td>
+      <td>{!$details_previous}</td>
+      <td>{!$details_new}</td>
     </tr>
   </table>
   <?php endif; ?>

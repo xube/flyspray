@@ -18,8 +18,7 @@
   </div>
   <?php endif; ?>
   <p>
-    <a href="{$fs->CreateURL('details', $row['related_task'])}">FS#{$row['related_task']}
-      &mdash; {$row['item_summary']}</a>
+    {!tpl_tasklink($row)}
   </p>
   <?php endforeach; ?>
 
@@ -39,9 +38,7 @@
   <p><em>{$details_text['otherrelated']}</em></p>
   <?php foreach ($related_to as $row): ?>
   <p>
-  <a href="{$fs->CreateURL('details', $row['this_task'])}">FS#{$row['this_task']}
-    &mdash; {$row['item_summary']}</a>
-  <br />
+   {!tpl_tasklink($row)}
   </p>
   <?php endforeach; ?>
 </div>

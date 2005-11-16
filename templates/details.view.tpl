@@ -1,10 +1,10 @@
 <span id="navigation">
   <?php if ($prev_id): ?>
-  {!tpl_tasklink($details_text['previoustask'], $prev_id, array('id'=>'prev'))}
+  {!tpl_tasklink($prev_id, $details_text['previoustask'], false, array('id'=>'prev'))}
   <?php endif; ?>
   <?php if ($prev_id && $next_id): ?> | <?php endif; ?>
   <?php if ($next_id): ?>
-  {!tpl_tasklink($details_text['nexttask'], $next_id, array('id'=>'next'))}
+  {!tpl_tasklink($next_id, $details_text['nexttask'], false, array('id'=>'next'))}
   <?php endif; ?>
 </span>
 <div id="taskdetails" ondblclick='openTask("{$fs->CreateURL('edittask', $task_details['task_id'])}")'>
@@ -152,13 +152,10 @@
       <b>{$details_text['taskdependson']}</b>
       <br />
       <?php foreach ($deps as $dependency): ?>
-      <?php if ($dependency['is_closed']): ?>
-      <a class="closedtasklink" href="{$fs->CreateURL('details', $dependency['dep_task_id'])}">
-        FS#{$dependency['task_id']} - {$dependency['item_summary']}</a>
-      <?php else: ?>
-      <a href="{$fs->CreateURL('details', $dependency['dep_task_id'])}">
-        FS#{$dependency['task_id']} - {$dependency['item_summary']}</a>
-      <?php endif; ?>
+      <?php $link = tpl_tasklink($dependency, null, true);
+            if(!$link) continue;
+      ?>
+      {!$link}
       <?php if ($user->can_edit_task($task_details)): ?>
       <span class="DoNotPrint"> &mdash;
         <a class="removedeplink"
@@ -194,13 +191,10 @@
       <b>{$details_text['taskblocks']}</b>
       <br />
       <?php foreach ($blocks as $block): ?>
-      <?php if ($block['is_closed']): ?>
-      <a class="closedtasklink" href="{$fs->CreateURL('details', $block['task_id'])}">
-        FS#{$block['task_id']} - {$block['item_summary']}</a>
-      <?php else: ?>
-      <a href="{$fs->CreateURL('details', $block['task_id'])}">
-        FS#{$block['task_id']} - {$block['item_summary']}</a>
-      <?php endif; ?>
+      <?php $link = tpl_tasklink($block, null, true);
+            if(!$link) continue;
+      ?>
+      {!$link}
       <br />
       <?php endforeach; ?>
     </div>

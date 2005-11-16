@@ -22,6 +22,7 @@
     <script type="text/javascript" src="{$baseurl}includes/styleswitcher.js"></script>
     <script type="text/javascript" src="{$baseurl}includes/tabs.js"></script>
     <script type="text/javascript" src="{$baseurl}includes/functions.js"></script>
+    <script type="text/javascript" src='{$baseurl}includes/perms.js'></script>
     <script type="text/javascript" src="{$baseurl}includes/jscalendar/calendar_stripped.js"></script>
     <script type="text/javascript" src="{$baseurl}includes/jscalendar/lang/calendar-en.js"></script>
     <script type="text/javascript" src="{$baseurl}includes/jscalendar/calendar-setup.js"></script>
@@ -29,7 +30,7 @@
     <script type="text/javascript" src="{$baseurl}includes/ie_hover.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body onload="perms = new Perms('permissions')">
     <!-- Remove this to remove the logo -->
     <h1 id="title">{$proj->prefs['project_title']}</h1>
     <?php

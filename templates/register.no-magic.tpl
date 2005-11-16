@@ -6,7 +6,7 @@
   <table class="admin">
     <tr>
       <td><label for="username">{$register_text['username']}</label></td>
-      <td><input id="username" name="user_name" type="text" size="20" maxlength="32" /><strong>*</strong></td>
+      <td><input id="username" name="user_name" type="text" size="20" maxlength="32" /><strong>*</strong><br />{$register_text['validusername']}</td>
     </tr>
     <tr>
       <td><label for="realname">{$register_text['realname']}</label></td>

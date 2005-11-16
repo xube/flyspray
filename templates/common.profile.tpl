@@ -94,9 +94,3 @@
     </table>
   </form>
 </fieldset>
-
-<fieldset class="admin">
-	<div id="permissions">
-	  {!tpl_draw_perms($user->perms)}
-	</div>
-</fieldset>
