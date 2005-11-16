@@ -94,7 +94,7 @@ class Database
         return $result->RecordCount();
     }
     
-    function Affected_Rows()
+    function AffectedRows()
     {
         return $this->dblink->Affected_Rows();
     }

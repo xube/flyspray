@@ -133,19 +133,16 @@ class User
          */
     }
 
-    function can_view_project()
+    function can_view_project($proj)
     {
-        global $proj;
         return $proj->prefs['project_is_active']
             && ($proj->prefs['others_view'] || $this->perms['view_tasks']);
     }
 
     function can_view_task($task)
     {
-        global $proj;
-        return $this->can_view_project()
-            && ($this->perms['manage_project'] || !$task['mark_private']
-                    || $task['assigned_to'] == $this->id);
+        return $this->perms['manage_project'] || !$task['mark_private']
+                    || $task['assigned_to'] == $this->id;
     }
 
     function can_edit_task($task)
@@ -180,24 +177,21 @@ class User
         return $this->isAnon() && $fs->prefs['spam_proof'] && $fs->prefs['anon_reg'];
     }
 
-    function can_open_task()
+    function can_open_task($proj)
     {
-        global $proj;
         return $this->perms['open_new_tasks'] || $proj->prefs['anon_open'];
     }
 
     function can_mark_private($task)
     {
-       global $proj;
-       return ($this->perms['manage_project'] && !$task['mark_private'])
-           || ($task['assigned_to'] == $this->id && !$task['mark_private']);
+        return !$task['mark_private']
+            && ($this->perms['manage_project'] || $task['assigned_to'] == $this->id);
     }
 
     function can_mark_public($task)
     {
-       global $proj;
-       return ($this->perms['manage_project'] && $task['mark_private'])
-           || ($task['assigned_to'] == $this->id && $task['mark_private']);
+        return $task['mark_private']
+            && ($this->perms['manage_project'] || $task['assigned_to'] == $this->id);
     }
 
     /* }}} */

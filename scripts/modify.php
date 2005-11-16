@@ -29,7 +29,7 @@ function Post_to0($key) { return Post::val($key, 0); }
 $old_details = $fs->GetTaskDetails(Req::val('task_id'));
 
 // Adding a new task  {{{ 
-if (Post::val('action') == 'newtask' && $user->can_open_task()) {
+if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     /* 
      * TODO  : merge code with Backend::newTask
      * FIXME : try to reset the form to the previous submited data
@@ -130,7 +130,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task()) {
 
     // If the reporter wanted to be added to the notification list
     if (Post::val('notifyme') == '1' && $user->id != $owner) {
-        $be->AddToNotifyList($user->id, array($task_id));
+        $be->AddToNotifyList($user->id, $task_id);
     }
 
     // Status and redirect
@@ -302,7 +302,7 @@ elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments']) {
 
     if (Post::val('notifyme') == '1') {
         // If the user wanted to watch this task for changes
-        $be->AddToNotifyList($user->id, array(Post::val('task_id')));
+        $be->AddToNotifyList($user->id, Post::val('task_id'));
     }
 
     if ($user->perms['create_attachments']) {
@@ -995,11 +995,10 @@ elseif (Req::val('action') == "add_notification") {
         settype($ids, 'array');
 
         if (!empty($ids)) {
-            $tasks = array_keys($ids);
-            $be->AddToNotifyList($user->id, $tasks);
+            $be->AddToNotifyList($user->id, array_keys($ids));
         }
     } else {
-        $be->AddToNotifyList(Req::val('user_id'), array(Req::val('ids')));
+        $be->AddToNotifyList(Req::val('user_id'), Req::val('ids'));
         $redirect_url = $fs->CreateURL('details', Req::val('ids'));
     }
 
@@ -1017,7 +1016,7 @@ elseif (Req::val('action') == "remove_notification") {
             $be->RemoveFromNotifyList($user->id, array_keys($ids));
         }
     } else {
-        $be->RemoveFromNotifyList(Req::val('user_id'), array(Req::val('ids')));
+        $be->RemoveFromNotifyList(Req::val('user_id'), Req::val('ids'));
         $redirect_url = $fs->CreateURL('details', Req::val('ids'));
     }
 
@@ -1169,10 +1168,10 @@ elseif (Req::val('action') == 'takeownership') {
       $redirect_url = Req::val('prev_page');
 
       if (!empty($ids)) {
-          $be->AssignToMe($user->id, array_keys($ids));
+          $be->AssignToMe($user, array_keys($ids));
       }
    } else {
-       $be->AssignToMe($user->id, array(Req::val('ids')));
+       $be->AssignToMe($user, Req::val('ids'));
        $redirect_url = $redirect_url = $fs->CreateURL('details', Req::val('ids'));
    }
 
@@ -1218,8 +1217,7 @@ elseif (Post::val('action') == 'requestreopen') {
                        array(Post::val('task_id'), $user->id));
    
     if ($db->fetchOne($sql)) {
-        $be->AddToNotifyList($user->id, array(Post::val('task_id')));
-        $fs->logEvent(Post::val('task_id'), 9, $user->id);
+        $be->AddToNotifyList($user->id, Post::val('task_id'));
     }
 
     // Now, get the project managers' details for this project

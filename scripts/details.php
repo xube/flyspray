@@ -88,9 +88,9 @@ else {
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON r.related_task = t.task_id
                         WHERE  r.this_task = ?
-                               AND t.mark_private = 0
-                                   OR {$user->perms['manage_project']} = 1
-                                   OR t.assigned_to = {$user->id}", array($task_id));
+                               AND ( t.mark_private = 0 OR ? = 1 
+                                   OR t.assigned_to = ? )",
+            array($task_id, $user->perms['manage_project'], $user->id));
     $page->assign('related', $db->fetchAllArray($sql));
 
     $sql = $db->Query("SELECT  *

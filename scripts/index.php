@@ -6,7 +6,7 @@
    allowed to view.
 */
 
-if (Get::val('project') !== '0' && !$user->can_view_project()) {
+if (Get::val('project') !== '0' && !$user->can_view_project($proj)) {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 

@@ -5,7 +5,7 @@
   | ~~~~~~~~~~~~~                                          |
   \********************************************************/
 
-if (!$user->can_open_task()) {
+if (!$user->can_open_task($proj)) {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 

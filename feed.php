@@ -105,7 +105,7 @@ if ($fs->prefs['cache_feeds'])
         $db->Query("UPDATE {cache} SET content = ?, last_updated = ? WHERE  type = ? AND topic = ? AND project = ? AND max_items = ?", 
                 array($content, time(), $feed_type, $orderby, $project, $max_items));
 
-        if (!$db->Affected_Rows()) {
+        if (!$db->affectedRows()) {
             $db->Query("INSERT INTO {cache} (content, type, topic, project, max_items, last_updated) VALUES(?, ?, ?, ?, ?, ?)", 
                     array($content, $feed_type, $orderby, $project, $max_items, time()));
         }

@@ -6,112 +6,88 @@
    ------------------------------------------------------------
 */
 
-class Backend {
+class Backend
+{
+    /* This function is used to ADD a user to the
+       Notification list of multiple tasks (if desired).
+       Expected args are user_id and an array of tasks
+    */
+    function AddToNotifyList($user_id, $tasks)
+    {
+        global $db, $fs;
 
-   /* This function is used to ADD a user to the
-      Notification list of multiple tasks (if desired).
-      Expected args are user_id and an array of tasks
-   */
-   function AddToNotifyList($user_id, $tasks)
-   {
-      global $db;
-      global $fs;
+        settype($tasks, 'array');
 
-      foreach ($tasks AS $key => $task_id)
-      {
-         // We can't add a user to a notif list if they're already on it, so...
-         // Get a list of users who are on the notif list for this task
-         $notify_list = $db->Query("SELECT user_id
-                                    FROM {notifications}
-                                    WHERE task_id = ?
-                                    AND user_id = ?",
-                                    array($task_id, $user_id)
-                                  );
+        foreach ($tasks AS $key => $task_id) {
+            $sql = $db->Query("SELECT  COUNT(*)
+                                 FROM  {notifications}
+                                WHERE  task_id = ?  AND user_id = ?",
+                    array($task_id, $user_id));
 
-         // If the user isn't already on the notification list...
-         if (!$db->CountRows($notify_list))
-         {
-            //  Add them to the notif list
-            $db->Query("INSERT INTO {notifications}
-                        (task_id, user_id)
-                        VALUES(?,?)",
-                        array($task_id, $user_id)
-                       );
+            // If the user isn't already on the notification list...
+            if (!$db->fetchOne($sql)) {
+                $db->Query("INSERT INTO  {notifications} (task_id, user_id)
+                                 VALUES  (?,?)", array($task_id, $user_id));
 
-            // Log this event to the task history
-            $fs->logEvent($task_id, 9, $user_id);
-         }
-
-      // End of cycling through the tasks
-      }
-
-      return true;
-
-   // End of AddToNotifyList() function
-   }
+                $fs->logEvent($task_id, 9, $user_id);
+            }
+        }
+    }
 
 
-   /* This function is used to REMOVE a user from the
-      Notification list of multiple tasks (if desired).
-      Expected args are user_id and an array of tasks.
-   */
-   function RemoveFromNotifyList($user_id, $tasks)
-   {
-      global $db;
-      global $fs;
+    /* This function is used to REMOVE a user from the
+       Notification list of multiple tasks (if desired).
+       Expected args are user_id and an array of tasks.
+    */
+    function RemoveFromNotifyList($user_id, $tasks)
+    {
+        global $db, $fs;
 
-      foreach ($tasks AS $key => $task_id)
-      {
-         $db->Query("DELETE FROM {notifications}
-                     WHERE task_id = ?
-                     AND user_id = ?",
-                     array($task_id, $user_id)
-                    );
+        settype($tasks, 'array');
 
-         $fs->logEvent($task_id, 10, $user_id);
-      }
-
-      return true;
-   }
+        foreach ($tasks AS $key => $task_id) {
+            $db->Query("DELETE FROM  {notifications}
+                              WHERE  task_id = ? AND user_id = ?",
+                    array($task_id, $user_id));
+            if ($db->affectedRows()) {
+                $fs->logEvent($task_id, 10, $user_id);
+            }
+        }
+    }
 
 
-   /* This function is for a user to assign multiple tasks to themselves.
-      Expected args are user_id and an array of tasks.
-   */
-   function AssignToMe($user_id, $tasks)
-   {
-      global $db;
-      global $fs;
-      global $notify;
+    /* This function is for a user to assign multiple tasks to themselves.
+       Expected args are user_id and an array of tasks.
+    */
+    function AssignToMe(&$user, $tasks)
+    {
+        global $db, $fs;
+        global $notify;
 
-      foreach ($tasks AS $key => $task_id)
-      {
-         // Get the task details
-         $task_details = @$fs->getTaskDetails($task_id);
-         $proj = new Project($task_details['attached_to_project']);
-         $user = new User($user_id);
-         $user->get_perms($proj);
+        settype($tasks, 'array');
 
-         if ($task_details['project_is_active']
-                 && ($task_details['others_view'] || $user->perms['view_tasks'])
-                 && (($task_details['mark_private'] && $task_details['assigned_to'] == $user->id)
-                     || $user->perms['manage_project'] || !$task_details['mark_private'])
-                 && (($user->perms['assign_to_self'] && !$task_details['assigned_to'])
-                     || $user->perms['assign_others_to_self'])
-                 && $task_details['assigned_to'] != $user->id )
-         {
-            $db->Query("UPDATE {tasks}
-                        SET assigned_to = ?, item_status = '3'
-                        WHERE task_id = ?",
-                        array($user_id, $task_id));
+        foreach ($tasks as $key => $task_id) {
+            // Get the task details
+            // FIXME make it less greedy in term of SQL
+            $task = @$fs->getTaskDetails($task_id);
+            $proj = new Project($task['attached_to_project']);
+            $user->get_perms($proj);
 
-            $fs->logEvent($task_details['task_id'], 19, $user->id, $task_details['assigned_to']);
-            $notify->Create('10', $task_id);
-         }
-      }
-
-      return true;
-   }
+            if ($user->can_view_project($proj)
+                    && $user->can_view_task($task)
+                    && $user->can_take_ownership($task))
+            {
+                $db->Query("UPDATE  {tasks}
+                               SET  assigned_to = ?, item_status = '3'
+                             WHERE  task_id = ?",
+                        array($user->id, $task_id));
+                if ($db->affectedRows()) {
+                    $fs->logEvent($task_id, 19, $user->id, $task['assigned_to']);
+                    $notify->Create('10', $task_id);
+                }
+            }
+        }
+    }
 
 
    /* This function takes an array of arguments, and returns a
