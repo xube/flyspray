@@ -124,7 +124,7 @@ class User
     {
         return $this->perms['edit_comments'];
         /*  || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
-         * 
+         *
          * TODO : do we want users to be able to edit their own comments ?
          *
          * Tony says: not really, as it destroys the proper flow of conversation
