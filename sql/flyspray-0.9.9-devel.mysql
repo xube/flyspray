@@ -1,122 +1,122 @@
 -- =============================================================================
--- 
+--
 -- get out of the magic_gpc hell -- Pierre Habouzit :: 2005-10-30 22:00
--- 
+--
 -- this has been generated automatically (vim macros) from the SQL schema, and
 -- replaces quotes in *EVERY* textual item
 -- this is exhaustive (maybe a bit too much, but It can't harm)
--- 
+--
 -- ========================================================================={{{=
 
 UPDATE flyspray_admin_requests SET
-    reason_given = REPLACE(REPLACE(reason_given, "\\'", "'"), '\\"', '"'),
-    time_submitted = REPLACE(REPLACE(time_submitted, "\\'", "'"), '\\"', '"'),
-    time_resolved = REPLACE(REPLACE(time_resolved, "\\'", "'"), '\\"', '"'),
-    deny_reason = REPLACE(REPLACE(deny_reason, "\\'", "'"), '\\"', '"');
+	 reason_given = REPLACE(REPLACE(reason_given, "\\'", "'"), '\\"', '"'),
+	 time_submitted = REPLACE(REPLACE(time_submitted, "\\'", "'"), '\\"', '"'),
+	 time_resolved = REPLACE(REPLACE(time_resolved, "\\'", "'"), '\\"', '"'),
+	 deny_reason = REPLACE(REPLACE(deny_reason, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_assigned SET
-    user_or_group = REPLACE(REPLACE(user_or_group, "\\'", "'"), '\\"', '"');
+	 user_or_group = REPLACE(REPLACE(user_or_group, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_attachments SET
-    orig_name = REPLACE(REPLACE(orig_name, "\\'", "'"), '\\"', '"'),
-    file_name = REPLACE(REPLACE(file_name, "\\'", "'"), '\\"', '"'),
-    file_desc = REPLACE(REPLACE(file_desc, "\\'", "'"), '\\"', '"'),
-    file_type = REPLACE(REPLACE(file_type, "\\'", "'"), '\\"', '"'),
-    date_added = REPLACE(REPLACE(date_added, "\\'", "'"), '\\"', '"');
+	 orig_name = REPLACE(REPLACE(orig_name, "\\'", "'"), '\\"', '"'),
+	 file_name = REPLACE(REPLACE(file_name, "\\'", "'"), '\\"', '"'),
+	 file_desc = REPLACE(REPLACE(file_desc, "\\'", "'"), '\\"', '"'),
+	 file_type = REPLACE(REPLACE(file_type, "\\'", "'"), '\\"', '"'),
+	 date_added = REPLACE(REPLACE(date_added, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_comments SET
-    date_added = REPLACE(REPLACE(date_added, "\\'", "'"), '\\"', '"'),
-    comment_text = REPLACE(REPLACE(comment_text, "\\'", "'"), '\\"', '"');
+	 date_added = REPLACE(REPLACE(date_added, "\\'", "'"), '\\"', '"'),
+	 comment_text = REPLACE(REPLACE(comment_text, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_groups SET
-    group_name = REPLACE(REPLACE(group_name, "\\'", "'"), '\\"', '"'),
-    group_desc = REPLACE(REPLACE(group_desc, "\\'", "'"), '\\"', '"');
+	 group_name = REPLACE(REPLACE(group_name, "\\'", "'"), '\\"', '"'),
+	 group_desc = REPLACE(REPLACE(group_desc, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_history SET
-    event_date = REPLACE(REPLACE(event_date, "\\'", "'"), '\\"', '"'),
-    field_changed = REPLACE(REPLACE(field_changed, "\\'", "'"), '\\"', '"'),
-    old_value = REPLACE(REPLACE(old_value, "\\'", "'"), '\\"', '"'),
-    new_value = REPLACE(REPLACE(new_value, "\\'", "'"), '\\"', '"');
+	 event_date = REPLACE(REPLACE(event_date, "\\'", "'"), '\\"', '"'),
+	 field_changed = REPLACE(REPLACE(field_changed, "\\'", "'"), '\\"', '"'),
+	 old_value = REPLACE(REPLACE(old_value, "\\'", "'"), '\\"', '"'),
+	 new_value = REPLACE(REPLACE(new_value, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_list_category SET
-    category_name = REPLACE(REPLACE(category_name, "\\'", "'"), '\\"', '"');
+	 category_name = REPLACE(REPLACE(category_name, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_list_os SET
-    os_name = REPLACE(REPLACE(os_name, "\\'", "'"), '\\"', '"');
+	 os_name = REPLACE(REPLACE(os_name, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_list_resolution SET
-    resolution_name = REPLACE(REPLACE(resolution_name, "\\'", "'"), '\\"', '"');
+	 resolution_name = REPLACE(REPLACE(resolution_name, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_list_tasktype SET
-    tasktype_name = REPLACE(REPLACE(tasktype_name, "\\'", "'"), '\\"', '"');
+	 tasktype_name = REPLACE(REPLACE(tasktype_name, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_list_version SET
-    version_name = REPLACE(REPLACE(version_name, "\\'", "'"), '\\"', '"');
+	 version_name = REPLACE(REPLACE(version_name, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_notification_messages SET
-    message_subject = REPLACE(REPLACE(message_subject, "\\'", "'"), '\\"', '"'),
-    message_body = REPLACE(REPLACE(message_body, "\\'", "'"), '\\"', '"'),
-    time_created = REPLACE(REPLACE(time_created, "\\'", "'"), '\\"', '"');
+	 message_subject = REPLACE(REPLACE(message_subject, "\\'", "'"), '\\"', '"'),
+	 message_body = REPLACE(REPLACE(message_body, "\\'", "'"), '\\"', '"'),
+	 time_created = REPLACE(REPLACE(time_created, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_notification_recipients SET
-    notify_method = REPLACE(REPLACE(notify_method, "\\'", "'"), '\\"', '"'),
-    notify_address = REPLACE(REPLACE(notify_address, "\\'", "'"), '\\"', '"');
+	 notify_method = REPLACE(REPLACE(notify_method, "\\'", "'"), '\\"', '"'),
+	 notify_address = REPLACE(REPLACE(notify_address, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_prefs SET
-    pref_name = REPLACE(REPLACE(pref_name, "\\'", "'"), '\\"', '"'),
-    pref_value = REPLACE(REPLACE(pref_value, "\\'", "'"), '\\"', '"'),
-    pref_desc = REPLACE(REPLACE(pref_desc, "\\'", "'"), '\\"', '"');
+	 pref_name = REPLACE(REPLACE(pref_name, "\\'", "'"), '\\"', '"'),
+	 pref_value = REPLACE(REPLACE(pref_value, "\\'", "'"), '\\"', '"'),
+	 pref_desc = REPLACE(REPLACE(pref_desc, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_projects SET
-    project_title = REPLACE(REPLACE(project_title, "\\'", "'"), '\\"', '"'),
-    theme_style = REPLACE(REPLACE(theme_style, "\\'", "'"), '\\"', '"'),
-    intro_message = REPLACE(REPLACE(intro_message, "\\'", "'"), '\\"', '"'),
-    visible_columns = REPLACE(REPLACE(visible_columns, "\\'", "'"), '\\"', '"'),
-    notify_email = REPLACE(REPLACE(notify_email, "\\'", "'"), '\\"', '"'),
-    notify_jabber = REPLACE(REPLACE(notify_jabber, "\\'", "'"), '\\"', '"');
+	 project_title = REPLACE(REPLACE(project_title, "\\'", "'"), '\\"', '"'),
+	 theme_style = REPLACE(REPLACE(theme_style, "\\'", "'"), '\\"', '"'),
+	 intro_message = REPLACE(REPLACE(intro_message, "\\'", "'"), '\\"', '"'),
+	 visible_columns = REPLACE(REPLACE(visible_columns, "\\'", "'"), '\\"', '"'),
+	 notify_email = REPLACE(REPLACE(notify_email, "\\'", "'"), '\\"', '"'),
+	 notify_jabber = REPLACE(REPLACE(notify_jabber, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_registrations SET
-    reg_time = REPLACE(REPLACE(reg_time, "\\'", "'"), '\\"', '"'),
-    confirm_code = REPLACE(REPLACE(confirm_code, "\\'", "'"), '\\"', '"'),
-    user_name = REPLACE(REPLACE(user_name, "\\'", "'"), '\\"', '"'),
-    real_name = REPLACE(REPLACE(real_name, "\\'", "'"), '\\"', '"'),
-    email_address = REPLACE(REPLACE(email_address, "\\'", "'"), '\\"', '"'),
-    jabber_id = REPLACE(REPLACE(jabber_id, "\\'", "'"), '\\"', '"'),
-    magic_url = REPLACE(REPLACE(magic_url, "\\'", "'"), '\\"', '"');
+	 reg_time = REPLACE(REPLACE(reg_time, "\\'", "'"), '\\"', '"'),
+	 confirm_code = REPLACE(REPLACE(confirm_code, "\\'", "'"), '\\"', '"'),
+	 user_name = REPLACE(REPLACE(user_name, "\\'", "'"), '\\"', '"'),
+	 real_name = REPLACE(REPLACE(real_name, "\\'", "'"), '\\"', '"'),
+	 email_address = REPLACE(REPLACE(email_address, "\\'", "'"), '\\"', '"'),
+	 jabber_id = REPLACE(REPLACE(jabber_id, "\\'", "'"), '\\"', '"'),
+	 magic_url = REPLACE(REPLACE(magic_url, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_reminders SET
-    start_time = REPLACE(REPLACE(start_time, "\\'", "'"), '\\"', '"'),
-    last_sent = REPLACE(REPLACE(last_sent, "\\'", "'"), '\\"', '"'),
-    reminder_message = REPLACE(REPLACE(reminder_message, "\\'", "'"), '\\"', '"');
+	 start_time = REPLACE(REPLACE(start_time, "\\'", "'"), '\\"', '"'),
+	 last_sent = REPLACE(REPLACE(last_sent, "\\'", "'"), '\\"', '"'),
+	 reminder_message = REPLACE(REPLACE(reminder_message, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_tasks SET
-    date_opened = REPLACE(REPLACE(date_opened, "\\'", "'"), '\\"', '"'),
-    date_closed = REPLACE(REPLACE(date_closed, "\\'", "'"), '\\"', '"'),
-    closure_comment = REPLACE(REPLACE(closure_comment, "\\'", "'"), '\\"', '"'),
-    item_summary = REPLACE(REPLACE(item_summary, "\\'", "'"), '\\"', '"'),
-    detailed_desc = REPLACE(REPLACE(detailed_desc, "\\'", "'"), '\\"', '"'),
-    last_edited_time = REPLACE(REPLACE(last_edited_time, "\\'", "'"), '\\"', '"'),
-    due_date = REPLACE(REPLACE(due_date, "\\'", "'"), '\\"', '"');
+	 date_opened = REPLACE(REPLACE(date_opened, "\\'", "'"), '\\"', '"'),
+	 date_closed = REPLACE(REPLACE(date_closed, "\\'", "'"), '\\"', '"'),
+	 closure_comment = REPLACE(REPLACE(closure_comment, "\\'", "'"), '\\"', '"'),
+	 item_summary = REPLACE(REPLACE(item_summary, "\\'", "'"), '\\"', '"'),
+	 detailed_desc = REPLACE(REPLACE(detailed_desc, "\\'", "'"), '\\"', '"'),
+	 last_edited_time = REPLACE(REPLACE(last_edited_time, "\\'", "'"), '\\"', '"'),
+	 due_date = REPLACE(REPLACE(due_date, "\\'", "'"), '\\"', '"');
 
 UPDATE flyspray_users SET
-    user_name = REPLACE(REPLACE(user_name, "\\'", "'"), '\\"', '"'),
-    user_pass = REPLACE(REPLACE(user_pass, "\\'", "'"), '\\"', '"'),
-    real_name = REPLACE(REPLACE(real_name, "\\'", "'"), '\\"', '"'),
-    jabber_id = REPLACE(REPLACE(jabber_id, "\\'", "'"), '\\"', '"'),
-    email_address = REPLACE(REPLACE(email_address, "\\'", "'"), '\\"', '"'),
-    dateformat = REPLACE(REPLACE(dateformat, "\\'", "'"), '\\"', '"'),
-    dateformat_extended = REPLACE(REPLACE(dateformat_extended, "\\'", "'"), '\\"', '"'),
-    magic_url = REPLACE(REPLACE(magic_url, "\\'", "'"), '\\"', '"'),
-    last_search = REPLACE(REPLACE(last_search, "\\'", "'"), '\\"', '"');
+	 user_name = REPLACE(REPLACE(user_name, "\\'", "'"), '\\"', '"'),
+	 user_pass = REPLACE(REPLACE(user_pass, "\\'", "'"), '\\"', '"'),
+	 real_name = REPLACE(REPLACE(real_name, "\\'", "'"), '\\"', '"'),
+	 jabber_id = REPLACE(REPLACE(jabber_id, "\\'", "'"), '\\"', '"'),
+	 email_address = REPLACE(REPLACE(email_address, "\\'", "'"), '\\"', '"'),
+	 dateformat = REPLACE(REPLACE(dateformat, "\\'", "'"), '\\"', '"'),
+	 dateformat_extended = REPLACE(REPLACE(dateformat_extended, "\\'", "'"), '\\"', '"'),
+	 magic_url = REPLACE(REPLACE(magic_url, "\\'", "'"), '\\"', '"'),
+	 last_search = REPLACE(REPLACE(last_search, "\\'", "'"), '\\"', '"');
 
 -- =========================================================================}}}=
 
 -- =============================================================================
--- 
+--
 -- Florian Schmitz, Added on 05 November 05
--- 
+--
 -- RSS/Atom feeds
--- 
+--
 -- (Updated 08 November 2005 by Mac Newbold - rename limit column to max_items,
 --  because limit is a reserved word in sql)
 --
@@ -157,3 +157,8 @@ ALTER TABLE `flyspray_projects` DROP `show_logo`;
 
 ALTER TABLE `flyspray_users` CHANGE `user_name` `user_name` VARCHAR( 32 ) NOT NULL;
 ALTER TABLE `flyspray_registrations` CHANGE `user_name` `user_name` VARCHAR( 32 ) NOT NULL;
+
+-- Tony Collins, 19 November 2005
+-- Changed field for FS#329
+
+ALTER TABLE `flyspray_tasks` CHANGE `assigned_to` `assigned_to` VARCHAR( 255 ) DEFAULT '0' NOT NULL ;

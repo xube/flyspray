@@ -27,6 +27,15 @@ $fs->get_language_pack('modify');
 $page->uses('status_list', 'priority_list', 'severity_list', 'task_details',
         'details_text', 'newtask_text','modify_text');
 
+$userlist = $fs->UserList($project_id);
+
+if (!empty($task_details['assigned_to']) ) {
+   $assigned_users = explode(" ", $task_details['assigned_to']);
+}
+
+$page->assign('userlist', $userlist);
+$page->assign('assigned_users', $assigned_users);
+
 if (Get::val('edit') && $user->can_edit_task($task_details)) {
     $page->display('details.edit.tpl');
 }
@@ -57,18 +66,18 @@ else {
                                   FROM  {admin_requests}
                                  WHERE  task_id = ?  AND resolved_by = '0'",
                                  array($task_id));
-                 
+
     // Get info on the dependencies again
     $open_deps    = $db->Query("SELECT  COUNT(*) - SUM(is_closed)
                                   FROM  {dependencies} d
                              LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
                                  WHERE  d.task_id = ?", array($task_id));
-                
+
     $watching     =  $db->Query("SELECT  COUNT(*)
                                    FROM  {notifications}
                                   WHERE  task_id = ?  AND user_id = ?",
                                   array($task_id, $user->id));
-    
+
     $page->assign('prev_id', $prev_id);
     $page->assign('next_id', $next_id);
     $page->assign('deps',    $db->fetchAllArray($check_deps));
@@ -88,7 +97,7 @@ else {
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON r.related_task = t.task_id
                         WHERE  r.this_task = ?
-                               AND ( t.mark_private = 0 OR ? = 1 
+                               AND ( t.mark_private = 0 OR ? = 1
                                    OR t.assigned_to = ? )",
             array($task_id, $user->perms['manage_project'], $user->id));
     $page->assign('related', $db->fetchAllArray($sql));

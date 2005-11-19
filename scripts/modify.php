@@ -22,9 +22,9 @@ function Post_to0($key) { return Post::val($key, 0); }
 
 $old_details = $fs->GetTaskDetails(Req::val('task_id'));
 
-// Adding a new task  {{{ 
+// Adding a new task  {{{
 if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
-    /* 
+    /*
      * TODO  : merge code with Backend::newTask
      * FIXME : try to reset the form to the previous submited data
      */
@@ -71,7 +71,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
 
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
-    // [MC] : über-ugly ... we need to be better here.
+    // [MC] : ber-ugly ... we need to be better here.
     $result = $db->Query("SELECT  task_id
                             FROM  {tasks}
                            WHERE  item_summary = ?  AND detailed_desc = ?
@@ -153,14 +153,14 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                             detailed_desc = ?, item_status = ?, assigned_to = ?,
                             product_category = ?, closedby_version = ?, operating_system = ?,
                             task_severity = ?, task_priority = ?, last_edited_by = ?,
-                            last_edited_time = NOW(), due_date = ?, percent_complete = ?
+                            last_edited_time = ?, due_date = ?, percent_complete = ?
                      WHERE  task_id = ?",
                 array(Post::val('attached_to_project'), Post::val('task_type'),
                     Post::val('item_summary'), Post::val('detailed_desc'),
-                    Post::val('item_status'), Post::val('assigned_to'),
+                    Post::val('item_status'), trim(Post::val('assigned_to')),
                     Post::val('product_category'), Post::val('closedby_version', 0),
                     Post::val('operating_system'), Post::val('task_severity'),
-                    Post::val('task_priority'), intval($user->id), $due_date,
+                    Post::val('task_priority'), intval($user->id), time(), $due_date,
                     Post::val('percent_complete'), Post::val('task_id')));
 
         // Get the details of the task we just updated
@@ -171,13 +171,11 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 
         $do_send = false;
         foreach ($new_details as $key => $val) {
-            if (strstr($key, 'last_edited_') === 0 || $key == 'assigned_to'
+            if (strstr($key, 'last_edited_') || $key == 'assigned_to'
                     || is_numeric($key))
             {
                 continue;
-            }
-            
-            if ($val != $old_details[$key]) {
+            } elseif ($val != $old_details[$key]) {
                 // Log the changed fields in the task history
                 $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key);
                 $do_send = true;
@@ -193,9 +191,10 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
             $fs->logEvent(Post::val('task_id'), 14, Post::val('assigned_to'),
                     Post::val('old_assigned'));
 
-            // Notify the new assignee what happened
-            if ($new_details['assigned_to'] != $user->id) {
-                $to   = $notify->SpecificAddresses(array(Post::val('assigned_to')));
+
+            // Notify the new assignee what happened.  This obviously won't happen if the task is now assigned to no-one.
+            if (!empty(Post::val('assigned_to'))) {
+                $to   = $notify->SpecificAddresses(explode(" ", Post::val('assigned_to')));
                 $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
                 $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
                 $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
@@ -306,7 +305,7 @@ elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments']) {
     $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
 } // }}}
 // sending a new user a confirmation code {{{
-elseif (Post::val('action') == 'sendcode') { 
+elseif (Post::val('action') == 'sendcode') {
 
     if (!Post::val('user_name') || !Post::val('real_name')
             || !(  (Post::val('email_address') && Post::val('notify_type') == '1')
@@ -596,7 +595,7 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
     array_unshift($args, 'Project Managers',
             'Permission to do anything related to this project.',
             intval($newproject['project_id']));
-        
+
     $db->Query("INSERT INTO  {groups}
                              ( group_name, group_desc, belongs_to_project,
                                ".join(',', $cols).")
@@ -709,7 +708,7 @@ elseif (Post::val('action') == "edituser"
 
         // If the user is changing their password, better update their cookie hash
         if ($user->id == Post::val('user_id')) {
-            $fs->setcookie('flyspray_passhash', 
+            $fs->setcookie('flyspray_passhash',
                     crypt($new_hash, $conf['general']['cookiesalt']), time()+3600*24*30);
         }
     }
@@ -939,7 +938,7 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
     if (!$db->CountRows($sql)) {
         $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
         $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
-    } 
+    }
 
     $relatedproject = $db->fetchOne($sql);
 
@@ -1193,13 +1192,13 @@ elseif (Post::val('action') == 'requestreopen') {
 
     $fs->AdminRequest(2, $proj->id, Post::val('task_id'), $user->id, Post::val('reason_given'));
     $fs->logEvent(Post::val('task_id'), 21, Post::val('reason_given'));
-   
+
     // Check if the user is on the notification list
-    $sql = $db->Query("SELECT  COUNT(*) 
+    $sql = $db->Query("SELECT  COUNT(*)
                          FROM  {notifications}
                         WHERE  task_id = ? AND user_id = ?",
                        array(Post::val('task_id'), $user->id));
-   
+
     if ($db->fetchOne($sql)) {
         $be->AddToNotifyList($user->id, Post::val('task_id'));
     }
@@ -1232,13 +1231,13 @@ elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project']) {
                            WHERE  request_id = ?",
                           array(Req::val('req_id')));
     $req_details = $db->FetchArray($result);
-   
+
     // Mark the PM request as 'resolved'
     $db->Query("UPDATE  {admin_requests}
                    SET  resolved_by = ?, time_resolved = NOW(), deny_reason = ?
                  WHERE  request_id = ?",
                 array($user->id, Req::val('deny_reason'), Req::val('req_id')));
-   
+
     $fs->logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
     $notify->Create('13', $req_details['task_id']);
 
@@ -1353,12 +1352,12 @@ elseif (Post::val('action') == 'chpass') {
         $_SESSION['ERROR'] = $modify_text['passnomatch'];
         $fs->redirect('./');
     }
-   
+
     $new_pass_hash = $fs->cryptPassword(Post::val('pass1'));
     $db->Query("UPDATE  {users} SET user_pass = ?, magic_url = ''
                  WHERE  magic_url = ?",
             array($new_pass_hash, Post::val('magic_url')));
-   
+
     $_SESSION['SUCCESS'] = $modify_text['passchanged'];
     $fs->redirect('./');
 } // }}}
