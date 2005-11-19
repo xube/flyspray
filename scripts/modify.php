@@ -193,7 +193,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 
 
             // Notify the new assignee what happened.  This obviously won't happen if the task is now assigned to no-one.
-            if (!empty(Post::val('assigned_to'))) {
+            if (!Post::val('assigned_to')) {
                 $to   = $notify->SpecificAddresses(explode(" ", Post::val('assigned_to')));
                 $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
                 $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);

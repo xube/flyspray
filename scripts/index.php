@@ -209,10 +209,10 @@ $sql = $db->Query("
              t.*,
              p.project_title, p.project_is_active,
              lt.tasktype_name         AS task_type,
-             lc.category_name         AS product_category,
+             lc.category_name         AS category_name,
              lv.version_name          AS product_version,
              lvc.version_name         AS closedby_version,
-             u.real_name              AS assigned_to,
+             u.real_name              AS assigned_to_name,
              uo.real_name             AS opened_by,
              COUNT(DISTINCT com.comment_id)    AS num_comments,
              COUNT(DISTINCT att.attachment_id) AS num_attachments
@@ -299,14 +299,14 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             'id'         => 'task_id',
             'project'    => 'project_title',
             'tasktype'   => 'task_type',
-            'category'   => 'product_category',
+            'category'   => 'category_name',
             'severity'   => '',
             'priority'   => '',
             'summary'    => 'item_summary',
             'dateopened' => 'date_opened',
             'status'     => '',
             'openedby'   => 'opened_by',
-            'assignedto' => 'assigned_to',
+            'assignedto' => 'assigned_to_name',
             'lastedit'   => 'last_edited_time',
             'reportedin' => 'product_version',
             'dueversion' => 'closedby_version',
@@ -318,11 +318,10 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
     switch ($colname) {
         case 'id':
+            $value = tpl_tasklink($task, $task['task_id']);
+            break;
         case 'summary':
-            $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
-            $url = htmlspecialchars($fs->createUrl('details', $task['task_id']),ENT_QUOTES, 'utf-8');
-            $value = sprintf('<a href="%s">%s</a>',
-                    $url, $value);
+            $value = tpl_tasklink($task, $task['item_summary']);
             break;
 
         case 'severity':

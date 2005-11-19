@@ -91,7 +91,7 @@ class FSTpl extends Tpl
 
 // {{{ costful templating functions, TODO: optimize them
 
-function tpl_tasklink($task, $text = null, $strict = false, $attrs = array())
+function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','assignedto','percent_complete'))
 {
     global $fs, $details_text, $user, $db;
     $fs->get_language_pack('modify');
@@ -106,33 +106,70 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array())
         return '';
     }
 
-    if ($task['is_closed']) {
-        if (!isset($task['resolution_name'])) {
-            $result = $db->Query("SELECT resolution_name FROM {list_resolution} WHERE resolution_id = ?", array($task['resolution_reason']));
-            $status = $db->FetchOne($result);
-        } else {
-            $status = $task['resolution_name'];
-        }
-        $attrs['class'] = 'closedtasklink';
-    } else {
-        $status = $status_list[$task['item_status']];
-    }
-    
     if ($user->can_view_task($task)) {
         $summary = htmlspecialchars(substr($task['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
     } else {
         $summary = $modify_text['taskmadeprivate'];
     }
+    
+    $title_text = array();
 
-    $title = $status . ': '.$summary;
+    foreach($title as $info)
+    {
+        switch($info)
+        {
+            case 'status':
+                if ($task['is_closed']) {
+                    if (!isset($task['resolution_name'])) {
+                        $task = $fs->GetTaskDetails($task['task_id']);
+                    }
+                    $title_text[] = $task['resolution_name'];
+                    $attrs['class'] = 'closedtasklink';
+                } else {
+                    $title_text[] = $status_list[$task['item_status']];
+                }
+                break;
+            
+            case 'summary':
+                $title_text[] = $summary;
+                break;
+            
+            case 'assignedto':
+                if($task['assigned_to'])
+                {
+                    if (!isset($task['assigned_to_name'])) {
+                        $task = $fs->GetTaskDetails($task['task_id']);
+                    }
+                    $title_text[] = $task['assigned_to_name'];
+                }
+                break;
+            
+            case 'percent_complete':
+                if($task['percent_complete']) {
+                    $title_text[] = $task['percent_complete'].'%';
+                }
+                break;
+            
+            case 'category':
+                if (!isset($task['category_name'])) {
+                    $task = $fs->GetTaskDetails($task['task_id']);
+                }
+                $title_text[] = $task['category_name'];
+                break;
+            
+            // ... more options if necessary
+        }
+    }
+    
+    $title_text = implode(' | ', $title_text);
 
     if (is_null($text)) {
         $text = 'FS#'.$task['task_id'].' - '.$summary;
     }
-	
+    
     $url = htmlspecialchars($fs->CreateURL('details', $task['task_id']));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
-            $url, $title, join_attrs($attrs), $text);
+            $url, $title_text, join_attrs($attrs), $text);
 
     if ($task['is_closed']) {
         $link = "<del>&#160;".$link."&#160;</del>";
