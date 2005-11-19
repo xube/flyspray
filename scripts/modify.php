@@ -923,14 +923,6 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
         $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
     }
 
-    $sql = $db->Query("SELECT  COUNT(*) FROM {related}
-                        WHERE  this_task = ?  AND related_task = ?",
-            array(Post::val('this_task'), Post::val('related_task')));
-    if ($db->fetchOne($sql)) {
-        $_SESSION['ERROR'] = $modify_text['relatederror'];
-        $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
-    }
-
     $sql = $db->Query("SELECT  attached_to_project
                          FROM  {tasks}
                         WHERE  task_id = ?",
@@ -945,6 +937,11 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
     if ($proj->id == $relatedproject || Post::has('allprojects')) {
         $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
                 array(Post::val('this_task'), Post::val('related_task')));
+
+        if (!$db->affectedRows()) {
+            $_SESSION['ERROR'] = $modify_text['relatederror'];
+            $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
+        }
 
         $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
         $fs->logEvent(Post::val('related_task'), 15, Post::val('this_task'));
@@ -1192,16 +1189,7 @@ elseif (Post::val('action') == 'requestreopen') {
 
     $fs->AdminRequest(2, $proj->id, Post::val('task_id'), $user->id, Post::val('reason_given'));
     $fs->logEvent(Post::val('task_id'), 21, Post::val('reason_given'));
-
-    // Check if the user is on the notification list
-    $sql = $db->Query("SELECT  COUNT(*)
-                         FROM  {notifications}
-                        WHERE  task_id = ? AND user_id = ?",
-                       array(Post::val('task_id'), $user->id));
-
-    if ($db->fetchOne($sql)) {
-        $be->AddToNotifyList($user->id, Post::val('task_id'));
-    }
+    $be->AddToNotifyList($user->id, Post::val('task_id'));
 
     // Now, get the project managers' details for this project
     $sql = $db->Query("SELECT  u.user_id

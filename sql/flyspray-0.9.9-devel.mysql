@@ -180,8 +180,9 @@ alter table flyspray_list_tasktype   add index (project_id);
 alter table flyspray_list_version    add index (project_id, version_tense);
 
 -- join tables
-alter table flyspray_related      add unique index (this_task, related_task);
-alter table flyspray_dependencies add unique index (task_id, dep_task_id);
+alter table flyspray_related       add unique index (this_task, related_task);
+alter table flyspray_dependencies  add unique index (task_id, dep_task_id);
+alter table flyspray_notifications add unique index (task_id, user_id);
 
 -- user and group related indexes
 alter table flyspray_users_in_groups add unique index (group_id, user_id);

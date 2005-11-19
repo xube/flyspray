@@ -19,16 +19,9 @@ class Backend
         settype($tasks, 'array');
 
         foreach ($tasks AS $key => $task_id) {
-            $sql = $db->Query("SELECT  COUNT(*)
-                                 FROM  {notifications}
-                                WHERE  task_id = ?  AND user_id = ?",
-                    array($task_id, $user_id));
-
-            // If the user isn't already on the notification list...
-            if (!$db->fetchOne($sql)) {
-                $db->Query("INSERT INTO  {notifications} (task_id, user_id)
-                                 VALUES  (?,?)", array($task_id, $user_id));
-
+            $db->Query("INSERT INTO  {notifications} (task_id, user_id)
+                             VALUES  (?,?)", array($task_id, $user_id));
+            if ($db->affectedRows()) {
                 $fs->logEvent($task_id, 9, $user_id);
             }
         }
