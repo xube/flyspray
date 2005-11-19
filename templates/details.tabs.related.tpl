@@ -17,9 +17,7 @@
     </form>
   </div>
   <?php endif; ?>
-  <p>
-    {!tpl_tasklink($row)}
-  </p>
+  <p>{!tpl_tasklink($row)}</p>
   <?php endforeach; ?>
 
   <?php if ($user->can_edit_task($task_details) && !$task_details['is_closed']): ?>
@@ -37,8 +35,6 @@
 
   <p><em>{$details_text['otherrelated']}</em></p>
   <?php foreach ($related_to as $row): ?>
-  <p>
-   {!tpl_tasklink($row)}
-  </p>
+  <p>{!tpl_tasklink($row)}</p>
   <?php endforeach; ?>
 </div>

@@ -1,11 +1,11 @@
 -- =============================================================================
---
+-- 
 -- get out of the magic_gpc hell -- Pierre Habouzit :: 2005-10-30 22:00
---
+-- 
 -- this has been generated automatically (vim macros) from the SQL schema, and
 -- replaces quotes in *EVERY* textual item
 -- this is exhaustive (maybe a bit too much, but It can't harm)
---
+-- 
 -- ========================================================================={{{=
 
 UPDATE flyspray_admin_requests SET
@@ -112,14 +112,14 @@ UPDATE flyspray_users SET
 -- =========================================================================}}}=
 
 -- =============================================================================
---
+-- 
 -- Florian Schmitz, Added on 05 November 05
---
+-- 
 -- RSS/Atom feeds
---
+-- 
 -- (Updated 08 November 2005 by Mac Newbold - rename limit column to max_items,
 --  because limit is a reserved word in sql)
---
+-- 
 -- =============================================================================
 
 ALTER TABLE flyspray_projects ADD feed_img_url TEXT NOT NULL ;
@@ -162,3 +162,44 @@ ALTER TABLE `flyspray_registrations` CHANGE `user_name` `user_name` VARCHAR( 32 
 -- Changed field for FS#329
 
 ALTER TABLE `flyspray_tasks` CHANGE `assigned_to` `assigned_to` VARCHAR( 255 ) DEFAULT '0' NOT NULL ;
+
+
+-- =============================================================================
+-- 
+-- add indexes -- Pierre Habouzit :: 2005-11-19 13:07
+-- 
+-- unique to ensure some invariants in the DB rather than in the code
+-- others to speed up queries
+-- 
+-- =========================================================================={{{
+-- lists tables
+alter table flyspray_list_category   add index (project_id);
+alter table flyspray_list_os         add index (project_id);
+alter table flyspray_list_resolution add index (project_id);
+alter table flyspray_list_tasktype   add index (project_id);
+alter table flyspray_list_version    add index (project_id, version_tense);
+
+-- join tables
+alter table flyspray_related      add unique index (this_task, related_task);
+alter table flyspray_dependencies add unique index (task_id, dep_task_id);
+
+-- user and group related indexes
+alter table flyspray_users_in_groups add unique index (group_id, user_id);
+alter table flyspray_users_in_groups add index (user_id);
+alter table flyspray_groups          add index (belongs_to_project);
+
+-- task related indexes
+alter table flyspray_attachments     add index (task_id, comment_id);
+alter table flyspray_comments        add index (task_id);
+
+alter table flyspray_tasks           add index (attached_to_project);
+alter table flyspray_tasks           add index (task_severity);
+alter table flyspray_tasks           add index (task_type);
+alter table flyspray_tasks           add index (product_category);
+alter table flyspray_tasks           add index (item_status);
+alter table flyspray_tasks           add index (is_closed);
+alter table flyspray_tasks           add index (assigned_to);
+alter table flyspray_tasks           add index (closedby_version);
+alter table flyspray_tasks           add index (due_date);
+
+-- ==========================================================================}}}

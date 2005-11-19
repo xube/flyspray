@@ -256,14 +256,14 @@ class Flyspray
    // It returns an array of user ids
    function UserList($project_id)
    {
-      global $db;
+      global $db, $fs;
       global $conf;
 
       // Create an empty array to put our users into
       $users = array();
 
       // Get the list of global groups that can be assigned tasks
-      $these_groups = explode(" ", $flyspray_prefs['assigned_groups']);
+      $these_groups = explode(" ", $fs->prefs['assigned_groups']);
       foreach ($these_groups AS $key => $val)
       {
          // Get the list of users from the global groups above
