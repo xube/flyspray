@@ -41,8 +41,8 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
             'product_category', 'product_version', 'closedby_version',
             'operating_system', 'task_severity', 'task_priority');
 
-    $sql_values = array(Post::val('project_id'), $item_summary, $detailed_desc,
-            intval($user->id), '0');
+    $sql_values = array(time(), time(), Post::val('project_id'), $item_summary,
+            $detailed_desc, intval($user->id), '0');
 
     $sql_params = array();
     foreach ($param_names as $param_name) {
@@ -67,7 +67,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
                                attached_to_project, item_summary,
                                detailed_desc, opened_by,
                                percent_complete, $sql_params )
-                     VALUES  ( NOW(), NOW(), $sql_placeholder)", $sql_values);
+                     VALUES  ( ?, ?, $sql_placeholder)", $sql_values);
 
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
@@ -214,10 +214,10 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
     }
 
     $db->Query("UPDATE  {tasks}
-                   SET  date_closed = NOW(), closed_by = ?, closure_comment = ?,
+                   SET  date_closed = ?, closed_by = ?, closure_comment = ?,
                         is_closed = '1', resolution_reason = ?
                  WHERE  task_id = ?",
-            array($user->id, Post::val('closure_comment', 0),
+            array(time(), $user->id, Post::val('closure_comment', 0),
                 Post::val('resolution_reason'), Post::val('task_id')));
 
     if (Post::val('mark100')) {
@@ -235,9 +235,9 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
     if ($fs->AdminRequestCheck(1, Post::val('task_id'))) {
         // If there's an admin request related to this, close it
         $db->Query("UPDATE  {admin_requests}
-                       SET  resolved_by = ?, time_resolved = NOW()
+                       SET  resolved_by = ?, time_resolved = ?
                      WHERE  task_id = ? AND request_type = ?",
-                array($user->id, Post::val('task_id'), 1));
+                array($user->id, time(), Post::val('task_id'), 1));
     }
 
     $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
@@ -248,9 +248,9 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
 elseif (Get::val('action') == 'reopen' && $user->can_close_task($old_details)) {
     $db->Query("UPDATE  {tasks}
                    SET  resolution_reason = '0', closure_comment = '0',
-                        last_edited_time = NOW(), last_edited_by = ?, is_closed = '0'
+                        last_edited_time = ?, last_edited_by = ?, is_closed = '0'
                  WHERE  task_id = ?",
-                array($user->id, Get::val('task_id')));
+                array(time(), $user->id, Get::val('task_id')));
 
     $notify->Create('4', Get::val('task_id'));
 
@@ -278,8 +278,8 @@ elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments']) {
 
     $db->Query("INSERT INTO  {comments}
                              (task_id, date_added, user_id, comment_text)
-                     VALUES  ( ?, NOW(), ?, ? )",
-            array(Post::val('task_id'), intval($user->id), $comment));
+                     VALUES  ( ?, ?, ?, ? )",
+            array(Post::val('task_id'), time(), intval($user->id), $comment));
 
     $result = $db->Query("SELECT  comment_id
                             FROM  {comments}
@@ -357,8 +357,8 @@ elseif (Post::val('action') == 'sendcode') {
                              ( reg_time, confirm_code, user_name, real_name,
                                email_address, jabber_id, notify_type,
                                magic_url )
-                     VALUES  (NOW(),?,?,?,?,?,?,?)",
-                array($confirm_code, $user_name, $real_name,
+                     VALUES  (?,?,?,?,?,?,?,?)",
+                array(time(), $confirm_code, $user_name, $real_name,
                     Post::val('email_address'), Post::val('jabber_id'),
                     Post::val('notify_type'), $magic_url));
 
@@ -670,10 +670,10 @@ elseif (Post::val('action') == "addattachment" && $user->perms['create_attachmen
     $db->Query("INSERT INTO  {attachments}
                              ( task_id, orig_name, file_name, file_desc,
                                file_type, file_size, added_by, date_added )
-                     VALUES  ( ?, ?, ?, ?, ?, ?, ?, NOW())",
+                     VALUES  ( ?, ?, ?, ?, ?, ?, ?, ?)",
             array(Post::val('task_id'), $_FILES['userfile']['name'], $file_name,
                 $file_desc, $_FILES['userfile']['type'],
-                $_FILES['userfile']['size'], inval($user->id)));
+                $_FILES['userfile']['size'], $user->id, time()));
 
     $notify->Create('8', Post::val('task_id'));
 
@@ -1234,9 +1234,9 @@ elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project']) {
 
     // Mark the PM request as 'resolved'
     $db->Query("UPDATE  {admin_requests}
-                   SET  resolved_by = ?, time_resolved = NOW(), deny_reason = ?
+                   SET  resolved_by = ?, time_resolved = ?, deny_reason = ?
                  WHERE  request_id = ?",
-                array($user->id, Req::val('deny_reason'), Req::val('req_id')));
+                array($user->id, time(), Req::val('deny_reason'), Req::val('req_id')));
 
     $fs->logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
     $notify->Create('13', $req_details['task_id']);

@@ -21,9 +21,9 @@ $get_reminders = $db->Query("SELECT  r.*, t.*, p.*
                          INNER JOIN  {users}     u ON r.user_id = r.to_user_id
                          INNER JOIN  {tasks}     t ON r.task_id = t.task_id
                          INNER JOIN  {projects}  p ON t.attached_to_project = p.project_id
-                              WHERE  t.is_closed = '0' AND r.start_time < NOW()
-                                                       AND r.last_sent + r.how_often < NOW()
-                           ORDER BY  r.reminder_id");
+                              WHERE  t.is_closed = '0' AND r.start_time < ?
+                                                       AND r.last_sent + r.how_often < ?
+                           ORDER BY  r.reminder_id", array(time(), time()));
 
 while ($row = $db->FetchRow($get_reminders)) {
     $jabber_users = array();
@@ -57,9 +57,9 @@ while ($row = $db->FetchRow($get_reminders)) {
 
     // Update the database with the time sent
     $update_db = $db->Query("UPDATE  {reminders}
-                                SET  last_sent = NOW()
+                                SET  last_sent = ?
                               WHERE  reminder_id = ?",
-                          array($row['reminder_id']));
+                          array(time(), $row['reminder_id']));
     }
 }
 

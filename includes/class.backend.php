@@ -141,12 +141,12 @@ class Backend
                                      ( task_id, comment_id, file_name,
                                        file_type, file_size, orig_name,
                                        added_by, date_added )
-                             VALUES  (?, ?, ?, ?, ?, ?, ?, NOW())",
+                             VALUES  (?, ?, ?, ?, ?, ?, ?, ?)",
                     array($taskid, $commentid, $fname,
                         $_FILES['userfile']['type'][$key],
                         $_FILES['userfile']['size'][$key],
                         $_FILES['userfile']['name'][$key],
-                        $user->id));
+                        $user->id), time());
 
             // Fetch the attachment id for the history log
             $result = $db->Query("SELECT  attachment_id
