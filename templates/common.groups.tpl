@@ -1,5 +1,5 @@
 <?php foreach($proj->listGroups() as $group): ?>
-<a class="grouptitle" href="{$fs->CreateURL($gr_link, $group['group_id'])}">{$group['group_name']}</a>
+<a class="grouptitle" href="{$fs->CreateURL('editgroup', $group['group_id'])}">{$group['group_name']}</a>
 <p>{$group['group_desc']}</p>
 <form action="{$baseurl}" method="post">
   <div>

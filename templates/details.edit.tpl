@@ -98,7 +98,11 @@
          </tr>
          <tr class="reportedver">
           <td><label for="reportedver">{$details_text['reportedversion']}</label></td>
-          <td id="reportedver">{$task_details['reported_version_name']}</td>
+          <td>
+            <select id="reportedver" name="reportedver">
+            {!tpl_options($proj->listVersions(false, 2, $task_details['product_version']), $task_details['product_version'])}
+            </select>
+          </td>
          </tr>
          <tr class="dueversion">
           <td><label for="dueversion">{$details_text['dueinversion']}</label></td>

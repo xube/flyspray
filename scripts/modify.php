@@ -153,7 +153,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                             detailed_desc = ?, item_status = ?, assigned_to = ?,
                             product_category = ?, closedby_version = ?, operating_system = ?,
                             task_severity = ?, task_priority = ?, last_edited_by = ?,
-                            last_edited_time = ?, due_date = ?, percent_complete = ?
+                            last_edited_time = ?, due_date = ?, percent_complete = ?, product_version = ?
                      WHERE  task_id = ?",
                 array(Post::val('attached_to_project'), Post::val('task_type'),
                     Post::val('item_summary'), Post::val('detailed_desc'),
@@ -161,7 +161,8 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                     Post::val('product_category'), Post::val('closedby_version', 0),
                     Post::val('operating_system'), Post::val('task_severity'),
                     Post::val('task_priority'), intval($user->id), time(), $due_date,
-                    Post::val('percent_complete'), Post::val('task_id')));
+                    Post::val('percent_complete'), Post::val('reportedver'),
+                    Post::val('task_id')));
 
         // Get the details of the task we just updated
         // To generate the changed-task message
@@ -329,12 +330,19 @@ elseif (Post::val('action') == 'sendcode') {
     if (!$user_name || !$real_name) {
         $_SESSION['ERROR'] = $register_text['registererror'];
         $fs->redirect($fs->createUrl('register'));
-    }
+    } 
 
     $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE user_name = ?",
             array($user_name));
     if ($db->fetchOne($sql)) {
         $_SESSION['ERROR'] = $register_text['usernametaken'];
+        $fs->redirect($fs->createUrl('register'));
+    }
+    
+    $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE email_address = ? OR jabber_id = ?",
+            array(Post::val('email_address'), Post::val('jabber_id')));
+    if ($db->fetchOne($sql)) {
+        $_SESSION['ERROR'] = $register_text['emailtaken'];
         $fs->redirect($fs->createUrl('register'));
     }
 
@@ -946,7 +954,7 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
         $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
         $fs->logEvent(Post::val('related_task'), 15, Post::val('this_task'));
 
-        $notify->Create('9', Post::val('this_task'));
+        $notify->Create('9', Post::val('this_task'), Post::val('related_task'));
 
         $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
         $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));

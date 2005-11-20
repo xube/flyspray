@@ -26,7 +26,7 @@ RewriteRule ^admin/([a-zA-Z]+)$ index.php?do=admin&area=$1 [L]
 RewriteRule ^pm/proj([0-9]+)/([a-zA-Z]+)$ index.php?do=pm&project=$1&area=$2 [L]
 
 RewriteRule ^newgroup/proj([0-9]+)$ index.php?do=newgroup&project=$1 [L]
-RewriteRule ^group/([0-9]+)$ index.php?do=admin&area=editgroup&id=$1 [L]
+RewriteRule ^editgroup/([0-9]+)$ index.php?do=admin&area=editgroup&id=$1 [L]
 RewriteRule ^projgroup/([0-9]+)$ index.php?do=pm&area=editgroup&id=$1 [L]
 RewriteRule ^user/([0-9]+)$ index.php?do=admin&area=users&id=$1 [L]
 RewriteRule ^newuser$ index.php?do=newuser [L]

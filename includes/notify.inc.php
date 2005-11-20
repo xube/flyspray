@@ -27,10 +27,10 @@ class Notifications {
 
    // This function is the wrapper for the others in this class
    // It addresses, creates and stores/sends the notifications
-   function Create ( $type, $task_id )
+   function Create ( $type, $task_id, $info )
    {
       $to = $this->Address($task_id);
-      $msg = $this->GenerateMsg($type, $task_id);
+      $msg = $this->GenerateMsg($type, $task_id, $info);
       $this->SendEmail($to[0], $msg[0], $msg[1]);
       $this->StoreJabber($to[1], $msg[0], $msg[1]);
 
@@ -555,14 +555,18 @@ class Notifications {
       ////////////////////////
       if ($type == '9')
       {
+         $related_task = $fs->getTaskDetails($arg1);
          $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['relatedadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= $notify_text['relatedis'] . ':' . "\n\n";
+         $body .= 'FS#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\n";
+         $body .= $fs->CreateURL('details', $related_task['task_id']) . "\n\n";
+         
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);

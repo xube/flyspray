@@ -554,7 +554,7 @@ class Flyspray
                 case 'newgroup':
                 case 'newtask':   return $url . $type .  '/proj' . $arg1;
 
-                case 'group':
+                case 'editgroup':
                 case 'projgroup': return $url . $type . '/' . $arg1;
 
                 case 'error':
@@ -586,8 +586,8 @@ class Flyspray
             case 'newgroup':
             case 'newtask':   return $url . '&project=' . $arg1;
 
-            case 'group':
-            case 'projgroup': return $url . '&area=editgroup&id=' . $arg1;
+            case 'editgroup':
+            case 'projgroup': return $conf['general']['baseurl'] . '?do=admin&area=editgroup&id=' . $arg1;
 
             case 'error':
             case 'lostpw':

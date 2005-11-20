@@ -31,6 +31,7 @@ $register_text = array (
 
 // Added in version 0.9.9
 'validusername' 		=>		'(only alphanumeric chars and - _ . are allowed)',
+'emailtaken'            =>      'That email address or Jabber-ID is already taken. You will need to choose another one.',
 
 );
 ?>

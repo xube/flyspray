@@ -99,17 +99,22 @@ class Project
         }
     }
 
-    function listVersions($pm = false, $tense = 2)
+    function listVersions($pm = false, $tense = 2, $reported_version = null)
     {
         if ($pm) {
             return $this->_cached_query(
                     'pm_version',
                     $this->_pm_list_sql('version', array('product_version', 'closedby_version')),
                     array($this->id));
-        } else {
+        } elseif(is_null($reported_version)) {
             return $this->_cached_query(
                     'version_'.$tense,
                     $this->_list_sql('version', "AND version_tense = '$tense'"),
+                    array($this->id));
+        } else {
+            return $this->_cached_query(
+                    'version_'.$tense,
+                    $this->_list_sql('version', "AND version_tense = '$tense' OR version_id = '$reported_version' "),
                     array($this->id));
         }
     }

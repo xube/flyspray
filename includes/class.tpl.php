@@ -135,8 +135,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
                 break;
             
             case 'assignedto':
-                if($task['assigned_to'])
-                {
+                if($task['assigned_to']) {
                     if (!isset($task['assigned_to_name'])) {
                         $task = $fs->GetTaskDetails($task['task_id']);
                     }
@@ -151,10 +150,12 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
                 break;
             
             case 'category':
-                if (!isset($task['category_name'])) {
-                    $task = $fs->GetTaskDetails($task['task_id']);
+                if($task['product_category']) {
+                    if (!isset($task['category_name'])) {
+                        $task = $fs->GetTaskDetails($task['task_id']);
+                    }
+                    $title_text[] = $task['category_name'];
                 }
-                $title_text[] = $task['category_name'];
                 break;
             
             // ... more options if necessary
