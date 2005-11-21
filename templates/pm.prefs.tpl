@@ -77,6 +77,13 @@
 
       <table class="admin">
         <tr>
+          <td><label for="notify_subject">{$pm_text['notifysubject']}</label></td>
+          <td>
+            <input id="notify_subject" name="notify_subject" type="text" size="40" value="{$proj->prefs['notify_subject']}" />
+            {$pm_text['notifysubjectinfo']}
+          </td>
+        </tr>
+        <tr>
           <td><label for="emailaddress">{$pm_text['emailaddress']}</label></td>
           <td>
             <input id="emailaddress" name="notify_email" type="text" value="{$proj->prefs['notify_email']}" />

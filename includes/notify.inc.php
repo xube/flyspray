@@ -326,6 +326,15 @@ class Notifications {
       // Set the due version correctly
       if ($task_details['closedby_version'] == '0')
          $task_details['closedby_version'] = $details_text['undecided'];
+         
+      // Generate the nofication message
+      if($proj->prefs['notify_subject']) {
+          $subject = str_replace(array('%p','%s','%t'),
+                                    array($proj->prefs['project_title'], $task_details['item_summary'], $task_id),
+                                    $proj->prefs['notify_subject']);
+      } else {
+          $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
+      }
 
 
       /* -------------------------------
@@ -352,8 +361,6 @@ class Notifications {
       ///////////////////////////////////////////////////////////////
       if ($type == '1')
       {
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['newtaskopened'] . "\n\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
@@ -382,9 +389,6 @@ class Notifications {
       //////////////////////////
       if ($type == '2')
       {
-         // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['taskchanged'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -416,9 +420,6 @@ class Notifications {
       /////////////////
       if ($type == '3')
       {
-         // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['taskclosed'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -443,8 +444,6 @@ class Notifications {
       ////////////////////
       if ($type == '4')
       {
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['taskreopened'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -463,9 +462,6 @@ class Notifications {
       {
          $depend_task = $fs->getTaskDetails($arg1);
         
-         // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['depadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -485,9 +481,6 @@ class Notifications {
       ////////////////////////
       if ($type == '6')
       {
-         // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['depremoved'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -515,9 +508,6 @@ class Notifications {
                              );
          $comment = $db->FetchArray($result);
 
-         // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['commentadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -542,8 +532,6 @@ class Notifications {
       //////////////////////
       if ($type == '8')
       {
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['attachmentadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -561,7 +549,6 @@ class Notifications {
       if ($type == '9')
       {
          $related_task = $fs->getTaskDetails($arg1);
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['relatedadded'] . "\n\n";
@@ -582,9 +569,6 @@ class Notifications {
       /////////////////////
       if ($type == '10')
       {
-
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $task_details['assigned_to_name'] . ' ' . $notify_text['takenownership'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n\n";
@@ -617,8 +601,6 @@ class Notifications {
       ////////////////////////
       if ($type == '12')
       {
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pendingreq'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -635,12 +617,12 @@ class Notifications {
       ///////////////////////
       if ($type == '13')
       {
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['pmdeny'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+         $body .= $notify_text['denialreason'] . ':' . "\n";
+         $body .= $arg1 . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
@@ -653,8 +635,6 @@ class Notifications {
       //////////////////
       if ($type == '14')
       {
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['assignedtoyou'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -673,9 +653,6 @@ class Notifications {
       {
          $depend_task = $fs->getTaskDetails($arg1);
         
-         // Generate the nofication message
-         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
-
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['taskwatching'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";

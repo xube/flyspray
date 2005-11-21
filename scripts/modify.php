@@ -637,7 +637,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
 
     $cols = array( 'project_title', 'theme_style', 'default_cat_owner',
             'intro_message', 'project_is_active', 'others_view', 'anon_open',
-            'notify_email', 'notify_email_when', 'notify_jabber',
+            'notify_email', 'notify_email_when', 'notify_jabber', 'notify_subject',
             'notify_jabber_when', 'feed_description', 'feed_img_url');
     $args = array_map('Post_to0', $cols);
     $args[] = Post::val('project_id', 0);
@@ -1235,7 +1235,7 @@ elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project']) {
                 array($user->id, time(), Req::val('deny_reason'), Req::val('req_id')));
 
     $fs->logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
-    $notify->Create('13', $req_details['task_id']);
+    $notify->Create('13', $req_details['task_id'], Req::val('deny_reason'));
 
     $_SESSION['SUCCESS'] = $modify_text['pmreqdenied'];
     $fs->redirect(Req::val('prev_page'));

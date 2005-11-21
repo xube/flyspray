@@ -7,15 +7,17 @@
     <?php if (!count($pendings)): ?>
     {$pm_text['nopendingreq']}
     <?php else: ?>
-    <table class="history" border="1">
+    <table class="requests">
       <tr>
         <th>{$admin_text['eventdesc']}</th>
         <th>{$admin_text['requestedby']}</th>
         <th>{$admin_text['daterequested']}</th>
         <th>{$pm_text['reasongiven']}</th>
+        <th> </th>
       </tr>
       <?php foreach ($pendings as $req): ?>
       <tr>
+        <td>
         <?php if ($req['request_type'] == 1) : ?>
         {$admin_text['closetask']} -
         <a href="{$fs->CreateURL('details', $req['task_id'])}">FS#{$req['task_id']} :
@@ -27,8 +29,8 @@
         <?php elseif ($req['request_type'] == 3) : ?>
         {$admin_text['applymember']}
         <?php endif; ?>
-        <td>$request_type</td>";
-        <td>{$fs->LinkedUserName($req['user_id'])}</td>
+        </td>
+        <td>{!tpl_userlink($req['user_id'])}</td>
         <td>{$fs->formatDate($req['time_submitted'], true)}</td>
         <td>{$req['reason_given']}</td>
         <td>
@@ -41,7 +43,7 @@
                 <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
                 <input type="hidden" name="req_id" value="{$req['request_id']}" />
                 {$pm_text['givereason']}
-                <textarea name="deny_reason"></textarea>
+                <textarea cols="40" rows="5" name="deny_reason"></textarea>
                 <br />
                 <input class="adminbutton" type="submit" value="{$pm_text['deny']}" />
               </div>

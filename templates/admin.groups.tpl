@@ -7,7 +7,6 @@
       <a href="{$fs->CreateURL('newgroup', $proj->id)}">{$admin_text['newgroup']}</a>
     </p>
     <?php
-    $this->assign('gr_link', 'group');
     $this->display('common.groups.tpl');
     ?>
   </fieldset>

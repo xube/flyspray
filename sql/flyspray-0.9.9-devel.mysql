@@ -204,3 +204,7 @@ alter table flyspray_tasks           add index (closedby_version);
 alter table flyspray_tasks           add index (due_date);
 
 -- ==========================================================================}}}
+
+-- Florian Schmitz, 21 November 2005, FS#344
+
+ALTER TABLE `flyspray_projects` ADD `notify_subject` VARCHAR( 100 ) NOT NULL;

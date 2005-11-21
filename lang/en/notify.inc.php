@@ -33,5 +33,6 @@ $notify_text = array (
 // Added in 0.9.9
 'taskwatching'                =>    'The following task you are watching',
 'isdepfor'                    =>    'is a new dependency for',
+'denialreason'                =>    'Reason for denial',
 );
 ?>

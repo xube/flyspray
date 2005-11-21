@@ -32,6 +32,10 @@ $pm_text = array (
 'allevents'                =>    'Any event occurs in any task',
 'feeds'                    =>    'Feeds',
 'feeddescription'          =>    'Feed description',
-'feedimgurl'               =>    'Feed image URL (leave blank for no image)'
+'feedimgurl'               =>    'Feed image URL (leave blank for no image)',
+
+// Added in 0.9.9
+'notifysubject'            =>    'Subject for notifications',
+'notifysubjectinfo'        =>    '(%p = project title, %s = task summary, %t = task id)',
 );
 ?>
