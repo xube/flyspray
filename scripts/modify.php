@@ -575,7 +575,7 @@ elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin']) {
 // adding a new project {{{
 elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
 
-    if (Post::val('project_title') != '') {
+    if (!Post::val('project_title')) {
         $_SESSION['ERROR'] = $modify_text['emptytitle'];
         $fs->redirect($fs->createURL('admin', 'newproject'));
     }
@@ -985,13 +985,13 @@ elseif (Req::val('action') == "add_notification") {
         if (!empty($ids)) {
             $be->AddToNotifyList($user->id, array_keys($ids));
         }
+        $fs->redirect(Req::val('prev_page'));
     } else {
         $be->AddToNotifyList(Req::val('user_id'), Req::val('ids'));
-        $redirect_url = $fs->CreateURL('details', Req::val('ids'));
     }
 
     $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
-    $fs->redirect($redirect_url.'#notify');
+    $fs->redirect($fs->CreateURL('details', Req::val('ids')) . '#notify');
 } // }}}
 // removing a notification entry {{{
 elseif (Req::val('action') == "remove_notification") {
@@ -1003,13 +1003,13 @@ elseif (Req::val('action') == "remove_notification") {
         if (!empty($ids)) {
             $be->RemoveFromNotifyList($user->id, array_keys($ids));
         }
+        $fs->redirect(Req::val('prev_page'));
     } else {
         $be->RemoveFromNotifyList(Req::val('user_id'), Req::val('ids'));
-        $redirect_url = $fs->CreateURL('details', Req::val('ids'));
     }
 
     $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
-    $fs->redirect($redirect_url.'#notify');
+    $fs->redirect($fs->CreateURL('details', Req::val('ids')) . '#notify');
 } // }}}
 // editing a comment {{{
 elseif (Post::val('action') == "editcomment" && $user->perms['edit_comments']) {

@@ -17,11 +17,11 @@
     </tr>
     <tr>
       <td><label for="viewnewtasks">{$newgroup_text['viewtasks']}</label></td>
-      <td><input id="viewasks" type="checkbox" name="view_tasks" value="1" checked /></td>
+      <td><input id="viewasks" type="checkbox" name="view_tasks" value="1" checked="checked" /></td>
     </tr>
     <tr>
       <td><label for="opennewtasks">{$newgroup_text['opennewtasks']}</label></td>
-      <td><input id="opennewtasks" type="checkbox" name="open_new_tasks" value="1" checked /></td>
+      <td><input id="opennewtasks" type="checkbox" name="open_new_tasks" value="1" checked="checked" /></td>
     </tr>
     <tr>
       <td><label for="modifyowntasks">{$newgroup_text['modifyowntasks']}</label></td>
@@ -33,7 +33,7 @@
     </tr>
     <tr>
       <td><label for="viewcomments">{$newgroup_text['viewcomments']}</label></td>
-      <td><input id="viewcomments" type="checkbox" name="view_comments" value="1" checked /></td>
+      <td><input id="viewcomments" type="checkbox" name="view_comments" value="1" checked="checked" /></td>
     </tr>
     <tr>
       <td><label for="addcomments">{$newgroup_text['addcomments']}</label></td>
@@ -57,7 +57,7 @@
     </tr>
     <tr>
       <td><label for="viewhistory">{$newgroup_text['viewhistory']}</label></td>
-      <td><input id="viewhistory" type="checkbox" name="view_history" value="1" checked /></td>
+      <td><input id="viewhistory" type="checkbox" name="view_history" value="1" checked="checked" /></td>
     </tr>
     <tr>
       <td><label for="closeowntasks">{$newgroup_text['closeowntasks']}</label></td>
@@ -77,11 +77,11 @@
     </tr>
     <tr>
       <td><label for="viewreports">{$newgroup_text['viewreports']}</label></td>
-      <td><input id="viewreports" type="checkbox" name="view_reports" value="1" checked /></td>
+      <td><input id="viewreports" type="checkbox" name="view_reports" value="1" checked="checked" /></td>
     </tr>
     <tr>
       <td><label for="groupopen">{$newgroup_text['groupenabled']}</label></td>
-      <td><input id="groupopen" type="checkbox" name="group_open" value="1" checked /></td>
+      <td><input id="groupopen" type="checkbox" name="group_open" value="1" checked="checked" /></td>
     </tr>
     <tr>
       <td colspan="2" class="buttons">

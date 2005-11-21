@@ -265,20 +265,20 @@ class Notifications {
          }
 
       // Use php's built-in mail() function
-      } else
-      {
+      } else {
          $mail->IsMail();
       }
 
       if (is_array($to))
       {
+         $mail->AddAddress($fs->prefs['admin_email']);
          foreach ($to as $key => $val)
          {
-            $mail->AddAddress($val);                        // Add each address
+            // Unlike the docs say, it *does (appear to)* work with mail()
+            $mail->AddBcc($val);                        // Add each address
          }
 
-      } else
-      {
+      } else {
          $mail->AddAddress($to);                            // Add a single address
       }
 

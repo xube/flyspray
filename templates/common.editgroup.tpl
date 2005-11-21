@@ -90,6 +90,10 @@
         <td><label for="viewreports">{$admin_text['viewreports']}</label></td>
         <td>{!tpl_checkbox('view_reports', $group_details['view_reports'], 'viewreports')}</td>
       </tr>
+      <tr>
+        <td><label for="groupopen">{$admin_text['groupenabled']}</label></td>
+        <td>{!tpl_checkbox('group_open', $group_details['group_open'], 'group_open')}</td>
+      </tr>
       <?php endif; ?>
       <tr>
         <td colspan="2" class="buttons">
