@@ -344,6 +344,7 @@ class Notifications {
          |12. PM request               |
          |13. PM denied request        |
          |14. New assignee             |
+         |15. Is dependency for        |
          -------------------------------
       */
       ///////////////////////////////////////////////////////////////
@@ -460,15 +461,19 @@ class Notifications {
       //////////////////////
       if ($type == '5')
       {
+         $depend_task = $fs->getTaskDetails($arg1);
+        
          // Generate the nofication message
          $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
 
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['depadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= $notify_text['newdepis'] . ':' . "\n\n";
+         $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
+         $body .= $fs->CreateURL('details', $depend_task['task_id']) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -661,6 +666,29 @@ class Notifications {
          return array($subject, $body);
       }
 
+      ///////////////////////
+      // Is dependency for //
+      ///////////////////////
+      if ($type == '15')
+      {
+         $depend_task = $fs->getTaskDetails($arg1);
+        
+         // Generate the nofication message
+         $subject = $notify_text['notifyfrom'] . $proj->prefs['project_title'];
+
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['taskwatching'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= $notify_text['isdepfor'] . ':' . "\n\n";
+         $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
+         $body .= $fs->CreateURL('details', $depend_task['task_id']) . "\n\n";
+         $body .= $notify_text['disclaimer'];
+
+         return array($subject, $body);
+
+      }
    // End of Detailed notification function
    }
 

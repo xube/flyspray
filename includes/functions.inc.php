@@ -534,7 +534,7 @@ class Flyspray
     /* Check if we should use address rewriting
        and return an appropriate URL
      */
-    function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = null)
+    function CreateURL($type, $arg1 = null, $arg2 = null)
     {
         global $conf;
 

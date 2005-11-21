@@ -3,7 +3,7 @@
   <?php foreach ($notifications as $row): ?>
   <p>
     {!tpl_userlink($row['user_id'])} &mdash;
-    <a href="{$baseurl}'?do=modify&amp;action=remove_notification&amp;ids={Get::val('id')}&amp;user_id={$row['user_id']}">{$details_text['remove']}</a>
+    <a href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::val('id')}&amp;user_id={$row['user_id']}">{$details_text['remove']}</a>
   </p>
   <?php endforeach; ?>
 

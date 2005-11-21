@@ -31,7 +31,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
 
     if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
         $_SESSION['ERROR'] = $modify_text['summaryanddetails'];
-        $this->redirect($fs->createUrl('newtask', $proj->id));
+        $fs->redirect($fs->createUrl('newtask', $proj->id));
     }
 
     $item_summary  = Post::val('item_summary');
@@ -1258,8 +1258,6 @@ elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details)
     $sql3 = $db->Query("SELECT COUNT(*) FROM {tasks} WHERE task_id = ?",
             array(Post::val('dep_task_id')));
 
-    $notify->Create('5', Post::val('task_id'));
-
     if ($db->fetchOne($sql1) || $db->fetchOne($sql2) || !$db->fetchOne($sql3)
             // Check that the user hasn't tried to add the same task as a dependency
             || Post::val('task_id') == Post::val('dep_task_id'))
@@ -1268,6 +1266,9 @@ elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details)
         $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
     }
 
+    $notify->Create('5', Post::val('task_id'), Post::val('dep_task_id'));
+    $notify->Create('15', Post::val('dep_task_id'), Post::val('task_id'));
+    
     // Log this event to the task history, both ways
     $fs->logEvent(Post::val('task_id'), 22, Post::val('dep_task_id'));
     $fs->logEvent(Post::val('dep_task_id'), 23, Post::val('task_id'));

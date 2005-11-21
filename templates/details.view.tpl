@@ -301,7 +301,7 @@
 	 <?php endif; ?>
 
 	 <?php if (!$user->isAnon()): ?>
-	 <?php if ($watched): ?>
+	 <?php if (!$watched): ?>
 	 <a id="addnotif" class="button"
 		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
 		{$details_text['watchtask']}</a>

@@ -30,5 +30,8 @@ $notify_text = array (
 'assignedtoyou'               =>    'You have been assigned the following task:',
 'fileaddedtoo'                =>    'There was one or more files attached to this comment.',
 
+// Added in 0.9.9
+'taskwatching'                =>    'The following task you are watching',
+'isdepfor'                    =>    'is a new dependency for',
 );
 ?>
