@@ -212,10 +212,6 @@
   <?php endif; ?>
   <?php endif; ?>
 
-  <?php if (count($penreqs)): ?>
-  <span id="pendingreq">{$details_text['taskpendingreq']}</span>
-  <?php endif; ?>
-
   <div id="actionbuttons">
 	 <?php if ($task_details['is_closed']): ?>
 
@@ -313,5 +309,8 @@
 	 <?php endif; ?>
 
 	 <?php endif; ?>
+	 <?php if (count($penreqs)): ?>
+     <span class="pendingreq">{$details_text['taskpendingreq']}</span>
+     <?php endif; ?>
   </div>
 </div>

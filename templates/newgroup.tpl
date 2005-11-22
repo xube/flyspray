@@ -44,6 +44,10 @@
       <td><input id="editcomments" type="checkbox" name="edit_comments" value="1" /></td>
     </tr>
     <tr>
+      <td><label for="viewattachments">{$newgroup_text['viewattachments']}</label></td>
+      <td><input id="viewattachments" type="checkbox" name="view_attachments" value="1" /></td>
+    </tr>
+    <tr>
       <td><label for="deletecomments">{$newgroup_text['deletecomments']}</label></td>
       <td><input id="deletecomments" type="checkbox" name="delete_comments" value="1" /></td>
     </tr>

@@ -249,7 +249,7 @@ a#reportslink {
    background-image:url(menu/projectprefs.png);
 }
 
-#pendingreq {
+.pendingreq {
    padding:0;
 }
 
@@ -885,15 +885,18 @@ div#fileupload {
    margin:20px 0;
 }
 
-span#pendingreq {
-   display:block;
-   clear:both;
+span.pendingreq {
    font-size:120%;
    font-weight:700;
-   float:right;
    color:red;
-   background-color:#FF0;
+   background:url(em.png) no-repeat left;
    margin:0 0 0 9px;
+   padding:2px 0 2px 10px;
+}
+
+a.pendingreq {
+   color:red;
+   background:url(em.png) no-repeat 6px !important;
 }
 
 /* container for the next/previous links in the task details */
@@ -993,11 +996,6 @@ label.inline,table.list label,div#showtask label,p.admin label,form#formaddrelat
 div#loginbox p,div#search p {
    margin:0;
    padding:0;
-}
-
-a.attention,a.attention:hover {
-   color:red;
-   background-color:#fff000;
 }
 
 div#tasklist table td.taskid,div#tasklist table th.taskid,table.history td.taskid {

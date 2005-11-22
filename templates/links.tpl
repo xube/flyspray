@@ -46,13 +46,17 @@ endif; ?>
     href="{$fs->CreateURL('pm', 'prefs', $proj->id)}">{$language['manageproject']}</a>
   </li>
 <?php endif; ?>
+<?php if ($user->perms['manage_project'] && $pm_pendingreq_num): ?>
+  <li>
+<?php else: ?>
   <li class="last">
+<?php endif; ?>
   <a id="logoutlink" href="{$fs->CreateURL('logout', null)}"
     accesskey="l">{$language['logout']}</a>
   </li>
 <?php if ($user->perms['manage_project'] && $pm_pendingreq_num): ?>
-  <li>
-  <a id="pendingreq" class="attention"
+  <li class="last">
+  <a class="pendingreq attention"
     href="{$fs->CreateURL('pm', 'pendingreq', $proj->id)}">{$num_req} {$language['pendingreq']}</a>
   </li>
 <?php endif; ?>

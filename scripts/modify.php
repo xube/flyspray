@@ -547,7 +547,7 @@ elseif (Post::val('action') == "newgroup"
                     'modify_all_tasks', 'view_comments', 'add_comments',
                     'edit_comments', 'delete_comments', 'create_attachments',
                     'delete_attachments', 'view_history', 'close_own_tasks',
-                    'close_other_tasks', 'assign_to_self',
+                    'close_other_tasks', 'assign_to_self', 'view_attachments',
                     'assign_others_to_self', 'view_reports', 'group_open');
             // XXX kludge : project in POST is belongs_to_project in the DB
             $db->Query("INSERT INTO  {groups} ( belongs_to_".join(',', $cols).")
