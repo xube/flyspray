@@ -96,8 +96,7 @@ class Notifications {
    // which is too slow to be called inline to Flyspray's scripts.
    function SendJabber()
    {
-      global $db;
-      global $fs;
+      global $db, $fs, $basedir;
 
       debug_print("Checking Flyspray Jabber configuration...");
 
@@ -109,7 +108,7 @@ class Notifications {
 
       debug_print("We are configured to use Jabber...");
 
-      require_once('class.jabber.php');
+      require_once("$basedir/includes/class.phpmailer.php");
       $JABBER = new Jabber;
 
       $JABBER->server      = $fs->prefs['jabber_server'];
@@ -353,7 +352,8 @@ class Notifications {
          |12. PM request               |
          |13. PM denied request        |
          |14. New assignee             |
-         |15. Is dependency for        |
+         |15. Reversed dep             |
+         |16. Reversed dep removed     |
          -------------------------------
       */
       ///////////////////////////////////////////////////////////////
@@ -490,16 +490,19 @@ class Notifications {
       ////////////////////////
       if ($type == '6')
       {
+         $depend_task = $fs->getTaskDetails($arg1);
+         
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['depremoved'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= $notify_text['removeddepis'] . ':' . "\n\n";
+         $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
+         $body .= $fs->CreateURL('details', $depend_task['task_id']) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-
       }
 
       ///////////////////
@@ -656,7 +659,7 @@ class Notifications {
       }
 
       ///////////////////////
-      // Is dependency for //
+      // Reversed dep      //
       ///////////////////////
       if ($type == '15')
       {
@@ -673,7 +676,26 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
+      }
+      
+      ////////////////////////////
+      // Reversed dep - removed //
+      ////////////////////////////
+      if ($type == '16')
+      {
+         $depend_task = $fs->getTaskDetails($arg1);
 
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['taskwatching'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= $notify_text['isnodepfor'] . ':' . "\n\n";
+         $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
+         $body .= $fs->CreateURL('details', $depend_task['task_id']) . "\n\n";
+         $body .= $notify_text['disclaimer'];
+
+         return array($subject, $body);
       }
    // End of Detailed notification function
    }

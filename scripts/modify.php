@@ -1306,7 +1306,8 @@ elseif (Get::val('action') == 'removedep' && $user->can_edit_task($old_details))
                         array(Get::val('depend_id')));
     $dep_info = $db->FetchArray($result);
 
-    $notify->Create('6', $dep_info['task_id']);
+    $notify->Create('6', $dep_info['task_id'], $dep_info['dep_task_id']);
+    $notify->Create('16', $dep_info['dep_task_id'], $dep_info['task_id']);
 
     $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
     $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
