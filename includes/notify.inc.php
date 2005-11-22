@@ -389,25 +389,34 @@ class Notifications {
       //////////////////////////
       if ($type == '2')
       {
+         $translation = array('priority_name' => $details_text['priority'],
+                              'severity_name' => $details_text['severity'],
+                              'status_name'   => $details_text['status'],
+                              'assigned_to_name' => $details_text['assignedto'],
+                              'due_in_version_name' => $details_text['dueinversion'],
+                              'reported_version_name' => $details_text['reportedversion'],
+                              'tasktype_name' => $details_text['tasktype'],
+                              'os_name' => $details_text['operatingsystem'],
+                              'category_name' => $details_text['category'],
+                              'due_date' => $details_text['duedate'],
+                              'percent_complete' => $details_text['percentcomplete'],
+                              'item_summary' => $details_text['summary'],
+                              'due_in_version_name' => $details_text['dueinversion'],
+                              'detailed_desc' => $details_text['taskedited'],
+                              'project_title' => $details_text['attachedtoproject']);
+                              
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['taskchanged'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $details_text['attachedtoproject'] . ' - ' .  $task_details['project_title'] . "\n";
-         $body .= $details_text['summary'] . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $details_text['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
-         $body .= $details_text['category'] . ' - ' . $task_details['category_name'] . "\n";
-         $body .= $details_text['status'] . ' - ' . $task_details['status_name'] . "\n";
-         $body .= $details_text['assignedto'] . ' - ' . $task_details['assigned_to_name'] . "\n";
-         $body .= $details_text['operatingsystem'] . ' - ' . $task_details['os_name'] . "\n";
-         $body .= $details_text['severity'] . ' - ' . $task_details['severity_name'] . "\n";
-         $body .= $details_text['priority'] . ' - ' . $task_details['priority_name'] . "\n";
-         $body .= $details_text['reportedversion'] . ' - ' . $task_details['reported_version_name'] . "\n";
-         $body .= $details_text['dueinversion'] . ' - ' . $task_details['due_in_version_name'] . "\n";
-         $body .= $details_text['duedate'] . ' - ' . $due_date . "\n";
-         $body .= $details_text['percentcomplete'] . ' - ' . $task_details['percent_complete'] . "%\n";
-         $body .= $details_text['details'] . ' - ' . $task_details['detailed_desc'] . "\n\n";
-         $body .= $notify_text['moreinfo'] . "\n";
+         foreach($arg1 as $change)
+         {
+            if($change[0] == 'detailed_desc') {
+                $body .= $translation[$change[0]] . ":\n-------\n" . $change[2] . "\n-------\n";
+            } else {
+                $body .= $translation[$change[0]] . ': ' . ( ($change[1]) ? $change[1] : '[-]' ) . ' -> ' . ( ($change[2]) ? $change[2] : '[-]' ) . "\n";
+            }
+         }
+         $body .= "\n" . $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 

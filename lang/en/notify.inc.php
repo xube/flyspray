@@ -9,7 +9,6 @@ $notify_text = array (
 'userwho'                     =>    'User who did this:',
 'moreinfo'                    =>    'More information can be found at the following URL:',
 'newtaskopened'               =>    'A new Flyspray task has been opened.  Details are below.',
-'taskchanged'                 =>    'The following task has been changed.  The new details are below.  For full information about what has changed, visit the URL and click the History tab.',
 'taskclosed'                  =>    'The following task is now closed:',
 'taskreopened'                =>    'The following task has been re-opened:',
 'depadded'                    =>    'The following task has a new dependency:',
@@ -34,5 +33,6 @@ $notify_text = array (
 'taskwatching'                =>    'The following task you are watching',
 'isdepfor'                    =>    'is a new dependency for',
 'denialreason'                =>    'Reason for denial',
+'taskchanged'                 =>    'The following task has been changed.  The changes are listed below.  For full information about what has changed, visit the URL and click the History tab.',
 );
 ?>

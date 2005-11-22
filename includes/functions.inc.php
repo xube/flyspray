@@ -685,6 +685,49 @@ class Flyspray
         list($usec, $sec) = explode(' ', microtime());
         return (float) $sec + ((float) $usec * 100000);
     }
+    
+    function compare_tasks($old, $new)
+    {
+        $comp = array('priority_name','severity_name','status_name','assigned_to_name','due_in_version_name',
+                     'reported_version_name','tasktype_name','os_name', 'category_name',
+                     'due_date','percent_complete','item_summary', 'due_in_version_name',
+                     'detailed_desc','project_title');
+                     
+        $changes = array();
+        foreach($old as $key => $value)
+        {
+            if(is_numeric($key) || !in_array($key, $comp)) {
+                continue;
+            }
+            
+            if($old[$key] != $new[$key]) {
+                switch($key)
+                {
+                    case 'due_date':
+                        $new[$key] = $this->formatDate($new[$key],0);
+                        $value = $this->formatDate($value,0);
+                        break;
+                        
+                    case 'percent_complete':
+                        $new[$key] .= '%';
+                        $value .= '%';
+                        break;
+                    
+                    case 'category_name':
+                        if($new['parent_category_name']) {
+                            $new['parent_category_name'] . ' ... ' . $new[$key];
+                        }
+                        
+                        if($old['parent_category_name'])  {
+                            $value = $old['parent_category_name'] . ' ... ' . $value;
+                        }
+                        break;                    
+                }
+                $changes[] = array($key, $value, $new[$key]);
+            }
+        }
+        return $changes;
+    }
 }
 
 ?>

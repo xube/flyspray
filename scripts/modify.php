@@ -199,7 +199,9 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
         }
 
         if ($do_send) {
-            $notify->Create('2', $new_details['task_id']);
+            $new_details = $fs->GetTaskDetails(Req::val('task_id'));
+            $changes = $fs->compare_tasks($old_details, $new_details);
+            $notify->Create('2', $new_details['task_id'], $changes);
         }
 
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
