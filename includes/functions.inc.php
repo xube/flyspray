@@ -262,6 +262,23 @@ class Flyspray
       // Create an empty array to put our users into
       $users = array();
 
+      // Retrieve all the users in this project.  A tricky query is required...
+      $get_project_users = $db->Query("SELECT uig.user_id, u.real_name, u.user_name, g.group_name
+                                       FROM {users_in_groups} uig
+                                       LEFT JOIN {users} u ON uig.user_id = u.user_id
+                                       LEFT JOIN {groups} g ON uig.group_id = g.group_id
+                                       LEFT JOIN {projects} p ON g.belongs_to_project = p.project_id
+                                       WHERE g.belongs_to_project = ?
+                                       ORDER BY g.group_id ASC",
+                                       array($project_id)
+                                     );
+
+      while ($row = $db->FetchArray($get_project_users))
+      {
+         if (!in_array($row['user_id'], $users))
+               $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
+      }
+
       // Get the list of global groups that can be assigned tasks
       $these_groups = explode(" ", $fs->prefs['assigned_groups']);
       foreach ($these_groups AS $key => $val)
@@ -281,23 +298,6 @@ class Flyspray
             if (!in_array($row['user_id'], $users))
                $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
          }
-      }
-
-      // Now, retrieve all the users in this project.  A tricky query is required...
-      $get_project_users = $db->Query("SELECT uig.user_id, u.real_name, u.user_name, g.group_name
-                                       FROM {users_in_groups} uig
-                                       LEFT JOIN {users} u ON uig.user_id = u.user_id
-                                       LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                                       LEFT JOIN {projects} p ON g.belongs_to_project = p.project_id
-                                       WHERE g.belongs_to_project = ?
-                                       ORDER BY g.group_id ASC",
-                                       array($project_id)
-                                     );
-
-      while ($row = $db->FetchArray($get_project_users))
-      {
-         if (!in_array($row['user_id'], $users))
-               $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
       }
 
       return $users;
@@ -577,7 +577,7 @@ class Flyspray
             case 'admin':     return $url . '&area=' . $arg1;
             case 'edittask':  return $url . '&id=' . $arg1 . '&edit=yep';
             case 'pm':        return $url . '&area=' . $arg1 . '&project=' . $arg2;
-            case 'user':      return $url . '&area=users&id=' . $arg1;
+            case 'user':      return '?do=admin&area=users&id=' . $arg1;
             case 'logout':    return '?do=authenticate&action=logout';
 
             case 'details':

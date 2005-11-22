@@ -55,7 +55,7 @@
 		<tr class="assignedto">
 		  <td><label for="assignedto">{$details_text['assignedto']}</label></td>
 		  <td id="assignedto">
-			 <?php if (!$task_details['assigned_to']): ?>
+			 <?php if (empty($assigned_users)): ?>
 			 {$details_text['noone']}
 			 <?php else:
 			 foreach ($assigned_users as $userid):

@@ -9,6 +9,13 @@
 require_once(dirname(__FILE__).'/header.php');
 require_once(dirname(__FILE__).'/includes/class.tpl.php');
 
+/*
+   FS#329 allows tasks to be assigned to multiple users.
+   We need to convert the old data by including this script.
+   It will need to be added to the installer/upgrader for release
+*/
+include_once('sql/upgrade_assignments.php');
+
 // Background daemon that does scheduled reminders
 if ($conf['general']['reminder_daemon'] == '1') {
     $fs->startReminderDaemon();

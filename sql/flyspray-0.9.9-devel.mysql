@@ -1,11 +1,11 @@
 -- =============================================================================
--- 
+--
 -- get out of the magic_gpc hell -- Pierre Habouzit :: 2005-10-30 22:00
--- 
+--
 -- this has been generated automatically (vim macros) from the SQL schema, and
 -- replaces quotes in *EVERY* textual item
 -- this is exhaustive (maybe a bit too much, but It can't harm)
--- 
+--
 -- ========================================================================={{{=
 
 UPDATE flyspray_admin_requests SET
@@ -112,14 +112,14 @@ UPDATE flyspray_users SET
 -- =========================================================================}}}=
 
 -- =============================================================================
--- 
+--
 -- Florian Schmitz, Added on 05 November 05
--- 
+--
 -- RSS/Atom feeds
--- 
+--
 -- (Updated 08 November 2005 by Mac Newbold - rename limit column to max_items,
 --  because limit is a reserved word in sql)
--- 
+--
 -- =============================================================================
 
 ALTER TABLE flyspray_projects ADD feed_img_url TEXT NOT NULL ;
@@ -165,12 +165,12 @@ ALTER TABLE `flyspray_tasks` CHANGE `assigned_to` `assigned_to` VARCHAR( 255 ) D
 
 
 -- =============================================================================
--- 
+--
 -- add indexes -- Pierre Habouzit :: 2005-11-19 13:07
--- 
+--
 -- unique to ensure some invariants in the DB rather than in the code
 -- others to speed up queries
--- 
+--
 -- =========================================================================={{{
 -- lists tables
 alter table flyspray_list_category   add index (project_id);
@@ -208,3 +208,9 @@ alter table flyspray_tasks           add index (due_date);
 -- Florian Schmitz, 21 November 2005, FS#344
 
 ALTER TABLE `flyspray_projects` ADD `notify_subject` VARCHAR( 100 ) NOT NULL;
+
+-- Tony Collins, 22 November 2005 (FS#329)
+
+ALTER TABLE `flyspray_assigned` DROP `user_or_group` ;
+ALTER TABLE `flyspray_assigned` CHANGE `assignee_id` `user_id` MEDIUMINT( 5 ) DEFAULT '0' NOT NULL ;
+ALTER TABLE `flyspray_assigned` ADD INDEX ( `task_id` , `user_id` ) ;

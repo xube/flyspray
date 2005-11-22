@@ -29,12 +29,23 @@ $page->uses('status_list', 'priority_list', 'severity_list', 'task_details',
 
 $userlist = $fs->UserList($project_id);
 
-if (!empty($task_details['assigned_to']) ) {
-   $assigned_users = explode(" ", $task_details['assigned_to']);
-}
+// Find the users assigned to this task
+$sql = $db->Query("SELECT user_id
+                     FROM {assigned}
+                    WHERE task_id = ?",
+                          array($task_details['task_id']));
 
+
+$assigned_users = array();
+while ($row = $db->FetchArray($sql))
+   $assigned_users[] = $row['user_id'];
+
+$old_assigned = implode(" ", $assigned_users);
+
+// Send user variables to the template
 $page->assign('userlist', $userlist);
 $page->assign('assigned_users', $assigned_users);
+$page->assign('old_assigned', $old_assigned);
 
 if (Get::val('edit') && $user->can_edit_task($task_details)) {
     $page->display('details.edit.tpl');

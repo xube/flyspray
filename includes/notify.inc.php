@@ -326,7 +326,7 @@ class Notifications {
       // Set the due version correctly
       if ($task_details['closedby_version'] == '0')
          $task_details['closedby_version'] = $details_text['undecided'];
-         
+
       // Generate the nofication message
       if($proj->prefs['notify_subject']) {
           $subject = str_replace(array('%p','%s','%t'),
@@ -461,7 +461,7 @@ class Notifications {
       if ($type == '5')
       {
          $depend_task = $fs->getTaskDetails($arg1);
-        
+
          $body = $notify_text['donotreply'] . "\n\n";
          $body .=  $notify_text['depadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -558,7 +558,7 @@ class Notifications {
          $body .= $notify_text['relatedis'] . ':' . "\n\n";
          $body .= 'FS#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\n";
          $body .= $fs->CreateURL('details', $related_task['task_id']) . "\n\n";
-         
+
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -652,7 +652,7 @@ class Notifications {
       if ($type == '15')
       {
          $depend_task = $fs->getTaskDetails($arg1);
-        
+
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['taskwatching'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
@@ -705,7 +705,7 @@ class Notifications {
    }
 
 
-   // This sends a notification to multiple users, usually from the notifications tab on a task
+   // This sends a notification to multiple users (assignees and notification tab)
    function Address($task_id)
    {
       global $db;
@@ -713,11 +713,14 @@ class Notifications {
       global $proj;
       global $user;
 
+      $users = array();
+
       $jabber_users = array();
       $email_users = array();
 
       $task_details = $fs->GetTaskDetails($task_id);
 
+      // Get list of users from the notification tab
       $get_users = $db->Query("SELECT *
                                FROM {notifications} n
                                LEFT JOIN {users} u ON n.user_id = u.user_id
@@ -726,47 +729,43 @@ class Notifications {
 
       while ($row = $db->FetchArray($get_users))
       {
-         // Check for current user
-         if ($row['user_id'] != $user->id &&  $row['user_id'] != $task_details['assigned_to'])
+         if ($row['user_id'] != $user->id)
          {
-            if (($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '1')
-            OR $fs->prefs['user_notify'] == '2')
+            if ( ( ($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '1')
+            OR $fs->prefs['user_notify'] == '2') && !in_array($row['email_address'], $email_users) )
             {
                array_push($email_users, $row['email_address']);
 
-            } elseif (($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '2')
-            OR $fs->prefs['user_notify'] == '3')
+            } elseif ( ( ($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '2')
+            OR $fs->prefs['user_notify'] == '3') && !in_array($row['jabber_id'], $jabber_users) )
             {
                array_push($jabber_users, $row['jabber_id']);
             }
-
-         // End of checking for current user
          }
+      }
 
-      // End of cycling through user array
-      };
+      // Get list of assignees
+      $get_users = $db->Query("SELECT *
+                               FROM {assigned} a
+                               LEFT JOIN {users} u ON a.user_id = u.user_id
+                               WHERE a.task_id = ?",
+                               array($task_id));
 
-      // Now we need to get the person assigned to this task, and add them to the correct address list
-      if (!empty($task_details['assigned_to']) && $task_details['assigned_to'] != $user->id)
+      while ($row = $db->FetchArray($get_users))
       {
-         $user_details = $fs->getUserDetails($task_details['assigned_to']);
-
-         // Email
-         if ($fs->prefs['user_notify'] == '2'
-            OR ($fs->prefs['user_notify'] = '1' && $user_details['notify_type'] == '1')
-            && !in_array($user_details['email_address'], $email_users))
+         if ($row['user_id'] != $user->id)
          {
-            array_push($email_users, $user_details['email_address']);
+            if ( ( ($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '1')
+            OR $fs->prefs['user_notify'] == '2') && !in_array($row['email_address'], $email_users) )
+            {
+               array_push($email_users, $row['email_address']);
 
-         // Jabber
-         } elseif ($fs->prefs['user_notify'] == '3'
-            OR ($fs->prefs['user_notify'] = '1' && $user_details['notify_type'] == '2')
-            && !in_array($user_details['jabber_id'], $jabber_users))
-         {
-            array_push($jabber_users, $user_details['jabber_id']);
+            } elseif ( ( ($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '2')
+            OR $fs->prefs['user_notify'] == '3') && !in_array($row['jabber_id'], $jabber_users) )
+            {
+               array_push($jabber_users, $row['jabber_id']);
+            }
          }
-
-      // End of adding the assigned_to address
       }
 
       // Now, we add the project contact addresses...

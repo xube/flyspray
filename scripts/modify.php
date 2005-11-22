@@ -150,19 +150,34 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 
         $db->Query("UPDATE  {tasks}
                        SET  attached_to_project = ?, task_type = ?, item_summary = ?,
-                            detailed_desc = ?, item_status = ?, assigned_to = ?,
+                            detailed_desc = ?, item_status = ?,
                             product_category = ?, closedby_version = ?, operating_system = ?,
                             task_severity = ?, task_priority = ?, last_edited_by = ?,
                             last_edited_time = ?, due_date = ?, percent_complete = ?, product_version = ?
                      WHERE  task_id = ?",
                 array(Post::val('attached_to_project'), Post::val('task_type'),
                     Post::val('item_summary'), Post::val('detailed_desc'),
-                    Post::val('item_status'), trim(Post::val('assigned_to')),
+                    Post::val('item_status'),
                     Post::val('product_category'), Post::val('closedby_version', 0),
                     Post::val('operating_system'), Post::val('task_severity'),
                     Post::val('task_priority'), intval($user->id), time(), $due_date,
                     Post::val('percent_complete'), Post::val('reportedver'),
                     Post::val('task_id')));
+
+        // Delete the current assignees for this task
+        $db->Query("DELETE FROM {assigned}
+                          WHERE task_id = ?",
+                                array(Post::val('task_id')));
+
+        // Convert assigned_to and store them in the 'assigned' table
+        foreach (explode(" ", trim(Post::val('assigned_to'))) as $key => $val)
+        {
+           $db->Query("INSERT INTO {assigned}
+                                   (task_id, user_id)
+                            VALUES (?,?)",
+                                   array(Post::val('task_id'), $val));
+        }
+
 
         // Get the details of the task we just updated
         // To generate the changed-task message
@@ -187,20 +202,20 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
             $notify->Create('2', $new_details['task_id']);
         }
 
-        if (Post::val('old_assigned') != Post::val('assigned_to')) {
+        if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
             // Log to task history
             $fs->logEvent(Post::val('task_id'), 14, Post::val('assigned_to'),
                     Post::val('old_assigned'));
 
-
-            // Notify the new assignee what happened.  This obviously won't happen if the task is now assigned to no-one.
-            if (!Post::val('assigned_to')) {
-                $to   = $notify->SpecificAddresses(explode(" ", Post::val('assigned_to')));
+            // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
+            if (Post::val('assigned_to') != '') {
+                $to   = $notify->SpecificAddresses( array_diff(explode(" ", Post::val('assigned_to')), explode(" ", Post::val('old_assigned') ) ) );
                 $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
                 $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
                 $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
             }
         }
+
 
         $_SESSION['SUCCESS'] = $modify_text['taskupdated'];
         $fs->redirect($fs->CreateURL('details', Post::val('task_id')));
@@ -330,7 +345,7 @@ elseif (Post::val('action') == 'sendcode') {
     if (!$user_name || !$real_name) {
         $_SESSION['ERROR'] = $register_text['registererror'];
         $fs->redirect($fs->createUrl('register'));
-    } 
+    }
 
     $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE user_name = ?",
             array($user_name));
@@ -338,7 +353,7 @@ elseif (Post::val('action') == 'sendcode') {
         $_SESSION['ERROR'] = $register_text['usernametaken'];
         $fs->redirect($fs->createUrl('register'));
     }
-    
+
     $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE email_address = ? OR jabber_id = ?",
             array(Post::val('email_address'), Post::val('jabber_id')));
     if ($db->fetchOne($sql)) {
@@ -1268,7 +1283,7 @@ elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details)
 
     $notify->Create('5', Post::val('task_id'), Post::val('dep_task_id'));
     $notify->Create('15', Post::val('dep_task_id'), Post::val('task_id'));
-    
+
     // Log this event to the task history, both ways
     $fs->logEvent(Post::val('task_id'), 22, Post::val('dep_task_id'));
     $fs->logEvent(Post::val('dep_task_id'), 23, Post::val('task_id'));
