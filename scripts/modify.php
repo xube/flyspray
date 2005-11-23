@@ -101,7 +101,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
 
         // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
         $to   = $notify->SpecificAddresses( explode(" ", Post::val('assigned_to')) );
-        $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
+        $msg  = $notify->GenerateMsg('14', $task_id);
         $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
     }

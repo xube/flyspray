@@ -25,8 +25,7 @@ function debug_print($message){
 // Start of the Notifications class
 class Notifications {
 
-   // This function is the wrapper for the others in this class
-   // It addresses, creates and stores/sends the notifications
+   // {{{ Wrapper function for all others 
    function Create ( $type, $task_id, $info )
    {
       $to = $this->Address($task_id);
@@ -35,10 +34,8 @@ class Notifications {
       $this->StoreJabber($to[1], $msg[0], $msg[1]);
 
    // End of Create() function
-   }
-
-   // This function stores pending jabber notifications in the database
-   // They are sent by SendJabber(), below
+   } // }}}
+   // {{{ Store Jabber messages for sending later
    function StoreJabber( $to, $subject, $body )
    {
       global $db;
@@ -89,11 +86,8 @@ class Notifications {
       }
 
       return TRUE;
-   }
-
-   // This function is called by scripts/schedule.php to periodically
-   // send pending Jabber notifications out using class.jabber.php,
-   // which is too slow to be called inline to Flyspray's scripts.
+   } // }}}
+   // {{{ Send Jabber messages that were stored earlier
    function SendJabber()
    {
       global $db, $fs, $basedir;
@@ -228,10 +222,8 @@ class Notifications {
          debug_print("Disconnected from Jabber server");
 
       return TRUE;
-   // End of SendJabber() function
-   }
-
-
+   } // }}}
+   // {{{ Send email
    function SendEmail($to, $subject, $body)
    {
       global $fs;
@@ -302,9 +294,8 @@ class Notifications {
       // We should fix this by using templating.  Until then, the below line gives no error on failure.
       $mail->Send();
 
-   }
-
-
+   } // }}}
+   // {{{ Create a message for any occasion
    function GenerateMsg($type, $task_id, $arg1='0')
    {
       global $db;
@@ -361,9 +352,7 @@ class Notifications {
          |16. Added to assignees list  |
          -------------------------------
       */
-      ///////////////////////////////////////////////////////////////
-      // New task opened.  Send notification to the category owner //
-      ///////////////////////////////////////////////////////////////
+      // {{{ New task opened
       if ($type == '1')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -387,11 +376,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      //////////////////////////
-      // Task details changed //
-      //////////////////////////
+      } // }}}
+      // {{{ Task details changed
       if ($type == '2')
       {
          $translation = array('priority_name' => $details_text['priority'],
@@ -427,11 +413,8 @@ class Notifications {
 
          return array($subject, $body);
 
-      }
-
-      /////////////////
-      // Task closed //
-      /////////////////
+      } // }}}
+      // {{{ Task closed
       if ($type == '3')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -451,11 +434,8 @@ class Notifications {
 
          return array($subject, $body);
 
-      }
-
-      ////////////////////
-      // Task re-opened //
-      ////////////////////
+      } // }}}
+      // {{{ Task re-opened
       if ($type == '4')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -467,11 +447,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      //////////////////////
-      // Dependency added //
-      //////////////////////
+      } // }}}
+      // {{{ Dependency added
       if ($type == '5')
       {
          $depend_task = $fs->getTaskDetails($arg1);
@@ -488,11 +465,8 @@ class Notifications {
 
          return array($subject, $body);
 
-      }
-
-      ////////////////////////
-      // Dependency removed //
-      ////////////////////////
+      } // }}}
+      // {{{ Dependency removed
       if ($type == '6')
       {
          $depend_task = $fs->getTaskDetails($arg1);
@@ -508,11 +482,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      ///////////////////
-      // Comment added //
-      ///////////////////
+      } // }}}
+      // {{{ Comment added
       if ($type == '7')
       {
          // Get the comment information
@@ -542,11 +513,8 @@ class Notifications {
 
          return array($subject, $body);
 
-      }
-
-      //////////////////////
-      // Attachment added //
-      //////////////////////
+      } // }}}
+      // {{{ Attachment added
       if ($type == '8')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -558,11 +526,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      ////////////////////////
-      // Related task added //
-      ////////////////////////
+      } // }}}
+      // {{{ Related task added
       if ($type == '9')
       {
          $related_task = $fs->getTaskDetails($arg1);
@@ -579,11 +544,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      /////////////////////
-      // Ownership taken //
-      /////////////////////
+      } // }}}
+      // {{{ Ownership taken
       if ($type == '10')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -594,11 +556,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      ///////////////////////
-      // Confirmation code //
-      ///////////////////////
+      } // }}}
+      // {{{ Confirmation code - FIXME
       if ($type == '11')
       {
          // We need to work out how to move the confirmation code message generation
@@ -611,11 +570,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      ////////////////////////
-      // Pending PM request //
-      ////////////////////////
+      } // }}}
+      // {{{ Pending PM request
       if ($type == '12')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -627,11 +583,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      ///////////////////////
-      // PM request denied //
-      ///////////////////////
+      } // }}}
+      // {{{ PM request denied
       if ($type == '13')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -645,11 +598,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      //////////////////
-      // New assignee //
-      //////////////////
+      } // }}}
+      // {{{ New assignee
       if ($type == '14')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -661,11 +611,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      ///////////////////////
-      // Reversed dep      //
-      ///////////////////////
+      } // }}}
+      // {{{ Reversed dep
       if ($type == '15')
       {
          $depend_task = $fs->getTaskDetails($arg1);
@@ -681,11 +628,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-      
-      ////////////////////////////
-      // Reversed dep - removed //
-      ////////////////////////////
+      } // }}}
+      // {{{ Reversed dep - removed
       if ($type == '16')
       {
          $depend_task = $fs->getTaskDetails($arg1);
@@ -701,11 +645,8 @@ class Notifications {
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
-      }
-
-      //////////////////////////////////
-      // User added to assignees list //
-      //////////////////////////////////
+      } // }}}
+      // {{{ User added to assignees list
       if ($type == '16')
       {
          $body = $notify_text['donotreply'] . "\n\n";
@@ -714,13 +655,10 @@ class Notifications {
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
          $body .= $notify_text['disclaimer'];
-      }
+      } // }}}
    
-   // End of Detailed notification function
-   }
-
-
-   // This sends a notification to a specific users, eg project managers.
+   } // }}}
+   // {{{ Create an address list for specific users
    function SpecificAddresses($users)
    {
 
@@ -751,11 +689,8 @@ class Notifications {
 
       return array($email_users, $jabber_users);
 
-   // End of SpecificAddresses function
-   }
-
-
-   // This sends a notification to multiple users (assignees and notification tab)
+   } // }}}
+   // {{{ Create a standard address list of users (assignees, notif tab and proj addresses)
    function Address($task_id)
    {
       global $db;
@@ -844,11 +779,7 @@ class Notifications {
       // Send back two arrays containing the notification addresses
       return array($email_users, $jabber_users);
 
-   // End of Address() function
-   }
-
-
-
+   } // }}}
 
 // End of Notify class
 }
