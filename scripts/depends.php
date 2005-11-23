@@ -9,7 +9,7 @@
 // Checks if a function is disabled
 function function_disabled($func_name)
 {
-    $disabled_functions = explode(', ', ini_get('disable_functions'));
+    $disabled_functions = explode(',', ini_get('disable_functions'));
     return in_array($func_name, $disabled_functions);
 }
 

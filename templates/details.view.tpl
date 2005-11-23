@@ -1,9 +1,9 @@
 <span id="navigation"> <?php if ($prev_id): ?>
-  {!tpl_tasklink($prev_id, $details_text['previoustask'], false, array('id'=>'prev'))}
+  {!tpl_tasklink($prev_id, $details_text['previoustask'], false, array('id'=>'prev', 'accesskey' => 'p'))}
   <?php endif; ?>
   <?php if ($prev_id && $next_id): ?> | <?php endif; ?>
   <?php if ($next_id): ?>
-  {!tpl_tasklink($next_id, $details_text['nexttask'], false, array('id'=>'next'))}
+  {!tpl_tasklink($next_id, $details_text['nexttask'], false, array('id'=>'next', 'accesskey' => 'n'))}
   <?php endif; ?>
 </span>
 <div id="taskdetails" ondblclick='openTask("{$fs->CreateURL('edittask', $task_details['task_id'])}")'>
@@ -236,7 +236,7 @@
 	 <?php else: ?>
 
 	 <?php if ($user->can_close_task($task_details) && !$d_open): ?>
-	 <a href="#close" id="closetask" class="button" onclick="showhidestuff('closeform');">
+	 <a href="#close" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');">
 		{$details_text['closetask']}</a><div id="closeform">
 		<form action="{$baseurl}" method="post" id="formclosetask">
 		  <div>
@@ -302,11 +302,11 @@
 
 	 <?php if (!$user->isAnon()): ?>
 	 <?php if (!$watched): ?>
-	 <a id="addnotif" class="button"
+	 <a id="addnotif" class="button" accesskey="w"
 		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
 		{$details_text['watchtask']}</a>
 	 <?php else: ?>
-	 <a id="removenotif" class="button"
+	 <a id="removenotif" class="button" accesskey="w"
 		href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
 		{$details_text['stopwatching']}</a>
 	 <?php endif; ?>

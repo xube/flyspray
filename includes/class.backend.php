@@ -178,7 +178,7 @@ class Backend
                         $_FILES['userfile']['type'][$key],
                         $_FILES['userfile']['size'][$key],
                         $_FILES['userfile']['name'][$key],
-                        $user->id), time());
+                        $user->id, time()));
 
             // Fetch the attachment id for the history log
             $result = $db->Query("SELECT  attachment_id

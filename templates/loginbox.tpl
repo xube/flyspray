@@ -13,7 +13,7 @@
       <input type="checkbox" id="lbl_remember" name="remember_login" />
 
       <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-      <input class="mainbutton" type="submit" value="{$loginbox_text['login']}" />
+      <input accesskey="l" class="mainbutton" type="submit" value="{$loginbox_text['login']}" />
 
       <span id="links">
         <?php

@@ -68,7 +68,7 @@
               <option value="0">{$language['allprojects']}</option>
               {!tpl_options($project_list, Get::val('project') !== '0' ?  $proj->id : -1)}
             </select>
-            <input class="mainbutton" type="submit" value="{$language['show']}" />
+            <input accesskey="u" class="mainbutton" type="submit" value="{$language['show']}" />
           </p>
         </form>
       </div>

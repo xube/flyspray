@@ -20,8 +20,7 @@ endif;
 
 if ($user->perms['view_reports']): ?>
   <li>
-  <a id="reportslink" href="{$fs->CreateURL('reports', null)}"
-    accesskey="r">{$language['reports']}</a>
+  <a id="reportslink" href="{$fs->CreateURL('reports', null)}">{$language['reports']}</a>
   </li>
 <?php
 endif; ?>

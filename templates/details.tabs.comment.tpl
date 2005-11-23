@@ -66,18 +66,18 @@
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{Get::val('id')}" />
       {$details_text['addcomment']}
-      <textarea id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
+      <textarea accesskey="r" tabindex="5" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
 
       <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
         {$details_text['uploadafile']}
-        <input type="file" size="55" name="userfile[]" /><br />
+        <input tabindex="7" type="file" size="55" name="userfile[]" /><br />
       </div>
-      <input class="adminbutton" type="button" onclick="addUploadFields()"
+      <input tabindex="8" class="adminbutton" type="button" onclick="addUploadFields()"
         value="{$details_text['selectmorefiles']}" />
       <?php endif; ?>
 
-      <input class="adminbutton" type="submit" value="{$details_text['addcomment']}" />
+      <input tabindex="6" class="adminbutton" type="submit" value="{$details_text['addcomment']}" />
       <?php if (!$watched): ?>
       {!tpl_checkbox('notifyme')} {$newtask_text['notifyme']}
       <?php endif; ?>

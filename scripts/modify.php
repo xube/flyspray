@@ -67,7 +67,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
                                attached_to_project, item_summary,
                                detailed_desc, opened_by,
                                percent_complete, $sql_params )
-                     VALUES  ( ?, ?, $sql_placeholder)", $sql_values);
+                     VALUES  ($sql_placeholder)", $sql_values);
 
     // Now, let's get the task_id back, so that we can send a direct link
     // URL in the notification message
