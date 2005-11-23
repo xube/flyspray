@@ -163,20 +163,27 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                     Post::val('task_priority'), intval($user->id), time(), $due_date,
                     Post::val('percent_complete'), Post::val('reportedver'),
                     Post::val('task_id')));
+        
+        // Update the list of users assigned this task
+        if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
+            
+            // Delete the current assignees for this task
+            $db->Query("DELETE FROM {assigned}
+                              WHERE task_id = ?",
+                                    array(Post::val('task_id')));
 
-        // Delete the current assignees for this task
-        $db->Query("DELETE FROM {assigned}
-                          WHERE task_id = ?",
-                                array(Post::val('task_id')));
-
-        // Convert assigned_to and store them in the 'assigned' table
-        foreach (explode(" ", trim(Post::val('assigned_to'))) as $key => $val)
-        {
-           $db->Query("INSERT INTO {assigned}
-                                   (task_id, user_id)
-                            VALUES (?,?)",
-                                   array(Post::val('task_id'), $val));
-        }
+            // Convert assigned_to and store them in the 'assigned' table
+            foreach (explode(" ", trim(Post::val('assigned_to'))) as $key => $val)
+            {
+               if (!empty($val))
+               {           
+                  $db->Query("INSERT INTO {assigned}
+                                          (task_id, user_id)
+                                   VALUES (?,?)",
+                                          array(Post::val('task_id'), $val));
+               }
+            }
+         }
 
 
         // Get the details of the task we just updated
@@ -206,7 +213,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
             // Log to task history
-            $fs->logEvent(Post::val('task_id'), 14, Post::val('assigned_to'),
+            $fs->logEvent(Post::val('task_id'), 14, trim(Post::val('assigned_to')),
                     Post::val('old_assigned'));
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
@@ -356,8 +363,17 @@ elseif (Post::val('action') == 'sendcode') {
         $fs->redirect($fs->createUrl('register'));
     }
 
-    $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE email_address = ? OR jabber_id = ?",
-            array(Post::val('email_address'), Post::val('jabber_id')));
+    $params = array();
+    $sqlextra = array();
+    if (Post::val('jabber_id')) {
+       array_push($sqlextra, "jabber_id = ?");
+       array_push($params, Post::val('jabber_id'));
+    }
+    if (Post::val('email_address')) {
+       array_push($sqlextra, "email_address = ?");
+       array_push($params, Post::val('email_address'));
+    }
+    $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE " . implode(' OR ', $sqlextra),$params);
     if ($db->fetchOne($sql)) {
         $_SESSION['ERROR'] = $register_text['emailtaken'];
         $fs->redirect($fs->createUrl('register'));
@@ -1165,6 +1181,7 @@ elseif (Post::val('action') == 'movetogroup' && $user->perms['manage_project']) 
     $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
     $fs->redirect(Post::val('prev_page'));
 } // }}}
+
 // taking ownership {{{
 elseif (Req::val('action') == 'takeownership') {
    if (Req::val('prev_page')) {
@@ -1177,12 +1194,35 @@ elseif (Req::val('action') == 'takeownership') {
       }
    } else {
        $be->AssignToMe($user, Req::val('ids'));
-       $redirect_url = $redirect_url = $fs->CreateURL('details', Req::val('ids'));
+       $redirect_url = $fs->CreateURL('details', Req::val('ids'));
    }
 
    $_SESSION['SUCCESS'] = $modify_text['takenownership'];
    $fs->redirect($redirect_url);
 } // }}}
+
+// add to assignees list {{{
+elseif (Req::val('action') == 'addtoassignees') {
+   if (Req::val('prev_page')) {
+      $ids = Req::val('ids');
+      settype($ids, 'array');
+      $redirect_url = Req::val('prev_page');
+
+      if (!empty($ids)) {
+          $be->AddToAssignees($user, array_keys($ids));
+      }
+   } else {
+       $be->AddToAssignees($user, Req::val('ids'));
+       $redirect_url = $fs->CreateURL('details', Req::val('ids'));
+   }
+
+   $_SESSION['SUCCESS'] = $modify_text['addedtoassignees'];
+   $fs->redirect($redirect_url);
+
+
+
+} // }}}
+
 // requesting task closure {{{
 elseif (Post::val('action') == 'requestclose') {
 

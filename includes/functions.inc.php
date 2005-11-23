@@ -383,6 +383,7 @@ class Flyspray
         // 26: Task was made private
         // 27: Task was made public
         // 28: PM request denied
+        // 29: User added to the list of assignees
 
 
         $db->Query("INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)

@@ -70,13 +70,52 @@ class Backend
                     && $user->can_view_task($task)
                     && $user->can_take_ownership($task))
             {
-                $db->Query("UPDATE  {tasks}
-                               SET  assigned_to = ?, item_status = '3'
-                             WHERE  task_id = ?",
-                        array($user->id, $task_id));
+               $db->Query("DELETE FROM {assigned}
+                                 WHERE task_id = ?",
+                                       array($task_id));
+
+               $db->Query("INSERT INTO {assigned}
+                                       (task_id, user_id)
+                                VALUES (?,?)",
+                                       array($task_id, $user->id));
+
                 if ($db->affectedRows()) {
                     $fs->logEvent($task_id, 19, $user->id, $task['assigned_to']);
                     $notify->Create('10', $task_id);
+                }
+            }
+        }
+    }
+    
+    /* This function is for a user to assign multiple tasks to themselves.
+       Expected args are user_id and an array of tasks.
+    */
+    function AddToAssignees(&$user, $tasks)
+    {
+        global $db, $fs;
+        global $notify;
+
+        settype($tasks, 'array');
+
+        foreach ($tasks as $key => $task_id) {
+            // Get the task details
+            // FIXME make it less greedy in term of SQL
+            $task = @$fs->getTaskDetails($task_id);
+            $proj = new Project($task['attached_to_project']);
+            $user->get_perms($proj);
+
+            if ($user->can_view_project($proj)
+                    && $user->can_view_task($task)
+                    && $user->can_add_to_assignees($task))
+            {
+               $db->Query("INSERT INTO {assigned}
+                                       (task_id, user_id)
+                                VALUES (?,?)",
+                                       array($task_id, $user->id));
+
+                if ($db->affectedRows()) {
+                    $fs->logEvent($task_id, 29, $user->id, $task['assigned_to']);
+                    $notify->Create('16', $task_id);
                 }
             }
         }

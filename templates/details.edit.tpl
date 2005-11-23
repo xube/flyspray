@@ -56,7 +56,7 @@
 			<tr class="assignedto">
 			 <td><label for="assignedto">{$details_text['assignedto']}</label></td>
 			 <td>
-				<a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">Select Users</a>
+				<a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{$details_text['selectusers']}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
 				<div id="multiuserlist">
 				 {!tpl_double_select('assigned_to', $userlist, $assigned_users, false)}

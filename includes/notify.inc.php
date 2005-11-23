@@ -183,24 +183,28 @@ class Notifications {
 
                // send notification
                if ( $JABBER->connected ) {
-                  $JABBER->SendMessage($jid, NULL, NULL,
+                  if ($JABBER->SendMessage($jid, NULL, NULL,
                      array(
                         "subject"   => $subject,
-                        "body"      => $body
-                     ));
-                  // delete entry from notification_recipients
-                  $result = $db->Query("DELETE FROM {notification_recipients}
-                                        WHERE message_id = ?
-                                        AND notify_method = 'j'
-                                        AND notify_address = ?",
-                                        array($notification['message_id'], $jid)
-                                      );
-                  debug_print("- notification sent");
+                        "body"      => htmlspecialchars($body),
+                     )
+                  )) {
+                     // delete entry from notification_recipients
+                     $result = $db->Query("DELETE FROM {notification_recipients}
+                                           WHERE message_id = ?
+                                           AND notify_method = 'j'
+                                           AND notify_address = ?",
+                                           array($notification['message_id'], $jid)
+                                         );
+                     debug_print("- notification sent");
+                  }
+                  else {
+                     debug_print("- notification not sent");
+                  }
                } else {
                   debug_print("- not connected");
                }
             }
-
             // check to see if there are still recipients for this notification
             $result = $db->Query("SELECT * FROM {notification_recipients}
                                   WHERE message_id = ?",
@@ -354,6 +358,7 @@ class Notifications {
          |14. New assignee             |
          |15. Reversed dep             |
          |16. Reversed dep removed     |
+         |16. Added to assignees list  |
          -------------------------------
       */
       ///////////////////////////////////////////////////////////////
@@ -697,6 +702,20 @@ class Notifications {
 
          return array($subject, $body);
       }
+
+      //////////////////////////////////
+      // User added to assignees list //
+      //////////////////////////////////
+      if ($type == '16')
+      {
+         $body = $notify_text['donotreply'] . "\n\n";
+         $body .= $notify_text['addedtoassignees'] . "\n\n";
+         $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= $notify_text['disclaimer'];
+      }
+   
    // End of Detailed notification function
    }
 

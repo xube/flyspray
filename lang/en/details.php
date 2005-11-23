@@ -154,5 +154,10 @@ $details_text = array (
 'depgraph'              =>    'View Dependency Graph',
 'reset'                 =>    'Reset',
 
+
+// Added in version 0.9.9
+'selectusers'           =>    'Select Users...',
+'addmetoassignees'      =>    'Add me to assignees',
+'addedtoassignees'      =>    'User added to assignees list',
 );
 ?>

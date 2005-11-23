@@ -188,7 +188,7 @@
 				if (empty($old_value)) {
 					$users = explode(" ", trim($new_value));
 					echo "{$details_text['taskassigned']} ";
-					foreach ($users as $key => $userid):
+					foreach ($users as $userid):
 					  echo tpl_userlink($userid) . ', ';
 					endforeach;
 				} elseif (empty($new_value)) {
@@ -196,7 +196,7 @@
 				} else {
 					 $users = explode(" ", trim($new_value));
 					 echo "{$details_text['taskreassigned']} ";
-					 foreach ($users as $key => $user_id):
+					 foreach ($users as $userid):
 						 echo tpl_userlink($userid) . ', ';
 					 endforeach;
 				}
@@ -228,6 +228,8 @@
 				echo $details_text['taskmadepublic'];
 		  } elseif ($history['event_type'] == '28') { // PM request denied
 				echo $details_text['pmreqdenied'] . ' - ' . $new_value;
+        } elseif ($history['event_type'] == '29') { // User added to assignees list
+            echo $details_text['addedtoassignees'];
 		  }
 		  ?>
 		</td>

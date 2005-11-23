@@ -34,6 +34,7 @@ $notify_text = array (
 'isdepfor'                    =>    'is a new dependency for',
 'denialreason'                =>    'Reason for denial',
 'taskchanged'                 =>    'The following task has been changed.  The changes are listed below.  For full information about what has changed, visit the URL and click the History tab.',
+'addedtoassignees'            =>    'A user has added themself to the list of users assigned to this task.',
 'removeddepis'                =>    'The removed dependency is',
 'isnodepfor'                  =>    'is no dependency anymore for',
 );

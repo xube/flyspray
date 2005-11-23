@@ -214,3 +214,8 @@ ALTER TABLE `flyspray_projects` ADD `notify_subject` VARCHAR( 100 ) NOT NULL;
 ALTER TABLE `flyspray_assigned` DROP `user_or_group` ;
 ALTER TABLE `flyspray_assigned` CHANGE `assignee_id` `user_id` MEDIUMINT( 5 ) DEFAULT '0' NOT NULL ;
 ALTER TABLE `flyspray_assigned` ADD INDEX ( `task_id` , `user_id` ) ;
+
+-- Tony Collins, 23 November 2005 (FS#329)
+
+ALTER TABLE `flyspray_groups` ADD `add_to_assignees` MEDIUMINT( 1 ) NOT NULL AFTER `assign_others_to_self` ;
+UPDATE `flyspray_groups` SET `add_to_assignees` = '1' WHERE `assign_others_to_self` =1 ;

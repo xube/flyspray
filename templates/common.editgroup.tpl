@@ -1,5 +1,4 @@
-<fieldset class="admin">
-  <legend>{$admin_text['editgroup']}</legend>
+<fieldset class="admin"> <legend>{$admin_text['editgroup']}</legend>
   <?php $group_details = $fs->getGroupDetails(Get::val('id')); ?>
   <form action="{$baseurl}?project={$group_details['belongs_to_project']}" method="post">
     <table class="admin">
@@ -82,9 +81,13 @@
         <td><label for="assigntoself">{$admin_text['assigntoself']}</label></td>
         <td>{!tpl_checkbox('assign_to_self', $group_details['assign_to_self'], 'assigntoself')}</td>
       </tr>
-      <tr>
+       <tr>
         <td><label for="assignotherstoself">{$admin_text['assignotherstoself']}</label></td>
         <td>{!tpl_checkbox('assign_others_to_self', $group_details['assign_others_to_self'], 'assignotherstoself')}</td>
+      </tr>
+      <tr>
+        <td><label for="addtoassignees">{$admin_text['addtoassignees']}</label></td>
+        <td>{!tpl_checkbox('add_to_assignees', $group_details['add_to_assignees'], 'addtoassignees')}</td>
       </tr>
       <tr>
         <td><label for="viewreports">{$admin_text['viewreports']}</label></td>

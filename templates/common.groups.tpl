@@ -52,8 +52,7 @@
     <input type="hidden" name="action" value="addtogroup" />
     <input type="hidden" name="project_id" value="{$proj->id}" />
     <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-    <select class="adminlist" name="user_list[]" multiple="multiple" size="15">
-      <?php foreach($proj->listUsersIn() as $usr): ?>
+    <select class="adminlist" name="user_list[]" multiple="multiple" size="15"> <?php foreach($proj->listUsersIn() as $usr): ?>
       <option value="{$usr['user_id']}">{$usr['user_name']} ({$usr['real_name']})</option>
       <?php endforeach; ?>
     </select>

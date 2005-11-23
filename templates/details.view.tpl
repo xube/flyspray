@@ -1,5 +1,4 @@
-<span id="navigation">
-  <?php if ($prev_id): ?>
+<span id="navigation"> <?php if ($prev_id): ?>
   {!tpl_tasklink($prev_id, $details_text['previoustask'], false, array('id'=>'prev'))}
   <?php endif; ?>
   <?php if ($prev_id && $next_id): ?> | <?php endif; ?>
@@ -15,8 +14,7 @@
 
   <div id="fineprint">
 	 {$details_text['attachedtoproject']} &mdash;
-	 <a href="{$baseurl}?project={$task_details['attached_to_project']}">
-		{$task_details['project_title']}</a>
+	 <a href="{$baseurl}?project={$task_details['attached_to_project']}">{$task_details['project_title']}</a>
 	 <br />
 	 {$details_text['openedby']} {!tpl_userlink($task_details['opened_by'])}
 	 - {!$fs->formatDate($task_details['date_opened'], true)}
@@ -124,7 +122,7 @@
 	 <span class="attachments">
 		<a href="{$baseurl}?getfile={$attachment['attachment_id']}" title="{$attachment['file_type']}">
 		  <?php
-		  // Let's strip the mimetype to get the icon image name
+		  // Strip the mimetype to get the icon image name
 		  list($main) = explode('/', $attachment['file_type']);
 		  $imgpath = "{$baseurl}themes/{$proj->prefs['theme_style']}/mime/";
 		  if (file_exists($imgpath.$attachment['file_type'].".png")):
@@ -279,6 +277,12 @@
 	 <a id="own" class="button"
 		href="{$baseurl}?do=modify&amp;action=takeownership&amp;ids={Get::val('id')}">
 		{$details_text['assigntome']}</a>
+	 <?php endif; ?>
+
+	 <?php if ($user->can_add_to_assignees($task_details)): ?>
+	 <a id="own" class="button"
+		href="{$baseurl}?do=modify&amp;action=addtoassignees&amp;ids={Get::val('id')}">
+		{$details_text['addmetoassignees']}</a>
 	 <?php endif; ?>
 
 	 <?php if ($user->can_edit_task($task_details)): ?>

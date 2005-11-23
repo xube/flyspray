@@ -190,5 +190,9 @@ $admin_text = array (
 'usereminderdaemon'     =>    'Enable background reminder daemon',
 'tasksperpage'          =>    'Tasks per page of the task list',
 
+
+// Added in version 0.9.9
+
+'addtoassignees'        =>    'Add self to assignees',
 );
 ?>
