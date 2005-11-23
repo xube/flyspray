@@ -37,7 +37,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     $item_summary  = Post::val('item_summary');
     $detailed_desc = Post::val('detailed_desc');
 
-    $param_names = array('task_type', 'item_status', 'assigned_to',
+    $param_names = array('task_type', 'item_status',
             'product_category', 'product_version', 'closedby_version',
             'operating_system', 'task_severity', 'task_priority');
 
@@ -78,7 +78,34 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
                         ORDER BY  task_id DESC",
                         array($item_summary, $detailed_desc), 1);
     $task_id = $db->FetchOne($result);
+    
 
+    
+    // Log the assignments and send notifications to the assignees
+    if (trim(Post::val('assigned_to')) != '')
+    {
+        // Convert assigned_to and store them in the 'assigned' table
+        foreach (explode(" ", trim(Post::val('assigned_to'))) as $key => $val)
+        {
+            if (!empty($val))
+            {           
+                $db->Query("INSERT INTO {assigned}
+                                        (task_id, user_id)
+                                 VALUES (?,?)",
+                                        array($task_id, $val));
+            }
+        }
+
+        // Log to task history
+        $fs->logEvent($task_id, 14, trim(Post::val('assigned_to')));
+
+        // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
+        $to   = $notify->SpecificAddresses( explode(" ", Post::val('assigned_to')) );
+        $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
+        $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+        $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+    }
+                
     // Log that the task was opened
     $fs->logEvent($task_id, 1);
 
@@ -110,8 +137,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     }
 
     if ($owner) {
-        $db->Query("INSERT INTO  {notifications} (task_id, user_id)
-                         VALUES  (?, ?)", array($task_id, $owner));
+        $be->AddToNotifyList($owner, array($task_id));
 
         $fs->logEvent($task_id, 9, $owner);
 
@@ -1181,7 +1207,6 @@ elseif (Post::val('action') == 'movetogroup' && $user->perms['manage_project']) 
     $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
     $fs->redirect(Post::val('prev_page'));
 } // }}}
-
 // taking ownership {{{
 elseif (Req::val('action') == 'takeownership') {
    if (Req::val('prev_page')) {
@@ -1200,7 +1225,6 @@ elseif (Req::val('action') == 'takeownership') {
    $_SESSION['SUCCESS'] = $modify_text['takenownership'];
    $fs->redirect($redirect_url);
 } // }}}
-
 // add to assignees list {{{
 elseif (Req::val('action') == 'addtoassignees') {
    if (Req::val('prev_page')) {
@@ -1222,7 +1246,6 @@ elseif (Req::val('action') == 'addtoassignees') {
 
 
 } // }}}
-
 // requesting task closure {{{
 elseif (Post::val('action') == 'requestclose') {
 

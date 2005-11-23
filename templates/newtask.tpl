@@ -49,10 +49,12 @@
             <label for="assignedto">{$newtask_text['assignedto']}</label>
           </td>
           <td>
-            <select id="assignedto" name="assigned_to" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
-              <option value="0">{$newtask_text['noone']}</option>
-              <?php $fs->ListUsers($proj->id); ?>
-            </select>
+            <?php if ($user->perms['modify_all_tasks']): ?>
+            <a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{$details_text['selectusers']}</a>
+            <div id="multiuserlist">
+                {!tpl_double_select('assigned_to', $userlist, $assigned_users, false)}
+            </div>
+            <?php endif; ?>
           </td>
         </tr>
         <tr>
@@ -105,6 +107,7 @@
           <td><label for="duedate">{$newtask_text['duedate']}</label></td>
           <td id="duedate">
             <input id="duedatehidden" type="hidden" name="due_date" value="" />
+            <?php if ($user->perms['modify_all_tasks']): ?>
             <span id="duedateview">{$index_text['selectduedate']}</span> <small>|</small>
             <a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '{$index_text['selectduedate']?>'">X</a>
             <script type="text/javascript">
@@ -116,6 +119,7 @@
               button      : "duedateview"   // ID of the button
               });
             </script>
+            <?php endif; ?>
           </td>
         </tr>
       </table>
