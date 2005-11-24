@@ -6,6 +6,7 @@ class Tpl
     var $_vars  = array();
     var $_theme = '';
     var $_tpls  = array();
+    var $_title = "";
 
     function uses()
     {
@@ -29,6 +30,11 @@ class Tpl
     function setTheme($theme)
     {
         $this->_theme = str_replace('//', '/', $theme.'/');
+    }
+
+    function setTitle($title)
+    {
+        $this->_title = $title;
     }
 
     function themeUrl()
@@ -84,8 +90,8 @@ class Tpl
 
     function render()
     {
-        foreach ($this->_tpls as $_tpl) {
-            $this->display($_tpl);
+        while (count($this->_tpls)) {
+            $this->display(array_shift($this->_tpls));
         }
     }
 

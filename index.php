@@ -154,6 +154,8 @@ else {
 }
 $page->assign('project_list', $project_list = $db->FetchAllArray($sql));
 
+// default title;
+$page->setTitle("Flyspray::{$proj->prefs['project_title']}:");
 
 $page->pushTpl('header.tpl');
 unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
