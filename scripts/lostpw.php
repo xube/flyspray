@@ -10,7 +10,7 @@ $page->uses('admin_text');
 
 if (!Get::has('magic') && $user->isAnon()) {
     // Step One: user requests magic url
-    $page->display('lostpw.step1.tpl');
+    $page->pushTpl('lostpw.step1.tpl');
 }
 elseif (!Get::has('magic') && $user->isAnon()) {
     // Step Two: user enters new password
@@ -22,6 +22,6 @@ elseif (!Get::has('magic') && $user->isAnon()) {
         $_SESSION['ERROR'] = $admin_text['badmagic'];
         $fs->redirect($fs->createUrl('error'));
     }
-    $page->display('lostpw.step2.tpl');
+    $page->pushTpl('lostpw.step2.tpl');
 }
 ?>

@@ -167,7 +167,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
         // if this task has already been modified before we clicked "save"...
         // we need to confirm that the we really wants to save our changes
         $page->uses('modify_text');
-        $page->display('details.edit.conflict.tpl');
+        $page->pushTpl('details.edit.conflict.tpl');
     }
     else {
         if ($due_date = Post::val('due_date', 0)) {
@@ -502,7 +502,7 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
 
     $_SESSION['SUCCESS'] = $modify_text['accountcreated'];
     $page->uses('modify_text');
-    $page->display('register.ok.tpl');
+    $page->pushTpl('register.ok.tpl');
 
 } // }}}
 // user self-registration without confirmation code (Or, by an admin) {{{
@@ -562,7 +562,7 @@ elseif (Post::val('action') == "newuser" &&
     } else {
         $_SESSION['SUCCESS'] = $modify_text['accountcreated'];
         $page->uses('modify_text');
-        $page->display('register.ok.tpl');
+        $page->pushTpl('register.ok.tpl');
     }
 
 } // }}}
@@ -1019,7 +1019,7 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
         $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
     } else {
         $page->uses('modify_text');
-        $page->display('details.edit.related.tpl');
+        $page->pushTpl('details.edit.related.tpl');
     }
 
 } // }}}

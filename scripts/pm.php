@@ -36,8 +36,8 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'os':
     case 'ver':
     case 'cat':
-        $page->display('pm.menu.tpl');
-        $page->display('pm.'.$area.'.tpl');
+        $page->pushTpl('pm.menu.tpl');
+        $page->pushTpl('pm.'.$area.'.tpl');
         break;
 
     default:

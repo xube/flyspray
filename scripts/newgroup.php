@@ -20,5 +20,5 @@ if (Get::val('project')) {
 
 $page->uses('newgroup_text');
 $page->assign('forproject', $forproject);
-$page->display('newgroup.tpl');
+$page->pushTpl('newgroup.tpl');
 ?>

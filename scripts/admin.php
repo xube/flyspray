@@ -21,7 +21,7 @@ $fs->get_language_pack('newuser');
 $proj = new Project(0);
 
 $page->uses('admin_text', 'index_text', 'newproject_text', 'newuser_text');
-$page->display('admin.menu.tpl');
+$page->pushTpl('admin.menu.tpl');
 
 switch ($area = Get::val('area', 'prefs')) {
     case 'users':
@@ -42,7 +42,7 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'tt':
     case 'ver':
 
-        $page->display('admin.'.$area.'.tpl');
+        $page->pushTpl('admin.'.$area.'.tpl');
         break;
 
     default:

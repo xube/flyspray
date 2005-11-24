@@ -155,13 +155,14 @@ else {
 $page->assign('project_list', $project_list = $db->FetchAllArray($sql));
 
 
-$page->display('header.tpl');
+$page->pushTpl('header.tpl');
 unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
 
 // Show the page the user wanted
 require("$basedir/scripts/$do.php");
 
-$page->display('footer.tpl');
+$page->pushTpl('footer.tpl');
+$page->render();
 
 if (!empty($conf['debug'])) {
     require ($basedir . '/includes/debug.inc.php');

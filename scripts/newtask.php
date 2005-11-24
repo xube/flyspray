@@ -24,6 +24,6 @@ $page->assign('assigned_users', array());
 
 $page->uses('newtask_text', 'index_text', 'details_text', 'status_list',
         'severity_list', 'priority_list','modify_text');
-$page->display('newtask.tpl');
+$page->pushTpl('newtask.tpl');
 
 ?>

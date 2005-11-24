@@ -5,6 +5,7 @@ class Tpl
     var $_uses  = array();
     var $_vars  = array();
     var $_theme = '';
+    var $_tpls  = array();
 
     function uses()
     {
@@ -45,6 +46,11 @@ class Tpl
         }
     }
 
+    function pushTpl($_tpl)
+    {
+        $this->_tpls[] = $_tpl;
+    }
+
     function display($_tpl, $_arg0 = null, $_arg1 = null)
     {
         // theming part
@@ -74,6 +80,13 @@ class Tpl
         }
         extract($this->_vars);
         eval( '?>'.$_tpl_data );
+    }
+
+    function render()
+    {
+        foreach ($this->_tpls as $_tpl) {
+            $this->display($_tpl);
+        }
     }
 
     function fetch($tpl, $arg0 = null, $arg1 = null)

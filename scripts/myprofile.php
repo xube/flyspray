@@ -20,6 +20,6 @@ $page->assign('group_names', $db->fetchAllArray($sql));
         
 $page->uses('admin_text','newuser_text');
 $page->assign('theuser', $user);
-$page->display('myprofile.tpl');
+$page->pushTpl('myprofile.tpl');
 
 ?>

@@ -48,7 +48,7 @@ $page->assign('assigned_users', $assigned_users);
 $page->assign('old_assigned', $old_assigned);
 
 if (Get::val('edit') && $user->can_edit_task($task_details)) {
-    $page->display('details.edit.tpl');
+    $page->pushTpl('details.edit.tpl');
 }
 else {
     $prev_id = $next_id = 0;
@@ -96,7 +96,7 @@ else {
     $page->assign('penreqs', $db->fetchAllArray($get_pending));
     $page->assign('d_open',  $db->fetchOne($open_deps));
     $page->assign('watched', $db->fetchOne($watching));
-    $page->display('details.view.tpl');
+    $page->pushTpl('details.view.tpl');
 
     ////////////////////////////
     // tabbed area
@@ -133,17 +133,17 @@ else {
     $page->assign('reminders', $db->fetchAllArray($sql));
 
 
-    $page->display('details.tabs.tpl');
+    $page->pushTpl('details.tabs.tpl');
 
     if ($user->perms['view_comments'] || $proj->prefs['others_view']) {
-        $page->display('details.tabs.comment.tpl');
+        $page->pushTpl('details.tabs.comment.tpl');
     }
 
-    $page->display('details.tabs.related.tpl');
+    $page->pushTpl('details.tabs.related.tpl');
 
     if ($user->perms['manage_project']) {
-        $page->display('details.tabs.notifs.tpl');
-        $page->display('details.tabs.remind.tpl');
+        $page->pushTpl('details.tabs.notifs.tpl');
+        $page->pushTpl('details.tabs.remind.tpl');
     }
 
     if ($user->perms['view_history']) {
@@ -164,7 +164,7 @@ else {
         // FIXME TODO XXX horrible, but templating history was just too
         // difficult
         $page->uses('db');
-        $page->display('details.tabs.history.tpl');
+        $page->pushTpl('details.tabs.history.tpl');
     }
 }
 ?>

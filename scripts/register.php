@@ -21,8 +21,8 @@ if (Get::has('magic')) {
         $fs->Redirect( $fs->CreateURL('error', null) );
     }
 
-    $page->display('register.magic.tpl');
+    $page->pushTpl('register.magic.tpl');
 } else {
-    $page->display('register.no-magic.tpl');
+    $page->pushTpl('register.no-magic.tpl');
 }
 ?>

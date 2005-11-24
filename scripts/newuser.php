@@ -20,5 +20,5 @@ if ($user->perms['is_admin']) {
                      ORDER BY  group_id ASC");
     $page->assign('group_names', $db->fetchAllArray($sql));
 }
-$page->display('newuser.tpl');
+$page->pushTpl('newuser.tpl');
 ?>

@@ -363,6 +363,6 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 // }}}
 
 $page->assign('tasks', $db->fetchAllArray($sql));
-$page->display('index.tpl');
+$page->pushTpl('index.tpl');
 
 ?>
