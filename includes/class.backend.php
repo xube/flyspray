@@ -19,9 +19,14 @@ class Backend
         settype($tasks, 'array');
 
         foreach ($tasks AS $key => $task_id) {
-            $db->Query("REPLACE {notifications} (task_id, user_id)
-                             VALUES  (?,?)", array($task_id, $user_id));
-            if ($db->affectedRows()) {
+            $sql = $db->Query("SELECT notify_id
+                                 FROM {notifications}
+                                WHERE task_id = ? and user_id = ?",
+                              array($task_id, $user_id));
+           
+            if (!$db->CountRows($sql)) {
+                $db->Query("INSERT INTO {notifications} (task_id, user_id)
+                                 VALUES  (?,?)", array($task_id, $user_id));
                 $fs->logEvent($task_id, 9, $user_id);
             }
         }

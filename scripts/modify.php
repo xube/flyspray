@@ -992,13 +992,18 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
     $relatedproject = $db->fetchOne($sql);
 
     if ($proj->id == $relatedproject || Post::has('allprojects')) {
-        $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
-                array(Post::val('this_task'), Post::val('related_task')));
-
-        if (!$db->affectedRows()) {
+        $sql = $db->Query("SELECT related_id
+                             FROM {related}
+                            WHERE this_task = ? and related_task = ?",
+                          array(Post::val('this_task'), Post::val('related_task')));
+       
+        if ($db->CountRows($sql)) {
             $_SESSION['ERROR'] = $modify_text['relatederror'];
             $fs->redirect($fs->CreateURL('details', Post::val('this_task').'#related'));
         }
+            
+        $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
+                array(Post::val('this_task'), Post::val('related_task')));
 
         $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
         $fs->logEvent(Post::val('related_task'), 15, Post::val('this_task'));
