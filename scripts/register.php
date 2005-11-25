@@ -12,6 +12,8 @@ if (!$user->can_register()) {
 $fs->get_language_pack('register');
 $page->uses('register_text');
 
+$page->setTitle('Flyspray:: ' . $register_text['registernewuser']);
+
 if (Get::has('magic')) {
     // If the user came here from their notification link
     $sql = $db->Query("SELECT * FROM {registrations} WHERE magic_url = ?",

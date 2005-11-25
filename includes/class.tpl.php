@@ -51,7 +51,7 @@ class Tpl
                     '<?php echo htmlspecialchars(\1, ENT_QUOTES, "utf-8"); ?>\2\2', $item);
         }
     }
-
+    // {{{ Display page
     function pushTpl($_tpl)
     {
         $this->_tpls[] = $_tpl;
@@ -86,7 +86,7 @@ class Tpl
         }
         extract($this->_vars);
         eval( '?>'.$_tpl_data );
-    }
+    } // }}}
 
     function render()
     {
@@ -238,7 +238,7 @@ function join_attrs($attr = null) {
     }
     return '';
 }
-
+// {{{ Options for a <select>
 function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null)
 {
     $html = '';
@@ -268,8 +268,8 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
     }
 
     return $html;
-}
-
+} // }}}
+// {{{ Double <select>
 function tpl_double_select($name, $options, $selected = null, $labelIsValue = false)
 {
     static $_id = 0;
@@ -317,8 +317,8 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
     }
 
     return sprintf($html, $opt1, $opt2);
-}
-
+} // }}}
+// {{{ Checkboxes
 function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null)
 {
     $name  = htmlspecialchars($name,  ENT_QUOTES, "utf-8");
@@ -332,8 +332,8 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
     }
 
     return $html.join_attrs($attr).' />';
-}
-
+} // }}}
+// {{{ Image display
 function tpl_img($src, $alt)
 {
     global $baseurl;
@@ -342,8 +342,8 @@ function tpl_img($src, $alt)
             .htmlspecialchars($src, ENT_QUOTES,'utf-8').'" alt="'
             .htmlspecialchars($alt, ENT_QUOTES,'utf-8').'" />';
     }
-}
-
+} // }}}
+// {{{ Text formatting
 function tpl_formattext($text)
 {
     $text = nl2br(htmlspecialchars($text));
@@ -354,8 +354,8 @@ function tpl_formattext($text)
     // Change FS#123 into hyperlinks to tasks
     return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
             'tpl_fast_tasklink', $text);
-}
-
+} // }}}
+// {{{ Draw permissions table
 function tpl_draw_perms($perms)
 {
     global $language,$proj;
@@ -384,7 +384,7 @@ function tpl_draw_perms($perms)
         }
     }
     return $html . '</tbody></table>';
-}
+} // }}}
 
 function tpl_disableif($if)
 {

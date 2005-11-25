@@ -20,5 +20,7 @@ if ($user->perms['is_admin']) {
                      ORDER BY  group_id ASC");
     $page->assign('group_names', $db->fetchAllArray($sql));
 }
+
+$page->setTitle('Flyspray:: ' . $newuser_text['registernewuser']);
 $page->pushTpl('newuser.tpl');
 ?>

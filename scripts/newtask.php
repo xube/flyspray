@@ -24,6 +24,8 @@ $page->assign('assigned_users', array());
 
 $page->uses('newtask_text', 'index_text', 'details_text', 'status_list',
         'severity_list', 'priority_list','modify_text');
+
+$page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . $newtask_text['newtask']);
 $page->pushTpl('newtask.tpl');
 
 ?>

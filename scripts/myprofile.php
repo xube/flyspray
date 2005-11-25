@@ -20,6 +20,8 @@ $page->assign('group_names', $db->fetchAllArray($sql));
         
 $page->uses('admin_text','newuser_text');
 $page->assign('theuser', $user);
+
+$page->setTitle('Flyspray:: ' . $language['editmydetails']);
 $page->pushTpl('myprofile.tpl');
 
 ?>

@@ -62,7 +62,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     $sql_params = join(', ', $sql_params);
     $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
 
-	$result = $db->Query("SELECT  max(task_id)+1
+    $result = $db->Query("SELECT  max(task_id)+1
                             FROM  {tasks}");
     $task_id = $db->FetchOne($result);           
                         

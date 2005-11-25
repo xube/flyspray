@@ -54,7 +54,8 @@ foreach ($pmodes as $mode => $desc) {
         $strlist[] = "<a href='$selfurl".($mode!=0 ? "&amp;prune=$mode" : "")."'>$desc</a>\n";
     }
 }
-echo "<p><b>Pruning Level: </b>\n". implode(" &nbsp;|&nbsp; \n", $strlist)."</p>\n";
+// FIXME: commented out by [TC] so that it didn't interfere with the template
+//echo "<p><b>Pruning Level: </b>\n". implode(" &nbsp;|&nbsp; \n", $strlist)."</p>\n";
 
 $starttime = microtime();
 
@@ -234,7 +235,15 @@ if (!function_disabled('system')) {
 
     unlink($tname);
 
-    echo "<img src='{$baseurl}$out' alt='task $id dependencies' usemap='#$graphname'>\n";
+/*
+    [TC] We cannot have this stuff outputting here, so I put it in a quick template
+*/
+
+    //echo "<img src='{$baseurl}$out' alt='task $id dependencies' usemap='#$graphname'>\n";
+    $page->assign('image', $out);
+    $page->assign('taskid', $id);
+    $page->assign('graphname', $graphname);
+    
 }
 else {
     echo '<strong>Error: The graph cannot be displayed because of the server\'s security settings.</strong>';
@@ -247,6 +256,11 @@ $endtime = microtime();
 list($startusec, $startsec) = explode(" ", $starttime);
 list($endusec, $endsec) = explode(" ", $endtime);
 $diff = ($endsec - $startsec) + ($endusec - $startusec);
-echo "\n<p>\nPage and image generated in ".round($diff, 2). " seconds.\n<p>\n";
+// [TC] FIXME: commented out to stop interfering with the template
+//echo "\n<p>\nPage and image generated in ".round($diff, 2). " seconds.\n<p>\n";
 
+
+$page->uses('details_text');
+$page->setTitle('FS#' . $id . ': ' . $details_text['dependencygraph']);
+$page->pushTpl('depends.tpl');
 ?>

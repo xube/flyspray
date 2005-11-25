@@ -156,8 +156,9 @@ $details_text = array (
 
 
 // Added in version 0.9.9
-'selectusers'           =>    'Select Users...',
-'addmetoassignees'      =>    'Add me to assignees',
-'addedtoassignees'      =>    'User added to assignees list',
+'selectusers'           =>      'Select Users...',
+'addmetoassignees'      =>      'Add me to assignees',
+'addedtoassignees'      =>      'User added to assignees list',
+'dependencygraph'       =>      'Dependency graph',
 );
 ?>

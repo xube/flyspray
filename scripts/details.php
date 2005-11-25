@@ -38,6 +38,8 @@ $page->assign('userlist', $userlist);
 $page->assign('assigned_users', $assigned_users);
 $page->assign('old_assigned', $old_assigned);
 
+$page->setTitle('FS#' . $task_details['task_id'] . ': ' . $task_details['item_summary']);
+
 if (Get::val('edit') && $user->can_edit_task($task_details)) {
     $page->pushTpl('details.edit.tpl');
 }

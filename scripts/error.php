@@ -10,6 +10,7 @@
 
 
 $fs->get_language_pack('main');
-echo '<div id="error">'.$language['errorpage'].'</div>';
-
+$page->uses('language');
+$page->setTitle('Flyspray:: Error');
+$page->pushTpl('error.tpl');
 ?>

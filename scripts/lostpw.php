@@ -7,6 +7,7 @@
 
 $fs->get_language_pack('admin');
 $page->uses('admin_text');
+$page->setTitle('Flyspray:: ' . $admin_text['lostpw']);
 
 if (!Get::has('magic') && $user->isAnon()) {
     // Step One: user requests magic url

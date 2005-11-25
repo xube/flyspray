@@ -60,5 +60,9 @@ $index_text = array (
 
 // Added in version 0.9.8
 'assignedtome'             =>    'Assigned to myself',
+
+// Added in version 0.9.9
+'tasklist'              =>      'Tasklist',
+
 );
 ?>
