@@ -30,16 +30,7 @@ $page->uses('status_list', 'priority_list', 'severity_list', 'task_details',
 $userlist = $fs->UserList($project_id);
 
 // Find the users assigned to this task
-$sql = $db->Query("SELECT user_id
-                     FROM {assigned}
-                    WHERE task_id = ?",
-                          array($task_details['task_id']));
-
-
-$assigned_users = array();
-while ($row = $db->FetchArray($sql))
-   $assigned_users[] = $row['user_id'];
-
+$assigned_users = $fs->GetAssignees($task_details['task_id']);
 $old_assigned = implode(" ", $assigned_users);
 
 // Send user variables to the template

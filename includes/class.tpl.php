@@ -305,7 +305,7 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
         $label = htmlspecialchars($label, ENT_QUOTES, "utf-8");
         $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
 
-        $opt1 .= sprintf('<option value="%s">%s</option>', $value, $label);
+        $opt1 .= sprintf('<option title="%2$s" value="%1$s">%2$s</option>', $value, $label);
     }
 
     $opt2 = '';
@@ -313,7 +313,7 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
         $label = htmlspecialchars($selectedones[$value], ENT_QUOTES, "utf-8");
         $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
 
-        $opt2 .= sprintf('<option value="%s">%s</option>', $value, $label);
+        $opt2 .= sprintf('<option title="%2$s" value="%1$s">%2$s</option>', $value, $label);
     }
 
     return sprintf($html, $opt1, $opt2);

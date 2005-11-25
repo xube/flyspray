@@ -187,18 +187,16 @@
 		  } elseif ($history['event_type'] == '14') {  //Task assigned
 				if (empty($old_value)) {
 					$users = explode(" ", trim($new_value));
+					$users = array_map ('tpl_userlink', $users);
 					echo "{$details_text['taskassigned']} ";
-					foreach ($users as $userid):
-					  echo tpl_userlink($userid) . ', ';
-					endforeach;
+					echo implode(', ', $users);
 				} elseif (empty($new_value)) {
 					 echo $details_text['assignmentremoved'];
 				} else {
 					 $users = explode(" ", trim($new_value));
+					 $users = array_map ('tpl_userlink', $users);
 					 echo "{$details_text['taskreassigned']} ";
-					 foreach ($users as $userid):
-						 echo tpl_userlink($userid) . ', ';
-					 endforeach;
+					 echo implode(', ', $users);
 				}
 		  } elseif ($history['event_type'] == '15') { //Task added to related list of another task
 				echo "{$details_text['addedasrelated']} ".tpl_tasklink($new_value);

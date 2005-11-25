@@ -6,21 +6,6 @@ class User
     var $perms = array();
     var $infos = array();
 
-    function GetAssignees($taskid)
-    {
-        global $db;
-
-        $sql = $db->Query("SELECT user_id
-                             FROM {assigned}
-                            WHERE task_id = ?",
-                                  array($taskid));
-        $assignees = array();
-        while ($row = $db->FetchArray($sql))
-            $assignees = $assignees + array($row['user_id']);
-
-        return $assignees;
-    }
-
     function User($uid = 0)
     {
         global $db;
@@ -156,7 +141,8 @@ class User
 
     function can_view_task($task)
     {
-        $assignees = $this->GetAssignees($task['task_id']);
+        global $fs;
+        $assignees = $fs->GetAssignees($task['task_id']);
         
         return $this->perms['manage_project'] || !$task['mark_private']
                     || in_array($this->id, $assignees);
@@ -164,7 +150,8 @@ class User
 
     function can_edit_task($task)
     {
-        $assignees = $this->GetAssignees($task['task_id']);
+        global $fs;
+        $assignees = $fs->GetAssignees($task['task_id']);
         
         return !$task['is_closed']
             && ($this->perms['modify_all_tasks'] ||
@@ -174,7 +161,8 @@ class User
 
     function can_take_ownership($task)
     {
-        $assignees = $this->GetAssignees($task['task_id']);
+        global $fs;
+        $assignees = $fs->GetAssignees($task['task_id']);
             
         return ($this->perms['assign_to_self'] && empty($assignees))
             || ($this->perms['assign_others_to_self'] && !in_array($this->id, $assignees));
@@ -182,7 +170,8 @@ class User
     
     function can_add_to_assignees($task)
 	 { 
-        $assignees = $this->GetAssignees($task['task_id']);
+        global $fs;
+        $assignees = $fs->GetAssignees($task['task_id']);
          
         return ($this->perms['add_to_assignees'] && !in_array($this->id, $assignees)
             && !empty($assignees));
@@ -213,7 +202,8 @@ class User
 
     function can_mark_private($task)
     {
-        $assignees = $this->GetAssignees($task['task_id']);
+        global $fs;
+        $assignees = $fs->GetAssignees($task['task_id']);
         
         return !$task['mark_private']
             && ($this->perms['manage_project'] || in_array($this->id, $assignees));
@@ -221,7 +211,8 @@ class User
 
     function can_mark_public($task)
     {
-        $assignees = $this->GetAssignees($task['task_id']);
+        global $fs;
+        $assignees = $fs->GetAssignees($task['task_id']);
         
         return $task['mark_private']
             && ($this->perms['manage_project'] || in_array($this->id, $assignees));

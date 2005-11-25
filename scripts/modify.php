@@ -62,27 +62,19 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     $sql_params = join(', ', $sql_params);
     $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
 
-    $db->Query("INSERT INTO  {tasks}
-                             ( date_opened, last_edited_time,
+	$result = $db->Query("SELECT  max(task_id)+1
+                            FROM  {tasks}");
+    $task_id = $db->FetchOne($result);           
+                        
+    $result = $db->Query("INSERT INTO  {tasks}
+                             ( task_id, date_opened, last_edited_time,
                                attached_to_project, item_summary,
                                detailed_desc, opened_by,
                                percent_complete, $sql_params )
-                     VALUES  ($sql_placeholder)", $sql_values);
+                     VALUES  ($task_id, $sql_placeholder)", $sql_values);
 
-    // Now, let's get the task_id back, so that we can send a direct link
-    // URL in the notification message
-    // [MC] : ber-ugly ... we need to be better here.
-    $result = $db->Query("SELECT  task_id
-                            FROM  {tasks}
-                           WHERE  item_summary = ?  AND detailed_desc = ?
-                        ORDER BY  task_id DESC",
-                        array($item_summary, $detailed_desc), 1);
-    $task_id = $db->FetchOne($result);
-    
-
-    
     // Log the assignments and send notifications to the assignees
-    if (trim(Post::val('assigned_to')) != '')
+    if (trim(Post::val('assigned_to')))
     {
         // Convert assigned_to and store them in the 'assigned' table
         foreach (explode(" ", trim(Post::val('assigned_to'))) as $key => $val)
@@ -211,14 +203,14 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
             }
          }
 
-
         // Get the details of the task we just updated
         // To generate the changed-task message
+        $new_details_full = $fs->GetTaskDetails(Post::val('task_id'));
+        // Not very nice...maybe combine compare_tasks() and logEvent() ?
         $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?",
                 array(Post::val('task_id')));
         $new_details = $db->FetchRow($result);
 
-        $do_send = false;
         foreach ($new_details as $key => $val) {
             if (strstr($key, 'last_edited_') || $key == 'assigned_to'
                     || is_numeric($key))
@@ -227,14 +219,12 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
             } elseif ($val != $old_details[$key]) {
                 // Log the changed fields in the task history
                 $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key);
-                $do_send = true;
             }
         }
-
-        if ($do_send) {
-            $new_details = $fs->GetTaskDetails(Req::val('task_id'));
-            $changes = $fs->compare_tasks($old_details, $new_details);
-            $notify->Create('2', $new_details['task_id'], $changes);
+        
+        $changes = $fs->compare_tasks($old_details, $new_details_full);
+        if(count($changes) > 0) {
+            $notify->Create('2', Post::val('task_id'), $changes);
         }
 
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {

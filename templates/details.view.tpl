@@ -248,9 +248,9 @@
 				<option value="0">{$details_text['selectareason']}</option>
 				{!tpl_options($proj->listResolutions())}
 			 </select>
-			 <input class="adminbutton" type="submit" name="buSubmit" value="{$details_text['closetask']}" />
-			 {$details_text['closurecomment']}
-			 <textarea class="admintext" name="closure_comment" rows="3" cols="30"></textarea>
+			 <input class="adminbutton" type="submit" name="buSubmit" value="{$details_text['closetask']}" /><br />
+			 <label class="default text" for="closure_comment">{$details_text['closurecomment']}</label>
+			 <textarea class="admintext" id="closure_comment" name="closure_comment" rows="3" cols="30"></textarea>
 			 <input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;{$details_text['mark100']}
 		  </div>
 		</form>

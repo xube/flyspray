@@ -363,7 +363,7 @@ class Notifications {
          $body .= $details_text['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
          $body .= $details_text['category'] . ' - ' . $task_details['category_name'] . "\n";
          $body .= $details_text['status'] . ' - ' . $task_details['status_name'] . "\n";
-         $body .= $details_text['assignedto'] . ' - ' . $task_details['assigned_to_name'] . "\n";
+         $body .= $details_text['assignedto'] . ' - ' . implode(', ', $task_details['assigned_to_name']) . "\n";
          $body .= $details_text['operatingsystem'] . ' - ' . $task_details['os_name'] . "\n";
          $body .= $details_text['severity'] . ' - ' . $task_details['severity_name'] . "\n";
          $body .= $details_text['priority'] . ' - ' . $task_details['priority_name'] . "\n";
@@ -399,8 +399,15 @@ class Notifications {
          $body = $notify_text['donotreply'] . "\n\n";
          $body .= $notify_text['taskchanged'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= $notify_text['userwho'] . ': ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         
          foreach($arg1 as $change)
          {
+            if($change[0] == 'assigned_to_name') {
+                $change[1] = implode(', ', $change[1]);
+                $change[2] = implode(', ', $change[2]);
+            }
+            
             if($change[0] == 'detailed_desc') {
                 $body .= $translation[$change[0]] . ":\n-------\n" . $change[2] . "\n-------\n";
             } else {
@@ -549,7 +556,7 @@ class Notifications {
       if ($type == '10')
       {
          $body = $notify_text['donotreply'] . "\n\n";
-         $body .= $task_details['assigned_to_name'] . ' ' . $notify_text['takenownership'] . "\n\n";
+         $body .= implode(', ', $task_details['assigned_to_name']) . ' ' . $notify_text['takenownership'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
          $body .= $fs->CreateURL('details', $task_id) . "\n\n";

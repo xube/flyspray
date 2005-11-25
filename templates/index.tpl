@@ -10,7 +10,7 @@
         <?php endif; ?>
         <em>{$index_text['searchthisproject']}:</em>
         <input id="searchtext" name="string" type="text" size="20"
-        maxlength="100" value="{Get::val('string')}" accesskey="s" />
+        maxlength="100" value="{Get::val('string')}" accesskey="q" />
 
         <select name="type">
           <option value="">{$index_text['alltasktypes']}</option>

@@ -138,8 +138,7 @@ class Flyspray
                                           vd.version_name   AS due_in_version_name,
                                           uo.real_name      AS opened_by_name,
                                           ue.real_name      AS last_edited_by_name,
-                                          uc.real_name      AS closed_by_name,
-                                          ua.real_name      AS assigned_to_name
+                                          uc.real_name      AS closed_by_name
                                     FROM  {tasks}              t
                                LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
                                LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
@@ -152,7 +151,6 @@ class Flyspray
                                LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
                                LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
                                LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
-                               LEFT JOIN  {users}              ua ON t.assigned_to = ua.user_id
                                    WHERE  t.task_id = ?", array($task_id));
 
         if (!$db->CountRows($get_details)) {
@@ -167,6 +165,9 @@ class Flyspray
             $get_details += array('severity_name' => $severity_list[$severity_id]);
             $get_details += array('priority_name' => $priority_list[$priority_id]);
         }
+        
+        $get_details['assigned_to'] = $this->GetAssignees($task_id);
+        $get_details['assigned_to_name'] = $this->GetAssignees($task_id, true);
 
         return $get_details;
     }
@@ -727,7 +728,32 @@ class Flyspray
                 $changes[] = array($key, $value, $new[$key]);
             }
         }
+
         return $changes;
+    }
+    
+    function GetAssignees($taskid, $name = false)
+    {
+        global $db;
+        
+        if($name) {
+            $sql = $db->Query("SELECT u.real_name
+                                FROM {users} u, {assigned} a
+                                WHERE task_id = ? AND u.user_id = a.user_id",
+                                  array($taskid));
+        } else {
+            $sql = $db->Query("SELECT user_id
+                                FROM {assigned}
+                                WHERE task_id = ?",
+                                  array($taskid));
+        }
+        
+        $assignees = array();
+        while ($row = $db->FetchArray($sql)) {
+            $assignees[] = ($name) ? $row['real_name'] : $row['user_id'];
+        }
+
+        return $assignees;
     }
 }
 
