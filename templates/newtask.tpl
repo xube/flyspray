@@ -128,16 +128,23 @@
     <div id="taskdetailsfull">
       <label for="details">{$newtask_text['details']}</label>
       <textarea id="details" name="detailed_desc" cols="70" rows="10"></textarea>
+      <?php if ($user->perms['create_attachments']): ?>
+        <div id="uploadfilebox">
+          <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
+            <input type="file" size="55" name="userfile[]" />
+            <a href="javascript://" onclick="removeUploadField(this);">{$details_text['remove']}</a>
+            <br />
+          </span>
+        </div>
+        <input id="attachafile" class="adminbutton" type="button" onclick="addUploadFields()" value="{$details_text['uploadafile']}" />
+        <input id="attachanotherfile" style="display: none" class="adminbutton" type="button" onclick="addUploadFields()"
+          value="{$details_text['attachanotherfile']}" />
+        
+      <?php endif; ?>
+      
     </div>
 
-    <?php if ($user->perms['create_attachments']): ?>
-    <div id="uploadfilebox">
-      {$details_text['uploadafile']}
-      <input type="file" size="55" name="userfile[]" /><br />
-    </div><div>
-    <input class="adminbutton" type="button" onclick="addUploadFields()" value="{$details_text['selectmorefiles']}" />
-    <?php endif; ?>
-
+    <div>
     <input type="hidden" name="do" value="modify" />
     <input type="hidden" name="action" value="newtask" />
     <input type="hidden" name="project_id" value="{$proj->id}" />

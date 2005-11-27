@@ -65,19 +65,24 @@
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{Get::val('id')}" />
-      {$details_text['addcomment']}
-      <textarea accesskey="r" tabindex="5" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
-
+      {$details_text['addcomment']}<br />
       <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
-        {$details_text['uploadafile']}
-        <input tabindex="7" type="file" size="55" name="userfile[]" /><br />
+        <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
+          <input tabindex="5" type="file" size="55" name="userfile[]" />
+            <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{$details_text['remove']}</a><br />
+        </span>    
       </div>
-      <input tabindex="8" class="adminbutton" type="button" onclick="addUploadFields()"
-        value="{$details_text['selectmorefiles']}" />
+      <input id="attachafile" tabindex="7" class="adminbutton" type="button" onclick="addUploadFields()"
+        value="{$details_text['uploadafile']}" />
+      <input id="attachanotherfile" tabindex="7" style="display: none" class="adminbutton" type="button" onclick="addUploadFields()"
+        value="{$details_text['attachanotherfile']}" />
+        
       <?php endif; ?>
+      <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
 
-      <input tabindex="6" class="adminbutton" type="submit" value="{$details_text['addcomment']}" />
+
+      <input tabindex="9" class="adminbutton" type="submit" value="{$details_text['addcomment']}" />
       <?php if (!$watched): ?>
       {!tpl_checkbox('notifyme')} {$newtask_text['notifyme']}
       <?php endif; ?>

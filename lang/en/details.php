@@ -36,7 +36,8 @@ $details_text = array (
 'commentby'           =>    'Comment by',
 'addcomment'          =>    'Add comment',
 'fileuploadedby'      =>    'File uploaded by',
-'uploadafile'         =>    'Attach a file',             // Changed in version 0.9.8
+'uploadafile'         =>    'Attach a file',         // Changed in version 0.9.8
+                                                     // Changed from label to button i 0.9.9
 'description'         =>    'Description',
 'uploadnow'           =>    'Upload now!',
 'thesearerelated'     =>    'These tasks are related to this task',
@@ -147,7 +148,7 @@ $details_text = array (
 'previoustask'          =>    'Previous task',
 'nexttask'              =>    'Next task',
 'duedate'               =>    'Due Date',
-'selectmorefiles'       =>    'Select more files',
+//'selectmorefiles'       =>    'Select more files',  Removed in version 0.9.9
 'attachnoperms'         =>    'There are attachments with this comment, but you have no permission to view them.',
 'open'                  =>    'OPEN',
 'closed'                =>    'CLOSED',
@@ -160,5 +161,6 @@ $details_text = array (
 'addmetoassignees'      =>      'Add me to assignees',
 'addedtoassignees'      =>      'User added to assignees list',
 'dependencygraph'       =>      'Dependency graph',
+'attachanotherfile'     =>      'Attach another file',
 );
 ?>
