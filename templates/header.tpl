@@ -19,15 +19,15 @@
 	<link rel="alternate" type="application/atom+xml" title="Flyspray Atom 0.3 Feed"
 	      href="{$baseurl}feed.php?feed_type=atom&amp;project={$proj->id}" />
 
-    <script type="text/javascript" src="{$baseurl}includes/styleswitcher.js"></script>
-    <script type="text/javascript" src="{$baseurl}includes/tabs.js"></script>
-    <script type="text/javascript" src="{$baseurl}includes/functions.js"></script>
-    <script type="text/javascript" src='{$baseurl}includes/perms.js'></script>
-    <script type="text/javascript" src="{$baseurl}includes/jscalendar/calendar_stripped.js"></script>
-    <script type="text/javascript" src="{$baseurl}includes/jscalendar/lang/calendar-en.js"></script>
-    <script type="text/javascript" src="{$baseurl}includes/jscalendar/calendar-setup.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/styleswitcher.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/tabs.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>
+    <script type="text/javascript" src='{$baseurl}javascript/perms.js'></script>
+    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar_stripped.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/lang/calendar-en.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar-setup.js"></script>
     <!--[if IE 6]>
-    <script type="text/javascript" src="{$baseurl}includes/ie_hover.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/ie_hover.js"></script>
     <![endif]-->
   </head>
   <body onload="perms = new Perms('permissions')">

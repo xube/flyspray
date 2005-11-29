@@ -26,7 +26,7 @@ $server = "http://localhost/flyspray-dev/remote.php";
 <head>
 
 <link href="/flyspray-dev/themes/Bluey/theme.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="/flyspray-dev/includes/functions.js"></script>
+<script type="text/javascript" src="/flyspray-dev/javascript/functions.js"></script>
 <title>Test page for the Flyspray XML-RPC interface</title>
 </head>
 
