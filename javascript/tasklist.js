@@ -8,6 +8,7 @@ function tasklistInit() {
 var Caret = {
   init: function () {
     Caret.currentRow = $('tasklist_table').getElementsByTagName('tbody')[0].getElementsByTagName('tr')[0];
+    Element.addClassName(Caret.currentRow,'current_row');
     Event.observe(window,'keypress',Caret.keypress);
   },
   keypress: function (e) {

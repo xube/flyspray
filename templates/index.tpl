@@ -93,6 +93,7 @@
             <?php endforeach; ?>
           </tr>
         </thead>
+        <tbody>
         <?php foreach ($tasks as $task_details):?>
         <tr id="task{!$task_details['task_id']}" class="severity{$task_details['task_severity']}">
           <td class="caret">
@@ -107,6 +108,7 @@
           <?php endforeach; ?>
         </tr>
         <?php endforeach; ?>
+        </tbody>
       </table>
       <table id="pagenumbers">
         <tr>
