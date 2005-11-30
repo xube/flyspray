@@ -83,6 +83,8 @@
       <table id="tasklist_table">
         <thead>
           <tr>
+            <th class="caret">
+            </th>
             <?php if (!$user->isAnon()): ?>
             <th class="ttcolumn"></th>
             <?php endif; ?>
@@ -93,6 +95,8 @@
         </thead>
         <?php foreach ($tasks as $task_details):?>
         <tr id="task{!$task_details['task_id']}" class="severity{$task_details['task_severity']}">
+          <td class="caret">
+          </td>
           <?php if (!$user->isAnon()): ?>
           <td class="ttcolumn">
             <input class="ticktask" type="checkbox" name="ids[{!$task_details['task_id']}]" value="1" />

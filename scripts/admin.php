@@ -18,8 +18,6 @@ $fs->get_language_pack('index');
 $fs->get_language_pack('newproject');
 $fs->get_language_pack('newuser');
 
-$proj = new Project(0);
-
 $page->uses('admin_text', 'index_text', 'newproject_text', 'newuser_text');
 $page->pushTpl('admin.menu.tpl');
 

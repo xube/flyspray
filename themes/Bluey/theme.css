@@ -504,7 +504,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity1:hover,.severity1.current_row {
+.severity1:hover {
    background-color:#ffe9b4;
    color:#000;
    cursor:pointer;
@@ -515,7 +515,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity2:hover,.severity2.current_row {
+.severity2:hover {
    background-color:#efca80;
    color:#000;
    cursor:pointer;
@@ -526,7 +526,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity3:hover,.severity3.current_row {
+.severity3:hover {
    background-color:#f7b390;
    color:#000;
    cursor:pointer;
@@ -537,7 +537,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity4:hover,.severity4.current_row {
+.severity4:hover {
    background-color:#ffb2ac;
    color:#000;
    cursor:pointer;
@@ -548,7 +548,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity5:hover,.severity5.current_row {
+.severity5:hover {
    background-color:#f3867e;
    color:#000;
    cursor:pointer;
@@ -1040,4 +1040,13 @@ table.requests {
 table.requests td {
     border:solid 1px black;
     padding:0.2em 0.5em;
+}
+
+tr.current_row td.caret {
+    background:url(caret.gif) no-repeat 3px center !important;
+}
+
+td.caret {
+    width:15px;
+    padding:0 !important;
 }
