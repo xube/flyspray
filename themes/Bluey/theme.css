@@ -325,7 +325,6 @@ div#tasklist table {
 }
 
 div#tasklist table th {
-   text-align:left;
    border-bottom:1px solid #ccc;
    padding:2px 1em 2px 2px;
 }
@@ -382,7 +381,6 @@ div#taskdetails table {
 }
 
 div#taskdetails table th {
-   text-align:left;
    font-weight:700;
 }
 
@@ -506,7 +504,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity1:hover {
+.severity1:hover,.severity1.current_row {
    background-color:#ffe9b4;
    color:#000;
    cursor:pointer;
@@ -517,7 +515,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity2:hover {
+.severity2:hover,.severity2.current_row {
    background-color:#efca80;
    color:#000;
    cursor:pointer;
@@ -528,7 +526,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity3:hover {
+.severity3:hover,.severity3.current_row {
    background-color:#f7b390;
    color:#000;
    cursor:pointer;
@@ -539,7 +537,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity4:hover {
+.severity4:hover,.severity4.current_row {
    background-color:#ffb2ac;
    color:#000;
    cursor:pointer;
@@ -550,7 +548,7 @@ you'll have to adjust the javascript*/
    color:#000;
 }
 
-.severity5:hover {
+.severity5:hover,.severity5.current_row {
    background-color:#f3867e;
    color:#000;
    cursor:pointer;
@@ -605,6 +603,11 @@ div#taskfields2 {
    float:left;
    width:49%;
    margin-bottom:8px;
+}
+
+div#taskfields1 th,div#taskfields2 th {
+    text-align:right;
+    padding-right:0.5em;
 }
 
 div#taskdetailsfull {
@@ -1037,8 +1040,4 @@ table.requests {
 table.requests td {
     border:solid 1px black;
     padding:0.2em 0.5em;
-}
-/* Used by the javascript/tasklist.js when navigating the task list with keys */
-.current_row {
-  background-color: #ff0000 !important; 
 }

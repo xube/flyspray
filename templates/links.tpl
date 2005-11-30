@@ -56,7 +56,7 @@ endif; ?>
 <?php if ($user->perms['manage_project'] && $pm_pendingreq_num): ?>
   <li class="last">
   <a class="pendingreq attention"
-    href="{$fs->CreateURL('pm', 'pendingreq', $proj->id)}">{$num_req} {$language['pendingreq']}</a>
+    href="{$fs->CreateURL('pm', 'pendingreq', $proj->id)}">{$pm_pendingreq_num} {$language['pendingreq']}</a>
   </li>
 <?php endif; ?>
 </ul>

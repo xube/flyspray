@@ -158,7 +158,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
                     if (!isset($task['assigned_to_name'])) {
                         $task = $fs->GetTaskDetails($task['task_id']);
                     }
-                    $title_text[] = $task['assigned_to_name'];
+                    $title_text[] = implode(', ', $task['assigned_to_name']);
                 }
                 break;
             
