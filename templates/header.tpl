@@ -18,7 +18,9 @@
           href="{$baseurl}feed.php?feed_type=rss2&amp;project={$proj->id}" />
 	<link rel="alternate" type="application/atom+xml" title="Flyspray Atom 0.3 Feed"
 	      href="{$baseurl}feed.php?feed_type=atom&amp;project={$proj->id}" />
-
+	      
+    <script type="text/javascript" src="{$baseurl}javascript/prototype/prototype.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/tasklist.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/styleswitcher.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/tabs.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>

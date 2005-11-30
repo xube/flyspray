@@ -1038,3 +1038,7 @@ table.requests td {
     border:solid 1px black;
     padding:0.2em 0.5em;
 }
+/* Used by the javascript/tasklist.js when navigating the task list with keys */
+.current_row {
+  background-color: #ff0000 !important; 
+}
