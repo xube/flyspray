@@ -241,3 +241,26 @@ function checknewtask(message)
 	}
 	return true;
 }
+var Cookie = {
+  getVar: function(name) {
+    var cookie = document.cookie;
+    if (cookie.length > 0) {
+      cookie += ';';
+    }
+    re = new RegExp(name + '\=(.*?);' );
+    if (cookie.match(re)) {
+      return RegExp.$1;
+    } else {
+      return '';
+    }
+  },
+  setVar: function(name,value,expire,path) {
+    document.cookie = name + '=' + value;
+  },
+  removeVar: function(name) {
+    var date = new Date(12);
+    document.cookie = name + '=;expires=' + date.toUTCString();
+  }  
+};
+var useAltForKeyboardNavigation = false;  // Set this to true if you don't want to kill
+                                         // Firefox's find as you type 

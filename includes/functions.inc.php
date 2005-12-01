@@ -656,7 +656,7 @@ class Flyspray
                 $output .= "<a href=\"?pagenum=1" . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
 
             if ($pagenum > 1)
-                $output .= "<a accesskey=\"p\" href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
+                $output .= "<a id=\"previous\" accesskey=\"p\" href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
 
             for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
                 if ($pagelink != $start)
@@ -670,7 +670,7 @@ class Flyspray
             }
 
             if ($pagenum < $pages)
-                $output .= " - <a accesskey=\"n\" href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a>";
+                $output .= " - <a id=\"next\" accesskey=\"n\" href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a>";
             if ($finish < $pages)
                 $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
             $output .= '</span>';

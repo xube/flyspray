@@ -21,7 +21,10 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
 	      href="{$baseurl}feed.php?feed_type=atom&amp;project={$proj->id}" />
 	      
     <script type="text/javascript" src="{$baseurl}javascript/prototype/prototype.js"></script>
-    <script type="text/javascript" src="{$baseurl}javascript/tasklist.js"></script>
+<?php if ('index' == $do || 'details' == $do): if ('index'== $do) $do = 'tasklist';?>
+ 
+    <script type="text/javascript" src="{$baseurl}javascript/{$do}.js"></script>
+<?php endif; ?>    
     <script type="text/javascript" src="{$baseurl}javascript/styleswitcher.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/tabs.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>
