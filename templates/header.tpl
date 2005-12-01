@@ -11,7 +11,8 @@
     <link rel="icon" type="image/png" href="{$this->themeUrl()}/favicon.ico" />
     <link media="screen" href="{$this->themeUrl()}/theme.css" rel="stylesheet" type="text/css" />
     <link media="print"  href="{$this->themeUrl()}/theme_print.css" rel="stylesheet" type="text/css" />
-    <style type="text/css">@import url({$baseurl}includes/jscalendar/calendar-win2k-1.css);</style>
+    <style type="text/css">@import 
+url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
     <link rel="alternate" type="application/rss+xml" title="Flyspray RSS 1.0 Feed"
           href="{$baseurl}feed.php?feed_type=rss1&amp;project={$proj->id}" />
     <link rel="alternate" type="application/rss+xml" title="Flyspray RSS 2.0 Feed"
