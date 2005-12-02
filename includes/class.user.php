@@ -38,6 +38,7 @@ class User
                              WHERE  user_id = ?",
                         array($_SERVER['REQUEST_URI'], $this->id)
                 );
+                $this->infos['last_search'] = $_SERVER['REQUEST_URI'];
                 break;
             }
         }

@@ -172,13 +172,6 @@ if (!$user->perms['manage_project']) {
     $sql_params[] = $user->id;
 }
 
-if (Get::val('tasks') == 'watched') {
-    //join the notification table to get watched tasks
-    $from        .= " RIGHT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
-    $where[]      = 'fsn.user_id = ?';
-    $sql_params[] = $user->id;
-}
-
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/
 $from  = "
                         {tasks}         t
@@ -190,6 +183,14 @@ $from  = "
              LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
              LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
 ";
+
+if (Get::val('tasks') == 'watched') {
+    //join the notification table to get watched tasks
+    $from        .= " LEFT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
+    $where[]      = 'fsn.user_id = ?';
+    $sql_params[] = $user->id;
+}
+
 $where = join(' AND ', $where);
 
 /* }}} */
