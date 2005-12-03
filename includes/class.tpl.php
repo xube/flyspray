@@ -1,4 +1,5 @@
 <?php
+require_once(dirname(__FILE__).'/geshi.php');
 
 class Tpl
 {
@@ -346,15 +347,10 @@ function tpl_img($src, $alt)
 // {{{ Text formatting
 function tpl_formattext($text)
 {
-    $text = nl2br(htmlspecialchars($text));
-
-    // Change URLs into hyperlinks
-    $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
-
-    // Change FS#123 into hyperlinks to tasks
-    return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
-            'tpl_fast_tasklink', $text);
-} // }}}
+    $format = new Flyspray_Textformatter($text);
+    return $format->get();
+}
+// }}}
 // {{{ Draw permissions table
 function tpl_draw_perms($perms)
 {
@@ -368,10 +364,9 @@ function tpl_draw_perms($perms)
             'assign_to_self', 'assign_others_to_self', 'view_reports',
             'global_view');
 
-    // FIXME: colours should be set in the stylesheet instead of the template class
     $yesno = array(
-            '<td style="color: red;">No</td>',
-            '<td style="color: green;">Yes</td>');
+            '<td class="bad">No</td>',
+            '<td class="good">Yes</td>');
 
     // FIXME: html belongs in a template, not in the template class
     $html = '<table border="1" onmouseover="perms.show()" onmouseout="perms.hide()">';
@@ -393,6 +388,63 @@ function tpl_disableif($if)
     }
 }
 
+// {{{ Text formatter class
+class Flyspray_Textformatter {
+	
+	var $_code_blocks = array();
+	var $_text = '';
+	
+	function Flyspray_Textformatter($text)
+	{
+        $langs = 'actionscript|ada|apache|applescript|asm|asp|bash|blitzbasic|c|caddcl|cadlisp|cpp|
+                  csharp|css|c_mac|d|delphi|diff|div|dos|eiffel|freebasic|gml|html|ini|inno|
+                  java|javascript|lisp|lua|matlab|mpasm|mysql|nsis|objc|ocaml|oobas|
+                  oracle8|pascal|perl|php|python|qbasic|ruby|scheme|sdlbasic|smarty|sql|vb|vbnet|
+                  vhdl|visualfoxpro|xml';
+		// Seperate code blocks and highlight them
+		$text = preg_replace_callback('/\[('.$langs.')\](.+)\[\/\1\]/Us', array(&$this, '_cut_code_blocks'), $text);
+		
+        // Apply changes to the remaining text
+        $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
+        $text = nl2br(htmlspecialchars($text));
+        $text = preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
+        
+        // Put code blocks at the right place again
+        $text = preg_replace_callback('|\[code:(\w{32})\]|U', array(&$this, '_get_code_blocks'), $text);
+        $this->_text = $text;
+	}
+	
+	function get()
+	{
+		return $this->_text;
+	}
+	
+	function _get_code_blocks($match)
+	{
+		if(isset($this->_code_blocks[$match[1]])) {
+			return $this->_code_blocks[$match[1]];
+		} else {
+            return "[code:{$match[1]}]";
+        }
+	}
+	
+	function _fs_highlight(&$match)
+	{
+        if($match[1] == 'html') {
+            $match[1] = 'html4strict';
+        }
+		$geshi =& new GeSHi(trim($match[2]), $match[1]);
+		$geshi->set_overall_class('code');
+	    return $geshi->parse_code();
+	}
+	
+	function _cut_code_blocks($match)
+	{
+		$id = md5(time().uniqid('fs'.mt_rand()));
+		$this->_code_blocks[$id] = $this->_fs_highlight($match);
+		return "[code:$id]";
+	}
+}
 // }}}
-
+// }}}
 ?>

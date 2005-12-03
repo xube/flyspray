@@ -1050,3 +1050,20 @@ td.caret {
     width:15px;
     padding:0 !important;
 }
+
+pre.code {
+    border:dotted 1px gray;
+    background:#FBFDFE;
+    padding:0.8em;
+    margin:1em;
+    overflow:auto;
+    max-height:30em;
+}
+
+.good {
+    color:green;
+}
+
+.bad {
+    color:red;
+}
