@@ -122,7 +122,7 @@
             <?php endif; ?>
           </td>
           <td id="numbers">
-            {!$fs->pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order'))}
+            {!$fs->pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order') . '&amp;tasks=' . Get::val('tasks'))}
           </td>
           <?php else: ?>
           <td id="taskrange"><strong>{$index_text['noresults']}</strong></td>

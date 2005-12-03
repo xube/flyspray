@@ -280,7 +280,7 @@
 	 <?php endif; ?>
 
 	 <?php if ($user->can_add_to_assignees($task_details)): ?>
-	 <a id="own" class="button"
+	 <a id="own_add" class="button"
 		href="{$baseurl}?do=modify&amp;action=addtoassignees&amp;ids={Get::val('id')}">
 		{$details_text['addmetoassignees']}</a>
 	 <?php endif; ?>
