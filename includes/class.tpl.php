@@ -401,12 +401,14 @@ class Flyspray_Textformatter {
                   java|javascript|lisp|lua|matlab|mpasm|mysql|nsis|objc|ocaml|oobas|
                   oracle8|pascal|perl|php|python|qbasic|ruby|scheme|sdlbasic|smarty|sql|vb|vbnet|
                   vhdl|visualfoxpro|xml';
-		// Seperate code blocks and highlight them
+		// Seperate code blocks and highlight them [php] [/php]
 		$text = preg_replace_callback('/\[('.$langs.')\](.+)\[\/\1\]/Us', array(&$this, '_cut_code_blocks'), $text);
+		// < ? php ? >
+		$text = preg_replace_callback('/<\?(php)(.+)\?>/Us', array(&$this, '_cut_code_blocks'), $text);
 		
         // Apply changes to the remaining text
         $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
-        $text = nl2br(htmlspecialchars($text));
+        $text = nl2br(htmlspecialchars($text, ENT_QUOTES, 'utf-8'));
         $text = preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
         
         // Put code blocks at the right place again
