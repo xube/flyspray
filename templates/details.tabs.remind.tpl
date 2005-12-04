@@ -41,7 +41,7 @@
 
       <em>{$details_text['remindthisuser']}</em>
       <select class="adminlist" name="to_user_id">
-        <?php $fs->listUsers($proj->id); ?>
+        {!tpl_options($proj->UserList())}
       </select>
 
       <br />

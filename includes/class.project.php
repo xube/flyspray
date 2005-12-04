@@ -178,41 +178,33 @@ class Project
 
     function listUsersIn($group_id = null)
     {
-        if (is_null($group_id)) {
-            // list of users in no group specific to that project
-
-            return $this->_cached_query(
-                    'users_in'.$group_id,
-                    "SELECT  u.*, MAX(g.group_id) AS gid
-                       FROM  {users}           u
-                  LEFT JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
-                  LEFT JOIN  {groups}          g   ON uig.group_id = g.group_id
-                                                      AND g.belongs_to_project = ?
-                   GROUP BY  u.user_id
-                     HAVING  gid IS NULL
-                   ORDER BY  u.user_name ASC",
-                    array($this->id));
-        } else {
-            return $this->_cached_query(
-                    'users_in'.$group_id,
-                    "SELECT  u.*
-                       FROM  {users}           u
-                 INNER JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
-                 INNER JOIN  {groups}          g   ON uig.group_id = g.group_id
-                      WHERE  g.belongs_to_project = ? AND g.group_id = ?
-                   ORDER BY  u.user_name ASC",
-                    array($this->id, $group_id));
-        }
+        return $this->_cached_query(
+                'users_in'.$group_id,
+                "SELECT  u.*
+                   FROM  {users}           u
+             INNER JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
+             INNER JOIN  {groups}          g   ON uig.group_id = g.group_id
+                  WHERE  g.group_id = ?
+               ORDER BY  u.user_name ASC",
+                array($group_id));
     }
 
-    function listGroups()
+    function listGroups($admin = false)
     {
-        return $this->_cached_query(
+        if(!$admin) {
+            return $this->_cached_query(
                 'groups',
                 "SELECT  * FROM {groups}
                   WHERE  belongs_to_project = ?
                   ORDER  BY group_id ASC",
                   array($this->id));
+        } else {
+            return $this->_cached_query(
+                'admingroups',
+                "SELECT  * FROM {groups}
+                  WHERE  belongs_to_project = 0 
+                  ORDER  BY group_id ASC");
+        }        
     }
 
     function listAttachments($cid)
@@ -235,6 +227,64 @@ class Project
                   WHERE  task_id = ? AND comment_id = 0
                ORDER BY  attachment_id ASC",
                array($tid));
+    }
+    
+    // It returns an array of user ids
+    function UserList($admin = false)
+    {
+      global $db, $fs;
+      global $conf;
+    
+      $where = ''; $params = array();
+      if(!$admin) {
+          $where = 'WHERE g.belongs_to_project = ? OR g.belongs_to_project = 0';
+          $params = array($this->id);
+      }
+      
+      // Create an empty array to put our users into
+      $users = array();
+    
+      // Retrieve all the users in this project or from global groups.  A tricky query is required...
+      $get_project_users = $db->Query("SELECT uig.user_id, u.real_name, u.user_name, g.group_name
+                                       FROM {users_in_groups} uig
+                                       LEFT JOIN {users} u ON uig.user_id = u.user_id
+                                       LEFT JOIN {groups} g ON uig.group_id = g.group_id
+                                       LEFT JOIN {projects} p ON g.belongs_to_project = p.project_id
+                                       $where
+                                       ORDER BY g.group_id ASC",
+                                       $params
+                                     );
+    
+      while ($row = $db->FetchArray($get_project_users))
+      {
+         if (!in_array($row['user_id'], $users))
+               $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
+      }
+    
+      // Get the list of global groups that can be assigned tasks
+      $these_groups = explode(' ', $fs->prefs['assigned_groups']);
+      foreach ($these_groups AS $key => $val)
+      {
+         // Get the list of users from the global groups above
+         $get_global_users = $db->Query("SELECT uig.user_id, u.real_name, u.user_name, g.group_name
+                                         FROM {users_in_groups} uig
+                                         LEFT JOIN {users} u ON uig.user_id = u.user_id
+                                         LEFT JOIN {groups} g ON uig.group_id = g.group_id
+                                         WHERE uig.group_id = ?",
+                                         array($val)
+                                       );
+    
+         // Cycle through the global userlist, adding each user to the array
+         while ($row = $db->FetchArray($get_global_users))
+         {
+            if (!in_array($row['user_id'], $users))
+               $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
+         }
+      }
+    
+      return $users;
+    
+    // End of UserList() function
     }
     /* }}} */
 }

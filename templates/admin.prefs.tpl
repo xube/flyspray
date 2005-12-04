@@ -59,14 +59,14 @@
           <td><label for="defaultglobalgroup">{$admin_text['defaultglobalgroup']}</label></td>
           <td>
             <select id="defaultglobalgroup" name="anon_group">
-              {!tpl_options($proj->listGroups(), $fs->prefs['anon_group'])}
+              {!tpl_options($fs->listGroups(), $fs->prefs['anon_group'])}
             </select>
           </td>
         </tr>
         <tr>
           <td><label id="groupsassignedlabel">{$admin_text['groupassigned']}</label></td>
           <td class="admintext">
-            <?php foreach($proj->listGroups() as $group): ?>
+            <?php foreach($fs->listGroups() as $group): ?>
             {!tpl_checkbox('assigned_groups['.$group['group_id'].']',
             strstr($fs->prefs['assigned_groups'], $group['group_id']) !== false)}
             {$group['group_name']}<br />

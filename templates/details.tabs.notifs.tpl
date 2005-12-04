@@ -12,7 +12,7 @@
     <p class="admin">
       {$details_text['addusertolist']}
       <select class="adminlist" name="user_id">
-        <?php $fs->listUsers($proj->id); ?>
+        {!tpl_options($proj->UserList())}
       </select>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="ids" value="{Get::val('id')}" />

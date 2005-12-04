@@ -103,7 +103,7 @@ if (Get::val('tasks') == 'assigned') {
 }
 
 if (is_numeric($dev)) {
-    $where[]      = 'assigned_to = ?';
+    $where[]      = 'a.task_id = t.task_id AND a.user_id = ?';
     $sql_params[] = $dev;
 } elseif ($dev == 'notassigned') {
     $where[]      = 'assigned_to = ?';
@@ -174,7 +174,8 @@ if (!$user->perms['manage_project']) {
 
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/
 $from  = "
-                        {tasks}         t
+                        {tasks}         t,
+                        {assigned}      a
              LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
              LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
              LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id

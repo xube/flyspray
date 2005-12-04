@@ -17,7 +17,7 @@ $fs->get_language_pack('status');
 $fs->get_language_pack('severity');
 $fs->get_language_pack('priority');
 
-$userlist = $fs->UserList($project_id);
+$userlist = $proj->UserList();
 
 $page->assign('userlist', $userlist);
 $page->assign('assigned_users', array());

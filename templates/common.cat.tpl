@@ -30,7 +30,7 @@
             <label for="categoryowner{$countlines}">{$admin_text['owner']}</label>
             <select id="categoryowner{$countlines}" name="category_owner[]">
               <option value="">{$admin_text['selectowner']}</option>
-              <?php $fs->listUsers($proj->id, $row['category_owner']); ?>
+              {!tpl_options($proj->UserList(), $row['category_owner'])}
             </select>
           </td>
           <td title="{$admin_text['listdeletetip']}">
@@ -61,7 +61,7 @@
             <label for="categoryowner{$countlines}">{$admin_text['owner']}</label>
             <select id="categoryowner{$countlines}" name="category_owner[]">
               <option value="">{$admin_text['selectowner']}</option>
-              <?php $fs->listUsers($proj->id, $subrow['category_owner']); ?>
+              {!tpl_options($proj->UserList(), $row['category_owner'])}
             </select>
           </td>
           <td title="{$admin_text['listdeletetip']}">
@@ -104,7 +104,7 @@
             <label for="categoryownernew" >{$admin_text['owner']}</label>
             <select id="categoryownernew" name="category_owner">
               <option value="">{$admin_text['selectowner']}</option>
-              <?php $fs->listUsers($proj->id); ?>
+              {!tpl_options($proj->UserList())}
             </select>
           </td>
           <td colspan="2" title="{$admin_text['categoryparenttip']}">

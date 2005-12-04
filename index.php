@@ -159,13 +159,14 @@ $page->setTitle("Flyspray :: {$proj->prefs['project_title']}");
 
 $page->assign('do',$do);
 $page->pushTpl('header.tpl');
-unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
 
 // Show the page the user wanted
 require("$basedir/scripts/$do.php");
 
 $page->pushTpl('footer.tpl');
 $page->render();
+
+unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
 
 if (!empty($conf['debug'])) {
     require ($basedir . '/includes/debug.inc.php');

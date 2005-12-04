@@ -19,7 +19,7 @@
           <td>
             <select id="defaultcatowner" name="default_cat_owner">
               <option value="">{$admin_text['noone']}</option>
-              {!$fs->listUsers($proj->id, $proj->prefs['default_cat_owner'])}
+              {!tpl_options($proj->UserList(), $proj->prefs['default_cat_owner'])}
             </select>
           </td>
         </tr>

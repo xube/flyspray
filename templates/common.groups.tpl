@@ -1,4 +1,4 @@
-<?php foreach($proj->listGroups() as $group): ?>
+<?php foreach($groups as $group): ?>
 <a class="grouptitle" href="{$fs->CreateURL('editgroup', $group['group_id'])}">{$group['group_name']}</a>
 <p>{$group['group_desc']}</p>
 <form action="{$baseurl}" method="post">
@@ -34,18 +34,19 @@
       <td colspan="4">
         <input class="adminbutton" type="submit" value="{$admin_text['moveuserstogroup']}" />
         <select class="adminlist" name="switch_to_group">
-          <?php if ($proj->id): ?>
+          <?php if (!$is_admin): ?>
           <option value="0">{$admin_text['nogroup']}</option>
           <?php endif; ?>
-          {!tpl_options($proj->listGroups())}
+          {!tpl_options($proj->listGroups($is_admin))}
         </select>
       </td>
     </tr>
   </table>
 </form>
+
 <?php endforeach; ?>
 
-<?php if ($proj->id): ?>
+<?php if (!$is_admin): ?>
 <form action="{$baseurl}" method="post">
   <div>
     <input type="hidden" name="do" value="modify" />
@@ -53,14 +54,12 @@
     <input type="hidden" name="project_id" value="{$proj->id}" />
     <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
     <select class="adminlist" name="user_list[]" multiple="multiple" size="15">
-      <?php foreach($proj->listUsersIn() as $usr): ?>
-      <option value="{$usr['user_id']}">{$usr['user_name']} ({$usr['real_name']})</option>
-      <?php endforeach; ?>
+      {!tpl_options($proj->UserList($is_admin))}
     </select>
     <br />
     <input class="adminbutton" type="submit" value="{$admin_text['addtogroup']}" />
     <select class="adminbutton" name="add_to_group">
-      {!tpl_options($proj->listGroups())}
+      {!tpl_options($proj->listGroups($is_admin))}
     </select>
   </div>
 </form>

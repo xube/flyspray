@@ -172,146 +172,12 @@ class Flyspray
         return $get_details;
     }
 
-
-    // {{{ functions that should go in a Project class
-
-    // This function generates a query of users for the "Assigned To" list
-    function listUsers($in_project, $current=null)
-    {
-        global $db;
-        global $conf;
-
-        $these_groups = explode(" ", $this->prefs['assigned_groups']);
-
-        foreach ($these_groups as $key => $val) {
-            if (empty($val))
-                continue;
-
-            $result = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($val));
-            $group_details = $db->FetchArray($result);
-
-            // Check that there is a user in the selected group prior to display
-            $check_group = $db->Query("SELECT * FROM {users_in_groups} WHERE group_id = ?", array($group_details['group_id']));
-            if (!$db->CountRows($check_group))
-                continue;
-
-            $user_query = $db->Query("SELECT  *
-                                        FROM  {users_in_groups} uig
-                                   LEFT JOIN  {users} u on uig.user_id = u.user_id
-                                       WHERE  group_id = ? AND u.account_enabled = '1'
-                                    ORDER BY  u.real_name ASC", array($group_details['group_id']));
-
-            echo '<optgroup label="' . $group_details['group_name'] . "\">\n";
-            $content = '';
-            while ($row = $db->FetchArray($user_query)) {
-                if ($current == $row['user_id']) {
-                    $content .= '<option value="' . $row['user_id'] . '" selected="selected">' . $row['real_name'] . "</option>\n";
-                } else {
-                    $content .= '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
-                }
-            }
-            if (!$content) {
-                echo '<option>---</option>';
-            } else {
-                echo $content;
-            }
-            echo "</optgroup>\n";
-        }
-
-        if (!$in_project)
-            return;
-
-        // Now, we get the users from groups in the current project
-        $get_group_details = $db->Query("SELECT group_id, group_name FROM {groups} WHERE belongs_to_project = ?", array($in_project));
-        while ($group_details = $db->FetchArray($get_group_details)) {
-            // Check that there is a user in the selected group prior to display
-            $check_group = $db->Query("SELECT * FROM {users_in_groups} WHERE group_id = ?", array($group_details['group_id']));
-            if (!$db->CountRows($check_group))
-                continue;
-
-            $user_query = $db->Query("SELECT  *
-                                        FROM  {users_in_groups} uig
-                                   LEFT JOIN  {users} u on uig.user_id = u.user_id
-                                       WHERE  group_id = ?", array($group_details['group_id']));
-
-            echo "<optgroup label=\"{$group_details['group_name']}\">\n";
-            $content = '';
-            while ($row = $db->FetchArray($user_query)) {
-                if ($current == $row['user_id']) {
-                    $content .= '<option value="' . $row['user_id'] . '" selected="selected">' . $row['real_name'] . "</option>\n";
-                } else {
-                    $content .= '<option value="' . $row['user_id'] . '">' . $row['real_name'] . "</option>\n";
-                }
-            }
-            if (!$content) {
-                echo '<option>---</option>';
-            } else {
-                echo $content;
-            }
-            echo "</optgroup>\n";
-        }
-    }
-
-
-   // New function to replace the ListUsers() function above
-   // It returns an array of user ids
-   function UserList($project_id)
-   {
-      global $db, $fs;
-      global $conf;
-
-      // Create an empty array to put our users into
-      $users = array();
-
-      // Retrieve all the users in this project.  A tricky query is required...
-      $get_project_users = $db->Query("SELECT uig.user_id, u.real_name, u.user_name, g.group_name
-                                       FROM {users_in_groups} uig
-                                       LEFT JOIN {users} u ON uig.user_id = u.user_id
-                                       LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                                       LEFT JOIN {projects} p ON g.belongs_to_project = p.project_id
-                                       WHERE g.belongs_to_project = ?
-                                       ORDER BY g.group_id ASC",
-                                       array($project_id)
-                                     );
-
-      while ($row = $db->FetchArray($get_project_users))
-      {
-         if (!in_array($row['user_id'], $users))
-               $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
-      }
-
-      // Get the list of global groups that can be assigned tasks
-      $these_groups = explode(" ", $fs->prefs['assigned_groups']);
-      foreach ($these_groups AS $key => $val)
-      {
-         // Get the list of users from the global groups above
-         $get_global_users = $db->Query("SELECT uig.user_id, u.real_name, u.user_name, g.group_name
-                                         FROM {users_in_groups} uig
-                                         LEFT JOIN {users} u ON uig.user_id = u.user_id
-                                         LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                                         WHERE uig.group_id = ?",
-                                         array($val)
-                                       );
-
-         // Cycle through the global userlist, adding each user to the array
-         while ($row = $db->FetchArray($get_global_users))
-         {
-            if (!in_array($row['user_id'], $users))
-               $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
-         }
-      }
-
-      return $users;
-
-   // End of UserList() function
-   }
-
     function listProjects()
     {
         global $db;
 
-        $sql = $db->Query("SELECT  project_id, project_title FROM {projects}
-                            WHERE  project_is_active = 1");
+        $sql = $db->Query('SELECT  project_id, project_title FROM {projects}
+                            WHERE  project_is_active = 1');
         return $db->fetchAllArray($sql);
     }
 
@@ -346,9 +212,18 @@ class Flyspray
         sort($lang_array);
         return $lang_array;
     }
+    
+    function listGroups()
+    {
+        global $proj;
+        return $proj->listGroups(true);
+    }
 
-    // }}}
-
+    function UserList()
+    {
+        global $proj;
+        return $proj->UserList(true);
+    }    
 
     function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
     {

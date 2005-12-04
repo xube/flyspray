@@ -27,7 +27,7 @@ $fs->get_language_pack('modify');
 $page->uses('status_list', 'priority_list', 'severity_list', 'task_details',
         'details_text', 'newtask_text','modify_text');
 
-$userlist = $fs->UserList($project_id);
+$userlist = $proj->UserList();
 
 // Find the users assigned to this task
 $assigned_users = $fs->GetAssignees($task_details['task_id']);

@@ -23,16 +23,12 @@ $page->pushTpl('admin.menu.tpl');
 
 switch ($area = Get::val('area', 'prefs')) {
     case 'users':
-        $sql = $db->Query("SELECT  group_id, group_name
-                             FROM  {groups}
-                            WHERE  belongs_to_project = '0'
-                         ORDER BY  group_id ASC");
-        $page->assign('group_names', $db->fetchAllArray($sql));
         $page->assign('theuser', new User(Get::val('id')));
-
     case 'cat':
     case 'editgroup':
     case 'groups':
+        $page->assign('groups', $fs->ListGroups());
+        $page->assign('is_admin', true);
     case 'newproject':
     case 'os':
     case 'prefs':

@@ -30,6 +30,8 @@ switch ($area = Get::val('area', 'prefs')) {
 
     case 'prefs':
     case 'groups':
+        $page->assign('groups', $proj->ListGroups());
+        $page->assign('is_admin', false);
     case 'editgroup':
     case 'tt':
     case 'res':
