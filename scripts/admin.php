@@ -20,6 +20,7 @@ $fs->get_language_pack('newuser');
 
 $page->uses('admin_text', 'index_text', 'newproject_text', 'newuser_text');
 $page->pushTpl('admin.menu.tpl');
+$page->assign('is_admin', true);
 
 switch ($area = Get::val('area', 'prefs')) {
     case 'users':
@@ -28,7 +29,6 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'editgroup':
     case 'groups':
         $page->assign('groups', $fs->ListGroups());
-        $page->assign('is_admin', true);
     case 'newproject':
     case 'os':
     case 'prefs':

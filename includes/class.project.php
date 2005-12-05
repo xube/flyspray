@@ -119,45 +119,36 @@ class Project
         }
     }
 
-    function listCatsIn($pm = false, $mother_cat = null)
+    function listCatsIn($admin = false, $mother_cat = null)
     {
-        if ($pm) {
-            if (is_null($mother_cat)) {
-                return $this->_cached_query(
-                        'pm_cats_in'.$mother_cat,
-                        "SELECT  c.*, count(t.task_id) AS used_in_tasks
-                           FROM  {list_category} c
-                      LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
-                          WHERE  project_id = ? AND parent_id < 1
-                       GROUP BY  c.category_id, c.project_id, c.category_name,
-                                 c.list_position, c.show_in_list, c.category_owner, c.parent_id
-                       ORDER BY  list_position",
-                        array($this->id));
-            } else {
-                return $this->_cached_query(
-                        'pm_cats_in'.$mother_cat,
-                        "SELECT  c.*, count(t.task_id) AS used_in_tasks
-                           FROM  {list_category} c
-                      LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
-                          WHERE  project_id = ? AND parent_id = ?
-                       GROUP BY  c.category_id, c.project_id, c.category_name,
-                                 c.list_position, c.show_in_list, c.category_owner, c.parent_id
-                       ORDER BY  list_position",
-                        array($this->id, $mother_cat));
-            }
+        if (!$admin) {
+            $proj = $this->id;
         } else {
-            return $this->_cached_query('cats_in',
-                    "SELECT  a.category_id,
-                             IF(a.parent_id,
-                                 CONCAT('...', a.category_name),
-                                 a.category_name) AS category_name,
-                             IF(a.parent_id, b.list_position, a.list_position) AS main_pos
-                       FROM  {list_category} a
-                  LEFT JOIN  {list_category} b ON a.parent_id = b.category_id
-                      WHERE  a.show_in_list = '1'
-                             AND ( a.project_id = ? OR a.project_id = '0' )
-                   ORDER BY  main_pos, a.list_position",
-                       array($this->id));
+            $proj = 0;
+        }
+        
+        if (is_null($mother_cat)) {
+            return $this->_cached_query(
+                    'pm_cats_in'.$mother_cat,
+                    "SELECT  c.*, count(t.task_id) AS used_in_tasks
+                       FROM  {list_category} c
+                  LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
+                      WHERE  project_id = ? AND parent_id < 1
+                   GROUP BY  c.category_id, c.project_id, c.category_name,
+                             c.list_position, c.show_in_list, c.category_owner, c.parent_id
+                   ORDER BY  list_position",
+                    array($proj));
+        } else {
+            return $this->_cached_query(
+                    'pm_cats_in'.$mother_cat,
+                    "SELECT  c.*, count(t.task_id) AS used_in_tasks
+                       FROM  {list_category} c
+                  LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
+                      WHERE  project_id = ? AND parent_id = ?
+                   GROUP BY  c.category_id, c.project_id, c.category_name,
+                             c.list_position, c.show_in_list, c.category_owner, c.parent_id
+                   ORDER BY  list_position",
+                    array($proj, $mother_cat));
         }
     }
 
