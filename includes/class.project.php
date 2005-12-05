@@ -61,42 +61,35 @@ class Project
               ORDER BY  list_position";
     }
 
-    function _list_sql($type, $where = null)
-    {
-        return "SELECT  {$type}_id, {$type}_name
-                  FROM  {list_{$type}}
-                 WHERE  show_in_list = '1' AND ( project_id = ? OR project_id = '0' )
-                        $where
-              ORDER BY  list_position";
-    }
-
     // }}}
     // PM dependant functions {{{
 
-    function listTaskTypes($pm = false)
+    function listTaskTypes($admin = false)
     {
-        if ($pm) {
-            return $this->_cached_query(
+        if (!$admin) {
+            $proj = $this->id;
+        } else {
+            $proj = 0;
+        }
+        
+        return $this->_cached_query(
                     'pm_task_types',
                     $this->_pm_list_sql('tasktype', 'task_type'),
-                    array($this->id));
-        } else {
-            return $this->_cached_query(
-                    'task_types', $this->_list_sql('tasktype'), array($this->id));
-        }
+                    array($proj));
     }
 
-    function listOs($pm = false)
+    function listOs($admin = false)
     {
-        if ($pm) {
-            return $this->_cached_query(
+        if (!$admin) {
+            $proj = $this->id;
+        } else {
+            $proj = 0;
+        }
+        
+        return $this->_cached_query(
                     'pm_os',
                     $this->_pm_list_sql('os', 'operating_system'),
-                    array($this->id));
-        } else {
-            return $this->_cached_query('os', $this->_list_sql('os'),
-                    array($this->id));
-        }
+                    array($proj));
     }
 
     function listVersions($pm = false, $tense = 2, $reported_version = null)
@@ -152,17 +145,18 @@ class Project
         }
     }
 
-    function listResolutions($pm = false)
+    function listResolutions($admin = false)
     {
-        if ($pm) {
-            return $this->_cached_query(
+        if (!$admin) {
+            $proj = $this->id;
+        } else {
+            $proj = 0;
+        }
+        
+        return $this->_cached_query(
                     'pm_resolutions',
                     $this->_pm_list_sql('resolution', 'resolution_reason'),
-                    array($this->id));
-        } else {
-            return $this->_cached_query('resolution',
-                    $this->_list_sql('resolution'), array($this->id));
-        }
+                    array($proj));
     }
 
     // }}}
