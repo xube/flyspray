@@ -16,7 +16,6 @@ $fs->get_language_pack('index');
 $fs->get_language_pack('admin');
 $fs->get_language_pack('pm');
 $page->uses('admin_text', 'pm_text', 'index_text');
-$page->assign('is_admin', false);
 
 switch ($area = Get::val('area', 'prefs')) {
     case 'pendingreq':

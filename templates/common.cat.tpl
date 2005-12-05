@@ -7,9 +7,9 @@
         <?php
         $countlines = -1;
 
-        foreach ($proj->listCatsIn($is_admin) as $row):
+        foreach ($proj->listCatsIn(true) as $row):
             $countlines++;
-            $subrows = $proj->listCatsIn($is_admin, $row['category_id']);
+            $subrows = $proj->listCatsIn(true, $row['category_id']);
         ?>
         <tr>
           <td>
@@ -78,8 +78,7 @@
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="update_category" />
             <input type="hidden" name="list_type" value="category" />
-            <input type="hidden" name="project_id"
-                   value="<?php if($is_admin): ?>0<?php else: ?>{$proj->id}<?php endif; ?>" />
+            <input type="hidden" name="project_id" value="{$proj->id}" />
             <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
             <input class="adminbutton" type="submit" value="{$admin_text['update']}" />
           </td>
@@ -114,7 +113,7 @@
               <option value="">{$admin_text['notsubcategory']}</option>
               <?php $cat_opts = array_map(
               create_function('$x', 'return array($x["category_id"], $x["category_name"]);'),
-              $proj->listCatsIn($is_admin));
+              $proj->listCatsIn(true));
               ?>
               {!tpl_options($cat_opts, Get::val('cat'))}
             </select>
@@ -122,7 +121,7 @@
           <td class="buttons">
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="add_category" />
-            <?php if (!$is_admin): ?>
+            <?php if ($proj->id): ?>
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <?php endif; ?>
             <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />

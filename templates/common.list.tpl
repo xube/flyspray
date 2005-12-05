@@ -65,7 +65,7 @@
         <?php endif; ?>
         <input type="hidden" name="list_type" value="{$list_type}" />
         <?php if ($proj->id): ?>
-        <input type="hidden" name="project_id" value="<?php if($is_admin): ?>0<?php else: ?>{$proj->id}<?php endif; ?>" />
+        <input type="hidden" name="project_id" value="{$proj->id}" />
         <?php endif; ?>
         <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
         <label for="listnamenew">{$admin_text['name']}</label>

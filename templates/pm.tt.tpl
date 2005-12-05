@@ -5,7 +5,7 @@
     <legend>{$admin_text['tasktypes']}</legend>
     <?php
     $this->assign('list_type', 'tasktype');
-    $this->assign('rows', $proj->listTaskTypes(false));
+    $this->assign('rows', $proj->listTaskTypes(true));
     $this->display('common.list.tpl');
     ?>
   </fieldset>
