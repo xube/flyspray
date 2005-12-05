@@ -55,13 +55,13 @@
           </td>
           <td title="{$admin_text['listshowtip']}">
             <label for="showinlist{$countlines}">{$admin_text['show']}</label>
-            {!tpl_checkbox('show_in_list['.$countlines.']', $row['show_in_list'], 'showinlist'.$countlines)}
+            {!tpl_checkbox('show_in_list['.$countlines.']', $subrow['show_in_list'], 'showinlist'.$countlines)}
           </td>
           <td title="{$admin_text['categoryownertip']}">
             <label for="categoryowner{$countlines}">{$admin_text['owner']}</label>
             <select id="categoryowner{$countlines}" name="category_owner[]">
               <option value="">{$admin_text['selectowner']}</option>
-              {!tpl_options($proj->UserList(), $row['category_owner'])}
+              {!tpl_options($proj->UserList(), $subrow['category_owner'])}
             </select>
           </td>
           <td title="{$admin_text['listdeletetip']}">
