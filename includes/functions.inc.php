@@ -500,7 +500,7 @@ class Flyspray
         if($dateformat == '')
             $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
 
-        return strftime($dateformat, $timestamp);
+        return utf8_encode(strftime($dateformat, $timestamp));
     }
 
     // This provides funky page numbering
