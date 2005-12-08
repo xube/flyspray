@@ -29,6 +29,8 @@ $fs->get_language_pack('status');
 $path_to_dot = "/usr/local/bin/dot"; // Where's the dot executable?
 $path_for_images = "attachments"; // What directory do we use for output?
 $fmt = "png"; 
+$id = Req::val('id');
+$page->assign('taskid', 0);
 
 // Minor(?) FIXME: we save the graphs into a directory (attachments), 
 // but they never get deleted. Once there, they'll be overwritten but
@@ -51,11 +53,11 @@ foreach ($pmodes as $mode => $desc) {
     if ($mode == $prunemode) {
         $strlist[] = $desc;
     } else {
-        $strlist[] = "<a href='$selfurl".($mode!=0 ? "&amp;prune=$mode" : "")."'>$desc</a>\n";
+        $strlist[] = "<a href='".htmlspecialchars($selfurl).($mode!=0 ? "&amp;prune=$mode" : "")."'>$desc</a>\n";
     }
 }
-// FIXME: commented out by [TC] so that it didn't interfere with the template
-//echo "<p><b>Pruning Level: </b>\n". implode(" &nbsp;|&nbsp; \n", $strlist)."</p>\n";
+
+$page->uses('strlist');
 
 $starttime = microtime();
 
@@ -218,14 +220,15 @@ $dotgraph .= "}\n";
 
 if (!function_disabled('system')) {
     // All done with the graph. Save it to a temp file.
-    $tname = tempnam("", "fs_depends_dot_");
-    $tmp   = fopen($tname, "w");
+    $tname = tempnam('', 'fs_depends_dot_');
+    $tmp   = fopen($tname, 'w');
     fwrite($tmp, $dotgraph);
     fclose($tmp);
 
     // Now run dot on it:
     $out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
     $cmd = "$path_to_dot -T $fmt -o$basedir/$out $tname";
+    $stat = 0;
     $rv  = system($cmd, $stat);
     if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
 
@@ -238,27 +241,18 @@ if (!function_disabled('system')) {
 /*
     [TC] We cannot have this stuff outputting here, so I put it in a quick template
 */
-
-    //echo "<img src='{$baseurl}$out' alt='task $id dependencies' usemap='#$graphname'>\n";
     $page->assign('image', $out);
     $page->assign('taskid', $id);
     $page->assign('graphname', $graphname);
     
-}
-else {
-    echo '<strong>Error: The graph cannot be displayed because of the server\'s security settings.</strong>';
+    $endtime = microtime();
+    list($startusec, $startsec) = explode(' ', $starttime);
+    list($endusec, $endsec) = explode(' ', $endtime);
+    $diff = ($endsec - $startsec) + ($endusec - $startusec);
+    $page->assign('time', round($diff, 2));
 }
 
 #echo "<pre>$dotgraph</pre>\n";
-
-$endtime = microtime();
-
-list($startusec, $startsec) = explode(" ", $starttime);
-list($endusec, $endsec) = explode(" ", $endtime);
-$diff = ($endsec - $startsec) + ($endusec - $startusec);
-// [TC] FIXME: commented out to stop interfering with the template
-//echo "\n<p>\nPage and image generated in ".round($diff, 2). " seconds.\n<p>\n";
-
 
 $page->uses('details_text');
 $page->setTitle('FS#' . $id . ': ' . $details_text['dependencygraph']);

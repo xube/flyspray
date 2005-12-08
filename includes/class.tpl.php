@@ -57,9 +57,26 @@ class Tpl
     {
         $this->_tpls[] = $_tpl;
     }
-
+    
+    function catch_start()
+    {
+        ob_start();
+    }
+    
+    function catch_end()
+    {
+        $this->_tpls[] = array(ob_get_contents());
+        ob_end_clean();
+    }
+    
     function display($_tpl, $_arg0 = null, $_arg1 = null)
     {
+        // if only plain text
+        if(is_array($_tpl)) {
+            echo $_tpl[0];
+            return;
+        }
+        
         // theming part
         $_basedir = dirname(dirname(__FILE__)).'/';
         if (file_exists($_basedir.$this->_theme.$_tpl)) {

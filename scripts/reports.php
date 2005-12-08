@@ -1,4 +1,5 @@
 <?php
+$page->catch_start();
 
 /*
    This script generates all different types of reports.
@@ -652,4 +653,6 @@ if ($report && function_exists($report.'_report')) {
 } else {
     events_report();
 }
+
+$page->catch_end();
 ?>
