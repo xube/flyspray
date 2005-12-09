@@ -231,7 +231,7 @@ class Project
     }
     
     // It returns an array of user ids and usernames/fullnames/groups
-    function UserList($admin = false, $excluded = array(), $all = false)
+    function UserList($excluded = array(), $all = false)
     {
       global $db, $fs;
       global $conf;

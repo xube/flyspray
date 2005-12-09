@@ -30,7 +30,7 @@
             if (Get::val('dev') == "notassigned") echo 'selected="selected"';
             ?>>{$index_text['notyetassigned']}</option>
           <option value="{$user->id}">{$index_text['assignedtome']}</option>
-          {!tpl_options($proj->UserList(false, array()), Get::val('dev'))}
+          {!tpl_options($proj->UserList(), Get::val('dev'))}
         </select>
 
         <select name="cat" {!tpl_disableif(Get::val('project') === '0')}>

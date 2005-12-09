@@ -60,7 +60,7 @@ foreach($groups as $group): ?>
     <input type="hidden" name="project_id" value="{$proj->id}" />
     <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
     <select class="adminlist" name="user_list[]" multiple="multiple" size="15">
-      {!tpl_options($proj->UserList(true, $users_in, true))}
+      {!tpl_options($proj->UserList($users_in, true))}
     </select>
     <br />
     <input class="adminbutton" type="submit" value="{$admin_text['addtogroup']}" />

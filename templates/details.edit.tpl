@@ -105,7 +105,7 @@
 			 <td>
 				<select id="dueversion" name="closedby_version">
 				 <option value="">{$details_text['undecided']}</option>
-				 {!tpl_options($proj->listVersions(), $task_details['closedby_version'])}
+				 {!tpl_options($proj->listVersions(false, 3), $task_details['closedby_version'])}
 				</select>
 			 </td>
 			</tr>

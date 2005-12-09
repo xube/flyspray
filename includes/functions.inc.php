@@ -219,10 +219,10 @@ class Flyspray
         return $proj->listGroups(true);
     }
 
-    function UserList()
+    function UserList($excluded = array())
     {
         global $proj;
-        return $proj->UserList(true);
+        return $proj->UserList($excluded, true);
     }    
 
     function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
