@@ -231,16 +231,12 @@ class Project
     }
     
     // It returns an array of user ids and usernames/fullnames/groups
-    function UserList($admin = false, $excluded = array())
+    function UserList($admin = false, $excluded = array(), $all = false)
     {
       global $db, $fs;
       global $conf;
-    
-      $where = ''; $params = array();
-      if(!$admin) {
-          $where = 'WHERE g.belongs_to_project = ? OR g.belongs_to_project = 0';
-          $params = array($this->id);
-      }
+      
+      $id = ($all) ? 0 : $this->id;
       
       // Create an empty array to put our users into
       $users = array();
@@ -251,9 +247,9 @@ class Project
                                        LEFT JOIN {users} u ON uig.user_id = u.user_id
                                        LEFT JOIN {groups} g ON uig.group_id = g.group_id
                                        LEFT JOIN {projects} p ON g.belongs_to_project = p.project_id
-                                       $where
+                                       WHERE g.belongs_to_project = ?
                                        ORDER BY g.group_id ASC",
-                                       $params
+                                       array($id)
                                      );
     
       while ($row = $db->FetchArray($get_project_users))
@@ -278,7 +274,7 @@ class Project
          // Cycle through the global userlist, adding each user to the array
          while ($row = $db->FetchArray($get_global_users))
          {
-            if (!in_array($row['user_id'], $users))
+            if (!in_array($row['user_id'], $users) && !in_array($row['user_id'],$excluded))
                $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
          }
       }

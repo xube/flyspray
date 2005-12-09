@@ -65,7 +65,7 @@
         <td><label for="groupin">{$newuser_text['globalgroup']}</label></td>
         <td>
           <select id="groupin" class="adminlist" name="group_in">
-            {!tpl_options($group_names, $theuser->infos['global_group'])}
+            {!tpl_options($groups, $theuser->infos['global_group'])}
           </select>
           <input type="hidden" name="record_id" value="{$theuser->infos['global_record_id']}" />
         </td>

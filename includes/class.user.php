@@ -15,8 +15,8 @@ class User
                              FROM  {users}           u
                        INNER JOIN  {users_in_groups} uig
                        INNER JOIN  {groups}          g   ON uig.group_id = g.group_id
-                            WHERE  u.user_id = ? AND g.belongs_to_project = '0'",
-                    array($uid));
+                            WHERE  u.user_id = ? AND uig.user_id = ? AND g.belongs_to_project = '0'",
+                    array($uid, $uid));
         if ($db->countRows($sql)) {
             $this->infos = $db->FetchArray($sql);
             $this->id = $uid;
