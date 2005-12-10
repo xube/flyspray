@@ -17,6 +17,7 @@ class Project
         } else {
             $this->id    = 0;
             $this->prefs['project_title'] = $language['allprojects'];
+            $this->prefs['theme_style']   = 0;
         }
     }
 

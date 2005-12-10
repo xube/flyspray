@@ -427,9 +427,9 @@ function events_report()
         </tr>
        </thead>
         <?php while ($history = $db->FetchRow($query_history)): ?>
-        <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('<?php echo $fs->CreateURL('details', $history['task_id']);?>')">
-          <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . "\">FS#{$history['task_id']}</a></td>";?>
-          <?php echo '<td><a href="' . $fs->CreateURL('details', $history['task_id']) . '">' . htmlspecialchars($history['item_summary']) . '</a></td>';?>
+        <tr class="severity<?php echo $history['task_severity'];?>" onclick="openTask('<?php echo htmlspecialchars($fs->CreateURL('details', $history['task_id']));?>')">
+          <?php echo '<td><a href="' . htmlspecialchars( $fs->CreateURL('details', $history['task_id'])) . "\">FS#{$history['task_id']}</a></td>";?>
+          <?php echo '<td><a href="' . htmlspecialchars($fs->CreateURL('details', $history['task_id'])) . '">' . htmlspecialchars($history['item_summary']) . '</a></td>';?>
           <td><?php echo $fs->formatDate($history['event_date'], true);?></td>
           <td><?php echo $history['user_id'] ? tpl_userlink($history['user_id']) : $details_text['anonymous']; ?></td>
           <td><?php echo EventDescription($history);?></td>

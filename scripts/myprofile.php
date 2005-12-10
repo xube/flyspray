@@ -16,7 +16,7 @@ $sql = $db->Query("SELECT  group_id, group_name
                              FROM  {groups}
                             WHERE  belongs_to_project = '0'
                          ORDER BY  group_id ASC");
-$page->assign('group_names', $db->fetchAllArray($sql));
+$page->assign('groups', $db->fetchAllArray($sql));
         
 $page->uses('admin_text','newuser_text');
 $page->assign('theuser', $user);

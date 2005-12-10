@@ -112,7 +112,7 @@
   </div>
 
   <div id="taskdetailsfull">
-	 <label>{$details_text['details']}</label>
+	 <h3 class="taskdesc">{$details_text['details']}</h3>
 	 {!tpl_formatText($task_details['detailed_desc'])}
 
 	 <?php // XXX stolen from details.tab.comment.tpl keep in sync
