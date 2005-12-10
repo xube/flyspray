@@ -44,9 +44,6 @@
             if (!Get::val('status')) echo 'selected="selected"';
             ?>>{$index_text['allopentasks']}</option>
           {!tpl_options($status_list, Get::val('status'))}
-          <option value="closed" <?php
-            if (Get::val('status') == "closed") echo 'selected="selected"';
-            ?>>{$index_text['closed']}</option>
         </select>
         <?php
         if ($due_date = Get::val('date')) {

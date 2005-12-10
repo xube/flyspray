@@ -17,9 +17,9 @@ foreach ($numeric as $key) {
 
 $action_ok = '/^(logout|newtask|update|close|reopen|addcomment|chpass|registeruser|newuser|newgroup|globaloptions|newproject|updateproject|addattachment|edituser|editgroup|update_list|add_to_list|update_category|add_category|add_related|remove_related|add_notification|remove_notification|editcomment|deletecomment|deleteattachment|addreminder|deletereminder|update_version_list|add_to_version_list|addtogroup|movetogroup|requestreopen|takeownership|requestclose|newdep|removedep|sendmagic|sendcode|makeprivate|makepublic|denypmreq|massaddnotify|massremovenotify|masstakeownership|addtoassignees)$/';
 $area_ok   = '/^(editcomment|comments|attachments|related|notify|users|tt|res|groups|remind|system|history|pendingreq|prefs|cat|os|ver|editgroup|newproject)$/';
-$do_ok     = '/^(admin|pm|reports|authenticate|chpass|details|depends|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment|error)$/';
+$do_ok     = '/^(admin|pm|reports|authenticate|chpass|roadmap|details|depends|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment|error)$/';
 $email_ok  = "/^[a-z0-9._\-']+(?:\+[a-z0-9._-]+)?@([a-z0-9.-]+\.)+[a-z]{2,4}+$/i";
-$order_ok  = '/^(id|proj|type|date|sev|cat|status|due|lastedit|pri|openedby|reportedin|assignedto|prog|duedate)$/';
+$order_ok  = '/^(id|proj|type|date|sev|cat|status|due|dateclosed|lastedit|pri|openedby|reportedin|assignedto|prog|duedate)$/';
 $sort_ok   = '/^(asc|desc)$/';
 
 $regexps   = array(

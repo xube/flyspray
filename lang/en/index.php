@@ -62,7 +62,8 @@ $index_text = array (
 'assignedtome'             =>    'Assigned to myself',
 
 // Added in version 0.9.9
-'tasklist'              =>      'Tasklist',
+'tasklist'                 =>      'Tasklist',
+'dateclosed'               =>      'Date closed',
 
 );
 ?>

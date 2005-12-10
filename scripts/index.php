@@ -45,6 +45,7 @@ $order_keys = array (
         'openedby'   => 'uo.real_name',
         'reportedin' => 't.product_version',
         'assignedto' => 'u.real_name',
+        'dateclosed' => 't.date_closed',
 );
 $sortorder  = sprintf("%s %s, %s %s, t.task_id ASC",
         $order_keys[Get::val('order',  'sev')],  Get::val('sort', 'desc'),
@@ -139,16 +140,14 @@ if (is_numeric($cat = Get::val('cat'))) {
 }
 
 if (is_numeric($status = Get::val('status'))) {
-    $where[]      = "item_status = ? AND is_closed <> '1'";
-    $sql_params[] = $status;
-}
-elseif ($status != 'all') {
-    if ($status == 'closed') {
-        $where[]  = 'is_closed = ?';
+    if ($status == '8') {
+        $where[]  = "is_closed = '1'";
     } else {
-        $where[]  = 'is_closed != ?';
+        $where[]      = "item_status = ? AND is_closed <> '1'";
+        $sql_params[] = $status;
     }
-    $sql_params[] = '1';
+} elseif(!$status) {
+    $where[]      = "is_closed <> '1'";
 }
 
 if (is_numeric($due = Get::val('due'))) {
@@ -255,6 +254,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
             'comments'   => '',
             'attachments'=> '',
             'progress'   => 'prog',
+            'dateclosed' => 'dateclosed',
     );
 
     $imgbase = '<img src="themes/'.$proj->prefs['theme_style'].'/%s.png" alt="%s" />';
@@ -316,6 +316,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             'duedate'    => 'due_date',
             'comments'   => 'num_comments',
             'attachments'=> 'num_attachments',
+            'dateclosed' => 'date_closed',
             'progress'   => '',
     );
 
@@ -337,6 +338,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
         case 'duedate':
         case 'dateopened':
+        case 'dateclosed':
         case 'lastedit':
             $value = $fs->formatDate($task[$indexes[$colname]], false);
             break;
