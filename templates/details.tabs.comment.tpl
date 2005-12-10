@@ -65,7 +65,6 @@
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{Get::val('id')}" />
-      {$details_text['addcomment']}<br />
       <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
@@ -84,7 +83,7 @@
 
       <input tabindex="9" class="adminbutton" type="submit" value="{$details_text['addcomment']}" />
       <?php if (!$watched): ?>
-      {!tpl_checkbox('notifyme')} {$newtask_text['notifyme']}
+      {!tpl_checkbox('notifyme', false, 'notifyme')} <label class="default" for="notifyme">{$newtask_text['notifyme']}</label>
       <?php endif; ?>
     </div>
   </form>

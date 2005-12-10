@@ -288,7 +288,7 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
 // re-opening an task {{{
 elseif (Get::val('action') == 'reopen' && $user->can_close_task($old_details)) {
     $db->Query("UPDATE  {tasks}
-                   SET  resolution_reason = '0', closure_comment = '0',
+                   SET  resolution_reason = '0', closure_comment = '0', date_closed = 0,
                         last_edited_time = ?, last_edited_by = ?, is_closed = '0'
                  WHERE  task_id = ?",
                 array(time(), $user->id, Get::val('task_id')));
