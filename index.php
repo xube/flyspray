@@ -140,7 +140,7 @@ if (!$user->isAnon() && !$user->perms['global_view']) {
                FROM  {projects} p
           LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
           LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
-              WHERE  p.project_is_active='1' AND (p.others_view OR uig.user_id IS NOT NULL)
+              WHERE  p.project_is_active='1' AND (p.others_view = '1' OR uig.user_id IS NOT NULL)
            ORDER BY  p.project_title", array($user->id));
 }
 else {
