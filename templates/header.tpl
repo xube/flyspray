@@ -64,7 +64,6 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
               {!tpl_options($project_list, Get::val('project') !== '0' ?  $proj->id : -1)}
             </select>
             &nbsp;            
-            <input accesskey="u" class="mainbutton" type="submit" value="{$language['show']}" />
             <select name="tasks">
               <option value="all">{$language['tasksall']}</option>
               <?php
@@ -77,7 +76,8 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
               ?>
             </select>
             <input type="hidden" id="doin" name="do" value="" />
-            <input type="hidden" id="areain" name="area" value="{Get::val('area')}" />          
+            <input type="hidden" id="areain" name="area" value="{Get::val('area')}" />
+            <input accesskey="u" class="mainbutton" type="submit" value="{$language['show']}" />          
           </p>
         </form>
       </div>
@@ -85,9 +85,8 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
       <div id="showtask">
         <form action="{$baseurl}index.php" method="get">
           <div>
-            <label for="taskid">{$language['showtask']} #</label>
+            <input class="mainbutton" type="submit" value="{$language['showtask']} #" />
             <input id="taskid" name="show_task" type="text" size="10" maxlength="10" accesskey="t" />
-            <input class="mainbutton" type="submit" value="{$language['go']}" />
           </div>
         </form>
       </div>

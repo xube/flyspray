@@ -160,19 +160,6 @@ if ($date = Get::val('date')) {
     $sql_params[] = strtotime("$date +24 hours");
 }
 
-if ($str = Get::val('string')) {
-    $str = strtr($str, '()', '  ');
-    $str = '%'.trim($str).'%';
-
-    $where[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ?)";
-    array_push($sql_params, $str, $str, $str);
-}
-
-if (!$user->perms['manage_project']) {
-    $where[]      = "(t.mark_private <> '1' OR t.assigned_to = ?)";
-    $sql_params[] = $user->id;
-}
-
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/
 $from  .= "
                         {tasks}         t
@@ -184,6 +171,28 @@ $from  .= "
              LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
              LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
 ";
+
+if ($str = Get::val('string')) {
+    $str = strtr($str, '()', '  ');
+    $comments = '';
+    if(strpos($str, '+c') !== false) {
+        $str = str_replace('+c', '', $str);
+        $str = '%'.trim($str).'%';
+        $from .= ' LEFT JOIN  {comments}         c  ON t.task_id = c.task_id';
+        $comments = 'OR c.comment_text LIKE ?';
+        array_push($sql_params, $str);
+    } else {    
+        $str = '%'.trim($str).'%';
+    }
+    
+    $where[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ? $comments)";
+    array_push($sql_params, $str, $str, $str);
+}
+
+if (!$user->perms['manage_project']) {
+    $where[]      = "(t.mark_private <> '1' OR t.assigned_to = ?)";
+    $sql_params[] = $user->id;
+}
 
 if (Get::val('tasks') == 'watched') {
     //join the notification table to get watched tasks

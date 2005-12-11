@@ -424,8 +424,8 @@ class Flyspray_Textformatter {
 		$text = preg_replace_callback('/<\?(php)(.+)\?>/Us', array(&$this, '_cut_code_blocks'), $text);
 		
         // Apply changes to the remaining text
-        $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
         $text = nl2br(htmlspecialchars($text, ENT_QUOTES, 'utf-8'));
+        $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
         $text = preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
         
         // Put code blocks at the right place again
