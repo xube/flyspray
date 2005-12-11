@@ -1,4 +1,5 @@
 <?php
+$page->setTitle('Flyspray:: ' . $language['reports']);
 $page->catch_start();
 
 /*
