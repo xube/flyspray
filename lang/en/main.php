@@ -63,6 +63,7 @@ $language = array (
                                  backend using SQL injection.  If this is true, go to the corner and think
                                  about your actions.  When you return, please do not do it again!',
 // Added in version 0.9.9
-'permissionsforproject'    =>    'Permissions for '
+'permissionsforproject'    =>    'Permissions for ',
+'switchto'                 =>    'Switch to',
 );
 ?>

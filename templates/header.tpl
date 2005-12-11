@@ -55,8 +55,16 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
 
     <div id="content">
       <div id="projectselector">
-        <form action="{$baseurl}index.php" method="get">
+        <form id="projectselectorform" action="{$baseurl}index.php" method="get">
           <p>
+            <input class="mainbutton" type="submit"
+                   onclick="document.getElementById('doin').value='{Get::val('do')}'" name="switch" value="{$language['switchto']}" />
+            <select name="project">
+              <option value="0">{$language['allprojects']}</option>
+              {!tpl_options($project_list, Get::val('project') !== '0' ?  $proj->id : -1)}
+            </select>
+            &nbsp;            
+            <input accesskey="u" class="mainbutton" type="submit" value="{$language['show']}" />
             <select name="tasks">
               <option value="all">{$language['tasksall']}</option>
               <?php
@@ -68,12 +76,8 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
               }
               ?>
             </select>
-            {$language['selectproject']}
-            <select name="project">
-              <option value="0">{$language['allprojects']}</option>
-              {!tpl_options($project_list, Get::val('project') !== '0' ?  $proj->id : -1)}
-            </select>
-            <input accesskey="u" class="mainbutton" type="submit" value="{$language['show']}" />
+            <input type="hidden" id="doin" name="do" value="" />
+            <input type="hidden" id="areain" name="area" value="{Get::val('area')}" />          
           </p>
         </form>
       </div>
