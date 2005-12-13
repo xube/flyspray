@@ -118,7 +118,7 @@
 				?>
 				<input id="duedatehidden" type="hidden" name="due_date" value="{$due_date}" />
 				<span id="duedateview">{$view_date}</span> <small>|</small>
-				<a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '{$details_text['undecided']}'">X</a>
+				<a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '{$details_text['undecided']}';">X</a>
 				<script type="text/javascript">
 				 Calendar.setup({
 					inputField  : "duedatehidden", // ID of the input field
