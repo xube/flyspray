@@ -10,7 +10,7 @@
 	</div>
   </li>
 <?php
-if ($user->perms['open_new_tasks']): ?>
+if (Get::val('project') != '0' && $user->perms['open_new_tasks']): ?>
   <li>
   <a id="newtasklink" href="{$fs->CreateURL('newtask', $proj->id)}"
     accesskey="a">{$language['addnewtask']}</a>
@@ -18,7 +18,7 @@ if ($user->perms['open_new_tasks']): ?>
 <?php
 endif;
 
-if ($user->perms['view_reports']): ?>
+if (Get::val('project') != '0' && $user->perms['view_reports']): ?>
   <li>
   <a id="reportslink" href="{$fs->CreateURL('reports', null)}">{$language['reports']}</a>
   </li>
@@ -39,7 +39,7 @@ endif; ?>
   </li>
 <?php endif; ?>
 
-<?php if ($user->perms['manage_project']): ?>
+<?php if (Get::val('project') != '0' && $user->perms['manage_project']): ?>
   <li>
   <a id="projectslink"
     href="{$fs->CreateURL('pm', 'prefs', $proj->id)}">{$language['manageproject']}</a>

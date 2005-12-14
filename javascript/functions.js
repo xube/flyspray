@@ -28,6 +28,12 @@ function showhidestuff(boxid) {
       case 'hidden': document.getElementById(boxid).style.visibility="visible"; break
       case 'visible': document.getElementById(boxid).style.visibility="hidden"; break
    }
+   switch (document.getElementById(boxid).style.display) {
+      case '': document.getElementById(boxid).style.display="block"; break
+      case 'none': document.getElementById(boxid).style.display="block"; break
+      case 'block': document.getElementById(boxid).style.display="none"; break
+      case 'inline': document.getElementById(boxid).style.display="none"; break
+   }
 }
 
 function setUpFade() {

@@ -24,7 +24,6 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
 <?php if ('index' == $do || 'details' == $do): ?>
     <script type="text/javascript" src="{$baseurl}javascript/{$do}.js"></script>
 <?php endif; ?>    
-    <script type="text/javascript" src="{$baseurl}javascript/styleswitcher.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/tabs.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>
     <script type="text/javascript" src='{$baseurl}javascript/perms.js'></script>
@@ -57,8 +56,7 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
       <div id="projectselector">
         <form id="projectselectorform" action="{$baseurl}index.php" method="get">
           <p>
-            <input class="mainbutton" type="submit"
-                   onclick="document.getElementById('doin').value='{Get::val('do')}'" name="switch" value="{$language['switchto']}" />
+            <input class="mainbutton" type="submit" name="switch" value="{$language['switchto']}" />
             <select name="project">
               <option value="0">{$language['allprojects']}</option>
               {!tpl_options($project_list, Get::val('project') !== '0' ?  $proj->id : -1)}
@@ -75,9 +73,9 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
               }
               ?>
             </select>
-            <input type="hidden" id="doin" name="do" value="" />
+            <input type="hidden" id="doin" name="do" value="{Get::val('do')}" />
             <input type="hidden" id="areain" name="area" value="{Get::val('area')}" />
-            <input accesskey="u" class="mainbutton" type="submit" value="{$language['show']}" />          
+            <input accesskey="u" class="mainbutton" name="show" type="submit" value="{$language['show']}" />          
           </p>
         </form>
       </div>

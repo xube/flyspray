@@ -126,6 +126,9 @@ if ($user->perms['manage_project']) {
 
 // Show the project blurb if the project manager defined one
 $do = Req::val('do', 'index');
+if(Req::has('show') || (Req::has('switch') && (Req::val('project') == '0' || $do == 'details' ))) {
+    $do = 'index';
+}
 if ($proj->prefs['project_is_active']
     && ($proj->prefs['others_view'] || $user->perms['view_tasks'])
     && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends')))
