@@ -73,7 +73,7 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
               }
               ?>
             </select>
-            <input type="hidden" id="doin" name="do" value="{Get::val('do')}" />
+            <input type="hidden" id="doin" name="do" value="{$do}" />
             <input type="hidden" id="areain" name="area" value="{Get::val('area')}" />
             <input accesskey="u" class="mainbutton" name="show" type="submit" value="{$language['show']}" />          
           </p>

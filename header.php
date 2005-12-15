@@ -49,9 +49,8 @@ if (empty($project_id)) {
     // Determine which project we want to see
     if (Req::has('project')) {
         $project_id = Req::val('project');
-    } else {
-        $project_id = Req::val('project_id', Cookie::val('flyspray_project',
-                    $fs->prefs['default_project']));
+    } elseif(!($project_id = Cookie::val('flyspray_project'))) {
+        $project_id = $fs->prefs['default_project'];
     }
 }
 
