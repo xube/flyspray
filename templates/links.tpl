@@ -1,3 +1,4 @@
+<?php $proj_id = (isset($old_project)) ? $old_project : $proj->id; ?>
 <div id="menu">
 
 <ul id="menu-list">
@@ -12,7 +13,7 @@
 <?php
 if (Get::val('project') != '0' && $user->perms['open_new_tasks']): ?>
   <li>
-  <a id="newtasklink" href="{$fs->CreateURL('newtask', $proj->id)}"
+  <a id="newtasklink" href="{$fs->CreateURL('newtask', $proj_id)}"
     accesskey="a">{$language['addnewtask']}</a>
   </li>
 <?php
@@ -42,7 +43,7 @@ endif; ?>
 <?php if (Get::val('project') != '0' && $user->perms['manage_project']): ?>
   <li>
   <a id="projectslink"
-    href="{$fs->CreateURL('pm', 'prefs', $proj->id)}">{$language['manageproject']}</a>
+    href="{$fs->CreateURL('pm', 'prefs', $proj_id)}">{$language['manageproject']}</a>
   </li>
 <?php endif; ?>
 <?php if ($user->perms['manage_project'] && $pm_pendingreq_num): ?>
@@ -56,7 +57,7 @@ endif; ?>
 <?php if ($user->perms['manage_project'] && $pm_pendingreq_num): ?>
   <li class="last">
   <a class="pendingreq attention"
-    href="{$fs->CreateURL('pm', 'pendingreq', $proj->id)}">{$pm_pendingreq_num} {$language['pendingreq']}</a>
+    href="{$fs->CreateURL('pm', 'pendingreq', $proj_id)}">{$pm_pendingreq_num} {$language['pendingreq']}</a>
   </li>
 <?php endif; ?>
 </ul>

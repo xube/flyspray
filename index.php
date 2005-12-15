@@ -93,11 +93,6 @@ if ($conf['general']['output_buffering'] == 'gzip' && extension_loaded('zlib'))
 }
 
 $page = new FSTpl();
-if (Req::val('project')) {
-    $page->setTheme($proj->prefs['theme_style']);
-} else {
-    $page->setTheme($fs->prefs['global_theme']);
-}
 
 if ($show_task = Get::val('show_task')) {
     // If someone used the 'show task' form, redirect them
@@ -167,6 +162,7 @@ $page->pushTpl('header.tpl');
 require("$basedir/scripts/$do.php");
 
 $page->pushTpl('footer.tpl');
+$page->setTheme($proj->prefs['theme_style']);
 $page->render();
 
 unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);

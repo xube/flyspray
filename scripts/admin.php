@@ -17,9 +17,10 @@ $fs->get_language_pack('admin');
 $fs->get_language_pack('index');
 $fs->get_language_pack('newproject');
 $fs->get_language_pack('newuser');
+$old_project = $proj->id;
 $proj = new Project(0);
 
-$page->uses('admin_text', 'index_text', 'newproject_text', 'newuser_text');
+$page->uses('admin_text', 'index_text', 'newproject_text', 'newuser_text', 'old_project');
 $page->pushTpl('admin.menu.tpl');
 
 switch ($area = Get::val('area', 'prefs')) {

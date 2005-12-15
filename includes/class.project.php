@@ -8,7 +8,7 @@ class Project
 
     function Project($id)
     {
-        global $db,$language;
+        global $db,$language,$fs;
 
         $sql = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($id));
         if ($db->countRows($sql)) {
@@ -17,7 +17,7 @@ class Project
         } else {
             $this->id    = 0;
             $this->prefs['project_title'] = $language['allprojects'];
-            $this->prefs['theme_style']   = 0;
+            $this->prefs['theme_style']   = $fs->prefs['global_theme'];
         }
     }
 
