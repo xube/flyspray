@@ -632,12 +632,12 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
     $db->Query("INSERT INTO  {projects}
                              ( project_title, theme_style, intro_message,
                                others_view, anon_open, project_is_active,
-                               visible_columns)
+                               visible_columns, lang_code)
                      VALUES  (?, ?, ?, ?, ?, 1, ?)",
               array(Post::val('project_title'), Post::val('theme_style'),
                   Post::val('intro_message'), Post::val('others_view', 0),
                   Post::val('anon_open', 0),
-                  'id tasktype severity summary status dueversion progress'));
+                  'id tasktype severity summary status dueversion progress', Post::val('lang_code')));
 
     $sql = $db->Query("SELECT project_id FROM {projects} ORDER BY project_id DESC", false, 1);
     $pid = $db->fetchOne($sql);
@@ -684,7 +684,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
         $fs->redirect($fs->CreateURL('pm', 'prefs', $proj->id));
     }
 
-    $cols = array( 'project_title', 'theme_style', 'default_cat_owner',
+    $cols = array( 'project_title', 'theme_style', 'default_cat_owner', 'lang_code',
             'intro_message', 'project_is_active', 'others_view', 'anon_open',
             'notify_email', 'notify_email_when', 'notify_jabber', 'notify_subject',
             'notify_jabber_when', 'feed_description', 'feed_img_url');

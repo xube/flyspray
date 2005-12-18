@@ -33,10 +33,11 @@ class Flyspray
      */
     function get_language_pack($module)
     {
+        global $proj;
         if ($module == 'functions')
             $module .= '.inc';
 
-        $lang     = $this->prefs['lang_code'];
+        $lang     = $proj->prefs['lang_code'];
         $basedir  = dirname(dirname(__FILE__));
         $before   = get_defined_vars();
 
@@ -44,7 +45,7 @@ class Flyspray
         $after_en = get_defined_vars();
         $new_var  = array_keys(array_diff($after_en, $before));
 
-        if ($lang != 'en' && isset($new_var[1])) {
+        if ($lang && $lang != 'en' && isset($new_var[1])) {
             $new_var_name   = $new_var[1];
             $new_var['en']  = $$new_var_name;
             @include("$basedir/lang/$lang/$module.php");
@@ -419,9 +420,12 @@ class Flyspray
 
         // If we do want address rewriting
         if(!empty($conf['general']['address_rewriting'])) {
+            if($arg2) {
+                $arg2 = '?string=' . $arg2;
+            }
             switch ($type) {
                 case 'depends':   return $url . 'task/' .  $arg1 . '/' . $type;
-                case 'details':   return $url . 'task/' . $arg1;
+                case 'details':   return $url . 'task/' . $arg1 . $arg2;
                 case 'edittask':  return $url . 'task/' .  $arg1 . '/edit';
                 case 'pm':        return $url . 'pm/proj' . $arg2 . '/' . $arg1;
 
@@ -449,6 +453,10 @@ class Flyspray
         } else {
             $url .= '?do=' . $type;
         }
+        
+        if($arg2) {
+            $arg2 = '&string=' . $arg2;
+        }
 
         switch ($type) {
             case 'admin':     return $url . '&area=' . $arg1;
@@ -458,7 +466,7 @@ class Flyspray
             case 'logout':    return '?do=authenticate&action=logout';
 
             case 'details':
-            case 'depends':   return $url . '&id=' . $arg1;
+            case 'depends':   return $url . '&id=' . $arg1 . $arg2;
 
             case 'newgroup':
             case 'newtask':   return $url . '&project=' . $arg1;

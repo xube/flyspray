@@ -24,6 +24,14 @@
           </td>
         </tr>
         <tr>
+          <td><label for="langcode">{$admin_text['language']}</label></td>
+          <td>
+            <select id="langcode" name="lang_code">
+              {!tpl_options($fs->listLangs(), $proj->prefs['lang_code'], true)}
+            </select>
+          </td>
+        </tr>
+        <tr>
           <td><label for="intromesg">{$admin_text['intromessage']}</label></td>
           <td>
             <textarea id="intromesg" name="intro_message" rows="12" cols="70">{$proj->prefs['intro_message']}</textarea>

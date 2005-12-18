@@ -9,7 +9,7 @@
 <div id="taskdetails" ondblclick='openTask("{$fs->CreateURL('edittask', $task_details['task_id'])}")'>
 
   <h2 class="severity{$task_details['task_severity']}">
-	 FS#{$task_details['task_id']} &mdash; {!tpl_formatText($task_details['item_summary'])}
+	 FS#{$task_details['task_id']} &mdash; {$task_details['item_summary']}
   </h2>
 
   <div id="fineprint">

@@ -24,7 +24,7 @@
       {$details_text['delete']}</a>
     <?php endif ?>
   </span>
-  <p class="comment">{!tpl_formatText($row['comment_text'])}</p>
+  <div class="comment">{!tpl_formatText($row['comment_text'])}</div>
 
   <?php // XXX the same lives in details.view.tpl, keep in sync
   if ($user->perms['view_attachments'] || $proj->prefs['others_view']):

@@ -18,6 +18,7 @@ class Project
             $this->id    = 0;
             $this->prefs['project_title'] = $language['allprojects'];
             $this->prefs['theme_style']   = $fs->prefs['global_theme'];
+            $this->prefs['lang_code']   = $fs->prefs['lang_code'];
         }
     }
 
