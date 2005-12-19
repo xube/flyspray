@@ -633,7 +633,7 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
                              ( project_title, theme_style, intro_message,
                                others_view, anon_open, project_is_active,
                                visible_columns, lang_code)
-                     VALUES  (?, ?, ?, ?, ?, 1, ?)",
+                     VALUES  (?, ?, ?, ?, ?, 1, ?, ?)",
               array(Post::val('project_title'), Post::val('theme_style'),
                   Post::val('intro_message'), Post::val('others_view', 0),
                   Post::val('anon_open', 0),
@@ -644,14 +644,14 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
 
     $cols = array( 'manage_project', 'view_tasks', 'open_new_tasks',
             'modify_own_tasks', 'modify_all_tasks', 'view_comments',
-            'add_comments', 'edit_comments', 'delete_comments',
+            'add_comments', 'edit_comments', 'delete_comments', 'view_attachments',
             'create_attachments', 'delete_attachments', 'view_history',
             'close_own_tasks', 'close_other_tasks', 'assign_to_self',
-            'assign_others_to_self', 'view_reports', 'group_open');
+            'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
     $args = array_fill(0, count($cols), '1');
     array_unshift($args, 'Project Managers',
             'Permission to do anything related to this project.',
-            intval($newproject['project_id']));
+            intval($pid));
 
     $db->Query("INSERT INTO  {groups}
                              ( group_name, group_desc, belongs_to_project,
@@ -801,13 +801,19 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
         $fs->redirect(Post::val('prev_page'));
     }
 
-    $cols = array( 'group_name', 'group_desc', 'manage_project', 'view_tasks',
-            'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
-            'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
-            'view_attachments', 'create_attachments', 'delete_attachments',
-            'view_history', 'close_own_tasks', 'close_other_tasks',
-            'assign_to_self', 'assign_others_to_self', 'view_reports',
-            'group_open');
+    $cols = array( 'group_name', 'group_desc');
+    
+    // Allow all groups to update permissions except for global Admin
+    if (Post::val('group_id') != '1') {
+        $cols = $cols + array('manage_project', 'view_tasks',
+                              'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
+                              'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
+                              'view_attachments', 'create_attachments', 'delete_attachments',
+                              'view_history', 'close_own_tasks', 'close_other_tasks',
+                              'assign_to_self', 'assign_others_to_self', 'view_reports',
+                              'group_open');
+    }
+
     $args = array_map('Post_to0', $cols);
     $args[] = Post::val('group_id');
 

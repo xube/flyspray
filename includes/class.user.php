@@ -145,6 +145,9 @@ class User
         global $fs;
         $assignees = $fs->GetAssignees($task['task_id']);
         
+        if ($this->isAnon() && !$proj->prefs['others_view'])
+            return 0;
+        
         return $this->perms['manage_project'] || !$task['mark_private']
                     || in_array($this->id, $assignees);
     }
