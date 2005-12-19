@@ -8,10 +8,15 @@
         <?php else: ?>
         <input type="hidden" name="project" value="{$proj->id}" />
         <?php endif; ?>
-        <em>{$index_text['searchthisproject']}:</em>
+        <input class="mainbutton" type="submit" value="{$index_text['searchthisproject']}" />
         <input id="searchtext" name="string" type="text" size="20"
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
-
+        
+        <span onClick="expandcontent(this, 'sc2')" style="cursor:pointer">
+        <span class="showstate"></span>{$index_text['advanced']}
+        </span>
+        
+        <div id="sc2" class="switchcontent">
         <select name="type">
           <option value="">{$index_text['alltasktypes']}</option>
           {!tpl_options($proj->listTaskTypes(), Get::val('type'))}
@@ -65,8 +70,7 @@
               button      : "duedateview"     // ID of the button
            });
         </script>
-       
-        <input class="mainbutton" type="submit" value="{$index_text['search']}" />
+       </div>
       </div>
     </form>
   </map>

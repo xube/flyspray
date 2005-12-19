@@ -64,6 +64,7 @@ $index_text = array (
 // Added in version 0.9.9
 'tasklist'                 =>      'Tasklist',
 'dateclosed'               =>      'Date closed',
+'advanced'                 =>      'Advanced',
 
 );
 ?>

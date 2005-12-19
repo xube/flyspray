@@ -277,7 +277,7 @@ div#search {
    margin-bottom:1em;
    border:1px solid gray;
    background-color:#e6eef6;
-   padding:0 0 3px 0;
+   padding:0 0 3px 3px;
 }
 
 div#search span#date_d {
@@ -307,6 +307,10 @@ div#search em {
    float:left;
    display:block;
    height:2.5em;
+}
+
+div#search input#searchtext {
+    width: 30em;
 }
 
 div#tasklist {
