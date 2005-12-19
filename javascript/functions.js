@@ -2,7 +2,7 @@
 addEvent(window,'load',setUpFade);
 // Set up the task list onclick handler
 addEvent(window,'load',setUpTasklistTable);
-
+addEvent(window,'load',setUpSearchBox);
 function Disable(formid)
 {
    document.formid.buSubmit.disabled = true;
@@ -268,5 +268,29 @@ var Cookie = {
     document.cookie = name + '=;expires=' + date.toUTCString();
   }  
 };
+function setUpSearchBox() {
+  if (document.getElementById('advancedsearch')) {
+    var state = Cookie.getVar('advancedsearch');
+    if ('1' == state) {
+      var showState = document.getElementById('advancedsearchstate');
+      showState.replaceChild(document.createTextNode('+'),showState.firstChild);
+      document.getElementById('sc2').style.display = 'block';
+    }
+  }
+}
+function toggleSearchBox() {
+  var state = Cookie.getVar('advancedsearch');
+  if ('1' == state) {
+      var showState = document.getElementById('advancedsearchstate');
+      showState.replaceChild(document.createTextNode('+'),showState.firstChild);
+      document.getElementById('sc2').style.display = 'none';
+      Cookie.setVar('advancedsearch','0');
+  } else {
+      var showState = document.getElementById('advancedsearchstate');
+      showState.replaceChild(document.createTextNode('-'),showState.firstChild);
+      document.getElementById('sc2').style.display = 'block';
+      Cookie.setVar('advancedsearch','1');
+  }
+}
 var useAltForKeyboardNavigation = false;  // Set this to true if you don't want to kill
                                          // Firefox's find as you type 

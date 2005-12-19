@@ -12,11 +12,11 @@
         <input id="searchtext" name="string" type="text" size="20"
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
-        <span onClick="expandcontent(this, 'sc2')" style="cursor:pointer">
-        <span class="showstate"></span>{$index_text['advanced']}
+        <span onclick="toggleSearchBox();" style="cursor:pointer">
+        <span id="advancedsearchstate" class="showstate">-</span>{$index_text['advanced']}
         </span>
         
-        <div id="sc2" class="switchcontent">
+        <div id="sc2" class="switchcontent" style="display:none;">
         <select name="type">
           <option value="">{$index_text['alltasktypes']}</option>
           {!tpl_options($proj->listTaskTypes(), Get::val('type'))}
