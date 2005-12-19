@@ -65,6 +65,9 @@ $index_text = array (
 'tasklist'                 =>      'Tasklist',
 'dateclosed'               =>      'Date closed',
 'advanced'                 =>      'Advanced',
+'searchcomments'           =>      'Search in comments',
+'searchforall'             =>      'Search for all words',
+
 
 );
 ?>

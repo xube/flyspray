@@ -17,6 +17,13 @@
         </span>
         
         <div id="sc2" class="switchcontent" style="display:none;">
+        {!tpl_checkbox('search_in_comments', Get::has('search_in_comments'), 'sic')}
+        <label class="default" for="sic">{$index_text['searchcomments']}</label>
+        
+        {!tpl_checkbox('search_for_all', Get::has('search_for_all'), 'sfa')}
+        <label class="default" for="sfa">{$index_text['searchforall']}</label>
+        
+        <br />
         <select name="type">
           <option value="">{$index_text['alltasktypes']}</option>
           {!tpl_options($proj->listTaskTypes(), Get::val('type'))}

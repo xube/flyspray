@@ -172,21 +172,26 @@ $from  .= "
              LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
 ";
 
-if ($str = Get::val('string')) {
-    $str = strtr($str, '()', '  ');
+if (Get::val('string')) {
+    $words = explode(' ', strtr(Get::val('string'), '()', '  '));
     $comments = '';
-    if(strpos($str, '+c') !== false) {
-        $str = str_replace('+c', '', $str);
-        $str = '%'.trim($str).'%';
+    $where_temp = array();
+    
+    if(Get::has('search_in_comments')) {
         $from .= ' LEFT JOIN  {comments}         c  ON t.task_id = c.task_id';
         $comments = 'OR c.comment_text LIKE ?';
-        array_push($sql_params, $str);
-    } else {    
-        $str = '%'.trim($str).'%';
     }
     
-    $where[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ? $comments)";
-    array_push($sql_params, $str, $str, $str);
+    foreach($words as $word) {
+        $word = '%' . trim($word) . '%';
+        $where_temp[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ? $comments)";
+        array_push($sql_params, $word, $word, $word);
+        if(Get::has('search_in_comments')) {
+            array_push($sql_params, $word);
+        }
+    }
+    
+    $where[] = '(' . implode( (Req::has('search_for_all') ? ' AND ' : ' OR '), $where_temp) . ')';
 }
 
 if (!$user->perms['manage_project']) {
