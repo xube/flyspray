@@ -615,7 +615,7 @@ div#taskfields1 th,div#taskfields2 th {
 
 div#taskdetailsfull {
    clear:both;
-   width:99%;
+   width:98%;
    margin-top:15px;
    border-top:1px solid #ccc;
    border-bottom:1px solid #ccc;
@@ -1081,3 +1081,87 @@ h3.taskdesc {
     position:relative;
     margin:0 0.2em;
 }
+
+div.comment {
+    padding:0.5em;
+}
+
+/* Dokuwiki */
+.code a {
+    text-decoration:none;
+}
+
+/* inline tables */
+table.inline {
+    background-color: #ffffff;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+table.inline th {
+    padding: 3px;
+    border: 1px solid #8cacbb;
+    background-color: #dee7ec;
+}
+
+table.inline td {
+    padding: 3px;
+    border: 1px solid #8cacbb;
+}
+
+.leftalign{
+    text-align:left;
+}
+
+.centeralign{
+    text-align:center;
+}
+
+.rightalign{
+    text-align:right;
+}
+
+.interwiki,.urlextern {
+    padding-left:17px;
+    background-repeat:no-repeat;
+}
+
+.urlextern {
+    background-image:url(link_icon.gif);
+}
+
+.fn_top {
+    font-size:0.8em;
+    vertical-align:top;
+}
+
+.footnotes {
+    font-size:0.8em;
+    border-top:solid 1px #ccc;
+}
+
+blockquote {
+    border-left: 2px solid #8cacbb;
+    padding-left: 3px;
+    margin-left: 0;
+}
+
+.search_hit {
+    background:#FF9;
+}
+
+.code .br0 {color:#6c6;}
+.code .es0 {color:#009;font-weight:700;}
+.code .kw1 {color:#b1b100;}
+.code .kw2 {color:#000;font-weight:700;}
+.code .kw3 {color:#006;}
+.code .kw4 {color:#933;}
+.code .me0 {color:#060;}
+.code .nu0 {color:#c6c;}
+.code .re4 {color:#099;}
+.code .sc0 {color:#0bd;}
+.code .sc1 {color:#db0;}
+.code .sc2 {color:#090;}
+.code .st0 {color:red;}
+.code .co1,.code .co2,.code .coMULTI {color:gray;font-style:italic;}
+.code .kw5,.code .re0,.code .re1,.code .re2 {color:#00f;}

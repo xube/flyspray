@@ -45,7 +45,7 @@ if (in_array(Req::val('do'), array('details', 'depends', 'modify'))) {
     }
 }
 
-if (empty($project_id)) {
+if (empty($project_id) || (Req::has('project') && Req::has('switch'))) {
     // Determine which project we want to see
     if (Req::has('project')) {
         $project_id = Req::val('project');

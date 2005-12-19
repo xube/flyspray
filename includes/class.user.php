@@ -32,7 +32,7 @@ class User
         global $db;
         // Only logged in users get to use the 'last search' functionality
         foreach (array('string','type','sev','due','dev','cat','status','order','sort') as $key) {
-            if (Get::has($key)) {
+            if (Get::has($key) && !Get::val('do')) {
                 $db->Query("UPDATE  {users}
                                SET  last_search = ?
                              WHERE  user_id = ?",

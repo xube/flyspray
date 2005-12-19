@@ -73,8 +73,11 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
               }
               ?>
             </select>
-            <input type="hidden" id="doin" name="do" value="{$do}" />
-            <input type="hidden" id="areain" name="area" value="{Get::val('area')}" />
+            <input type="hidden" name="do" value="{$do}" />
+            <?php foreach($_GET as $key => $value): ?>
+            <?php if(!in_array($key, array('area', 'id'))) continue; ?>
+            <input type="hidden" name="{$key}" value="{$value}" />
+            <?php endforeach; ?>
             <input accesskey="u" class="mainbutton" name="show" type="submit" value="{$language['show']}" />          
           </p>
         </form>

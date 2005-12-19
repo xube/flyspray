@@ -26,7 +26,7 @@ $index_text = array (
 'next'                     =>      'Next',
 
 // Added in version 0.9.5
-'searchthisproject'        =>    'Search this project',
+'searchthisproject'        =>    'Search this project for',
 
 // Added in version 0.9.6
 'closed'                   =>    'Closed',

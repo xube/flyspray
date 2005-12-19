@@ -1,5 +1,9 @@
 <?php
-require_once(dirname(__FILE__).'/geshi.php');
+define('DOKU_PLUGIN', $conf['general']['basedir'] . 'includes/dokuwiki/lib/plugins/');
+define('DOKU_CONF', $conf['general']['basedir'] . 'includes/dokuwiki/conf/');
+define('DOKU_INTERNAL_LINK', $conf['general']['doku_url']);
+define('DOKU_BASE', $baseurl .'includes/dokuwiki/');
+define('DOKU_URL', $baseurl .'includes/dokuwiki/');
 
 class Tpl
 {
@@ -205,7 +209,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $text = 'FS#'.$task['task_id'].' - '.$summary;
     }
     
-    $url = htmlspecialchars($fs->CreateURL('details', $task['task_id']));
+    $url = htmlspecialchars($fs->CreateURL('details', $task['task_id'],  Get::val('string')));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
             $url, $title_text, join_attrs($attrs), $text);
 
@@ -364,8 +368,66 @@ function tpl_img($src, $alt)
 // {{{ Text formatting
 function tpl_formattext($text)
 {
-    $format = new Flyspray_Textformatter($text);
-    return $format->get();
+    global $conf, $baseurl;
+    if ($conf['general']['wiki_syntax']) {
+        // Unfortunately dokuwiki also uses $conf
+        $fs_conf = $conf;
+        $conf = array();
+        
+        // Dokuwiki generates some notices
+        error_reporting(E_ALL ^ E_NOTICE);
+        
+        require_once('dokuwiki/inc/parser/parser.php');
+        require_once('dokuwiki/inc/common.php');
+        require_once('dokuwiki/inc/parser/xhtml.php');
+        
+        $modes = p_get_parsermodes();
+        
+        $Parser = & new Doku_Parser();
+        
+        // Add the Handler
+        $Parser->Handler = & new Doku_Handler();
+        
+        //add modes to parser
+        foreach($modes as $mode){
+            $Parser->addMode($mode['mode'], $mode['obj']);
+        }
+        
+        // Do the parsing
+        $instructions = $Parser->parse($text);
+        
+        // Create a renderer
+        $Renderer = & new Doku_Renderer_XHTML();
+        
+        $Renderer->smileys = getSmileys();
+        $Renderer->entities = getEntities();
+        $Renderer->acronyms = getAcronyms();
+        $Renderer->interwiki = getInterwiki();
+        
+        // Loop through the instructions
+        foreach ($instructions as $instruction) {
+            // Execute the callback against the Renderer
+            call_user_func_array(array(&$Renderer, $instruction[0]), $instruction[1]);
+        }
+        
+        $conf = $fs_conf;
+        
+        // Display the output
+        if (Get::val('string')) {
+            return html_hilight($Renderer->doc, Get::val('string'));
+        } else {
+            return $Renderer->doc;
+        }
+   } else {
+        $text = nl2br(htmlspecialchars($text));
+        
+        // Change URLs into hyperlinks
+        $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
+        
+        // Change FS#123 into hyperlinks to tasks
+        return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
+            'tpl_fast_tasklink', $text);
+   }
 }
 // }}}
 // {{{ Draw permissions table
@@ -398,72 +460,40 @@ function tpl_draw_perms($perms)
     return $html . '</tbody></table>';
 } // }}}
 
+/**
+ * Highlights searchqueries in HTML code
+ *
+ * @author Andreas Gohr <andi@splitbrain.org>
+ * @author Harry Fuecks <hfuecks@gmail.com>
+ */
+function html_hilight($html,$query){
+  //split at common delimiters
+  $queries = preg_split ('/[\s\'"\\\\`()\]\[?:!\.{};,#+*<>]+/',$query,-1,PREG_SPLIT_NO_EMPTY);
+  foreach ($queries as $q){
+     $q = preg_quote($q,'/');
+     $html = preg_replace_callback("/((<[^>]*)|$q)/i",'html_hilight_callback',$html);
+  }
+  return $html;
+}
+
+/** 
+ * Callback used by html_hilight()
+ *
+ * @author Harry Fuecks <hfuecks@gmail.com>
+ */     
+function html_hilight_callback($m) {
+  $hlight = unslash($m[0]);
+  if ( !isset($m[2])) {
+    $hlight = '<span class="search_hit">'.$hlight.'</span>';
+  }
+  return $hlight;
+}
+
 function tpl_disableif($if)
 {
     if ($if) {
         return 'disabled="disabled"';
     }
 }
-
-// {{{ Text formatter class
-class Flyspray_Textformatter {
-	
-	var $_code_blocks = array();
-	var $_text = '';
-	
-	function Flyspray_Textformatter($text)
-	{
-        $langs = 'actionscript|ada|apache|applescript|asm|asp|bash|blitzbasic|c|caddcl|cadlisp|cpp|
-                  csharp|css|c_mac|d|delphi|diff|div|dos|eiffel|freebasic|gml|html|ini|inno|
-                  java|javascript|lisp|lua|matlab|mpasm|mysql|nsis|objc|ocaml|oobas|
-                  oracle8|pascal|perl|php|python|qbasic|ruby|scheme|sdlbasic|smarty|sql|vb|vbnet|
-                  vhdl|visualfoxpro|xml';
-		// Seperate code blocks and highlight them [php] [/php]
-		$text = preg_replace_callback('/\[('.$langs.')\](.+)\[\/\1\]/Us', array(&$this, '_cut_code_blocks'), $text);
-		// < ? php ? >
-		$text = preg_replace_callback('/<\?(php)(.+)\?>/Us', array(&$this, '_cut_code_blocks'), $text);
-		
-        // Apply changes to the remaining text
-        $text = nl2br(htmlspecialchars($text, ENT_QUOTES, 'utf-8'));
-        $text = ereg_replace('[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]','<a href="\0">\0</a>', $text);
-        $text = preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
-        
-        // Put code blocks at the right place again
-        $text = preg_replace_callback('|\[code:(\w{32})\]|U', array(&$this, '_get_code_blocks'), $text);
-        $this->_text = $text;
-	}
-	
-	function get()
-	{
-		return $this->_text;
-	}
-	
-	function _get_code_blocks($match)
-	{
-		if(isset($this->_code_blocks[$match[1]])) {
-			return $this->_code_blocks[$match[1]];
-		} else {
-            return "[code:{$match[1]}]";
-        }
-	}
-	
-	function _fs_highlight(&$match)
-	{
-        if($match[1] == 'html') {
-            $match[1] = 'html4strict';
-        }
-		$geshi =& new GeSHi(trim($match[2]), $match[1]);
-		$geshi->set_overall_class('code');
-	    return $geshi->parse_code();
-	}
-	
-	function _cut_code_blocks($match)
-	{
-		$id = md5(time().uniqid('fs'.mt_rand()));
-		$this->_code_blocks[$id] = $this->_fs_highlight($match);
-		return "[code:$id]";
-	}
-}
-// }}}
 // }}}
 ?>
