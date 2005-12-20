@@ -21,6 +21,7 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
 	      href="{$baseurl}feed.php?feed_type=atom&amp;project={$proj->id}" />
 	      
     <script type="text/javascript" src="{$baseurl}javascript/prototype/prototype.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/script.aculo.us/scriptaculous.js"></script>
 <?php if ('index' == $do || 'details' == $do): ?>
     <script type="text/javascript" src="{$baseurl}javascript/{$do}.js"></script>
 <?php endif; ?>    

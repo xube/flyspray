@@ -1,4 +1,4 @@
-addEvent(window,'load',setUpIEHover);
+//addEvent(window,'load',setUpIEHover);
 var g_severityCSSHoverBackground = Array();
 var g_severityCSSHoverColor = Array();
 var g_severityBackgroundColor;

@@ -1,4 +1,5 @@
 Event.observe(window,'load',tasklistInit);
+
 function tasklistInit() {
   Caret.init();
 }
@@ -15,38 +16,36 @@ var Caret = {
       Caret.currentRow = $('tasklist_table').getElementsByTagName('tbody')[0].getElementsByTagName('tr')[0];
     }
     Element.addClassName(Caret.currentRow,'current_row');
-    Event.observe(window,'keypress',Caret.keypress);
+    Event.observe(document,'keydown',Caret.keypress);
   },
   keypress: function (e) {
     var src = Event.element(e);
     if (/input|select|textarea/.test(src.nodeName.toLowerCase())) {
         // don't do anything if key is pressed in input, select or textarea
       return;
-    }//106 -j 107 - k 111 - o
+    }
     if ((useAltForKeyboardNavigation && !e.altKey) ||
         (!useAltForKeyboardNavigation && e.altKey) ||
          e.ctrlKey || e.shiftKey) {
       return;
     }
-    // if:s instead of a switch, I expect to do some IE tweaking later
-    if (106 == e.charCode) {
-      // user pressed "j" move down
-      Element.removeClassName(Caret.currentRow,'current_row');
-      Caret.nextRow();
-      Element.addClassName(Caret.currentRow,'current_row');
-      Event.stop(e);
-    }
-    if (107 == e.charCode) {
-      // user pressed "k" move up
-      Element.removeClassName(Caret.currentRow,'current_row');
-      Caret.previousRow();
-      Element.addClassName(Caret.currentRow,'current_row');
-      Event.stop(e);
-    }
-    if (111 == e.charCode) {
-      // user pressed "o" open task
-      window.location = Caret.currentRow.getElementsByTagName('a')[0].href;
-      Event.stop(e);
+    switch (e.keyCode) {
+      case 74:       // user pressed "j" move down
+          Element.removeClassName(Caret.currentRow,'current_row');
+          Caret.nextRow();
+          Element.addClassName(Caret.currentRow,'current_row');
+          Event.stop(e);
+          break;
+      case 75:      // user pressed "k" move up
+          Element.removeClassName(Caret.currentRow,'current_row');
+          Caret.previousRow();
+          Element.addClassName(Caret.currentRow,'current_row');
+          Event.stop(e);
+          break;
+      case 79:     // user pressed "o" open task
+          window.location = Caret.currentRow.getElementsByTagName('a')[0].href;
+          Event.stop(e);
+          break;
     }
   },
   nextRow: function () {

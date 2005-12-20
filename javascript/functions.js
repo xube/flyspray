@@ -2,7 +2,6 @@
 addEvent(window,'load',setUpFade);
 // Set up the task list onclick handler
 addEvent(window,'load',setUpTasklistTable);
-addEvent(window,'load',setUpSearchBox);
 function Disable(formid)
 {
    document.formid.buSubmit.disabled = true;
@@ -285,12 +284,12 @@ function toggleSearchBox() {
   if ('1' == state) {
       var showState = document.getElementById('advancedsearchstate');
       showState.replaceChild(document.createTextNode('+'),showState.firstChild);
-      document.getElementById('sc2').style.display = 'none';
+      Effect.BlindUp('sc2',{duration: .5});
       Cookie.setVar('advancedsearch','0');
   } else {
       var showState = document.getElementById('advancedsearchstate');
       showState.replaceChild(document.createTextNode('-'),showState.firstChild);
-      document.getElementById('sc2').style.display = 'block';
+      Effect.BlindDown('sc2',{duration: .5});
       Cookie.setVar('advancedsearch','1');
   }
 }

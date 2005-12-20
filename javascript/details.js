@@ -8,7 +8,7 @@ function detailsInit() {
   Cookie.setVar('current_task',arr[0]);
   if (!$('details')) {
     // make sure the page is not in edit mode
-    Event.observe(window,'keypress',keyboardNavigation);
+    Event.observe(document,'keydown',keyboardNavigation);
   }
 }
 function keyboardNavigation(e) {
@@ -17,28 +17,26 @@ function keyboardNavigation(e) {
     // don't do anything if key is pressed in input, select or textarea
     return;
   }
-  // u 117
-  // p 112
-  // n 110 
   if ((useAltForKeyboardNavigation && !e.altKey) ||
        e.ctrlKey || e.shiftKey) {
     return;
   }
-  if (117 == e.charCode) {
-    window.location = $('lastsearchlink').href;
-    Event.stop(e);
+  switch (e.keyCode) {
+    case 85:  // "u" get back to task list
+        window.location = $('lastsearchlink').href;
+        Event.stop(e);
+        break;
+    case 80:  // "p" move to previous task
+        if ($('prev')) {
+          window.location = $('prev').href;
+          Event.stop(e);
+        }
+        break;
+    case 78: // "n" move to next task    
+        if ($('next')) {
+          window.location = $('next').href;
+          Event.stop(e);
+        }
+        break;
   }
-  if (112 == e.charCode) {
-    if ($('prev')) {
-      window.location = $('prev').href;
-      Event.stop(e);
-    }
-  }
-  if (110 == e.charCode) {
-    if ($('next')) {
-      window.location = $('next').href;
-      Event.stop(e);
-    }
-  }
-
 }

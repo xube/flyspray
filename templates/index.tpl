@@ -13,10 +13,15 @@
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
         <span onclick="toggleSearchBox();" style="cursor:pointer">
-        <span id="advancedsearchstate" class="showstate">-</span>{$index_text['advanced']}
+        <span id="advancedsearchstate" class="showstate"><?php
+        if (Cookie::val('advancedsearch')):
+            echo '-';
+          else:
+            echo '+';
+          endif;?></span>{$index_text['advanced']}
         </span>
         
-        <div id="sc2" class="switchcontent" style="display:none;">
+        <div id="sc2" class="switchcontent" <? if (!Cookie::val('advancedsearch')):?>style="display:none;"><?php endif; ?>
         {!tpl_checkbox('search_in_comments', Get::has('search_in_comments'), 'sic')}
         <label class="default" for="sic">{$index_text['searchcomments']}</label>
         
