@@ -3,7 +3,7 @@
 global $roadmap_text;
 $roadmap_text = array (
 'roadmap'	    =>	'Roadmap',
-'roadmapfor'	=>	'Roadmap for',
+'roadmapfor'	=>	'Roadmap for version',
 'tasks'         =>  'tasks',
 'completed'     =>  'completed.',
 'opentasks'     =>  'open tasks:',

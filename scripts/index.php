@@ -183,14 +183,14 @@ if (Get::val('string')) {
     }
     
     foreach($words as $word) {
-        $word = '%' . trim($word) . '%';
+        $word = '%' . str_replace('+', ' ', trim($word)) . '%';
         $where_temp[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ? $comments)";
         array_push($sql_params, $word, $word, $word);
         if(Get::has('search_in_comments')) {
             array_push($sql_params, $word);
         }
     }
-    
+      
     $where[] = '(' . implode( (Req::has('search_for_all') ? ' AND ' : ' OR '), $where_temp) . ')';
 }
 

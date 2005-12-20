@@ -35,18 +35,13 @@ while ($row = $db->FetchArray($milestones)) {
     }
     $percent_complete = round($percent_complete/max(count($all_tasks),1));
                          
-    $tasks = $db->Query('SELECT  task_id
+    $tasks = $db->Query('SELECT  task_id, detailed_desc, task_severity
                          FROM    {tasks}
                          WHERE   closedby_version = ? AND attached_to_project = ? AND is_closed = 0',
                          array($row['version_id'], $proj->id));
     $tasks = $db->fetchAllArray($tasks);
     
-    $open_tasks = array();
-    foreach($tasks as $task) {
-        $open_tasks[] = $task['task_id'];
-    }
-    
-    $data[] = array('open_tasks' => $open_tasks, 'percent_complete' => $percent_complete,
+    $data[] = array('open_tasks' => $tasks, 'percent_complete' => $percent_complete,
                     'all_tasks' => $all_tasks, 'name' => $row['version_name']);
 }
 

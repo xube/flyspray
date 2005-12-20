@@ -1150,6 +1150,25 @@ blockquote {
     background:#FF9;
 }
 
+dl.roadmap dd {
+    border:dotted 1px gray;
+    background:#FEF9FD;
+    margin:-0.5em 1em 0 2em;
+    padding:0.1em 0.5em;
+    display:none;
+}
+
+dl.roadmap dt {
+    border:solid 1px gray;
+    margin:1em 3em 0 0;
+    padding:0.1em 0.5em;
+    position:relative;
+}
+
+.fade {
+    color:gray;
+}
+
 .code .br0 {color:#6c6;}
 .code .es0 {color:#009;font-weight:700;}
 .code .kw1 {color:#b1b100;}

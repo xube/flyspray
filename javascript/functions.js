@@ -16,10 +16,12 @@ function openTask( url )
 
  function showstuff(boxid){
    document.getElementById(boxid).style.visibility="visible";
+   document.getElementById(boxid).style.display="block";
 }
 
 function hidestuff(boxid){
    document.getElementById(boxid).style.visibility="hidden";
+   document.getElementById(boxid).style.display="none";
 }
 
 function showhidestuff(boxid) {

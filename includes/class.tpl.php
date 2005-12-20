@@ -414,7 +414,12 @@ function tpl_formattext($text)
         
         // Display the output
         if (Get::val('string')) {
-            return html_hilight($Renderer->doc, Get::val('string'));
+            $words = explode(' ', Get::val('string'));
+            $ret = $Renderer->doc;
+            foreach($words as $word) {
+                $ret = html_hilight($ret, $word);
+            }
+            return $ret;
         } else {
             return $Renderer->doc;
         }

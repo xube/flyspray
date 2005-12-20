@@ -96,3 +96,22 @@ table#tasklist_table td {
 	border:dotted 1px gray;
 	padding:0.1em 0.2em;
 }
+
+dl.roadmap {
+    margin:1em;
+}
+
+dl.roadmap dd {
+    border:dotted 1px gray;
+    margin:0.5em 1em 0.5em 2em;
+    padding:0.1em 0.5em;
+}
+
+dl.roadmap dt {
+    border:solid 1px gray;
+    margin:0.5em 3em -1em 0;
+    padding:0.1em 0.5em;
+    background:white;
+    position:relative;
+    background:white;
+}
