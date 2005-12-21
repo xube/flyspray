@@ -25,7 +25,8 @@ foreach($milestone['open_tasks'] as $task): ?>
 
 <?php if(count($milestone['open_tasks'])): ?>
 <dl class="roadmap">
-    <?php foreach($milestone['open_tasks'] as $task): ?>
+    <?php foreach($milestone['open_tasks'] as $task):
+          if(!$user->can_view_task($task)) continue; ?>
       <dt class="severity{$task['task_severity']}" onclick="showhidestuff('dd{$task['task_id']}')">
         {!tpl_tasklink($task['task_id'])} <b class="DoNotPrint fade">[+]</b>
       </dt>

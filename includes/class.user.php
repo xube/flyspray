@@ -44,7 +44,7 @@ class User
         }
     }
 
-    function get_perms($proj)
+    function get_perms(&$proj)
     {
         global $db;
 
@@ -80,6 +80,9 @@ class User
             if ($this->perms['is_admin']) {
                 $this->perms = array_map(create_function('$x', 'return 1;'), $this->perms);
             }
+        }
+        if(!$this->can_view_project($proj)) {
+            $proj = new Project(0);
         }
     }
 
@@ -142,11 +145,11 @@ class User
 
     function can_view_task($task)
     {
-        global $fs;
-        $assignees = $fs->GetAssignees($task['task_id']);
-        
+        global $fs, $proj;        
         if ($this->isAnon() && !$proj->prefs['others_view'])
             return 0;
+        
+        $assignees = $fs->GetAssignees($task['task_id']);
         
         return $this->perms['manage_project'] || !$task['mark_private']
                     || in_array($this->id, $assignees);

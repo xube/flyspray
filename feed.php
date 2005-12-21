@@ -39,7 +39,8 @@ $filename = $feed_type.'-'.$orderby.'-'.$project.'-'.$max_items;
 $sql = $db->Query("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
                      FROM  {tasks}    t
                INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1'
-                    WHERE  t.is_closed <> '$closed' AND p.project_id = ? AND t.mark_private <> '1'",
+                    WHERE  t.is_closed <> '$closed' AND p.project_id = ? AND t.mark_private <> '1'
+                           AND p.others_view = '1' ",
                            array($project));
 $most_recent = max($db->fetchRow($sql));
 
@@ -66,13 +67,14 @@ if ($fs->prefs['cache_feeds']) {
     }
 }
 
-/* build a new feed if cache didn't worked */
+/* build a new feed if cache didn't work */
 $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed, 
                            t.last_edited_time, t.opened_by, u.real_name
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
                INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1' 
                     WHERE  t.is_closed <> '$closed' AND p.project_id = ? AND t.mark_private <> '1'
+                           AND p.others_view = '1'
                  ORDER BY  $orderby DESC", array($project), $max_items);
 
 $task_details     = $db->fetchAllArray($sql);

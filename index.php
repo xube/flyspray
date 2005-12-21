@@ -9,6 +9,10 @@
 require_once(dirname(__FILE__).'/header.php');
 require_once(dirname(__FILE__).'/includes/class.tpl.php');
 
+// Get the translation for the wrapper page (this page)
+$fs->get_language_pack('main');
+setlocale(LC_ALL, str_replace('-','_',$language['locale']));
+
 /*
    FS#329 allows tasks to be assigned to multiple users.
    We need to convert the old data by including this script.
@@ -70,10 +74,6 @@ if (Get::has('getfile') && Get::val('getfile')) {
 /*******************************************************************************/
 /* Here begins the deep flyspray : html rendering                              */
 /*******************************************************************************/
-
-// Get the translation for the wrapper page (this page)
-$fs->get_language_pack('main');
-setlocale(LC_ALL, str_replace('-','_',$language['locale']));
 
 // make browsers back button work
 header('Expires: -1');
