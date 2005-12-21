@@ -30,7 +30,7 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
          <h2>Proceed to Database setup:</h2>
          <div class="installBlock">
          <form class="formBlock farRight" action="index.php" method="post" name="adminForm" style="display:inline;">
-            <input type="checkbox" name="agreecheck"  class="inputbox" /> I accept the license&nbsp;
+            <input type="checkbox" name="agreecheck" id="agreecheck" class="inputbox" /> <label for="agreecheck">I accept the license&nbsp;</label>
             <input type="hidden" name="action" value="database" />
             <input class="button" type="submit" name="next" value="Next >>" />
          </form>

@@ -52,7 +52,7 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
             </tr>
             <tr>
                <td>Database password</td>
-               <td align="left"><input class="inputbox" type="text" name="db_password" value="<?php echo $db_password; ?>" /></td>
+               <td align="left"><input class="inputbox" type="password" name="db_password" value="<?php echo $db_password; ?>" /></td>
             </tr>
             <tr>
                <td>Database name</td>

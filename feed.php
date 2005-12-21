@@ -10,7 +10,7 @@ $page = new FSTpl();
 header ('Content-type: text/xml; charset=utf-8');
 
 $max_items  = (intval(Req::val('num', 10)) == 10) ? 10 : 20;
-$project    = intval(Req::val('proj', $fs->prefs['default_project']));
+$proj->id   = ($proj->id) ? $proj->id : $fs->prefs['default_project'];
 $feed_type  = Req::val('feed_type', 'rss2');
 if ($feed_type != 'rss1' && $feed_type != 'rss2') {
     $feed_type = 'atom';
@@ -30,7 +30,7 @@ switch (Req::val('topic')) {
     break;
 }
 
-$filename = $feed_type.'-'.$orderby.'-'.$project.'-'.$max_items;
+$filename = $feed_type.'-'.$orderby.'-'.$proj->id.'-'.$max_items;
 
 // FIXME : avoid that DB call ...  by making the whole project invalidates cache himself
 // {{{
@@ -41,7 +41,7 @@ $sql = $db->Query("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_ed
                INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1'
                     WHERE  t.is_closed <> '$closed' AND p.project_id = ? AND t.mark_private <> '1'
                            AND p.others_view = '1' ",
-                           array($project));
+                           array($proj->id));
 $most_recent = max($db->fetchRow($sql));
 
 // }}}
@@ -59,7 +59,7 @@ if ($fs->prefs['cache_feeds']) {
                              FROM  {cache}
                             WHERE  type = ? AND topic = ? AND project = ?
                                    AND max_items = ?  AND last_updated >= ?", 
-                        array($feed_type, $orderby, $project, $max_items, $most_recent));
+                        array($feed_type, $orderby, $proj->id, $max_items, $most_recent));
         if ($content = $db->FetchOne($sql)) {
             echo $content;
             exit;
@@ -75,7 +75,7 @@ $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_op
                INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1' 
                     WHERE  t.is_closed <> '$closed' AND p.project_id = ? AND t.mark_private <> '1'
                            AND p.others_view = '1'
-                 ORDER BY  $orderby DESC", array($project), $max_items);
+                 ORDER BY  $orderby DESC", array($proj->id), $max_items);
 
 $task_details     = $db->fetchAllArray($sql);
 $feed_description = $proj->prefs['feed_description'] ? $proj->prefs['feed_description'] : 'Flyspray:: '.$proj->prefs['project_title'].': '.$title;
@@ -105,11 +105,11 @@ if ($fs->prefs['cache_feeds'])
     }
     else { 
         $db->Query("UPDATE {cache} SET content = ?, last_updated = ? WHERE  type = ? AND topic = ? AND project = ? AND max_items = ?", 
-                array($content, time(), $feed_type, $orderby, $project, $max_items));
+                array($content, time(), $feed_type, $orderby, $proj->id, $max_items));
 
         if (!$db->affectedRows()) {
             $db->Query("INSERT INTO {cache} (content, type, topic, project, max_items, last_updated) VALUES(?, ?, ?, ?, ?, ?)", 
-                    array($content, $feed_type, $orderby, $project, $max_items, time()));
+                    array($content, $feed_type, $orderby, $proj->id, $max_items, time()));
         }
     }
 }

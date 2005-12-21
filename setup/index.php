@@ -1474,13 +1474,13 @@ class Setup extends Flyspray
 
       //Get the date value to rename tables with the date+time prefix if the backup option was ticked
       $date_time = date("YmdHis");
-      $db_bu_prefix  = $date_time . '_' . $db_prefix;
+      $db_bu_prefix  = $date_time . '_';
 
       // Loop through the tables array
       foreach ($table_list as $table)
       {
          // Giving the backup table a new prefix based on the date & time of action
-         $bu_table = str_replace($db_prefix, $db_bu_prefix, $table);
+         $bu_table = $db_bu_prefix . $table;
 
          // Query to copy the existing table into a table with the new prefix
          switch (strtolower($db_type))
@@ -1620,7 +1620,7 @@ class Setup extends Flyspray
          $filtered_tables	= array();
          foreach ($table_list as $table)
          {
-            if (strpos($table, $db_prefix) == 0)
+            if (strpos($table, $db_prefix) === 0)
             {
                $filtered_tables[]	= $table;
             }
