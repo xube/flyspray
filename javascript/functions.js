@@ -279,17 +279,22 @@ function setUpSearchBox() {
     }
   }
 }
+var toggling = false;
 function toggleSearchBox() {
+  if (toggling) {return;}
+  toggling=true;
   var state = Cookie.getVar('advancedsearch');
   if ('1' == state) {
       var showState = document.getElementById('advancedsearchstate');
       showState.replaceChild(document.createTextNode('+'),showState.firstChild);
-      Effect.BlindUp('sc2',{duration: .5});
+      Effect.BlindUp('sc2',{duration: .25,
+                            afterFinish: function(){toggling=false}});
       Cookie.setVar('advancedsearch','0');
   } else {
       var showState = document.getElementById('advancedsearchstate');
       showState.replaceChild(document.createTextNode('-'),showState.firstChild);
-      Effect.BlindDown('sc2',{duration: .5});
+      Effect.BlindDown('sc2',{duration: .25,
+                              afterFinish: function(){toggling=false}});
       Cookie.setVar('advancedsearch','1');
   }
 }
