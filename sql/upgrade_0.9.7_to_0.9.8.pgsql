@@ -114,3 +114,9 @@ ALTER TABLE flyspray_tasks ALTER closure_comment DROP NOT NULL;
 -- Added 20 August 05 by Jeffery Fernandez <developer@jefferyfernandez.id.au> for updating the Flyspray version.
 UPDATE flyspray_prefs SET pref_value = '0.9.8' WHERE pref_name = 'fs_ver';
 
+-- Added 22 December 05 by Florian Schmitz, FS#760
+ALTER TABLE flyspray_list_category ADD COLUMN parent_id_new bigint ;
+UPDATE flyspray_list_category SET parent_id_new = CAST(parent_id AS bigint);
+ALTER TABLE flyspray_list_category DROP COLUMN parent_id;
+Alter table flyspray_list_category rename parent_id_new to parent_id;
+
