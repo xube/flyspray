@@ -71,7 +71,7 @@
             $columnnames = array('id', 'tasktype', 'category', 'severity',
             'priority', 'summary', 'dateopened', 'status', 'openedby',
             'assignedto', 'lastedit', 'reportedin', 'dueversion', 'duedate',
-            'comments', 'attachments', 'progress', 'dateclosed');
+            'comments', 'attachments', 'progress', 'dateclosed', 'os');
             $selectedcolumns = explode(" ", $proj->prefs['visible_columns']);
             ?>
             {!tpl_double_select('visible_columns', $columnnames, $selectedcolumns, true)}

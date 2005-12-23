@@ -46,6 +46,7 @@ $order_keys = array (
         'reportedin' => 't.product_version',
         'assignedto' => 'u.real_name',
         'dateclosed' => 't.date_closed',
+        'os'         => 'los.os_name',
 );
 $sortorder  = sprintf("%s %s, %s %s, t.task_id ASC",
         $order_keys[Get::val('order',  'sev')],  Get::val('sort', 'desc'),
@@ -86,6 +87,7 @@ $from   = '             {tasks}         t
              LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
              LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
              LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
+             LEFT JOIN  {list_os}       los ON t.operating_system = los.os_id
              LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
              LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
              LEFT JOIN  {history}       h   ON t.task_id = h.task_id ';
@@ -235,6 +237,7 @@ $sql = $db->Query("
              lv.version_name          AS product_version,
              lvc.version_name         AS closedby_version,
              u.real_name              AS assigned_to_name,
+             los.os_name              AS os_name,
              uo.real_name             AS opened_by,
              COUNT(DISTINCT com.comment_id)    AS num_comments,
              COUNT(DISTINCT att.attachment_id) AS num_attachments
@@ -275,6 +278,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
             'attachments'=> '',
             'progress'   => 'prog',
             'dateclosed' => 'dateclosed',
+            'os'         => 'os',
     );
 
     $imgbase = '<img src="themes/'.$proj->prefs['theme_style'].'/%s.png" alt="%s" />';
@@ -338,6 +342,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             'attachments'=> 'num_attachments',
             'dateclosed' => 'date_closed',
             'progress'   => '',
+            'os'         => 'os_name',
     );
 
     switch ($colname) {

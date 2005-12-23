@@ -32,7 +32,7 @@ $action_ok = '/^(logout|newtask|update|close|reopen|addcomment|chpass|registerus
 $area_ok   = '/^(editcomment|comments|attachments|related|notify|users|tt|res|groups|remind|system|history|pendingreq|prefs|cat|os|ver|editgroup|newproject)$/';
 $do_ok     = '/^(admin|pm|reports|authenticate|chpass|roadmap|details|depends|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment|error)$/';
 $email_ok  = "/^[a-z0-9._\-']+(?:\+[a-z0-9._-]+)?@([a-z0-9.-]+\.)+[a-z]{2,4}+$/i";
-$order_ok  = '/^(id|proj|type|date|sev|cat|status|due|dateclosed|event_date|pri|openedby|reportedin|assignedto|prog|duedate)$/';
+$order_ok  = '/^(id|proj|type|date|sev|cat|os|status|due|dateclosed|event_date|pri|openedby|reportedin|assignedto|prog|duedate)$/';
 $sort_ok   = '/^(asc|desc)$/';
 
 $regexps   = array(

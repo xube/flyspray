@@ -1117,8 +1117,8 @@ class Setup extends Flyspray
             array(
                   'db_hostname' => array('Database hostname', 'string', TRUE),
                   'db_type' =>  array('Database type', 'string', TRUE),
-                  'db_username' => array('Database username', 'string', TRUE),
-                  'db_password' => array('Database password', 'string', TRUE),
+                  'db_username' => array('Database username', 'string', FALSE),
+                  'db_password' => array('Database password', 'string', FALSE),
                   'db_name' => array('Database name', 'string', TRUE),
                   'db_prefix' => array('Table prefix', 'string', TRUE),
                   'db_delete' => array('Delete tables checkbox', 'string', FALSE),
@@ -1154,8 +1154,8 @@ class Setup extends Flyspray
             array(
                'db_hostname' => array('Database hostname', 'string', TRUE),
                'db_type' =>  array('Database type', 'string', TRUE),
-               'db_username' => array('Database username', 'string', TRUE),
-               'db_password' => array('Database password', 'string', TRUE),
+               'db_username' => array('Database username', 'string', FALSE),
+               'db_password' => array('Database password', 'string', FALSE),
                'db_name' => array('Database name', 'string', TRUE),
                'db_prefix' => array('Table prefix', 'string', TRUE),
                'db_setup_options' =>  array('Database type', 'number', TRUE),
@@ -1386,7 +1386,7 @@ class Setup extends Flyspray
             break;
 
             default:
-            $_SESSION['page_message'][] = 'Please verify your username/password/database details.';
+            $_SESSION['page_message'][] = "Please verify your username/password/database details (error=$error_number)";
             return FALSE;
             break;
          }
