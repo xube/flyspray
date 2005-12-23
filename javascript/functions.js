@@ -287,14 +287,24 @@ function toggleSearchBox() {
   if ('1' == state) {
       var showState = document.getElementById('advancedsearchstate');
       showState.replaceChild(document.createTextNode('+'),showState.firstChild);
-      Effect.BlindUp('sc2',{duration: .25,
-                            afterFinish: function(){toggling=false}});
+      if (window.opera) {
+        $('sc2').style.display = 'none';
+        toggling = false;
+      } else {
+        Effect.BlindUp('sc2',{duration: .25,
+                              afterFinish: function(){toggling=false}});
+      }
       Cookie.setVar('advancedsearch','0');
   } else {
       var showState = document.getElementById('advancedsearchstate');
       showState.replaceChild(document.createTextNode('-'),showState.firstChild);
-      Effect.BlindDown('sc2',{duration: .25,
-                              afterFinish: function(){toggling=false}});
+      if (window.opera) {
+        $('sc2').style.display = 'block';
+        toggling = false;
+      } else {
+        Effect.BlindDown('sc2',{duration: .25,
+                                afterFinish: function(){toggling=false}});
+      }                              
       Cookie.setVar('advancedsearch','1');
   }
 }
