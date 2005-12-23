@@ -132,10 +132,10 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
         $be->AddToNotifyList($owner, array($task_id));
 
         $fs->logEvent($task_id, 9, $owner);
-
-        // Create the Notification
-        $notify->Create('1', $task_id);
     }
+
+    // Create the Notification
+    $notify->Create('1', $task_id);
 
     // If the reporter wanted to be added to the notification list
     if (Post::val('notifyme') == '1' && $user->id != $owner) {

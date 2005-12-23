@@ -26,7 +26,7 @@ function debug_print($message){
 class Notifications {
 
    // {{{ Wrapper function for all others 
-   function Create ( $type, $task_id, $info )
+   function Create ( $type, $task_id, $info = null)
    {
       $to = $this->Address($task_id);
       $msg = $this->GenerateMsg($type, $task_id, $info);
