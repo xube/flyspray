@@ -1322,9 +1322,13 @@ elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project']) {
     $fs->redirect(Req::val('prev_page'));
 } // }}}
 // adding a dependency {{{
-elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details)
-        && Post::val('dep_task_id'))
+elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details))
 {
+    if (!Post::val('dep_task_id')) {
+        $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
+        $fs->redirect($fs->CreateURL('details', Req::val('task_id')));
+    }
+
     // First check that the user hasn't tried to add this twice
     $sql1 = $db->Query("SELECT  COUNT(*) FROM {dependencies}
                          WHERE  task_id = ? AND dep_task_id = ?",
