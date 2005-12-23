@@ -961,7 +961,7 @@ div#error {
    margin:0;
 }
 
-span#duedateview {
+span#duedateview,span#changedsinceview {
    color:#47617b;
    background-color:#eef7ff;
    font-weight:700;
@@ -1169,6 +1169,20 @@ dl.roadmap dt {
     color:gray;
 }
 
+label.multisel {
+    position:absolute;
+}
+
+div#search fieldset {
+    border:solid 1px gray;
+    margin:0.5em;
+    padding:0 0.5em 1em;
+}
+
+div#search select {
+	margin-top:1.2em;
+}
+    
 .code .br0 {color:#6c6;}
 .code .es0 {color:#009;font-weight:700;}
 .code .kw1 {color:#b1b100;}

@@ -40,7 +40,7 @@ $order_keys = array (
         'due'        => 'lvc.list_position',
         'duedate'    => 'due_date',
         'prog'       => 'percent_complete',
-        'lastedit'   => 'last_edited_time',
+        'event_date' => 'event_date',
         'pri'        => 'task_priority',
         'openedby'   => 'uo.real_name',
         'reportedin' => 't.product_version',
@@ -56,10 +56,17 @@ $offset     = $perpage * ($pagenum - 1);
 
 // for 'sort by this column' links
 function keep($key) {
+    if (is_array(Get::val($key))) {
+        $return = '';
+        foreach (Get::val($key) as $value) {
+            $return .= $key . '[]=' . $value . '&';
+        }
+        return substr($return, 0, -1);
+    }    
     return Get::val($key) ? $key.'='.Get::val($key) : null;
 }
 $keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
-        'project', 'task');
+        'project', 'task', 'opened', 'changedsince');
 $keys   = array_map('keep', $keys);
 $keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
 $keys[] = Get::val('project') === '0' ? "project=0" : "project=".$proj->id;
@@ -72,10 +79,18 @@ $visible = explode(' ', $project ? $proj->prefs['visible_columns'] : $fs->prefs[
 $page->uses('offset', 'perpage', 'pagenum', 'get', 'visible');
 
 /* build SQL statement {{{ */
+// This SQL courtesy of Lance Conry http://www.rhinosw.com/
+$from   = '             {tasks}         t
+             LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
+             LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
+             LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
+             LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
+             LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
+             LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
+             LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
+             LEFT JOIN  {history}       h   ON t.task_id = h.task_id ';
 
-$from       = '';
-$where      = array();
-$where[]    = 'project_is_active = ?';
+$where      = array('project_is_active = ?');
 $sql_params = array('1');
 
 if (Get::val('project') == '0') {
@@ -96,93 +111,83 @@ else {
     $sql_params[]  = $proj->id;
 }
 
-$dev = Get::val('dev');
+/// pre-process selected developers {{{
 if (Get::val('tasks') == 'assigned') {
-    $dev = $user->id;
+    $_GET['dev'] = $user->id;
 } elseif (Get::val('tasks') == 'reported') {
     $where[]      = 'opened_by = ?';
     $sql_params[] = $user->id;
 }
+/// }}}
 
-if (is_numeric($dev)) {
-    $where[]      = 'a.task_id = t.task_id AND a.user_id = ?';
-    $from        .= ' {assigned}      a,';
-    $sql_params[] = $dev;
-} elseif ($dev == 'notassigned') {
-    $where[]      = 'assigned_to = ?';
-    $sql_params[] = '0';
-}
+/// process search-conditions {{{
+$submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version',
+                 'cat' => 'product_category', 'status' => 'item_status', 'dev' => 'a.user_id',
+                 'opened' => 'opened_by');
+foreach ($submits as $key => $db_key) {
+    $type = (Get::has($key)) ? Get::val($key) : (($key == 'status') ? 'open' : '');
+    settype($type, 'array');
 
-if (is_numeric(Get::val('type'))) {
-    $where[]      = 'task_type = ?';
-    $sql_params[] = Get::val('type');
-}
-
-if (is_numeric(Get::val('sev'))) {
-    $where[]      = 'task_severity = ?';
-    $sql_params[] = Get::val('sev');
-}
-
-if (is_numeric($cat = Get::val('cat'))) {
-    $temp_where   = 'product_category = ?';
-    $sql_params[] = $cat;
-
-    // Do some weird stuff to add the subcategories to the query
-    $get_subs = $db->Query('SELECT  category_id
-                              FROM  {list_category}
-                             WHERE  parent_id = ?', array($cat));
-
-    while ($row = $db->FetchArray($get_subs)) {
-        $temp_where  .= ' OR product_category =?';
-        $sql_params[] = $row['category_id'];
+    if (in_array('', $type)) continue;
+    
+    if($key == 'dev') {
+        $from .= 'LEFT JOIN {assigned} a  ON t.task_id = a.task_id';
     }
-    $where[] = "($temp_where)";
-}
+    
+    $temp = '';
+    foreach ($type as $val) {
+        // add conditions for the status selection
+        if ($key == 'status' && $val == '8') {
+            $temp  .= " is_closed = '1' AND";
+        } elseif ($key == 'status') {
+            $temp .= " is_closed <> '1' AND";
+        }
+        
+        if (is_numeric($val) && !($key == 'status' && $val == '8')) {
+            $temp .= ' ' . $db_key . ' = ?  OR';
+            $sql_params[] = $val;
+        } elseif ($val == 'notassigned') {
+            $temp .= ' a.user_id is NULL  OR';
+        }
+        
+        // Do some weird stuff to add the subcategories to the query
+        if ($key == 'cat') {
+            $get_subs = $db->Query('SELECT  category_id
+                                      FROM  {list_category}
+                                     WHERE  parent_id = ?', array($val));
 
-if (is_numeric($status = Get::val('status'))) {
-    if ($status == '8') {
-        $where[]  = "is_closed = '1'";
-    } else {
-        $where[]      = "item_status = ? AND is_closed <> '1'";
-        $sql_params[] = $status;
+            while ($row = $db->FetchArray($get_subs)) {
+                $temp  .= ' product_category = ?  OR';
+                $sql_params[] = $row['category_id'];
+            }
+        }
     }
-} elseif(!$status) {
-    $where[]      = "is_closed <> '1'";
-}
 
-if (is_numeric($due = Get::val('due'))) {
-    $where[]      = 'closedby_version = ?';
-    $sql_params[] = $due;
+    if ($temp) $where[] = '(' . substr($temp, 0, -3) . ')';
 }
+/// }}}
 
 if ($date = Get::val('date')) {
     $where[]      = "(due_date < ? AND due_date <> '0' AND due_date <> '')";
     $sql_params[] = strtotime("$date +24 hours");
 }
 
-// This SQL courtesy of Lance Conry http://www.rhinosw.com/
-$from  .= "
-                        {tasks}         t
-             LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
-             LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
-             LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
-             LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
-             LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
-             LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
-             LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
-";
+if ($date = Get::val('changedsince')) {
+    $where[]      = "(event_date >= ? AND event_date <> '0' AND event_date <> '')";
+    $sql_params[] = strtotime($date);
+}
 
 if (Get::val('string')) {
     $words = explode(' ', strtr(Get::val('string'), '()', '  '));
     $comments = '';
     $where_temp = array();
     
-    if(Get::has('search_in_comments')) {
+    if (Get::has('search_in_comments')) {
         $from .= ' LEFT JOIN  {comments}         c  ON t.task_id = c.task_id';
         $comments = 'OR c.comment_text LIKE ?';
     }
     
-    foreach($words as $word) {
+    foreach ($words as $word) {
         $word = '%' . str_replace('+', ' ', trim($word)) . '%';
         $where_temp[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ? $comments)";
         array_push($sql_params, $word, $word, $word);
@@ -213,6 +218,7 @@ $where = join(' AND ', $where);
 $sql = $db->Query("SELECT  t.task_id
                      FROM  $from
                     WHERE  $where
+                 GROUP BY  t.task_id
                  ORDER BY  $sortorder", $sql_params);
 
 // Store the order of the tasks returned for the next/previous links in the task details
@@ -222,7 +228,7 @@ $page->assign('total', count($id_list));
 // Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
 $sql = $db->Query("
      SELECT
-             t.*,
+             t.*, max(h.event_date) AS event_date,
              p.project_title, p.project_is_active,
              lt.tasktype_name         AS task_type,
              lc.category_name         AS category_name,
@@ -261,7 +267,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
             'status'     => 'status',
             'openedby'   => 'openedby',
             'assignedto' => 'assignedto',
-            'lastedit'   => 'lastedit',
+            'lastedit'   => 'event_date',
             'reportedin' => 'reportedin',
             'dueversion' => 'due',
             'duedate'    => 'duedate',
@@ -324,7 +330,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             'status'     => '',
             'openedby'   => 'opened_by',
             'assignedto' => 'assigned_to_name',
-            'lastedit'   => 'last_edited_time',
+            'lastedit'   => 'event_date',
             'reportedin' => 'product_version',
             'dueversion' => 'closedby_version',
             'duedate'    => 'due_date',

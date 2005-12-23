@@ -6,8 +6,21 @@
    up on BugTraq!
 */
 
-$numeric = array('getfile', 'project', 'page', 'perpage', 'pagenum', 'cat',
-        'sev', 'notify_type', 'type', 'due');
+$numeric = array('getfile', 'project', 'page', 'perpage', 'pagenum', 'notify_type');
+
+$numeric_array = array('sev', 'type', 'cat', 'due', 'id', 'opened');
+
+foreach ($numeric_array as $key) {
+    if (Get::has($key)) {
+        $value = Get::val($key);
+        settype($value, 'array');
+        foreach ($value as $val) {
+            if ($val && !is_numeric($val)) {
+                $fs->Redirect($fs->CreateURL('error', null));
+            }
+        }
+    }
+}
 
 foreach ($numeric as $key) {
     if (Get::has($key) && !is_numeric(Get::val($key))) {
@@ -19,13 +32,12 @@ $action_ok = '/^(logout|newtask|update|close|reopen|addcomment|chpass|registerus
 $area_ok   = '/^(editcomment|comments|attachments|related|notify|users|tt|res|groups|remind|system|history|pendingreq|prefs|cat|os|ver|editgroup|newproject)$/';
 $do_ok     = '/^(admin|pm|reports|authenticate|chpass|roadmap|details|depends|index|loginbox|modify|newgroup|newproject|newtask|newuser|changelog|register|report|myprofile|lostpw|editcomment|error)$/';
 $email_ok  = "/^[a-z0-9._\-']+(?:\+[a-z0-9._-]+)?@([a-z0-9.-]+\.)+[a-z]{2,4}+$/i";
-$order_ok  = '/^(id|proj|type|date|sev|cat|status|due|dateclosed|lastedit|pri|openedby|reportedin|assignedto|prog|duedate)$/';
+$order_ok  = '/^(id|proj|type|date|sev|cat|status|due|dateclosed|event_date|pri|openedby|reportedin|assignedto|prog|duedate)$/';
 $sort_ok   = '/^(asc|desc)$/';
 
 $regexps   = array(
         'action'        => $action_ok,
         'area'          => $area_ok,
-        'dev'           => '/^(\d+|notassigned)$/',
         'do'            => $do_ok,
         'email_address' => $email_ok,
         'jabber_id'     => $email_ok,
@@ -35,9 +47,26 @@ $regexps   = array(
         'report'        => '/^(summary|changelog|events|severity|age)$/',
         'sort'          => $sort_ok,
         'sort2'         => $sort_ok,
-        'status'        => '/^(\d+|all|closed)$/',
         'tasks'         => '/^(all|assigned|reported|watched)$/',
+        'PHPSESSID'     => '!<.*>!',
 );
+
+$regexps_array   = array(
+        'dev'           => '/^(\d+|notassigned)$/',
+        'status'        => '/^(\d+|open)$/',
+);
+
+foreach ($regexps_array as $key => $regexp) {
+    if (Get::has($key)) {
+        $value = Get::val($key);
+        settype($value, 'array');
+        foreach($value as $val) {
+            if($val && !preg_match($regexp, $val)) {
+                $fs->Redirect($fs->CreateURL('error', null));
+            }
+        }
+    }
+}
 
 foreach ($regexps as $key => $regexp) {
     if (Post::has($key) && Post::val($key) && !preg_match($regexp, Post::val($key))) {
@@ -48,21 +77,4 @@ foreach ($regexps as $key => $regexp) {
     }
 }
 
-if ($id = Get::val('id')) {
-    if (is_array($id)) {
-        foreach($id as $i) {
-            if (!is_numeric($id)) {
-                $fs->Redirect($fs->CreateURL('error', null));
-            }
-        }
-    } elseif (!is_numeric($id)) {
-        $fs->Redirect($fs->CreateURL('error', null));
-    }
-}
-
-if (Get::has('PHPSESSID')) {
-    if (preg_match ('!<.*>!', Get::val('PHPSESSID'))) {
-        $fs->Redirect($fs->CreateURL('error', null));
-    }
-}
 ?>

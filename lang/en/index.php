@@ -67,7 +67,12 @@ $index_text = array (
 'advanced'                 =>      'Advanced',
 'searchcomments'           =>      'Search in comments',
 'searchforall'             =>      'Search for all words',
-
+'anonusers'                =>      'Anonymous Users',
+'miscellaneous'            =>      'Miscellaneous',
+'users'                    =>      'Users',
+'taskproperties'           =>      'Task Properties',
+'selectsincedate'          =>      'Select Changed since',
+'changedsince'             =>      'Changed since'
 
 );
 ?>

@@ -13,55 +13,19 @@
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
         <span onclick="toggleSearchBox();" style="cursor:pointer">
-        <span id="advancedsearchstate" class="showstate"><?php
-        if (Cookie::val('advancedsearch')):
-            echo '-';
-          else:
-            echo '+';
-          endif;?></span>{$index_text['advanced']}
+        <span id="advancedsearchstate" class="showstate">
+          <?php echo (Cookie::val('advancedsearch')) ? '-' : '+'; ?>
+        </span>{$index_text['advanced']}
         </span>
         
-        <div id="sc2" class="switchcontent" <? if (!Cookie::val('advancedsearch')):?>style="display:none;"><?php endif; ?>
+        <div id="sc2" class="switchcontent" <? if (!Cookie::val('advancedsearch')):?>style="display:none;"<?php endif; ?> >
+        <fieldset><legend>{$index_text['miscellaneous']}</legend>
         {!tpl_checkbox('search_in_comments', Get::has('search_in_comments'), 'sic')}
         <label class="default" for="sic">{$index_text['searchcomments']}</label>
         
         {!tpl_checkbox('search_for_all', Get::has('search_for_all'), 'sfa')}
         <label class="default" for="sfa">{$index_text['searchforall']}</label>
-        
-        <br />
-        <select name="type">
-          <option value="">{$index_text['alltasktypes']}</option>
-          {!tpl_options($proj->listTaskTypes(), Get::val('type'))}
-        </select>
-        <select name="sev">
-          <option value="">{$index_text['allseverities']}</option>
-          {!tpl_options($severity_list, Get::val('sev'))}
-        </select>
-        <select name="due" {!tpl_disableif(Get::val('project') === '0')}>
-          <option value="">{$index_text['dueanyversion']}</option>
-          {!tpl_options($proj->listVersions(false, 3), Get::val('due'))}
-        </select>
-        <select name="dev">
-          <option value="">{$index_text['alldevelopers']}</option>
-          <option value="notassigned" <?php
-            if (Get::val('dev') == "notassigned") echo 'selected="selected"';
-            ?>>{$index_text['notyetassigned']}</option>
-          <option value="{$user->id}">{$index_text['assignedtome']}</option>
-          {!tpl_options($proj->UserList(), Get::val('dev'))}
-        </select>
 
-        <select name="cat" {!tpl_disableif(Get::val('project') === '0')}>
-          <option value="">{$index_text['allcategories']}</option>
-          {!tpl_options($proj->listCatsIn(), Get::val('cat'))}
-        </select>
-
-        <select name="status">
-          <option value="all">{$index_text['allstatuses']}</option>
-          <option value="" <?php
-            if (!Get::val('status')) echo 'selected="selected"';
-            ?>>{$index_text['allopentasks']}</option>
-          {!tpl_options($status_list, Get::val('status'))}
-        </select>
         <?php
         if ($due_date = Get::val('date')) {
             $show_date = $index_text['due'] . ' ' . $due_date;
@@ -76,12 +40,81 @@
         <script type="text/javascript">
            Calendar.setup({
               inputField  : "duedatehidden",  // ID of the input field
-              ifFormat    : "%d-%b-%Y",       // the date format
               displayArea : "duedateview",    // The display field
-              daFormat    : "%d-%b-%Y",
               button      : "duedateview"     // ID of the button
            });
         </script>
+
+        <?php
+        if ($since_date = Get::val('changedsince')) {
+            $show_date = $index_text['changedsince'] . ' ' . $since_date;
+        } else {
+            $since_date  = '0';
+            $show_date = $index_text['selectsincedate'];
+        }
+        ?>
+        <input id="changedsincehidden" type="hidden" name="changedsince" value="{$since_date}" />
+        <span id="changedsinceview">{$show_date}</span> <small>|</small>
+        <a href="#" onclick="document.getElementById('changedsincehidden').value = '0';document.getElementById('changedsinceview').innerHTML = '{$index_text['selectsincedate']}'">X</a>
+        <script type="text/javascript">
+           Calendar.setup({
+              inputField  : "changedsincehidden",  // ID of the input field
+              displayArea : "changedsinceview",    // The display field
+              button      : "changedsinceview"     // ID of the button
+           });
+        </script>
+        </fieldset>
+
+        <fieldset><legend>{$index_text['taskproperties']}</legend>
+        <label class="default multisel" for="type">{$index_text['tasktype']}</label>
+        <select name="type[]" id="type" multiple="multiple" size="5">
+          {!tpl_options(array('' => $index_text['alltasktypes']) +
+                        $proj->listTaskTypes(), (Get::has('type') ? Get::val('type') : ''))}
+        </select>
+        
+        <label class="default multisel" for="sev">{$index_text['severity']}</label>
+        <select name="sev[]" id="sev" multiple="multiple" size="5">
+          {!tpl_options(array('' => $index_text['allseverities']) +
+                        $severity_list, (Get::has('sev') ? Get::val('sev') : ''))}
+        </select>
+        
+        <label class="default multisel" for="due">{$index_text['dueversion']}</label>
+        <select name="due[]" id="due" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
+          {!tpl_options(array('' => $index_text['dueanyversion']) +
+                        $proj->listVersions(false, 3), (Get::has('due') ? Get::val('due') : ''))}
+        </select>
+        
+        <label class="default multisel" for="cat">{$index_text['category']}</label>
+        <select name="cat[]" id="cat" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
+          {!tpl_options(array('' => $index_text['allcategories']) +
+                        $proj->listCatsIn(), (Get::has('cat') ? Get::val('cat') : ''))}
+        </select>
+
+        <label class="default multisel" for="status">{$index_text['status']}</label>
+        <select name="status[]" id="status" multiple="multiple" size="5">
+          {!tpl_options(array('' => $index_text['allstatuses']) +
+                        array('open' => $index_text['allopentasks']) +
+                        $status_list, (Get::has('status') ? Get::val('status') : 'open') )}
+        </select>
+        </fieldset>
+
+        <fieldset><legend>{$index_text['users']}</legend>
+        <label class="default multisel" for="dev">{$index_text['assignedto']}</label>
+        <select name="dev[]" id="dev" multiple="multiple" size="5">
+          {!tpl_options(array('' => $index_text['alldevelopers']) +
+                        array('notassigned' => $index_text['notyetassigned']) +
+                        array($user->id => $index_text['assignedtome']) +
+                        $proj->UserList(), (Get::has('dev') ? Get::val('dev') : ''))}
+        </select>
+        
+        <label class="default multisel" for="opened">{$index_text['openedby']}</label>
+        <select name="opened[]" id="opened" multiple="multiple" size="5">
+          {!tpl_options(array('' => $index_text['alldevelopers']) +
+                        array('-1' => $index_text['anonusers']) +
+                        $proj->UserList(array(), true), (Get::has('opened') ? Get::val('opened') : ''))}
+        </select>
+        </fieldset>
+
        </div>
       </div>
     </form>

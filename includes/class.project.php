@@ -249,7 +249,7 @@ class Project
                                        LEFT JOIN {users} u ON uig.user_id = u.user_id
                                        LEFT JOIN {groups} g ON uig.group_id = g.group_id
                                        LEFT JOIN {projects} p ON g.belongs_to_project = p.project_id
-                                       WHERE g.belongs_to_project = ?
+                                       WHERE g.belongs_to_project = ? AND user_name is not NULL
                                        ORDER BY g.group_id ASC",
                                        array($id)
                                      );
@@ -269,7 +269,7 @@ class Project
                                          FROM {users_in_groups} uig
                                          LEFT JOIN {users} u ON uig.user_id = u.user_id
                                          LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                                         WHERE uig.group_id = ?",
+                                         WHERE uig.group_id = ? AND user_name is not NULL",
                                          array($val)
                                        );
     

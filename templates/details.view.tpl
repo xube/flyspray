@@ -35,7 +35,7 @@
 		  <th id="category">{$details_text['category']}</th>
 		  <td headers="category">
 			 <?php if ($task_details['parent_category_name']): ?>
-			 {$task_details['parent_category_name']} &mdash;
+			 {$task_details['parent_category_name']} &#8594;
 			 <?php endif; ?>
 			 {$task_details['category_name']}
 		  </td>

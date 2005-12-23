@@ -30,7 +30,7 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
     <script type="text/javascript" src='{$baseurl}javascript/perms.js'></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar_stripped.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/lang/calendar-en.js"></script>
-    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar-setup.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar-setup_stripped.js"></script>
     <!--[if IE 6]>
     <script type="text/javascript" src="{$baseurl}javascript/ie_hover.js"></script>
     <![endif]-->
@@ -59,8 +59,7 @@ url({$baseurl}javascript/jscalendar/calendar-win2k-1.css);</style>
           <p>
             <input class="mainbutton" type="submit" name="switch" value="{$language['switchto']}" />
             <select name="project">
-              <option value="0">{$language['allprojects']}</option>
-              {!tpl_options($project_list, Get::val('project') !== '0' ?  $proj->id : -1)}
+              {!tpl_options(array_merge(array(0 => $language['allprojects']), $project_list), $proj->id)}
             </select>
             &nbsp;            
             <select name="tasks">
