@@ -420,7 +420,7 @@ class Flyspray
 
         // If we do want address rewriting
         if(!empty($conf['general']['address_rewriting'])) {
-            if($arg2) {
+            if($arg2 && $type == 'details') {
                 $arg2 = '?string=' . $arg2;
             }
             switch ($type) {
@@ -435,8 +435,7 @@ class Flyspray
                 case 'newgroup':
                 case 'newtask':   return $url . $type .  '/proj' . $arg1;
 
-                case 'editgroup':
-                case 'projgroup': return $url . $type . '/' . $arg1;
+                case 'editgroup': return $url . $arg2 . '/' . $type . '/' . $arg1;
 
                 case 'error':
                 case 'logout':
@@ -454,7 +453,7 @@ class Flyspray
             $url .= '?do=' . $type;
         }
         
-        if($arg2) {
+        if($arg2 && $type == 'details') {
             $arg2 = '&string=' . $arg2;
         }
 
@@ -471,8 +470,7 @@ class Flyspray
             case 'newgroup':
             case 'newtask':   return $url . '&project=' . $arg1;
 
-            case 'editgroup':
-            case 'projgroup': return $conf['general']['baseurl'] . '?do=admin&area=editgroup&id=' . $arg1;
+            case 'editgroup': return $conf['general']['baseurl'] . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1;
 
             case 'error':
             case 'lostpw':

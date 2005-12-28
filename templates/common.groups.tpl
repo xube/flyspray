@@ -1,7 +1,7 @@
 <?php 
 $users_in = array();
 foreach($groups as $group): ?>
-<a class="grouptitle" href="{$fs->CreateURL('editgroup', $group['group_id'])}">{$group['group_name']}</a>
+<a class="grouptitle" href="{$fs->CreateURL('editgroup', $group['group_id'], ($proj->id) ? 'pm' : 'admin')}">{$group['group_name']}</a>
 <p>{$group['group_desc']}</p>
 <form action="{$baseurl}" method="post">
   <div>
