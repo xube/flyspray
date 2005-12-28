@@ -35,7 +35,7 @@
           <td><label for="status">{$newtask_text['status']}</label></td>
           <td>
             <select id="status" name="item_status" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
-              {!tpl_options($status_list, 2)}
+              {!tpl_options($proj->listTaskStatuses(), 2)}
             </select>
           </td>
         </tr>
@@ -113,9 +113,7 @@
             <script type="text/javascript">
               Calendar.setup({
               inputField  : "duedatehidden",// ID of the input field
-              ifFormat    : "%d-%b-%Y",     // the date format
               displayArea : "duedateview",  // The display field
-              daFormat    : "%d-%b-%Y",
               button      : "duedateview"   // ID of the button
               });
             </script>

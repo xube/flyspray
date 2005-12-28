@@ -37,5 +37,6 @@ $pm_text = array (
 // Added in 0.9.9
 'notifysubject'            =>    'Subject for notifications',
 'notifysubjectinfo'        =>    '(%p = project title, %s = task summary, %t = task id)',
+'taskstatuses'             =>    'Task Statuses',
 );
 ?>

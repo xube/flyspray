@@ -134,10 +134,9 @@ class FSTpl extends Tpl
 
 function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','assignedto','percent_complete'))
 {
-    global $fs, $details_text, $user, $db;
+    global $fs, $details_text, $user, $db, $proj;
     $fs->get_language_pack('modify');
-    $fs->get_language_pack('status');
-    global $modify_text, $status_list;
+    global $modify_text;
 
     if (!is_array($task)) {
         $task = $fs->GetTaskDetails($task);
@@ -167,7 +166,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
                     $title_text[] = $task['resolution_name'];
                     $attrs['class'] = 'closedtasklink';
                 } else {
-                    $title_text[] = $status_list[$task['item_status']];
+                    $title_text[] = $task['status_name'];
                 }
                 break;
             

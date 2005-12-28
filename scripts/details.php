@@ -19,18 +19,23 @@ if ( !($task_details = $fs->GetTaskDetails($task_id))
 $fs->get_language_pack('details');
 $fs->get_language_pack('newtask');
 $fs->get_language_pack('index');
-$fs->get_language_pack('status');
 $fs->get_language_pack('severity');
 $fs->get_language_pack('priority');
 $fs->get_language_pack('modify');
 
-$page->uses('status_list', 'priority_list', 'severity_list', 'task_details',
-        'details_text', 'newtask_text','modify_text');
+$status_list = array();
+$sql = $db->Query('SELECT status_id, status_name FROM {list_status}');
+while ($row = $db->FetchArray($sql)) {
+    $status_list[$row[0]] = $row[1];
+}
+
+$page->uses('priority_list', 'severity_list', 'task_details',
+            'status_list', 'details_text', 'newtask_text','modify_text');
 
 $userlist = $proj->UserList();
 
 // Find the users assigned to this task
-$assigned_users = $fs->GetAssignees($task_details['task_id']);
+$assigned_users = $task_details['assigned_to'];
 $old_assigned = implode(" ", $assigned_users);
 
 // Send user variables to the template
@@ -94,7 +99,8 @@ else {
     ////////////////////////////
     // tabbed area
 
-    $sql = $db->Query("SELECT * FROM {comments} WHERE task_id = ?", array($task_id));
+    $sql = $db->Query("SELECT * FROM {comments} WHERE task_id = ? ORDER BY date_added ASC",
+                       array($task_id));
     $page->assign('comments', $db->fetchAllArray($sql));
 
     $sql = $db->Query("SELECT  *

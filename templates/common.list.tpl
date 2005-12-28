@@ -36,6 +36,7 @@
       </td>
     </tr>
     <?php endforeach; ?>
+    <?php if(count($rows)): ?>
     <tr>
       <td colspan="3"></td>
       <td class="buttons">
@@ -50,6 +51,7 @@
         <input class="adminbutton" type="submit" value="{$admin_text['update']}" />
       </td>
     </tr>
+    <?php endif; ?>
   </table>
 </form>
 <hr />

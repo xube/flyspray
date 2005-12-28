@@ -124,8 +124,7 @@ class Flyspray
     {
         global $db;
         global $project_prefs;
-        global $status_list, $severity_list, $priority_list;
-        $this->get_language_pack('status');
+        global $severity_list, $priority_list;
         $this->get_language_pack('severity');
         $this->get_language_pack('priority');
 
@@ -139,7 +138,8 @@ class Flyspray
                                           vd.version_name   AS due_in_version_name,
                                           uo.real_name      AS opened_by_name,
                                           ue.real_name      AS last_edited_by_name,
-                                          uc.real_name      AS closed_by_name
+                                          uc.real_name      AS closed_by_name,
+                                          lst.status_name   AS status_name
                                     FROM  {tasks}              t
                                LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
                                LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
@@ -149,6 +149,7 @@ class Flyspray
                                LEFT JOIN  {list_tasktype}      tt ON t.task_type = tt.tasktype_id
                                LEFT JOIN  {list_version}       vr ON t.product_version = vr.version_id
                                LEFT JOIN  {list_version}       vd ON t.closedby_version = vd.version_id
+                               LEFT JOIN  {list_status}       lst ON t.item_status = lst.status_id
                                LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
                                LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
                                LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
@@ -162,7 +163,6 @@ class Flyspray
             $status_id    = $get_details['item_status'];
             $severity_id  = $get_details['task_severity'];
             $priority_id  = $get_details['task_priority'];
-            $get_details += array('status_name'   => $status_list[$status_id]);
             $get_details += array('severity_name' => $severity_list[$severity_id]);
             $get_details += array('priority_name' => $priority_list[$priority_id]);
         }
@@ -579,7 +579,7 @@ class Flyspray
         $changes = array();
         foreach($old as $key => $value)
         {
-            if(is_numeric($key) || !in_array($key, $comp)) {
+            if(!in_array($key, $comp)) {
                 continue;
             }
             
@@ -587,8 +587,8 @@ class Flyspray
                 switch($key)
                 {
                     case 'due_date':
-                        $new[$key] = $this->formatDate($new[$key],0);
-                        $value = $this->formatDate($value,0);
+                        $new[$key] = $this->formatDate($new[$key], 0);
+                        $value = $this->formatDate($value, 0);
                         break;
                         
                     case 'percent_complete':

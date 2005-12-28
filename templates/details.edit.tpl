@@ -49,7 +49,7 @@
 			 <td><label for="status">{$details_text['status']}</label></td>
 			 <td>
 				<select id="status" name="item_status">
-				 {!tpl_options($status_list, $task_details['item_status'])}
+				 {!tpl_options($proj->listTaskStatuses(), $task_details['item_status'])}
 				</select>
 			 </td>
 			</tr>
@@ -122,9 +122,7 @@
 				<script type="text/javascript">
 				 Calendar.setup({
 					inputField  : "duedatehidden", // ID of the input field
-					ifFormat    : "%d-%b-%Y",      // the date format
 					displayArea : "duedateview",   // The display field
-					daFormat    : "%d-%b-%Y",
 					button      : "duedateview"    // ID of the button
 				 });
 				</script>

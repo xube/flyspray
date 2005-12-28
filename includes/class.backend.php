@@ -85,7 +85,7 @@ class Backend
                                        array($task_id, $user->id));
 
                 if ($db->affectedRows()) {
-                    $fs->logEvent($task_id, 19, $user->id, $task['assigned_to']);
+                    $fs->logEvent($task_id, 19, $user->id, implode(' ', $task['assigned_to']));
                     $notify->Create('10', $task_id);
                 }
             }
@@ -119,7 +119,7 @@ class Backend
                                        array($task_id, $user->id));
 
                 if ($db->affectedRows()) {
-                    $fs->logEvent($task_id, 29, $user->id, $task['assigned_to']);
+                    $fs->logEvent($task_id, 29, $user->id, implode(' ', $task['assigned_to']));
                     $notify->Create('16', $task_id);
                 }
             }

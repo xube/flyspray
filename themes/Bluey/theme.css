@@ -80,7 +80,7 @@ form {
 input,textarea,select,button {
    background-color:#eef7ff;
    color:#03008f;
-   border:1px solid #000;
+   border:1px solid gray;
    font-size:100%;
    margin:2px;
 }
@@ -119,11 +119,10 @@ p.admin for instance for adding comments
 table.admin serves the same purpose
  table.login is the framework for the login form at the bottom of a page
  table.userlist is found in the user&groups section */
-div.admin,p.admin,table.admin,table.userlist {
+div.admin,p.admin,table.userlist {
    border:1px solid #ccc;
    background-color:#e6eef6;
    color:#000;
-   font-family:Helvetica, Verdana, sans-serif;
    margin:1em 0 30px;
    padding:0;
 }
@@ -173,7 +172,7 @@ div#loginbox span#links a {
 div#menu {
    border:1px solid #ccc;
    background:url(menu/editmydetails.png) #e6eef6 left no-repeat;
-   height:18px;
+   height:1.5em;
    vertical-align:baseline;
    margin:0;
    padding:4px 0 0 0;
@@ -401,7 +400,7 @@ p#footer {
    color:#fff;
    text-align:center;
    clear:both;
-   margin:15px 0 0;
+   margin:15px 0.5em 0;
    padding:5px;
 }
 
@@ -410,9 +409,8 @@ selectors. These are buttons and buttons only used by the admin */
 input.adminbutton,input.mainbutton,button {
    background-color:#838ab5;
    color:#fff;
-   background-image:url(button.png);
-   background-repeat:repeat-x;
-   border:1px ridge #000;
+   background:url(button.png) repeat-x;;
+   border:1px solid #000;
    font-weight:700;
 }
 
@@ -571,7 +569,6 @@ table.history {
    width:100%;
    background-color:#e6eef6;
    color:#000;
-   font-family:Helvetica, Verdana, Sans-Serif;
    margin:1em 0;
    padding:0 1em;
 }
@@ -745,15 +742,14 @@ fieldset.admin {
    margin-top:15px;
    background-color:#e6eef6;
    color:#000;
-   border:1px solid #000;
+   border:1px solid gray;
 }
 
 fieldset.admin legend {
-   border-bottom:1px solid #000;
-   border-right:1px solid #000;
-   font:120% Helvetica, Verdana, sans-serif;
-   background-color:#f5f9fd;
-   color:#000;
+   border:1px solid #000;
+   font:bold  110% Helvetica, Verdana, sans-serif;
+   background-color:#47617b;
+   color:white;
    margin:5px;
    padding:2px;
 }
@@ -791,10 +787,8 @@ div#successbar {
 }
 
 div#toolboxmenu {
-   width:auto;
    float:left;
-   margin-right:25px;
-   margin-top:15px;
+   margin:15px 25px 15px 0;
 }
 
 div#toolboxmenu a {
@@ -943,7 +937,6 @@ div#error {
    background-color:#feffc2;
    color:#000;
    font-size:150%;
-   font-family:Helvetica, Verdana, sans-serif;
    border:2px solid red;
    margin:30px;
    padding:10px;

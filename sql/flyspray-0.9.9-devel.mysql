@@ -222,3 +222,23 @@ UPDATE `flyspray_groups` SET `add_to_assignees` = '1' WHERE `assign_others_to_se
 
 -- Florian Schmitz, 18 December 2005 (FS#723)
 ALTER TABLE `flyspray_projects` ADD `lang_code` VARCHAR( 10 ) NOT NULL ;
+
+-- Florian Schmitz, 24 December 2005 (FS#287)
+CREATE TABLE `flyspray_list_status` (
+  `status_id` mediumint(3) NOT NULL auto_increment,
+  `status_name` varchar(20) NOT NULL default '',
+  `list_position` mediumint(3) NOT NULL default '0',
+  `show_in_list` mediumint(1) NOT NULL default '0',
+  `project_id` mediumint(3) NOT NULL default '0',
+  PRIMARY KEY  (`status_id`),
+  KEY `project_id` (`project_id`),
+  KEY `project_id_2` (`project_id`)
+) TYPE=MyISAM COMMENT='List of statuses for Flyspray the bug killer.';
+
+INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (1, 'Unconfirmed', 1, 1, 0);
+INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (2, 'New', 2, 1, 0);
+INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (3, 'Assigned', 3, 1, 0);
+INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (4, 'Researching', 4, 1, 0);
+INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (5, 'Waiting on Customer', 5, 1, 0);
+INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (6, 'Requires testing', 6, 1, 0);
+INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (7, 'Reopened', 7, 1, 0);

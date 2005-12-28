@@ -252,10 +252,14 @@ function categoryArray()
 **/
 function statusArray()
 {
-   global $lang;
-   require("lang/$lang/status.php");
+    global $db;
+    $status_list = array();
+    $sql = $db->Query('SELECT status_id, status_name FROM {list_status}');
+    while ($row = $db->FetchArray($sql)) {
+        $status_list[$row[0]] = $row[1];
+    }
 
-   return $status_list;
+    return $status_list;
 }
 
 /**

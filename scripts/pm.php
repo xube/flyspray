@@ -37,6 +37,7 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'os':
     case 'ver':
     case 'cat':
+    case 'status':
 
         $page->setTitle('Flyspray:: ' . $pm_text['pmtoolbox']);
         $page->pushTpl('pm.menu.tpl');

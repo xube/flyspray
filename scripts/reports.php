@@ -14,6 +14,12 @@ $fs->get_language_pack('details');
 $fs->get_language_pack('admin');
 $fs->get_language_pack('index');
 
+$status_list = array();
+$sql = $db->Query('SELECT status_id, status_name FROM {list_status}');
+while ($row = $db->FetchArray($sql)) {
+    $status_list[$row[0]] = $row[1];
+}
+
 // Only allow those with permission to view this page
 if (!$user->perms['view_reports']) {
     echo $admin_text['nopermission'];
@@ -68,7 +74,6 @@ function changelog_report()
       <script type="text/javascript">
           Calendar.setup({
               inputField  : "startdate",         // ID of the input field
-              ifFormat    : "%d-%b-%Y",          // the date format
               button      : "triggerstartdate"   // ID of the button
           });
       </script>
@@ -78,7 +83,6 @@ function changelog_report()
       <script type="text/javascript">
           Calendar.setup({
             inputField  : "enddate",         // ID of the input field
-            ifFormat    : "%d-%b-%Y",        // the date format
             button      : "triggerenddate"   // ID of the button
           });
       </script>
@@ -359,7 +363,6 @@ function events_report()
                   <script type="text/javascript">
                     Calendar.setup({
                         inputField  : "fromdate",       // ID of the input field
-                        ifFormat    : "%d-%b-%Y",       // the date format
                         button      : "triggerfromdate" // ID of the button
                     });
                   </script>
@@ -369,7 +372,6 @@ function events_report()
                   <script type="text/javascript">
                     Calendar.setup({
                         inputField  : "todate",         // ID of the input field
-                        ifFormat    : "%d-%b-%Y",       // the date format
                         button      : "triggertodate"   // ID of the button
                     });
                   </script>
@@ -451,9 +453,7 @@ function events_report()
  */
 function EventDescription($history)
 {
-    global $db;
-    global $fs;
-    global $details_text;
+    global $db, $fs, $details_text, $status_list;
 
     $description = '';
     $newvalue = $history['new_value'];

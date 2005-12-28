@@ -36,6 +36,7 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'prefs':
     case 'res':
     case 'tt':
+    case 'status':
     case 'ver':
 
         $page->setTitle('Flyspray:: ' . $admin_text['admintoolbox']);

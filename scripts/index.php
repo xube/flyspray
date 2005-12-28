@@ -18,7 +18,6 @@ if (Get::val('project') === '0' && !$user->perms['global_view']) {
 $fs->get_language_pack('index');
 $fs->get_language_pack('details');
 $fs->get_language_pack('severity');
-$fs->get_language_pack('status');
 $fs->get_language_pack('priority');
 
 $page->uses('index_text', 'details_text', 'severity_list', 'priority_list',
@@ -88,6 +87,7 @@ $from   = '             {tasks}         t
              LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
              LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
              LEFT JOIN  {list_os}       los ON t.operating_system = los.os_id
+             LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id
              LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
              LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
              LEFT JOIN  {history}       h   ON t.task_id = h.task_id ';
@@ -236,6 +236,7 @@ $sql = $db->Query("
              lc.category_name         AS category_name,
              lv.version_name          AS product_version,
              lvc.version_name         AS closedby_version,
+             lst.status_name          AS status_name,
              u.real_name              AS assigned_to_name,
              los.os_name              AS os_name,
              uo.real_name             AS opened_by,
@@ -320,7 +321,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 
 function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
     global $fs, $proj, $index_text, $priority_list,
-           $severity_list, $status_list;
+           $severity_list;
 
     $indexes = array (
             'id'         => 'task_id',
@@ -331,7 +332,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             'priority'   => '',
             'summary'    => 'item_summary',
             'dateopened' => 'date_opened',
-            'status'     => '',
+            'status'     => 'status_name',
             'openedby'   => 'opened_by',
             'assignedto' => 'assigned_to_name',
             'lastedit'   => 'event_date',
@@ -372,7 +373,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             if ($task['is_closed']) {
                 $value = $index_text['closed'];
             } else {
-                $value = $status_list[$task['item_status']];
+                $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
             }
             break;
 

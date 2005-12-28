@@ -194,5 +194,6 @@ $admin_text = array (
 // Added in version 0.9.9
 
 'addtoassignees'        =>    'Add self to assignees',
+'taskstatuses'         =>    'Task Statuses',
 );
 ?>

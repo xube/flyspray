@@ -177,6 +177,19 @@ class Project
         }
     }
 
+    function listTaskStatuses($pm = false)
+    {
+        if ($pm) {
+            return $this->_cached_query(
+                    'pm_statuses',
+                    $this->_pm_list_sql('status', 'item_status'),
+                    array($this->id));
+        } else {
+            return $this->_cached_query('status',
+                    $this->_list_sql('status'), array($this->id));
+        }
+    }
+    
     // }}}
 
     function listUsersIn($group_id = null)
