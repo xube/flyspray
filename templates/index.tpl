@@ -68,33 +68,29 @@
         <fieldset><legend>{$index_text['taskproperties']}</legend>
         <label class="default multisel" for="type">{$index_text['tasktype']}</label>
         <select name="type[]" id="type" multiple="multiple" size="5">
-          {!tpl_options(array('' => $index_text['alltasktypes']) +
-                        $proj->listTaskTypes(), (Get::has('type') ? Get::val('type') : ''))}
+          {!tpl_options(array('' => $index_text['alltasktypes']) + $proj->listTaskTypes(), Get::val('type'))}
         </select>
         
         <label class="default multisel" for="sev">{$index_text['severity']}</label>
         <select name="sev[]" id="sev" multiple="multiple" size="5">
-          {!tpl_options(array('' => $index_text['allseverities']) +
-                        $severity_list, (Get::has('sev') ? Get::val('sev') : ''))}
+          {!tpl_options(array('' => $index_text['allseverities']) + $severity_list, Get::val('sev'))}
         </select>
         
         <label class="default multisel" for="due">{$index_text['dueversion']}</label>
         <select name="due[]" id="due" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
-          {!tpl_options(array('' => $index_text['dueanyversion']) +
-                        $proj->listVersions(false, 3), (Get::has('due') ? Get::val('due') : ''))}
+          {!tpl_options(array('' => $index_text['dueanyversion']) + $proj->listVersions(false, 3), Get::val('due'))}
         </select>
         
         <label class="default multisel" for="cat">{$index_text['category']}</label>
         <select name="cat[]" id="cat" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
-          {!tpl_options(array('' => $index_text['allcategories']) +
-                        $proj->listCatsIn(), (Get::has('cat') ? Get::val('cat') : ''))}
+          {!tpl_options(array('' => $index_text['allcategories']) + $proj->listCatsIn(), Get::val('cat'))}
         </select>
 
         <label class="default multisel" for="status">{$index_text['status']}</label>
         <select name="status[]" id="status" multiple="multiple" size="5">
           {!tpl_options(array('' => $index_text['allstatuses']) +
                         array('open' => $index_text['allopentasks']) +
-                        $status_list, (Get::has('status') ? Get::val('status') : 'open') )}
+                        $status_list, Get::val('status'))}
         </select>
         </fieldset>
 
@@ -104,14 +100,14 @@
           {!tpl_options(array('' => $index_text['alldevelopers']) +
                         array('notassigned' => $index_text['notyetassigned']) +
                         array($user->id => $index_text['assignedtome']) +
-                        $proj->UserList(), (Get::has('dev') ? Get::val('dev') : ''))}
+                        $proj->UserList(), Get::val('dev'))}
         </select>
         
         <label class="default multisel" for="opened">{$index_text['openedby']}</label>
         <select name="opened[]" id="opened" multiple="multiple" size="5">
           {!tpl_options(array('' => $index_text['alldevelopers']) +
                         array('-1' => $index_text['anonusers']) +
-                        $proj->UserList(array(), true), (Get::has('opened') ? Get::val('opened') : ''))}
+                        $proj->UserList(array(), true), Get::val('opened'))}
         </select>
         </fieldset>
 
