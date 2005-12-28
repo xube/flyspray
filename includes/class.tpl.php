@@ -273,7 +273,8 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
     foreach ($options as $value=>$label)
     {
         if (is_array($label)) {
-            list($value, $label) = $label;
+            $value = $label[0];
+            $label = $label[1];
         }
         $label = htmlspecialchars($label, ENT_QUOTES, "utf-8");
         $value = $labelIsValue ? $label
@@ -315,7 +316,8 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
     $opt1 = '';
     foreach ($options as $value => $label) {
         if (is_array($label)) {
-            list($value, $label) = $label;
+            $value = $label[0];
+            $label = $label[1];
         }
         if ($labelIsValue) {
             $value = $label;
