@@ -20,7 +20,10 @@
 
   <?php if ($user->perms['view_history']): ?>
   <li id="historytab">
-  <a href="#history">{$details_text['history']}</a>
+  <a <?php if(!Get::has('history')): ?>id="nohistorytab"<?php endif; ?>
+     href="<?php if(!Get::has('history')):
+        ?>{$fs->CreateURL('details', $task_details['task_id'], null, array('history' => 'yep'))}<?php endif; ?>#history">
+        {$details_text['history']}</a>
   </li>
   <?php endif; ?>
 </ul>

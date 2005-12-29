@@ -49,7 +49,7 @@
 			 <td><label for="status">{$details_text['status']}</label></td>
 			 <td>
 				<select id="status" name="item_status">
-				 {!tpl_options($proj->listTaskStatuses(), $task_details['item_status'])}
+				 {!tpl_options($status_list, $task_details['item_status'])}
 				</select>
 			 </td>
 			</tr>

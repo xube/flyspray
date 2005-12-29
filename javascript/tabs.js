@@ -83,6 +83,9 @@ function makeTabLinks() { // {{{
   if (submenu) {
     links = submenu.getElementsByTagName('a');
     for (i=0; i<links.length; i++) {
+      if(links[i].id == 'nohistorytab') {
+        continue;
+      }
       var href = links[i].getAttribute('href');
       target = href.substring(href.indexOf('#')+1);
       links[i]['onclick'] = new Function("showTabById('"+target+"'); return false;");

@@ -208,7 +208,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $text = 'FS#'.$task['task_id'].' - '.$summary;
     }
     
-    $url = htmlspecialchars($fs->CreateURL('details', $task['task_id'],  Get::val('string')));
+    $url = htmlspecialchars($fs->CreateURL('details', $task['task_id'],  null, array('string' => Get::val('string'))));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
             $url, $title_text, join_attrs($attrs), $text);
 

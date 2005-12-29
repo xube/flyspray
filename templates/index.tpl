@@ -90,7 +90,7 @@
         <select name="status[]" id="status" multiple="multiple" size="5">
           {!tpl_options(array('' => $index_text['allstatuses']) +
                         array('open' => $index_text['allopentasks']) +
-                        $proj->listTaskStatuses(), Get::val('status', ''))}
+                        $proj->listTaskStatuses(), Get::val('status', 'open'))}
         </select>
         </fieldset>
 

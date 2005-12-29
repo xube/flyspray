@@ -412,30 +412,34 @@ class Flyspray
     /* Check if we should use address rewriting
        and return an appropriate URL
      */
-    function CreateURL($type, $arg1 = null, $arg2 = null)
+    function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
     {
         global $conf;
 
         $url = $conf['general']['baseurl'];
 
+        $append = '';
+        foreach($arg3 as $key => $value) {
+            if($value) $append .= $key . '=' . $value . '&';
+        }
+        $append = substr($append, 0, -1);
+            
         // If we do want address rewriting
         if(!empty($conf['general']['address_rewriting'])) {
-            if($arg2 && $type == 'details') {
-                $arg2 = '?string=' . $arg2;
-            }
+            if($append) $append = '?' . $append;
             switch ($type) {
-                case 'depends':   return $url . 'task/' .  $arg1 . '/' . $type;
-                case 'details':   return $url . 'task/' . $arg1 . $arg2;
-                case 'edittask':  return $url . 'task/' .  $arg1 . '/edit';
-                case 'pm':        return $url . 'pm/proj' . $arg2 . '/' . $arg1;
+                case 'depends':   return $url . 'task/' .  $arg1 . '/' . $type . $append;
+                case 'details':   return $url . 'task/' . $arg1 . $append;
+                case 'edittask':  return $url . 'task/' .  $arg1 . '/edit' . $append;
+                case 'pm':        return $url . 'pm/proj' . $arg2 . '/' . $arg1 . $append;
 
                 case 'admin':
-                case 'user':      return $url . $type . '/' . $arg1;
+                case 'user':      return $url . $type . '/' . $arg1 . $append;
 
                 case 'newgroup':
-                case 'newtask':   return $url . $type .  '/proj' . $arg1;
+                case 'newtask':   return $url . $type .  '/proj' . $arg1. $append;
 
-                case 'editgroup': return $url . $arg2 . '/' . $type . '/' . $arg1;
+                case 'editgroup': return $url . $arg2 . '/' . $type . '/' . $arg1 . $append;
 
                 case 'error':
                 case 'logout':
@@ -443,7 +447,7 @@ class Flyspray
                 case 'myprofile':
                 case 'newuser':
                 case 'register':
-                case 'reports':  return $url . $type;
+                case 'reports':  return $url . $type . $append;
             }
         }
 
@@ -453,31 +457,28 @@ class Flyspray
             $url .= '?do=' . $type;
         }
         
-        if($arg2 && $type == 'details') {
-            $arg2 = '&string=' . $arg2;
-        }
-
+        if($append) $append = '&' . $append;
         switch ($type) {
-            case 'admin':     return $url . '&area=' . $arg1;
-            case 'edittask':  return $url . '&id=' . $arg1 . '&edit=yep';
-            case 'pm':        return $url . '&area=' . $arg1 . '&project=' . $arg2;
-            case 'user':      return '?do=admin&area=users&id=' . $arg1;
-            case 'logout':    return '?do=authenticate&action=logout';
+            case 'admin':     return $url . '&area=' . $arg1 . $append;
+            case 'edittask':  return $url . '&id=' . $arg1 . '&edit=yep' . $append;
+            case 'pm':        return $url . '&area=' . $arg1 . '&project=' . $arg2 . $append;
+            case 'user':      return '?do=admin&area=users&id=' . $arg1 . $append;
+            case 'logout':    return '?do=authenticate&action=logout' . $append;
 
             case 'details':
-            case 'depends':   return $url . '&id=' . $arg1 . $arg2;
+            case 'depends':   return $url . '&id=' . $arg1 . $append;
 
             case 'newgroup':
-            case 'newtask':   return $url . '&project=' . $arg1;
+            case 'newtask':   return $url . '&project=' . $arg1 . $append;
 
-            case 'editgroup': return $conf['general']['baseurl'] . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1;
+            case 'editgroup': return $url . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1 . $append;
 
             case 'error':
             case 'lostpw':
             case 'myprofile':
             case 'newuser':
             case 'register':
-            case 'reports':   return $url;
+            case 'reports':   return $url . $append;
         }
     }
 

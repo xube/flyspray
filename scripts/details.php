@@ -145,7 +145,7 @@ else {
         $page->pushTpl('details.tabs.remind.tpl');
     }
 
-    if ($user->perms['view_history']) {
+    if ($user->perms['view_history'] && Get::has('history')) {
         if (is_numeric($details = Get::val('details'))) {
             $details = " AND h.history_id = $details";
         } else {
