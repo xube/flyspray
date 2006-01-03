@@ -8,7 +8,7 @@
 
 $numeric = array('getfile', 'project', 'page', 'perpage', 'pagenum', 'notify_type');
 
-$numeric_array = array('sev', 'type', 'cat', 'due', 'id', 'opened');
+$numeric_array = array('sev', 'type', 'cat', 'due', 'id');
 
 foreach ($numeric_array as $key) {
     if (Get::has($key)) {
@@ -52,7 +52,6 @@ $regexps   = array(
 );
 
 $regexps_array   = array(
-        'dev'           => '/^(\d+|notassigned)$/',
         'status'        => '/^(\d+|open)$/',
 );
 

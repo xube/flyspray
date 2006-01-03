@@ -18,7 +18,7 @@
         </span>{$index_text['advanced']}
         </span>
         
-        <div id="sc2" class="switchcontent" <? if (!Cookie::val('advancedsearch')):?>style="display:none;"<?php endif; ?> >
+        <div id="sc2" class="switchcontent" <?php if (!Cookie::val('advancedsearch')):?>style="display:none;"<?php endif; ?> >
         <fieldset><legend>{$index_text['miscellaneous']}</legend>
         {!tpl_checkbox('search_in_comments', Get::has('search_in_comments'), 'sic')}
         <label class="default" for="sic">{$index_text['searchcomments']}</label>
@@ -96,19 +96,11 @@
 
         <fieldset><legend>{$index_text['users']}</legend>
         <label class="default multisel" for="dev">{$index_text['assignedto']}</label>
-        <select name="dev[]" id="dev" multiple="multiple" size="5">
-          {!tpl_options(array('' => $index_text['alldevelopers']) +
-                        array('notassigned' => $index_text['notyetassigned']) +
-                        array($user->id => $index_text['assignedtome']) +
-                        $proj->UserList(), Get::val('dev', ''))}
-        </select>
+        <input class="users" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" />
         
         <label class="default multisel" for="opened">{$index_text['openedby']}</label>
-        <select name="opened[]" id="opened" multiple="multiple" size="5">
-          {!tpl_options(array('' => $index_text['alldevelopers']) +
-                        array('-1' => $index_text['anonusers']) +
-                        $proj->UserList(array(), true), Get::val('opened', ''))}
-        </select>
+        <input class="users" size="30" type="text" name="opened" id="opened" value="{Get::val('opened')}" />
+        
         </fieldset>
 
        </div>

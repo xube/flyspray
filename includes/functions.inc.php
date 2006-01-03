@@ -127,7 +127,12 @@ class Flyspray
         global $severity_list, $priority_list;
         $this->get_language_pack('severity');
         $this->get_language_pack('priority');
+        static $cache = array();
 
+        if(isset($cache[$task_id])) {
+            return $cache[$task_id];
+        }
+        
         $get_details = $db->Query("SELECT t.*, p.*,
                                           c.category_name, c.category_owner, c.parent_id,
                                           pc.category_name AS parent_category_name,
@@ -169,6 +174,7 @@ class Flyspray
         
         $get_details['assigned_to'] = $this->GetAssignees($task_id);
         $get_details['assigned_to_name'] = $this->GetAssignees($task_id, true);
+        $cache[$task_id] = $get_details;
 
         return $get_details;
     }

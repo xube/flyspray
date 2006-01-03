@@ -297,6 +297,10 @@ div#search select,div#search input {
    margin:3px 0 0;
 }
 
+div#search input.users {
+	margin-top:1.2em;
+}
+
 div#search input.mainbutton {
    color:#FFF;
 }

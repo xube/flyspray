@@ -113,7 +113,7 @@ else {
     $sql_params[]  = $proj->id;
 }
 
-/// pre-process selected developers {{{
+/// pre-process selected users {{{
 if (Get::val('tasks') == 'assigned') {
     $_GET['dev'] = $user->id;
 } elseif (Get::val('tasks') == 'reported') {
@@ -124,16 +124,26 @@ if (Get::val('tasks') == 'assigned') {
 
 /// process search-conditions {{{
 $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version',
-                 'cat' => 'product_category', 'status' => 'item_status', 'dev' => 'a.user_id',
-                 'opened' => 'opened_by');
+                 'cat' => 'product_category', 'status' => 'item_status',
+                 'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
+                 'opened' => array('opened_by', 'usopen.user_name', 'usopen.real_name'));
 foreach ($submits as $key => $db_key) {
-    $type = (Get::has($key)) ? Get::val($key) : (($key == 'status') ? 'open' : '');
+    $type = Get::val($key, ($key == 'status') ? 'open' : '');
     settype($type, 'array');
-
+    
+    if($key == 'dev' || $key == 'opened') {
+        $type = explode(' ', Get::val($key));
+    }
+    
     if (in_array('', $type)) continue;
     
     if($key == 'dev') {
-        $from .= 'LEFT JOIN {assigned} a  ON t.task_id = a.task_id';
+        $from .= 'LEFT JOIN {assigned} a  ON t.task_id = a.task_id ';
+        $from .= 'LEFT JOIN {users} us  ON a.user_id = us.user_id ';
+    }
+    
+    if($key == 'opened') {
+        $from .= 'LEFT JOIN {users} usopen  ON t.opened_by = usopen.user_id ';
     }
     
     $temp = '';
@@ -144,10 +154,15 @@ foreach ($submits as $key => $db_key) {
         } elseif ($key == 'status') {
             $temp .= " is_closed <> '1' AND";
         }
-        
-        if (is_numeric($val) && !($key == 'status' && $val == '8')) {
+        if (is_numeric($val) && !is_array($db_key) && !($key == 'status' && $val == '8')) {
             $temp .= ' ' . $db_key . ' = ?  OR';
             $sql_params[] = $val;
+        } elseif (is_array($db_key)) {
+            if(!is_numeric($val)) $val = '%' . $val . '%';
+            foreach($db_key as $value) {
+                $temp .= ' ' . $value . ' LIKE ?  OR';
+                $sql_params[] = $val;
+            }
         } elseif ($val == 'notassigned') {
             $temp .= ' a.user_id is NULL  OR';
         }
