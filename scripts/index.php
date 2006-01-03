@@ -217,8 +217,8 @@ if (Get::val('string')) {
 }
 
 if (!$user->perms['manage_project']) {
-    $where[]      = "(t.mark_private <> '1' OR t.assigned_to = ?)";
-    $sql_params[] = $user->id;
+    $where[]      = "(t.mark_private <> '1' OR t.opened_by = ? OR t.assigned_to = ?)";
+    array_push($sql_params, $user->id, $user->id);
 }
 
 if (Get::val('tasks') == 'watched') {
@@ -254,7 +254,7 @@ $sql = $db->Query("
              lst.status_name          AS status_name,
              u.real_name              AS assigned_to_name,
              los.os_name              AS os_name,
-             uo.real_name             AS opened_by,
+             uo.real_name             AS opened_by_name,
              COUNT(DISTINCT com.comment_id)    AS num_comments,
              COUNT(DISTINCT att.attachment_id) AS num_attachments
      FROM
@@ -348,7 +348,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             'summary'    => 'item_summary',
             'dateopened' => 'date_opened',
             'status'     => 'status_name',
-            'openedby'   => 'opened_by',
+            'openedby'   => 'opened_by_name',
             'assignedto' => 'assigned_to_name',
             'lastedit'   => 'event_date',
             'reportedin' => 'product_version',

@@ -147,12 +147,17 @@ class User
     {
         global $fs, $proj;        
         if ($this->isAnon() && !$proj->prefs['others_view'])
-            return 0;
+            return false;
+
+        if ($task['opened_by'] == $this->id && !$this->isAnon()
+            || !$task['mark_private']
+            || $this->perms['manage_project']) {
+            return true;
+        }
         
         $assignees = $fs->GetAssignees($task['task_id']);
         
-        return $this->perms['manage_project'] || !$task['mark_private']
-                    || in_array($this->id, $assignees);
+        return in_array($this->id, $assignees);
     }
 
     function can_edit_task($task)

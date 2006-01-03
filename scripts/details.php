@@ -36,7 +36,7 @@ $userlist = $proj->UserList();
 
 // Find the users assigned to this task
 $assigned_users = $task_details['assigned_to'];
-$old_assigned = implode(" ", $assigned_users);
+$old_assigned = implode(' ', $assigned_users);
 
 // Send user variables to the template
 $page->assign('userlist', $userlist);
