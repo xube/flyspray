@@ -10,7 +10,7 @@
 class Flyspray
 {
     // Change this for each release.  Don't forget!
-    var $version = '0.9.9 (devel)';
+    var $version = '0.9.9 dev';
 
     var $prefs   = array();
 

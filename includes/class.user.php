@@ -120,8 +120,9 @@ class User
 
     function can_create_group()
     {
+        global $proj;
         return $this->perms['is_admin']
-            || ($this->perms['manage_project'] && !Get::val('project'));
+            || $this->perms['manage_project'];
     }
 
     function can_edit_comment($comment)
@@ -154,21 +155,18 @@ class User
             || $this->perms['manage_project']) {
             return true;
         }
-        
-        $assignees = $fs->GetAssignees($task['task_id']);
-        
-        return in_array($this->id, $assignees);
+               
+        return in_array($this->id, $fs->GetAssignees($task['task_id']));
     }
 
     function can_edit_task($task)
     {
         global $fs;
-        $assignees = $fs->GetAssignees($task['task_id']);
         
         return !$task['is_closed']
             && ($this->perms['modify_all_tasks'] ||
                     ($this->perms['modify_own_tasks']
-                     && in_array($this->id, $assignees)));
+                     && in_array($this->id, $fs->GetAssignees($task['task_id']))));
     }
 
     function can_take_ownership($task)
@@ -215,19 +213,17 @@ class User
     function can_mark_private($task)
     {
         global $fs;
-        $assignees = $fs->GetAssignees($task['task_id']);
         
         return !$task['mark_private']
-            && ($this->perms['manage_project'] || in_array($this->id, $assignees));
+            && ($this->perms['manage_project'] || in_array($this->id, $fs->GetAssignees($task['task_id'])));
     }
 
     function can_mark_public($task)
     {
         global $fs;
-        $assignees = $fs->GetAssignees($task['task_id']);
         
         return $task['mark_private']
-            && ($this->perms['manage_project'] || in_array($this->id, $assignees));
+            && ($this->perms['manage_project'] || in_array($this->id, $fs->GetAssignees($task['task_id'])));
     }
 
     /* }}} */

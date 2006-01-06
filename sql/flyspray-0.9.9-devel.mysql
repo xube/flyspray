@@ -242,3 +242,9 @@ INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`,
 INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (5, 'Waiting on Customer', 5, 1, 0);
 INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (6, 'Requires testing', 6, 1, 0);
 INSERT INTO `flyspray_list_status` (`status_id`, `status_name`, `list_position`, `show_in_list`, `project_id`) VALUES (7, 'Reopened', 7, 1, 0);
+
+-- Florian Schmitz, 5 January 2006
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES (
+'23', 'last_update_check', '0', 'Time when the last update check was done.'
+);

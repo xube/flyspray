@@ -1179,6 +1179,15 @@ div#search fieldset {
 div#search select {
 	margin-top:1.2em;
 }
+
+div#updatemsg {
+   background-color:#feffc2;
+   color:#000;
+   border:2px solid red;
+   margin:10px;
+   padding:5px;
+   font-weight:bold;
+}
     
 .code .br0 {color:#6c6;}
 .code .es0 {color:#009;font-weight:700;}

@@ -408,6 +408,23 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
 // }}}
 
+// Update check {{{
+if(Get::has('hideupdatemsg')) {
+    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_id = 23', array(time()));
+    unset($_SESSION['latest_version']);
+} else if ($conf['general']['update_check'] && $user->perms['is_admin']
+           && $fs->prefs['last_update_check'] < time()-60*60*24*3) {
+    if (!isset($_SESSION['latest_version'])) {
+        $handle = fopen('http://flyspray.rocks.cc/version.txt', 'r');
+        socket_set_timeout($handle, 8);
+        $_SESSION['latest_version'] = fgets($handle, 10);
+    }
+    if (version_compare($fs->version, $_SESSION['latest_version'] . ' pl') === -1) {
+        $page->assign('updatemsg', true);
+    }
+}
+// }}}
+
 $page->assign('tasks', $db->fetchAllArray($sql));
 $page->setTitle("Flyspray :: {$proj->prefs['project_title']}: {$index_text['tasklist']} ");
 $page->pushTpl('index.tpl');

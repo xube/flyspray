@@ -1,3 +1,11 @@
+<?php if(isset($updatemsg)): ?>
+<div id="updatemsg">
+    <a href="http://flyspray.rocks.cc/">{$index_text['updatefs']}</a> {$index_text['currentversion']}
+    <span class="bad">{$fs->version}</span> {$index_text['latestversion']} <span class="good">{$_SESSION['latest_version']}</span>.
+    <a href="?hideupdatemsg=yep">{$index_text['hidemessage']}</a>
+</div>
+
+<?php endif; ?>
 <div id="search">
   <map id="projectsearchform" name="projectsearchform">
     <form action="index.php" method="get">
@@ -95,12 +103,11 @@
         </fieldset>
 
         <fieldset><legend>{$index_text['users']}</legend>
-        <label class="default multisel" for="dev">{$index_text['assignedto']}</label>
-        <input class="users" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" />
-        
         <label class="default multisel" for="opened">{$index_text['openedby']}</label>
         <input class="users" size="30" type="text" name="opened" id="opened" value="{Get::val('opened')}" />
         
+        <label class="default multisel" for="dev">{$index_text['assignedto']}</label>
+        <input class="users" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" />        
         </fieldset>
 
        </div>

@@ -29,7 +29,7 @@
       </td>
       <?php endif; ?>
       <td title="Delete this item from the list">
-        <?php if (!$row['used_in_tasks']): ?>
+        <?php if (!$row['used_in_tasks'] && !($list_type == 'status' && $row[$list_type.'_id'] < 8)): ?>
         <label for="delete{$row[$list_type.'_id']}">{$admin_text['delete']}</label>
         <input id="delete{$row[$list_type.'_id']}" type="checkbox" name="delete[{$row[$list_type.'_id']}]" value="1" />
         <?php endif; ?>

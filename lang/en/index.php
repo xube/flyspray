@@ -72,7 +72,10 @@ $index_text = array (
 'users'                    =>      'Users',
 'taskproperties'           =>      'Task Properties',
 'selectsincedate'          =>      'Select Changed since',
-'changedsince'             =>      'Changed since'
-
+'changedsince'             =>      'Changed since',
+'updatefs'                 =>      'Please update Flyspray.',
+'currentversion'           =>      'Your current version is',
+'latestversion'            =>      'and the latest version is',
+'hidemessage'              =>      '(remind me later)',
 );
 ?>
