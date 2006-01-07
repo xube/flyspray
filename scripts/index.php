@@ -131,9 +131,9 @@ foreach ($submits as $key => $db_key) {
     $type = Get::val($key, ($key == 'status') ? 'open' : '');
     settype($type, 'array');
     
-    if($key == 'dev' || $key == 'opened') {
+/*    if($key == 'dev' || $key == 'opened') {
         $type = explode(' ', Get::val($key));
-    }
+    }*/
     
     if (in_array('', $type)) continue;
     

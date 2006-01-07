@@ -1083,7 +1083,7 @@ div.comment {
     padding:0.5em;
 }
 
-/* Dokuwiki */
+/* Dokuwiki {{{ */
 .code a {
     text-decoration:none;
 }
@@ -1204,3 +1204,38 @@ div#updatemsg {
 .code .st0 {color:red;}
 .code .co1,.code .co2,.code .coMULTI {color:gray;font-style:italic;}
 .code .kw5,.code .re0,.code .re1,.code .re2 {color:#00f;}
+/* }}} */
+/* Stuff for the autocomplete lists {{{ */
+
+div.autocomplete {
+    position: absolute;
+    width: 350px;
+    background-color:#eef7ff;
+    color:#03008f;
+    border:1px solid gray;
+    margin: 0px;
+    padding: 0px;
+}
+
+div.autocomplete ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+div.autocomplete ul li {
+    list-style-type: none;
+    display: block;
+    margin: 0;
+    padding: 2px;
+    height: 16px;
+}
+
+
+div.autocomplete ul li.selected {
+    background-color: #d7e9ff;
+    cursor: pointer;
+}
+
+
+/* }}} */

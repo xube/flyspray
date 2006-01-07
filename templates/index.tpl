@@ -105,9 +105,18 @@
         <fieldset><legend>{$index_text['users']}</legend>
         <label class="default multisel" for="opened">{$index_text['openedby']}</label>
         <input class="users" size="30" type="text" name="opened" id="opened" value="{Get::val('opened')}" />
-        
+        <div class="autocomplete" id="opened_complete"></div>
+        <script type="text/javascript">
+            new Ajax.Autocompleter('opened', 'opened_complete', 'javascript/callbacks/usersearch.php', {})
+        </script>
+
         <label class="default multisel" for="dev">{$index_text['assignedto']}</label>
-        <input class="users" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" />        
+        <input class="users" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" /> 
+        <div class="autocomplete" id="dev_complete"></div>
+        <script type="text/javascript">
+            new Ajax.Autocompleter('dev', 'dev_complete', 'javascript/callbacks/usersearch.php', {})
+        </script>
+
         </fieldset>
 
        </div>
