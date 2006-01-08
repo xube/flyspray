@@ -33,44 +33,10 @@
         
         {!tpl_checkbox('search_for_all', Get::has('search_for_all'), 'sfa')}
         <label class="default" for="sfa">{$index_text['searchforall']}</label>
+        
+        {!tpl_datepicker('', $index_text['selectduedate'], $index_text['due'])}
+        {!tpl_datepicker('changedsince', $index_text['selectsincedate'], $index_text['changedsince'])}
 
-        <?php
-        if ($due_date = Get::val('date')) {
-            $show_date = $index_text['due'] . ' ' . $due_date;
-        } else {
-            $due_date  = '0';
-            $show_date = $index_text['selectduedate'];
-        }
-        ?>
-        <input id="duedatehidden" type="hidden" name="date" value="{$due_date}" />
-        <span id="duedateview" title="{$index_text['due']}">{$show_date}</span> <small>|</small>
-        <a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '{$index_text['selectduedate']}'">X</a>
-        <script type="text/javascript">
-           Calendar.setup({
-              inputField  : "duedatehidden",  // ID of the input field
-              displayArea : "duedateview",    // The display field
-              button      : "duedateview"     // ID of the button
-           });
-        </script>
-
-        <?php
-        if ($since_date = Get::val('changedsince')) {
-            $show_date = $index_text['changedsince'] . ' ' . $since_date;
-        } else {
-            $since_date  = '0';
-            $show_date = $index_text['selectsincedate'];
-        }
-        ?>
-        <input id="changedsincehidden" type="hidden" name="changedsince" value="{$since_date}" />
-        <span id="changedsinceview" title="{$index_text['changedsince']}">{$show_date}</span> <small>|</small>
-        <a href="#" onclick="document.getElementById('changedsincehidden').value = '0';document.getElementById('changedsinceview').innerHTML = '{$index_text['selectsincedate']}'">X</a>
-        <script type="text/javascript">
-           Calendar.setup({
-              inputField  : "changedsincehidden",  // ID of the input field
-              displayArea : "changedsinceview",    // The display field
-              button      : "changedsinceview"     // ID of the button
-           });
-        </script>
         </fieldset>
 
         <fieldset><legend>{$index_text['taskproperties']}</legend>

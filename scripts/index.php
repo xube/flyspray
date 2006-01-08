@@ -6,11 +6,11 @@
    allowed to view.
 */
 
-if (Get::val('project') !== '0' && !$user->can_view_project($proj)) {
+if ($proj->id !== '0' && !$user->can_view_project($proj)) {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
-if (Get::val('project') === '0' && !$user->perms['global_view']) {
+if ($proj->id === '0' && !$user->perms['global_view']) {
     $fs->Redirect( $fs->CreateURL('error', null) );
 }
 
@@ -66,15 +66,14 @@ function keep($key) {
     return Get::val($key) ? $key.'='.Get::val($key) : null;
 }
 $keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
-        'project', 'task', 'opened', 'changedsince');
+        'project', 'task', 'opened', 'changedsincedate');
 $keys   = array_map('keep', $keys);
 $keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
-$keys[] = Get::val('project') === '0' ? "project=0" : "project=".$proj->id;
+$keys[] = $proj->id === '0' ? "project=0" : "project=".$proj->id;
 $get    = htmlspecialchars(join('&', $keys));
 
 // Get the visibility state of all columns
-$project = Get::val('project', $proj->id);
-$visible = explode(' ', $project ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']);
+$visible = explode(' ', $proj->id ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']);
 
 $page->uses('offset', 'perpage', 'pagenum', 'get', 'visible');
 
@@ -95,7 +94,7 @@ $from   = '             {tasks}         t
 $where      = array('project_is_active = ?');
 $sql_params = array('1');
 
-if (Get::val('project') == '0') {
+if ($proj->id == '0') {
     // If the user wants to view tasks from all projects
     // XXX take $project_list from index.php
 
@@ -189,7 +188,7 @@ if ($date = Get::val('date')) {
     $sql_params[] = strtotime("$date +24 hours");
 }
 
-if ($date = Get::val('changedsince')) {
+if ($date = Get::val('changedsincedate')) {
     $where[]      = "(event_date >= ? AND event_date <> '0' AND event_date <> '')";
     $sql_params[] = strtotime($date);
 }

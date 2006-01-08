@@ -9,7 +9,7 @@
           <td><label for="defaultproject">{$admin_text['defaultproject']}</label></td>
           <td>
             <select id="defaultproject" name="default_project">
-              {!tpl_options($fs->listProjects(), $fs->prefs['default_project'])}
+              {!tpl_options(array_merge(array(0 => $language['allprojects']), $fs->listProjects()), $fs->prefs['default_project'])}
             </select>
           </td>
         </tr>

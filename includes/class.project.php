@@ -10,19 +10,23 @@ class Project
     {
         global $db,$language,$fs;
 
-        $sql = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($id));
-        if ($db->countRows($sql)) {
-            $this->prefs = $db->fetchArray($sql);
-            $this->id    = $id;
-        } else {
-            $this->id    = 0;
-            $this->prefs['project_title'] = $language['allprojects'];
-            $this->prefs['theme_style']   = $fs->prefs['global_theme'];
-            $this->prefs['lang_code']   = $fs->prefs['lang_code'];
-            $this->prefs['project_is_active'] = 1;
-            $this->prefs['others_view'] = 1;
-            $this->prefs['intro_message'] = '';
+        if ($id != 0) {
+            $sql = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($id));
+            if ($db->countRows($sql)) {
+                $this->prefs = $db->fetchArray($sql);
+                $this->id    = $id;
+                return;
+            }
         }
+        
+        $this->id    = 0;
+        $this->prefs['project_title'] = $language['allprojects'];
+        $this->prefs['theme_style']   = $fs->prefs['global_theme'];
+        $this->prefs['lang_code']   = $fs->prefs['lang_code'];
+        $this->prefs['project_is_active'] = 1;
+        $this->prefs['others_view'] = 1;
+        $this->prefs['intro_message'] = '';
+        $this->prefs['anon_open'] = 0;
     }
 
     function checkExists()

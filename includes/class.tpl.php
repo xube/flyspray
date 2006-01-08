@@ -213,7 +213,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
             $url, $title_text, join_attrs($attrs), $text);
 
     if ($task['is_closed']) {
-        $link = "<del>&#160;".$link."&#160;</del>";
+        $link = '<del>&#160;' . $link . '&#160;</del>';
     }
     return $link;
 }
@@ -259,6 +259,25 @@ function join_attrs($attr = null) {
     }
     return '';
 }
+// {{{ Datepicker
+function tpl_datepicker($name, $description, $shortdesc, $value = null) {
+    if (($date = $value) || ($date = Req::val($name . 'date'))) {
+        $show_date = $shortdesc . ' ' . $date;
+    } else {
+        $date  = '0';
+        $show_date = $description;
+    }
+    
+    $page = new Tpl;
+    // $page->uses() doesn't work here?
+    $page->assign('show_date', $show_date);
+    $page->assign('name', $name);
+    $page->assign('date', $date);
+    $page->assign('shortdesc', $shortdesc);
+    $page->assign('description', $description);
+    $page->display('datepicker.tpl');
+}
+// }}}
 // {{{ Options for a <select>
 function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null)
 {

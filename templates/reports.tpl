@@ -1,0 +1,113 @@
+<ul id="submenu">
+  <li><a href="#events">{$reports_text['events']}</a></li>
+</ul>
+<div id="events" class="tab">
+  <form action="{$baseurl}index.php" method="get">
+    <table id="event1">
+      <tr>
+        <td>{$reports_text['tasks']}</td>
+        <td><label class="inline">{!tpl_checkbox('open', (Req::has('open')))}
+            {$reports_text['opened']}</label></td>
+        <td><label class="inline">{!tpl_checkbox('close', (Req::has('close')))}
+            {$reports_text['closed']}</label></td>
+        <td><label class="inline">{!tpl_checkbox('edit', (Req::has('edit')))}
+            {$reports_text['edited']}</label></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><label class="inline">{!tpl_checkbox('assign', (Req::has('assign')))}
+            {$reports_text['assigned']}</label></td>
+        <td><label class="inline">{!tpl_checkbox('comments', (Req::has('comments')))}
+            {$reports_text['comments']}</label></td>
+        <td><label class="inline">{!tpl_checkbox('attachments', (Req::has('attachments')))}
+            {$reports_text['attachments']}</label></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><label class="inline">{!tpl_checkbox('related', (Req::has('related')))}
+            {$reports_text['relatedtasks']}</label></td>
+        <td><label class="inline">{!tpl_checkbox('notifications', (Req::has('notifications')))}
+            {$reports_text['notifications']}</label></td>
+        <td><label class="inline">{!tpl_checkbox('reminders', (Req::has('reminders')))}
+            {$reports_text['reminders']}</label></td>
+      </tr>
+    </table>
+    
+    <table>
+      <tr>
+        <td><label class="inline"><input type="radio" name="date" value="within" <?php if (Req::val('date') == 'within') echo 'checked="checked"';?> />
+            {$reports_text['within']}</label></td>
+        <td colspan="6">
+          <select name="within">
+          {!tpl_options(array('day' => $reports_text['pastday'],
+                              'week' => $reports_text['pastweek'],
+                              'month' => $reports_text['pastmonth'],
+                              'year' => $reports_text['pastyear'],
+                              'all' => $reports_text['nolimit']), Req::val('within'))}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><label class="inline"><input type="radio" name="date" value="from" <?php if (Req::val('date') == 'from') echo 'checked="checked"';?> />
+            {$reports_text['from']}</label></td>
+        <td>
+            {!tpl_datepicker('from', $reports_text['selectfromdate'], $reports_text['from'])}
+          &mdash;
+            {!tpl_datepicker('to', $reports_text['selecttodate'], $reports_text['to'])}
+        </td>
+      </tr>
+      <tr>
+        <td><label class="inline"><input type="radio" name="date" value="duein" <?php if (Req::val('date') == 'duein') echo 'checked="checked"';?> />
+            {$reports_text['duein']}</label></td>
+        <td colspan="6">
+          <select name="duein">
+            {!tpl_options($proj->listVersions(false, 3), Req::val('duein'))}
+          </select>
+        </td>
+      </tr>
+    </table>
+
+    <input type="hidden" name="do" value="reports" /><input type="submit" class="mainbutton" name="submit" value="{$reports_text['show']}" />
+  </form>
+  
+  <?php if($histories): ?>
+  <div id="tasklist">
+  <table id="tasklist_table">
+   <thead>
+    <tr>
+      <th class="taskid">
+        <a href="{$fs->CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'id' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'id') + $_GET)}">
+           {$index_text['id']}
+        </a>
+      </th>
+      <th>{$details_text['summary']}</th>
+      <th>
+        <a href="{$fs->CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'date' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'date') + $_GET)}">
+          {$details_text['eventdate']}
+        </a>
+      </th>
+      <th>
+        <a href="{$fs->CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'user' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'user') + $_GET)}">
+          {$details_text['user']}
+        </a>
+      </th>
+      <th>
+        <a href="{$fs->CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'type' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'type') + $_GET)}">
+          {$details_text['event']}
+        </a>
+      </th>
+    </tr>
+   </thead>
+    <?php foreach ($histories as $history): ?>
+    <tr class="severity{$history['task_severity']}" onclick="openTask('{$fs->CreateURL('details', $history['task_id'])}')">
+      <td>{!tpl_tasklink($history, 'FS#' . $history['task_id'])}</td>
+      <td>{!tpl_tasklink($history)}</td>
+      <td>{$fs->formatDate($history['event_date'], true)}</td>
+      <td>{!tpl_userlink($history['user_id'])}</td>
+      <td>{!event_description($history)}</td>
+    </tr>
+    <?php endforeach; ?>
+  </table>
+  </div>
+  <?php endif; ?>
+</div>

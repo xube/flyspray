@@ -49,7 +49,7 @@
 			 <td><label for="status">{$details_text['status']}</label></td>
 			 <td>
 				<select id="status" name="item_status">
-				 {!tpl_options($status_list, $task_details['item_status'])}
+				 {!tpl_options($proj->listTaskStatuses(), $task_details['item_status'])}
 				</select>
 			 </td>
 			</tr>
@@ -113,19 +113,10 @@
 			 <td><label for="duedate">{$details_text['duedate']}</label></td>
 			 <td id="duedate">
 				<?php
-				$due_date  = $fs->formatDate($task_details['due_date'], false, '');
+				$due_date  = date('d-M-Y', $task_details['due_date']);
 				$view_date = $fs->formatDate($task_details['due_date'], false, $details_text['undecided']);
 				?>
-				<input id="duedatehidden" type="hidden" name="due_date" value="{$due_date}" />
-				<span id="duedateview">{$view_date}</span> <small>|</small>
-				<a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '{$details_text['undecided']}';">X</a>
-				<script type="text/javascript">
-				 Calendar.setup({
-					inputField  : "duedatehidden", // ID of the input field
-					displayArea : "duedateview",   // The display field
-					button      : "duedateview"    // ID of the button
-				 });
-				</script>
+                {!tpl_datepicker('due_', $view_date, '', $due_date)}
 			 </td>
 			</tr>
 			<tr class="percent">

@@ -45,6 +45,8 @@ $reports_text = array (
 
 'changelog'     =>      'Changelog',
 'date'          =>      'Date',
+'selectfromdate' =>     'Select From Date',
+'selecttodate'  =>     'Select To Date',
 
 );
 ?>

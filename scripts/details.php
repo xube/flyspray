@@ -23,11 +23,7 @@ $fs->get_language_pack('severity');
 $fs->get_language_pack('priority');
 $fs->get_language_pack('modify');
 
-$status_list = array();
-$sql = $db->Query('SELECT status_id, status_name FROM {list_status}');
-while ($row = $db->FetchArray($sql)) {
-    $status_list[$row[0]] = $row[1];
-}
+require_once('includes/events.inc.php');
 
 $page->uses('priority_list', 'severity_list', 'task_details',
             'status_list', 'details_text', 'newtask_text','modify_text');
