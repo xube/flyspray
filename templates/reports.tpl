@@ -35,10 +35,10 @@
     
     <table>
       <tr>
-        <td><label class="inline"><input type="radio" name="date" value="within" <?php if (Req::val('date') == 'within') echo 'checked="checked"';?> />
+        <td><label class="inline"><input type="radio" id="datewithin" name="date" value="within" <?php if (Req::val('date') == 'within') echo 'checked="checked"';?> />
             {$reports_text['within']}</label></td>
         <td colspan="6">
-          <select name="within">
+          <select onclick="getElementById('datewithin').checked=true" name="within">
           {!tpl_options(array('day' => $reports_text['pastday'],
                               'week' => $reports_text['pastweek'],
                               'month' => $reports_text['pastmonth'],
@@ -48,19 +48,19 @@
         </td>
       </tr>
       <tr>
-        <td><label class="inline"><input type="radio" name="date" value="from" <?php if (Req::val('date') == 'from') echo 'checked="checked"';?> />
+        <td><label class="inline"><input type="radio" id="datefrom" name="date" value="from" <?php if (Req::val('date') == 'from') echo 'checked="checked"';?> />
             {$reports_text['from']}</label></td>
-        <td>
+        <td onclick="getElementById('datefrom').checked=true">
             {!tpl_datepicker('from', $reports_text['selectfromdate'], $reports_text['from'])}
           &mdash;
             {!tpl_datepicker('to', $reports_text['selecttodate'], $reports_text['to'])}
         </td>
       </tr>
       <tr>
-        <td><label class="inline"><input type="radio" name="date" value="duein" <?php if (Req::val('date') == 'duein') echo 'checked="checked"';?> />
+        <td><label class="inline"><input type="radio" id="dateduein" name="date" value="duein" <?php if (Req::val('date') == 'duein') echo 'checked="checked"';?> />
             {$reports_text['duein']}</label></td>
         <td colspan="6">
-          <select name="duein">
+          <select onclick="getElementById('dateduein').checked=true" name="duein">
             {!tpl_options($proj->listVersions(false, 3), Req::val('duein'))}
           </select>
         </td>

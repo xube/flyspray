@@ -1,3 +1,5 @@
+@import url("../../javascript/jscalendar/calendar-system.css");
+
 body {
 	background:#F5F9FD;
 	color:#000;
@@ -1201,8 +1203,8 @@ div.autocomplete {
 	background-color:#eef7ff;
 	color:#03008f;
 	border:1px solid gray;
-	margin: 0px;
 	padding: 0px;
+	margin:-1px 0 0;
 }
 
 div.autocomplete ul {
@@ -1215,14 +1217,15 @@ div.autocomplete ul li {
 	list-style-type: none;
 	display: block;
 	margin: 0;
-	padding: 2px;
-	height: 16px;
+	padding:2px 4px;
+	height: 1.1em;
 }
 
 
 div.autocomplete ul li.selected {
-	background-color: #d7e9ff;
-	cursor: pointer;
+	background-color:highlight;
+	cursor:pointer;
+	color:white;
 }
 
 
