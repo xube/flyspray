@@ -1,7 +1,6 @@
 <h3>{$admin_text['lostpw']}</h3>
 
 <p>{$admin_text['lostpwexplain']}</p>
-<br />
 
 <div class="admin">
   <form action="{$baseurl}index.php" method="post">

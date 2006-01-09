@@ -1,5 +1,4 @@
 <h3>{$admin_text['changepass']}</h3>
-<br />
 
 <div class="admin">
   <form action="index.php" method="post">

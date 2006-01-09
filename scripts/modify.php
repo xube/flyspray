@@ -1409,11 +1409,11 @@ elseif (Post::val('action') == 'sendmagic') {
                  WHERE user_id = ?",
             array($magic_url, $user_details['user_id']));
 
-    $subject = $modify_text['noticefrom'] . ' ' . $proj->prefs['project_title'];
+    $subject = $modify_text['changefspass'];
 
-    $message = "{$modify_text['noticefrom']} {$proj->prefs['project_title']} \n"
+    $message = "{$modify_text['messagefrom']} $baseurl. \n\n"
              . "{$modify_text['magicurlmessage']} \n"
-             . "{$conf['general']['baseurl']}index.php?do=lostpw&amp;magic=$magic_url\n";
+             . "{$baseurl}index.php?do=lostpw&amp;magic=$magic_url\n";
 
     $to   = $notify->SpecificAddresses(array($user_details['user_id']));
     $mail = $notify->SendEmail($to[0], $subject, $message);
