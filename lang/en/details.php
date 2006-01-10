@@ -162,5 +162,6 @@ $details_text = array (
 'addedtoassignees'      =>      'User added to assignees list',
 'dependencygraph'       =>      'Dependency graph',
 'attachanotherfile'     =>      'Attach another file',
+'OK'                    =>      'OK',
 );
 ?>

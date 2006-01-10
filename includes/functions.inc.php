@@ -477,7 +477,7 @@ class Flyspray
             case 'newgroup':
             case 'newtask':   return $url . '&project=' . $arg1 . $append;
 
-            case 'editgroup': return $url . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1 . $append;
+            case 'editgroup': return $conf['general']['baseurl'] . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1 . $append;
 
             case 'error':
             case 'lostpw':

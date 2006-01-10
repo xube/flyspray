@@ -108,15 +108,7 @@
           <td id="duedate">
             <input id="duedatehidden" type="hidden" name="due_date" value="" />
             <?php if ($user->perms['modify_all_tasks']): ?>
-            <span id="duedateview">{$index_text['selectduedate']}</span> <small>|</small>
-            <a href="#" onclick="document.getElementById('duedatehidden').value = '0';document.getElementById('duedateview').innerHTML = '{$index_text['selectduedate']?>'">X</a>
-            <script type="text/javascript">
-              Calendar.setup({
-              inputField  : "duedatehidden",// ID of the input field
-              displayArea : "duedateview",  // The display field
-              button      : "duedateview"   // ID of the button
-              });
-            </script>
+            {!tpl_datepicker('due_', $index_text['selectduedate'], $index_text['selectduedate'])}
             <?php endif; ?>
           </td>
         </tr>

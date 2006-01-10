@@ -12,12 +12,12 @@
         onmouseup="dualSelect('r', 'l', '{!$id}')"/>
     </td>
     <td class="c3">
-      <input type="button" value="&#8593;" onmouseup="selectMove('{!$id}', -1)" />
-      <br />
+      <?php if($updown): ?><input type="button" value="&#8593;" onmouseup="selectMove('{!$id}', -1)" /><br /><?php endif; ?>
+      
       <select id="r{!$id}" multiple="multiple"
         ondblclick="dualSelect(this, 'l', '{!$id}')">%s</select>
       <br />
-      <input type="button" value="&#8595;" onmouseup="selectMove('{!$id}', 1)" />
+      <?php if($updown): ?><input type="button" value="&#8595;" onmouseup="selectMove('{!$id}', 1)" /><?php endif; ?>
       <input type="hidden" value="{join(' ', $selected)}" id="v{!$id}" name="{$name}" />
     </td>
   </tr>

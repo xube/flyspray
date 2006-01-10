@@ -701,6 +701,7 @@ div#multiuserlist {
 	display:block;
 	width:42em;
 	padding:5px 30px 5px 5px;
+	text-align:right;
 }
 
 div#multiuserlist .double_select td.c2 {

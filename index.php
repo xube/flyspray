@@ -42,7 +42,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
                                   a.orig_name, a.file_name, a.file_type
                             FROM  {attachments} a
                       INNER JOIN  {tasks}       t ON a.task_id = t.task_id
-                           WHERE  attachment_id = ?", array($_GET['getfile']));
+                           WHERE  attachment_id = ?", array(Get::val('getfile')));
     list($task_id, $proj_id, $orig_name, $file_name, $file_type) = $db->FetchArray($result);
 
     if ($proj_id != $proj->id) {

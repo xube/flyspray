@@ -261,6 +261,7 @@ function join_attrs($attr = null) {
 }
 // {{{ Datepicker
 function tpl_datepicker($name, $description, $shortdesc, $value = null) {
+    global $fs;
     if (($date = $value) || ($date = Req::val($name . 'date'))) {
         $show_date = $shortdesc . ' ' . $date;
     } else {
@@ -273,6 +274,7 @@ function tpl_datepicker($name, $description, $shortdesc, $value = null) {
     $page->assign('show_date', $show_date);
     $page->assign('name', $name);
     $page->assign('date', $date);
+    $page->assign('fs', $fs);
     $page->assign('shortdesc', $shortdesc);
     $page->assign('description', $description);
     $page->display('datepicker.tpl');
@@ -311,7 +313,7 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
     return $html;
 } // }}}
 // {{{ Double <select>
-function tpl_double_select($name, $options, $selected = null, $labelIsValue = false)
+function tpl_double_select($name, $options, $selected = null, $labelIsValue = false, $updown = true)
 {
     static $_id = 0;
     static $tpl = null;
@@ -327,6 +329,8 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
     $tpl->assign('id', '_task_id_'.($_id++));
     $tpl->assign('name', $name);
     $tpl->assign('selected', $selected);
+    $tpl->assign('updown', $updown);
+    
     $html = $tpl->fetch('common.dualselect.tpl');
 
     $selectedones = array();
