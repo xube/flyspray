@@ -260,23 +260,22 @@ function join_attrs($attr = null) {
     return '';
 }
 // {{{ Datepicker
-function tpl_datepicker($name, $description, $shortdesc, $value = null) {
+function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
     global $fs;
     if (($date = $value) || ($date = Req::val($name . 'date'))) {
         $show_date = $shortdesc . ' ' . $date;
     } else {
         $date  = '0';
-        $show_date = $description;
+        $show_date = $novaldesc;
     }
     
     $page = new Tpl;
-    // $page->uses() doesn't work here?
     $page->assign('show_date', $show_date);
     $page->assign('name', $name);
     $page->assign('date', $date);
     $page->assign('fs', $fs);
     $page->assign('shortdesc', $shortdesc);
-    $page->assign('description', $description);
+    $page->assign('novaldesc', $novaldesc);
     $page->display('datepicker.tpl');
 }
 // }}}

@@ -372,8 +372,13 @@ elseif (Post::val('action') == 'sendcode') {
         $fs->redirect($fs->createUrl('register'));
     }
 
-    $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE user_name = ?",
-            array($user_name));
+    // Delete registration codes older than 24 hours
+    $yesterday = date('U') - '86400';
+    $db->Query("DELETE FROM {registrations} WHERE reg_time < ?", array($yesterday));
+
+    $sql = $db->Query('SELECT COUNT(*) FROM {users} u, {registrations} r
+                       WHERE  u.user_name = ? OR r.user_name = ?',
+                       array($user_name, $user_name));
     if ($db->fetchOne($sql)) {
         $_SESSION['ERROR'] = $register_text['usernametaken'];
         $fs->redirect($fs->createUrl('register'));
@@ -394,11 +399,7 @@ elseif (Post::val('action') == 'sendcode') {
         $_SESSION['ERROR'] = $register_text['emailtaken'];
         $fs->redirect($fs->createUrl('register'));
     }
-
-    // Delete registration codes older than 24 hours
-    $yesterday = date('U') - '86400';
-    $remove = $db->Query("DELETE FROM {registrations} WHERE reg_time < ?", array($yesterday));
-
+    
     // Generate a random bunch of numbers for the confirmation code
     mt_srand($fs->make_seed());
     $randval = mt_rand();
@@ -484,7 +485,7 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
     // Get this user's id for the record
     $uid = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
             array($reg_details['user_name']));
-    $uid = $db->fetchOne($sql);
+    $uid = $db->fetchOne($uid);
 
     // Now, create a new record in the users_in_groups table
     $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
@@ -504,20 +505,31 @@ elseif (Post::val('action') == "newuser" &&
             || (!Post::val('email_address') && !Post::val('jabber_id'))
     ) {
         $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
-        $fs->redirect($fs->createUrl('register'));
+        $fs->redirect($fs->createUrl('newuser'));
     }
 
     if (Post::val('user_pass') != Post::val('user_pass2')) {
         $_SESSION['ERROR'] = $modify_text['nomatchpass'];
-        $fs->redirect($fs->createUrl('register'));
+        $fs->redirect($fs->createUrl('newuser'));
     }
+    
+    // Limit lengths
+    $user_name = substr(trim(Post::val('user_name')), 0, 32);
+    $real_name = substr(trim(Post::val('real_name')), 0, 100);
+    // Remove doubled up spaces and control chars
+    $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
+    $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
+    // Strip special chars
+    require_once "$basedir/includes/utf8.inc.php";
+    $user_name = utf8_keepalphanum($user_name);
 
     // Check to see if the username is available
-    $sql = $db->Query("SELECT * FROM {users} WHERE user_name = ?",
-            array(Post::val('user_name')));
-    if ($db->CountRows($sql)) {
+    $sql = $db->Query('SELECT COUNT(*) FROM {users} u, {registrations} r
+                       WHERE  u.user_name = ? OR r.user_name = ?',
+                       array($user_name, $user_name));
+    if ($db->fetchOne($sql)) {
         $_SESSION['ERROR'] = $modify_text['usernametaken'];
-        $fs->redirect($fs->createUrl('register'));
+        $fs->redirect($fs->createUrl('newuser'));
     }
 
     $pass_hash = $fs->cryptPassword(Post::val('user_pass'));
@@ -533,13 +545,13 @@ elseif (Post::val('action') == "newuser" &&
                                email_address, notify_type, account_enabled,
                                tasks_perpage)
                      VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25)",
-            array(Post::val('user_name'), $pass_hash, Post::val('real_name'),
+            array($user_name, $pass_hash, $real_name,
                 Post::val('jabber_id'), Post::val('email_address'),
                 Post::val('notify_type')));
 
     // Get this user's id for the record
     $sql = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
-            array(Post::val('user_name')));
+            array($user_name));
     $uid = $db->fetchOne($sql);
 
     // Now, create a new record in the users_in_groups table

@@ -59,7 +59,7 @@
 				<a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{$details_text['selectusers']}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
 				<div id="multiuserlist">
-				 {!tpl_double_select('assigned_to', $userlist, $assigned_users, false)}
+				 {!tpl_double_select('assigned_to', $userlist, $assigned_users, false, false)}
                  <button type="button" onclick="hidestuff('multiuserlist')">{$details_text['OK']}</button>
 				</div>
 			 </td>
@@ -113,8 +113,7 @@
 			<tr class="duedate">
 			 <td><label for="duedate">{$details_text['duedate']}</label></td>
 			 <td id="duedate">
-                {!tpl_datepicker('due_', $fs->formatDate($task_details['due_date'], false, $details_text['undecided']),
-                                 '', $fs->formatDate($task_details['due_date'], false))}
+                {!tpl_datepicker('due_', $details_text['undecided'], '', $fs->formatDate($task_details['due_date'], false))}
 			 </td>
 			</tr>
 			<tr class="percent">

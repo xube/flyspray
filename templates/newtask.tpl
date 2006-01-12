@@ -52,7 +52,8 @@
             <?php if ($user->perms['modify_all_tasks']): ?>
             <a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{$details_text['selectusers']}</a>
             <div id="multiuserlist">
-                {!tpl_double_select('assigned_to', $userlist, $assigned_users, false)}
+                {!tpl_double_select('assigned_to', $userlist, $assigned_users, false, false)}
+                <button type="button" onclick="hidestuff('multiuserlist')">{$details_text['OK']}</button>
             </div>
             <?php endif; ?>
           </td>
