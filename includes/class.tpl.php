@@ -261,12 +261,27 @@ function join_attrs($attr = null) {
 }
 // {{{ Datepicker
 function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
-    global $fs;
+    global $fs, $user;
+    
     if (($date = $value) || ($date = Req::val($name . 'date'))) {
         $show_date = $shortdesc . ' ' . $date;
     } else {
         $date  = '0';
         $show_date = $novaldesc;
+    }
+    
+    $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
+    $dateformat = '';
+    if(!$user->isAnon()) {
+        $dateformat = $user->infos[$format_id];
+    }
+
+    if(!$dateformat) {
+        $dateformat = $fs->prefs[$format_id];
+    }
+
+    if(!$dateformat) {
+        $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
     }
     
     $page = new Tpl;
@@ -276,6 +291,7 @@ function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
     $page->assign('fs', $fs);
     $page->assign('shortdesc', $shortdesc);
     $page->assign('novaldesc', $novaldesc);
+    $page->assign('dateformat', $dateformat);
     $page->display('datepicker.tpl');
 }
 // }}}

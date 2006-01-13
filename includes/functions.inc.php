@@ -1,5 +1,4 @@
 <?php
-
 /*
    ----------------------------------------------------------
    | This script contains all the functions we use often in |
@@ -490,28 +489,26 @@ class Flyspray
 
     function formatDate($timestamp, $extended, $default = '')
     {
-        global $db;
-        global $conf;
+        global $db, $conf, $user;
 
         if (!$timestamp) {
             return $default;
         }
 
         $dateformat = '';
-        $format_id  = $extended ? "dateformat_extended" : "dateformat";
+        $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
 
-        if(isset($_SESSION['userid'])) {
-            $get_user_details = $db->Query("SELECT {$format_id} FROM {users} WHERE user_id = " . $_SESSION['userid']);
-            $user_details     = $db->FetchArray($get_user_details);
-            $dateformat       = $user_details[$format_id];
+        if(!$user->isAnon()) {
+            $dateformat = $user->infos[$format_id];
         }
 
-        if($dateformat == '') {
+        if(!$dateformat) {
             $dateformat = $this->prefs[$format_id];
         }
 
-        if($dateformat == '')
+        if(!$dateformat) {
             $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
+        }
 
         return utf8_encode(strftime($dateformat, $timestamp));
     }
