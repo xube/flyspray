@@ -483,9 +483,9 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
                 $reg_details['email_address'], $reg_details['notify_type']));
 
     // Get this user's id for the record
-    $uid = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
+    $sql = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
             array($reg_details['user_name']));
-    $uid = $db->fetchOne($uid);
+    $uid = $db->fetchOne($sql);
 
     // Now, create a new record in the users_in_groups table
     $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)

@@ -4,8 +4,14 @@
     <span class="bad">{$fs->version}</span> {$index_text['latestversion']} <span class="good">{$_SESSION['latest_version']}</span>.
     <a href="?hideupdatemsg=yep">{$index_text['hidemessage']}</a>
 </div>
-
 <?php endif; ?>
+
+<?php 
+// Testing for the new sessionStart() function
+//echo 'session name is ' . session_name(); 
+//echo '<br /><br />';
+?>
+
 <div id="search">
   <map id="projectsearchform" name="projectsearchform">
     <form action="index.php" method="get">

@@ -48,7 +48,7 @@ $regexps   = array(
         'sort'          => $sort_ok,
         'sort2'         => $sort_ok,
         'tasks'         => '/^(all|assigned|reported|watched)$/',
-        'PHPSESSID'     => '!<.*>!',
+        'PHPSESSID'     => '/^[a-zA-Z0-9]+$/',
 );
 
 $regexps_array   = array(

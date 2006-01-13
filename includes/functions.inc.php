@@ -2,7 +2,7 @@
 /*
    ----------------------------------------------------------
    | This script contains all the functions we use often in |
-   |Flyspray to do various things.                          |
+   |Flyspray to do miscellaneous things.                    |
    ----------------------------------------------------------
 */
 
@@ -12,20 +12,22 @@ class Flyspray
     var $version = '0.9.9 dev';
 
     var $prefs   = array();
-
+    
+    // Application-wide preferences {{{
     function Flyspray()
     {
         global $db;
-        session_start();
-
+        
+        //$this->startSession();
+        session_start()
+        
         $res = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
 
         while ($row = $db->FetchRow($res)) {
             $this->prefs[$row['pref_name']] = $row['pref_value'];
         }
-    }
-
-
+    } // }}}
+    // Get language pack {{{
     /** Get translation for specified language and page.  It loads default
       language (en) and then merges with requested one. Thus it makes English
       messages available even if translation is not present.
@@ -54,10 +56,8 @@ class Flyspray
                 ${$new_var_name}[$key] = $val;
             }
         }
-    }
-
-
-    //  Redirects the browser to the page in $url
+    } // }}}
+    //  Redirects the browser to the page in $url {{{
     function Redirect($url)
     {
         @ob_clean();
@@ -83,9 +83,8 @@ class Flyspray
 </html>
 <?php
         exit;
-    }
-
-
+    } // }}}
+    // Duplicate submission check {{{
     /** Test to see if user resubmitted a form.
       Checks only newtask and addcomment actions.
       @return   true if user has submitted the same action within less than
@@ -115,10 +114,8 @@ class Flyspray
             $_SESSION['requests_hash'][$currentrequest] = time();
         }
         return false;
-    }
-
-    // Thanks to Mr Lance Conry for this query that saved me a lot of effort.
-    // Check him out at http://www.rhinosw.com/
+    } // }}}
+    // Retrieve task details {{{
     function GetTaskDetails($task_id)
     {
         global $db;
@@ -176,8 +173,8 @@ class Flyspray
         $cache[$task_id] = $get_details;
 
         return $get_details;
-    }
-
+    } // }}}
+    // List projects {{{
     function listProjects()
     {
         global $db;
@@ -185,8 +182,8 @@ class Flyspray
         $sql = $db->Query('SELECT  project_id, project_title FROM {projects}
                             WHERE  project_is_active = 1');
         return $db->fetchAllArray($sql);
-    }
-
+    } // }}}
+    // List themes {{{
     function listThemes()
     {
         if ($handle = opendir(dirname(dirname(__FILE__)).'/themes/')) {
@@ -201,8 +198,8 @@ class Flyspray
 
         sort($theme_array);
         return $theme_array;
-    }
-
+    } // }}}
+    // List languages {{{
     function listLangs()
     {
         if ($handle = opendir(dirname(dirname(__FILE__)).'/lang/')) {
@@ -217,20 +214,20 @@ class Flyspray
 
         sort($lang_array);
         return $lang_array;
-    }
-    
+    } // }}}
+    // List groups {{{
     function listGroups()
     {
         global $proj;
         return $proj->listGroups(true);
-    }
-
+    } // }}}
+    // User list {{{
     function UserList($excluded = array())
     {
         global $proj;
         return $proj->UserList($excluded, true);
-    }    
-
+    } // }}}
+    // Log events to the history table {{{
     function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
     {
         global $db, $user;
@@ -271,10 +268,8 @@ class Flyspray
         $db->Query("INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                                 VALUES(?, ?, ?, ?, ?, ?, ?)",
                 array($task, intval($user->id), date('U'), $type, $field, $oldvalue, $newvalue));
-    }
-
-
-    // Log a request for an admin/project manager to do something
+    } // }}}
+    // Log a request for an admin/project manager to do something {{{
     function AdminRequest($type, $project, $task, $submitter, $reason)
     {
         global $db;
@@ -286,10 +281,8 @@ class Flyspray
         $db->Query("INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
                 VALUES(?, ?, ?, ?, ?, ?)",
                 array($project, $task, $submitter, $type, $reason, date(U)));
-    }
-
-
-    // Check for an existing admin request for a task and event type
+    } // }}}
+    // Check for an existing admin request for a task and event type {{{
     function AdminRequestCheck($type, $task)
     {
         global $db;
@@ -298,10 +291,8 @@ class Flyspray
                 WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
                 array($type, $task));
         return (bool)($db->CountRows($check));
-    }
-
-
-    // Get the current user's details
+    } // }}}
+    // Get the current user's details {{{
     function getUserDetails($user_id)
     {
         global $db;
@@ -309,17 +300,15 @@ class Flyspray
         // Get current user details.  We need this to see if their account is enabled or disabled
         $result = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($user_id));
         return $db->FetchArray($result);
-    }
-
+    } // }}}
+    // Get group details {{{
     function getGroupDetails($group_id)
     {
         global $db;
         $sql = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($group_id));
         return $db->FetchArray($sql);
-    }
-
-
-    // Crypt a password with the method set in the configfile
+    } // }}}
+    // Crypt a password with the method set in the configfile {{{
     function cryptPassword($password)
     {
         global $conf;
@@ -333,10 +322,8 @@ class Flyspray
         // use random salted crypt by default
         $letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return crypt($password, substr($letters, rand(0, 52), 1).substr($letters, rand(0, 52), 1) );
-    }
-
-
-    // This function checks if a user provided the right credentials
+    } // }}}
+    // Check if a user provided the right credentials {{{
     function checkLogin($username, $password)
     {
         global $db;
@@ -375,16 +362,15 @@ class Flyspray
         }
 
         return false;
-    }
-
-
+    } // }}}
+    // Set cookie {{{
     function setCookie($name, $val, $time)
     {
         global $baseurl;
         $url = parse_url($baseurl);
         setcookie($name, $val, $time, $url['path']);
-    }
-
+    } // }}}
+    // Reminder daemon {{{
     function startReminderDaemon()
     {
         $script  = 'scripts/daemon.php';
@@ -409,14 +395,38 @@ class Flyspray
 
             exec("$php $script $include $timeout ../$runfile >/dev/null &");
         }
-    }
+    } // }}}
+    // Start the session {{{
+    function startSession()
+    {
+        if (session_name() == 'PHPSESSID')
+        {
+            $names = array( 'GetFirefox',
+                            'UseLinux',
+                            'NoMS',
+                            'Think',
+                            'BuyMeAMac',
+                            'FreeSoftware',
+                            'ReadTheFAQ',
+                          );
+        
+            $rand_key = array_rand($names);
+
+            $sessname = $names[$rand_key];
+        } else
+        {
+            $sessname = session_name();
+        }
+
+        session_name($sessname);
+        session_start();
+    
+    }  // }}}
 
 
 // FIXME: TEMPLATING FUNCTIONS, SHOULD MOVE AWAY AT SOME POINT
-
-    /* Check if we should use address rewriting
-       and return an appropriate URL
-     */
+    
+    // Create an URL based upon address-rewriting preferences {{{
     function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
     {
         global $conf;
@@ -485,8 +495,8 @@ class Flyspray
             case 'register':
             case 'reports':   return $url . $append;
         }
-    }
-
+    } // }}}
+    // Format Date {{{
     function formatDate($timestamp, $extended, $default = '')
     {
         global $db, $conf, $user;
@@ -511,9 +521,8 @@ class Flyspray
         }
 
         return utf8_encode(strftime($dateformat, $timestamp));
-    }
-
-    // This provides funky page numbering
+    } /// }}}
+    // Page numbering {{{
     // Thanks to Nathan Fritz for this.  http://www.netflint.net/
     function pagenums($pagenum, $perpage, $totalcount, $extraurl)
     {
@@ -562,17 +571,14 @@ class Flyspray
         }
 
         return $output;
-    }
-
-    /* This function came from the php function page for mt_srand()
-       seed with microseconds to create a random filename
-     */
+    } // }}}
+    // Generate a long random number {{{
     function make_seed()
     {
         list($usec, $sec) = explode(' ', microtime());
         return (float) $sec + ((float) $usec * 100000);
-    }
-    
+    } // }}}
+    // Compare tasks {{{
     function compare_tasks($old, $new)
     {
         $comp = array('priority_name','severity_name','status_name','assigned_to_name','due_in_version_name',
@@ -615,8 +621,8 @@ class Flyspray
         }
 
         return $changes;
-    }
-    
+    } // }}}
+    // Get a list of assignees for a task {{{
     function GetAssignees($taskid, $name = false)
     {
         global $db;
@@ -639,7 +645,6 @@ class Flyspray
         }
 
         return $assignees;
-    }
+    } /// }}}
 }
-
 ?>
