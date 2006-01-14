@@ -405,10 +405,10 @@ function tpl_img($src, $alt)
     }
 } // }}}
 // {{{ Text formatting
-function tpl_formattext($text)
+function tpl_formattext($text, $onyfs = false)
 {
     global $conf, $baseurl;
-    if ($conf['general']['wiki_syntax']) {
+    if ($conf['general']['wiki_syntax'] && !$onyfs) {
         // Unfortunately dokuwiki also uses $conf
         $fs_conf = $conf;
         $conf = array();
@@ -466,7 +466,7 @@ function tpl_formattext($text)
         $text = nl2br(htmlspecialchars($text));
         
         // Change URLs into hyperlinks
-        $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
+        if(!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
         
         // Change FS#123 into hyperlinks to tasks
         return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",

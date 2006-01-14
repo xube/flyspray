@@ -119,7 +119,6 @@ if ($user->perms['manage_project']) {
     $page->assign('pm_pendingreq_num', $count);
 }
 
-// Show the project blurb if the project manager defined one
 $do = Req::val('do', 'index');
 if($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
     $do = 'pm';
@@ -129,6 +128,7 @@ if($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
     $do = 'index';
 }
 
+// Show the project blurb if the project manager defined one
 if ($proj->prefs['project_is_active']
     && ($proj->prefs['others_view'] || $user->perms['view_tasks'])
     && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends')))
@@ -139,7 +139,7 @@ if ($proj->prefs['project_is_active']
 if (!$user->isAnon() && !$user->perms['global_view']) {
     // or, if the user is logged in
     $sql = $db->Query(
-            "SELECT  p.project_id, p.project_title
+            "SELECT  DISTINCT p.project_id, p.project_title
                FROM  {projects} p
           LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
           LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
@@ -155,7 +155,17 @@ else {
                      ORDER BY  project_title",
                      array($user->perms['global_view']));
 }
+
 $page->assign('project_list', $project_list = $db->FetchAllArray($sql));
+
+// Get e-mail addresses of the admins
+if ($user->isAnon() && !$fs->prefs['user_notify']) {
+    $sql = $db->Query('SELECT email_address
+                         FROM {users} u
+                    LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
+                        WHERE g.group_id = 1');
+    $page->assign('admin_emails', $db->FetchAllArray($sql));
+}
 
 // default title;
 $page->setTitle("Flyspray :: {$proj->prefs['project_title']}");

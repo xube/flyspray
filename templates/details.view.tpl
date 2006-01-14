@@ -206,7 +206,7 @@
   {$fs->formatDate($task_details['date_closed'], true)}<br />
   {$details_text['reasonforclosing']}&nbsp;&nbsp;{$task_details['resolution_name']}<br />
   <?php if ($task_details['closure_comment']): ?>
-  {$details_text['closurecomment']}&nbsp;&nbsp;{!tpl_FormatText($task_details['closure_comment'])}
+  {$details_text['closurecomment']}&nbsp;&nbsp;{!tpl_FormatText($task_details['closure_comment'], true)}
   <?php endif; ?>
   <?php endif; ?>
 

@@ -78,7 +78,7 @@ function event_description($history) {
             $return .= $details_text['taskclosed'];
             $return .= " ({$history['resolution_name']}";
             if (!empty($old_value)) {
-                 $return .= ': ' . tpl_formatText($old_value);
+                 $return .= ': ' . tpl_formatText($old_value, true);
             }
             $return .= ')';
             break;

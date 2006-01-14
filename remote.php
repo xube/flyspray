@@ -141,7 +141,7 @@ function getTask($args)
                   'date_closed'          =>    $task_details['date_closed'],
                   'closed_by'            =>    $task_details['closed_by_name'],
                   'closure_comment'      =>    $task_details['closure_comment'],
-                  'item_summary'         =>    tpl_formattext($task_details['item_summary']),
+                  'item_summary'         =>    $task_details['item_summary'],
                   'detailed_desc'        =>    tpl_formatText($task_details['detailed_desc']),
                   'item_status'          =>    $task_details['status_name'],
                   'assigned_to'          =>    $task_details['assigned_to_name'],

@@ -31,6 +31,7 @@ if (Req::has('user_name') && Req::has('password')) {
     // Run the username and password through the login checker
     if (!$fs->checkLogin($username, $password)) {
         $_SESSION['ERROR'] = $authenticate_text['loginfailed'];
+        $_SESSION['failed_login'] = Req::val('user_name');
         $fs->redirect(Req::val('prev_page'));
     }
     else {
