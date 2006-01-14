@@ -34,6 +34,7 @@ $do_ok     = '/^(admin|pm|reports|authenticate|chpass|roadmap|details|depends|in
 $email_ok  = "/^[a-z0-9._\-']+(?:\+[a-z0-9._-]+)?@([a-z0-9.-]+\.)+[a-z]{2,4}+$/i";
 $order_ok  = '/^(id|proj|type|date|sev|cat|os|status|due|dateclosed|event_date|pri|openedby|reportedin|assignedto|prog|duedate)$/';
 $sort_ok   = '/^(asc|desc)$/';
+$sessname = $_SESSION['SESSNAME'];
 
 $regexps   = array(
         'action'        => $action_ok,
@@ -48,7 +49,7 @@ $regexps   = array(
         'sort'          => $sort_ok,
         'sort2'         => $sort_ok,
         'tasks'         => '/^(all|assigned|reported|watched)$/',
-        'PHPSESSID'     => '/^[a-zA-Z0-9]+$/',
+        $sessname       => '/^[a-zA-Z0-9]+$/',
 );
 
 $regexps_array   = array(

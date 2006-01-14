@@ -18,8 +18,8 @@ class Flyspray
     {
         global $db;
         
-        //$this->startSession();
-        session_start()
+        $this->startSession();
+        //session_start();
         
         $res = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
 
@@ -399,28 +399,42 @@ class Flyspray
     // Start the session {{{
     function startSession()
     {
-        if (session_name() == 'PHPSESSID')
-        {
-            $names = array( 'GetFirefox',
-                            'UseLinux',
-                            'NoMS',
-                            'Think',
-                            'BuyMeAMac',
-                            'FreeSoftware',
-                            'ReadTheFAQ',
-                          );
+        $names = array( 'GetFirefox',
+                        'UseLinux',
+                        'NoMicrosoft',
+                        'ThinkB4Replying',
+                        'BuyTonyAMac',
+                        'FreeSoftware',
+                        'ReadTheFAQ',
+                        'RTFM',
+                        'VisitAU',
+                        'SubliminalAdvertising',
+                      );
         
-            $rand_key = array_rand($names);
-
-            $sessname = $names[$rand_key];
-        } else
+        foreach ($names as $val)
         {
-            $sessname = session_name();
+            session_name($val);
+            session_start();
+            
+            if (isset($_SESSION['SESSNAME']))
+            {
+                $sessname = $_SESSION['SESSNAME'];
+                break;
+            }
+            session_destroy();
+            setcookie(session_name(), '', time()-60, '/');
         }
-
-        session_name($sessname);
-        session_start();
-    
+                
+        if (empty($sessname))
+        {
+            $rand_key = array_rand($names);
+            $sessname = $names[$rand_key];
+            session_name($sessname);
+            session_start();
+            $_SESSION['SESSNAME'] = $sessname;
+        }
+        
+            
     }  // }}}
 
 

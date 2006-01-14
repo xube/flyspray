@@ -270,14 +270,14 @@ function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
         $show_date = $novaldesc;
     }
     
-    $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
+    //$format_id  = $extended ? 'dateformat_extended' : 'dateformat';
     $dateformat = '';
     if(!$user->isAnon()) {
-        $dateformat = $user->infos[$format_id];
+        $dateformat = $user->infos['dateformat'];
     }
 
     if(!$dateformat) {
-        $dateformat = $fs->prefs[$format_id];
+        $dateformat = $fs->prefs['dateformat'];
     }
 
     if(!$dateformat) {

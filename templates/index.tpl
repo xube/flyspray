@@ -6,12 +6,6 @@
 </div>
 <?php endif; ?>
 
-<?php 
-// Testing for the new sessionStart() function
-//echo 'session name is ' . session_name(); 
-//echo '<br /><br />';
-?>
-
 <div id="search">
   <map id="projectsearchform" name="projectsearchform">
     <form action="index.php" method="get">
