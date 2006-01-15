@@ -19,7 +19,6 @@ class Flyspray
         global $db;
         
         $this->startSession();
-        //session_start();
         
         $res = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
 
@@ -175,12 +174,18 @@ class Flyspray
         return $get_details;
     } // }}}
     // List projects {{{
-    function listProjects()
+    function listProjects($activeOnly=true)
     {
         global $db;
+        
+        $query = 'SELECT  project_id, project_title FROM {projects}';
+        
+        if ($activeOnly)  {
+            
+            $query .= " WHERE  project_is_active = 1";
+        }
 
-        $sql = $db->Query('SELECT  project_id, project_title FROM {projects}
-                            WHERE  project_is_active = 1');
+        $sql = $db->Query($query);
         return $db->fetchAllArray($sql);
     } // }}}
     // List themes {{{

@@ -73,12 +73,12 @@ if (!isset($_REQUEST['username']))
          <option value="getVersion">Get Flyspray version information</option>
          <option value="getTask">Get Task Information</option>
          <option value="getUser">Get User Information</option>
-         <option value="getTaskTypeList">getTaskTypeList</option>
-         <option value="getCategoryList">getCategoryList</option>
          <option value="getNewTaskData">getNewTaskData</option>
          <option value="getArrayListForName">getArrayListForName</option>
          <option value="createNewTask">createNewTask</option>
          <option value="openTask">openTask (with sample data)</option>
+         <option value="filterTasks">Filter tasks</option>
+          <option value="getProjects">getProjects</option>
          </select>
          </td>
          </tr>
@@ -94,7 +94,18 @@ if (!isset($_REQUEST['username']))
          <td>Array name:</td>
          <td><input name="arrayname" type="text" size="16" value="status"/></td>
          </tr>
-
+		  <tr id="getProjectIdForm">
+		  <td>Project id:</td>
+		  <td><input name="projectid" type="text" size="16" value="2"/></td>
+		  </tr>
+          <tr id="getSearchTermForm">
+		  <td>Seach String:</td>
+		  <td><input name="filterSearch" type="text" size="20" value=""/></td>
+		  </tr>
+          <tr id="activeProjectsOnlyForm">
+		  <td>Active Projects Only:</td>
+		  <td><input name="activeOnly" type="checkbox" checked/></td>
+		  </tr>
          <tr>
          <td colspan="2"><hr /></td>
          </tr>
@@ -135,7 +146,7 @@ else
    // Enable debug for testing
    if (isset($_REQUEST['debug']) && $_REQUEST['debug'] == '1')
       $client->debug = true;
-
+   
    $action = $_REQUEST['action'];
    $msg = "";
 
@@ -153,25 +164,26 @@ else
       showResponse($response);
    }
 
-   if ("getTaskTypeList" == $action) {
-      $response = remoteCall("fs.getTaskTypeList");
+   /*if ("getTaskTypeList" == $action) {
+      $response = remoteCall("fs.getTaskTypeList",array("projectid"=>$_REQUEST['projectid']));
       showResponse($response);
    }
-
-   if ("getCategoryList" == $action) {
-      $response = remoteCall("fs.getCategoryList");
+*/
+   if ("getProjects" == $action) {
+      $response = remoteCall("fs.getProjects",array("activeonly"=>$_REQUEST['activeOnly']));
       showResponse($response);
    }
+   
 
    if ("getNewTaskData" == $action) {
 
-      $response = remoteCall("fs.getNewTaskData");
+      $response = remoteCall("fs.getNewTaskData",array("projectid"=>$_REQUEST['projectid']));
       showResponse($response);
    }
 
    if ("getArrayListForName" == $action) {
 
-      $response = remoteCall("fs.getArrayListForName",$_REQUEST['arrayname']);
+      $response = remoteCall("fs.getArrayListForName",array("arrayname"=>$_REQUEST['arrayname'],"projectid"=>$_REQUEST['projectid']));
       showResponse($response);
    }
 
@@ -180,7 +192,14 @@ else
       $response = remoteCall("fs.getVersion");
       showResponse($response);
    }
+   
+   if ("filterTasks" == $action) {
 
+       $filterTaskData['search'] = $_REQUEST['filterSearch'];
+       
+       $response = remoteCall("fs.filterTasks",$filterTaskData);
+       showResponse($response);
+   }
 
    if ("createNewTask" == $action) {
       $response = remoteCall("fs.getNewTaskData");
@@ -198,13 +217,14 @@ else
          <input type="hidden" name="debug" value="<?php echo $_REQUEST['debug']?>" />
          <input type="hidden" name="do" value="modify" />
          <input type="hidden" name="action" value="newTask" />
-         <input type="hidden" name="project_id" value="1" />
+         <input type="hidden" name="project_id" value="<?php echo $_REQUEST['projectid']?>" />
          <input type="hidden" name="username" value="<?php echo $_REQUEST['username']?>">
          <input type="hidden" name="password" value="<?php echo $_REQUEST['password']?>">
          <input type="hidden" name="url" value="<?php echo $_REQUEST['url']?>">
          <label for="itemsummary">Summary</label>
             </td>
-            <td><input id="itemsummary" type="text" name="item_summary" size="50" maxlength="100" /></td></tr>
+            <td><input id="itemsummary" type="text" name="item_summary" size="50" maxlength="100" /> 
+Project: <? echo $response->value['projectList'][$_REQUEST['projectid']];?></td></tr>
 
             </table>
             <div id="taskfields1">
@@ -339,7 +359,7 @@ else
 
       $taskArray = $_REQUEST;
 
-      $taskArray['project_id'] = 1;
+      //$taskArray['project_id'] = 1;
 
 
 
@@ -423,6 +443,7 @@ function menuForArray($array,$name)
 function remoteCall($name,$args=array())
 {
    global $client;
+
    $params = array(new xmlrpcval($_REQUEST['username']),new xmlrpcval($_REQUEST['password']),php_xmlrpc_encode($args));
    $msg = new xmlrpcmsg($name, $params);
 

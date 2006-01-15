@@ -381,6 +381,29 @@ class Backend
    */
    function GenerateTaskList($args)
    {
+       global $fs;
+       
+       $taskIdList =  $this->getTaskIdList($args);
+       
+       $taskList = array();
+       
+       foreach($taskIdList as $taskId) {
+           
+           $taskList[] = $fs->GetTaskDetails($taskId);
+       }
+      
+       return $taskList;
+   }
+    
+   /*
+      This function takes an array of arguments and returns a list of 
+      task ids that match.
+    
+    Originally all of this was in generateTaskList but it got refactored
+    to support the xmlrpc interface
+    */
+   function getTaskIdList($args) 
+   {
       if (!is_array($args))
          return "We were not given an array of arguments to process.";
 
@@ -414,7 +437,7 @@ class Backend
             OR !is_numeric($sev)
             OR !is_numeric($dev)
             OR !is_numeric($cat)
-            OR !is_numeric($status)
+            //OR !is_numeric($status) // ok to remove? e.g. status can be 'closed'
             OR !is_numeric($due)
             OR !is_numeric($limit)
          )
@@ -554,7 +577,7 @@ class Backend
       $tasklist = array();
 
       while ($row = $db->FetchArray($search))
-         $tasklist[] = $fs->GetTaskDetails($row['task_id']);
+         $tasklist[] = $row['task_id'];
 
       return $tasklist;
 

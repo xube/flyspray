@@ -29,18 +29,20 @@ define('CREATE_TASK_FAILED',-4);    //Error creating task
 // Get the main headerfile.  It calls other important files
 require('header.php');
 
+require('includes/class.tpl.php');
+
 $lang = "en";
 
 
 // define a version for this interface so that clients can figure out
 // if a particular function is available
 // not sure how this should work, but increase the number if a function gets added
-define('FS_XMLRPC_VERSION','1.0');
+define('FS_XMLRPC_VERSION','1.2');
 
 
 // use xmlrpc library (library + server library)
-require_once $conf['general']['baseurl'] . 'includes/xmlrpc.inc';
-require_once $conf['general']['baseurl'] . 'includes/xmlrpcs.inc';
+require_once $conf['general']['basedir'] . 'includes/xmlrpc.inc';
+require_once $conf['general']['basedir'] . 'includes/xmlrpcs.inc';
 
 //////////////////////////////////////////////////
 // Login/Authentication functions               //
@@ -89,12 +91,80 @@ function xmlrpcEncodedArrayResponse($data)
       return new xmlrpcresp(php_xmlrpc_encode($data));
 }
 
+
+/**
+    sets a default value of zero
+**/
+function valueOrZero($value)
+{
+    
+    if ($value)
+        return $value;
+    else
+        return 0;
+}
+
+
+
+function setProject($project_id) 
+{
+	global $fs;
+	global $proj;
+	
+   // get a list of valid projects
+   
+   $projectList = projectListArray();
+   
+   // use project if valid id, otherwise use the default
+   
+   if (array_key_exists($project_id,$projectList)) {
+      
+      $proj = new Project($project_id);
+   } else {
+      
+      $proj = new Project($fs->prefs['default_project']);
+   }
+   
+	
+}
+
+/**
+    returns a list of projects 
+    pass in false as argument 2 to get a list of all projects
+    or true (default) to get active projects only
+    (arg 0 is username, 1 is password)
+**/
+function getProjects($args)
+{
+    global $proj;
+    $activeOnly = false;
+    
+    $user_id = checkRPCLogin($args);
+    
+    // if the user doesn't hava a valid login then return an error response
+    if (!$user_id) {
+        return loginErrorResponse();
+    }
+    
+    
+    $taskArgs = php_xmlrpc_decode($args->getParam(2));
+    
+    $activeOnly = $taskArgs['activeonly'];
+    
+    $array = projectListArray($activeOnly);
+    
+    return xmlrpcEncodedArrayResponse($array);
+}
+
+
+
 //////////////////////////////////////////////////
 // Start of function to return a task's details //
 //////////////////////////////////////////////////
 function getTask($args)
 {
    global $fs;
+   
 
    $task_id    = php_xmlrpc_decode($args->getParam(2));
 
@@ -114,7 +184,9 @@ function getTask($args)
    $task_details = $fs->getTaskDetails($task_id);
 
    // Get the user's permissions for the project this task belongs to
-   $permissions = $fs->getPermissions($user_id, $task_details['attached_to_project']);
+   
+   $user = new user($user_id);
+   $permissions = $user->get_perms($task_details['attached_to_project']);
 
    // If the task doesn't exist, stop.
    if (!is_numeric($task_details['task_id']))
@@ -132,31 +204,31 @@ function getTask($args)
       return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to perform this function.');
 
    $result = array (
-                  'task_id'              =>    $task_details['task_id'],
-                  'attached_to_project'  =>    $task_details['project_title'],
-                  'task_type'            =>    $task_details['tasktype_name'],
-                  'date_opened'          =>    $task_details['date_opened'],
-                  'opened_by'            =>    $task_details['opened_by_name'],
-                  'is_closed'            =>    $task_details['is_closed'],
-                  'date_closed'          =>    $task_details['date_closed'],
-                  'closed_by'            =>    $task_details['closed_by_name'],
-                  'closure_comment'      =>    $task_details['closure_comment'],
-                  'item_summary'         =>    $task_details['item_summary'],
-                  'detailed_desc'        =>    tpl_formatText($task_details['detailed_desc']),
-                  'item_status'          =>    $task_details['status_name'],
-                  'assigned_to'          =>    $task_details['assigned_to_name'],
-                  'resolution_reason'    =>    $task_details['resolution_name'],
-                  'product_category'     =>    $task_details['category_name'],
-                  'product_version'      =>    $task_details['reported_version_name'],
-                  'closedby_version'     =>    $task_details['due_in_version_name'],
-                  'operating_system'     =>    $task_details['os_name'],
-                  'task_severity'        =>    $task_details['severity_name'],
-                  'task_priority'        =>    $task_details['priority_name'],
-                  'last_edited_by'       =>    $task_details['last_edited_by_name'],
-                  'last_edited_time'     =>    $task_details['last_edited_time'],
-                  'percent_complete'     =>    $task_details['percent_complete'],
-                  'mark_private'         =>    $task_details['mark_private'],
-               );
+                     'task_id'              =>    $task_details['task_id'],
+                     'attached_to_project'  =>    $task_details['project_title'],
+                     'task_type'            =>    $task_details['tasktype_name'],
+                     'date_opened'          =>    $task_details['date_opened'],
+                     'opened_by'            =>    $task_details['opened_by_name'],
+                     'is_closed'            =>    $task_details['is_closed'],
+                     'date_closed'          =>    $task_details['date_closed'],
+                     'closed_by'            =>    $task_details['closed_by_name'],
+                     'closure_comment'      =>    $task_details['closure_comment'],
+                     'item_summary'         =>    tpl_formattext($task_details['item_summary']),
+                     'detailed_desc'        =>    tpl_formattext($task_details['detailed_desc']),
+                     'item_status'          =>    $task_details['status_name'],
+                     'assigned_to'          =>    $task_details['assigned_to_name'],
+                     'resolution_reason'    =>    $task_details['resolution_name'],
+                     'product_category'     =>    $task_details['category_name'],
+                     'product_version'      =>    $task_details['reported_version_name'],
+                     'closedby_version'     =>    $task_details['due_in_version_name'],
+                     'operating_system'     =>    $task_details['os_name'],
+                     'task_severity'        =>    $task_details['severity_name'],
+                     'task_priority'        =>    $task_details['priority_name'],
+                     'last_edited_by'       =>    $task_details['last_edited_by_name'],
+                     'last_edited_time'     =>    $task_details['last_edited_time'],
+                     'percent_complete'     =>    $task_details['percent_complete'],
+                     'mark_private'         =>    $task_details['mark_private'],
+                   );
 
    return xmlrpcEncodedArrayResponse($result);
 
@@ -221,12 +293,26 @@ function arrayForQuery($query,$keyName,$valueName,$queryParam=array())
 {
    global $db;
 
-   $get_severity = $db->query($query,$queryParam);
+   $arrayQuery = $db->query($query,$queryParam);
 
-   while ($row = $db->FetchArray($get_severity)) {
+   return rotateArray($db->fetchAllArray($arrayQuery),$keyName,$valueName);
+}
+
+
+/**
+** takes an array that consists of key->value pairs and returns a pair consisting of the key keyName and the value ValueName
+** taken from the array. Useful for extracting data from adodb queries
+**/
+function rotateArray($array,$keyName,$valueName)
+{
+   
+   $result = array();
+   
+   foreach($array as $row) {
+      
       $result[$row[$keyName]] = $row[$valueName];
-
-   };
+      
+   }
    return $result;
 }
 
@@ -236,16 +322,22 @@ function arrayForQuery($query,$keyName,$valueName,$queryParam=array())
 **/
 function taskTypeArray()
 {
-   return arrayForQuery("SELECT tasktype_id, tasktype_name FROM flyspray_list_tasktype ORDER BY list_position"
-                        ,'tasktype_id','tasktype_name');
+   global $proj;
+	
+   return rotateArray($proj->listTaskTypes(),"tasktype_id","tasktype_name");
+	
+	
 }
 /**
 ** returns an array of possible task category values
 **/
 function categoryArray()
 {
-   return arrayForQuery("SELECT category_id, category_name FROM flyspray_list_category ORDER BY list_position"
-                        ,'category_id','category_name');
+	
+   global $proj;
+	
+   return rotateArray($proj->listCatsIn(),"category_id","category_name");
+	
 }
 /**
 ** returns an array of possible task status values
@@ -289,20 +381,19 @@ function operatingSystemArray()
 {
    global $proj;
 
-   return arrayForQuery("SELECT os_id, os_name FROM flyspray_list_os WHERE project_id = ? AND show_in_list = ? ORDER BY list_position"
-                        ,'os_id','os_name',array($proj->id, '1'));
+   return rotateArray($proj->listOs(),'os_id','os_name');
 
 }
 
 /**
 ** returns a list of versions that a task can be reported as occurring in
-**/
+ **/
 function reportedVersionArray()
 {
-    global $proj;
-
-   return arrayForQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",'version_id','version_name',array($proj->id, '1', '2'));
-
+   global $proj;
+   
+   return rotateArray($proj->listVersions(false,2),'version_id','version_name');
+   
 }
 
 
@@ -313,14 +404,9 @@ function reportedVersionArray()
 **/
 function dueInVersionArray()
 {
-  global $proj;
-
-   $result = arrayForQuery("SELECT version_id, version_name FROM flyspray_list_version WHERE project_id = ? AND show_in_list = ? AND version_tense = ? ORDER BY list_position",'version_id','version_name',array($proj->id, '1', '3'));
-   // note undecided should appear at the top of the list
-   array_unshift($result,'undecided');
-
-
-   return $result;
+   global $proj;
+   
+   return rotateArray($proj->listVersions(false,3),'version_id','version_name');
 
 }
 
@@ -333,9 +419,21 @@ function assignedUserListArray()
 {
    global $proj;
 
-   $query = "SELECT user_id, real_name from {users}";
+   return $proj->UserList();
+   
+}
 
-   return arrayForQuery($query,'user_id','real_name');
+
+/**
+** returns a list of projects
+ ** @BUG currently it doesn't handle groups (how?)
+ ** @FIXME
+ **/
+function projectListArray($activeOnly=true)
+{
+   
+   global $fs;
+   return rotateArray($fs->listProjects($activeOnly),'project_id','project_title');
 }
 
 /**
@@ -352,6 +450,7 @@ function taskDataArray()
    $result['reportedVersion'] = reportedVersionArray();
    $result['dueInVersion'] = dueInVersionArray();
    $result['assignedUserList'] = assignedUserListArray();
+   $result['projectList'] = projectListArray();
 
    return $result;
 }
@@ -379,6 +478,11 @@ function resultFromQueryAsArray($args,$arrayName)
       return loginErrorResponse();
    }
 
+   $argData = php_xmlrpc_decode($args->getParam(2));
+   
+   // set current project
+   setProject($argData['projectid']);
+   
    $array = getArrayData($arrayName);
 
    // return the array as a xmlrpc response
@@ -388,12 +492,20 @@ function resultFromQueryAsArray($args,$arrayName)
 }
 
 
-
 function getArrayListForName($args)
 {
+   global $proj;
+   
    $requestedArray = php_xmlrpc_decode($args->getParam(2));
-
-   return resultFromQueryAsArray($args,$requestedArray);
+   
+   $project_id = $requestedArray['projectid'];
+   
+   
+   setProject($project_id);
+   
+   //echo  "projectid = $proj->id, $project_id";
+   
+   return resultFromQueryAsArray($args,$requestedArray['arrayname']);
 }
 
 
@@ -419,6 +531,8 @@ function getArrayData($arrayName)
          return dueInVersionArray();
       case "assignedUserList":
          return assignedUserListArray();
+      case "projectList":
+         return projectListArray();
       default:
       case "taskData":
          return taskDataArray();
@@ -430,7 +544,7 @@ function getArrayData($arrayName)
 
 // wrapper functions for some commonly used arrays
 
-function getTaskTypeList($args)
+/*function getTaskTypeList($args)
 {
    return resultFromQueryAsArray($args,"taskType");
 
@@ -440,7 +554,7 @@ function getCategoryList($args)
 {
    return resultFromQueryAsArray($args,"category");
 
-}
+}*/
 
 function getStatusList($args)
 {
@@ -467,10 +581,13 @@ function openTask($args)
    global $fs;
    global $db;
    global $be;
+   global $proj;
+   
    include_once('includes/notify.inc.php');
    $notify = new Notifications();
 
-
+   
+   
    $taskData   = php_xmlrpc_decode($args->getParam(2));
 
    // First, check the user has a valid, active login.  If not, then stop.
@@ -482,14 +599,19 @@ function openTask($args)
    if (!$user_id) {
       return loginErrorResponse();
    }
+   
+   
+   
+   setProject($taskData['project_id']);
 
    // Get the task details
    $task_details = @$fs->getTaskDetails($task_id);
 
    // Get the user's permissions for the project this task belongs to
-   $permissions = $fs->getPermissions($user_id, $taskData['project_id']);
+   $user = new user($user_id);
+   $user->get_perms($proj);
 
-
+   $permissions = $user->perms;
 
 
    // compulsory args
@@ -521,12 +643,14 @@ function openTask($args)
 
 
    // get permissions for the project
-   $project_prefs = $fs->GetProjectPrefs($taskData['project_id']);
+   $project_prefs = $proj->prefs;
+   
+   
 
    // check permissions here rather than waiting until we get to
    // the backend module. Saves time and effort
    if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1') {
-      return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to perform this function.');
+      return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to open a new task.');
    }
 
 
@@ -585,7 +709,8 @@ function closeTask($args)
    $task_details = @$fs->getTaskDetails($task_id);
 
    // Get the user's permissions for the project this task belongs to
-   $permissions = $fs->getPermissions($user_id, $task_details['attached_to_project']);
+   $user = new user($user_id);
+   $permissions = $user->get_perms($task_details['attached_to_project']);
 
    // If the task doesn't exist, stop.
    if (!is_numeric($task_details['task_id']))
@@ -673,7 +798,8 @@ function getUser($args)
    }
 
    // Get the user's permissions
-   $permissions = $fs->getPermissions($user_id, true);
+   $user = new user($user_id);
+   $permissions = $user->get_perms($task_details['attached_to_project']);
 
    if ($permissions['is_admin'] == '1' or $user_id == $req_user)
    {
@@ -705,18 +831,97 @@ function getUser($args)
 }
 
 
-// Define the server
-$server = new xmlrpc_server(array(
-                                  'fs.getVersion' => array( 'function' => 'getVersion' ),
-                                  'fs.getTask' =>  array( 'function' => 'getTask' ),
-                                  'fs.getUser' =>  array( 'function' => 'getUser' ),
-                                  'fs.closeTask' =>  array( 'function' => 'closeTask' ),
-                                  'fs.getTaskTypeList' =>  array( 'function' => 'getTaskTypeList' ),
-                                  'fs.getCategoryList'=>  array( 'function' => 'getCategoryList' ),
-                                  'fs.getNewTaskData'=>  array( 'function' => 'getNewTaskData'),
-                                  'fs.openTask' => array( 'function' => 'openTask'),
-                                  'fs.getArrayListForName' => array( 'function' => 'getArrayListForName')
-                                 )
-                            );
 
+////////////////////////////////////////////////////
+// Start of function to list tasks with filtering //
+////////////////////////////////////////////////////
+function filterTasks($args)
+{
+   
+   global $fs;
+   global $db;
+   global $be;
+   global $proj;
+   
+   
+   $user_id = checkRPCLogin($args);
+   
+   // if the user doesn't have a valid login then return an error response
+   if (!$user_id) {
+      return loginErrorResponse();
+   }
+   
+   $requestArgs = php_xmlrpc_decode($args->getParam(2));
+   
+   
+   //error_log(print_r($requestArgs,true));
+   
+   if (empty($requestArgs['project_id'])) {
+      $requestArgs['project_id'] = $proj->id;
+   } else {
+      $proj = new Project($requestArgs['project_id']);
+   }
+   
+   // Compare permissions to view this task
+   if ($user->perms['view_tasks'] == '1' OR $user->perms['global_view'] == '1' OR $proj->prefs['others_view'] == '1') {
+      $can_view = true;
+   }
+   
+   if (!$can_view) {
+      return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to perform this function.');
+   }
+   
+   
+   // clean up the input arguments
+   if ($requestArgs['status_id'] == "not closed") {
+         $requestArgs['status_id'] = "";
+   }
+   
+   if ($requestArgs['limit'] <= 0) {
+        $requestArgs['limit'] = -1;
+   }
+   
+   // build the task array
+   
+   $taskArgs[0] = $user_id;
+   $taskArgs[1] = valueOrZero($requestArgs['project_id']);
+   $taskArgs[2] = $requestArgs['tasks_req'];
+   $taskArgs[3] = $requestArgs['search'];
+   $taskArgs[4] = valueOrZero($requestArgs['type_id']);
+   $taskArgs[5] = valueOrZero($requestArgs['severity_id']);
+   $taskArgs[6] = valueOrZero($requestArgs['user_id']);
+   $taskArgs[7] = valueOrZero($requestArgs['category_id']);
+   $taskArgs[8] = $requestArgs['status_id'];
+   $taskArgs[9] = valueOrZero($requestArgs['due_in_version_id']);
+   $taskArgs[10] = $requestArgs['due_date'];
+   $taskArgs[11] = $requestArgs['limit'];
+ 
+   
+   
+   // can't yet do os_id or priority_id
+   // need to add this to backend.class.php
+   
+   // get the task list (use the id only function)
+   $taskList = $be->getTaskIdList($taskArgs);
+   
+   
+   // return to client
+   return xmlrpcEncodedArrayResponse($taskList);
+   // end of filter tasks function   
+}
+
+// Define the server
+
+$server = new xmlrpc_server(NULL,0);
+
+$server->add_to_map('fs.getVersion','getVersion',NULL,NULL);
+$server->add_to_map('fs.getTask','getTask',NULL,NULL);
+$server->add_to_map('fs.getUser','getUser',NULL,NULL);
+$server->add_to_map('fs.closeTask','closeTask',NULL,NULL);
+$server->add_to_map('fs.getNewTaskData','getNewTaskData',NULL,NULL);
+$server->add_to_map('fs.openTask','openTask',NULL,NULL);
+$server->add_to_map('fs.getArrayListForName','getArrayListForName',NULL,NULL);
+$server->add_to_map('fs.filterTasks','filterTasks',NULL,NULL);
+$server->add_to_map('fs.getProjects','getProjects',NULL,NULL);
+$server->service();
 ?>
