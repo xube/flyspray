@@ -10,7 +10,7 @@ $conf    = @parse_ini_file($basedir . '/flyspray.conf.php', true);
 
 // If it is empty, or lacks 0.9.8 variables, take the user to the setup page
 if (count($conf) == 0 || !isset($conf['general']['baseurl'])) {
-    header('Location: setup/index.php');
+    header('Location:'. 'http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') .  "/" .'setup/index.php');
     exit;
 }
 if (substr($baseurl = $conf['general']['baseurl'], -1) != '/') {

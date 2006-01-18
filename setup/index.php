@@ -12,9 +12,9 @@
 
 session_start();
 
-error_reporting(0);
+//error_reporting(0);
 
-if (file_exists('../flyspray.conf.php') && (count($config = parse_ini_file('../flyspray.conf.php', true)) > 0) )
+if ( is_readable ('../flyspray.conf.php') && (count($config = parse_ini_file('../flyspray.conf.php', true)) > 0) )
 {
    die('Flyspray Already Installed. Delete the contents of flyspray.conf.php to run setup.');
 }
@@ -39,6 +39,15 @@ define('APPLICATION_WEB_ROOT', str_replace('setup',"",APPLICATION_SETUP_INDEX));
 define('APPLICATION_PATH', realpath('../') );
 define('OBJECTS_PATH', realpath('../includes') );
 define('TEMPLATE_FOLDER', realpath('templates/'));
+
+if (substr(PHP_OS, 0, 3) == 'WIN') {
+
+  define('IS_MSWIN', true);
+
+} else {
+
+  define('IS_MSWIN', false);
+}
 
 require_once(OBJECTS_PATH . '/template.php');
 require_once(OBJECTS_PATH . '/functions.inc.php');
@@ -111,6 +120,7 @@ class Setup extends Flyspray
       $this->mSupportedDatabases	=
                            array(
                                  'MySQL' => array(TRUE, 'mysql_connect', 'mysql'),
+                                 'MySQLi' => array(TRUE,'mysqli_connect','mysql'),
                                  'Postgres' => array(TRUE, 'pg_connect', 'pgsql'),
                               );
       $this->mAvailableDatabases	= array();
@@ -121,7 +131,7 @@ class Setup extends Flyspray
                                     1 => array ('Install 0.9.8' => '/sql/flyspray-0.9.8', 'dependency' => '', 'function' => 'InstallPointNineEight'),
                                     2 => array ('Upgrade 0.9.7 - 0.9.8' => '/sql/upgrade_0.9.7_to_0.9.8', 'dependency' => '3', 'function' => 'UpgradePointNineSeven'),
                                     // Only for testing3 => array ('Install 0.9.7' => '/sql/flyspray-0.9.7', 'dependency' => '', 'function' => 'InstallPointNineSeven'),
-                                 ); 
+                                 );
 
       $this->mServerSoftware		= (strstr($_SERVER['SERVER_SOFTWARE'], 'Apache'))
                            ? 'apache'
@@ -163,7 +173,7 @@ class Setup extends Flyspray
          if (substr($path, -1, 1) == DIRECTORY_SEPARATOR)
          {
             // If file exists, transfer the values and quit the foreach loop
-            if (file_exists($path . $includeFile))
+            if (is_file($path . $includeFile))
             {
                $where_path = $path . $includeFile;
                break;
@@ -172,7 +182,7 @@ class Setup extends Flyspray
          else
          {
             // Include the "directory separator" in the scan
-            if (file_exists($path . DIRECTORY_SEPARATOR . $includeFile))
+            if (is_readable($path . DIRECTORY_SEPARATOR . $includeFile))
             {
                $where_path = $path . DIRECTORY_SEPARATOR . $includeFile;
                break;
@@ -296,19 +306,41 @@ class Setup extends Flyspray
       // Return an html formated Yes/No string
       return $this->ReturnStatus($this->mPhpVersionStatus, $type = 'yes');
    }
-   
+
    function CheckPhpCli()
    {
-		exec("php -v", $output, $php_cli);
-		if ($php_cli && $output)
-		{
+    // is executable doesn't exist in windows before PHP 5.0.0
+   $executable_tester = (function_exists('is_executable')) ? 'is_executable' : 'is_file';
+
+   $php_binary = 'php' . (IS_MSWIN ? '.exe' : '');
+
+       /* Try to use PEAR::System __IF_AVAILABLE__(not an aditional
+         requirement for flyspray)
+         to _efectively_ locate the php binary */
+
+        if($this->ScanIncludePath('System.php')) {
+
+         include_once 'System.php';
+
+         /* if found in the system PATH an is_executable..returns the php binary path
+            if not, returns false */
+
+         if( @System::which($php_binary) ) {
+
+                $this->mPhpCliStatus = TRUE;
+                return $this->mPhpCliStatus;
+
+         }
+            // see: http://php.net/reserved.constants
+        }elseif($executable_tester( PHP_BINDIR . DIRECTORY_SEPARATOR . $php_binary)) {
+
 			$this->mPhpCliStatus = TRUE;
 			return $this->mPhpCliStatus;
-		}
-		else
-		{
+
+        } else {
+
 			return FALSE;
-		}
+        }
    }
 
    /**
@@ -594,7 +626,7 @@ class Setup extends Flyspray
          $filename = basename($url);
 
          // Open the file for writing
-         $fp = fopen("$downloadTo/$filename", 'w');
+         $fp = fopen("$downloadTo/$filename", 'wb');
 
          // Set an option for a CURL transfer
          curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -711,18 +743,18 @@ class Setup extends Flyspray
 
 		// Get the file name of the download
 		$filename = basename($url);
-	
+
 		// Set time-out for 15 minutes
 		set_time_limit(900);
-	
-		// Grab the file contents
+
+		// Grab the file contents ( this will fail if allow_url_fopen=Off )
 		$contents = file_get_contents($url);
-	
+
 		// If successful in getting file contents
 		if ($contents)
 		{
 			// If was able to open a handle to write to the file stream
-			if ($handle = fopen("$downloadTo/$filename", 'w'))
+			if ($handle = fopen("$downloadTo/$filename", 'wb'))
 			{
 				// If the contents was not written to file
 				if (fwrite($handle, $contents) === FALSE)
@@ -743,6 +775,7 @@ class Setup extends Flyspray
 				return FALSE;
 			}
 		}
+        //this will fail if the curl extension is not available
 		elseif ($this->FetchThroughCurl($url, $downloadTo))
 		{
 			return TRUE;
@@ -767,7 +800,7 @@ class Setup extends Flyspray
 		return FALSE;
       }
    }
-   
+
 
    function GetAdminInput($field, $value, $label)
    {
@@ -907,8 +940,8 @@ class Setup extends Flyspray
       }
       return $output;
    }
-   
-   
+
+
 	function GetReminderDaemonSelection($value)
 	{
 		$selection	= '';
@@ -967,19 +1000,21 @@ class Setup extends Flyspray
 
 		// where to download the libraries
 		$download_to = realpath('../adodb');
-		if (file_exists($download_to) && is_dir($download_to))
+
+		if (is_dir($download_to))
 		{
 			// Setup the Download URL's
-			$url ='http://dl.sourceforge.net/sourceforge/adodb/adodb465.tgz';
+            //prior adodb versions have a broken mysqli driver.
+			$url ='http://dl.sourceforge.net/sourceforge/adodb/adodb470.tgz';
 			$alternate_url = 'http://sourceforge.net/project/showfiles.php?group_id=42718';
-			
+
 			// If the libraries were downloaded successfully
 			if ( ($adodb_message = $this->DownloadFileToServer($url, $download_to, $alternate_url)) === TRUE)
 			{
 				// Specify locations to fetch file and un-compress archive to
 				$from_location = $download_to;
 				$uncompress_to = "$download_to/../";
-			
+
 				// If able to uncompress the archive. It will un-compress to the download location
 				if ( ($adodb_message = $this->UncompressFile($from_location, basename($url), $uncompress_to)) === TRUE )
 				{
@@ -1023,7 +1058,7 @@ class Setup extends Flyspray
       clearstatcache();
 
       // Return the status of the permission
-      return (file_exists($fileSystem) && is_writable($fileSystem))
+      return (is_writable($fileSystem))
       ? TRUE
       : FALSE;
    }
@@ -1237,10 +1272,10 @@ class Setup extends Flyspray
       $daemonise	= ( (isset($data['reminder_daemon'])) && ($data['reminder_daemon'] == 1) )
 					? 1
 					: 0;
-					
+
 	  // Double check the urls and paths slashes.
 	  $site_url			.= (substr($site_url, -1, 1) != '/') ? '/' : '';
-	  $absolute_path	= (substr($absolute_path, -1, 1) == DIRECTORY_SEPARATOR) 
+	  $absolute_path	= (substr($absolute_path, -1, 1) == DIRECTORY_SEPARATOR)
 	  					? substr($absolute_path, 0, (strlen($absolute_path)-1) ) : $absolute_path;
 
       $config	= array();
@@ -1268,7 +1303,7 @@ class Setup extends Flyspray
 
       $config_text = $config_intro . implode( "\n", $config );
 
-      if (is_writable('../flyspray.conf.php') && ($fp = fopen('../flyspray.conf.php', "w")))
+      if (is_writable('../flyspray.conf.php') && ($fp = fopen('../flyspray.conf.php', "wb")))
       {
          fputs($fp, $config_text, strlen($config_text));
          fclose($fp);
@@ -1356,9 +1391,10 @@ class Setup extends Flyspray
       $this->mDbConnection =& NewADOConnection(strtolower($data['db_type']));
 
       // Setting debugging for ADODB
-      $this->mDbConnection->debug = FALSE;
+      $this->mDbConnection->debug = TRUE;
 
       /* check hostname/username/password */
+
       if (!$this->mDbConnection->Connect($data['db_hostname'], $data['db_username'], $data['db_password'], $data['db_name']))
       {
          switch($error_number = $this->mDbConnection->MetaError())
@@ -1517,7 +1553,7 @@ class Setup extends Flyspray
    function DeleteTables($data, $table_list)
    {
       extract($data);
-      
+
       // Loop through the tables array
       foreach ($table_list as $table)
       {
@@ -1543,12 +1579,12 @@ class Setup extends Flyspray
       return TRUE;
    }
 
-   
+
    function DeleteSequences($data)
    {
       extract($data);
       $db_type	= strtolower($db_type);
-      
+
       if ($db_type != 'postgres') {
 	return TRUE;
       }
@@ -1723,7 +1759,7 @@ class Setup extends Flyspray
       $sql_file	= APPLICATION_PATH . "$file." . $this->mSupportedDatabases[$_POST['db_type']][2];
 
       // Check if the install/upgrade file exists
-      if (file_exists($sql_file) && is_file($sql_file))
+      if (is_readable($sql_file))
       {
          // Extract the variables to local namespace
          extract($data);
@@ -1735,7 +1771,7 @@ class Setup extends Flyspray
          // \ (backslash), " (double quotes), ' (simple quote) or any "special" character
          // that has a meaning for string processing.
          @set_magic_quotes_runtime(0);
-         $query = fread(fopen($sql_file, "r"), filesize($sql_file));
+         $query = fread(fopen($sql_file, "rb"), filesize($sql_file));
 
          // Re-set the magic quotes runtime settings
          @set_magic_quotes_runtime($mqr);
@@ -1880,13 +1916,13 @@ class Setup extends Flyspray
       $sql = trim($sql);
 	  switch (strtolower($db_type))
 	  {
-	  	
+
       	// Removes any lines that start with a # and --
       	//$sql = ereg_replace("\n#[^\n]*\n", "\n", $sql); // Doesn't work as expected
 		case 'mysql':
 			$sql = ereg_replace("#[^\n]*\n", "\n", $sql);
 		break;
-		
+
 		case 'postgres':
 			$sql = ereg_replace("--[^\n]*\n", "\n", $sql);
 		break;
@@ -2031,15 +2067,15 @@ class Setup extends Flyspray
 				// Fix the Attachments to be within the comments
 				// Get a list of the attachments
 				$sql	= "
-				SELECT 
+				SELECT
 					*
-				FROM 
+				FROM
 					$attachments_table
 				WHERE
 					comment_id < '1'
-				AND 
+				AND
 					date_added > '0'";
-				
+
 				$attachments = $this->mDbConnection->Execute($sql);
 				if ($attachments)
       			{
@@ -2048,27 +2084,27 @@ class Setup extends Flyspray
 					{
 						// Create a comment
 						$sql	= "
-						INSERT INTO 
+						INSERT INTO
 							flyspray_comments
 							(task_id, date_added, user_id, comment_text)
-						VALUES 
+						VALUES
 							( ?, ?, ?, ? )";
 						$data	= array($row['task_id'], $row['date_added'], $row['added_by'], $row['file_desc']);
 						$this->mDbConnection->Execute($sql, $data);
-					
+
 						// Retrieve the comment ID
 						$comment_sql	= "
 						SELECT
 							*
 						FROM
 							$comments_table
-						WHERE 
+						WHERE
 							comment_text = ?
-						ORDER BY 
+						ORDER BY
 							comment_id DESC";
-						
+
 						$comment = $this->mDbConnection->FetchRow($this->mDbConnection->Execute($comment_sql, array($row['file_desc'])));
-					
+
 						// Update the attachment entry to point it to the comment ID
 						$update_attachments	= "
 						UPDATE
@@ -2077,7 +2113,7 @@ class Setup extends Flyspray
 							comment_id = ?
 						WHERE
 							attachment_id = ?";
-						
+
 						$this->mDbConnection->Execute($update_attachments, array($comment['comment_id'], $row['attachment_id']));
 					}
 				}
@@ -2139,9 +2175,9 @@ class Setup extends Flyspray
             ? TRUE
             : FALSE;
          break;
-		 
+
 		 case 'folder':
-		 	return (file_exists($value) && is_dir($value))
+		 	return (is_dir($value))
 			? TRUE
 			: FALSE;
 		 break;
@@ -2194,7 +2230,7 @@ class Setup extends Flyspray
             foreach($templates[$name]['block'] as $section => $plugin)
             {
                // Check if the template exists before fetching. Else trigger an error.
-               if (file_exists($templates[$plugin]['path'] . '/' . $templates[$plugin]['template']))
+               if (is_file ($templates[$plugin]['path'] . '/' . $templates[$plugin]['template']))
                {
                   // Fetch the contents of the block and plug it into the appropriate section
                   $template[$name]->Set($section, $template[$plugin]->fetch($templates[$plugin]['template']));
@@ -2229,7 +2265,7 @@ class Setup extends Flyspray
             $template[$name]->SetVars($common_vars);
 
             // Check if the template exists before fetching and echoing. Else trigger an error.
-            if (file_exists($module['path'] . '/'. $module['template']))
+            if ( is_file ($module['path'] . '/'. $module['template']))
             {
                // Echo the final template and exit the script
                echo $template[$name]->Fetch($module['template']);

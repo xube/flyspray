@@ -6,7 +6,7 @@
 if (!empty($conf['debug']['validator'])) {
     $result = ob_get_clean();
 
-    $fd = fopen($basedir.'/attachments/valid.html', 'w');
+    $fd = fopen($basedir.'/attachments/valid.html', 'wb');
     fwrite($fd, $result);
     fclose($fd);
 
