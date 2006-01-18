@@ -1,46 +1,42 @@
-Flyspray -  A ten step getting-started guide.
+Flyspray -  A getting-started guide.
 
-Step One:  Unpack the compressed package into a directory where your web
-server can reach it.  It will extract into its own flyspray-version/ directory.
-If you're reading this, you've probably already done that.
+===== Preparing for install =====
+  * Unpack the compressed package into a directory where your webserver can reach it.
+    It will extract into its own flyspray-version/ directory.
+    >  tar -xzvf flyspray-version.tar.gz flyspray/
+  * Flyspray depends on ADOdb to provide support for different types of databases.
+    If you don't already have ADOdb installed, Flyspray Setup can install it for you.
+    If you want Setup to install ADOdb, then you need to make the adodb/ directory writeable
+    by the webserver.
+  * Flyspray comes with an empty flyspray.conf.php that Flyspray Setup needs to write to.
+    Make it writeable by the webserver.
+  * Create a Mysql database for Flyspray to use:
+    >  mysqladmin -u root -p create flyspray;
+  * Or, create a PostgreSQL database for Flyspray to use:
+    >  createuser -ADP flyspray;
+    >  createdb -E UNICODE -O flyspray flyspray;
+  * If you would like to attach files to Flyspray tasks and comments, make the attachments/
+    directory writeable by the webserver.
 
-Step Two:  Create a mysql database for Flyspray to use.  Here is one way to do
-that, from the unix/linux command line, entering your mysql root password when
-prompted:
+===== Installation =====
+  * Point your browser to http://yourserver/flyspray/ and follow along with Flyspray Setup.
+  * When Setup completes, you will be automatically logged-in, and taken to your user profile
+    where you can change  details such as your Real Name.
+  * If for some reason you can't use Flyspray Setup (or it doesn't work for you), then you could 
+    try installing without it <http://flyspray.rocks.cc/manual/hardcore_install>.
 
-mysqladmin -u root -p create flyspray
+If you would like to enable support for the Task Dependency Graphs feature <http://flyspray.rocks.cc/manual/dependencies%23task_dependency_graphs>,
+an optional additional package can be installed to enable it. Most operating systems have a package
+available for the free Graphviz <http://www.graphviz.org/> package, either in an OS-specific package
+or by download direct from the Graphviz site. This package is required for this feature until bug 612
+is implemented, after which your choice of an internet connection or the locally installed package
+are required. If you have installed this package, but it still isn't working, look at the top of the
+scripts/depends.php file in your Flyspray installation, and make sure the right path to the installed
+"dot" excutable is in place.
+(It is unknown if or how this feature works on Windows PCs, but bug 612 should make it accessible to those installations.)
 
-If you prefer PostgreSQL, create flyspray database user:
-
-createuser -ADP flyspray
-
-and then a database itself:
-
-createdb -E UNICODE -O flyspray flyspray
-
-Step Three:  Make flyspray.conf.php writeable by the webserver.
-
-Step Four:  If you need the setup program to install ADOdb for you, make the
-adodb/ directory writeable by the webserver.
-
-Step Five:  Point your browser to http://yourserver/flyspray-version/ and
-follow along with the setup script.
-
-Step Six: Click the Projects link to set up your project options, user groups
-and lists.
-
-Step Seven:  If you wish to be able to upload attachments, you will need to make
-the attachments/ directory writeable by the webserver process.  The easiest way
-to do this is to make it world writeable.  In unix/linux this is done like this:
-
-chmod a+rwx attachments
-
-Note that this could be a security issue.  You really should learn to make it
-only writable by the process running your webserver.
-
-Step Eight: Close the sample task, and begin adding your own.
-
-Step Nine:  To report any bugs in Flyspray or request developer support, see
-the 'Support' link on the Flyspray website - http://flyspray.rocks.cc/?p=Support
-
-Step Ten:  Flyspray 0.9.8 is so easy to set up, there is no step ten.  Enjoy!
+===== After installation =====
+  * Click the 'Manage Project' link to set up your project preferences, user groups and lists.
+  * Close the sample task, and start adding your own, real tasks.
+  * If you need help, read the documentation <http://flyspray.rocks.cc/manual/toc>,
+    faq <http://flyspray.rocks.cc/faq>, and support <http://flyspray.rocks.cc/support> pages.
