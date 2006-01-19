@@ -19,10 +19,9 @@ ini_set('arg_separator.output','&amp;');
 // MySQLi driver is _useless_ if zend.ze1_compatibility_mode is enabled 
 // in fact you should never use this setting,the damn thing does not work.
  
-#if(PHP_VERSION >= '5.0') {
-#
-#	ini_set('zend.ze1_compatibility_mode',0);
-#}
+if(PHP_VERSION >= '5.0') {
+	ini_set('zend.ze1_compatibility_mode',0);
+}
 
 // This is for retarded Windows servers not having REQUEST_URI
 if (!isset($_SERVER['REQUEST_URI']))

@@ -224,7 +224,7 @@ else
          <label for="itemsummary">Summary</label>
             </td>
             <td><input id="itemsummary" type="text" name="item_summary" size="50" maxlength="100" /> 
-Project: <? echo $response->value['projectList'][$_REQUEST['projectid']];?></td></tr>
+Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></td></tr>
 
             </table>
             <div id="taskfields1">
