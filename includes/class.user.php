@@ -30,6 +30,9 @@ class User
 
     /* misc functions {{{ */
     function didSearch() {
+        if(Get::has('tasks') && Get::val('tasks') != 'last') {
+            return true;
+        }
         foreach ($this->search_keys as $key) {
             if (Get::has($key)) {
                 return true;
@@ -38,7 +41,7 @@ class User
         return false;
     }
     
-    function save_search()
+    function save_search($do = 'index')
     {
         global $db, $baseurl;
         
@@ -50,8 +53,23 @@ class User
         $url->addfrom('get', $this->search_keys);
         
         // Only logged in users get to use the 'last search' functionality     
-        if ($this->didSearch()) {
-            if(Get::val('search_name')) {
+        if ($do == 'index') {
+            if(!$this->didSearch() || Get::val('tasks') == 'last') {
+                $arr = unserialize($this->infos['last_search']);
+                $_GET = array_merge($_GET, $arr);
+            }
+            
+            $arr = array();
+            foreach($this->search_keys as $key) {
+                $arr[$key] = Get::val($key);
+            }
+            
+            $db->Query("UPDATE  {users}
+                           SET  last_search = ?
+                         WHERE  user_id = ?",
+                        array(serialize($arr), $this->id));
+                        
+            if(Get::val('search_name') && $this->didSearch()) {
                 $db->Query('UPDATE {searches} SET search_string = ?, time = ? WHERE user_id = ? AND name = ?',
                             array($url->get(false), time(), $this->id, Get::val('search_name')));
                 if(!$db->affectedRows()) {
@@ -59,11 +77,6 @@ class User
                                 array($this->id, Get::val('search_name'), $url->get(false), time()));
                 }
             }
-            // save last search here
-            //$db->Query("UPDATE  {users}
-            //       SET  last_search = ?
-            //     WHERE  user_id = ?",
-            //array(...));
         }
         
         $sql = $db->Query('SELECT * FROM {searches} WHERE user_id = ? ORDER BY time DESC', array($this->id));

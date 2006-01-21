@@ -41,7 +41,7 @@ while ($row = $db->FetchArray($milestones)) {
                          array($row['version_id'], $proj->id));
     $tasks = $db->fetchAllArray($tasks);
     
-    $data[] = array('open_tasks' => $tasks, 'percent_complete' => $percent_complete,
+    $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks, 'percent_complete' => $percent_complete,
                     'all_tasks' => $all_tasks, 'name' => $row['version_name']);
 }
 

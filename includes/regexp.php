@@ -26,7 +26,7 @@ $check['order']         = array('id', 'proj', 'type', 'date', 'sev', 'cat', 'os'
                                 'openedby', 'reportedin', 'assignedto', 'prog', 'duedate');
 $check['sort']          = array('asc', 'desc');
 $check['report']        = array('summary', 'changelog', 'events', 'severity', 'age');
-$check['tasks']         = array('all', 'assigned', 'reported', 'watched');
+$check['tasks']         = array('all', 'assigned', 'reported', 'watched', 'last');
 $check['email_address'] = "/^[a-z0-9._\-']+(?:\+[a-z0-9._-]+)?@([a-z0-9.-]+\.)+[a-z]{2,4}+$/i";
 $check['magic']         = '/^[a-zA-Z0-9_-]+$/';
 $check[$_SESSION['SESSNAME']] = '/^[a-zA-Z0-9]+$/';

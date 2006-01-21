@@ -65,5 +65,6 @@ $language = array (
 // Added in version 0.9.9
 'permissionsforproject'    =>    'Permissions for ',
 'switchto'                 =>    'Switch to',
+'lastsearch'               =>    'Last search',
 );
 ?>

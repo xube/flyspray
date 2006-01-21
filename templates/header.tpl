@@ -67,7 +67,8 @@
                   echo tpl_options(array(
                               'assigned' => $language['tasksassigned'],
                               'reported' => $language['tasksreported'],
-                              'watched'  => $language['taskswatched']), Get::val('tasks'));
+                              'watched'  => $language['taskswatched'],
+                              'last'     => $language['lastsearch']), Get::val('tasks'));
               }
               ?>
             </select>

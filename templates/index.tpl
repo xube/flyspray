@@ -10,7 +10,6 @@
   <map id="projectsearchform" name="projectsearchform">
     <form action="index.php" method="get">
       <div>
-        <input type="hidden" name="tasks" value="{Get::val('tasks')}" />
         <?php if(Get::val('project') == '0'): ?>
         <input type="hidden" name="project" value="0" />
         <?php else: ?>
