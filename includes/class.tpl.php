@@ -444,15 +444,15 @@ function tpl_formattext($text, $onyfs = false)
         $Renderer->entities = getEntities();
         $Renderer->acronyms = getAcronyms();
         $Renderer->interwiki = getInterwiki();
+
+        $conf = $fs_conf;
         
         // Loop through the instructions
         foreach ($instructions as $instruction) {
             // Execute the callback against the Renderer
             call_user_func_array(array(&$Renderer, $instruction[0]), $instruction[1]);
         }
-        
-        $conf = $fs_conf;
-        
+              
         // Display the output
         if (Get::val('histring')) {
             $words = explode(' ', Get::val('histring'));
