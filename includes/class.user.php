@@ -81,9 +81,6 @@ class User
                 $this->perms = array_map(create_function('$x', 'return 1;'), $this->perms);
             }
         }
-        if(!$this->can_view_project($proj)) {
-            $proj = new Project(0);
-        }
     }
 
     function check_account_ok()
