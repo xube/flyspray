@@ -68,7 +68,7 @@
       <textarea class="admintext" name="reminder_message"
         rows="10" cols="72">{$details_text['defaultreminder']}
 
-{$fs->CreateURL('details', Get::val('id'))}</textarea>
+{CreateURL('details', Get::val('id'))}</textarea>
       <br />
       <input class="adminbutton" type="submit" value="{$details_text['addreminder']}" />
     </div>

@@ -7,7 +7,7 @@
   \******************************************************/
 
 if (!$user->can_create_user()) {
-    $fs->redirect( $fs->createUrl('error') );
+    $fs->redirect( CreateURL('error') );
 }
 
 $fs->get_language_pack('newuser');

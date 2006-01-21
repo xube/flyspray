@@ -77,5 +77,10 @@ $index_text = array (
 'currentversion'           =>      'Your current version is',
 'latestversion'            =>      'and the latest version is',
 'hidemessage'              =>      '(remind me later)',
+'saveas'                   =>      'Save as',
+'delete'                   =>      'delete',
+'nosearches'               =>      'No saved searches',
+'OK'                       =>      'OK',
+'saved'                    =>      'Saved!',
 );
 ?>

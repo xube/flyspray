@@ -1,7 +1,7 @@
 <?php 
 $users_in = array();
 foreach($groups as $group): ?>
-<a class="grouptitle" href="{$fs->CreateURL('editgroup', $group['group_id'], ($proj->id) ? 'pm' : 'admin')}">{$group['group_name']}</a>
+<a class="grouptitle" href="{CreateURL('editgroup', $group['group_id'], ($proj->id) ? 'pm' : 'admin')}">{$group['group_name']}</a>
 <p>{$group['group_desc']}</p>
 <form action="{$baseurl}" method="post">
   <div>
@@ -23,7 +23,7 @@ foreach($groups as $group): ?>
     foreach($proj->listUsersIn($group['group_id']) as $usr): ?>
     <tr>
       <td>{!tpl_checkbox('users['.$usr['user_id'].']')}</td>
-      <td><a href="{$fs->CreateURL('user', $usr['user_id'])}">{$usr['user_name']}</a></td>
+      <td><a href="{CreateURL('user', $usr['user_id'])}">{$usr['user_name']}</a></td>
       <td>{$usr['real_name']}</td>
       <?php if ($user->infos['account_enabled']): ?>
       <td>{$admin_text['yes']}</td>

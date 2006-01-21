@@ -248,3 +248,14 @@ INSERT INTO `flyspray_prefs` ( `pref_name` , `pref_value` , `pref_desc` )
 VALUES (
 'last_update_check', '0', 'Time when the last update check was done.'
 );
+
+-- Florian Schmitz, 14 January 2006
+CREATE TABLE `flyspray_searches` (
+`id` INT NOT NULL AUTO_INCREMENT ,
+`user_id` INT NOT NULL ,
+`name` VARCHAR( 50 ) NOT NULL ,
+`search_string` TEXT NOT NULL ,
+`time` INT NOT NULL ,
+PRIMARY KEY ( `id` )
+) TYPE = MYISAM COMMENT = 'Saves custom searches';
+

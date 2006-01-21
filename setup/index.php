@@ -1275,8 +1275,7 @@ class Setup extends Flyspray
 
 	  // Double check the urls and paths slashes.
 	  $site_url			.= (substr($site_url, -1, 1) != '/') ? '/' : '';
-	  $absolute_path	= (substr($absolute_path, -1, 1) == DIRECTORY_SEPARATOR)
-	  					? substr($absolute_path, 0, (strlen($absolute_path)-1) ) : $absolute_path;
+	  $absolute_path	.= (substr($absolute_path, -1, 1) != '/') ? '/' : '';
 
       $config	= array();
       $config[] = "[database]";

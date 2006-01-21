@@ -21,7 +21,7 @@ elseif (Get::has('magic') && $user->isAnon()) {
 
     if (!$db->CountRows($check_magic)) {
         $_SESSION['ERROR'] = $admin_text['badmagic'];
-        $fs->redirect($fs->createUrl('error'));
+        $fs->redirect(CreateURL('error'));
     }
     $page->pushTpl('lostpw.step2.tpl');
 } else {

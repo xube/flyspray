@@ -16,7 +16,7 @@ function function_disabled($func_name)
 if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
         || !$user->can_view_task($task_details))
 {
-    $fs->Redirect( $fs->CreateURL('error', null) );
+    $fs->Redirect( CreateURL('error', null) );
 }
 
 $fs->get_language_pack('details');
@@ -45,7 +45,7 @@ $page->assign('taskid', 0);
 // - Put the pruning strings into the details language pack, once they're set
 
 $prunemode = Req::val('prune', 0);
-$selfurl   = $fs->CreateURL('depends', $id);
+$selfurl   = CreateURL('depends', $id);
 $pmodes    = array('None', 'Prune Closed Links', 'Prune Closed Tasks');
 
 foreach ($pmodes as $mode => $desc) {
@@ -207,7 +207,7 @@ foreach ($node_list as $n => $r) {
        "$details_text[status]: ".$r['status_name'].
        ($r['assg'] ? " ($r[assg])" : ""));
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
-        "href=\"".$fs->CreateURL("details", $n)."\", ".
+        "href=\"".CreateURL("details", $n)."\", ".
         "tooltip=\"$tooltip\", fillcolor=\"$col\"];\n";
 }
 // Add edges

@@ -22,7 +22,7 @@
   <li id="historytab">
   <a <?php if(!Get::has('history')): ?>id="nohistorytab"<?php endif; ?>
      href="<?php if(!Get::has('history')):
-        ?>{$fs->CreateURL('details', $task_details['task_id'], null, array('history' => 'yep'))}<?php endif; ?>#history">
+        ?>{CreateURL('details', $task_details['task_id'], null, array('history' => 'yep'))}<?php endif; ?>#history">
         {$details_text['history']}</a>
   </li>
   <?php endif; ?>

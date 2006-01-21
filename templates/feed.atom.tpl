@@ -14,7 +14,7 @@
   <?php foreach ($task_details as $row): ?>
   <entry>
     <title>{$row['item_summary']}</title>
-    <link href="{$fs->CreateURL('details', $row['task_id'])}" />    
+    <link href="{CreateURL('details', $row['task_id'])}" />    
     <updated>{date('Y-m-d\TH:i:s\Z',$row['last_edited_time'])}</updated>    
     <published>{date('Y-m-d\TH:i:s\Z',$row['date_opened'])}</published>
     <content type="xhtml" xml:lang="en" xml:base="http://diveintomark.org/">

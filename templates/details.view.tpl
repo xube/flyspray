@@ -6,7 +6,7 @@
   {!tpl_tasklink($next_id, $details_text['nexttask'], false, array('id'=>'next', 'accesskey' => 'n'))}
   <?php endif; ?>
 </span>
-<div id="taskdetails" ondblclick='openTask("{$fs->CreateURL('edittask', $task_details['task_id'])}")'>
+<div id="taskdetails" ondblclick='openTask("{CreateURL('edittask', $task_details['task_id'])}")'>
 
   <h2 class="severity{$task_details['task_severity']}">
 	 FS#{$task_details['task_id']} &mdash; {$task_details['item_summary']}
@@ -17,11 +17,11 @@
 	 <a href="{$baseurl}?project={$task_details['attached_to_project']}">{$task_details['project_title']}</a>
 	 <br />
 	 {$details_text['openedby']} {!tpl_userlink($task_details['opened_by'])}
-	 - {!$fs->formatDate($task_details['date_opened'], true)}
+	 - {!formatDate($task_details['date_opened'], true)}
 	 <?php if ($task_details['last_edited_by']): ?>
 	 <br />
 	 {$details_text['editedby']}  {!tpl_userlink($task_details['last_edited_by'])}
-	 - {$fs->formatDate($task_details['last_edited_time'], true)}
+	 - {formatDate($task_details['last_edited_time'], true)}
 	 <?php endif; ?>
   </div>
 
@@ -97,7 +97,7 @@
 		<tr class="duedate">
 		  <th id="duedate">{$details_text['duedate']}</th>
 		  <td headers="duedate">
-			 {$fs->formatDate($task_details['due_date'], false, $details_text['undecided'])}
+			 {formatDate($task_details['due_date'], false, $details_text['undecided'])}
 		  </td>
 		</tr>
 		<tr class="percent">
@@ -170,7 +170,7 @@
 		<br class="DoNotPrint" />
 
 		<?php if (count($deps) || count($blocks)): ?>
-		<a class="DoNotPrint" href="{$fs->CreateURL('depends', Get::val('id'))}">{$details_text['depgraph']}</a>
+		<a class="DoNotPrint" href="{CreateURL('depends', Get::val('id'))}">{$details_text['depgraph']}</a>
 		<br />
 		<br />
 		<?php endif; ?>
@@ -203,7 +203,7 @@
 
   <?php if ($task_details['is_closed']): ?>
   {$details_text['closedby']}&nbsp;&nbsp;{!tpl_userlink($task_details['closed_by'])}<br />
-  {$fs->formatDate($task_details['date_closed'], true)}<br />
+  {formatDate($task_details['date_closed'], true)}<br />
   {$details_text['reasonforclosing']}&nbsp;&nbsp;{$task_details['resolution_name']}<br />
   <?php if ($task_details['closure_comment']): ?>
   {$details_text['closurecomment']}&nbsp;&nbsp;{!tpl_FormatText($task_details['closure_comment'], true)}
@@ -286,7 +286,7 @@
 	 <?php endif; ?>
 
 	 <?php if ($user->can_edit_task($task_details)): ?>
-	 <a id="edittask" class="button" href="{$fs->CreateURL('edittask', Get::val('id'))}">
+	 <a id="edittask" class="button" href="{CreateURL('edittask', Get::val('id'))}">
 		{$details_text['edittask']}</a>
 	 <?php endif; ?>
 

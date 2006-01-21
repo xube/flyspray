@@ -2,7 +2,7 @@
   <?php if ($details): ?>
   <b>{$details_text['selectedhistory']}</b>
   &mdash;
-  <a href="{$fs->createUrl('details', Get::val('id'), null, array('history' => 'yep'))}#history">
+  <a href="{CreateURL('details', Get::val('id'), null, array('history' => 'yep'))}#history">
 	 {$details_text['showallhistory']}</a>
   <?php endif; ?>
   <table class="history">
@@ -17,7 +17,7 @@
 	 <?php else: ?>
 	 <?php foreach ($histories as $history): ?>
 	 <tr>
-		<td>{$fs->formatDate($history['event_date'], true)}</td>
+		<td>{formatDate($history['event_date'], true)}</td>
 		<td>{!tpl_userlink($history['user_id'])}</td>
 		<td>{!event_description($history)}</td>
 	 </tr>

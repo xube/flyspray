@@ -308,5 +308,36 @@ function toggleSearchBox() {
       Cookie.setVar('advancedsearch','1');
   }
 }
+function deletesearch(id, url) {
+    var oNodeToRemove = document.getElementById('rs' + id)
+    oNodeToRemove.parentNode.removeChild(oNodeToRemove);
+    var table = document.getElementById('mysearchestable');
+    if(table.rows.length > 0) {
+        table.getElementsByTagName('tr')[table.rows.length-1].style.borderBottom = '0';
+    }
+    if(table.rows.length == 0) {
+        showstuff('nosearches');
+    }
+    url = url + 'javascript/callbacks/deletesearches.php';
+    var myAjax = new Ajax.Request(url, {method: 'get', parameters: 'id=' + id });
+}
+function savesearch(query, url, savetext) {
+    url = url + 'javascript/callbacks/savesearches.php?' + query + '&search_name=' + document.getElementById('save_search').value;
+    if(document.getElementById('save_search').value != '') {
+        setTimeout('reverttext("' + document.getElementById('lblsaveas').firstChild.nodeValue + '")', 2000)
+        document.getElementById('lblsaveas').firstChild.nodeValue = savetext;
+    }
+    var myAjax = new Ajax.Request(url, {method: 'get'});
+}
+function reverttext(text) {
+    document.getElementById('lblsaveas').firstChild.nodeValue = text;
+}
+function activelink(id) {
+    if(document.getElementById(id).className == 'active') {
+        document.getElementById(id).className = 'inactive';
+    } else {
+        document.getElementById(id).className = 'active';
+    }
+}
 var useAltForKeyboardNavigation = false;  // Set this to true if you don't want to kill
                                          // Firefox's find as you type 

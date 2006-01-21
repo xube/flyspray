@@ -17,7 +17,7 @@
       <title>{$row['item_summary']}</title>
       <pubDate>{date('r',$row['last_edited_time'])}</pubDate>
       <description>{strip_tags($row['detailed_desc'])}</description>
-      <link>{$fs->CreateURL('details', $row['task_id'])}</link>
+      <link>{CreateURL('details', $row['task_id'])}</link>
     </item>
     <?php endforeach; ?>
   </channel>

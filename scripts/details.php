@@ -13,7 +13,7 @@ $task_id = Get::val('id');
 if ( !($task_details = $fs->GetTaskDetails($task_id))
         || !$user->can_view_task($task_details))
 {
-    $fs->Redirect( $fs->CreateURL('error', null) );
+    $fs->Redirect( CreateURL('error', null) );
 }
 
 $fs->get_language_pack('details');

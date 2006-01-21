@@ -6,7 +6,7 @@
   \********************************************************/
 
 if (!$user->can_open_task($proj)) {
-    $fs->Redirect( $fs->CreateURL('error', null) );
+    $fs->Redirect( CreateURL('error', null) );
 }
 
 $fs->get_language_pack('newtask');

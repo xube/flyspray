@@ -7,11 +7,11 @@
 */
 
 if ($proj->id !== '0' && !$user->can_view_project($proj)) {
-    $fs->Redirect( $fs->CreateURL('error', null) );
+    $fs->Redirect( CreateURL('error', null) );
 }
 
 if ($proj->id === '0' && !$user->perms['global_view']) {
-    $fs->Redirect( $fs->CreateURL('error', null) );
+    $fs->Redirect( CreateURL('error', null) );
 }
 
 // First, the obligatory language packs
@@ -380,7 +380,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
         case 'dateopened':
         case 'dateclosed':
         case 'lastedit':
-            $value = $fs->formatDate($task[$indexes[$colname]], false);
+            $value = formatDate($task[$indexes[$colname]], false);
             break;
 
         case 'status':

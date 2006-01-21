@@ -5,6 +5,9 @@ class User
     var $id = null;
     var $perms = array();
     var $infos = array();
+    var $searches = array();
+    var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort',
+                             'opened', 'search_in_comments', 'search_for_all');
 
     function User($uid = 0)
     {
@@ -26,22 +29,45 @@ class User
     }
 
     /* misc functions {{{ */
-
-    function save_search()
-    {
-        global $db;
-        // Only logged in users get to use the 'last search' functionality
-        foreach (array('string','type','sev','due','dev','cat','status','order','sort') as $key) {
-            if (Get::has($key) && !Get::val('do')) {
-                $db->Query("UPDATE  {users}
-                               SET  last_search = ?
-                             WHERE  user_id = ?",
-                        array($_SERVER['REQUEST_URI'], $this->id)
-                );
-                $this->infos['last_search'] = $_SERVER['REQUEST_URI'];
-                break;
+    function didSearch() {
+        foreach ($this->search_keys as $key) {
+            if (Get::has($key)) {
+                return true;
             }
         }
+        return false;
+    }
+    
+    function save_search()
+    {
+        global $db, $baseurl;
+        
+        if($this->isAnon()) {
+            return;
+        }
+
+        $url = new Url($baseurl);
+        $url->addfrom('get', $this->search_keys);
+        
+        // Only logged in users get to use the 'last search' functionality     
+        if ($this->didSearch()) {
+            if(Get::val('search_name')) {
+                $db->Query('UPDATE {searches} SET search_string = ?, time = ? WHERE user_id = ? AND name = ?',
+                            array($url->get(false), time(), $this->id, Get::val('search_name')));
+                if(!$db->affectedRows()) {
+                    $db->Query('INSERT INTO {searches} (user_id, name, search_string, time) VALUES(?, ?, ?, ?)',
+                                array($this->id, Get::val('search_name'), $url->get(false), time()));
+                }
+            }
+            // save last search here
+            //$db->Query("UPDATE  {users}
+            //       SET  last_search = ?
+            //     WHERE  user_id = ?",
+            //array(...));
+        }
+        
+        $sql = $db->Query('SELECT * FROM {searches} WHERE user_id = ? ORDER BY time DESC', array($this->id));
+        $this->searches = $db->FetchAllArray($sql);
     }
 
     function get_perms(&$proj)
@@ -94,7 +120,7 @@ class User
         {
             $fs->setcookie('flyspray_userid',   '', time()-60);
             $fs->setcookie('flyspray_passhash', '', time()-60);
-            $fs->Redirect($fs->CreateURL('logout', null));
+            $fs->Redirect(CreateURL('logout', null));
         }
     }
 
@@ -144,6 +170,7 @@ class User
     function can_view_task($task)
     {
         global $fs, $proj;        
+        
         if ($this->isAnon() && !$proj->prefs['others_view'])
             return false;
 

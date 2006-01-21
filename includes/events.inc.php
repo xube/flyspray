@@ -48,8 +48,8 @@ function event_description($history) {
                     break;
                  case 'due_date':
                     $field = $details_text['duedate'];
-                    $old_value = $fs->FormatDate($old_value, false, $details_text['undecided']);
-                    $new_value = $fs->FormatDate($new_value, false, $details_text['undecided']);
+                    $old_value = formatDate($old_value, false, $details_text['undecided']);
+                    $new_value = formatDate($new_value, false, $details_text['undecided']);
                     break;
                 case 'percent_complete':
                     $field = $details_text['percentcomplete'];
@@ -91,7 +91,7 @@ function event_description($history) {
     case '5':      //Comment edited
             $return .= "<a href=\"?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}#history\">{$details_text['commentedited']}</a>";
             if ($history['c_date_added']) {
-                 $return .= " ({$details_text['commentby']} " . tpl_userlink($history['c_user_id']) . " - " . $fs->formatDate($history['c_date_added'], true) . ")";
+                 $return .= " ({$details_text['commentby']} " . tpl_userlink($history['c_user_id']) . " - " . formatDate($history['c_date_added'], true) . ")";
             }
             if ($details) {
                  $details_previous = tpl_formatText($old_value);
@@ -101,7 +101,7 @@ function event_description($history) {
     case '6':     //Comment deleted
             $return .= "<a href=\"?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}#history\">{$details_text['commentdeleted']}</a>";
             if ($new_value != '' && $history['field_changed'] != '') {
-                 $return .= " ({$details_text['commentby']} " . tpl_userlink($new_value) . " - " . $fs->formatDate($history['field_changed'], true) . ")";
+                 $return .= " ({$details_text['commentby']} " . tpl_userlink($new_value) . " - " . formatDate($history['field_changed'], true) . ")";
             }
             if (!empty($details)) {
                  $details_previous = tpl_formatText($old_value);

@@ -19,11 +19,11 @@
 		  </select>
 		  <br />
 		  {$details_text['openedby']} {!tpl_userlink($task_details['opened_by'])}
-		  - {!$fs->formatDate($task_details['date_opened'], true)}
+		  - {!formatDate($task_details['date_opened'], true)}
 		  <?php if ($task_details['last_edited_by']): ?>
 		  <br />
 		  {$details_text['editedby']}  {!tpl_userlink($task_details['last_edited_by'])}
-		  - {$fs->formatDate($task_details['last_edited_time'], true)}
+		  - {formatDate($task_details['last_edited_time'], true)}
 		  <?php endif; ?>
 		</div>
 
@@ -113,7 +113,7 @@
 			<tr class="duedate">
 			 <td><label for="duedate">{$details_text['duedate']}</label></td>
 			 <td id="duedate">
-                {!tpl_datepicker('due_', $details_text['undecided'], '', $fs->formatDate($task_details['due_date'], false))}
+                {!tpl_datepicker('due_', $details_text['undecided'], '', formatDate($task_details['due_date'], false))}
 			 </td>
 			</tr>
 			<tr class="percent">

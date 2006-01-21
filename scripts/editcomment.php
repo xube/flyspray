@@ -16,7 +16,7 @@ $sql = $db->Query("SELECT  c.*, u.real_name
 $page->assign('comment', $comment = $db->FetchArray($sql));
 
 if (!$user->can_edit_comment($comment)) {
-    $fs->Redirect( $fs->createURL('error') );
+    $fs->Redirect( CreateURL('error') );
 }
 
 $fs->get_language_pack('admin');

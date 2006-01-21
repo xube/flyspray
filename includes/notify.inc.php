@@ -314,7 +314,7 @@ class Notifications {
          $due_date = $details_text['undecided'];
       } else
       {
-         $due_date = $fs->FormatDate($task_details['due_date'], false);
+         $due_date = formatDate($task_details['due_date'], false);
       }
 
       // Set the due version correctly
@@ -372,7 +372,7 @@ class Notifications {
          $body .= $details_text['duedate'] . ' - ' . $due_date . "\n";
          $body .= $details_text['details'] . ' - ' . $task_details['detailed_desc'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -415,7 +415,7 @@ class Notifications {
             }
          }
          $body .= "\n" . $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -428,7 +428,7 @@ class Notifications {
          $body .=  $notify_text['taskclosed'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $details_text['reasonforclosing'] . ' - ' . $task_details['resolution_name'] . "\n";
+         $body .= $details_text['reasonforclosing'] . ' ' . $task_details['resolution_name'] . "\n";
 
          if (!empty($task_details['closure_comment']))
          {
@@ -436,7 +436,7 @@ class Notifications {
          }
 
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -450,7 +450,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] .  ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -464,10 +464,10 @@ class Notifications {
          $body .=  $notify_text['depadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= $notify_text['newdepis'] . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
-         $body .= $fs->CreateURL('details', $depend_task['task_id']) . "\n\n";
+         $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -482,10 +482,10 @@ class Notifications {
          $body .= $notify_text['depremoved'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= $notify_text['removeddepis'] . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
-         $body .= $fs->CreateURL('details', $depend_task['task_id']) . "\n\n";
+         $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -515,7 +515,7 @@ class Notifications {
             $body .= $notify_text['fileaddedtoo'] . "\n\n";
 
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . '#comment' . $comment['comment_id'] . "\n\n";
+         $body .= CreateURL('details', $task_id) . '#comment' . $comment['comment_id'] . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -529,7 +529,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -543,10 +543,10 @@ class Notifications {
          $body .= $notify_text['relatedadded'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= $notify_text['relatedis'] . ':' . "\n\n";
          $body .= 'FS#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\n";
-         $body .= $fs->CreateURL('details', $related_task['task_id']) . "\n\n";
+         $body .= CreateURL('details', $related_task['task_id']) . "\n\n";
 
          $body .= $notify_text['disclaimer'];
 
@@ -559,7 +559,7 @@ class Notifications {
          $body .= implode(', ', $task_details['assigned_to_name']) . ' ' . $notify_text['takenownership'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -586,7 +586,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -601,7 +601,7 @@ class Notifications {
          $body .= $notify_text['denialreason'] . ':' . "\n";
          $body .= $arg1 . "\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -614,7 +614,7 @@ class Notifications {
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= $notify_text['moreinfo'] . "\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -628,10 +628,10 @@ class Notifications {
          $body .= $notify_text['taskwatching'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= $notify_text['isdepfor'] . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
-         $body .= $fs->CreateURL('details', $depend_task['task_id']) . "\n\n";
+         $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -645,10 +645,10 @@ class Notifications {
          $body .= $notify_text['taskwatching'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= $notify_text['isnodepfor'] . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
-         $body .= $fs->CreateURL('details', $depend_task['task_id']) . "\n\n";
+         $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
          $body .= $notify_text['disclaimer'];
 
          return array($subject, $body);
@@ -660,7 +660,7 @@ class Notifications {
          $body .= $notify_text['addedtoassignees'] . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= $notify_text['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
-         $body .= $fs->CreateURL('details', $task_id) . "\n\n\n";
+         $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= $notify_text['disclaimer'];
       } // }}}
    

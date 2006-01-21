@@ -11,7 +11,7 @@
     <items>
       <rdf:Seq>
         <?php foreach($task_details as $row): ?>
-        <rdf:li rdf:resource="{$fs->CreateURL('details', $row['task_id'])}" />
+        <rdf:li rdf:resource="{CreateURL('details', $row['task_id'])}" />
         <?php endforeach; ?>
       </rdf:Seq>
     </items>
@@ -20,9 +20,9 @@
     <?php endif; ?>		
   </channel>
   <?php foreach($task_details as $row): ?>
-  <item rdf:about="{$fs->CreateURL('details', $row['task_id'])}">
+  <item rdf:about="{CreateURL('details', $row['task_id'])}">
     <title>{$row['item_summary']}</title>
-    <link>{$fs->CreateURL('details', $row['task_id'])}</link>
+    <link>{CreateURL('details', $row['task_id'])}</link>
     <dc:date>{date('Y-m-d\TH:i:s\Z',$row['last_edited_time'])}</dc:date>
     <dc:creator>{$row['real_name']}</dc:creator>
     <description>{strip_tags(tpl_FormatText($row['detailed_desc']))}</description>

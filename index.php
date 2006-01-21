@@ -7,7 +7,6 @@
 */
 
 require_once(dirname(__FILE__).'/header.php');
-require_once(dirname(__FILE__).'/includes/class.tpl.php');
 
 // Get the translation for the wrapper page (this page)
 $fs->get_language_pack('main');
@@ -23,6 +22,15 @@ include_once('sql/upgrade_assignments.php');
 // Background daemon that does scheduled reminders
 if ($conf['general']['reminder_daemon'] == '1') {
     $fs->startReminderDaemon();
+}
+
+$do = Req::val('do', 'index');
+if($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
+    $do = 'pm';
+} elseif($do == 'pm' && Req::has('switch') && Req::val('project') == '0') {
+    $do = 'admin';
+} elseif(Req::has('show') || (Req::has('switch') && (Req::val('project') == '0' || $do == 'details' ))) {
+    $do = 'index';
 }
 
 /* permission stuff */
@@ -66,7 +74,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
         readfile($path);
     }
     else {
-        $fs->Redirect( $fs->CreateURL('error', null) );
+        $fs->Redirect( CreateURL('error', null) );
     }
     exit;
 }
@@ -97,9 +105,9 @@ $page = new FSTpl();
 if ($show_task = Get::val('show_task')) {
     // If someone used the 'show task' form, redirect them
     if (is_numeric($show_task)) {
-        $fs->Redirect( $fs->CreateURL('details', $show_task) );
+        $fs->Redirect( CreateURL('details', $show_task) );
     } else {
-        $fs->Redirect( $fs->CreateURL('error', null) );
+        $fs->Redirect( CreateURL('error', null) );
     }
 }
 
@@ -117,15 +125,6 @@ if ($user->perms['manage_project']) {
     list($count) = $db->fetchRow($sql);
 
     $page->assign('pm_pendingreq_num', $count);
-}
-
-$do = Req::val('do', 'index');
-if($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
-    $do = 'pm';
-} elseif($do == 'pm' && Req::has('switch') && Req::val('project') == '0') {
-    $do = 'admin';
-} elseif(Req::has('show') || (Req::has('switch') && (Req::val('project') == '0' || $do == 'details' ))) {
-    $do = 'index';
 }
 
 // Show the project blurb if the project manager defined one

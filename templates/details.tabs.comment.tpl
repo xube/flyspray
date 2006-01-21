@@ -2,12 +2,12 @@
   <?php foreach($comments as $row): ?>
   <em>
     <a name="comment{$row['comment_id']}" id="comment{$row['comment_id']}"
-      href="{$fs->CreateURL('details', $task_details['task_id'])}#comment{$row['comment_id']}">
+      href="{CreateURL('details', $task_details['task_id'])}#comment{$row['comment_id']}">
       <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/menu/comment.png"
         title="{$details_text['commentlink']}" alt="" />
     </a>
     {$details_text['commentby']} {!tpl_userlink($row['user_id'])} -
-    {$fs->formatDate($row['date_added'], true)}
+    {formatDate($row['date_added'], true)}
   </em>
 
   <span class="DoNotPrint">

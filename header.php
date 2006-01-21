@@ -20,12 +20,14 @@ if (substr($baseurl = $conf['general']['baseurl'], -1) != '/') {
 require_once "$basedir/includes/fix.inc.php";
 require_once "$basedir/includes/class.gpc.php";
 
+require_once "$basedir/includes/utf8.inc.php";
 require_once "$basedir/includes/db.inc.php";
 require_once "$basedir/includes/functions.inc.php";
 
 require_once "$basedir/includes/class.backend.php";
 require_once "$basedir/includes/class.project.php";
 require_once "$basedir/includes/class.user.php";
+require_once "$basedir/includes/class.tpl.php";
 
 $db = new Database;
 $db->dbOpenFast($conf['database']);

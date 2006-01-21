@@ -115,20 +115,18 @@ class Flyspray
         return false;
     } // }}}
     // Retrieve task details {{{
-    function GetTaskDetails($task_id)
+    function GetTaskDetails($task_id, $cacheenabled = false)
     {
-        global $db;
-        global $project_prefs;
-        global $severity_list, $priority_list;
+        global $db, $severity_list, $priority_list;
         $this->get_language_pack('severity');
         $this->get_language_pack('priority');
         static $cache = array();
 
-        if(isset($cache[$task_id])) {
+        if(isset($cache[$task_id]) && $cacheenabled) {
             return $cache[$task_id];
         }
         
-        $get_details = $db->Query("SELECT t.*, p.*,
+        $get_details = $db->Query('SELECT t.*, p.*,
                                           c.category_name, c.category_owner, c.parent_id,
                                           pc.category_name AS parent_category_name,
                                           o.os_name,
@@ -153,7 +151,7 @@ class Flyspray
                                LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
                                LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
                                LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
-                                   WHERE  t.task_id = ?", array($task_id));
+                                   WHERE  t.task_id = ?', array($task_id));
 
         if (!$db->CountRows($get_details)) {
            return false;
@@ -442,161 +440,13 @@ class Flyspray
             
     }  // }}}
 
-
-// FIXME: TEMPLATING FUNCTIONS, SHOULD MOVE AWAY AT SOME POINT
-    
-    // Create an URL based upon address-rewriting preferences {{{
-    function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
-    {
-        global $conf;
-
-        $url = $conf['general']['baseurl'];
-
-        $append = '';
-        foreach($arg3 as $key => $value) {
-            if($value) $append .= $key . '=' . $value . '&';
-        }
-        $append = substr($append, 0, -1);
-            
-        // If we do want address rewriting
-        if(!empty($conf['general']['address_rewriting'])) {
-            if($append) $append = '?' . $append;
-            switch ($type) {
-                case 'depends':   return $url . 'task/' .  $arg1 . '/' . $type . $append;
-                case 'details':   return $url . 'task/' . $arg1 . $append;
-                case 'edittask':  return $url . 'task/' .  $arg1 . '/edit' . $append;
-                case 'pm':        return $url . 'pm/proj' . $arg2 . '/' . $arg1 . $append;
-
-                case 'admin':
-                case 'user':      return $url . $type . '/' . $arg1 . $append;
-
-                case 'newgroup':
-                case 'newtask':   return $url . $type .  '/proj' . $arg1. $append;
-
-                case 'editgroup': return $url . $arg2 . '/' . $type . '/' . $arg1 . $append;
-
-                case 'error':
-                case 'logout':
-                case 'lostpw':
-                case 'myprofile':
-                case 'newuser':
-                case 'register':
-                case 'reports':  return $url . $type . $append;
-            }
-        }
-
-        if ($type == 'edittask') {
-            $url .= '?do=details';
-        } else {
-            $url .= '?do=' . $type;
-        }
-        
-        if($append) $append = '&' . $append;
-        switch ($type) {
-            case 'admin':     return $url . '&area=' . $arg1 . $append;
-            case 'edittask':  return $url . '&id=' . $arg1 . '&edit=yep' . $append;
-            case 'pm':        return $url . '&area=' . $arg1 . '&project=' . $arg2 . $append;
-            case 'user':      return '?do=admin&area=users&id=' . $arg1 . $append;
-            case 'logout':    return '?do=authenticate&action=logout' . $append;
-
-            case 'details':
-            case 'depends':   return $url . '&id=' . $arg1 . $append;
-
-            case 'newgroup':
-            case 'newtask':   return $url . '&project=' . $arg1 . $append;
-
-            case 'editgroup': return $conf['general']['baseurl'] . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1 . $append;
-
-            case 'error':
-            case 'lostpw':
-            case 'myprofile':
-            case 'newuser':
-            case 'register':
-            case 'reports':   return $url . $append;
-        }
-    } // }}}
-    // Format Date {{{
-    function formatDate($timestamp, $extended, $default = '')
-    {
-        global $db, $conf, $user;
-
-        if (!$timestamp) {
-            return $default;
-        }
-
-        $dateformat = '';
-        $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
-
-        if(!$user->isAnon()) {
-            $dateformat = $user->infos[$format_id];
-        }
-
-        if(!$dateformat) {
-            $dateformat = $this->prefs[$format_id];
-        }
-
-        if(!$dateformat) {
-            $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
-        }
-
-        return utf8_encode(strftime($dateformat, $timestamp));
-    } /// }}}
-    // Page numbering {{{
-    // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-    function pagenums($pagenum, $perpage, $totalcount, $extraurl)
-    {
-        global $db;
-        global $functions_text;
-
-        $this->get_language_pack('functions');
-
-        $extraurl = '&amp;' . $extraurl;
-
-        // Just in case $perpage is something weird, like 0, fix it here:
-        if ($perpage < 1) {
-            $perpage = $totalcount > 0 ? $totalcount : 1;
-        }
-        $pages  = ceil($totalcount / $perpage);
-        $output = sprintf($functions_text['page'], $pagenum, $pages);
-
-        if (!($totalcount / $perpage <= 1)) {
-            $output .= "<span class=\"DoNotPrint\"> &nbsp;&nbsp;--&nbsp;&nbsp; ";
-
-            $start  = max(1, $pagenum - 3);
-            $finish = min($pages, $pagenum + 3);
-
-            if ($start > 1)
-                $output .= "<a href=\"?pagenum=1" . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
-
-            if ($pagenum > 1)
-                $output .= "<a id=\"previous\" accesskey=\"p\" href=\"?pagenum=" . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
-
-            for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
-                if ($pagelink != $start)
-                    $output .= " - ";
-
-                if ($pagelink == $pagenum) {
-                    $output .= "<strong>" . $pagelink . "</strong>";
-                } else {
-                    $output .= "<a href=\"?pagenum=" . $pagelink . $extraurl . "\">" . $pagelink . "</a>";
-                }
-            }
-
-            if ($pagenum < $pages)
-                $output .= " - <a id=\"next\" accesskey=\"n\" href=\"?pagenum=" . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a>";
-            if ($finish < $pages)
-                $output .= "<a href=\"?pagenum=" . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
-            $output .= '</span>';
-        }
-
-        return $output;
-    } // }}}
     // Generate a long random number {{{
     function make_seed()
     {
         list($usec, $sec) = explode(' ', microtime());
         return (float) $sec + ((float) $usec * 100000);
     } // }}}
+    
     // Compare tasks {{{
     function compare_tasks($old, $new)
     {

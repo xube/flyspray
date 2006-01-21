@@ -3,7 +3,7 @@
 
 <ul id="menu-list">
   <li onmouseover='perms.show()' onmouseout='perms.do_later("hide")'>
-	<a href="{$fs->CreateURL('myprofile', null)}" title="{$language['editmydetails']}">
+	<a href="{CreateURL('myprofile', null)}" title="{$language['editmydetails']}">
 	  <em>{$user->infos['real_name']} ({$user->infos['user_name']})</em>
 	</a>
 	<div id="permissions">
@@ -13,7 +13,7 @@
 <?php
 if ($proj->id != '0' && $user->perms['open_new_tasks']): ?>
   <li>
-  <a id="newtasklink" href="{$fs->CreateURL('newtask', $proj_id)}"
+  <a id="newtasklink" href="{CreateURL('newtask', $proj_id)}"
     accesskey="a">{$language['addnewtask']}</a>
   </li>
 <?php
@@ -21,29 +21,37 @@ endif;
 
 if ($proj->id != '0' && $user->perms['view_reports']): ?>
   <li>
-  <a id="reportslink" href="{$fs->CreateURL('reports', null)}">{$language['reports']}</a>
+  <a id="reportslink" href="{CreateURL('reports', null)}">{$language['reports']}</a>
   </li>
 <?php
 endif; ?>
   <li>
-<?php if (!empty($user->infos['last_search'])): ?>
-  <a id="lastsearchlink" href="{$user->infos['last_search']}"
-    accesskey="m">{$language['lastsearch']}</a>
-<?php else: ?>
-  <a id="lastsearchlink" href="{$baseurl}"
-    accesskey="m">{$language['lastsearch']}</a>
-<?php endif; ?>
+  <a id="lastsearchlink" onclick="activelink('lastsearchlink')" href="javascript:showhidestuff('mysearches')" accesskey="m">{$language['mysearch']}</a>
+  <div id="mysearches">
+    <strong id="nosearches" <?php if(count($user->searches)): ?>class="hide"<?php endif; ?>>{$index_text['nosearches']}</strong>
+    <table id="mysearchestable">
+    <?php foreach ($user->searches as $search): ?>
+    <tr id="rs{$search['id']}" <?php if($search == end($user->searches)): ?>class="last"<?php endif; ?>>
+      <td><a href="{$search['search_string']}">{$search['name']}</a></td>
+      <td width="16">
+        <a href="javascript:deletesearch('{$search['id']}','{$baseurl}')">
+        <img src="{$this->themeUrl()}button_cancel.png" width="16" height="16" title="{$index_text['delete']}" alt="{$index_text['delete']}" /></a>
+      </td>
+    </tr>
+    <?php endforeach; ?>
+    </table>
+  </div>
   </li>
 <?php if ($user->perms['is_admin']): ?>
   <li>
-  <a id="optionslink" href="{$fs->CreateURL('admin', 'prefs')}">{$language['admintoolbox']}</a>
+  <a id="optionslink" href="{CreateURL('admin', 'prefs')}">{$language['admintoolbox']}</a>
   </li>
 <?php endif; ?>
 
 <?php if ($proj->id != '0' && $user->perms['manage_project']): ?>
   <li>
   <a id="projectslink"
-    href="{$fs->CreateURL('pm', 'prefs', $proj_id)}">{$language['manageproject']}</a>
+    href="{CreateURL('pm', 'prefs', $proj_id)}">{$language['manageproject']}</a>
   </li>
 <?php endif; ?>
 <?php if ($user->perms['manage_project'] && $pm_pendingreq_num): ?>
@@ -51,13 +59,13 @@ endif; ?>
 <?php else: ?>
   <li class="last">
 <?php endif; ?>
-  <a id="logoutlink" href="{$fs->CreateURL('logout', null)}"
+  <a id="logoutlink" href="{CreateURL('logout', null)}"
     accesskey="l">{$language['logout']}</a>
   </li>
 <?php if ($user->perms['manage_project'] && $pm_pendingreq_num): ?>
   <li class="last">
   <a class="pendingreq attention"
-    href="{$fs->CreateURL('pm', 'pendingreq', $proj_id)}">{$pm_pendingreq_num} {$language['pendingreq']}</a>
+    href="{CreateURL('pm', 'pendingreq', $proj_id)}">{$pm_pendingreq_num} {$language['pendingreq']}</a>
   </li>
 <?php endif; ?>
 </ul>

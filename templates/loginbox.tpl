@@ -20,13 +20,13 @@
         if ($user->isAnon() && $fs->prefs['anon_reg']):
             if ($fs->prefs['spam_proof']):
         ?>
-        <a href="{$fs->CreateURL('register','')}">{$language['register']}</a>
+        <a href="{CreateURL('register','')}">{$language['register']}</a>
         <?php else: ?>
-        <a href="{$fs->CreateURL('newuser','')}">{$language['register']}</a>
+        <a href="{CreateURL('newuser','')}">{$language['register']}</a>
         <?php endif;
         endif; ?>
         <?php if ($user->isAnon() && $fs->prefs['user_notify']): ?>
-        <a href="{$fs->CreateURL('lostpw','')}">{$loginbox_text['lostpassword']}</a>
+        <a href="{CreateURL('lostpw','')}">{$loginbox_text['lostpassword']}</a>
         <?php else: ?>
         <a id="lostpwlink" href="mailto:<?php foreach($admin_emails as $mail): ?>{str_replace('@', '#', $mail[0])},<?php endforeach;
         ?>?subject={rawurlencode($loginbox_text['lostpwforfs'])}&amp;body={rawurlencode($loginbox_text['lostpwmsg1'])}{$baseurl}{rawurlencode($loginbox_text['lostpwmsg2'])}<?php

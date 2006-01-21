@@ -6,7 +6,7 @@
   \*********************************************************/
 
 if (!$user->can_register()) {
-    $fs->Redirect( $fs->CreateURL('error', null) );
+    $fs->Redirect( CreateURL('error', null) );
 }
 
 $fs->get_language_pack('register');
@@ -20,7 +20,7 @@ if (Get::has('magic')) {
             array(Get::val('magic')));
 
     if (!$db->CountRows($sql)) {
-        $fs->Redirect( $fs->CreateURL('error', null) );
+        $fs->Redirect( CreateURL('error', null) );
     }
 
     $page->pushTpl('register.magic.tpl');

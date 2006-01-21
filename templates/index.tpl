@@ -16,6 +16,12 @@
         <?php else: ?>
         <input type="hidden" name="project" value="{$proj->id}" />
         <?php endif; ?>
+        <?php if(!$user->isAnon()): ?>
+        <span class="save_search"><label class="default" for="save_search" id="lblsaveas">{$index_text['saveas']}</label>
+        <input type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
+        <button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{$index_text['saved']}')" type="button">{$index_text['OK']}</button></span>
+        <?php endif; ?>
+        
         <input class="mainbutton" type="submit" value="{$index_text['searchthisproject']}" />
         <input id="searchtext" name="string" type="text" size="20"
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
@@ -138,7 +144,7 @@
             <?php endif; ?>
           </td>
           <td id="numbers">
-            {!$fs->pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order') . '&amp;tasks=' . Get::val('tasks'))}
+            {!pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order') . '&amp;tasks=' . Get::val('tasks'))}
           </td>
           <?php else: ?>
           <td id="taskrange"><strong>{$index_text['noresults']}</strong></td>

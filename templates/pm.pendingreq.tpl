@@ -20,18 +20,18 @@
         <td>
         <?php if ($req['request_type'] == 1) : ?>
         {$admin_text['closetask']} -
-        <a href="{$fs->CreateURL('details', $req['task_id'])}">FS#{$req['task_id']} :
+        <a href="{CreateURL('details', $req['task_id'])}">FS#{$req['task_id']} :
           {$req['item_summary']}</a>
         <?php elseif ($req['request_type'] == 2) : ?>
         {$admin_text['reopentask']} -
-        <a href="{$fs->CreateURL('details', $req['task_id'])}">FS#{$req['task_id']} :
+        <a href="{CreateURL('details', $req['task_id'])}">FS#{$req['task_id']} :
           {$req['item_summary']}</a>
         <?php elseif ($req['request_type'] == 3) : ?>
         {$admin_text['applymember']}
         <?php endif; ?>
         </td>
         <td>{!tpl_userlink($req['user_id'])}</td>
-        <td>{$fs->formatDate($req['time_submitted'], true)}</td>
+        <td>{formatDate($req['time_submitted'], true)}</td>
         <td>{$req['reason_given']}</td>
         <td>
           <a href="#" class="button" onclick="showhidestuff('denyform{$req['request_id']}');">{$pm_text['deny']}</a>

@@ -6,7 +6,7 @@
   \*********************************************************/
 
 if ($user->isAnon()) {
-    $fs->redirect($fs->createUrl('error'));
+    $fs->redirect(CreateURL('error'));
 }
 
 $fs->get_language_pack('admin');

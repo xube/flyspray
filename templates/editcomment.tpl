@@ -2,7 +2,7 @@
 
 <form action="index.php" method="post">
   <div class="admin">
-    <p>{$admin_text['commentby']} {$comment['real_name']} - {$fs->formatDate($comment['date_added'], true)}</p>
+    <p>{$admin_text['commentby']} {$comment['real_name']} - {formatDate($comment['date_added'], true)}</p>
     <textarea cols="72" rows="10" name="comment_text">{$comment['comment_text']}</textarea>
     <p class="buttons">
       <input type="hidden" name="do" value="modify" />

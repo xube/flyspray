@@ -139,7 +139,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     global $modify_text;
 
     if (!is_array($task)) {
-        $task = $fs->GetTaskDetails($task);
+        $task = $fs->GetTaskDetails($task, true);
     }
 
     if($strict && !$user->can_view_task($task)) {
@@ -147,7 +147,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     }
 
     if ($user->can_view_task($task)) {
-        $summary = htmlspecialchars(substr($task['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
+        $summary = htmlspecialchars(utf8_substr($task['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
     } else {
         $summary = $modify_text['taskmadeprivate'];
     }
@@ -161,7 +161,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
             case 'status':
                 if ($task['is_closed']) {
                     if (!isset($task['resolution_name'])) {
-                        $task = $fs->GetTaskDetails($task['task_id']);
+                        $task = $fs->GetTaskDetails($task['task_id'], true);
                     }
                     $title_text[] = $task['resolution_name'];
                     $attrs['class'] = 'closedtasklink';
@@ -177,7 +177,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
             case 'assignedto':
                 if($task['assigned_to']) {
                     if (!isset($task['assigned_to_name'])) {
-                        $task = $fs->GetTaskDetails($task['task_id']);
+                        $task = $fs->GetTaskDetails($task['task_id'], true);
                     }
                     $title_text[] = implode(', ', $task['assigned_to_name']);
                 }
@@ -192,7 +192,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
             case 'category':
                 if($task['product_category']) {
                     if (!isset($task['category_name'])) {
-                        $task = $fs->GetTaskDetails($task['task_id']);
+                        $task = $fs->GetTaskDetails($task['task_id'], true);
                     }
                     $title_text[] = $task['category_name'];
                 }
@@ -208,7 +208,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $text = 'FS#'.$task['task_id'].' - '.$summary;
     }
     
-    $url = htmlspecialchars($fs->CreateURL('details', $task['task_id'],  null, array('string' => Get::val('string'))));
+    $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, array('histring' => Get::val('string'))));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
             $url, $title_text, join_attrs($attrs), $text);
 
@@ -220,8 +220,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
 
 function tpl_userlink($uid)
 {
-    global $db, $fs;
-    global $details_text;
+    global $db, $fs, $details_text;
 
     static $cache = array();
 
@@ -230,7 +229,7 @@ function tpl_userlink($uid)
                 array($uid));
         if ($db->countRows($sql)) {
             list($uname, $rname) = $db->fetchRow($sql);
-            $cache[$uid] = '<a href="'.htmlspecialchars($fs->createUrl('user', $uid)).'">'
+            $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL('user', $uid)).'">'
                 .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
                 .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
         } else {
@@ -451,8 +450,8 @@ function tpl_formattext($text, $onyfs = false)
         $conf = $fs_conf;
         
         // Display the output
-        if (Get::val('string')) {
-            $words = explode(' ', Get::val('string'));
+        if (Get::val('histring')) {
+            $words = explode(' ', Get::val('histring'));
             $ret = $Renderer->doc;
             foreach($words as $word) {
                 $ret = html_hilight($ret, $word);
@@ -468,11 +467,36 @@ function tpl_formattext($text, $onyfs = false)
         if(!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
         
         // Change FS#123 into hyperlinks to tasks
-        return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/",
-            'tpl_fast_tasklink', $text);
+        return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
    }
 }
 // }}}
+// Format Date {{{
+function formatDate($timestamp, $extended, $default = '')
+{
+    global $db, $conf, $user, $fs;
+
+    if (!$timestamp) {
+        return $default;
+    }
+
+    $dateformat = '';
+    $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
+
+    if(!$user->isAnon()) {
+        $dateformat = $user->infos[$format_id];
+    }
+
+    if(!$dateformat) {
+        $dateformat = $fs->prefs[$format_id];
+    }
+
+    if(!$dateformat) {
+        $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
+    }
+
+    return utf8_encode(strftime($dateformat, $timestamp));
+} /// }}}
 // {{{ Draw permissions table
 function tpl_draw_perms($perms)
 {
@@ -538,5 +562,213 @@ function tpl_disableif($if)
         return 'disabled="disabled"';
     }
 }
+// {{{ Url handling
+// Create an URL based upon address-rewriting preferences {{{
+function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
+{
+    global $conf;
+
+    $url = $conf['general']['baseurl'];
+       
+    // If we do want address rewriting
+    if(!empty($conf['general']['address_rewriting'])) {
+        switch ($type) {
+            case 'depends':   $return = $url . 'task/' .  $arg1 . '/' . $type; break;
+            case 'details':   $return = $url . 'task/' . $arg1; break;
+            case 'edittask':  $return = $url . 'task/' .  $arg1 . '/edit'; break;
+            case 'pm':        $return = $url . 'pm/proj' . $arg2 . '/' . $arg1; break;
+
+            case 'admin':
+            case 'user':      $return = $url . $type . '/' . $arg1; break;
+
+            case 'newgroup':
+            case 'newtask':   $return = $url . $type .  '/proj' . $arg1; break;
+
+            case 'editgroup': $return = $url . $arg2 . '/' . $type . '/' . $arg1; break;
+
+            case 'error':
+            case 'logout':
+            case 'lostpw':
+            case 'myprofile':
+            case 'newuser':
+            case 'register':
+            case 'reports':  $return = $url . $type; break;
+        }
+    } else {
+        if ($type == 'edittask') {
+            $url .= '?do=details';
+        } else {
+            $url .= '?do=' . $type;
+        }
+        
+        switch ($type) {
+            case 'admin':     $return = $url . '&area=' . $arg1; break;
+            case 'edittask':  $return = $url . '&id=' . $arg1 . '&edit=yep'; break;
+            case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
+            case 'user':      $return = '?do=admin&area=users&id=' . $arg1; break;
+            case 'logout':    $return = '?do=authenticate&action=logout'; break;
+
+            case 'details':
+            case 'depends':   $return = $url . '&id=' . $arg1; break;
+
+            case 'newgroup':
+            case 'newtask':   $return = $url . '&project=' . $arg1; break;
+
+            case 'editgroup': $return = $conf['general']['baseurl'] . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1; break;
+
+            case 'error':
+            case 'lostpw':
+            case 'myprofile':
+            case 'newuser':
+            case 'register':
+            case 'reports':   $return = $url; break;
+        }
+    }
+
+    if(count($arg3)) {
+        $url = new Url($return);
+        $url->addvars($arg3);
+        return $url->get();
+    }
+    return $return;
+} // }}}
+// Page numbering {{{
+// Thanks to Nathan Fritz for this.  http://www.netflint.net/
+function pagenums($pagenum, $perpage, $totalcount, $extraurl)
+{
+    global $db, $functions_text, $fs;
+
+    $fs->get_language_pack('functions');
+
+    $extraurl = '&amp;' . $extraurl;
+
+    // Just in case $perpage is something weird, like 0, fix it here:
+    if ($perpage < 1) {
+        $perpage = $totalcount > 0 ? $totalcount : 1;
+    }
+    $pages  = ceil($totalcount / $perpage);
+    $output = sprintf($functions_text['page'], $pagenum, $pages);
+
+    if (!($totalcount / $perpage <= 1)) {
+        $output .= '<span class="DoNotPrint"> &nbsp;&nbsp;--&nbsp;&nbsp; ';
+
+        $start  = max(1, $pagenum - 3);
+        $finish = min($pages, $pagenum + 3);
+
+        if ($start > 1)
+            $output .= '<a href="?pagenum=1' . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
+
+        if ($pagenum > 1)
+            $output .= '<a id="previous" accesskey="p" href="?pagenum=' . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
+
+        for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
+            if ($pagelink != $start)
+                $output .= ' - ';
+
+            if ($pagelink == $pagenum) {
+                $output .= '<strong>' . $pagelink . '</strong>';
+            } else {
+                $output .= '<a href="?pagenum=' . $pagelink . $extraurl . '">' . $pagelink . '</a>';
+            }
+        }
+
+        if ($pagenum < $pages)
+            $output .= ' - <a id="next" accesskey="n" href="?pagenum=' . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a>";
+        if ($finish < $pages)
+            $output .= '<a href="?pagenum=' . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
+        $output .= '</span>';
+    }
+
+    return $output;
+} // }}}    
+class Url {
+	var $url = '';
+	var $parsed;
+	
+	function url($url = '') {
+		$this->url = $url;
+		$this->parsed = parse_url($this->url);
+	}
+	
+	function seturl($url) {
+		$this->url = $url;
+		$this->parsed = parse_url($this->url);
+	}
+	
+	function getinfo($type = null) {		
+		if(is_null($type)) {
+			return $this->parsed;
+		} elseif(isset($this->parsed[$type])) {
+			return $this->parsed[$type];
+		} else {
+			return '';
+		}
+	}
+	
+	function setinfo($type, $value) {
+		$this->parsed[$type] = $value;
+	}
+	
+	function addfrom($method = 'get', $vars = array()) {
+		$append = '';
+		foreach($vars as $key) {
+			$source = ($method == 'get') ? Get::val($key) : Post::val($key);
+            if(is_array($source)) {
+                foreach($source as $value) {
+                    if($value) $append .= rawurlencode($key) . '[]=' . rawurlencode($value) . '&';
+                }
+            } else {
+                if($source) $append .= rawurlencode($key) . '=' . rawurlencode($source) . '&';
+            }
+        }
+        $append = substr($append, 0, -1);
+        
+        if($this->getinfo('query')) {
+        	$this->parsed['query'] .= '&' . $append;
+        } else {
+        	$this->parsed['query'] = $append;
+        }
+	}
+	
+	function addvars($vars = array()) {
+		$append = '';
+		foreach($vars as $key => $value) {
+            if(is_array($value)) {
+                foreach($value as $valuei) {
+                    if($valuei) $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
+                }
+            } else {
+                if($value) $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
+            }
+        }
+        $append = substr($append, 0, -1);
+        
+        if($this->getinfo('query')) {
+        	$this->parsed['query'] .= '&' . $append;
+        } else {
+        	$this->parsed['query'] = $append;
+        }
+	}
+	
+	function get($fullpath = true) {
+		$return = '';
+		if($fullpath) {
+			$return .= $this->getinfo('scheme') . '://' . $this->getinfo('host');
+		}
+		
+		 $return .= $this->getinfo('path');
+		
+		 if($this->getinfo('query')) {
+		 	$return .= '?' . $this->getinfo('query');
+		 }
+		 
+		 if($this->getinfo('fragment')) {
+		 	$return .= '#' . $this->getinfo('fragment');
+		 }
+		 
+		 return $return;
+	}
+}
+// }}}
 // }}}
 ?>

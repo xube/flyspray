@@ -9,7 +9,7 @@
   \********************************************************/
 
 if (!$user->perms['manage_project']) {
-    $fs->Redirect( $fs->CreateURL('error', null) );
+    $fs->Redirect( CreateURL('error', null) );
 }
 
 $fs->get_language_pack('index');
@@ -45,6 +45,6 @@ switch ($area = Get::val('area', 'prefs')) {
         break;
 
     default:
-        $fs->Redirect( $fs->CreateURL('error', null) );
+        $fs->Redirect( CreateURL('error', null) );
 }
 ?>

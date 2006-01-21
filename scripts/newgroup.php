@@ -7,7 +7,7 @@
   \*******************************************/
 
 if (!$user->can_create_group()) {
-    $fs->redirect($fs->createUrl('error'));
+    $fs->redirect(CreateURL('error'));
 }
 
 $fs->get_language_pack('newgroup');
