@@ -311,6 +311,12 @@
 		{$details_text['stopwatching']}</a>
 	 <?php endif; ?>
 	 <?php endif; ?>
+         
+	 <?php if ($user->can_vote($task_details['task_id'])): ?>
+            <a id="addvote" class="button"
+                href="{$baseurl}?do=modify&amp;action=addvote&amp;id={Get::val('id')}">
+                {$details_text['addvote']}</a>
+         <?php endif; ?>
 
 	 <?php endif; ?>
 	 <?php if (count($penreqs)): ?>

@@ -512,7 +512,7 @@ function tpl_draw_perms($perms)
             'view_attachments', 'create_attachments', 'delete_attachments',
             'view_history', 'close_own_tasks', 'close_other_tasks',
             'assign_to_self', 'assign_others_to_self', 'view_reports',
-            'global_view');
+            'add_votes', 'global_view');
 
     $yesno = array(
             '<td class="bad">No</td>',

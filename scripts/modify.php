@@ -820,7 +820,7 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
                               'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
                               'view_attachments', 'create_attachments', 'delete_attachments',
                               'view_history', 'close_own_tasks', 'close_other_tasks',
-                              'assign_to_self', 'assign_others_to_self', 'view_reports',
+                              'assign_to_self', 'assign_others_to_self', 'view_reports', 'add_votes',
                               'group_open');
     }
 
@@ -1475,5 +1475,22 @@ elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project']) {
     $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];
     $fs->redirect(CreateURL('details', Req::val('id')));
 } // }}}
-
+// Adding a vote for a task {{{
+elseif (Get::val('action') == 'addvote') {
+    
+    if ($user->can_vote(Get::val('id')))
+    {
+        $db->Query("INSERT INTO {votes}
+                                (user_id, task_id, date_time)
+                         VALUES (?,?,?)", array($user->id, Get::val('id'), time()));
+                         
+        $_SESSION['SUCCESS'] = $modify_text['voterecorded'];
+        $fs->redirect(CreateURL('details', Get::val('id')));
+    } else
+    {
+        $_SESSION['ERROR'] = $modify_text['votefailed'];
+        $fs->redirect(CreateURL('details', Get::val('id')));
+    }
+    
+} // }}}
 ?>

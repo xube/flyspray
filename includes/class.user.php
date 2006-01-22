@@ -93,7 +93,7 @@ class User
                 'delete_comments', 'view_attachments', 'create_attachments',
                 'delete_attachments', 'view_history', 'close_own_tasks',
                 'close_other_tasks', 'assign_to_self', 'assign_others_to_self',
-                'add_to_assignees', 'view_reports', 'group_open');
+                'add_to_assignees', 'view_reports', 'add_votes', 'group_open');
 
         $this->perms = array();
 
@@ -261,6 +261,27 @@ class User
         
         return $task['mark_private']
             && ($this->perms['manage_project'] || in_array($this->id, $fs->GetAssignees($task['task_id'])));
+    }
+    
+    function can_vote($task_id)
+    {
+        global $db;
+        
+        // First check that the user hasn't already voted today
+        $sql = $db->Query("SELECT date_time
+                             FROM {votes}
+                            WHERE user_id = ?
+                         ORDER BY vote_id DESC", array($this->id));
+        $last_voted = $db->FetchOne($sql);
+
+        // Check that they haven't already voted for this task sometime in the past
+        $check = $db->Query("SELECT date_time
+                               FROM {votes}
+                              WHERE user_id = ?
+                                AND task_id = ?
+                           ORDER BY vote_id DESC", array($this->id, $task_id));
+
+        return $this->perms['add_votes'] && ($last_voted + 86400 < time()) && !$db->CountRows($check);
     }
 
     /* }}} */

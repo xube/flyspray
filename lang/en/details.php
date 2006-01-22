@@ -163,5 +163,6 @@ $details_text = array (
 'dependencygraph'       =>      'Dependency graph',
 'attachanotherfile'     =>      'Attach another file',
 'OK'                    =>      'OK',
+'addvote'               =>      'Add Vote',
 );
 ?>

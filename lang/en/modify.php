@@ -166,5 +166,11 @@ $modify_text = array (
 'massopsuccess'         =>       'Mass operations successful - where permissions allowed',
 'usernotexist'          =>       'That username does not exist on this Flyspray installation',
 'commentattachperms'    =>       'You cannot delete that comment - no permission to delete attachments',
+
+
+// Added in version 0.9.9
+'voterecorded'          =>      'Your vote has been recorded',
+'votefailed'            =>      'You vote could not be added at this time',
+
 );
 ?>

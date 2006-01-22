@@ -48,5 +48,8 @@ $reports_text = array (
 'selectfromdate' =>     'Select From Date',
 'selecttodate'  =>     'Select To Date',
 
+// Added in version 0.9.9
+'votes'         =>      'Votes',
+
 );
 ?>

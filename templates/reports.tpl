@@ -1,5 +1,6 @@
 <ul id="submenu">
   <li><a href="#events">{$reports_text['events']}</a></li>
+  <li><a href="#votes">{$reports_text['votes']}</a></li>
 </ul>
 <div id="events" class="tab">
   <form action="{$baseurl}index.php" method="get">
@@ -116,4 +117,8 @@
   </table>
   </div>
   <?php endif; ?>
+</div>
+
+<div id="votes" class="tab">
+
 </div>

@@ -15,7 +15,8 @@ $check['action']        = array('logout', 'newtask', 'update', 'close', 'reopen'
                                 'deletecomment', 'deleteattachment', 'addreminder', 'deletereminder', 'update_version_list',
                                 'add_to_version_list', 'addtogroup', 'movetogroup', 'requestreopen', 'takeownership',
                                 'requestclose', 'newdep', 'removedep', 'sendmagic', 'sendcode', 'makeprivate', 'makepublic',
-                                'denypmreq', 'massaddnotify', 'massremovenotify', 'masstakeownership', 'addtoassignees');
+                                'denypmreq', 'massaddnotify', 'massremovenotify', 'masstakeownership', 'addtoassignees',
+                                'addvote');
 $check['area']          = array('comments', 'editcomment', 'attachments', 'related', 'notify', 'status', 'users', 'tt', 'res',
                                 'groups', 'remind', 'system', 'history', 'pendingreq', 'prefs', 'cat', 'os', 'ver', 'editgroup',
                                 'newproject');

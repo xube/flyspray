@@ -29,7 +29,7 @@ define('CREATE_TASK_FAILED',-4);    //Error creating task
 // Get the main headerfile.  It calls other important files
 require('header.php');
 
-require('includes/class.tpl.php');
+//require('includes/class.tpl.php');
 
 $lang = "en";
 
@@ -582,6 +582,7 @@ function openTask($args)
    global $db;
    global $be;
    global $proj;
+   global $user;
    
    include_once('includes/notify.inc.php');
    $notify = new Notifications();
@@ -615,32 +616,10 @@ function openTask($args)
 
 
    // compulsory args
-   $taskData[0] = $user_id;
-   $taskData[1] = $taskData['project_id'];
-
-   $taskData[2] = $taskData['item_summary'];
-   $taskData[3] = $taskData['detailed_desc'];
-
-   $taskData[4] = $taskData['task_type'];
-   $taskData[5] = $taskData['product_category'];
-   $taskData[6] = $taskData['product_version'];
-   $taskData[7] = $taskData['operating_system'];
-   $taskData[8] = $taskData['task_severity'];
-
-   // permission based arguments
-   // these get used if the permissions are sufficient
-   // otherwise these values get overridden in $be->createtask
-
-   $taskData[9] = $taskData['assigned_to'];
-   $taskData[10] = $taskData['closedby_version'];
-   $taskData[11] = $taskData['task_priority'];
-   $taskData[12] = $taskData['due_date'];
-   $taskData[13] = $taskData['item_status'];
-
-
-   // data should now be loaded
-
-
+   $taskData['user_id'] = $user_id;
+   $taskData['attached_to_project'] = $taskData['project_id'];
+   
+   // task data is now used directly
 
    // get permissions for the project
    $project_prefs = $proj->prefs;
@@ -661,20 +640,12 @@ function openTask($args)
 
 
 
-   // if the result is empty then return a generic result
-   // if the result is not empty then assume that if we get an array back then success
-   // otherwise if we get a string back then it's probably an error message
+   // if the result isn't valid return a failure message
 
-   if (empty($result)) {
-
-      $result =  "create task returned - no data returned";
-   } else if (!is_array($result)) {
-      // return the error
+   if (!$be->isNewTaskValid($result))
+   {
       return new xmlrpcresp (0,CREATE_TASK_FAILED, $result);
-
    }
-
-
    // return success
    return xmlrpcEncodedArrayResponse($result);
 }

@@ -210,7 +210,7 @@ class Backend
    {
       global $db;
       global $fs;
-      //global $notify;
+      global $user;
 
       $notify = new Notifications();
 
@@ -219,116 +219,134 @@ class Backend
          return "We were not given an array of arguments to process.";
 
 
-
-
-      // Here's a list of the arguments we accept
-      // These args are complusory
-      $userid        = $args[0];    // The user id of the user creating this task (numerical, 0 = anon)
-      $projectid     = $args[1];    // Project to which we're attaching this task (numerical)
-
-      $summary       = $args[2];    // Item Summary (string)
-      $desc          = $args[3];    // Detailed Description (string)
-
-      $tasktype      = $args[4];    // Task Type (numerical)
-      $category      = $args[5];    // Product Category (numerical)
-      $version       = $args[6];    // Version this task was REPORTED in (numerical)
-      $os            = $args[7];    // Operating system (numerical)
-      $severity      = $args[8];    // Task severity (numerical)
-
-      // These args are only set by someone with 'modify all tasks' permission
-      $assigned      = $args[9];    // User id of who is being assigned the task (numerical)
-      $duever        = $args[10];   // The version this task is DUE in (numerical)
-      $priority      = $args[11];   // Task Priority (numerical)
-      $duedate       = $args[12];   // Due Date (10 digit numerical)
-      $status        = $args[13];   // Item Status (numerical)
-
-
+      $args['user_id'] = $args['user_id'];    // The user id of the user creating this task (numerical, 0 = anon)
+     
       // Get some information about the project and the user's permissions
-      $project       = new Project($projectid);
-      $user          = new User($userid);
+      $project       = new Project($args['attached_to_project']);
+      $user          = new User($args['user_id']);
       $user->get_perms($project);
 
       // Check permissions for the specified user (or anonymous) to open tasks
       if ($user->perms['open_new_tasks'] != '1' && $project->prefs['anon_open'] != '1')
-         return false;
-
+      {
+         return "permission denied";
+      }
 
       // Some fields can have default values set
-      if (empty($assigned) OR $user->perms['modify_all_tasks'] != '1')
+      if ($user->perms['modify_all_tasks'] != '1')
       {
-         $assigned = 0;
-         $duever = 0;
-         $priority = 2;
-         $duedate = 0;
-         $status = 1;
-      }
-
-      $checkArray = array("userid","projectid","tasktype","category","version","os","severity",
-                          "assigned","duever","priority","duedate","status");
-
-
-      foreach ($checkArray as $item) {
-
-         if (!is_numeric($$item)) {
-            return "value for $item is not numeric ($item='".($$item)."')";
+         
+         $args['closedby_version'] = 0;
+         $args['task_priority'] = 2;
+         $args['due_date'] = 0;
+         $args['item_status'] = 1;
+      } 
+      
+      
+      $assigned_user_list = $args['assigned'];
+      // fix assigned user list o an array if it isn't currently
+      // but only if it isn't empty
+      if ($assigned_user_list) 
+      {
+         if (!is_array($args['assigned'])) 
+         {
+            $assigned_user_list = array($args['assigned']);
          }
       }
+      
+      
+      // check that values are numeric where necessary
+      $checkArray = array("attached_to_project", "task_type","product_category",
+                          "product_version","operating_system",
+                          "task_severity","closedby_version","task_priority","due_date","item_status");
 
+      
+      
+      foreach ($checkArray as $item) 
+      {
 
+         if (!is_numeric($args[$item])) 
+         {
+            return "value for $item is not numeric ($item='".($args[$item])."')";
+         }
+      }
+      
+      $result = $db->Query("SELECT  max(task_id)+1 FROM {tasks}");
+      $task_id = $db->FetchOne($result);  
 
-      // Here comes the database insert!
-      $db->Query("INSERT INTO {tasks}
-                  (attached_to_project,
-                  task_type,
-                  date_opened,
-                  opened_by,
-                  item_summary,
-                  detailed_desc,
-                  item_status,
-                  assigned_to,
-                  product_category,
-                  product_version,
-                  closedby_version,
-                  operating_system,
-                  task_severity,
-                  task_priority,
-                  due_date)
-                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                  array($projectid,
-                  $tasktype,
-                  date('U'),
-                  $userid,
-                  $summary,
-                  $desc,
-                  $status,
-                  $assigned,
-                  $category,
-                  $version,
-                  $duever,
-                  $os,
-                  $severity,
-                  $priority,
-                  $duedate)
-                );
+      $args['task_id'] = $task_id;
+      $args['opened_by'] = $args['user_id'];
+      $args['date_opened'] = date('U');
+      $args['last_edited_time'] = date('U');
+      
+     
+      
+      $valid_keys = array_merge($checkArray, 
+                                array('task_id','date_opened', 'last_edited_time', 'opened_by', 'detailed_desc', 'item_summary'));
+      
+      
+      // remove any value/key pairs that are not in valid_keys (or check_array)
+      foreach ($args as $key => $val) 
+      {
+         
+         if (!in_array($key,$valid_keys)) 
+         {
+            unset($args[$key]);
+         }
+      }
+      
+     // modified database insert, now the whole thing is built from the $args array
+      $cols = implode(",",array_keys($args));
+      $values = implode(",",array_fill(0,count($args),"?"));
+      
+            $db->Query("INSERT INTO {tasks} 
+                        ($cols)
+                        VALUES($values)",
+                        array_values($args)
+                      );
+      
+      if (!$result) 
+      {
+         // failure to insert task
+         return "failed to create new task (db failure)";
+      }
 
-      // Get the task id back
-      $result = $db->Query("SELECT task_id, item_summary, product_category
-                                                FROM {tasks}
-                                                WHERE item_summary = ?
-                                                AND detailed_desc = ?
-                                                ORDER BY task_id DESC",
-                                                array($summary, $desc), 1);
-      $task_details = $db->FetchArray($result);
-
-
-      $taskid = $task_details['task_id'];
+      
+      
+      $task_details = array('task_id'=>$task_id,'item_summary'=>$args['item_summary']);
+      $task_id = $args['task_id'];
+      
+      if ($assigned_user_list)  
+      {
+         
+          foreach ($assigned_user_list as $assigned_user_id)
+          {
+            $db->Query("INSERT INTO {assigned} 
+                        (task_id, user_id) 
+                        VALUES (?,?)",
+                       array($task_id, $assigned_user_id));
+          }
+         
+         
+         // Log to task history
+                  
+         $fs->logEvent($task_id, 14, join(" ",$assigned_user_list));
+         
+         // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
+         $to   = $notify->SpecificAddresses($assigned_user_list);
+         $msg  = $notify->GenerateMsg('14', $task_id);
+         $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+         
+      }
+      
       // Log that the task was opened
       $fs->logEvent($task_details['task_id'], 1);
 
       $result = $db->Query("SELECT * FROM {list_category}
-                                                 WHERE category_id = ?",
-                                                 array($category)
-                                    );
+                            WHERE category_id = ?",
+                            array($category)
+                          );
       $cat_details = $db->FetchArray($result);
 
       // We need to figure out who is the category owner for this task
@@ -353,21 +371,20 @@ class Backend
       if (empty($owner))
          $owner = $project->prefs['default_cat_owner'];
 
-      if (!empty($owner))
+      if ($owner) 
       {
-         // Category owners now get auto-added to the notification list for new tasks
-         $insert = $db->Query("INSERT INTO {notifications}
-                              (task_id, user_id)
-                              VALUES(?, ?)",
-                              array($taskid, $owner)
-                             );
-
-         $fs->logEvent($taskid, 9, $owner);
-
-         // Create the Notification
-         $notify->Create('1', $taskid);
-
-      // End of checking if there's a category owner set, and notifying them.
+         $be->AddToNotifyList($owner, array($task_id));
+         
+         $fs->logEvent($task_id, 9, $owner);
+      }
+      
+      // Create the Notification
+      $notify->Create('1', $task_id);
+      
+      // If the reporter wanted to be added to the notification list
+      if ($args['notifyme'] == '1' && $userid != $owner) 
+      {
+         $be->AddToNotifyList($user->id, $userid);
       }
 
       // give some information back
@@ -375,6 +392,16 @@ class Backend
 
    // End of CreateTask() function
    }
+    
+    function isNewTaskValid($taskResult)
+    {
+        if (empty($taskResult))
+            return false;
+        if (is_array($taskResult))
+            return true;
+
+        return false;
+    }
 
    /* This function takes an array of arguments, and returns a
       nested array of task details ready to be formatted for display.

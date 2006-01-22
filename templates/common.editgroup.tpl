@@ -93,6 +93,11 @@
         <td><label for="viewreports">{$admin_text['viewreports']}</label></td>
         <td>{!tpl_checkbox('view_reports', $group_details['view_reports'], 'viewreports')}</td>
       </tr>
+      <tr>
+        <td><label for="canvote">{$admin_text['canvote']}</label></td>
+        <td>{!tpl_checkbox('add_votes', $group_details['add_votes'], 'canvote')}</td>
+      </tr>
+
       <?php if (!$proj->id): ?>
       <tr>
         <td><label for="groupopen">{$admin_text['groupenabled']}</label></td>

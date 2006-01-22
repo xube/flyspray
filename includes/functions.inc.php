@@ -450,6 +450,8 @@ class Flyspray
     // Compare tasks {{{
     function compare_tasks($old, $new)
     {
+        global $tpl;
+        
         $comp = array('priority_name','severity_name','status_name','assigned_to_name','due_in_version_name',
                      'reported_version_name','tasktype_name','os_name', 'category_name',
                      'due_date','percent_complete','item_summary', 'due_in_version_name',
@@ -466,8 +468,8 @@ class Flyspray
                 switch($key)
                 {
                     case 'due_date':
-                        $new[$key] = $this->formatDate($new[$key], 0);
-                        $value = $this->formatDate($value, 0);
+                        $new[$key] = $tpl->formatDate($new[$key], 0);
+                        $value = $tpl->formatDate($value, 0);
                         break;
                         
                     case 'percent_complete':

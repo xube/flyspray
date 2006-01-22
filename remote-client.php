@@ -15,10 +15,12 @@
 
  */
 
+require('header.php');
+
 // default server (for easier testing)
 
 //$server = "http://flyspray.rocks.cc/bts/remote.php";
-$server = "http://localhost/flyspray-dev/remote.php";
+$server = $conf['general']['baseurl']."remote.php";
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -255,10 +257,10 @@ Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></
             </tr>
             <tr>
                <td>
-                  <label for="assignedto">Assigned To</label>
+                  <label for="assigned">Assigned To</label>
                </td>
                <td>
-                  <?php echo menuForArray($response->value['assignedUserList'],"assigned_to"); ?>
+                  <?php echo menuForArray($response->value['assignedUserList'],"assigned"); ?>
                </td>
             </tr>
             <tr>
@@ -383,7 +385,7 @@ Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></
       $taskArray['project_id'] = 1;
       $taskArray['task_type'] = 2;
       $taskArray['item_status'] = 2;
-      $taskArray['assigned_to'] = 2;
+      $taskArray['assigned'] = 2;
       $taskArray['product_category'] = 2;
       $taskArray['product_version'] = 2;
       $taskArray['closedby_version'] = 2;
