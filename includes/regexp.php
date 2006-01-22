@@ -24,7 +24,7 @@ $check['do']            = array('index', 'admin', 'pm', 'reports', 'authenticate
                                 'loginbox', 'modify', 'newgroup', 'newproject', 'newtask', 'newuser', 'changelog', 'register',
                                 'report', 'myprofile', 'lostpw', 'editcomment', 'error');
 $check['order']         = array('id', 'proj', 'type', 'date', 'sev', 'cat', 'os', 'status', 'due', 'dateclosed', 'event_date', 'pri',
-                                'openedby', 'reportedin', 'assignedto', 'prog', 'duedate');
+                                'openedby', 'reportedin', 'assignedto', 'prog', 'duedate', 'votes');
 $check['sort']          = array('asc', 'desc');
 $check['report']        = array('summary', 'changelog', 'events', 'severity', 'age');
 $check['tasks']         = array('all', 'assigned', 'reported', 'watched', 'last');

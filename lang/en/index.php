@@ -82,5 +82,6 @@ $index_text = array (
 'nosearches'               =>      'No saved searches',
 'OK'                       =>      'OK',
 'saved'                    =>      'Saved!',
+'votes'                    =>      'Votes',
 );
 ?>

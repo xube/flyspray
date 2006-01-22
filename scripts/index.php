@@ -46,6 +46,7 @@ $order_keys = array (
         'assignedto' => 'u.real_name',
         'dateclosed' => 't.date_closed',
         'os'         => 'los.os_name',
+        'votes'      => 'num_votes',
 );
 $sortorder  = sprintf("%s %s, %s %s, t.task_id ASC",
         $order_keys[Get::val('order',  'sev')],  Get::val('sort', 'desc'),
@@ -89,7 +90,8 @@ $from   = '             {tasks}         t
              LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id
              LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
              LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
-             LEFT JOIN  {history}       h   ON t.task_id = h.task_id ';
+             LEFT JOIN  {history}       h   ON t.task_id = h.task_id 
+             LEFT JOIN  {votes}         vot ON t.task_id = vot.task_id ';
 
 $where      = array('project_is_active = ?');
 $sql_params = array('1');
@@ -231,7 +233,8 @@ $where = join(' AND ', $where);
 
 /* }}} */
 
-$sql = $db->Query("SELECT  t.task_id
+$sql = $db->Query("SELECT  t.task_id,
+                           COUNT(DISTINCT vot.vote_id) AS num_votes
                      FROM  $from
                     WHERE  $where
                  GROUP BY  t.task_id
@@ -255,7 +258,8 @@ $sql = $db->Query("
              los.os_name              AS os_name,
              uo.real_name             AS opened_by_name,
              COUNT(DISTINCT com.comment_id)    AS num_comments,
-             COUNT(DISTINCT att.attachment_id) AS num_attachments
+             COUNT(DISTINCT att.attachment_id) AS num_attachments,
+             COUNT(DISTINCT vot.vote_id)       AS num_votes
      FROM
              $from
              LEFT JOIN  {comments}      com ON t.task_id = com.task_id
@@ -294,6 +298,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
             'progress'   => 'prog',
             'dateclosed' => 'dateclosed',
             'os'         => 'os',
+            'votes'      => 'votes',
     );
 
     $imgbase = '<img src="themes/'.$proj->prefs['theme_style'].'/%s.png" alt="%s" />';
@@ -354,6 +359,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             'dueversion' => 'closedby_version',
             'duedate'    => 'due_date',
             'comments'   => 'num_comments',
+            'votes'      => 'num_votes',
             'attachments'=> 'num_attachments',
             'dateclosed' => 'date_closed',
             'progress'   => '',

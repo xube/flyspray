@@ -166,7 +166,7 @@
             $columnnames = array('id', 'project', 'tasktype', 'category', 'severity',
             'priority', 'summary', 'dateopened', 'status', 'openedby',
             'assignedto', 'lastedit', 'reportedin', 'dueversion', 'duedate',
-            'comments', 'attachments', 'progress', 'dateclosed', 'os');
+            'comments', 'attachments', 'progress', 'dateclosed', 'os', 'votes');
             $selectedcolumns = explode(" ", $fs->prefs['visible_columns']);
             ?>
             {!tpl_double_select('visible_columns', $columnnames, $selectedcolumns, true)}

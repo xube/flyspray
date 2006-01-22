@@ -1,5 +1,5 @@
 <?php
-require_once('includes/events.inc.php');
+require_once($basedir . '/includes/events.inc.php');
 $page->setTitle('Flyspray:: ' . $language['reports']);
 
 $fs->get_language_pack('reports');

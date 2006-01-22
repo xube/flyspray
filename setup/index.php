@@ -1275,7 +1275,6 @@ class Setup extends Flyspray
 
 	  // Double check the urls and paths slashes.
 	  $site_url			.= (substr($site_url, -1, 1) != '/') ? '/' : '';
-	  $absolute_path	.= (substr($absolute_path, -1, 1) != '/') ? '/' : '';
 
       $config	= array();
       $config[] = "[database]";
@@ -1287,7 +1286,6 @@ class Setup extends Flyspray
       $config[] = "dbprefix = \"$db_prefix\"				; The prefix to the {$this->mProductName} tables";
       $config[] = "\n";
       $config[] = '[general]';
-      $config[] = "basedir = \"$absolute_path\"		; Location of your {$this->mProductName} installation";
       $config[] = "cookiesalt = \"$cookiesalt\"			; Randomisation value for cookie encoding";
       $config[] = "adodbpath = \"{$this->mAdodbPath}\"	; Path to the main ADODB include file";
       $config[] = 'output_buffering = "on"				; Available options: "on" or "gzip"';

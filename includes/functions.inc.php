@@ -33,12 +33,11 @@ class Flyspray
      */
     function get_language_pack($module)
     {
-        global $proj;
+        global $proj, $basedir;
         if ($module == 'functions')
             $module .= '.inc';
 
         $lang     = $proj->prefs['lang_code'];
-        $basedir  = dirname(dirname(__FILE__));
         $before   = get_defined_vars();
 
         require("$basedir/lang/en/$module.php");

@@ -57,6 +57,7 @@ class User
             if(!$this->didSearch() || Get::val('tasks') == 'last') {
                 $arr = unserialize($this->infos['last_search']);
                 $_GET = array_merge($_GET, $arr);
+                $_GET['tasks'] = 'last';
             }
             
             $arr = array();
@@ -267,21 +268,13 @@ class User
     {
         global $db;
         
-        // First check that the user hasn't already voted today
-        $sql = $db->Query("SELECT date_time
+        // Check that the user hasn't already voted today or for this task
+        $check = $db->Query('SELECT vote_id
                              FROM {votes}
-                            WHERE user_id = ?
-                         ORDER BY vote_id DESC", array($this->id));
-        $last_voted = $db->FetchOne($sql);
+                             WHERE user_id = ? AND (task_id = ? OR date_time > ?)',
+                             array($this->id, $task_id, time() - 86400));
 
-        // Check that they haven't already voted for this task sometime in the past
-        $check = $db->Query("SELECT date_time
-                               FROM {votes}
-                              WHERE user_id = ?
-                                AND task_id = ?
-                           ORDER BY vote_id DESC", array($this->id, $task_id));
-
-        return $this->perms['add_votes'] && ($last_voted + 86400 < time()) && !$db->CountRows($check);
+        return $this->perms['add_votes'] && !$db->CountRows($check);
     }
 
     /* }}} */

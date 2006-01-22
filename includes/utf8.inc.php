@@ -1,5 +1,5 @@
 <?php
-require_once('dokuwiki/inc/utf8.php');
+require_once($basedir . '/includes/dokuwiki/inc/utf8.php');
 
 // a-z A-Z . _ -, extended latin chars, Cyrillic and Greek
 // a-z A-Z . _ -, extended latin chars, Cyrillic and Greek

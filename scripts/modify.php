@@ -1478,16 +1478,14 @@ elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project']) {
 // Adding a vote for a task {{{
 elseif (Get::val('action') == 'addvote') {
     
-    if ($user->can_vote(Get::val('id')))
-    {
+    if ($user->can_vote(Get::val('id'))) {
         $db->Query("INSERT INTO {votes}
                                 (user_id, task_id, date_time)
                          VALUES (?,?,?)", array($user->id, Get::val('id'), time()));
                          
         $_SESSION['SUCCESS'] = $modify_text['voterecorded'];
         $fs->redirect(CreateURL('details', Get::val('id')));
-    } else
-    {
+    } else {
         $_SESSION['ERROR'] = $modify_text['votefailed'];
         $fs->redirect(CreateURL('details', Get::val('id')));
     }
