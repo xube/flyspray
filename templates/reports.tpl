@@ -120,5 +120,17 @@
 </div>
 
 <div id="votes" class="tab">
-
+    <?php if (!empty($tasks_voted_for)): ?>
+        <table><tr><th></th><th>{!$reports_text['votes']}</th><th>{!$details_text['summary']}</th></tr>
+        <?php foreach ($tasks_voted_for AS $key => $val):?>
+            <tr>
+                <td><img src="{$baseurl}themes/{$proj->prefs['theme_style']}/dropdown.png"
+                            title="{$reports_text['moreinfo']}" alt="" />
+                </td>
+                <td>{$val}</td>
+                <td>{!tpl_tasklink($key)}</td>
+            </tr>
+        <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
 </div>

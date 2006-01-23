@@ -134,6 +134,28 @@ if (count($type)) {
     $histories = $db->FetchAllArray($histories);
 }
 
-$page->uses('histories', 'details_text', 'reports_text', 'index_text', 'admin_text', 'sort');
+/**********************\
+*  Voting tally report *
+\**********************/
+
+/*$sql = $db->Query("SELECT t.task_id, v.user_id
+                     FROM {tasks} t
+                LEFT JOIN {votes} v ON t.task_id = v.task_id
+                    WHERE v.vote_id IS NOT NULL");
+*/
+
+$sql = $db->Query("SELECT COUNT(vote_id) AS num_votes,
+                          t.task_id AS id
+                     FROM {votes} v, {tasks} t
+                    WHERE v.task_id = t.task_id
+                 GROUP BY v.task_id
+                 ORDER BY num_votes DESC");
+
+$tasks_voted_for = array();
+while ($row = $db->FetchArray($sql))
+    $tasks_voted_for = $tasks_voted_for + array($row['id'] => $row['num_votes']);
+
+
+$page->uses('histories', 'details_text', 'reports_text', 'index_text', 'admin_text', 'sort', 'tasks_voted_for');
 $page->pushTpl('reports.tpl');
 ?>
