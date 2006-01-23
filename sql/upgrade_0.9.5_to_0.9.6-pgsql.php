@@ -27,11 +27,11 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 }
 
   if ($upgraded == 'yes') {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">Your POSTGRESQL Flyspray database has already been upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
+    echo "<table class=\"admin\"><tr><td class=\"text\">Your POSTGRESQL Flyspray database has already been upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
 	echo "<a href=\"../\">Take me to Flyspray 0.9.6 now!</a></td></tr><table>";
 
   } else {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">This script will upgrade your POSTGRESQL database for use with Flyspray 0.9.6.";
+    echo "<table class=\"admin\"><tr><td class=\"text\">This script will upgrade your POSTGRESQL database for use with Flyspray 0.9.6.";
     echo " You should ensure that your database settings are correct in <b>flyspray.conf.php</b> before continuing.";
     echo "<br><br><a href=\"" . $_SERVER['PHP_SELF'] . "?page=2\">Perform upgrade now!</a></td></tr></table>";
   };
@@ -49,7 +49,7 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 }
 
   if ($upgraded == 'yes') {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">Your POSTGRESQL Flyspray database has already been upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
+    echo "<table class=\"admin\"><tr><td class=\"text\">Your POSTGRESQL Flyspray database has already been upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
 	echo "<a href=\"../\">Take me to Flyspray 0.9.6 now!</a></td></tr><table>";
 
   } else {
@@ -151,7 +151,7 @@ $init_history = $fs->dbQuery("INSERT INTO flyspray_history (task_id, user_id, ev
 
 
   
-echo "<table class=\"admin\"><tr><td class=\"admintext\">Your  POSTGRESQL Flyspray database is now upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
+echo "<table class=\"admin\"><tr><td class=\"text\">Your  POSTGRESQL Flyspray database is now upgraded for use with version 0.9.6.  You can delete this script.<br><br>";
 echo "<a href=\"../\">Take me to Flyspray 0.9.6 now!</a></td></tr><table>";
 
 // End of checking if upgrade is already done

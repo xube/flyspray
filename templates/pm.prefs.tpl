@@ -9,7 +9,7 @@
         <tr>
           <td><label for="projecttitle">{$admin_text['projecttitle']}</label></td>
           <td>
-            <input id="projecttitle" name="project_title" type="text" size="40" maxlength="100"
+            <input id="projecttitle" name="project_title" class="text" type="text" size="40" maxlength="100"
               value="{$proj->prefs['project_title']}" />
           </td>
         </tr>
@@ -66,7 +66,7 @@
         </tr>
         <tr>
           <td><label>{$admin_text['visiblecolumns']}</label></td>
-          <td class="admintext">
+          <td class="text">
             <?php // Set the selectable column names
             $columnnames = array('id', 'tasktype', 'category', 'severity',
             'priority', 'summary', 'dateopened', 'status', 'openedby',
@@ -87,20 +87,20 @@
         <tr>
           <td><label for="notify_subject">{$pm_text['notifysubject']}</label></td>
           <td>
-            <input id="notify_subject" name="notify_subject" type="text" size="40" value="{$proj->prefs['notify_subject']}" />
+            <input id="notify_subject" class="text" name="notify_subject" type="text" size="40" value="{$proj->prefs['notify_subject']}" />
             {$pm_text['notifysubjectinfo']}
           </td>
         </tr>
         <tr>
           <td><label for="emailaddress">{$pm_text['emailaddress']}</label></td>
           <td>
-            <input id="emailaddress" name="notify_email" type="text" value="{$proj->prefs['notify_email']}" />
+            <input id="emailaddress" name="notify_email" class="text" type="text" value="{$proj->prefs['notify_email']}" />
           </td>
         </tr>
         <tr>
           <td><label for="jabberid">{$pm_text['jabberid']}</label></td>
           <td>
-            <input id="jabberid" name="notify_jabber" type="text" value="{$proj->prefs['notify_jabber']}" />
+            <input id="jabberid" class="text" name="notify_jabber" type="text" value="{$proj->prefs['notify_jabber']}" />
           </td>
         </tr>
       </table>
@@ -113,13 +113,13 @@
         <tr>
           <td><label for="feed_description">{$pm_text['feeddescription']}</label></td>
           <td>
-            <input id="feed_description" name="feed_description" type="text" value="{$proj->prefs['feed_description']}" />
+            <input id="feed_description" class="text" name="feed_description" type="text" value="{$proj->prefs['feed_description']}" />
           </td>
         </tr>
         <tr>
           <td><label for="feed_img_url">{$pm_text['feedimgurl']}</label></td>
           <td>
-            <input id="feed_img_url" name="feed_img_url" type="text" value="{$proj->prefs['feed_img_url']}" />
+            <input id="feed_img_url" class="text" name="feed_img_url" type="text" value="{$proj->prefs['feed_img_url']}" />
           </td>
         </tr>
       </table>
@@ -131,10 +131,10 @@
           <input type="hidden" name="do" value="modify" />
           <input type="hidden" name="action" value="updateproject" />
           <input type="hidden" name="project_id" value="{$proj->id}" />
-          <input class="adminbutton" type="submit" value="{$admin_text['saveoptions']}" />
+          <button type="submit">{$admin_text['saveoptions']}</button>
         </td>
         <td class="buttons">
-          <input class="adminbutton" type="reset" value="{$admin_text['resetoptions']}" />
+          <button type="reset">{$admin_text['resetoptions']}</button>
         </td>
       </tr>
     </table>

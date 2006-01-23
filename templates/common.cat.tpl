@@ -15,12 +15,12 @@
           <td>
             <input type="hidden" name="id[]" value="{$row['category_id']}" />
             <label for="categoryname{$countlines}">{$admin_text['name']}</label>
-            <input id="categoryname{$countlines}" type="text" size="15" maxlength="40" name="list_name[]" 
+            <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" 
               value="{$row['category_name']}" />
           </td>
           <td title="{$admin_text['listordertip']}">
             <label for="listposition{$countlines}">{$admin_text['order']}</label>
-            <input id="listposition{$countlines}" type="text" size="3" maxlength="3" name="list_position[]" value="{$row['list_position']}" />
+            <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$row['list_position']}" />
           </td>
           <td title="{$admin_text['listshowtip']}">
             <label for="showinlist{$countlines}">{$admin_text['show']}</label>
@@ -47,11 +47,11 @@
             <input type="hidden" name="id[]" value="{$subrow['category_id']}" />
             &rarr;
             <label for="categoryname{$countlines}">{$admin_text['name']}</label>
-            <input id="categoryname{$countlines}" type="text" size="15" maxlength="40" name="list_name[]" value="{$subrow['category_name']}" />
+            <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" value="{$subrow['category_name']}" />
           </td>
           <td title="{$admin_text['listordertip']}">
             <label for="listposition{$countlines}">{$admin_text['order']}</label>
-            <input id="listposition{$countlines}" type="text" size="3" maxlength="3" name="list_position[]" value="{$subrow['list_position']}" />
+            <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$subrow['list_position']}" />
           </td>
           <td title="{$admin_text['listshowtip']}">
             <label for="showinlist{$countlines}">{$admin_text['show']}</label>
@@ -80,7 +80,7 @@
             <input type="hidden" name="list_type" value="category" />
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-            <input class="adminbutton" type="submit" value="{$admin_text['update']}" />
+            <button type="submit">{$admin_text['update']}</button>
           </td>
         </tr>
       </table>
@@ -94,11 +94,11 @@
         <tr>
           <td>
             <label for="listnamenew">{$admin_text['name']}</label>
-            <input id="listnamenew" type="text" size="15" maxlength="30" name="list_name" />
+            <input id="listnamenew" class="text" type="text" size="15" maxlength="30" name="list_name" />
           </td>
           <td title="{$admin_text['listordertip']}">
             <label for="listpositionnew">{$admin_text['order']}</label>
-            <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
+            <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" name="list_position" />
           </td>
           <td title="{$admin_text['categoryownertip']}" colspan="2">
             <label for="categoryownernew" >{$admin_text['owner']}</label>
@@ -125,7 +125,7 @@
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <?php endif; ?>
             <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-            <input class="adminbutton" type="submit" value="{$admin_text['addnew']}" />
+            <button type="submit">{$admin_text['addnew']}</button>
           </td>
         </tr>
       </table>

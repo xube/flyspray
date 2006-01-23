@@ -83,5 +83,6 @@ $index_text = array (
 'OK'                       =>      'OK',
 'saved'                    =>      'Saved!',
 'votes'                    =>      'Votes',
+'allclosedtasks'           =>      'All Closed Tasks',
 );
 ?>

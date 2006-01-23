@@ -3,7 +3,7 @@
 	 <div>
 		<h2 class="severity{$task_details['task_severity']}">
 		  FS#{$task_details['task_id']} &mdash;
-		  <input class="severity{$task_details['task_severity']}" type="text"
+		  <input class="text severity{$task_details['task_severity']}" type="text"
 			name="item_summary" size="80" maxlength="100"
 			value="{$task_details['item_summary']}" />
 		</h2>
@@ -53,8 +53,8 @@
 				</select>
 			 </td>
 			</tr>
-			<tr class="assignedto">
-			 <td><label for="assignedto">{$details_text['assignedto']}</label></td>
+			<tr>
+			 <td><label>{$details_text['assignedto']}</label></td>
 			 <td>
 				<a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{$details_text['selectusers']}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
@@ -136,9 +136,8 @@
 			 <tr><td>&nbsp;</td></tr>
 			 <tr>
 				<td class="buttons">
-				  <input class="adminbutton" type="submit" accesskey="s" name="buSubmit"
-					 value="{$details_text['savedetails']}" />
-				  <input class="adminbutton" type="reset" name="buReset" value="{$details_text['reset']}" />
+				  <button type="submit" accesskey="s">{$details_text['savedetails']}</button>
+				  <button type="reset">{$details_text['reset']}</button>
 				</td>
 			 </tr>
 		  </table>

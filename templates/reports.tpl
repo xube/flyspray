@@ -74,7 +74,8 @@
       </tr>
     </table>
 
-    <input type="hidden" name="do" value="reports" /><input type="submit" class="mainbutton" name="submit" value="{$reports_text['show']}" />
+    <input type="hidden" name="do" value="reports" />
+    <button type="submit" name="submit">{$reports_text['show']}</button>
   </form>
   
   <?php if($histories): ?>

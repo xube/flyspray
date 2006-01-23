@@ -20,13 +20,13 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 					<tr>
 						<td align="right"><?php echo $product_name; ?> URL</td>
 						<td align="center">
-							<input class="inputbox" type="text" name="site_url" value="<?php echo $site_url; ?>" size="30" />
+							<input class="inputbox text" type="text" name="site_url" value="<?php echo $site_url; ?>" size="30" />
 						</td>
 					</tr>
 					<tr>
 						<td align="right">System Path</td>
 						<td align="center">
-							<input class="inputbox" type="text" name="absolute_path" value="<?php echo $absolute_path; ?>" size="30" />
+							<input class="inputbox text" type="text" name="absolute_path" value="<?php echo $absolute_path; ?>" size="30" />
 						</td>
 					</tr>
 					<?php echo $admin_email; ?>

@@ -4,21 +4,21 @@
       <tr>
         <td><label for="realname">{$admin_text['realname']}</label></td>
         <td>
-          <input id="realname" type="text" name="real_name" size="50" maxlength="100"
+          <input id="realname" class="text" type="text" name="real_name" size="50" maxlength="100"
             value="{$theuser->infos['real_name']}" />
         </td>
       </tr>
       <tr>
         <td><label for="emailaddress">{$admin_text['emailaddress']}</label></td>
         <td>
-          <input id="emailaddress" type="text" name="email_address" size="50" maxlength="100"
+          <input id="emailaddress" class="text" type="text" name="email_address" size="50" maxlength="100"
             value="{$theuser->infos['email_address']}" />
         </td>
       </tr>
       <tr>
         <td><label for="jabberid">{$admin_text['jabberid']}</label></td>
         <td>
-          <input id="jabberid" type="text" name="jabber_id" size="50" maxlength="100"
+          <input id="jabberid" class="text" type="text" name="jabber_id" size="50" maxlength="100"
             value="{$theuser->infos['jabber_id']}" />
         </td>
       </tr>
@@ -37,14 +37,14 @@
       <tr>
         <td><label for="dateformat">{$admin_text['dateformat']}</label></td>
         <td>
-          <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30"
+          <input id="dateformat" class="text" name="dateformat" type="text" size="40" maxlength="30"
             value="{$theuser->infos['dateformat']}" />
         </td>
       </tr>
       <tr>
         <td><label for="dateformat_extended">{$admin_text['dateformat_extended']}</label></td>
         <td>
-          <input id="dateformat_extended" name="dateformat_extended" type="text"
+          <input id="dateformat_extended" class="text" name="dateformat_extended" type="text"
             size="40" maxlength="30" value="{$theuser->infos['dateformat_extended']}" />
         </td>
       </tr>
@@ -76,11 +76,11 @@
       </tr>
       <tr>
         <td><label for="changepass">{$admin_text['changepass']}</label></td>
-        <td><input id="changepass" type="password" name="changepass" size="40" maxlength="100" /></td>
+        <td><input id="changepass" class="password" type="password" name="changepass" size="40" maxlength="100" /></td>
       </tr>
       <tr>
         <td><label for="confirmpass">{$admin_text['confirmpass']}</label></td>
-        <td><input id="confirmpass" type="password" name="confirmpass" size="40" maxlength="100" /></td>
+        <td><input id="confirmpass" class="password" type="password" name="confirmpass" size="40" maxlength="100" /></td>
       </tr>
       <tr>
         <td colspan="2" class="buttons">
@@ -88,7 +88,7 @@
           <input type="hidden" name="action" value="edituser" />
           <input type="hidden" name="user_id" value="{$theuser->id}" />
           <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-          <input class="adminbutton" type="submit" value="{$admin_text['updatedetails']}" />
+          <button type="submit">{$admin_text['updatedetails']}</button>
         </td>
       </tr>
     </table>

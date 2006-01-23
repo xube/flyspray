@@ -5,11 +5,11 @@
   <table class="admin">
     <tr>
       <td><label for="groupname">{$newgroup_text['groupname']}</label></td>
-      <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" /> <strong>*</strong></td>
+      <td><input id="groupname" class="text" type="text" name="group_name" size="20" maxlength="20" /> <strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="groupdesc">{$newgroup_text['description']}</label></td>
-      <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" /> <strong>*</strong></td>
+      <td><input id="groupdesc" class="text" type="text" name="group_desc" size="50" maxlength="100" /> <strong>*</strong></td>
     </tr>
     <tr>
       <td><label for="manageproject">{$newgroup_text['projectmanager']}</label></td>
@@ -92,7 +92,7 @@
         <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="newgroup" />
         <input type="hidden" name="project" value="{Get::val('project')}" />
-        <input class="adminbutton" type="submit" value="{$newgroup_text['addthisgroup']}" />
+        <button type="submit">{$newgroup_text['addthisgroup']}</button>
       </td>
     </tr>
   </table>

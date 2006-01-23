@@ -4,7 +4,6 @@ global $register_text;
 $register_text = array (
 
 'registernewuser'	=>	'Register new user',
-'requiredfields'	=>	'Required fields are marked with a',
 'username'		=>	'Username',
 'password'		=>	'Password',
 'confirmpass'		=>	'Confirm Password',
@@ -15,7 +14,6 @@ $register_text = array (
 'none'			=>	'None',
 'email'			=>	'Email',
 'jabber'		=>	'Jabber',
-'note'			=>	'<b>Note:</b>  You will be sent a confirmation code before your account is created.  The code will be sent using your preferred notification method, above.<br />IF YOU ENTER FAKE DETAILS, YOU WILL NOT RECEIVE YOUR CODE.',
 'sendcode'		=>	'Send code!',
 'entercode'             =>      'Enter the confirmation code you received in your notification message.  Also enter your desired account password.',  // Changed in 0.9.7
 'confirmationcode'	=>      'Confirmation Code',
@@ -29,9 +27,9 @@ $register_text = array (
 // Added in version 0.9.7
 'badmagic'              =>      'That is not a valid magic key! Are you sure that you got that from your notification message?',
 
-// Added in version 0.9.9
+// Added or changed in version 0.9.9
 'validusername' 		=>		'(only alphanumeric chars and - _ . are allowed)',
 'emailtaken'            =>      'That email address or Jabber-ID is already taken. You will need to choose another one.',
-
+'note'			=>	'<strong>Note:</strong>  You will be sent a confirmation code before your account is created.  The code will be sent using your preferred notification method, above.<br />If you enter fake details, you will <strong>not receive your code</strong>.',
 );
 ?>

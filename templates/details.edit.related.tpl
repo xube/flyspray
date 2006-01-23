@@ -6,13 +6,13 @@
     <input type="hidden" name="this_task" value="{Post::val('this_task')}">
     <input type="hidden" name="related_task" value="{Post::val('related_task')}">
     <input type="hidden" name="allprojects" value="1">
-    <input class="adminbutton" type="submit" value="{$modify_text['addanyway']}">
+    <button type="submit">{$modify_text['addanyway']}</button>
   </form>
   <form action="index.php" method="get">
     <input type="hidden" name="do" value="details">
     <input type="hidden" name="id" value="{Post::val('this_task')}">
     <input type="hidden" name="area" value="related">
-    <input class="adminbutton" type="submit" value="{$modify_text['cancel']}">
+    <button type="submit">{$modify_text['cancel']}</button>
   </form>
 </div>
 

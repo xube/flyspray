@@ -6,7 +6,7 @@
       <tr>
         <td><label for="itemsummary">{$newtask_text['summary']}</label></td>
         <td>
-          <input id="itemsummary" type="text" name="item_summary" size="50" maxlength="100" />
+          <input id="itemsummary" class="text" type="text" name="item_summary" size="50" maxlength="100" />
         </td>
       </tr>
     </table>
@@ -46,7 +46,7 @@
             <input type="hidden" name="item_status"   value="1" />
             <input type="hidden" name="task_priority" value="2" />
             <?php endif; ?>
-            <label for="assignedto">{$newtask_text['assignedto']}</label>
+            <label>{$newtask_text['assignedto']}</label>
           </td>
           <td>
             <?php if ($user->perms['modify_all_tasks']): ?>
@@ -127,9 +127,10 @@
             <br />
           </span>
         </div>
-        <input id="attachafile" class="adminbutton" type="button" onclick="addUploadFields()" value="{$details_text['uploadafile']}" />
-        <input id="attachanotherfile" style="display: none" class="adminbutton" type="button" onclick="addUploadFields()"
-          value="{$details_text['attachanotherfile']}" />
+        <button id="attachafile" type="button" onclick="addUploadFields()">{$details_text['uploadafile']}</button>
+        <button id="attachanotherfile" style="display:none" type="button" onclick="addUploadFields()">
+          {$details_text['attachanotherfile']}
+        </button>
         
       <?php endif; ?>
       
@@ -139,11 +140,11 @@
     <input type="hidden" name="do" value="modify" />
     <input type="hidden" name="action" value="newtask" />
     <input type="hidden" name="project_id" value="{$proj->id}" />
-    <input class="adminbutton" type="submit" name="buSubmit" value="{$newtask_text['addthistask']}" accesskey="s"/>
+    <button accesskey="s" type="submit">{$newtask_text['addthistask']}</button>
 
     <?php if (!$user->isAnon()): ?>
-    &nbsp;&nbsp;<input class="admintext" type="checkbox" id="notifyme" name="notifyme" value="1" checked="checked" />
-    <label class="default" for="notifyme">{$newtask_text['notifyme']}</label>
+    &nbsp;&nbsp;<input class="text" type="checkbox" id="notifyme" name="notifyme" value="1" checked="checked" />
+    <label class="left" for="notifyme">{$newtask_text['notifyme']}</label>
     <?php endif; ?>
     </div>
   </form>

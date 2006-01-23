@@ -55,15 +55,15 @@ if (!isset($_REQUEST['username']))
          <caption>Request task details</caption>
          <tr>
          <td>Base URL to Flyspray</td>
-         <td><input name="url" type="text" size="30" value="<?php echo $server;?>" /></td>
+         <td><input name="url" type="text" class="text" size="30" value="<?php echo $server;?>" /></td>
          </tr>
          <tr>
          <td>Your User Name:</td>
-         <td><input name="username" type="text" size="30" /></td>
+         <td><input name="username" type="text" class="text" size="30" /></td>
          </tr>
          <tr>
          <td>Your Password:</td>
-         <td><input name="password" type="password" size="30" /></td>
+         <td><input class="password" name="password" type="password" size="30" /></td>
          </tr>
          <tr>
          <td colspan="2"><hr /></td>
@@ -86,23 +86,23 @@ if (!isset($_REQUEST['username']))
          </tr>
          <tr id="getTaskForm">
          <td>Task ID:</td>
-         <td><input name="taskid" type="text" size="4" value="1"/></td>
+         <td><input name="taskid" type="text" class="text" size="4" value="1"/></td>
          </tr>
          <tr id="getUserForm">
          <td>User ID:</td>
-         <td><input name="userid" type="text" size="4" value="1"/></td>
+         <td><input name="userid" type="text" class="text" size="4" value="1"/></td>
          </tr>
          <tr id="getArrayListForNameForm">
          <td>Array name:</td>
-         <td><input name="arrayname" type="text" size="16" value="status"/></td>
+         <td><input name="arrayname" type="text" class="text" size="16" value="status"/></td>
          </tr>
 		  <tr id="getProjectIdForm">
 		  <td>Project id:</td>
-		  <td><input name="projectid" type="text" size="16" value="2"/></td>
+		  <td><input name="projectid" type="text" class="text" size="16" value="2"/></td>
 		  </tr>
           <tr id="getSearchTermForm">
 		  <td>Seach String:</td>
-		  <td><input name="filterSearch" type="text" size="20" value=""/></td>
+		  <td><input name="filterSearch" type="text" class="text" size="20" value=""/></td>
 		  </tr>
           <tr id="activeProjectsOnlyForm">
 		  <td>Active Projects Only:</td>
@@ -225,7 +225,7 @@ else
          <input type="hidden" name="url" value="<?php echo $_REQUEST['url']?>">
          <label for="itemsummary">Summary</label>
             </td>
-            <td><input id="itemsummary" type="text" name="item_summary" size="50" maxlength="100" /> 
+            <td><input id="itemsummary" type="text" class="text" name="item_summary" size="50" maxlength="100" />
 Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></td></tr>
 
             </table>
@@ -342,10 +342,10 @@ Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></
       Attach a file         <input type="file" size="55" name="userfile[]" /><br />
    </div>
 
-   <input class="adminbutton" type="button" onclick="addUploadFields()" value="Select more files" />
+   <button type="button" onclick="addUploadFields()">Select more files</button>
 
-   <input class="adminbutton" type="submit" name="buSubmit" value="Add this task" accesskey="s"/>
-            &nbsp;&nbsp;<input class="admintext" type="checkbox" name="notifyme" value="1" checked="checked" />Notify me whenever this task changes
+   <button type="submit" accesskey="s" name="buSubmit">Add this task</button>
+            &nbsp;&nbsp;<input class="text" type="checkbox" name="notifyme" value="1" checked="checked" />Notify me whenever this task changes
 
 
    </form>

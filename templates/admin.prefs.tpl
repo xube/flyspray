@@ -24,13 +24,13 @@
         <tr>
           <td><label for="dateformat">{$admin_text['dateformat']}</label></td>
           <td>
-            <input id="dateformat" name="dateformat" type="text" size="40" maxlength="30" value="{$fs->prefs['dateformat']}" />
+            <input id="dateformat" name="dateformat" type="text" class="text" size="40" maxlength="30" value="{$fs->prefs['dateformat']}" />
           </td>
         </tr>
         <tr>
           <td><label for="dateformat_extended">{$admin_text['dateformat_extended']}</label></td>
           <td>
-            <input id="dateformat_extended" name="dateformat_extended" type="text" size="40" maxlength="30" value="{$fs->prefs['dateformat_extended']}" />
+            <input id="dateformat_extended" name="dateformat_extended" class="text" type="text" size="40" maxlength="30" value="{$fs->prefs['dateformat_extended']}" />
           </td>
         </tr>
         <tr>
@@ -65,7 +65,7 @@
         </tr>
         <tr>
           <td><label id="groupsassignedlabel">{$admin_text['groupassigned']}</label></td>
-          <td class="admintext">
+          <td class="text">
             <?php foreach($fs->listGroups() as $group): ?>
             {!tpl_checkbox('assigned_groups['.$group['group_id'].']',
             strstr($fs->prefs['assigned_groups'], $group['group_id']) !== false)}
@@ -95,25 +95,25 @@
         <tr>
           <td><label for="adminemail">{$admin_text['fromaddress']}</label></td>
           <td>
-            <input id="adminemail" name="admin_email" type="text" size="40" maxlength="100" value="{$fs->prefs['admin_email']}" />
+            <input id="adminemail" name="admin_email" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['admin_email']}" />
           </td>
         </tr>
         <tr>
           <td><label for="smtpserv">{$admin_text['smtpserver']}</label></td>
           <td>
-            <input id="smtpserv" name="smtp_server" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_server']}" />
+            <input id="smtpserv" name="smtp_server" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_server']}" />
           </td>
         </tr>
         <tr>
           <td><label for="smtpuser">{$admin_text['smtpuser']}</label></td>
           <td>
-            <input id="smtpuser" name="smtp_user" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_user']}" />
+            <input id="smtpuser" name="smtp_user" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_user']}" />
           </td>
         </tr>
         <tr>
           <td><label for="smtppass">{$admin_text['smtppass']}</label></td>
           <td>
-            <input id="smtppass" name="smtp_pass" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_pass']}" />
+            <input id="smtppass" name="smtp_pass" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_pass']}" />
           </td>
         </tr>
         <tr>
@@ -124,25 +124,25 @@
         <tr>
           <td><label for="jabberserver">{$admin_text['jabberserver']}</label></td>
           <td>
-            <input id="jabberserver" name="jabber_server" size="40" maxlength="100" value="{$fs->prefs['jabber_server']}" />
+            <input id="jabberserver" class="text" type="text" name="jabber_server" size="40" maxlength="100" value="{$fs->prefs['jabber_server']}" />
           </td>
         </tr>
         <tr>
           <td><label for="jabberport">{$admin_text['jabberport']}</label></td>
           <td>
-            <input id="jabberport" name="jabber_port" size="40" maxlength="100" value="{$fs->prefs['jabber_port']}" />
+            <input id="jabberport" class="text" type="text" name="jabber_port" size="40" maxlength="100" value="{$fs->prefs['jabber_port']}" />
           </td>
         </tr>
         <tr>
           <td><label for="jabberusername">{$admin_text['jabberuser']}</label></td>
           <td>
-            <input id="jabberusername" name="jabber_username" size="40" maxlength="100" value="{$fs->prefs['jabber_username']}" />
+            <input id="jabberusername" class="text" type="text" name="jabber_username" size="40" maxlength="100" value="{$fs->prefs['jabber_username']}" />
           </td>
         </tr>
         <tr>
           <td><label for="jabberpassword">{$admin_text['jabberpass']}</label></td>
           <td>
-            <input id="jabberpassword" name="jabber_password" type="password" size="40" maxlength="100" value="{$fs->prefs['jabber_password']}" />
+            <input id="jabberpassword" name="jabber_password" class="password" type="password" size="40" maxlength="100" value="{$fs->prefs['jabber_password']}" />
           </td>
         </tr>
       </table>
@@ -161,7 +161,7 @@
         </tr>
         <tr>
           <td><label id="viscollabel">{$admin_text['visiblecolumns']}</label></td>
-          <td class="admintext">
+          <td class="text">
             <?php // Set the selectable column names
             $columnnames = array('id', 'project', 'tasktype', 'category', 'severity',
             'priority', 'summary', 'dateopened', 'status', 'openedby',
@@ -181,10 +181,10 @@
           <input type="hidden" name="do" value="modify" />
           <input type="hidden" name="action" value="globaloptions" />
           <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-          <input class="adminbutton" type="submit" value="{$admin_text['saveoptions']}" />
+          <button type="submit">{$admin_text['saveoptions']}</button>
         </td>
         <td class="buttons">
-          <input class="adminbutton" type="reset" value="{$admin_text['resetoptions']}" />
+          <button type="reset">{$admin_text['resetoptions']}</button>
         </td>
       </tr>
     </table>

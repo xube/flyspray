@@ -4,16 +4,16 @@
   <form action="{$baseurl}?do=authenticate" method="post">
     <div>
       <label for="lbl_user_name">{$loginbox_text['username']}</label>
-      <input class="maintext" type="text" id="lbl_user_name" name="user_name" size="20" maxlength="20" />
+      <input class="text" type="text" id="lbl_user_name" name="user_name" size="20" maxlength="20" />
 
       <label for="lbl_password">{$loginbox_text['password']}</label>
-      <input class="maintext" type="password" id="lbl_password" name="password" size="20" maxlength="20" />
+      <input class="password" type="password" id="lbl_password" name="password" size="20" maxlength="20" />
 
       <label for="lbl_remember">{$loginbox_text['rememberme']}</label>
       <input type="checkbox" id="lbl_remember" name="remember_login" />
 
       <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-      <input accesskey="l" class="mainbutton" type="submit" value="{$loginbox_text['login']}" />
+      <button accesskey="l" type="submit">{$loginbox_text['login']}</button>
 
       <span id="links">
         <?php
@@ -36,7 +36,8 @@
                  ?>&lt;{rawurlencode($loginbox_text['yourusername'])}&gt;<?php
                  endif;
                  ?>{rawurlencode($loginbox_text['regards'])}">{$loginbox_text['lostpassword']}</a>
-        <?php endif; ?><script type="text/javascript">var link = document.getElementById('lostpwlink');link.href=link.href.replace(/#/g,"@");</script>
+        <script type="text/javascript">var link = document.getElementById('lostpwlink');link.href=link.href.replace(/#/g,"@");</script>
+        <?php endif; ?>
       </span>
     </div>
   </form>

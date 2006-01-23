@@ -25,7 +25,7 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
             </tr>
             <tr>
                <td>Host Name</td>
-               <td align="left"><input class="inputbox" type="text" name="db_hostname" value="<?php echo $db_hostname; ?>" /></td>
+               <td align="left"><input class="inputbox text" type="text" name="db_hostname" value="<?php echo $db_hostname; ?>" /></td>
             </tr>
             <tr>
                <td>Database Type</td>
@@ -48,19 +48,19 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
             </tr>
             <tr>
                <td>Database user name</td>
-               <td align="left"><input class="inputbox" type="text" name="db_username" value="<?php echo $db_username; ?>" /></td>
+               <td align="left"><input class="inputbox text" type="text" name="db_username" value="<?php echo $db_username; ?>" /></td>
             </tr>
             <tr>
                <td>Database password</td>
-               <td align="left"><input class="inputbox" type="password" name="db_password" value="<?php echo $db_password; ?>" /></td>
+               <td align="left"><input class="inputbox" class="password" type="password" name="db_password" value="<?php echo $db_password; ?>" /></td>
             </tr>
             <tr>
                <td>Database name</td>
-               <td align="left"><input class="inputbox" type="text" name="db_name" value="<?php echo $db_name; ?>" /></td>
+               <td align="left"><input class="inputbox text" type="text" name="db_name" value="<?php echo $db_name; ?>" /></td>
             </tr>
             <tr>
                <td>Table prefix</td>
-               <td align="left"><input class="inputbox" type="text" name="db_prefix" value="<?php echo $db_prefix; ?>" /></td>
+               <td align="left"><input class="inputbox text" type="text" name="db_prefix" value="<?php echo $db_prefix; ?>" /></td>
             </tr>
             <tr>
                <td>Drop existing tables?</td>

@@ -45,7 +45,7 @@
                 {$pm_text['givereason']}
                 <textarea cols="40" rows="5" name="deny_reason"></textarea>
                 <br />
-                <input class="adminbutton" type="submit" value="{$pm_text['deny']}" />
+                <button type="submit">{$pm_text['deny']}</button>
               </div>
             </form>
           </div>

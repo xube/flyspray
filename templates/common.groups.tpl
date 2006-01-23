@@ -38,7 +38,7 @@ foreach($groups as $group): ?>
 
     <tr>
       <td colspan="4">
-        <input class="adminbutton" type="submit" value="{$admin_text['moveuserstogroup']}" />
+        <button type="submit">{$admin_text['moveuserstogroup']}</button>
         <select class="adminlist" name="switch_to_group">
           <?php if ($proj->id): ?>
           <option value="0">{$admin_text['nogroup']}</option>
@@ -63,8 +63,8 @@ foreach($groups as $group): ?>
       {!tpl_options($proj->UserList($users_in, true))}
     </select>
     <br />
-    <input class="adminbutton" type="submit" value="{$admin_text['addtogroup']}" />
-    <select class="adminbutton" name="add_to_group">
+    <button type="submit">{$admin_text['addtogroup']}</button>
+    <select name="add_to_group">
       {!tpl_options($proj->listGroups())}
     </select>
   </div>

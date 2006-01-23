@@ -6,11 +6,11 @@
         <td>
           <label for="groupname">{$admin_text['groupname']}</label>
         </td>
-        <td><input id="groupname" type="text" name="group_name" size="20" maxlength="20" value="{$group_details['group_name']}" /></td>
+        <td><input id="groupname" class="text" type="text" name="group_name" size="20" maxlength="20" value="{$group_details['group_name']}" /></td>
       </tr>
       <tr>
         <td><label for="groupdesc">{$admin_text['description']}</label></td>
-        <td><input id="groupdesc" type="text" name="group_desc" size="50" maxlength="100" value="{$group_details['group_desc']}" /></td>
+        <td><input id="groupdesc" class="text" type="text" name="group_desc" size="50" maxlength="100" value="{$group_details['group_desc']}" /></td>
       </tr>
       <?php if ($group_details['group_id'] == 1): ?>
       <tr>
@@ -111,7 +111,7 @@
           <input type="hidden" name="action" value="editgroup" />
           <input type="hidden" name="group_id" value="{$group_details['group_id']}" />
           <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-          <input class="adminbutton" type="submit" value="{$admin_text['updatedetails']}" />
+          <button type="submit">{$admin_text['updatedetails']}</button>
         </td>
       </tr>
     </table>

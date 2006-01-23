@@ -181,8 +181,8 @@
 			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="newdep" />
 			 <input type="hidden" name="task_id" value="{Get::val('id')}" />
-			 <input class="admintext" type="text" name="dep_task_id" size="5" maxlength="10" />
-			 <input class="adminbutton" type="submit" name="submit" value="{$details_text['addnew']}" />
+			 <input class="text" type="text" name="dep_task_id" size="5" maxlength="10" />
+			 <button type="submit" name="submit">{$details_text['addnew']}</button>
 		  </div>
 		</form>
 		<?php endif; ?>
@@ -227,7 +227,7 @@
 			 <input type="hidden" name="task_id" value="{Get::val('id')}" />
 			 <label for="reason">{$details_text['givereason']}</label>
 			 <textarea id="reason" name="reason_given"></textarea><br />
-			 <input class="adminbutton" type="submit" value="{$details_text['submitreq']}" />
+			 <button type="submit">{$details_text['submitreq']}</button>
 		  </div>
 		</form>
 	 </div>
@@ -248,9 +248,9 @@
 				<option value="0">{$details_text['selectareason']}</option>
 				{!tpl_options($proj->listResolutions())}
 			 </select>
-			 <input class="adminbutton" type="submit" name="buSubmit" value="{$details_text['closetask']}" /><br />
+			 <button type="submit">{$details_text['closetask']}</button>
 			 <label class="default text" for="closure_comment">{$details_text['closurecomment']}</label>
-			 <textarea class="admintext" id="closure_comment" name="closure_comment" rows="3" cols="30"></textarea>
+			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="30"></textarea>
 			 <input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;{$details_text['mark100']}
 		  </div>
 		</form>
@@ -267,7 +267,7 @@
 			 <input type="hidden" name="task_id" value="{Get::val('id')}" />
 			 <label for="reason">{$details_text['givereason']}</label>
 			 <textarea id="reason" name="reason_given"></textarea><br />
-			 <input class="adminbutton" type="submit" value="{$details_text['submitreq']}" />
+			 <button type="submit">{$details_text['submitreq']}</button>
 		  </div>
 		</form>
 	 </div>

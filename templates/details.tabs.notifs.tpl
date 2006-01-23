@@ -17,7 +17,7 @@
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="ids" value="{Get::val('id')}" />
       <input type="hidden" name="action" value="add_notification" />
-      <input class="adminbutton" type="submit" value="{$details_text['addtolist']}" />
+      <button type="submit">{$details_text['addtolist']}</button>
     </p>
   </form>
   <?php endif; ?>

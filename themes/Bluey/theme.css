@@ -35,7 +35,7 @@ a {
 	width: auto;
 	min-width: 12em;
 }
-.double_select .c3 input {
+.double_select .c3 button {
 	height: 1.5em;
 	width: 12em;
 }
@@ -80,12 +80,20 @@ form {
 	padding:0;
 }
 
-input,textarea,select,button {
+input {
+	margin:0;
+}
+
+input.text,input.password,textarea,select,button {
 	background-color:#eef7ff;
 	color:#03008f;
 	border:1px solid gray;
 	font-size:100%;
 	margin:2px;
+}
+
+input.required {
+	border:solid 2px red;
 }
 
 select {
@@ -97,7 +105,7 @@ textarea {
 }
 
 /* labels are used nearly in every form */
-label {
+div#taskdetailsfull label, td label {
 	text-align:right;
 	display:block;
 	margin-right:8px;
@@ -105,11 +113,14 @@ label {
 	white-space:nowrap;
 }
 
-label.default {
-	text-align:left;
-	display:inline;
+label.left {
+	padding:0 0.5em 0 0.3em;
+}
+
+label {
 	font-weight:700;
 	white-space:nowrap;
+	padding:0 0.3em 0 0.5em; /* by default the inputbox is right */
 }
 
 label.text {
@@ -138,7 +149,7 @@ div#loginbox {
 	padding:0;
 }
 
-div#loginbox label,div#loginbox input.maintext,div#loginbox input.mainbutton {
+div#loginbox input.text,div#loginbox input.password,div#loginbox button {
 	display:inline;
 	margin:0;
 	padding:0 3px;
@@ -149,13 +160,13 @@ div#loginbox a {
 	padding:0 0 0 13px;
 }
 
-div#loginbox input.mainbutton {
+div#loginbox button {
 	margin-left:3px;
 	height:19px;
 }
 
-div#loginbox input {
-	height:15px;
+div#loginbox input.text,div#loginbox input.password {
+	height:1.2em;
 	margin:1px 0 0;
 }
 
@@ -330,20 +341,19 @@ div#search {
 	padding:0.4em 0.5em;
 }
 
-div#search input,div#search button {
+div#search input.text,div#search button {
 	margin:0;
 }
 
 div#search label.multisel {
 	position:absolute;
-	margin-left:0.2em;
 }
 	
 div#search input.users {
 	margin-top:1.2em;
 }
 
-div#search input.mainbutton {
+div#search button {
 	color:#FFF;
 	margin-left:0;
 }
@@ -353,13 +363,16 @@ div#search input#searchtext {
 }
 
 div#search fieldset {
-	border:solid 1px gray;
 	padding:0 0.5em 0.5em;
 	margin:0.3em 0;
 }
 
 div#search select {
 	margin-top:1.2em;
+}
+
+div#search fieldset legend {
+	padding:0 2px;
 }
 
 span.save_search {
@@ -389,6 +402,7 @@ div#tasklist table th {
 div#tasklist table td {
 	border-bottom:1px solid #CCC;
 	padding:2px 1ex 2px 2px;
+	vertical-align:middle;
 }
 
 div#tasklist table td.taskdate {
@@ -397,7 +411,6 @@ div#tasklist table td.taskdate {
 }
 
 div#tasklist table td.progress {
-	vertical-align:middle;
 	text-align:center;
 }
 
@@ -459,17 +472,15 @@ p#footer {
 	padding:5px;
 }
 
-/* used solely for several browsers do not support [type="submit"]
-selectors. These are buttons and buttons only used by the admin */
-input.adminbutton,input.mainbutton,button {
-	background-color:#838ab5;
+/* used solely for several browsers do not support [type="submit"] selectors. */
+button {
 	color:#fff;
-	background:url(button.png) repeat-x;
+	background:url(button.png) repeat-x #838ab5;
 	border:1px solid #000;
 	font-weight:700;
 }
 
-input.adminbutton:hover,input.mainbutton:hover,button:hover {
+button:hover {
 	cursor:pointer;
 }
 
@@ -482,9 +493,8 @@ div.redirectmessage {
 	padding:1ex;
 }
 
-/* form#registernewuser, form#chgpassword, form#newgroup are used in
-the popup windows*/
-form#chgpassword h1,form#registernewuser h1,form#newgroup h1 {
+/* form#chgpassword, form#newgroup are used in the popup windows*/
+form#chgpassword h1,form#newgroup h1 {
 	font-size:110%;
 	margin:2px;
 	padding:0;
@@ -495,12 +505,11 @@ form#chgpassword h1,form#registernewuser h1,form#newgroup h1 {
 	text-align:center;
 }
 
-form#registernewuser strong,form#newgroup strong {
+form#newgroup strong {
 	color:red;
 }
 
-/* The tabs containing the links to comments, attachments, ...
-in details.php */
+/* The tabs containing the links to comments, attachments, ... in details.php */
 p#tabs a {
 	background:url("tab-notactive.png") no-repeat top left #cad0d7;
 	border-right:1px solid #93989D;
@@ -527,8 +536,7 @@ div.tabentries {
 	margin:2px 1em;
 }
 
-/* This is the division that keeps the buttons to modify comments
-(delete, edit) */
+/* This is the division that keeps the buttons to modify comments (delete, edit) */
 div.modifycomment {
 	float:right;
 	width:20em;
@@ -550,56 +558,56 @@ color and it can't handle short color forms like #000.
 If you want to change other properties during the hover
 you'll have to adjust the javascript*/
 .severity1 {
-	background-color:#fff5dd;
+	background-color:#fff5dd !important;
 	color:#000;
 }
 
 .severity1:hover {
-	background-color:#ffe9b4;
+	background-color:#ffe9b4 !important;
 	color:#000;
 	cursor:pointer;
 }
 
 .severity2 {
-	background-color:#ecdbb7;
+	background-color:#ecdbb7 !important;
 	color:#000;
 }
 
 .severity2:hover {
-	background-color:#efca80;
+	background-color:#efca80 !important;
 	color:#000;
 	cursor:pointer;
 }
 
 .severity3 {
-	background-color:#f5d5c6;
+	background-color:#f5d5c6 !important;
 	color:#000;
 }
 
 .severity3:hover {
-	background-color:#f7b390;
+	background-color:#f7b390 !important;
 	color:#000;
 	cursor:pointer;
 }
 
 .severity4 {
-	background-color:#ffd5d1;
+	background-color:#ffd5d1 !important;
 	color:#000;
 }
 
 .severity4:hover {
-	background-color:#ffb2ac;
+	background-color:#ffb2ac !important;
 	color:#000;
 	cursor:pointer;
 }
 
 .severity5 {
-	background-color:#f3a29b;
+	background-color:#f3a29b !important;
 	color:#000;
 }
 
 .severity5:hover {
-	background-color:#f3867e;
+	background-color:#f3867e !important;
 	color:#000;
 	cursor:pointer;
 }
@@ -698,10 +706,8 @@ div#actionbuttons {
 }
 
 div#actionbuttons a {
-	background-image:url(button.png);
-	background-repeat:repeat-x;
+	background:url(button.png) repeat-x transparent;
 	color:#fff;
-	background-color:transparent;
 	border:1px solid #000;
 	margin:0 3px;
 	padding:2px 5px;
@@ -713,10 +719,8 @@ div#actionbuttons a#hideclosetask {
 	right:3px;
 	width:16px;
 	height:16px;
-	background-image:url(cancel.png);
-	background-repeat:no-repeat;
+	background:url(cancel.png) no-repeat transparent;
 	color:#000;
-	background-color:transparent;
 	border:none;
 }
 
@@ -726,10 +730,8 @@ div#actionbuttons a#hideclosetask:hover {
 	right:3px;
 	width:16px;
 	height:16px;
-	background-image:url(cancel-over.png);
-	background-repeat:no-repeat;
+	background:url(cancel-over.png) no-repeat transparent;
 	color:#000;
-	background-color:transparent;
 	border:none;
 }
 
@@ -788,14 +790,15 @@ div.denyform {
 	padding:5px 30px 5px 5px;
 }
 
-fieldset.admin {
-	margin-top:15px;
+fieldset {
+	margin:1em 0.5em;
+	padding:0.5em 0.7em 0.5em;
 	background-color:#e6eef6;
 	color:#000;
 	border:1px solid gray;
 }
 
-fieldset.admin legend {
+fieldset legend {
 	border:1px solid #000;
 	font:bold 110% Helvetica, Verdana, sans-serif;
 	background:#587A99;
@@ -987,9 +990,6 @@ div#error {
 }
 
 .ttcolumn input {
-	border:0;
-	background:#FFF !important;
-	height:15px;
 	margin:0;
 }
 
@@ -1015,7 +1015,7 @@ a.datelink {
 	margin-right:0.2em;
 }
 
-html,form p,p#tabs,p.unregistered,#submenu,#submenu * {
+html,p#tabs,p.unregistered,#submenu,#submenu * {
 	margin:0;
 	padding:0;
 }
@@ -1040,7 +1040,7 @@ td,th {
 	vertical-align:top;
 }
 
-label.inline,table.list label,div#showtask label,p.admin label,form#formaddrelatedtask label {
+.inline,table.list label,div#showtask label,p.admin label,form#formaddrelatedtask label {
 	display:inline;
 }
 
@@ -1049,7 +1049,7 @@ div#loginbox p,div#search p {
 	padding:0;
 }
 
-div#tasklist table td.taskid,div#tasklist table th.taskid,table.history td.taskid {
+td.taskid,th.taskid,td.taskid {
 	text-align:center;
 	padding:2px 1ex;
 }
@@ -1109,6 +1109,21 @@ pre.code {
 
 div.roadmap {
 	padding-left:1em;
+}
+
+dl.roadmap dd {
+	border:dotted 1px gray;
+	background:#FEF9FD;
+	margin:-0.5em 1em 0 2em;
+	padding:0.1em 0.5em;
+	display:none;
+}
+
+dl.roadmap dt {
+	border:solid 1px gray;
+	margin:1em 3em 0 0;
+	padding:0.1em 0.5em;
+	position:relative;
 }
 
 h3.taskdesc {
@@ -1205,21 +1220,6 @@ blockquote {
 
 .search_hit {
 	background:#FF9;
-}
-
-dl.roadmap dd {
-	border:dotted 1px gray;
-	background:#FEF9FD;
-	margin:-0.5em 1em 0 2em;
-	padding:0.1em 0.5em;
-	display:none;
-}
-
-dl.roadmap dt {
-	border:solid 1px gray;
-	margin:1em 3em 0 0;
-	padding:0.1em 0.5em;
-	position:relative;
 }
 
 .fade {

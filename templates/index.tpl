@@ -16,13 +16,13 @@
         <input type="hidden" name="project" value="{$proj->id}" />
         <?php endif; ?>
         <?php if(!$user->isAnon()): ?>
-        <span class="save_search"><label class="default" for="save_search" id="lblsaveas">{$index_text['saveas']}</label>
-        <input type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
+        <span class="save_search"><label for="save_search" id="lblsaveas">{$index_text['saveas']}</label>
+        <input class="text" type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
         <button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{$index_text['saved']}')" type="button">{$index_text['OK']}</button></span>
         <?php endif; ?>
         
-        <input class="mainbutton" type="submit" value="{$index_text['searchthisproject']}" />
-        <input id="searchtext" name="string" type="text" size="20"
+        <button type="submit">{$index_text['searchthisproject']}</button>
+        <input class="text" id="searchtext" name="string" type="text" size="20"
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
         <span onclick="toggleSearchBox();" style="cursor:pointer">
@@ -34,10 +34,10 @@
         <div id="sc2" class="switchcontent" <?php if (!Cookie::val('advancedsearch')):?>style="display:none;"<?php endif; ?> >
         <fieldset><legend>{$index_text['miscellaneous']}</legend>
         {!tpl_checkbox('search_in_comments', Get::has('search_in_comments'), 'sic')}
-        <label class="default" for="sic">{$index_text['searchcomments']}</label>
+        <label class="left" for="sic">{$index_text['searchcomments']}</label>
         
         {!tpl_checkbox('search_for_all', Get::has('search_for_all'), 'sfa')}
-        <label class="default" for="sfa">{$index_text['searchforall']}</label>
+        <label class="left" for="sfa">{$index_text['searchforall']}</label>
         
         {!tpl_datepicker('', $index_text['selectduedate'], $index_text['due'])}
         {!tpl_datepicker('changedsince', $index_text['selectsincedate'], $index_text['changedsince'])}
@@ -69,20 +69,21 @@
         <select name="status[]" id="status" multiple="multiple" size="5">
           {!tpl_options(array('' => $index_text['allstatuses']) +
                         array('open' => $index_text['allopentasks']) +
+                        array('closed' => $index_text['allclosedtasks']) +
                         $proj->listTaskStatuses(), Get::val('status', 'open'))}
         </select>
         </fieldset>
 
         <fieldset><legend>{$index_text['users']}</legend>
         <label class="default multisel" for="opened">{$index_text['openedby']}</label>
-        <input class="users" size="30" type="text" name="opened" id="opened" value="{Get::val('opened')}" />
+        <input class="users text" size="30" type="text" name="opened" id="opened" value="{Get::val('opened')}" />
         <div class="autocomplete" id="opened_complete"></div>
         <script type="text/javascript">
             new Ajax.Autocompleter('opened', 'opened_complete', 'javascript/callbacks/usersearch.php', {})
         </script>
 
         <label class="default multisel" for="dev">{$index_text['assignedto']}</label>
-        <input class="users" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" /> 
+        <input class="users text" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" /> 
         <div class="autocomplete" id="dev_complete"></div>
         <script type="text/javascript">
             new Ajax.Autocompleter('dev', 'dev_complete', 'javascript/callbacks/usersearch.php', {})
@@ -157,7 +158,7 @@
           <option value="remove_notification">{$index_text['stopwatching']}</option>
           <option value="takeownership">{$index_text['assigntome']}</option>
         </select>
-        <input class="mainbutton" type="submit" value="{$index_text['takeaction']}" />
+        <button type="submit">{$index_text['takeaction']}</button>
       </div>
       <?php endif ?>
     </div>

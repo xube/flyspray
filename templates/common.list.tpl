@@ -9,12 +9,12 @@
       <td>
         <input type="hidden" name="id[]" value="{$row[$list_type.'_id']}" />
         <label for="listname{$countlines}">{$admin_text['name']}</label>
-        <input id="listname{$countlines}" type="text" size="15" maxlength="40" name="list_name[]"
+        <input id="listname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]"
           value="{$row[$list_type.'_name']}" />
       </td>
       <td title="The order these items will appear in the list">
         <label for="listposition{$countlines}">{$admin_text['order']}</label>
-        <input id="listposition{$countlines}" type="text" size="3" maxlength="3" name="list_position[]" value="{$row['list_position']}" />
+        <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$row['list_position']}" />
       </td>
       <td title="Show this item in the list">
         <label for="showinlist{$countlines}">{$admin_text['show']}</label>
@@ -48,7 +48,7 @@
         <?php endif; ?>
         <input type="hidden" name="list_type" value="{$list_type}" />
         <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-        <input class="adminbutton" type="submit" value="{$admin_text['update']}" />
+        <button type="submit">{$admin_text['update']}</button>
       </td>
     </tr>
     <?php endif; ?>
@@ -71,11 +71,11 @@
         <?php endif; ?>
         <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
         <label for="listnamenew">{$admin_text['name']}</label>
-        <input id="listnamenew" type="text" size="15" maxlength="40" name="list_name" />
+        <input id="listnamenew" class="text" type="text" size="15" maxlength="40" name="list_name" />
       </td>
       <td>
         <label for="listpositionnew">{$admin_text['order']}</label>
-        <input id="listpositionnew" type="text" size="3" maxlength="3" name="list_position" />
+        <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" name="list_position" />
       </td>
       <td>
         <label for="showinlistnew">{$admin_text['show']}</label>
@@ -90,7 +90,7 @@
       </td>
       <?php endif; ?>
       <td class="buttons">
-        <input class="adminbutton" type="submit" value="{$admin_text['addnew']}" />
+        <button type="submit">{$admin_text['addnew']}</button>
       </td>
     </tr>
   </table>

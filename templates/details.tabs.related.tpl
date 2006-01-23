@@ -12,7 +12,7 @@
         <input type="hidden" name="id" value="{Get::val('id')}" />
         <input type="hidden" name="related_id" value="{$row['related_id']}" />
         <input type="hidden" name="related_task" value="{$row['related_task']}" />
-        <input class="adminbutton" type="submit" value="{$details_text['remove']}" />
+        <button type="submit">{$details_text['remove']}</button>
       </p>
     </form>
   </div>
@@ -28,7 +28,7 @@
       <input type="hidden" name="this_task" value="{Get::val('id')}" />
       <label>{$details_text['addnewrelated']}
         <input name="related_task" size="10" maxlength="10" /></label>
-      <input class="adminbutton" type="submit" value="{$details_text['add']}" />
+      <button type="submit">{$details_text['add']}</button>
     </div>
   </form>
   <?php endif; ?>

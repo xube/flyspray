@@ -629,12 +629,11 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
         }
     }
 
-    if(count($arg3)) {
-        $url = new Url($return);
+    $url = new Url($return);
+    if (count($arg3)) {
         $url->addvars($arg3);
-        return $url->get();
     }
-    return $return;
+    return $url->get();
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
@@ -759,18 +758,22 @@ class Url {
 		if($fullpath) {
 			$return .= $this->getinfo('scheme') . '://' . $this->getinfo('host');
 		}
+        
+        if($this->getinfo('port')) {
+            $return .= ':' . $this->getinfo('port');
+        }
 		
-		 $return .= $this->getinfo('path');
+		$return .= $this->getinfo('path');
 		
-		 if($this->getinfo('query')) {
-		 	$return .= '?' . $this->getinfo('query');
-		 }
+		if($this->getinfo('query')) {
+            $return .= '?' . $this->getinfo('query');
+		}
 		 
-		 if($this->getinfo('fragment')) {
+		if($this->getinfo('fragment')) {
 		 	$return .= '#' . $this->getinfo('fragment');
-		 }
+		}
 		 
-		 return $return;
+		return $return;
 	}
 }
 // }}}

@@ -19,7 +19,7 @@
     <input type="hidden" name="task_severity" value="{Post::val('task_severity')}" />
     <input type="hidden" name="task_priority" value="{Post::val('task_priority')}" />
     <input type="hidden" name="percent_complete" value="{Post::val('percent_complete')}" />
-    <input type="submit" class="adminbutton" value="{$modify_text['saveanyway']}" />
+    <button type="submit">{$modify_text['saveanyway']}</button>
   </form>
 </span>
 &nbsp;&nbsp;&nbsp;
@@ -27,6 +27,6 @@
   <form action="index.php" method="get">
     <input type="hidden" name="do" value="details" />
     <input type="hidden" name="id" value="{Post::val('task_id')}" />
-    <input type="submit" class="adminbutton" value="{$modify_text['cancel']}" />
+    <button type="submit">{$modify_text['cancel']}</button>
   </form>
 </span>

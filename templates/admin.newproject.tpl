@@ -10,7 +10,7 @@
       <table class="admin">
         <tr>
           <td><label for="projecttitle">{$newproject_text['projecttitle']}</label></td>
-          <td><input id="projecttitle" name="project_title" type="text" size="40" maxlength="100" /></td>
+          <td><input id="projecttitle" name="project_title" type="text" class="text" size="40" maxlength="100" /></td>
         </tr>
         <tr>
           <td><label for="themestyle">{$newproject_text['themestyle']}</label></td>
@@ -41,7 +41,7 @@
           <td><input id="anonopen" type="checkbox" name="anon_open" value="1" /></td>
         </tr>
         <tr>
-          <td class="buttons" colspan="2"><input class="adminbutton" type="submit" value="{$newproject_text['createthisproject']}" /></td>
+          <td class="buttons" colspan="2"><button type="submit">{$newproject_text['createthisproject']}</button></td>
         </tr>
       </table>
     </form>

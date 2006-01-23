@@ -7,7 +7,7 @@
       <input type="hidden" name="action" value="deletereminder" />
       <input type="hidden" name="task_id" value="{Get::val('id')}" />
       <input type="hidden" name="reminder_id" value="{$row['reminder_id']}" />
-      <input class="adminbutton" type="submit" value="{$details_text['remove']}" />
+      <button type="submit">{$details_text['remove']}</button>
     </div>
   </form>
   <?php endif; ?>
@@ -47,7 +47,7 @@
       <br />
 
       <em>{$details_text['thisoften']}</em>
-      <input type="text" name="timeamount1" size="3" maxlength="3" />
+      <input class="text" type="text" name="timeamount1" size="3" maxlength="3" />
       <select class="adminlist" name="timetype1">
         <option value="3600">{$details_text['hours']}</option>
         <option value="86400">{$details_text['days']}</option>
@@ -57,7 +57,7 @@
       <br />
 
       <em>{$details_text['startafter']}</em>
-      <input type="text" name="timeamount2" size="3" maxlength="3" />
+      <input class="text" type="text" name="timeamount2" size="3" maxlength="3" />
       <select class="adminlist" name="timetype2">
         <option value="3600">{$details_text['hours']}</option>
         <option value="86400">{$details_text['days']}</option>
@@ -65,12 +65,12 @@
       </select>
 
       <br />
-      <textarea class="admintext" name="reminder_message"
+      <textarea class="text" name="reminder_message"
         rows="10" cols="72">{$details_text['defaultreminder']}
 
 {CreateURL('details', Get::val('id'))}</textarea>
       <br />
-      <input class="adminbutton" type="submit" value="{$details_text['addreminder']}" />
+      <button type="submit">{$details_text['addreminder']}</button>
     </div>
   </form>
   <?php endif; ?>

@@ -66,7 +66,7 @@ if ($HTTP_GET_VARS["comment"] &&
 ?>
 <h3>Make a comment on the story</h3>
 <form method="post">
-<p>Your name:<br /><input type="text" size="30" name="name" /></p>
+<p>Your name:<br /><input class="text" type="text" size="30" name="name" /></p>
 <p>Your comment:<br /><textarea rows="5" cols="60"
    name="commenttext"></textarea></p>
 <input type="submit" value="Send comment" />

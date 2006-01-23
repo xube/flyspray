@@ -10,7 +10,7 @@
       <input type="hidden" name="task_id" value="{$comment['task_id']}" />
       <input type="hidden" name="comment_id" value="{$comment['comment_id']}" />
       <input type="hidden" name="previous_text" value="{$comment['comment_text']}" />
-      <input class="adminbutton" type="submit" value="{$admin_text['saveeditedcomment']}" />
+      <button type="submit">{$admin_text['saveeditedcomment']}</button>
     </p>
   </div>
 </form>

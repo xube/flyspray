@@ -25,10 +25,10 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 }
 
   if ($upgraded == 'yes') {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database has already been upgraded for use with version 0.9.4.  You can delete this script.<br><br>";
+    echo "<table class=\"admin\"><tr><td class=\"text\">Your Flyspray database has already been upgraded for use with version 0.9.4.  You can delete this script.<br><br>";
 	echo "<a href=\"./\">Take me to Flyspray 0.9.4 now!</a></td></tr><table>";
   } else {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">This script will upgrade your database for use with Flyspray 0.9.4.";
+    echo "<table class=\"admin\"><tr><td class=\"text\">This script will upgrade your database for use with Flyspray 0.9.4.";
     echo " You should ensure that your database settings are correct in config.inc.php before continuing.";
     echo "<br><br><a href=\"upgrade_0.9.3.1_to_0.9.4.php?page=2\">Perform upgrade now!</a></td></tr></table>";
   };
@@ -46,7 +46,7 @@ while ($tables_array = $fs->dbFetchArray($checkdb)) {
 }
 
   if ($upgraded == 'yes') {
-    echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database has already been upgraded for use with version 0.9.4.  You can delete this script.<br><br>";
+    echo "<table class=\"admin\"><tr><td class=\"text\">Your Flyspray database has already been upgraded for use with version 0.9.4.  You can delete this script.<br><br>";
 	echo "<a href=\"./\">Take me to Flyspray 0.9.4 now!</a></td></tr><table>";
   } else {
 
@@ -119,7 +119,7 @@ $upgrade = $fs->dbQuery("UPDATE flyspray_tasks SET task_severity = '5' WHERE tas
 $upgrade = $fs->dbQuery("UPDATE flyspray_tasks SET task_severity = '5' WHERE task_severity = '10'");
 
 
-  echo "<table class=\"admin\"><tr><td class=\"admintext\">Your Flyspray database is now upgraded for use with version 0.9.4.  You can delete this script.<br><br>";
+  echo "<table class=\"admin\"><tr><td class=\"text\">Your Flyspray database is now upgraded for use with version 0.9.4.  You can delete this script.<br><br>";
   echo "<a href=\"./\">Take me to Flyspray 0.9.4 now!</a></td></tr><table>";
 };
 

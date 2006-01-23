@@ -54,8 +54,8 @@
     <div id="content">
       <div id="projectselector">
         <form id="projectselectorform" action="{$baseurl}index.php" method="get">
-          <p>
-            <input class="mainbutton" type="submit" name="switch" value="{$language['switchto']}" />
+           <div>
+            <button type="submit" value="1" name="switch">{$language['switchto']}</button>
             <select name="project">
               {!tpl_options(array_merge(array(0 => $language['allprojects']), $project_list), $proj->id)}
             </select>
@@ -77,16 +77,16 @@
             <?php if(!in_array($key, array('area', 'id'))) continue; ?>
             <input type="hidden" name="{$key}" value="{$value}" />
             <?php endforeach; ?>
-            <input accesskey="u" class="mainbutton" name="show" type="submit" value="{$language['show']}" />          
-          </p>
+            <button accesskey="u" value="1" name="show" type="submit">{$language['show']}</button>
+          </div>
         </form>
       </div>
 
       <div id="showtask">
         <form action="{$baseurl}index.php" method="get">
           <div>
-            <input class="mainbutton" type="submit" value="{$language['showtask']} #" />
-            <input id="taskid" name="show_task" type="text" size="10" maxlength="10" accesskey="t" />
+            <button type="submit">{$language['showtask']} #</button>
+            <input id="taskid" name="show_task" class="text" type="text" size="10" maxlength="10" accesskey="t" />
           </div>
         </form>
       </div>

@@ -6,6 +6,10 @@ $fs->get_language_pack('reports');
 $fs->get_language_pack('details');
 $fs->get_language_pack('index');
 
+/**********************\
+*  Event reports       *
+\**********************/
+
 $sort = strtoupper(Req::val('sort', 'desc'));
 
 switch (Req::val('order')) {
@@ -152,9 +156,9 @@ $sql = $db->Query("SELECT COUNT(vote_id) AS num_votes,
                  ORDER BY num_votes DESC");
 
 $tasks_voted_for = array();
-while ($row = $db->FetchArray($sql))
+while ($row = $db->FetchArray($sql)) {
     $tasks_voted_for = $tasks_voted_for + array($row['id'] => $row['num_votes']);
-
+}
 
 $page->uses('histories', 'details_text', 'reports_text', 'index_text', 'admin_text', 'sort', 'tasks_voted_for');
 $page->pushTpl('reports.tpl');

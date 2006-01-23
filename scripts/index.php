@@ -150,7 +150,7 @@ foreach ($submits as $key => $db_key) {
     $temp = '';
     foreach ($type as $val) {
         // add conditions for the status selection
-        if ($key == 'status' && $val == '8') {
+        if ($key == 'status' && $val == 'closed') {
             $temp  .= " is_closed = '1' AND";
         } elseif ($key == 'status') {
             $temp .= " is_closed <> '1' AND";

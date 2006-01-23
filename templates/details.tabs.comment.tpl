@@ -72,18 +72,20 @@
             <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{$details_text['remove']}</a><br />
         </span>    
       </div>
-      <input id="attachafile" tabindex="7" class="adminbutton" type="button" onclick="addUploadFields()"
-        value="{$details_text['uploadafile']}" />
-      <input id="attachanotherfile" tabindex="7" style="display: none" class="adminbutton" type="button" onclick="addUploadFields()"
-        value="{$details_text['attachanotherfile']}" />
+      <button id="attachafile" tabindex="7" type="button" onclick="addUploadFields()">
+        {$details_text['uploadafile']}
+      </button>
+      <button id="attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
+         {$details_text['attachanotherfile']}
+      </button>
         
       <?php endif; ?>
       <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
 
 
-      <input tabindex="9" class="adminbutton" type="submit" value="{$details_text['addcomment']}" />
+      <button tabindex="9" type="submit">{$details_text['addcomment']}</button>
       <?php if (!$watched): ?>
-      {!tpl_checkbox('notifyme', false, 'notifyme')} <label class="default" for="notifyme">{$newtask_text['notifyme']}</label>
+      {!tpl_checkbox('notifyme', false, 'notifyme')} <label class="left" for="notifyme">{$newtask_text['notifyme']}</label>
       <?php endif; ?>
     </div>
   </form>
