@@ -69,7 +69,7 @@ class Flyspray
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <meta http-equiv="refresh" content="0; url='<?php echo htmlspecialchars($server_prefix . $url, ENT_QUOTES) ?>'">
+    <meta http-equiv="refresh" content="0; url='<?php echo htmlspecialchars($url, ENT_QUOTES) ?>'">
     <title>Redirect</title>
   </head>
   <body>
