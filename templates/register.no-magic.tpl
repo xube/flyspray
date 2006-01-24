@@ -20,10 +20,12 @@
       <td><input id="jabberid" name="jabber_id" type="text" class="text" size="20" maxlength="100" /></td>
     </tr>
     <tr>
-      <td><label>{$register_text['notifications']}</label></td>
+      <td><label for="notify_type">{$register_text['notifications']}</label></td>
       <td>
-        <label class="left"><input type="radio" name="notify_type" value="1" checked="checked" />{$register_text['email']}</label> <br />
-        <label class="left"><input type="radio" name="notify_type" value="2" />{$register_text['jabber']}</label>
+        <select id="notify_type" name="notify_type">
+          <option value="1">{$register_text['email']}</option>
+          <option value="2">{$register_text['jabber']}</option>
+        </select>
       </td>
     </tr>
   </table>

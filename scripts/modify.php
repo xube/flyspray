@@ -361,8 +361,10 @@ elseif (Post::val('action') == 'sendcode') {
     $user_name = substr(trim(Post::val('user_name')), 0, 32);
     $real_name = substr(trim(Post::val('real_name')), 0, 100);
     // Remove doubled up spaces and control chars
-    $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
-    $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
+    if(version_compare(PHP_VERSION, '4.3.4') == 1) {
+        $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
+        $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
+    }
     // Strip special chars
     $user_name = utf8_keepalphanum($user_name);
 
@@ -500,9 +502,8 @@ elseif (Post::val('action') == "newuser" &&
         ($user->perms['is_admin'] || $user->can_self_register()))
 {
 
-    if ( !Post::val('user_name') || !Post::val('user_pass') || !Post::val('real_name')
-            || (!Post::val('email_address') && !Post::val('jabber_id'))
-    ) {
+    if ( !Post::val('user_name') || !Post::val('user_pass') || !Post::val('real_name'))
+    {
         $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
         $fs->redirect(CreateURL('newuser'));
     }
@@ -516,8 +517,10 @@ elseif (Post::val('action') == "newuser" &&
     $user_name = substr(trim(Post::val('user_name')), 0, 32);
     $real_name = substr(trim(Post::val('real_name')), 0, 100);
     // Remove doubled up spaces and control chars
-    $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
-    $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
+    if(version_compare(PHP_VERSION, '4.3.4') == 1) {
+        $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
+        $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
+    }
     // Strip special chars
     $user_name = utf8_keepalphanum($user_name);
 
