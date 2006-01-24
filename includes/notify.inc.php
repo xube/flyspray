@@ -38,8 +38,7 @@ class Notifications {
    // {{{ Store Jabber messages for sending later
    function StoreJabber( $to, $subject, $body )
    {
-      global $db;
-      global $fs;
+      global $db, $fs;
 
       $subject = htmlspecialchars($subject);
       $body = htmlspecialchars($body);
@@ -47,14 +46,16 @@ class Notifications {
       if (empty($fs->prefs['jabber_server'])
           OR empty($fs->prefs['jabber_port'])
           OR empty($fs->prefs['jabber_username'])
-          OR empty($fs->prefs['jabber_password']))
+          OR empty($fs->prefs['jabber_password'])) {
             return false;
+      }
 
-      if (empty($to))
+      if (empty($to)) {
          return false;
+      }
 
       $body = str_replace('&amp;', '&', $body);
-      $date = date('U');
+      $date = time();
 
       // store notification in table
       $db->Query("INSERT INTO {notification_messages}
@@ -97,8 +98,9 @@ class Notifications {
       if (empty($fs->prefs['jabber_server'])
           OR empty($fs->prefs['jabber_port'])
           OR empty($fs->prefs['jabber_username'])
-          OR empty($fs->prefs['jabber_password']))
+          OR empty($fs->prefs['jabber_password'])) {
             return false;
+      }
 
       debug_print("We are configured to use Jabber...");
 
@@ -669,8 +671,7 @@ class Notifications {
    function SpecificAddresses($users)
    {
 
-      global $db;
-      global $fs;
+      global $db, $fs;
 
       $jabber_users = array();
       $email_users = array();
@@ -680,13 +681,15 @@ class Notifications {
          // Get each user's notify prefs
          $user_details = $fs->getUserDetails($val);
 
-         if (($fs->prefs['user_notify'] == '1' && $user_details['notify_type'] == '1')
-            OR $fs->prefs['user_notify'] == '2')
+         if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == '1' || $user_details['notify_type'] == '3') )
+             || $fs->prefs['user_notify'] == '2')
          {
                array_push($email_users, $user_details['email_address']);
 
-         } elseif (($fs->prefs['user_notify'] == '1' && $user_details['notify_type'] == '2')
-            OR $fs->prefs['user_notify'] == '3')
+         }
+         
+         if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == '2' || $user_details['notify_type'] == '3') )
+             || $fs->prefs['user_notify'] == '3')
          {
                array_push($jabber_users, $user_details['jabber_id']);
          }
@@ -700,10 +703,7 @@ class Notifications {
    // {{{ Create a standard address list of users (assignees, notif tab and proj addresses)
    function Address($task_id)
    {
-      global $db;
-      global $fs;
-      global $proj;
-      global $user;
+      global $db, $fs, $proj, $user;
 
       $users = array();
 
@@ -721,18 +721,21 @@ class Notifications {
 
       while ($row = $db->FetchArray($get_users))
       {
-         if ($row['user_id'] != $user->id)
+         if ($row['user_id'] == $user->id) {
+            continue;
+         }
+        
+         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == '1' || $row['notify_type'] == '3') )
+             || $fs->prefs['user_notify'] == '2')
          {
-            if ( ( ($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '1')
-            OR $fs->prefs['user_notify'] == '2') && !in_array($row['email_address'], $email_users) )
-            {
                array_push($email_users, $row['email_address']);
 
-            } elseif ( ( ($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '2')
-            OR $fs->prefs['user_notify'] == '3') && !in_array($row['jabber_id'], $jabber_users) )
-            {
+         }
+         
+         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == '2' || $row['notify_type'] == '3') )
+             || $fs->prefs['user_notify'] == '3')
+         {
                array_push($jabber_users, $row['jabber_id']);
-            }
          }
       }
 
@@ -745,18 +748,21 @@ class Notifications {
 
       while ($row = $db->FetchArray($get_users))
       {
-         if ($row['user_id'] != $user->id)
+         if ($row['user_id'] == $user->id) {
+            continue;
+         }
+         
+         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == '1' || $row['notify_type'] == '3') )
+             || $fs->prefs['user_notify'] == '2')
          {
-            if ( ( ($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '1')
-            OR $fs->prefs['user_notify'] == '2') && !in_array($row['email_address'], $email_users) )
-            {
                array_push($email_users, $row['email_address']);
 
-            } elseif ( ( ($fs->prefs['user_notify'] == '1' && $row['notify_type'] == '2')
-            OR $fs->prefs['user_notify'] == '3') && !in_array($row['jabber_id'], $jabber_users) )
-            {
+         }
+         
+         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == '2' || $row['notify_type'] == '3') )
+             || $fs->prefs['user_notify'] == '3')
+         {
                array_push($jabber_users, $row['jabber_id']);
-            }
          }
       }
 

@@ -27,7 +27,11 @@
         <td>
           <?php if ($fs->prefs['user_notify'] == '1'): ?>
           <select id="notifytype" name="notify_type">
-            {!tpl_options(array('None', 'Email', 'Jabber'), $theuser->infos['notify_type'])}
+            {!tpl_options(array($newuser_text['none'],
+                                $newuser_text['email'],
+                                $newuser_text['jabber'],
+                                $newuser_text['both']),
+                                $theuser->infos['notify_type'])}
           </select>
           <?php else: ?>
           {$admin_text['setglobally']}

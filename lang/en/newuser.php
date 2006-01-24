@@ -21,6 +21,7 @@ $newuser_text = array (
 // New in 0.9.7
 
 'globalgroup'		=>	'Global group',
-
+// New in 0.9.9
+'both'                  => 'Both',
 );
 ?>

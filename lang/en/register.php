@@ -31,5 +31,6 @@ $register_text = array (
 'validusername' 		=>		'(only alphanumeric chars and - _ . are allowed)',
 'emailtaken'            =>      'That email address or Jabber-ID is already taken. You will need to choose another one.',
 'note'			=>	'<strong>Note:</strong>  You will be sent a confirmation code before your account is created.  The code will be sent using your preferred notification method, above.<br />If you enter fake details, you will <strong>not receive your code</strong>.',
+'both'                  => 'Both',
 );
 ?>

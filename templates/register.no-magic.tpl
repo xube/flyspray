@@ -25,6 +25,7 @@
         <select id="notify_type" name="notify_type">
           <option value="1">{$register_text['email']}</option>
           <option value="2">{$register_text['jabber']}</option>
+          <option value="3">{$register_text['both']}</option>
         </select>
       </td>
     </tr>

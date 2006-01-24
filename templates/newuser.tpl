@@ -38,6 +38,7 @@
           <option value="0">{$newuser_text['none']}</option>
           <option value="1">{$newuser_text['email']}</option>
           <option value="2">{$newuser_text['jabber']}</option>
+          <option value="3">{$newuser_text['both']}</option>
         </select>
       </td>
     </tr>
