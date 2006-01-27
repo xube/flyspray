@@ -85,7 +85,7 @@
 
       <button tabindex="9" type="submit">{$details_text['addcomment']}</button>
       <?php if (!$watched): ?>
-      {!tpl_checkbox('notifyme', false, 'notifyme')} <label class="left" for="notifyme">{$newtask_text['notifyme']}</label>
+      {!tpl_checkbox('notifyme', true, 'notifyme')} <label class="left" for="notifyme">{$newtask_text['notifyme']}</label>
       <?php endif; ?>
     </div>
   </form>

@@ -1241,6 +1241,8 @@ blockquote {
 .code .st0 {color:red;}
 .code .co1,.code .co2,.code .coMULTI {color:gray;font-style:italic;}
 .code .kw5,.code .re0,.code .re1,.code .re2 {color:#00f;}
+
+.acronym {cursor: help;}
 /* }}} */
 /* Stuff for the autocomplete lists {{{ */
 

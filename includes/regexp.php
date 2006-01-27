@@ -68,6 +68,16 @@ foreach($check as $key => $allowed) {
         } else {
             check_value($_POST[$key], $allowed);
         }        
+    }    
+    
+    if (Req::has($key)) {
+        if (is_array(Req::val($key))) {
+            foreach (Req::val($key) as $num => $value) {
+                check_value($_REQUEST[$key][$num], $allowed);
+            }
+        } else {
+            check_value($_REQUEST[$key], $allowed);
+        }        
     }
 }
 
