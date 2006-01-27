@@ -27,7 +27,7 @@
       <input type="hidden" name="action" value="add_related" />
       <input type="hidden" name="this_task" value="{Get::val('id')}" />
       <label>{$details_text['addnewrelated']}
-        <input name="related_task" size="10" maxlength="10" /></label>
+        <input name="related_task" type="text" class="text" size="10" maxlength="10" /></label>
       <button type="submit">{$details_text['add']}</button>
     </div>
   </form>

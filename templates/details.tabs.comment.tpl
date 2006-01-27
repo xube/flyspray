@@ -68,7 +68,7 @@
       <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
-          <input tabindex="5" type="file" size="55" name="userfile[]" />
+          <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
             <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{$details_text['remove']}</a><br />
         </span>    
       </div>

@@ -386,7 +386,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
         case 'dateopened':
         case 'dateclosed':
         case 'lastedit':
-            $value = formatDate($task[$indexes[$colname]], false);
+            $value = formatDate($task[$indexes[$colname]]);
             break;
 
         case 'status':

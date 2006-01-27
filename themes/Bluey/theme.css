@@ -84,7 +84,7 @@ input {
 	margin:0;
 }
 
-input.text,input.password,textarea,select,button {
+input.text,input.password,input.file,textarea,select,button {
 	background-color:#eef7ff;
 	color:#03008f;
 	border:1px solid gray;
@@ -440,8 +440,8 @@ div#taskdetails {
 }
 
 div#taskdetails h2 {
-	font-size:100%;
-	font-weight:400;
+	font-size:115%;
+	font-weight:700;
 	padding:0.3ex 1ex;
 }
 
@@ -687,6 +687,16 @@ div#taskinfo {
 	min-height:50px;
 	float:left;
 	padding:8px;
+	margin-bottom:5px;
+}
+
+div#taskclosed {
+	padding:5px;
+	margin:5px 5px 10px;
+	clear:both;
+	width:20em;
+	background:white;
+	border:solid 1px red;
 }
 
 div#taskdeps {
@@ -702,7 +712,7 @@ div#taskblocks {
 
 div#actionbuttons {
 	clear:both;
-	padding:5px;
+	padding:0 5px 5px;
 }
 
 div#actionbuttons a {

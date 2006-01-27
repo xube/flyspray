@@ -316,7 +316,7 @@ class Notifications {
          $due_date = $details_text['undecided'];
       } else
       {
-         $due_date = formatDate($task_details['due_date'], false);
+         $due_date = formatDate($task_details['due_date']);
       }
 
       // Set the due version correctly

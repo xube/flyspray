@@ -266,8 +266,8 @@ function join_attrs($attr = null) {
 function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
     global $fs, $user;
     
-    if (($date = $value) || ($date = Req::val($name . 'date'))) {
-        $show_date = $shortdesc . ' ' . $date;
+    if ((!is_null($value) && $date = date('d-M-Y', $value)) || ($date = Req::val($name . 'date'))) {
+        $show_date = $shortdesc . ' ' . formatDate(strtotime($date . '+23 hours 59 minutes 59 seconds'));
     } else {
         $date  = '0';
         $show_date = $novaldesc;
@@ -476,7 +476,7 @@ function tpl_formattext($text, $onyfs = false)
 }
 // }}}
 // Format Date {{{
-function formatDate($timestamp, $extended, $default = '')
+function formatDate($timestamp, $extended = false, $default = '')
 {
     global $db, $conf, $user, $fs;
 

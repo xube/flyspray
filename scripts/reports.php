@@ -132,8 +132,8 @@ if (count($type)) {
                               AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
                     LEFT JOIN {list_version} lv2 ON lv2.version_id = h.new_value
                               AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
-                        WHERE ($where) $wheredate
-                     ORDER BY $orderby");
+                        WHERE t.attached_to_project = ? AND ($where) $wheredate
+                     ORDER BY $orderby", array($proj->id));
              
     $histories = $db->FetchAllArray($histories);
 }

@@ -465,8 +465,8 @@ class Flyspray
                 switch($key)
                 {
                     case 'due_date':
-                        $new[$key] = formatDate($new[$key], 0);
-                        $value = formatDate($value, 0);
+                        $new[$key] = formatDate($new[$key]);
+                        $value = formatDate($value);
                         break;
                         
                     case 'percent_complete':

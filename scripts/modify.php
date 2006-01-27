@@ -55,16 +55,17 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     // Process the due_date
     if ($due_date = Post::val('due_date', 0)) {
         $due_date = strtotime("$due_date +23 hours 59 minutes 59 seconds");
-        $sql_params[] = 'due_date';
-        $sql_values[] = $due_date;
     }
 
+    $sql_params[] = 'due_date';
+    $sql_values[] = $due_date;
+    
     $sql_params = join(', ', $sql_params);
     $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
 
     $result = $db->Query("SELECT  max(task_id)+1
                             FROM  {tasks}");
-    $task_id = $db->FetchOne($result);           
+    $task_id = $db->FetchOne($result);
                         
     $result = $db->Query("INSERT INTO  {tasks}
                              ( task_id, date_opened, last_edited_time,
@@ -163,16 +164,16 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
     }
     else {
         if ($due_date = Post::val('due_date', 0)) {
-            $due_date = strtotime(Post::val('due_date')."+23 hours 59 minutes 59 seconds");
+            $due_date = strtotime(Post::val('due_date') . '+23 hours 59 minutes 59 seconds');
         }
 
-        $db->Query("UPDATE  {tasks}
+        $db->Query('UPDATE  {tasks}
                        SET  attached_to_project = ?, task_type = ?, item_summary = ?,
                             detailed_desc = ?, item_status = ?,
                             product_category = ?, closedby_version = ?, operating_system = ?,
                             task_severity = ?, task_priority = ?, last_edited_by = ?,
                             last_edited_time = ?, due_date = ?, percent_complete = ?, product_version = ?
-                     WHERE  task_id = ?",
+                     WHERE  task_id = ?',
                 array(Post::val('attached_to_project'), Post::val('task_type'),
                     Post::val('item_summary'), Post::val('detailed_desc'),
                     Post::val('item_status'),
@@ -186,12 +187,12 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
             
             // Delete the current assignees for this task
-            $db->Query("DELETE FROM {assigned}
-                              WHERE task_id = ?",
+            $db->Query('DELETE FROM {assigned}
+                              WHERE task_id = ?',
                                     array(Post::val('task_id')));
 
             // Convert assigned_to and store them in the 'assigned' table
-            foreach (explode(" ", trim(Post::val('assigned_to'))) as $key => $val)
+            foreach (explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
             {
                if (!empty($val))
                {           
@@ -216,7 +217,9 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                     || is_numeric($key))
             {
                 continue;
-            } elseif ($val != $old_details[$key]) {
+            }
+            
+            if ($val != $old_details[$key]) {
                 // Log the changed fields in the task history
                 $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key);
             }

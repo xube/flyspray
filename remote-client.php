@@ -339,7 +339,7 @@ Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></
       <textarea id="details" name="detailed_desc" cols="70" rows="10"></textarea>
    </div>
    <div id="uploadfilebox">
-      Attach a file         <input type="file" size="55" name="userfile[]" /><br />
+      Attach a file         <input type="file" class="file" size="55" name="userfile[]" /><br />
    </div>
 
    <button type="button" onclick="addUploadFields()">Select more files</button>
