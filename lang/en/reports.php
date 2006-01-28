@@ -50,6 +50,7 @@ $reports_text = array (
 
 // Added in version 0.9.9
 'votes'         =>      'Votes',
+'showvoters'    =>      'Show/hide voters',
 
 );
 ?>

@@ -341,3 +341,10 @@ function activelink(id) {
 }
 var useAltForKeyboardNavigation = false;  // Set this to true if you don't want to kill
                                          // Firefox's find as you type 
+
+function getVoters(id, baseurl, field)
+{
+    var url = baseurl + 'javascript/callbacks/getvoters.php?id=' + id;
+    var myAjax = new Ajax.Updater(field, url, { method: 'get', });
+}
+

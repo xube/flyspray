@@ -142,16 +142,11 @@ if (count($type)) {
 *  Voting tally report *
 \**********************/
 
-/*$sql = $db->Query("SELECT t.task_id, v.user_id
-                     FROM {tasks} t
-                LEFT JOIN {votes} v ON t.task_id = v.task_id
-                    WHERE v.vote_id IS NOT NULL");
-*/
-
 $sql = $db->Query("SELECT COUNT(vote_id) AS num_votes,
                           t.task_id AS id
                      FROM {votes} v, {tasks} t
                     WHERE v.task_id = t.task_id
+                      AND t.is_closed <> '1'
                  GROUP BY v.task_id
                  ORDER BY num_votes DESC");
 
