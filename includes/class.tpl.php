@@ -266,23 +266,28 @@ function join_attrs($attr = null) {
 function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
     global $fs, $user;
     
-    if ((!is_null($value) && $date = date('d-M-Y', $value)) || ($date = Req::val($name . 'date'))) {
+    if ($value) {
+        $date = date('d-M-Y', $value);
+    } else {
+        $date = Req::val($name . 'date', '0');
+    }
+    
+    if ($date) {
         $show_date = $shortdesc . ' ' . formatDate(strtotime($date . '+23 hours 59 minutes 59 seconds'));
     } else {
-        $date  = '0';
         $show_date = $novaldesc;
     }
     
     $dateformat = '';
-    if(!$user->isAnon()) {
+    if (!$user->isAnon()) {
         $dateformat = $user->infos['dateformat'];
     }
 
-    if(!$dateformat) {
+    if (!$dateformat) {
         $dateformat = $fs->prefs['dateformat'];
     }
 
-    if(!$dateformat) {
+    if (!$dateformat) {
         $dateformat = '%Y-%m-%d';
     }
     
