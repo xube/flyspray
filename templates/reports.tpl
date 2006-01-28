@@ -122,18 +122,18 @@
 
 <div id="votes" class="tab">
     <?php if (!empty($tasks_voted_for)): ?>
-        <table><tr><th></th><th>{!$reports_text['votes']}</th><th>{!$details_text['summary']}</th></tr>
-        <?php foreach ($tasks_voted_for AS $key => $val):?>
+        <table><tr><th colspan="2">{!$reports_text['votes']}</th><th></th></tr>
+        <?php foreach ($tasks_voted_for AS $key => $val): ?>
             <tr>
-                <td>
-                <a class="DoNotPrint" href="#" onclick="showhidestuff('dropdown<?php echo $key; ?>');getVoters('<?php echo $key; ?>', '{$baseurl}', 'dropdown<?php echo $key; ?>')">
-                <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/dropdown.png" title="{$reports_text['showvoters']}" alt="" />
+              <td>
+                <a class="DoNotPrint" href="#" onclick="showhidestuff('dropdown{$key}');getVoters('{$key}', '{$baseurl}', 'dropdown{$key}')">
+                  <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/dropdown.png" title="{$reports_text['showvoters']}" alt="" />
                 </a>
-                </td>
-                <td valign="top">{$val}</td>
-                <td>{!tpl_tasklink($key)}
-                <div style="visibility:hidden;" id="dropdown<?php echo $key; ?>" class="voters"></div>
-                </td>
+              </td>
+              <td valign="top">{$val}</td>
+              <td>{!tpl_tasklink($key)}
+                <div style="visibility:hidden;" id="dropdown{$key}" class="voters"></div>
+              </td>
             </tr>
         <?php endforeach; ?>
         </table>

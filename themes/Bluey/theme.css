@@ -16,6 +16,14 @@ a {
 	text-decoration:none;
 }
 
+ul.reports {
+	margin:0.5em 0;
+}
+
+div#votes {
+	padding-bottom:0.5em;
+}
+
 /* fancy dual selects */
 .double_select td {
 	vertical-align: middle;
@@ -1284,7 +1292,7 @@ div.autocomplete ul li {
 div.autocomplete ul li.selected {
 	background-color:highlight;
 	cursor:pointer;
-	color:white;
+	color:HighlightText;
 }
 
 
