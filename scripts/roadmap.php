@@ -4,9 +4,7 @@
   | ~~~~~~~~~~~~~~~~~~~                                     |
   \*********************************************************/
 
-$fs->get_language_pack('details');
-$fs->get_language_pack('roadmap');
-$page->setTitle('Flyspray :: ' . $roadmap_text['roadmap']);
+$page->setTitle('Flyspray :: ' . $language['roadmap']);
 
 // Get milestones
 $milestones = $db->Query('SELECT   version_id, version_name
@@ -46,7 +44,5 @@ while ($row = $db->FetchArray($milestones)) {
 }
 
 $page->uses('data');
-$page->uses('details_text');
-$page->uses('roadmap_text');
 $page->pushTpl('roadmap.tpl');
 ?>

@@ -7,19 +7,19 @@
 foreach($milestone['open_tasks'] as $task): ?>
      showhidestuff('dd{$task['task_id']}');
 <?php endforeach; ?>
-">{$roadmap_text['roadmapfor']} {$milestone['name']} <span class="DoNotPrint fade">[++]</span></h3>
+">{$language['roadmapfor']} {$milestone['name']} <span class="DoNotPrint fade">[++]</span></h3>
 
 <p><img src="{$baseurl}themes/{$proj->prefs['theme_style']}/percent-{(round($milestone['percent_complete']/10)*10)}.png"
-				title="{(round($milestone['percent_complete']/10)*10)}% {$details_text['complete']}"
+				title="{(round($milestone['percent_complete']/10)*10)}% {$language['complete']}"
 				alt="" width="200" height="20" />
 </p>
 
 <p>{$milestone['percent_complete']}% of
    <a href="{$baseurl}index.php?tasks=&amp;project={$proj->id}&amp;due={$milestone['id']}&amp;status[]=">
-     {count($milestone['all_tasks'])} {$roadmap_text['tasks']}
-   </a> {$roadmap_text['completed']}
+     {count($milestone['all_tasks'])} {$language['tasks']}
+   </a> {$language['completed']}
    <?php if(count($milestone['open_tasks'])): ?>
-   <a href="{$baseurl}index.php?tasks=&amp;project={$proj->id}&amp;due={$milestone['id']}">{count($milestone['open_tasks'])} {$roadmap_text['opentasks']}</a>
+   <a href="{$baseurl}index.php?tasks=&amp;project={$proj->id}&amp;due={$milestone['id']}">{count($milestone['open_tasks'])} {$language['opentasks']}</a>
    <?php endif; ?>
 </p>
 

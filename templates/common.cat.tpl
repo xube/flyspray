@@ -1,6 +1,6 @@
 <fieldset class="admin">
-  <legend>{$admin_text['categories']}</legend>
-  <p>{$admin_text['listnote']}</p>
+  <legend>{$language['categories']}</legend>
+  <p>{$language['listnote']}</p>
   <div class="admin">
     <form action="{$baseurl}" method="post">
       <table class="list">
@@ -14,28 +14,28 @@
         <tr>
           <td>
             <input type="hidden" name="id[]" value="{$row['category_id']}" />
-            <label for="categoryname{$countlines}">{$admin_text['name']}</label>
+            <label for="categoryname{$countlines}">{$language['name']}</label>
             <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" 
               value="{$row['category_name']}" />
           </td>
-          <td title="{$admin_text['listordertip']}">
-            <label for="listposition{$countlines}">{$admin_text['order']}</label>
+          <td title="{$language['listordertip']}">
+            <label for="listposition{$countlines}">{$language['order']}</label>
             <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$row['list_position']}" />
           </td>
-          <td title="{$admin_text['listshowtip']}">
-            <label for="showinlist{$countlines}">{$admin_text['show']}</label>
+          <td title="{$language['listshowtip']}">
+            <label for="showinlist{$countlines}">{$language['show']}</label>
             {!tpl_checkbox('show_in_list['.$countlines.']', $row['show_in_list'], 'showinlist'.$countlines)}
           </td>
-          <td title="{$admin_text['categoryownertip']}">
-            <label for="categoryowner{$countlines}">{$admin_text['owner']}</label>
+          <td title="{$language['categoryownertip']}">
+            <label for="categoryowner{$countlines}">{$language['owner']}</label>
             <select id="categoryowner{$countlines}" name="category_owner[]">
-              <option value="">{$admin_text['selectowner']}</option>
+              <option value="">{$language['selectowner']}</option>
               {!tpl_options($proj->UserList(), $row['category_owner'])}
             </select>
           </td>
-          <td title="{$admin_text['listdeletetip']}">
+          <td title="{$language['listdeletetip']}">
             <?php if (!$row['used_in_tasks'] && !count($subrows)): ?>
-            <label for="delete{$row['category_id']}">{$admin_text['delete']}</label>
+            <label for="delete{$row['category_id']}">{$language['delete']}</label>
             <input id="delete{$row['category_id']}" type="checkbox" name="delete[{$row['category_id']}]" value="1" />
             <?php endif; ?>
           </td>
@@ -46,27 +46,27 @@
           <td>
             <input type="hidden" name="id[]" value="{$subrow['category_id']}" />
             &rarr;
-            <label for="categoryname{$countlines}">{$admin_text['name']}</label>
+            <label for="categoryname{$countlines}">{$language['name']}</label>
             <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" value="{$subrow['category_name']}" />
           </td>
-          <td title="{$admin_text['listordertip']}">
-            <label for="listposition{$countlines}">{$admin_text['order']}</label>
+          <td title="{$language['listordertip']}">
+            <label for="listposition{$countlines}">{$language['order']}</label>
             <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$subrow['list_position']}" />
           </td>
-          <td title="{$admin_text['listshowtip']}">
-            <label for="showinlist{$countlines}">{$admin_text['show']}</label>
+          <td title="{$language['listshowtip']}">
+            <label for="showinlist{$countlines}">{$language['show']}</label>
             {!tpl_checkbox('show_in_list['.$countlines.']', $subrow['show_in_list'], 'showinlist'.$countlines)}
           </td>
-          <td title="{$admin_text['categoryownertip']}">
-            <label for="categoryowner{$countlines}">{$admin_text['owner']}</label>
+          <td title="{$language['categoryownertip']}">
+            <label for="categoryowner{$countlines}">{$language['owner']}</label>
             <select id="categoryowner{$countlines}" name="category_owner[]">
-              <option value="">{$admin_text['selectowner']}</option>
+              <option value="">{$language['selectowner']}</option>
               {!tpl_options($proj->UserList(), $subrow['category_owner'])}
             </select>
           </td>
-          <td title="{$admin_text['listdeletetip']}">
+          <td title="{$language['listdeletetip']}">
             <?php if (!$subrow['used_in_tasks']): ?>
-            <label for="delete{$subrow['category_id']}">{$admin_text['delete']}</label>
+            <label for="delete{$subrow['category_id']}">{$language['delete']}</label>
             <input id="delete{$subrow['category_id']}" type="checkbox" name="delete[{$subrow['category_id']}]" value="1" />
             <?php endif; ?>
           </td>
@@ -80,7 +80,7 @@
             <input type="hidden" name="list_type" value="category" />
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-            <button type="submit">{$admin_text['update']}</button>
+            <button type="submit">{$language['update']}</button>
           </td>
         </tr>
       </table>
@@ -93,24 +93,24 @@
       <table class="list">
         <tr>
           <td>
-            <label for="listnamenew">{$admin_text['name']}</label>
+            <label for="listnamenew">{$language['name']}</label>
             <input id="listnamenew" class="text" type="text" size="15" maxlength="30" name="list_name" />
           </td>
-          <td title="{$admin_text['listordertip']}">
-            <label for="listpositionnew">{$admin_text['order']}</label>
+          <td title="{$language['listordertip']}">
+            <label for="listpositionnew">{$language['order']}</label>
             <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" name="list_position" />
           </td>
-          <td title="{$admin_text['categoryownertip']}" colspan="2">
-            <label for="categoryownernew" >{$admin_text['owner']}</label>
+          <td title="{$language['categoryownertip']}" colspan="2">
+            <label for="categoryownernew" >{$language['owner']}</label>
             <select id="categoryownernew" name="category_owner">
-              <option value="">{$admin_text['selectowner']}</option>
+              <option value="">{$language['selectowner']}</option>
               {!tpl_options($proj->UserList())}
             </select>
           </td>
-          <td colspan="2" title="{$admin_text['categoryparenttip']}">
-            <label for="parent_id">{$admin_text['subcategoryof']}</label>
+          <td colspan="2" title="{$language['categoryparenttip']}">
+            <label for="parent_id">{$language['subcategoryof']}</label>
             <select id="parent_id" name="parent_id">
-              <option value="">{$admin_text['notsubcategory']}</option>
+              <option value="">{$language['notsubcategory']}</option>
               <?php $cat_opts = array_map(
               create_function('$x', 'return array($x["category_id"], $x["category_name"]);'),
               $proj->listCatsIn(true));
@@ -125,7 +125,7 @@
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <?php endif; ?>
             <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-            <button type="submit">{$admin_text['addnew']}</button>
+            <button type="submit">{$language['addnew']}</button>
           </td>
         </tr>
       </table>

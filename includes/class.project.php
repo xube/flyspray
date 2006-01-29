@@ -8,7 +8,7 @@ class Project
 
     function Project($id)
     {
-        global $db,$language,$fs;
+        global $db, $language, $fs;
 
         if ($id != 0) {
             $sql = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($id));
@@ -255,8 +255,7 @@ class Project
     // It returns an array of user ids and usernames/fullnames/groups
     function UserList($excluded = array(), $all = false)
     {
-      global $db, $fs;
-      global $conf;
+      global $db, $fs, $conf;
       
       $id = ($all) ? 0 : $this->id;
       

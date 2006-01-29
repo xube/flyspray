@@ -11,8 +11,6 @@ $path = dirname(dirname(__FILE__));
 require_once("$path/header.php");
 require_once("$path/includes/notify.inc.php");
 
-$fs->get_language_pack('functions');
-
 $notify = new Notifications;
 $now = date('U');
 
@@ -49,7 +47,7 @@ while ($row = $db->FetchRow($get_reminders)) {
       }
    }
 
-   $subject = $functions_text['notifyfrom'];
+   $subject = $language['notifyfromfs'];
    $message = $row['reminder_message'];
 
    // Pass the recipients and message onto the notification function

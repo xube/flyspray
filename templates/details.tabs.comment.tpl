@@ -4,9 +4,9 @@
     <a name="comment{$row['comment_id']}" id="comment{$row['comment_id']}"
       href="{CreateURL('details', $task_details['task_id'])}#comment{$row['comment_id']}">
       <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/menu/comment.png"
-        title="{$details_text['commentlink']}" alt="" />
+        title="{$language['commentlink']}" alt="" />
     </a>
-    {$details_text['commentby']} {!tpl_userlink($row['user_id'])} -
+    {$language['commentby']} {!tpl_userlink($row['user_id'])} -
     {formatDate($row['date_added'], true)}
   </em>
 
@@ -14,14 +14,14 @@
     <?php if ($user->perms['edit_comments']): ?>
     &mdash;
     <a href="{$baseurl}?do=editcomment&amp;task_id={Get::val('id')}&amp;id={$row['comment_id']}">
-      {$details_text['edit']}</a>
+      {$language['edit']}</a>
     <?php endif; ?>
 
     <?php if ($user->perms['delete_comments']): ?>
     &mdash;
     <a href="{$baseurl}?do=modify&amp;action=deletecomment&amp;task_id={Get::val('id')}&amp;comment_id={$row['comment_id']}"
-      onclick="return confirm('{$details_text['confirmdeletecomment']}');">
-      {$details_text['delete']}</a>
+      onclick="return confirm('{$language['confirmdeletecomment']}');">
+      {$language['delete']}</a>
     <?php endif ?>
   </span>
   <div class="comment">{!tpl_formatText($row['comment_text'])}</div>
@@ -47,14 +47,14 @@
     <?php if ($user->perms['delete_attachments']): ?>
     &mdash;
     <a href="{$baseurl}?do=modify&amp;action=deleteattachment&amp;id={$attachment['attachment_id']}"
-      onclick="return confirm('{$details_text['confirmdeleteattach']}');">
-      {$details_text['delete']}</a>
+      onclick="return confirm('{$language['confirmdeleteattach']}');">
+      {$language['delete']}</a>
     <?php endif; ?>
   </span>
   <?php endforeach; ?>
   <br />
   <?php elseif (count($attachments)): ?>
-  <span class="attachments">{$details_text['attachnoperms']}</span>
+  <span class="attachments">{$language['attachnoperms']}</span>
   <br />
   <?php endif; ?>
   <?php endforeach; ?>
@@ -69,23 +69,23 @@
       <div id="uploadfilebox">
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
           <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
-            <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{$details_text['remove']}</a><br />
+            <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{$language['remove']}</a><br />
         </span>    
       </div>
       <button id="attachafile" tabindex="7" type="button" onclick="addUploadFields()">
-        {$details_text['uploadafile']}
+        {$language['uploadafile']}
       </button>
       <button id="attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
-         {$details_text['attachanotherfile']}
+         {$language['attachanotherfile']}
       </button>
         
       <?php endif; ?>
       <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
 
 
-      <button tabindex="9" type="submit">{$details_text['addcomment']}</button>
+      <button tabindex="9" type="submit">{$language['addcomment']}</button>
       <?php if (!$watched): ?>
-      {!tpl_checkbox('notifyme', true, 'notifyme')} <label class="left" for="notifyme">{$newtask_text['notifyme']}</label>
+      {!tpl_checkbox('notifyme', true, 'notifyme')} <label class="left" for="notifyme">{$language['notifyme']}</label>
       <?php endif; ?>
     </div>
   </form>

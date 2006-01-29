@@ -10,9 +10,6 @@ if (!$user->can_create_user()) {
     $fs->redirect( CreateURL('error') );
 }
 
-$fs->get_language_pack('newuser');
-$page->uses('newuser_text');
-
 if ($user->perms['is_admin']) {
     $sql = $db->Query("SELECT  group_id, group_name
                          FROM  {groups}
@@ -21,6 +18,6 @@ if ($user->perms['is_admin']) {
     $page->assign('group_names', $db->fetchAllArray($sql));
 }
 
-$page->setTitle('Flyspray:: ' . $newuser_text['registernewuser']);
+$page->setTitle('Flyspray:: ' . $language['registernewuser']);
 $page->pushTpl('newuser.tpl');
 ?>

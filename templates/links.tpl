@@ -28,14 +28,14 @@ endif; ?>
   <li>
   <a id="lastsearchlink" onclick="activelink('lastsearchlink')" href="javascript:showhidestuff('mysearches')" accesskey="m">{$language['mysearch']}</a>
   <div id="mysearches">
-    <strong id="nosearches" <?php if(count($user->searches)): ?>class="hide"<?php endif; ?>>{$index_text['nosearches']}</strong>
+    <strong id="nosearches" <?php if(count($user->searches)): ?>class="hide"<?php endif; ?>>{$language['nosearches']}</strong>
     <table id="mysearchestable">
     <?php foreach ($user->searches as $search): ?>
     <tr id="rs{$search['id']}" <?php if($search == end($user->searches)): ?>class="last"<?php endif; ?>>
       <td><a href="{$search['search_string']}">{$search['name']}</a></td>
       <td width="16">
         <a href="javascript:deletesearch('{$search['id']}','{$baseurl}')">
-        <img src="{$this->themeUrl()}button_cancel.png" width="16" height="16" title="{$index_text['delete']}" alt="{$index_text['delete']}" /></a>
+        <img src="{$this->themeUrl()}button_cancel.png" width="16" height="16" title="{$language['delete']}" alt="{$language['delete']}" /></a>
       </td>
     </tr>
     <?php endforeach; ?>

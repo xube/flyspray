@@ -1,10 +1,10 @@
-<h3>{$proj->prefs['project_title']} :: {$newtask_text['newtask']}</h3>
+<h3>{$proj->prefs['project_title']} :: {$language['newtask']}</h3>
 
 <div id="taskdetails">
-  <form enctype="multipart/form-data" action="{$baseurl}" method="post" onsubmit="return checknewtask('{$modify_text['summaryanddetails']}')">
+  <form enctype="multipart/form-data" action="{$baseurl}" method="post" onsubmit="return checknewtask('{$language['summaryanddetails']}')">
     <table>
       <tr>
-        <td><label for="itemsummary">{$newtask_text['summary']}</label></td>
+        <td><label for="itemsummary">{$language['summary']}</label></td>
         <td>
           <input id="itemsummary" class="text" type="text" name="item_summary" size="50" maxlength="100" />
         </td>
@@ -15,7 +15,7 @@
 
       <table>
         <tr>
-          <td><label for="tasktype">{$newtask_text['tasktype']}</label></td>
+          <td><label for="tasktype">{$language['tasktype']}</label></td>
           <td>
             <select name="task_type" id="tasktype">
               {!tpl_options($proj->listTaskTypes())}
@@ -24,7 +24,7 @@
         </tr>
 
         <tr>
-          <td><label for="category">{$newtask_text['category']}</label></td>
+          <td><label for="category">{$language['category']}</label></td>
           <td>
             <select class="adminlist" name="product_category" id="category">
               {!tpl_options($proj->listCatsIn())}
@@ -32,7 +32,7 @@
           </td>
         </tr>
         <tr>
-          <td><label for="status">{$newtask_text['status']}</label></td>
+          <td><label for="status">{$language['status']}</label></td>
           <td>
             <select id="status" name="item_status" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
               {!tpl_options($proj->listTaskStatuses(), 2)}
@@ -46,20 +46,20 @@
             <input type="hidden" name="item_status"   value="1" />
             <input type="hidden" name="task_priority" value="2" />
             <?php endif; ?>
-            <label>{$newtask_text['assignedto']}</label>
+            <label>{$language['assignedto']}</label>
           </td>
           <td>
             <?php if ($user->perms['modify_all_tasks']): ?>
-            <a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{$details_text['selectusers']}</a>
+            <a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{$language['selectusers']}</a>
             <div id="multiuserlist">
                 {!tpl_double_select('assigned_to', $userlist, $assigned_users, false, false)}
-                <button type="button" onclick="hidestuff('multiuserlist')">{$details_text['OK']}</button>
+                <button type="button" onclick="hidestuff('multiuserlist')">{$language['OK']}</button>
             </div>
             <?php endif; ?>
           </td>
         </tr>
         <tr>
-          <td><label for="os">{$newtask_text['operatingsystem']}</label></td>
+          <td><label for="os">{$language['operatingsystem']}</label></td>
           <td>
             <select id="os" name="operating_system">
               {!tpl_options($proj->listOs())}
@@ -72,7 +72,7 @@
     <div id="taskfields2">
       <table>
         <tr>
-          <td><label for="severity">{$newtask_text['severity']}</label></td>
+          <td><label for="severity">{$language['severity']}</label></td>
           <td>
             <select id="severity" class="adminlist" name="task_severity">
               {!tpl_options($severity_list, 2)}
@@ -80,7 +80,7 @@
           </td>
         </tr>
         <tr>
-          <td><label for="priority">{$newtask_text['priority']}</label></td>
+          <td><label for="priority">{$language['priority']}</label></td>
           <td>
             <select id="priority" name="task_priority" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
               {!tpl_options($priority_list, 2)}
@@ -88,7 +88,7 @@
           </td>
         </tr>
         <tr>
-          <td><label for="reportedver">{$newtask_text['reportedversion']}</label></td>
+          <td><label for="reportedver">{$language['reportedversion']}</label></td>
           <td>
             <select class="adminlist" name="product_version" id="reportedver">
               {!tpl_options($proj->listVersions(false, 2))}
@@ -96,20 +96,20 @@
           </td>
         </tr>
         <tr>
-          <td><label for="dueversion">{$newtask_text['dueinversion']}</label></td>
+          <td><label for="dueversion">{$language['dueinversion']}</label></td>
           <td>
             <select id="dueversion" name="closedby_version" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
-              <option value="">{$newtask_text['undecided']}</option>
+              <option value="">{$language['undecided']}</option>
               {!tpl_options($proj->listVersions(false, 3))}
             </select>
           </td>
         </tr>
         <tr>
-          <td><label for="duedate">{$newtask_text['duedate']}</label></td>
+          <td><label for="duedate">{$language['duedate']}</label></td>
           <td id="duedate">
             <input id="duedatehidden" type="hidden" name="due_date" value="" />
             <?php if ($user->perms['modify_all_tasks']): ?>
-            {!tpl_datepicker('due_', $index_text['selectduedate'], $index_text['selectduedate'])}
+            {!tpl_datepicker('due_', $language['selectduedate'], $language['selectduedate'])}
             <?php endif; ?>
           </td>
         </tr>
@@ -117,19 +117,19 @@
     </div>
 
     <div id="taskdetailsfull">
-      <label for="details">{$newtask_text['details']}</label>
+      <label for="details">{$language['details']}</label>
       <textarea id="details" name="detailed_desc" cols="70" rows="10"></textarea>
       <?php if ($user->perms['create_attachments']): ?>
         <div id="uploadfilebox">
           <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
             <input class="file" type="file" size="55" name="userfile[]" />
-            <a href="javascript://" onclick="removeUploadField(this);">{$details_text['remove']}</a>
+            <a href="javascript://" onclick="removeUploadField(this);">{$language['remove']}</a>
             <br />
           </span>
         </div>
-        <button id="attachafile" type="button" onclick="addUploadFields()">{$details_text['uploadafile']}</button>
+        <button id="attachafile" type="button" onclick="addUploadFields()">{$language['uploadafile']}</button>
         <button id="attachanotherfile" style="display:none" type="button" onclick="addUploadFields()">
-          {$details_text['attachanotherfile']}
+          {$language['attachanotherfile']}
         </button>
         
       <?php endif; ?>
@@ -140,11 +140,11 @@
     <input type="hidden" name="do" value="modify" />
     <input type="hidden" name="action" value="newtask" />
     <input type="hidden" name="project_id" value="{$proj->id}" />
-    <button accesskey="s" type="submit">{$newtask_text['addthistask']}</button>
+    <button accesskey="s" type="submit">{$language['addthistask']}</button>
 
     <?php if (!$user->isAnon()): ?>
     &nbsp;&nbsp;<input class="text" type="checkbox" id="notifyme" name="notifyme" value="1" checked="checked" />
-    <label class="left" for="notifyme">{$newtask_text['notifyme']}</label>
+    <label class="left" for="notifyme">{$language['notifyme']}</label>
     <?php endif; ?>
     </div>
   </form>

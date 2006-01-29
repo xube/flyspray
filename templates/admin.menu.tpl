@@ -1,11 +1,11 @@
 <div id="toolboxmenu">
-  <a id="globprefslink" href="{CreateURL('admin', 'prefs')}">{$admin_text['preferences']}</a>
-  <a id="globuglink" href="{CreateURL('admin', 'groups')}">{$admin_text['usergroups']}</a>
-  <a id="globttlink" href="{CreateURL('admin', 'tt')}">{$admin_text['tasktypes'] }</a>
-  <a id="globstatuslink" href="{CreateURL('admin', 'status')}">{$admin_text['taskstatuses'] }</a>
-  <a id="globreslink" href="{CreateURL('admin', 'res')}">{$admin_text['resolutions'] }</a>
-  <a id="globcatlink" href="{CreateURL('admin', 'cat')}">{$admin_text['categories'] }</a>
-  <a id="globoslink" href="{CreateURL('admin', 'os')}">{$admin_text['operatingsystems']}</a>
-  <a id="globverlink" href="{CreateURL('admin', 'ver')}">{$admin_text['versions'] }</a>
-  <a id="globnewprojlink" href="{CreateURL('admin', 'newproject')}">{$admin_text['newproject']}</a>
+  <a id="globprefslink" href="{CreateURL('admin', 'prefs')}">{$language['preferences']}</a>
+  <a id="globuglink" href="{CreateURL('admin', 'groups')}">{$language['usersandgroups']}</a>
+  <a id="globttlink" href="{CreateURL('admin', 'tt')}">{$language['tasktypes'] }</a>
+  <a id="globstatuslink" href="{CreateURL('admin', 'status')}">{$language['taskstatuses'] }</a>
+  <a id="globreslink" href="{CreateURL('admin', 'res')}">{$language['resolutions'] }</a>
+  <a id="globcatlink" href="{CreateURL('admin', 'cat')}">{$language['categories'] }</a>
+  <a id="globoslink" href="{CreateURL('admin', 'os')}">{$language['operatingsystems']}</a>
+  <a id="globverlink" href="{CreateURL('admin', 'ver')}">{$language['versions'] }</a>
+  <a id="globnewprojlink" href="{CreateURL('admin', 'newproject')}">{$language['newproject']}</a>
 </div>

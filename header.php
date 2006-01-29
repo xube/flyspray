@@ -29,6 +29,8 @@ require_once "$basedir/includes/class.project.php";
 require_once "$basedir/includes/class.user.php";
 require_once "$basedir/includes/class.tpl.php";
 
+require_once "$basedir/lang/en.php";
+
 $db = new Database;
 $db->dbOpenFast($conf['database']);
 $fs = new Flyspray;
@@ -60,4 +62,16 @@ $proj = new Project($project_id);
 $proj->checkExists();
 $proj->setCookie();
 
+// Load translations
+$translation = "$basedir/lang/{$proj->prefs['lang_code']}.php";
+if ($proj->prefs['lang_code'] != 'en' && file_exists($translation)) {
+    include_once($translation);
+    $language = array_merge($language, $translation);
+}
+for ($i = 6; $i >= 1; $i--) {
+    $priority_list[$i] = $language['priority' . $i];
+}
+for ($i = 5; $i >= 1; $i--) {
+    $severity_list[$i] = $language['severity' . $i];
+}
 ?>

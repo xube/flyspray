@@ -10,17 +10,14 @@ if (!$user->can_create_group()) {
     $fs->redirect(CreateURL('error'));
 }
 
-$fs->get_language_pack('newgroup');
-
 if (Get::val('project')) {
     $forproject = $proj->prefs['project_title'];
-    $page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . $newgroup_text['createnewgroup']);
+    $page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . $language['createnewgroup']);
 } else {
-    $forproject = $newgroup_text['globalgroups'];
-    $page->setTitle('Flyspray:: ' . $newgroup_text['createnewgroup']);
+    $forproject = $language['globalgroups'];
+    $page->setTitle('Flyspray:: ' . $language['createnewgroup']);
 }
 
-$page->uses('newgroup_text');
 $page->assign('forproject', $forproject);
 $page->pushTpl('newgroup.tpl');
 ?>

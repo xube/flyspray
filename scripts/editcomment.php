@@ -19,9 +19,6 @@ if (!$user->can_edit_comment($comment)) {
     $fs->Redirect( CreateURL('error') );
 }
 
-$fs->get_language_pack('admin');
-$page->uses('admin_text');
-
 $page->pushTpl('editcomment.tpl');
 
 ?>

@@ -5,8 +5,6 @@
   | ~~~~~~~~~~~~~~~~~~~                                    |
   \********************************************************/
 
-$fs->get_language_pack('authenticate');
-
 if (Req::val('action') == 'logout') {
 
     // Set cookie expiry time to the past, thus removing them
@@ -30,7 +28,7 @@ if (Req::has('user_name') && Req::has('password')) {
 
     // Run the username and password through the login checker
     if (!$fs->checkLogin($username, $password)) {
-        $_SESSION['ERROR'] = $authenticate_text['loginfailed'];
+        $_SESSION['ERROR'] = $language['loginfailed'];
         $_SESSION['failed_login'] = Req::val('user_name');
         $fs->redirect(Req::val('prev_page'));
     }
@@ -57,12 +55,12 @@ if (Req::has('user_name') && Req::has('password')) {
                 array($user->id)
             );
 
-        $_SESSION['SUCCESS'] = $authenticate_text['loginsuccessful'];
+        $_SESSION['SUCCESS'] = $language['loginsuccessful'];
     }
 }
 else {
     // If the user didn't provide both a username and a password, show this error:
-    $_SESSION['ERROR'] = $authenticate_text['loginfailed'] . ' - ' . $authenticate_text['userandpass'];
+    $_SESSION['ERROR'] = $language['loginfailed'] . ' - ' . $language['userandpass'];
 }
 $fs->redirect(Req::val('prev_page'));
 ?>

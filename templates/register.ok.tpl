@@ -1,4 +1,4 @@
 <div class="redirectmessage">
-  <p>{$modify_text['loginbelow']}</p>
-  <p>{$modify_text['newuserwarning']}</p>
+  <p>{$language['loginbelow']}</p>
+  <p>{$language['newuserwarning']}</p>
 </div>

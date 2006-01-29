@@ -1,8 +1,8 @@
 <div id="toolbox">
-  <h3>{$pm_text['pmtoolbox']} :: {$proj->prefs['project_title']} : {$pm_text['taskstatuses']}</h3>
+  <h3>{$language['pmtoolbox']} :: {$proj->prefs['project_title']} : {$language['taskstatuses']}</h3>
 
   <fieldset class="admin">
-    <legend>{$admin_text['taskstatuses']}</legend>
+    <legend>{$language['taskstatuses']}</legend>
     <?php
     $this->assign('list_type', 'status');
     $this->assign('rows', $proj->listTaskStatuses(true));

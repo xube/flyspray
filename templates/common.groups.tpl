@@ -15,9 +15,9 @@ foreach($groups as $group): ?>
   <table class="userlist">
     <tr>
       <th></th>
-      <th>{$admin_text['username']}</th>
-      <th>{$admin_text['realname']}</th>
-      <th>{$admin_text['accountenabled']}</th>
+      <th>{$language['username']}</th>
+      <th>{$language['realname']}</th>
+      <th>{$language['accountenabled']}</th>
     </tr>
     <?php
     foreach($proj->listUsersIn($group['group_id']) as $usr): ?>
@@ -26,9 +26,9 @@ foreach($groups as $group): ?>
       <td><a href="{CreateURL('user', $usr['user_id'])}">{$usr['user_name']}</a></td>
       <td>{$usr['real_name']}</td>
       <?php if ($user->infos['account_enabled']): ?>
-      <td>{$admin_text['yes']}</td>
+      <td>{$language['yes']}</td>
       <?php else: ?>
-      <td>{$admin_text['no']}</td>
+      <td>{$language['no']}</td>
       <?php endif; ?>
     </tr>
     <?php
@@ -38,10 +38,10 @@ foreach($groups as $group): ?>
 
     <tr>
       <td colspan="4">
-        <button type="submit">{$admin_text['moveuserstogroup']}</button>
+        <button type="submit">{$language['moveuserstogroup']}</button>
         <select class="adminlist" name="switch_to_group">
           <?php if ($proj->id): ?>
-          <option value="0">{$admin_text['nogroup']}</option>
+          <option value="0">{$language['nogroup']}</option>
           <?php endif; ?>
           {!tpl_options($proj->listGroups())}
         </select>
@@ -63,7 +63,7 @@ foreach($groups as $group): ?>
       {!tpl_options($proj->UserList($users_in, true))}
     </select>
     <br />
-    <button type="submit">{$admin_text['addtogroup']}</button>
+    <button type="submit">{$language['addtogroup']}</button>
     <select name="add_to_group">
       {!tpl_options($proj->listGroups())}
     </select>

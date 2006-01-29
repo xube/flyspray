@@ -13,14 +13,10 @@ if (!$user->perms['is_admin']) {
     $fs->Redirect( CreateURL('error', null) );
 }
 
-$fs->get_language_pack('admin');
-$fs->get_language_pack('index');
-$fs->get_language_pack('newproject');
-$fs->get_language_pack('newuser');
 $old_project = $proj->id;
 $proj = new Project(0);
 
-$page->uses('admin_text', 'index_text', 'newproject_text', 'newuser_text', 'old_project');
+$page->uses('old_project');
 $page->pushTpl('admin.menu.tpl');
 
 switch ($area = Get::val('area', 'prefs')) {
@@ -39,7 +35,7 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'status':
     case 'ver':
 
-        $page->setTitle('Flyspray:: ' . $admin_text['admintoolbox']);
+        $page->setTitle('Flyspray:: ' . $language['admintoolboxlong']);
         $page->pushTpl('admin.'.$area.'.tpl');
         break;
 

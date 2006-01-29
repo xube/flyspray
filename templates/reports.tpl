@@ -1,36 +1,36 @@
 <ul id="submenu">
-  <li><a href="#events">{$reports_text['events']}</a></li>
-  <li><a href="#votes">{$reports_text['votes']}</a></li>
+  <li><a href="#events">{$language['events']}</a></li>
+  <li><a href="#votes">{$language['votes']}</a></li>
 </ul>
 <div id="events" class="tab">
   <form action="{$baseurl}index.php" method="get">
     <table id="event1">
       <tr>
-        <td>{$reports_text['tasks']}</td>
+        <td>{$language['Tasks']}</td>
         <td><label class="inline">{!tpl_checkbox('open', (Req::has('open')))}
-            {$reports_text['opened']}</label></td>
+            {$language['opened']}</label></td>
         <td><label class="inline">{!tpl_checkbox('close', (Req::has('close')))}
-            {$reports_text['closed']}</label></td>
+            {$language['closed']}</label></td>
         <td><label class="inline">{!tpl_checkbox('edit', (Req::has('edit')))}
-            {$reports_text['edited']}</label></td>
+            {$language['edited']}</label></td>
       </tr>
       <tr>
         <td></td>
         <td><label class="inline">{!tpl_checkbox('assign', (Req::has('assign')))}
-            {$reports_text['assigned']}</label></td>
+            {$language['assigned']}</label></td>
         <td><label class="inline">{!tpl_checkbox('comments', (Req::has('comments')))}
-            {$reports_text['comments']}</label></td>
+            {$language['comments']}</label></td>
         <td><label class="inline">{!tpl_checkbox('attachments', (Req::has('attachments')))}
-            {$reports_text['attachments']}</label></td>
+            {$language['attachments']}</label></td>
       </tr>
       <tr>
         <td></td>
         <td><label class="inline">{!tpl_checkbox('related', (Req::has('related')))}
-            {$reports_text['relatedtasks']}</label></td>
+            {$language['relatedtasks']}</label></td>
         <td><label class="inline">{!tpl_checkbox('notifications', (Req::has('notifications')))}
-            {$reports_text['notifications']}</label></td>
+            {$language['notifications']}</label></td>
         <td><label class="inline">{!tpl_checkbox('reminders', (Req::has('reminders')))}
-            {$reports_text['reminders']}</label></td>
+            {$language['reminders']}</label></td>
       </tr>
     </table>
     
@@ -38,33 +38,33 @@
       <tr>
         <td>
           <input type="radio" id="datewithin" name="date" value="within" <?php if (Req::val('date') == 'within') echo 'checked="checked"';?> />
-          <label class="inline" for="datewithin">{$reports_text['within']}</label>
+          <label class="inline" for="datewithin">{$language['within']}</label>
         </td>
         <td colspan="6">
           <select onclick="getElementById('datewithin').checked=true" name="within">
-          {!tpl_options(array('day' => $reports_text['pastday'],
-                              'week' => $reports_text['pastweek'],
-                              'month' => $reports_text['pastmonth'],
-                              'year' => $reports_text['pastyear'],
-                              'all' => $reports_text['nolimit']), Req::val('within'))}
+          {!tpl_options(array('day' => $language['pastday'],
+                              'week' => $language['pastweek'],
+                              'month' => $language['pastmonth'],
+                              'year' => $language['pastyear'],
+                              'all' => $language['nolimit']), Req::val('within'))}
           </select>
         </td>
       </tr>
       <tr>
         <td>
           <input type="radio" id="datefrom" name="date" value="from" <?php if (Req::val('date') == 'from') echo 'checked="checked"';?> />
-          <label class="inline" for="datefrom">{$reports_text['from']}</label>
+          <label class="inline" for="datefrom">{$language['from']}</label>
         </td>
         <td onclick="getElementById('datefrom').checked=true">
-            {!tpl_datepicker('from', $reports_text['selectfromdate'], $reports_text['from'])}
+            {!tpl_datepicker('from', $language['selectfromdate'], $language['from'])}
           &mdash;
-            {!tpl_datepicker('to', $reports_text['selecttodate'], $reports_text['to'])}
+            {!tpl_datepicker('to', $language['selecttodate'], $language['to'])}
         </td>
       </tr>
       <tr>
         <td>
           <input type="radio" id="dateduein" name="date" value="duein" <?php if (Req::val('date') == 'duein') echo 'checked="checked"';?> />
-          <label class="inline" for="dateduein">{$reports_text['duein']}</label>
+          <label class="inline" for="dateduein">{$language['duein']}</label>
         </td>
         <td colspan="6">
           <select onclick="getElementById('dateduein').checked=true" name="duein">
@@ -75,7 +75,7 @@
     </table>
 
     <input type="hidden" name="do" value="reports" />
-    <button type="submit" name="submit">{$reports_text['show']}</button>
+    <button type="submit" name="submit">{$language['show']}</button>
   </form>
   
   <?php if($histories): ?>
@@ -85,23 +85,23 @@
     <tr>
       <th class="taskid">
         <a href="{CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'id' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'id') + $_GET)}">
-           {$index_text['id']}
+           {$language['id']}
         </a>
       </th>
-      <th>{$details_text['summary']}</th>
+      <th>{$language['summary']}</th>
       <th>
         <a href="{CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'date' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'date') + $_GET)}">
-          {$details_text['eventdate']}
+          {$language['eventdate']}
         </a>
       </th>
       <th>
         <a href="{CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'user' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'user') + $_GET)}">
-          {$details_text['user']}
+          {$language['user']}
         </a>
       </th>
       <th>
         <a href="{CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'type' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'type') + $_GET)}">
-          {$details_text['event']}
+          {$language['event']}
         </a>
       </th>
     </tr>
@@ -122,12 +122,12 @@
 
 <div id="votes" class="tab">
     <?php if (!empty($tasks_voted_for)): ?>
-        <table><tr><th colspan="2">{!$reports_text['votes']}</th><th></th></tr>
+        <table><tr><th colspan="2">{!$language['votes']}</th><th></th></tr>
         <?php foreach ($tasks_voted_for AS $key => $val): ?>
             <tr>
               <td>
                 <a class="DoNotPrint" href="#" onclick="showhidestuff('dropdown{$key}');getVoters('{$key}', '{$baseurl}', 'dropdown{$key}')">
-                  <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/dropdown.png" title="{$reports_text['showvoters']}" alt="" />
+                  <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/dropdown.png" title="{$language['showvoters']}" alt="" />
                 </a>
               </td>
               <td valign="top">{$val}</td>

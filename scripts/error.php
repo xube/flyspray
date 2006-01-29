@@ -9,8 +9,6 @@
   \*********************************************************/
 
 
-$fs->get_language_pack('main');
-$page->uses('language');
 $page->setTitle('Flyspray:: Error');
 $page->pushTpl('error.tpl');
 ?>

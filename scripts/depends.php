@@ -19,10 +19,6 @@ if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
     $fs->Redirect( CreateURL('error', null) );
 }
 
-$fs->get_language_pack('details');
-$fs->get_language_pack('severity');
-$fs->get_language_pack('priority');
-
 // Configuration information:
 // [FIXME: in the future, this will come from the initial configuration.]
 $path_to_dot = "/usr/local/bin/dot"; // Where's the dot executable?
@@ -195,16 +191,16 @@ foreach ($node_list as $n => $r) {
     if ($n==$id) { $col = "#ffff$x"; } else {  $col = "#$x$x$x"; }
     // Make sure label terminates in \n!
     $label = "FS#$n - ".
-        ($r['clsd'] ? $details_text['closed'] :
-         "$r[pct]% ".$details_text['complete']).#" status $r[stat]".
+        ($r['clsd'] ? $language['closed'] :
+         "$r[pct]% ".$language['complete']).#" status $r[stat]".
          "\n".wordwrap(addslashes($r['sum']), 20)."\n";
     $tooltip =
-      ($r['clsd'] ? "$details_text[closed]: $r[res]".
+      ($r['clsd'] ? "$language[closed]: $r[res]".
        (!empty($r['clsdby']) ? " ($r[clsdby])" : "").
        ($r['com']!='' ? " - $r[com]" : "")
-       : $severity_list[$r['sev']]." $details_text[severity]/".
-       $priority_list[$r['pri']]." $details_text[priority] - ".
-       "$details_text[status]: ".$r['status_name'].
+       : $severity_list[$r['sev']]." $language[severity]/".
+       $priority_list[$r['pri']]." $language[priority] - ".
+       "$language[status]: ".$r['status_name'].
        ($r['assg'] ? " ($r[assg])" : ""));
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
         "href=\"".CreateURL("details", $n)."\", ".
@@ -255,7 +251,6 @@ if (!function_disabled('system')) {
 
 #echo "<pre>$dotgraph</pre>\n";
 
-$page->uses('details_text');
-$page->setTitle('FS#' . $id . ': ' . $details_text['dependencygraph']);
+$page->setTitle('FS#' . $id . ': ' . $language['dependencygraph']);
 $page->pushTpl('depends.tpl');
 ?>

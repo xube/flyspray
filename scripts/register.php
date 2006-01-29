@@ -9,10 +9,7 @@ if (!$user->can_register()) {
     $fs->Redirect( CreateURL('error', null) );
 }
 
-$fs->get_language_pack('register');
-$page->uses('register_text');
-
-$page->setTitle('Flyspray:: ' . $register_text['registernewuser']);
+$page->setTitle('Flyspray:: ' . $language['registernewuser']);
 
 if (Get::has('magic')) {
     // If the user came here from their notification link

@@ -9,7 +9,6 @@
 require_once(dirname(__FILE__).'/header.php');
 
 // Get the translation for the wrapper page (this page)
-$fs->get_language_pack('main');
 setlocale(LC_ALL, str_replace('-','_',$language['locale']));
 
 /*

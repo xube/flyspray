@@ -1,19 +1,18 @@
-<?php $fs->get_language_pack('loginbox'); global $loginbox_text; ?>
 <div id="loginbox">
-  <em>{$loginbox_text['login']}</em>
+  <em>{$language['login']}</em>
   <form action="{$baseurl}?do=authenticate" method="post">
     <div>
-      <label for="lbl_user_name">{$loginbox_text['username']}</label>
+      <label for="lbl_user_name">{$language['username']}</label>
       <input class="text" type="text" id="lbl_user_name" name="user_name" size="20" maxlength="20" />
 
-      <label for="lbl_password">{$loginbox_text['password']}</label>
+      <label for="lbl_password">{$language['password']}</label>
       <input class="password" type="password" id="lbl_password" name="password" size="20" maxlength="20" />
 
-      <label for="lbl_remember">{$loginbox_text['rememberme']}</label>
+      <label for="lbl_remember">{$language['rememberme']}</label>
       <input type="checkbox" id="lbl_remember" name="remember_login" />
 
       <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-      <button accesskey="l" type="submit">{$loginbox_text['login']}</button>
+      <button accesskey="l" type="submit">{$language['login']}</button>
 
       <span id="links">
         <?php
@@ -26,16 +25,16 @@
         <?php endif;
         endif; ?>
         <?php if ($user->isAnon() && $fs->prefs['user_notify']): ?>
-        <a href="{CreateURL('lostpw','')}">{$loginbox_text['lostpassword']}</a>
+        <a href="{CreateURL('lostpw','')}">{$language['lostpassword']}</a>
         <?php else: ?>
         <a id="lostpwlink" href="mailto:<?php foreach($admin_emails as $mail): ?>{str_replace('@', '#', $mail[0])},<?php endforeach;
-        ?>?subject={rawurlencode($loginbox_text['lostpwforfs'])}&amp;body={rawurlencode($loginbox_text['lostpwmsg1'])}{$baseurl}{rawurlencode($loginbox_text['lostpwmsg2'])}<?php
+        ?>?subject={rawurlencode($language['lostpwforfs'])}&amp;body={rawurlencode($language['lostpwmsg1'])}{$baseurl}{rawurlencode($language['lostpwmsg2'])}<?php
                  if(isset($_SESSION['failed_login'])):
                  ?>{rawurlencode($_SESSION['failed_login'])}<?php
                  else:
-                 ?>&lt;{rawurlencode($loginbox_text['yourusername'])}&gt;<?php
+                 ?>&lt;{rawurlencode($language['yourusername'])}&gt;<?php
                  endif;
-                 ?>{rawurlencode($loginbox_text['regards'])}">{$loginbox_text['lostpassword']}</a>
+                 ?>{rawurlencode($language['regards'])}">{$language['lostpassword']}</a>
         <script type="text/javascript">var link = document.getElementById('lostpwlink');link.href=link.href.replace(/#/g,"@");</script>
         <?php endif; ?>
       </span>

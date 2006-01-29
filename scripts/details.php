@@ -16,17 +16,10 @@ if ( !($task_details = $fs->GetTaskDetails($task_id))
     $fs->Redirect( CreateURL('error', null) );
 }
 
-$fs->get_language_pack('details');
-$fs->get_language_pack('newtask');
-$fs->get_language_pack('index');
-$fs->get_language_pack('severity');
-$fs->get_language_pack('priority');
-$fs->get_language_pack('modify');
-
 require_once($basedir . '/includes/events.inc.php');
 
 $page->uses('priority_list', 'severity_list', 'task_details',
-            'status_list', 'details_text', 'newtask_text','modify_text');
+            'status_list');
 
 $userlist = $proj->UserList();
 

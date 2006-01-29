@@ -14,14 +14,8 @@ if ($proj->id === '0' && !$user->perms['global_view']) {
     $fs->Redirect( CreateURL('error', null) );
 }
 
-// First, the obligatory language packs
-$fs->get_language_pack('index');
-$fs->get_language_pack('details');
-$fs->get_language_pack('severity');
-$fs->get_language_pack('priority');
 
-$page->uses('index_text', 'details_text', 'severity_list', 'priority_list',
-        'status_list');
+$page->uses('severity_list', 'priority_list', 'status_list');
 
 $perpage = '20';
 if (@$user->infos['tasks_perpage'] > 0) {
@@ -275,7 +269,7 @@ $sql = $db->Query("
 
 function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 {
-    global $proj , $index_text, $get;
+    global $proj, $language, $get;
 
     $keys = array (
             'id'         => 'id',
@@ -303,7 +297,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 
     $imgbase = '<img src="themes/'.$proj->prefs['theme_style'].'/%s.png" alt="%s" />';
     $class   = '';
-    $html    = $index_text[$colname];
+    $html    = $language[$colname];
     if ($colname == 'comments' || $colname == 'attachments') {
         $html = sprintf($imgbase, substr($colname, 0, -1), $html);
     }
@@ -329,7 +323,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 
         $link = "?order=$orderkey&amp;$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
         $html = sprintf('<a title="%s" href="%s">%s</a>',
-                $index_text['sortthiscolumn'], $link, $html);
+                $language['sortthiscolumn'], $link, $html);
     }
 
     return sprintf($format, $class, $html);
@@ -339,7 +333,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 // tpl function that draws a cell {{{
 
 function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
-    global $fs, $proj, $index_text, $priority_list,
+    global $fs, $proj, $language, $priority_list,
            $severity_list;
 
     $indexes = array (
@@ -391,7 +385,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
         case 'status':
             if ($task['is_closed']) {
-                $value = $index_text['closed'];
+                $value = $language['closed'];
             } else {
                 $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
             }
@@ -400,7 +394,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
         case 'progress':
             $value = tpl_img("themes/".$proj->prefs['theme_style']
                     ."/percent-".$task['percent_complete'].".png",
-                    $task['percent_complete'].'% '.$index_text['complete']);
+                    $task['percent_complete'].'% '.$language['complete']);
             break;
 
         default:
@@ -443,7 +437,7 @@ if(Get::has('hideupdatemsg')) {
 // }}}
 
 $page->assign('tasks', $db->fetchAllArray($sql));
-$page->setTitle("Flyspray :: {$proj->prefs['project_title']}: {$index_text['tasklist']} ");
+$page->setTitle("Flyspray :: {$proj->prefs['project_title']}: {$language['tasklist']} ");
 $page->pushTpl('index.tpl');
 
 ?>

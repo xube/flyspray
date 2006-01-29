@@ -1,10 +1,10 @@
 <div id="toolbox">
-  <h3>{$admin_text['admintoolbox']} :: {$admin_text['usergroups']}</h3>
+  <h3>{$language['admintoolboxlong']} :: {$language['usersandgroups']}</h3>
   <fieldset class="admin">
-    <legend>{$admin_text['usergroups']}</legend>
+    <legend>{$language['usersandgroups']}</legend>
     <p>
-      <a href="{CreateURL('newuser', $proj->id)}">{$admin_text['newuser']}</a> |
-      <a href="{CreateURL('newgroup', $proj->id)}">{$admin_text['newgroup']}</a>
+      <a href="{CreateURL('newuser', $proj->id)}">{$language['newuser']}</a> |
+      <a href="{CreateURL('newgroup', $proj->id)}">{$language['newgroup']}</a>
     </p>
     <?php
     $this->display('common.groups.tpl');

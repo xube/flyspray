@@ -26,35 +26,7 @@ class Flyspray
             $this->prefs[$row['pref_name']] = $row['pref_value'];
         }
     } // }}}
-    // Get language pack {{{
-    /** Get translation for specified language and page.  It loads default
-      language (en) and then merges with requested one. Thus it makes English
-      messages available even if translation is not present.
-     */
-    function get_language_pack($module)
-    {
-        global $proj, $basedir;
-        if ($module == 'functions')
-            $module .= '.inc';
 
-        $lang     = $proj->prefs['lang_code'];
-        $before   = get_defined_vars();
-
-        require("$basedir/lang/en/$module.php");
-        $after_en = get_defined_vars();
-        $new_var  = array_keys(array_diff($after_en, $before));
-
-        if ($lang && $lang != 'en' && isset($new_var[1])) {
-            $new_var_name   = $new_var[1];
-            $new_var['en']  = $$new_var_name;
-            @include("$basedir/lang/$lang/$module.php");
-            $new_var[$lang] = $$new_var_name;
-            $$new_var_name  = $new_var['en'];
-            foreach ($new_var[$lang] as $key => $val) {
-                ${$new_var_name}[$key] = $val;
-            }
-        }
-    } // }}}
     //  Redirects the browser to the page in $url {{{
     function Redirect($url)
     {
@@ -116,9 +88,8 @@ class Flyspray
     // Retrieve task details {{{
     function GetTaskDetails($task_id, $cacheenabled = false)
     {
-        global $db, $severity_list, $priority_list;
-        $this->get_language_pack('severity');
-        $this->get_language_pack('priority');
+        global $db, $language;
+
         static $cache = array();
 
         if(isset($cache[$task_id]) && $cacheenabled) {
@@ -204,14 +175,15 @@ class Flyspray
     // List languages {{{
     function listLangs()
     {
-        if ($handle = opendir(dirname(dirname(__FILE__)).'/lang/')) {
-            $lang_array = array();
-            while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != ".." && file_exists("lang/$file/main.php")) {
-                    $lang_array[] = $file;
+        global $basedir;
+        $lang_array = array();
+        if ($handle = dir($basedir . '/lang')) {
+            while (false !== ($file = $handle->read())) {
+                if ($file{0} != '.') {
+                    $lang_array[] = str_replace('.php', '', $file);
                 }
             }
-            closedir($handle);
+            $handle->close();
         }
 
         sort($lang_array);

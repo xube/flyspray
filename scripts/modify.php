@@ -5,9 +5,6 @@
   | ~~~~~~~~~~~~~~~~~~~~~~  |
   \*************************/
 
-$fs->get_language_pack('modify');
-$fs->get_language_pack('register');
-
 // Include the notifications class
 include_once "$basedir/includes/notify.inc.php";
 $notify = new Notifications;
@@ -30,7 +27,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
      */
 
     if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
-        $_SESSION['ERROR'] = $modify_text['summaryanddetails'];
+        $_SESSION['ERROR'] = $language['summaryanddetails'];
         $fs->redirect(CreateURL('newtask', $proj->id));
     }
 
@@ -144,7 +141,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     }
 
     // Status and redirect
-    $_SESSION['SUCCESS'] = $modify_text['newtaskadded'];
+    $_SESSION['SUCCESS'] = $language['newtaskadded'];
     $fs->redirect(CreateURL('details', $task_id));
 
 } // }}}
@@ -152,14 +149,13 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
 elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 
     if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
-        $_SESSION['ERROR'] = $modify_text['summaryanddetails'];
+        $_SESSION['ERROR'] = $language['summaryanddetails'];
         $fs->redirect(CreateURL('edittask', $old_details['task_id']));
     }
 
     if (Post::val('edit_start_time') < $old_details['last_edited_time']) {
         // if this task has already been modified before we clicked "save"...
         // we need to confirm that the we really wants to save our changes
-        $page->uses('modify_text');
         $page->pushTpl('details.edit.conflict.tpl');
     }
     else {
@@ -245,7 +241,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
         }
 
 
-        $_SESSION['SUCCESS'] = $modify_text['taskupdated'];
+        $_SESSION['SUCCESS'] = $language['taskupdated'];
         $fs->redirect(CreateURL('details', Post::val('task_id')));
     }
 } // }}}
@@ -253,7 +249,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
 
     if (!Post::val('resolution_reason')) {
-        $_SESSION['ERROR'] = $modify_text['noclosereason'];
+        $_SESSION['ERROR'] = $language['noclosereason'];
         $fs->redirect(CreateURL('details', Post::val('task_id')));
     }
 
@@ -284,7 +280,7 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
                 array($user->id, time(), Post::val('task_id'), 1));
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['taskclosed'];
+    $_SESSION['SUCCESS'] = $language['taskclosedmsg'];
     $fs->redirect(CreateURL('details', Post::val('task_id')));
 
 } // }}}
@@ -308,7 +304,7 @@ elseif (Get::val('action') == 'reopen' && $user->can_close_task($old_details)) {
 
     $fs->logEvent(Get::val('task_id'), 13);
 
-    $_SESSION['SUCCESS'] = $modify_text['taskreopened'];
+    $_SESSION['SUCCESS'] = $language['taskreopenedmsg'];
     $fs->redirect(CreateURL('details', Get::val('task_id')));
 } // }}}
 // adding a comment {{{
@@ -316,7 +312,7 @@ elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments']) {
 
     if (!($comment = Post::val('comment_text'))) {
         // If they pressed submit without actually typing anything
-        $_SESSION['ERROR'] = $modify_text['nocommententered'];
+        $_SESSION['ERROR'] = $language['nocommententered'];
         $fs->redirect(CreateURL('details', Post::val('task_id')));
     }
 
@@ -345,7 +341,7 @@ elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments']) {
         $notify->Create('7', Post::val('task_id'));
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['commentadded'];
+    $_SESSION['SUCCESS'] = $language['commentaddedmsg'];
     $fs->redirect(CreateURL('details', Post::val('task_id')));
 } // }}}
 // sending a new user a confirmation code {{{
@@ -356,7 +352,7 @@ elseif (Post::val('action') == 'sendcode') {
                 || (Post::val('jabber_id') && Post::val('notify_type') == '2')  )
     ) {
         // If the form wasn't filled out correctly, show an error
-        $_SESSION['ERROR'] = $modify_text['erroronform'];
+        $_SESSION['ERROR'] = $language['erroronform'];
         $fs->redirect(CreateURL('register'));
     }
 
@@ -372,7 +368,7 @@ elseif (Post::val('action') == 'sendcode') {
     $user_name = utf8_keepalphanum($user_name);
 
     if (!$user_name || !$real_name) {
-        $_SESSION['ERROR'] = $register_text['registererror'];
+        $_SESSION['ERROR'] = $language['registererror'];
         $fs->redirect(CreateURL('register'));
     }
 
@@ -384,7 +380,7 @@ elseif (Post::val('action') == 'sendcode') {
                        WHERE  u.user_name = ? OR r.user_name = ?',
                        array($user_name, $user_name));
     if ($db->fetchOne($sql)) {
-        $_SESSION['ERROR'] = $register_text['usernametaken'];
+        $_SESSION['ERROR'] = $language['usernametaken'];
         $fs->redirect(CreateURL('register'));
     }
 
@@ -400,7 +396,7 @@ elseif (Post::val('action') == 'sendcode') {
     }
     $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE " . implode(' OR ', $sqlextra),$params);
     if ($db->fetchOne($sql)) {
-        $_SESSION['ERROR'] = $register_text['emailtaken'];
+        $_SESSION['ERROR'] = $language['emailtaken'];
         $fs->redirect(CreateURL('register'));
     }
     
@@ -424,14 +420,14 @@ elseif (Post::val('action') == 'sendcode') {
                     Post::val('email_address'), Post::val('jabber_id'),
                     Post::val('notify_type'), $magic_url));
 
-    $subject = $modify_text['noticefrom'] . ' ' . $proj->prefs['project_title'];
+    $subject = $language['noticefrom'] . ' ' . $proj->prefs['project_title'];
 
-    $message = "{$register_text['noticefrom']} {$proj->prefs['project_title']}\n\n"
-             . "{$modify_text['addressused']}\n\n"
+    $message = "{$language['noticefrom']} {$proj->prefs['project_title']}\n\n"
+             . "{$language['addressused']}\n\n"
              . "{$conf['general']['baseurl']}index.php?do=register&magic=$magic_url\n\n"
                // In case that spaces in the username have been removed
-             . "{$register_text['username']}: ".$user_name."\n"
-             . "{$modify_text['confirmcodeis']} {$confirm_code}";
+             . "{$language['username']}: ".$user_name."\n"
+             . "{$language['confirmcodeis']} {$confirm_code}";
 
     // Check how they want to receive their code
     switch (Post::val('notify_type')) {
@@ -447,19 +443,19 @@ elseif (Post::val('action') == 'sendcode') {
         default: ;
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['codesent'];
+    $_SESSION['SUCCESS'] = $language['codesent'];
     $fs->redirect('./');
 } // }}}
 // new user self-registration with a confirmation code {{{
 elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
 
     if (!Post::val('user_pass') || !Post::val('confirmation_code')) {
-        $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
+        $_SESSION['ERROR'] = $language['formnotcomplete'];
         $fs->redirect(CreateURL('register'));
     }
 
     if (Post::val('user_pass') != Post::val('user_pass2')) {
-        $_SESSION['ERROR'] = $modify_text['nomatchpass'];
+        $_SESSION['ERROR'] = $language['nomatchpass'];
         $fs->redirect(CreateURL('register'));
     }
 
@@ -469,7 +465,7 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
     $reg_details = $db->FetchArray($sql);
 
     if ($reg_details['confirm_code'] != Post::val('confirmation_code')) {
-        $_SESSION['ERROR'] = $modify_text['confirmwrong'];
+        $_SESSION['ERROR'] = $language['confirmwrong'];
         $fs->redirect(CreateURL('register'));
     }
 
@@ -495,8 +491,7 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
     $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
                      VALUES  (?, ?)", array($uid, $fs->prefs['anon_group']));
 
-    $_SESSION['SUCCESS'] = $modify_text['accountcreated'];
-    $page->uses('modify_text');
+    $_SESSION['SUCCESS'] = $language['accountcreated'];
     $page->pushTpl('register.ok.tpl');
 
 } // }}}
@@ -507,12 +502,12 @@ elseif (Post::val('action') == "newuser" &&
 
     if ( !Post::val('user_name') || !Post::val('user_pass') || !Post::val('real_name'))
     {
-        $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
+        $_SESSION['ERROR'] = $language['formnotcomplete'];
         $fs->redirect(CreateURL('newuser'));
     }
 
     if (Post::val('user_pass') != Post::val('user_pass2')) {
-        $_SESSION['ERROR'] = $modify_text['nomatchpass'];
+        $_SESSION['ERROR'] = $language['nomatchpass'];
         $fs->redirect(CreateURL('newuser'));
     }
     
@@ -532,7 +527,7 @@ elseif (Post::val('action') == "newuser" &&
                        WHERE  u.user_name = ? OR r.user_name = ?',
                        array($user_name, $user_name));
     if ($db->fetchOne($sql)) {
-        $_SESSION['ERROR'] = $modify_text['usernametaken'];
+        $_SESSION['ERROR'] = $language['usernametaken'];
         $fs->redirect(CreateURL('newuser'));
     }
 
@@ -563,11 +558,10 @@ elseif (Post::val('action') == "newuser" &&
                      VALUES  ( ?, ?)", array($uid, $group_in));
 
     if ($user->perms['is_admin']) {
-        $_SESSION['SUCCESS'] = $modify_text['newusercreated'];
+        $_SESSION['SUCCESS'] = $language['newusercreated'];
         $fs->redirect(CreateURL('admin', 'groups'));
     } else {
-        $_SESSION['SUCCESS'] = $modify_text['accountcreated'];
-        $page->uses('modify_text');
+        $_SESSION['SUCCESS'] = $language['accountcreated'];
         $page->pushTpl('register.ok.tpl');
     }
 
@@ -579,7 +573,7 @@ elseif (Post::val('action') == "newgroup"
 ) {
 
     if (!Post::val('group_name') || !Post::val('group_desc')) {
-        $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
+        $_SESSION['ERROR'] = $language['formnotcomplete'];
     } else {
         // Check to see if the group name is available
         $sql = $db->Query("SELECT  COUNT(*)
@@ -588,7 +582,7 @@ elseif (Post::val('action') == "newgroup"
                 array(Post::val('group_name'), Post::val('project')));
 
         if ($db->fetchOne($sql)) {
-            $_SESSION['ERROR'] = $modify_text['groupnametaken'];
+            $_SESSION['ERROR'] = $language['groupnametaken'];
         } else {
             $cols = array('project', 'group_name', 'group_desc', 'manage_project',
                     'view_tasks', 'open_new_tasks', 'modify_own_tasks',
@@ -602,7 +596,7 @@ elseif (Post::val('action') == "newgroup"
                              VALUES  (".join(',', array_fill(0, count($cols), '?')).")",
                                  array_map('Post_to0', $cols));
 
-            $_SESSION['SUCCESS'] = $modify_text['newgroupadded'];
+            $_SESSION['SUCCESS'] = $language['newgroupadded'];
         }
     }
 
@@ -634,14 +628,14 @@ elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin']) {
                  WHERE  pref_name = 'visible_columns'",
             array(trim(Post::val('visible_columns'))));
 
-    $_SESSION['SUCCESS'] = $modify_text['optionssaved'];
+    $_SESSION['SUCCESS'] = $language['optionssaved'];
     $fs->redirect(CreateURL('admin','prefs'));
 } // }}}
 // adding a new project {{{
 elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
 
     if (!Post::val('project_title')) {
-        $_SESSION['ERROR'] = $modify_text['emptytitle'];
+        $_SESSION['ERROR'] = $language['emptytitle'];
         $fs->redirect(CreateURL('admin', 'newproject'));
     }
 
@@ -689,14 +683,14 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
                                show_in_list, version_tense )
                      VALUES  (?, ?, 1, 1, 2)", array($pid, '1.0'));
 
-    $_SESSION['SUCCESS'] = $modify_text['projectcreated'];
+    $_SESSION['SUCCESS'] = $language['projectcreated'];
     $fs->redirect(CreateURL('pm', 'prefs', $pid));
 } // }}}
 // updating project preferences {{{
 elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']) {
 
     if (!Post::val('project_title')) {
-        $_SESSION['ERROR'] = $modify_text['emptytitle'];
+        $_SESSION['ERROR'] = $language['emptytitle'];
         $fs->redirect(CreateURL('pm', 'prefs', $proj->id));
     }
 
@@ -715,7 +709,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
             array(trim(Post::val('visible_columns')), Post::val('project_id')));
 
 
-    $_SESSION['SUCCESS'] = $modify_text['projectupdated'];
+    $_SESSION['SUCCESS'] = $language['projectupdated'];
     $fs->redirect(CreateURL('pm', 'prefs', $proj->id));
 
 } // }}}
@@ -727,7 +721,7 @@ elseif (Post::val('action') == "addattachment" && $user->perms['create_attachmen
     $file_name = Post::val('task_id')."_$randval";
 
     if (!$_FILES['userfile']['name']) {
-        $_SESSION['ERROR'] = $modify_text['selectfileerror'];
+        $_SESSION['ERROR'] = $language['selectfileerror'];
         $fs->redirect(CreateURL('details', Post::val('task_id')));
     }
 
@@ -735,7 +729,7 @@ elseif (Post::val('action') == "addattachment" && $user->perms['create_attachmen
     @chmod("attachments/$file_name", 0644);
 
     if (!file_exists("attachments/$file_name")) {
-        $_SESSION['ERROR'] = $modify_text['fileerror'];
+        $_SESSION['ERROR'] = $language['fileerror'];
         $fs->redirect(CreateURL('details', Post::val('task_id')));
     }
 
@@ -756,7 +750,7 @@ elseif (Post::val('action') == "addattachment" && $user->perms['create_attachmen
     $aid = $db->fetchOne($sql);
     $fs->logEvent(Post::val('task_id'), 7, $aid);
 
-    $_SESSION['SUCCESS'] = $modify_text['fileuploaded'];
+    $_SESSION['SUCCESS'] = $language['fileuploaded'];
     $fs->redirect(CreateURL('details', Post::val('task_id')));
 
 } // }}}
@@ -765,13 +759,13 @@ elseif (Post::val('action') == "edituser"
           && ($user->perms['is_admin'] || $user->id == Post::val('user_id')))
 {
     if (!Post::val('real_name') || (!Post::val('email_address') && !Post::val('jabber_id'))) {
-        $_SESSION['ERROR'] = $modify_text['realandnotify'];
+        $_SESSION['ERROR'] = $language['realandnotify'];
         $fs->redirect(Post::val('prev_page'));
     }
 
     if (Post::val('changepass') || Post::val('confirmpass')) {
         if (Post::val('changepass') != Post::val('confirmpass')) {
-            $_SESSION['ERROR'] = $modify_text['passnomatch'];
+            $_SESSION['ERROR'] = $language['passnomatch'];
             $fs->redirect(Post::val('prev_page'));
         }
 
@@ -806,14 +800,14 @@ elseif (Post::val('action') == "edituser"
                 array(Post::val('group_in'), Post::val('record_id')));
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['userupdated'];
+    $_SESSION['SUCCESS'] = $language['userupdated'];
     $fs->redirect(Post::val('prev_page'));
 } // }}}
 // updating a group definition {{{
 elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
 
     if (!Post::val('group_name') && !Post::val('group_desc')) {
-        $_SESSION['ERROR'] = $modify_text['groupanddesc'];
+        $_SESSION['ERROR'] = $language['groupanddesc'];
         $fs->redirect(Post::val('prev_page'));
     }
 
@@ -837,7 +831,7 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
                    SET  ".join('=?,', $cols)."=?
                  WHERE  group_id = ?", $args);
 
-    $_SESSION['SUCCESS'] = $modify_text['groupupdated'];
+    $_SESSION['SUCCESS'] = $language['groupupdated'];
     $fs->redirect(Post::val('prev_page'));
 
 } // }}}
@@ -850,7 +844,7 @@ elseif (Post::val('action') == "update_list" && $user->perms['manage_project']) 
     $listdelete   = Post::val('delete');
     $listid       = Post::val('id');
 
-    $redirectmessage = $modify_text['listupdated'];
+    $redirectmessage = $language['listupdated'];
 
     for($i = 0; $i < count($listname); $i++) {
         if (is_numeric($listposition[$i])) {
@@ -859,7 +853,7 @@ elseif (Post::val('action') == "update_list" && $user->perms['manage_project']) 
                                    WHERE  $list_id = '{$listid[$i]}'",
                     array($listname[$i], $listposition[$i], intval($listshow[$i])));
         } else {
-            $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
+            $redirectmessage = $language['listupdated'] . " " . $language['fieldsmissing'];
         }
     }
 
@@ -875,7 +869,7 @@ elseif (Post::val('action') == "update_list" && $user->perms['manage_project']) 
 elseif (Post::val('action') == "add_to_list" && $user->perms['manage_project']) {
 
     if (!Post::val('list_name') || !Post::val('list_position')) {
-        $_SESSION['ERROR'] = $modify_text['fillallfields'];
+        $_SESSION['ERROR'] = $language['fillallfields'];
         $fs->redirect(Post::val('prev_page'));
     }
 
@@ -885,7 +879,7 @@ elseif (Post::val('action') == "add_to_list" && $user->perms['manage_project']) 
             array(Post::val('project_id', '0'), Post::val('list_name'),
                 Post::val('list_position'), '1'));
 
-    $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
+    $_SESSION['SUCCESS'] = $language['listitemadded'];
     $fs->redirect(Post::val('prev_page'));
 
 } // }}}
@@ -899,7 +893,7 @@ elseif (Post::val('action') == "update_version_list" && $user->perms['manage_pro
     $listdelete   = Post::val('delete');
     $listid       = Post::val('id');
 
-    $redirectmessage = $modify_text['listupdated'];
+    $redirectmessage = $language['listupdated'];
 
     for($i = 0; $i < count($listname); $i++) {
         if (is_numeric($listposition[$i])) {
@@ -911,7 +905,7 @@ elseif (Post::val('action') == "update_version_list" && $user->perms['manage_pro
                     array($listname[$i], $listposition[$i],
                         intval($listshow[$i]), intval($listtense[$i])));
         } else {
-            $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
+            $redirectmessage = $language['listupdated'] . " " . $language['fieldsmissing'];
         }
     }
 
@@ -927,7 +921,7 @@ elseif (Post::val('action') == "update_version_list" && $user->perms['manage_pro
 elseif (Post::val('action') == "add_to_version_list" && $user->perms['manage_project']) {
 
    if (!Post::val('list_name') || !Post::val('list_position')) {
-       $_SESSION['ERROR'] = $modify_text['fillallfields'];
+       $_SESSION['ERROR'] = $language['fillallfields'];
        $fs->redirect(Post::val('prev_page'));
    }
 
@@ -937,7 +931,7 @@ elseif (Post::val('action') == "add_to_version_list" && $user->perms['manage_pro
              array(Post::val('project_id'), Post::val('list_name'),
                  Post::val('list_position'), '1', Post::val('version_tense')));
 
-   $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
+   $_SESSION['SUCCESS'] = $language['listitemadded'];
    $fs->redirect(Post::val('prev_page'));
 
 } // }}}
@@ -951,7 +945,7 @@ elseif (Post::val('action') == "update_category" && $user->perms['manage_project
     $listowner    = Post::val('category_owner');
     $listdelete   = Post::val('delete');
 
-    $redirectmessage = $modify_text['listupdated'];
+    $redirectmessage = $language['listupdated'];
 
     for ($i = 0; $i < count($listname); $i++) {
         if (is_numeric($listposition[$i])) {
@@ -962,7 +956,7 @@ elseif (Post::val('action') == "update_category" && $user->perms['manage_project
                               array($listname[$i], $listposition[$i],
                                   intval($listshow[$i]), intval($listowner[$i]), $listid[$i]));
         } else {
-            $redirectmessage = $modify_text['listupdated'] . " " . $modify_text['fieldsmissing'];
+            $redirectmessage = $language['listupdated'] . " " . $language['fieldsmissing'];
         }
     }
 
@@ -978,7 +972,7 @@ elseif (Post::val('action') == "update_category" && $user->perms['manage_project
 elseif (Post::val('action') == "add_category" && $user->perms['manage_project']) {
 
     if (!Post::val('list_name') || !Post::val('list_position')) {
-        $_SESSION['ERROR'] = $modify_text['fillallfields'];
+        $_SESSION['ERROR'] = $language['fillallfields'];
         $fs->redirect(Post::val('prev_page'));
     }
 
@@ -990,7 +984,7 @@ elseif (Post::val('action') == "add_category" && $user->perms['manage_project'])
                 Post::val('list_position'), Post::val('category_owner', 0),
                 Post::val('parent_id', 0)));
 
-    $_SESSION['SUCCESS'] = $modify_text['listitemadded'];
+    $_SESSION['SUCCESS'] = $language['listitemadded'];
     $fs->redirect(Post::val('prev_page'));
 
 } // }}}
@@ -998,7 +992,7 @@ elseif (Post::val('action') == "add_category" && $user->perms['manage_project'])
 elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_details)) {
 
     if (!is_numeric(Post::val('related_task'))) {
-        $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
+        $_SESSION['ERROR'] = $language['relatedinvalid'];
         $fs->redirect(CreateURL('details', Post::val('this_task').'#related'));
     }
 
@@ -1007,7 +1001,7 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
                         WHERE  task_id = ?",
             array(Post::val('related_task')));
     if (!$db->CountRows($sql)) {
-        $_SESSION['ERROR'] = $modify_text['relatedinvalid'];
+        $_SESSION['ERROR'] = $language['relatedinvalid'];
         $fs->redirect(CreateURL('details', Post::val('this_task').'#related'));
     }
 
@@ -1020,7 +1014,7 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
                           array(Post::val('this_task'), Post::val('related_task')));
        
         if ($db->CountRows($sql)) {
-            $_SESSION['ERROR'] = $modify_text['relatederror'];
+            $_SESSION['ERROR'] = $language['relatederror'];
             $fs->redirect(CreateURL('details', Post::val('this_task').'#related'));
         }
             
@@ -1032,10 +1026,9 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
 
         $notify->Create('9', Post::val('this_task'), Post::val('related_task'));
 
-        $_SESSION['SUCCESS'] = $modify_text['relatedadded'];
+        $_SESSION['SUCCESS'] = $language['relatedaddedmsg'];
         $fs->redirect(CreateURL('details', Post::val('this_task').'#related'));
     } else {
-        $page->uses('modify_text');
         $page->pushTpl('details.edit.related.tpl');
     }
 
@@ -1048,7 +1041,7 @@ elseif (Post::val('action') == "remove_related" && $user->can_edit_task($old_det
     $fs->logEvent(Post::val('id'), 12, Post::val('related_task'));
     $fs->logEvent(Post::val('related_task'), 16, Post::val('id'));
 
-    $_SESSION['SUCCESS'] = $modify_text['relatedremoved'];
+    $_SESSION['SUCCESS'] = $language['relatedremoved'];
     $fs->redirect(CreateURL('details', Post::val('id')));
 
 } // }}}
@@ -1066,7 +1059,7 @@ elseif (Req::val('action') == "add_notification") {
         $be->AddToNotifyList(Req::val('user_id'), Req::val('ids'));
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['notifyadded'];
+    $_SESSION['SUCCESS'] = $language['notifyadded'];
     $fs->redirect(CreateURL('details', Req::val('ids')) . '#notify');
 } // }}}
 // removing a notification entry {{{
@@ -1084,7 +1077,7 @@ elseif (Req::val('action') == "remove_notification") {
         $be->RemoveFromNotifyList(Req::val('user_id'), Req::val('ids'));
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['notifyremoved'];
+    $_SESSION['SUCCESS'] = $language['notifyremoved'];
     $fs->redirect(CreateURL('details', Req::val('ids')) . '#notify');
 } // }}}
 // editing a comment {{{
@@ -1097,7 +1090,7 @@ elseif (Post::val('action') == "editcomment" && $user->perms['edit_comments']) {
     $fs->logEvent(Post::val('task_id'), 5, Post::val('comment_text'),
             Post::val('previous_text'), Post::val('comment_id'));
 
-    $_SESSION['SUCCESS'] = $modify_text['editcommentsaved'];
+    $_SESSION['SUCCESS'] = $language['editcommentsaved'];
     $fs->Redirect(CreateURL('details', Req::val('task_id')));
 } // }}}
 // deleting a comment {{{
@@ -1115,7 +1108,7 @@ elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments']
                                     array(Req::val('comment_id')));
 
     if($db->CountRows($check_attachments) && !$user->perms['delete_attachments']) {
-        $_SESSION['ERROR'] = $modify_text['commentattachperms'];
+        $_SESSION['ERROR'] = $language['commentattachperms'];
         $fs->redirect(CreateURL('details', Req::val('task_id')));
     }
 
@@ -1134,7 +1127,7 @@ elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments']
         $fs->logEvent($attachment['task_id'], 8, $attachment['orig_name']);
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['commentdeleted'];
+    $_SESSION['SUCCESS'] = $language['commentdeletedmsg'];
     $fs->redirect(CreateURL('details', Req::val('task_id')));
 
 } // }}}
@@ -1152,7 +1145,7 @@ elseif (Req::val('action') == 'deleteattachment' && $user->perms['delete_attachm
 
     $fs->logEvent($row['task_id'], 8, $row['orig_name']);
 
-    $_SESSION['SUCCESS'] = $modify_text['attachmentdeleted'];
+    $_SESSION['SUCCESS'] = $language['attachmentdeletedmsg'];
     $fs->redirect(CreateURL('details', $row['task_id']));
 } // }}}
 // adding a reminder {{{
@@ -1170,7 +1163,7 @@ elseif (Post::val('action') == "addreminder" && $user->perms['manage_project']) 
 
     $fs->logEvent(Post::val('task_id'), 17, Post::val('to_user_id'));
 
-    $_SESSION['SUCCESS'] = $modify_text['reminderadded'];
+    $_SESSION['SUCCESS'] = $language['reminderaddedmsg'];
     $fs->redirect(CreateURL('details', Req::val('task_id')).'#remind');
 } // }}}
 // removing a reminder {{{
@@ -1184,14 +1177,14 @@ elseif (Post::val('action') == "deletereminder" && $user->perms['manage_project'
 
     $fs->logEvent(Post::val('task_id'), 18, $reminder);
 
-    $_SESSION['SUCCESS'] = $modify_text['reminderdeleted'];
+    $_SESSION['SUCCESS'] = $language['reminderdeletedmsg'];
     $fs->redirect(CreateURL('details', Req::val('task_id')).'#remind');
 } // }}}
 // adding a bunch of users to a group {{{
 elseif (Post::val('action') == "addtogroup" && $user->perms['manage_project']) {
 
     if (!is_array(Post::val('user_list'))) {
-        $_SESSION['ERROR'] = $modify_text['nouserselected'];
+        $_SESSION['ERROR'] = $language['nouserselected'];
         $fs->redirect(Post::val('prev_page'));
     }
 
@@ -1201,7 +1194,7 @@ elseif (Post::val('action') == "addtogroup" && $user->perms['manage_project']) {
                 array($val, Post::val('add_to_group')));
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
+    $_SESSION['SUCCESS'] = $language['groupswitchupdated'];
     $fs->redirect(Post::val('prev_page'));
 
 } // }}}
@@ -1221,7 +1214,7 @@ elseif (Post::val('action') == 'movetogroup' && $user->perms['manage_project']) 
         }
     }
 
-    $_SESSION['SUCCESS'] = $modify_text['groupswitchupdated'];
+    $_SESSION['SUCCESS'] = $language['groupswitchupdated'];
     $fs->redirect(Post::val('prev_page'));
 } // }}}
 // taking ownership {{{
@@ -1239,7 +1232,7 @@ elseif (Req::val('action') == 'takeownership') {
        $redirect_url = CreateURL('details', Req::val('ids'));
    }
 
-   $_SESSION['SUCCESS'] = $modify_text['takenownership'];
+   $_SESSION['SUCCESS'] = $language['takenownershipmsg'];
    $fs->redirect($redirect_url);
 } // }}}
 // add to assignees list {{{
@@ -1257,7 +1250,7 @@ elseif (Req::val('action') == 'addtoassignees') {
        $redirect_url = CreateURL('details', Req::val('ids'));
    }
 
-   $_SESSION['SUCCESS'] = $modify_text['addedtoassignees'];
+   $_SESSION['SUCCESS'] = $language['addedtoassignees'];
    $fs->redirect($redirect_url);
 
 
@@ -1286,7 +1279,7 @@ elseif (Post::val('action') == 'requestclose') {
     $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
     $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
-    $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
+    $_SESSION['SUCCESS'] = $language['adminrequestmade'];
     $fs->redirect(CreateURL('details', Req::val('task_id')));
 } // }}}
 // requesting task re-opening {{{
@@ -1313,7 +1306,7 @@ elseif (Post::val('action') == 'requestreopen') {
     $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
 
 
-    $_SESSION['SUCCESS'] = $modify_text['adminrequestmade'];
+    $_SESSION['SUCCESS'] = $language['adminrequestmade'];
     $fs->redirect(CreateURL('details', Req::val('task_id')));
 } // }}}
 // denying a PM request {{{
@@ -1334,14 +1327,14 @@ elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project']) {
     $fs->logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
     $notify->Create('13', $req_details['task_id'], Req::val('deny_reason'));
 
-    $_SESSION['SUCCESS'] = $modify_text['pmreqdenied'];
+    $_SESSION['SUCCESS'] = $language['pmreqdeniedmsg'];
     $fs->redirect(Req::val('prev_page'));
 } // }}}
 // adding a dependency {{{
 elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details))
 {
     if (!Post::val('dep_task_id')) {
-        $_SESSION['ERROR'] = $modify_text['formnotcomplete'];
+        $_SESSION['ERROR'] = $language['formnotcomplete'];
         $fs->redirect(CreateURL('details', Req::val('task_id')));
     }
 
@@ -1363,7 +1356,7 @@ elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details))
             // Check that the user hasn't tried to add the same task as a dependency
             || Post::val('task_id') == Post::val('dep_task_id'))
     {
-        $_SESSION['ERROR'] = $modify_text['dependaddfailed'];
+        $_SESSION['ERROR'] = $language['dependaddfailed'];
         $fs->redirect(CreateURL('details', Req::val('task_id')));
     }
 
@@ -1378,7 +1371,7 @@ elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details))
                      VALUES  (?,?)",
             array(Post::val('task_id'), Post::val('dep_task_id')));
 
-    $_SESSION['SUCCESS'] = $modify_text['dependadded'];
+    $_SESSION['SUCCESS'] = $language['dependadded'];
 
     $fs->redirect(CreateURL('details', Req::val('task_id')));
 } // }}}
@@ -1399,7 +1392,7 @@ elseif (Get::val('action') == 'removedep' && $user->can_edit_task($old_details))
     $db->Query("DELETE FROM {dependencies} WHERE depend_id = ?",
             array(Get::val('depend_id')));
 
-    $_SESSION['SUCCESS'] = $modify_text['depremoved'];
+    $_SESSION['SUCCESS'] = $language['depremovedmsg'];
     $fs->redirect(CreateURL('details', $dep_info['task_id']));
 
 } // }}}
@@ -1412,7 +1405,7 @@ elseif (Post::val('action') == 'sendmagic') {
 
     // If the username doesn't exist, throw an error
     if (!$db->CountRows($sql)) {
-        $_SESSION['ERROR'] = $modify_text['usernotexist'];
+        $_SESSION['ERROR'] = $language['usernotexist'];
         $fs->redirect(CreateURL('lostpw', null));
     }
 
@@ -1425,17 +1418,17 @@ elseif (Post::val('action') == 'sendmagic') {
                  WHERE user_id = ?",
             array($magic_url, $user_details['user_id']));
 
-    $subject = $modify_text['changefspass'];
+    $subject = $language['changefspass'];
 
-    $message = "{$modify_text['messagefrom']} $baseurl. \n\n"
-             . "{$modify_text['magicurlmessage']} \n"
+    $message = "{$language['messagefrom']} $baseurl. \n\n"
+             . "{$language['magicurlmessage']} \n"
              . "{$baseurl}index.php?do=lostpw&amp;magic=$magic_url\n";
 
     $to   = $notify->SpecificAddresses(array($user_details['user_id']));
     $mail = $notify->SendEmail($to[0], $subject, $message);
     $jabb = $notify->StoreJabber($to[1], $subject, $message);
 
-    $_SESSION['SUCCESS'] = $modify_text['magicurlsent'];
+    $_SESSION['SUCCESS'] = $language['magicurlsent'];
     $fs->redirect('./');
 
 } // }}}
@@ -1443,12 +1436,12 @@ elseif (Post::val('action') == 'sendmagic') {
 elseif (Post::val('action') == 'chpass') {
     // Check that the user submitted both the fields, and they are the same
     if (!Post::val('pass1') || !Post::val('magic_url')) {
-        $_SESSION['ERROR'] = $modify_text['erroronform'];
+        $_SESSION['ERROR'] = $language['erroronform'];
         $fs->redirect('./');
     }
 
     if (Post::val('pass1') != Post::val('pass2')) {
-        $_SESSION['ERROR'] = $modify_text['passnomatch'];
+        $_SESSION['ERROR'] = $language['passnomatch'];
         $fs->redirect('./');
     }
 
@@ -1457,7 +1450,7 @@ elseif (Post::val('action') == 'chpass') {
                  WHERE  magic_url = ?",
             array($new_pass_hash, Post::val('magic_url')));
 
-    $_SESSION['SUCCESS'] = $modify_text['passchanged'];
+    $_SESSION['SUCCESS'] = $language['passchanged'];
     $fs->redirect('./');
 } // }}}
 // making a task private {{{
@@ -1467,7 +1460,7 @@ elseif (Get::val('action') == 'makeprivate' && $user->perms['manage_project']) {
 
     $fs->logEvent(Get::val('id'), 26);
 
-    $_SESSION['SUCCESS'] = $modify_text['taskmadeprivate'];
+    $_SESSION['SUCCESS'] = $language['taskmadeprivatemsg'];
     $fs->redirect(CreateURL('details', Req::val('id')));
 } // }}}
 // making a task public {{{
@@ -1478,7 +1471,7 @@ elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project']) {
 
     $fs->logEvent(Get::val('id'), 27);
 
-    $_SESSION['SUCCESS'] = $modify_text['taskmadepublic'];
+    $_SESSION['SUCCESS'] = $language['taskmadepublicmsg'];
     $fs->redirect(CreateURL('details', Req::val('id')));
 } // }}}
 // Adding a vote for a task {{{
@@ -1489,10 +1482,10 @@ elseif (Get::val('action') == 'addvote') {
                                 (user_id, task_id, date_time)
                          VALUES (?,?,?)", array($user->id, Get::val('id'), time()));
                          
-        $_SESSION['SUCCESS'] = $modify_text['voterecorded'];
+        $_SESSION['SUCCESS'] = $language['voterecorded'];
         $fs->redirect(CreateURL('details', Get::val('id')));
     } else {
-        $_SESSION['ERROR'] = $modify_text['votefailed'];
+        $_SESSION['ERROR'] = $language['votefailed'];
         $fs->redirect(CreateURL('details', Get::val('id')));
     }
     

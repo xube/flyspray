@@ -1,8 +1,8 @@
 <div id="toolbox">
-  <h3>{$pm_text['pmtoolbox']} :: {$proj->prefs['project_title']} : {$pm_text['verlisted']}</h3>
+  <h3>{$language['pmtoolbox']} :: {$proj->prefs['project_title']} : {$language['verlisted']}</h3>
 
   <fieldset class="admin">
-    <legend>{$admin_text['versions']}</legend>
+    <legend>{$language['versions']}</legend>
     <?php
     $this->assign('list_type', 'version');
     $this->assign('rows', $proj->listVersions(true));

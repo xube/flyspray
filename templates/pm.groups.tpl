@@ -1,8 +1,8 @@
 <div id="toolbox">
-  <h3>{$pm_text['pmtoolbox']} :: {$proj->prefs['project_title']} : {$pm_text['groupmanage']}</h3>
+  <h3>{$language['pmtoolbox']} :: {$proj->prefs['project_title']} : {$language['groupmanage']}</h3>
   <fieldset class="admin">
-    <legend>{$admin_text['usergroups']}</legend>
-    <p><a href="{CreateURL('newgroup', $proj->id)}">{$admin_text['newgroup']}</a></p>
+    <legend>{$language['usersandgroups']}</legend>
+    <p><a href="{CreateURL('newgroup', $proj->id)}">{$language['newgroup']}</a></p>
     <?php
     $this->display('common.groups.tpl');
     ?>

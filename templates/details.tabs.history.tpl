@@ -1,19 +1,19 @@
 <div id="history" class="tab">
   <?php if ($details): ?>
-  <b>{$details_text['selectedhistory']}</b>
+  <b>{$language['selectedhistory']}</b>
   &mdash;
   <a href="{CreateURL('details', Get::val('id'), null, array('history' => 'yep'))}#history">
-	 {$details_text['showallhistory']}</a>
+	 {$language['showallhistory']}</a>
   <?php endif; ?>
   <table class="history">
 	 <tr>
-		<th>{$details_text['eventdate']}</th>
-		<th>{$details_text['user']}</th>
-		<th>{$details_text['event']}</th>
+		<th>{$language['eventdate']}</th>
+		<th>{$language['user']}</th>
+		<th>{$language['event']}</th>
 	 </tr>
 
 	 <?php if (!count($histories)): ?>
-	 <tr><td colspan="3">{$details_text['nohistory']}</td></tr>
+	 <tr><td colspan="3">{$language['nohistory']}</td></tr>
 	 <?php else: ?>
 	 <?php foreach ($histories as $history): ?>
 	 <tr>
@@ -28,8 +28,8 @@
   <?php if ($details && isset($details_previous) && isset($details_new)): ?>
   <table class="history">
 	 <tr>
-		<th>{$details_text['previousvalue']}</th>
-		<th>{$details_text['newvalue']}</th>
+		<th>{$language['previousvalue']}</th>
+		<th>{$language['newvalue']}</th>
 	 </tr>
 	 <tr>
 		<td>{!$details_previous}</td>

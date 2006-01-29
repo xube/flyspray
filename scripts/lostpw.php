@@ -5,9 +5,7 @@
   | ~~~~~~~~~~~~~~~~~~~~~~~~                                |
   \*********************************************************/
 
-$fs->get_language_pack('admin');
-$page->uses('admin_text');
-$page->setTitle('Flyspray:: ' . $admin_text['lostpw']);
+$page->setTitle('Flyspray:: ' . $language['lostpw']);
 
 if (!Get::has('magic') && $user->isAnon()) {
     // Step One: user requests magic url
@@ -20,7 +18,7 @@ elseif (Get::has('magic') && $user->isAnon()) {
             array(Get::val('magic')));
 
     if (!$db->CountRows($check_magic)) {
-        $_SESSION['ERROR'] = $admin_text['badmagic'];
+        $_SESSION['ERROR'] = $language['badmagic'];
         $fs->redirect(CreateURL('error'));
     }
     $page->pushTpl('lostpw.step2.tpl');

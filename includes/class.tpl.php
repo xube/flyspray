@@ -134,9 +134,7 @@ class FSTpl extends Tpl
 
 function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','assignedto','percent_complete'))
 {
-    global $fs, $details_text, $user, $db, $proj;
-    $fs->get_language_pack('modify');
-    global $modify_text;
+    global $fs, $language, $user, $db, $proj;
 
     if (!is_array($task)) {
         $task = $fs->GetTaskDetails($task, true);
@@ -149,7 +147,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     if ($user->can_view_task($task)) {
         $summary = htmlspecialchars(utf8_substr($task['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
     } else {
-        $summary = $modify_text['taskmadeprivate'];
+        $summary = $language['taskmadeprivate'];
     }
     
     $title_text = array();
@@ -224,7 +222,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
 
 function tpl_userlink($uid)
 {
-    global $db, $fs, $details_text;
+    global $db, $fs;
 
     static $cache = array();
 
@@ -237,7 +235,7 @@ function tpl_userlink($uid)
                 .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
                 .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
         } else {
-            $cache[$uid] = $details_text['anonymous'];
+            $cache[$uid] = $language['anonymous'];
         }
     }
 
@@ -644,9 +642,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
 function pagenums($pagenum, $perpage, $totalcount, $extraurl)
 {
-    global $db, $functions_text, $fs;
-
-    $fs->get_language_pack('functions');
+    global $db, $language, $fs;
 
     $extraurl = '&amp;' . $extraurl;
 
@@ -655,7 +651,7 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
         $perpage = $totalcount > 0 ? $totalcount : 1;
     }
     $pages  = ceil($totalcount / $perpage);
-    $output = sprintf($functions_text['page'], $pagenum, $pages);
+    $output = sprintf($language['page'], $pagenum, $pages);
 
     if (!($totalcount / $perpage <= 1)) {
         $output .= '<span class="DoNotPrint"> &nbsp;&nbsp;--&nbsp;&nbsp; ';
@@ -664,10 +660,10 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
         $finish = min($pages, $pagenum + 3);
 
         if ($start > 1)
-            $output .= '<a href="?pagenum=1' . $extraurl . "\">&lt;&lt; {$functions_text['first']} </a>";
+            $output .= '<a href="?pagenum=1' . $extraurl . "\">&lt;&lt; {$language['first']} </a>";
 
         if ($pagenum > 1)
-            $output .= '<a id="previous" accesskey="p" href="?pagenum=' . ($pagenum - 1) . $extraurl . "\">&lt; {$functions_text['previous']}</a> - ";
+            $output .= '<a id="previous" accesskey="p" href="?pagenum=' . ($pagenum - 1) . $extraurl . "\">&lt; {$language['previous']}</a> - ";
 
         for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
             if ($pagelink != $start)
@@ -681,9 +677,9 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
         }
 
         if ($pagenum < $pages)
-            $output .= ' - <a id="next" accesskey="n" href="?pagenum=' . ($pagenum + 1). $extraurl . "\">{$functions_text['next']} &gt;</a>";
+            $output .= ' - <a id="next" accesskey="n" href="?pagenum=' . ($pagenum + 1). $extraurl . "\">{$language['next']} &gt;</a>";
         if ($finish < $pages)
-            $output .= '<a href="?pagenum=' . $pages . $extraurl . "\"> {$functions_text['last']} &gt;&gt;</a>";
+            $output .= '<a href="?pagenum=' . $pages . $extraurl . "\"> {$language['last']} &gt;&gt;</a>";
         $output .= '</span>';
     }
 

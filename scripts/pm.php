@@ -12,11 +12,6 @@ if (!$user->perms['manage_project']) {
     $fs->Redirect( CreateURL('error', null) );
 }
 
-$fs->get_language_pack('index');
-$fs->get_language_pack('admin');
-$fs->get_language_pack('pm');
-$page->uses('admin_text', 'pm_text', 'index_text');
-
 switch ($area = Get::val('area', 'prefs')) {
     case 'pendingreq':
         $sql = $db->Query("SELECT  *
@@ -39,7 +34,7 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'cat':
     case 'status':
 
-        $page->setTitle('Flyspray:: ' . $pm_text['pmtoolbox']);
+        $page->setTitle('Flyspray:: ' . $language['pmtoolbox']);
         $page->pushTpl('pm.menu.tpl');
         $page->pushTpl('pm.'.$area.'.tpl');
         break;
