@@ -660,7 +660,7 @@ class Notifications {
    
    } // }}}
    // {{{ Create an address list for specific users
-   function SpecificAddresses($users)
+   function SpecificAddresses($users, $ignoretype = false)
    {
 
       global $db, $fs;
@@ -670,18 +670,22 @@ class Notifications {
 
       foreach ($users AS $key => $val)
       {
-         // Get each user's notify prefs
-         $user_details = $fs->getUserDetails($val);
+        // Get each user's notify prefs
+        if (is_array($val)) {
+            $user_details = $val;
+        } else {
+            $user_details = $fs->getUserDetails($val);
+        }
 
          if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == '1' || $user_details['notify_type'] == '3') )
-             || $fs->prefs['user_notify'] == '2')
+             || $fs->prefs['user_notify'] == '2' || $ignoretype)
          {
                array_push($email_users, $user_details['email_address']);
 
          }
          
          if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == '2' || $user_details['notify_type'] == '3') )
-             || $fs->prefs['user_notify'] == '3')
+             || $fs->prefs['user_notify'] == '3' || $ignoretype)
          {
                array_push($jabber_users, $user_details['jabber_id']);
          }

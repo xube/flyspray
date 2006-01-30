@@ -1424,7 +1424,7 @@ elseif (Post::val('action') == 'sendmagic') {
              . "{$language['magicurlmessage']} \n"
              . "{$baseurl}index.php?do=lostpw&amp;magic=$magic_url\n";
 
-    $to   = $notify->SpecificAddresses(array($user_details['user_id']));
+    $to   = $notify->SpecificAddresses(array($user_details), true);
     $mail = $notify->SendEmail($to[0], $subject, $message);
     $jabb = $notify->StoreJabber($to[1], $subject, $message);
 

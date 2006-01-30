@@ -6,8 +6,6 @@
     <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <link rel="alternate" type="application/rss+xml" title="Flyspray RSS Feed"
-      href="{$baseurl.'scripts/rss.php?proj='.$proj->id}" />
     <link rel="icon" type="image/png" href="{$this->themeUrl()}favicon.ico" />
     <link media="screen" href="{$this->themeUrl()}theme.css" rel="stylesheet" type="text/css" />
     <link media="print"  href="{$this->themeUrl()}theme_print.css" rel="stylesheet" type="text/css" />
