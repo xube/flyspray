@@ -21,7 +21,7 @@ if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
 
 // Configuration information:
 // [FIXME: in the future, this will come from the initial configuration.]
-$path_to_dot = "/usr/local/bin/dot"; // Where's the dot executable?
+$path_to_dot = $conf['general']['dot_path']; // Where's the dot executable?
 $path_for_images = "attachments"; // What directory do we use for output?
 $fmt = "png"; 
 $id = Req::val('id');
