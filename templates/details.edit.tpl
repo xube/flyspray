@@ -105,7 +105,7 @@
 			 <td><label for="dueversion">{$language['dueinversion']}</label></td>
 			 <td>
 				<select id="dueversion" name="closedby_version">
-				 <option value="">{$language['undecided']}</option>
+				 <option value="0">{$language['undecided']}</option>
 				 {!tpl_options($proj->listVersions(false, 3), $task_details['closedby_version'])}
 				</select>
 			 </td>

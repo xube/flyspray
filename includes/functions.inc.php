@@ -35,7 +35,6 @@ class Flyspray
             session_write_close();
         }
         header('Location: ' . $url);
-        header('Refresh: 0; URL=' . $url);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -88,7 +87,7 @@ class Flyspray
     // Retrieve task details {{{
     function GetTaskDetails($task_id, $cacheenabled = false)
     {
-        global $db, $language;
+        global $db, $language, $severity_list, $priority_list;
 
         static $cache = array();
 

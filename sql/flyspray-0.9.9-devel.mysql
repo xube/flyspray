@@ -271,3 +271,6 @@ PRIMARY KEY ( `vote_id` )
 ) TYPE = MYISAM COMMENT = 'Tallies votes for tasks';
 
 UPDATE `flyspray_groups` SET `add_votes` = '1' WHERE `group_id` = 1 LIMIT 1;
+
+-- Florian Schmitz, 29 January 2006
+UPDATE `flyspray_tasks` SET `due_date` = 0 WHERE `due_date` = '';

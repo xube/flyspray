@@ -99,7 +99,7 @@
           <td><label for="dueversion">{$language['dueinversion']}</label></td>
           <td>
             <select id="dueversion" name="closedby_version" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
-              <option value="">{$language['undecided']}</option>
+              <option value="0">{$language['undecided']}</option>
               {!tpl_options($proj->listVersions(false, 3))}
             </select>
           </td>

@@ -327,7 +327,7 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         $html .= join_attrs($attr).'>'.$label.'</option>';
     }
     if (!$html) {
-        $html .= '<option>---</option>';
+        $html .= '<option value="0">---</option>';
     }
 
     return $html;

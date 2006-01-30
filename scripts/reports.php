@@ -143,7 +143,7 @@ $sql = $db->Query("SELECT COUNT(vote_id) AS num_votes,
                      FROM {votes} v, {tasks} t
                     WHERE v.task_id = t.task_id
                       AND t.is_closed <> '1'
-                 GROUP BY v.task_id
+                 GROUP BY v.task_id, t.task_id
                  ORDER BY num_votes DESC");
 
 $tasks_voted_for = array();

@@ -18,7 +18,7 @@
           <td><label for="defaultcatowner">{$language['defaultcatowner']}</label></td>
           <td>
             <select id="defaultcatowner" name="default_cat_owner">
-              <option value="">{$language['noone']}</option>
+              <option value="0">{$language['noone']}</option>
               {!tpl_options($proj->UserList(), $proj->prefs['default_cat_owner'])}
             </select>
           </td>

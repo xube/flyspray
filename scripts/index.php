@@ -14,7 +14,6 @@ if ($proj->id === '0' && !$user->perms['global_view']) {
     $fs->Redirect( CreateURL('error', null) );
 }
 
-
 $page->uses('severity_list', 'priority_list', 'status_list');
 
 $perpage = '20';
