@@ -30,27 +30,17 @@ class Flyspray
     //  Redirects the browser to the page in $url {{{
     function Redirect($url)
     {
+        global $language;
         @ob_clean();
         if (count($_SESSION)) {
             session_write_close();
         }
         header('Location: ' . $url);
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <meta http-equiv="refresh" content="0; url='<?php echo htmlspecialchars($url, ENT_QUOTES) ?>'">
-    <title>Redirect</title>
-  </head>
-  <body>
-    <div align="center">
-    If your browser does not support meta redirection please click
-    <a href="<?php echo htmlspecialchars($url) ?>">HERE</a> to be redirected
-    </div>
-  </body>
-</html>
-<?php
+        $page = new FSTpl;
+        $page->setTitle($language['Redirect']);
+        $page->assign('url', $url);
+        $page->display('common.redirect.tpl');
+        
         exit;
     } // }}}
     // Duplicate submission check {{{

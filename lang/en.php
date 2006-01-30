@@ -649,6 +649,8 @@ Regards,',
 'severity3'               => 'Medium',
 'severity2'               => 'Low',
 'severity1'               => 'Very Low',
+'Redirect'                => 'Redirect',
+'redirectmsg'             => 'If your browser does not support meta redirection please click %sHERE%s to be redirected',
 );
 
 ?>
