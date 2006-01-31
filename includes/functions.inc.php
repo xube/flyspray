@@ -137,8 +137,7 @@ class Flyspray
         
         $query = 'SELECT  project_id, project_title FROM {projects}';
         
-        if ($activeOnly)  {
-            
+        if ($activeOnly)  {            
             $query .= " WHERE  project_is_active = 1";
         }
 

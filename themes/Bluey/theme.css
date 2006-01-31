@@ -911,7 +911,7 @@ a.grouptitle {
 div.tab {
 	clear:left;
 	margin:0 1ex 10px 0;
-	padding:1ex 1ex 1cm;
+	padding:1ex 1ex 0;
 }
 
 /* flow */

@@ -308,7 +308,7 @@ elseif (Get::val('action') == 'reopen' && $user->can_close_task($old_details)) {
     $fs->redirect(CreateURL('details', Get::val('task_id')));
 } // }}}
 // adding a comment {{{
-elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments']) {
+elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments'] && (!$old_details['is_closed'] || $proj->prefs['comment_closed'])) {
 
     if (!($comment = Post::val('comment_text'))) {
         // If they pressed submit without actually typing anything
@@ -697,7 +697,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
     $cols = array( 'project_title', 'theme_style', 'default_cat_owner', 'lang_code',
             'intro_message', 'project_is_active', 'others_view', 'anon_open',
             'notify_email', 'notify_email_when', 'notify_jabber', 'notify_subject',
-            'notify_jabber_when', 'feed_description', 'feed_img_url');
+            'notify_jabber_when', 'feed_description', 'feed_img_url', 'comment_closed');
     $args = array_map('Post_to0', $cols);
     $args[] = Post::val('project_id', 0);
 

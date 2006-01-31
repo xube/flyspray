@@ -13,9 +13,11 @@
   <li id="notifytab">
   <a href="#notify">{$language['notifications']} ({!count($notifications)})</a>
   </li>
+  <?php if (!$task_details['is_closed']): ?>
   <li id="remindtab">
   <a href="#remind">{$language['reminders']} ({!count($reminders)})</a>
   </li>
+  <?php endif; ?>
   <?php endif; ?>
 
   <?php if ($user->perms['view_history']): ?>

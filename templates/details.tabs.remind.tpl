@@ -1,6 +1,6 @@
-<div id="remind" class="tab">
+<?php if (!$task_details['is_closed']): ?>
+  <div id="remind" class="tab">
   <?php foreach ($reminders as $row): ?>
-  <?php if (!$task_details['is_closed']): ?>
   <form action="{$baseurl}" method="post">
     <div>
       <input type="hidden" name="do" value="modify" />
@@ -10,7 +10,6 @@
       <button type="submit">{$language['remove']}</button>
     </div>
   </form>
-  <?php endif; ?>
   <em>{$language['remindthisuser']}:</em>
   <a href="?do=admin&amp;area=users&amp;id={$row['to_user_id']}">
     {$row['real_name']} ({$row['user_name']})</a>
@@ -32,7 +31,6 @@
   <br /><br />
   <?php endforeach; ?>
 
-  <?php if (!$task_details['is_closed']): ?>
   <form action="{$baseurl}" method="post" id="formaddreminder">
     <div class="admin">
       <input type="hidden" name="do" value="modify" />
@@ -73,5 +71,5 @@
       <button type="submit">{$language['addreminder']}</button>
     </div>
   </form>
-  <?php endif; ?>
 </div>
+<?php endif; ?>

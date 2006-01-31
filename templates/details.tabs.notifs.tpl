@@ -9,9 +9,9 @@
 
   <?php if ($user->perms['manage_project']): ?>
   <form action="{$baseurl}" method="get">
-    <p class="admin">
-      {$language['addusertolist']}
-      <select class="adminlist" name="user_id">
+    <p>
+      <label for="notifuser_id">{$language['addusertolist']}</label>
+      <select class="adminlist" id="notifuser_id" name="user_id">
         {!tpl_options($proj->UserList())}
       </select>
       <input type="hidden" name="do" value="modify" />

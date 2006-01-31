@@ -296,24 +296,23 @@ class Notifications {
    // {{{ Create a message for any occasion
    function GenerateMsg($type, $task_id, $arg1='0')
    {
-      global $db, $fs, $user;
+      global $db, $fs, $user, $language;
 
       // Get the task details
       $task_details = $fs->getTaskDetails($task_id);
       $proj = new Project($task_details['attached_to_project']);
 
       // Set the due date correctly
-      if ($task_details['due_date'] == '0')
-      {
+      if ($task_details['due_date'] == '0') {
          $due_date = $language['undecided'];
-      } else
-      {
+      } else {
          $due_date = formatDate($task_details['due_date']);
       }
 
       // Set the due version correctly
-      if ($task_details['closedby_version'] == '0')
+      if ($task_details['closedby_version'] == '0') {
          $task_details['closedby_version'] = $language['undecided'];
+      }
 
       // Generate the nofication message
       if($proj->prefs['notify_subject']) {

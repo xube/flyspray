@@ -59,12 +59,12 @@
   <?php endif; ?>
   <?php endforeach; ?>
 
-  <?php if ($user->perms['add_comments'] && !$task_details['is_closed']): ?>
+  <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
   <form enctype="multipart/form-data" action="{$baseurl}" method="post">
     <div class="admin">
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
-      <input type="hidden" name="task_id" value="{Get::val('id')}" />
+      <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
       <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>

@@ -274,3 +274,6 @@ UPDATE `flyspray_groups` SET `add_votes` = '1' WHERE `group_id` = 1 LIMIT 1;
 
 -- Florian Schmitz, 29 January 2006
 UPDATE `flyspray_tasks` SET `due_date` = 0 WHERE `due_date` = '';
+
+-- Florian Schmitz, 31 January 2006
+ALTER TABLE `flyspray_projects` ADD `comment_closed` MEDIUMINT( 1 ) DEFAULT '0' NOT NULL ;

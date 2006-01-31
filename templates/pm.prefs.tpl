@@ -49,6 +49,10 @@
           <td><label for="anonopen">{$language['allowanonopentask']}</label></td>
           <td>{!tpl_checkbox('anon_open', $proj->prefs['anon_open'], 'anonopen')}</td>
         </tr>
+        <tr>
+          <td><label for="comment_closed">{$language['allowclosedcomments']}</label></td>
+          <td>{!tpl_checkbox('comment_closed', $proj->prefs['comment_closed'], 'comment_closed')}</td>
+        </tr>
       </table>
     </fieldset>
 

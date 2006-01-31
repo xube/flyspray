@@ -651,6 +651,8 @@ Regards,',
 'severity1'               => 'Very Low',
 'Redirect'                => 'Redirect',
 'redirectmsg'             => 'If your browser does not support meta redirection please click %sHERE%s to be redirected',
+'allowclosedcomments'     => 'Allow comments on closed tasks',
+'norelated'               => 'No related tasks.',
 );
 
 ?>
