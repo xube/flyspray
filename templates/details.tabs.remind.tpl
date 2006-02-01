@@ -31,8 +31,9 @@
   <br /><br />
   <?php endforeach; ?>
 
+  <fieldset><legend>{$language['addreminder']}</legend>
   <form action="{$baseurl}" method="post" id="formaddreminder">
-    <div class="admin">
+    <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addreminder" />
       <input type="hidden" name="task_id" value="{Get::val('id')}" />
@@ -71,5 +72,6 @@
       <button type="submit">{$language['addreminder']}</button>
     </div>
   </form>
+  </fieldset>
 </div>
 <?php endif; ?>

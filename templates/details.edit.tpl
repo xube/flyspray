@@ -131,7 +131,29 @@
 		<div id="taskdetailsfull">
 		  <label for="details">{$language['details']}</label>
 		  <textarea id="details" name="detailed_desc"
-			 cols="70" rows="10">{$task_details['detailed_desc']}</textarea>
+			 cols="70" rows="10">{$task_details['detailed_desc']}</textarea><br />
+          <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
+              <button type="button" onclick="showstuff('edit_add_comment');this.style.display='none';">{$language['addcomment']}</button>
+              <div id="edit_add_comment" class="hide">
+              <label for="comment_text">{$language['comment']}</label>
+              <?php if ($user->perms['create_attachments']): ?>
+              <div id="uploadfilebox">
+                <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
+                  <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
+                    <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{$language['remove']}</a><br />
+                </span>    
+              </div>
+              <button id="attachafile" tabindex="7" type="button" onclick="addUploadFields()">
+                {$language['uploadafile']}
+              </button>
+              <button id="attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
+                 {$language['attachanotherfile']}
+              </button>
+                
+              <?php endif; ?>
+              <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
+              </div>
+          <?php endif; ?>
 		  <table class="taskdetails">
 			 <tr><td>&nbsp;</td></tr>
 			 <tr>

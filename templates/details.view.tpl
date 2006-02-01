@@ -205,9 +205,9 @@
   <div id="taskclosed">
       {$language['closedby']}&nbsp;&nbsp;{!tpl_userlink($task_details['closed_by'])}<br />
       {formatDate($task_details['date_closed'], true)}<br />
-      {$language['reasonforclosing']}&nbsp;&nbsp;{$task_details['resolution_name']}<br />
+      <strong>{$language['reasonforclosing']}</strong> &nbsp;{$task_details['resolution_name']}<br />
       <?php if ($task_details['closure_comment']): ?>
-      {$language['closurecomment']}&nbsp;&nbsp;{!tpl_FormatText($task_details['closure_comment'], true)}
+      <strong>{$language['closurecomment']}</strong> &nbsp;{!tpl_FormatText($task_details['closure_comment'], true)}
       <?php endif; ?>
   </div>
   <?php endif; ?>

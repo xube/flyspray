@@ -24,7 +24,15 @@
       {$language['delete']}</a>
     <?php endif ?>
   </span>
-  <div class="comment">{!tpl_formatText($row['comment_text'])}</div>
+  <div class="comment">
+  <?php if(isset($comment_changes[$row['date_added']])): ?>
+  <ul class="comment_changes">
+  <?php foreach($comment_changes[$row['date_added']] as $change): ?>
+    <li>{!event_description($change)}</li>
+  <?php endforeach; ?>
+  </ul>
+  <?php endif; ?>
+  {!tpl_formatText($row['comment_text'])}</div>
 
   <?php // XXX the same lives in details.view.tpl, keep in sync
   if ($user->perms['view_attachments'] || $proj->prefs['others_view']):
@@ -60,8 +68,9 @@
   <?php endforeach; ?>
 
   <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
+  <fieldset><legend>{$language['addcomment']}</legend>
   <form enctype="multipart/form-data" action="{$baseurl}" method="post">
-    <div class="admin">
+    <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
@@ -89,5 +98,6 @@
       <?php endif; ?>
     </div>
   </form>
+  </fieldset>
   <?php endif; ?>
 </div>

@@ -163,6 +163,8 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
             $due_date = strtotime(Post::val('due_date') . '+23 hours 59 minutes 59 seconds');
         }
 
+        $time = time();
+
         $db->Query('UPDATE  {tasks}
                        SET  attached_to_project = ?, task_type = ?, item_summary = ?,
                             detailed_desc = ?, item_status = ?,
@@ -175,7 +177,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                     Post::val('item_status'),
                     Post::val('product_category'), Post::val('closedby_version', 0),
                     Post::val('operating_system'), Post::val('task_severity'),
-                    Post::val('task_priority'), intval($user->id), time(), $due_date,
+                    Post::val('task_priority'), intval($user->id), $time, $due_date,
                     Post::val('percent_complete'), Post::val('reportedver'),
                     Post::val('task_id')));
         
@@ -217,7 +219,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
             
             if ($val != $old_details[$key]) {
                 // Log the changed fields in the task history
-                $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key);
+                $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key, $time);
             }
         }
         
@@ -239,7 +241,8 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                 $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
             }
         }
-
+        
+        $be->add_comment($old_details, Post::val('comment_text'), $time);
 
         $_SESSION['SUCCESS'] = $language['taskupdated'];
         $fs->redirect(CreateURL('details', Post::val('task_id')));
@@ -308,37 +311,17 @@ elseif (Get::val('action') == 'reopen' && $user->can_close_task($old_details)) {
     $fs->redirect(CreateURL('details', Get::val('task_id')));
 } // }}}
 // adding a comment {{{
-elseif (Post::val('action') == 'addcomment' && $user->perms['add_comments'] && (!$old_details['is_closed'] || $proj->prefs['comment_closed'])) {
+elseif (Post::val('action') == 'addcomment') {
 
-    if (!($comment = Post::val('comment_text'))) {
+    if (!$be->add_comment($old_details, Post::val('comment_text'))) {
         // If they pressed submit without actually typing anything
         $_SESSION['ERROR'] = $language['nocommententered'];
         $fs->redirect(CreateURL('details', Post::val('task_id')));
     }
-
-    $db->Query("INSERT INTO  {comments}
-                             (task_id, date_added, user_id, comment_text)
-                     VALUES  ( ?, ?, ?, ? )",
-            array(Post::val('task_id'), time(), intval($user->id), $comment));
-
-    $result = $db->Query("SELECT  comment_id
-                            FROM  {comments}
-                           WHERE  task_id = ?
-                        ORDER BY  comment_id DESC",
-            array(Post::val('task_id')), 1);
-    $cid = $db->FetchOne($result);
-
-    $fs->logEvent(Post::val('task_id'), 4, $cid);
-
+        
     if (Post::val('notifyme') == '1') {
         // If the user wanted to watch this task for changes
         $be->AddToNotifyList($user->id, Post::val('task_id'));
-    }
-
-    if ($be->UploadFiles($user, $old_details['task_id'], $cid)) {
-        $notify->Create('7', Post::val('task_id'), 'files');
-    } else {
-        $notify->Create('7', Post::val('task_id'));
     }
 
     $_SESSION['SUCCESS'] = $language['commentaddedmsg'];

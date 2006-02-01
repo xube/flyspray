@@ -109,7 +109,7 @@ select {
 }
 
 textarea {
-	width:95%;
+	width:99%;
 }
 
 /* labels are used nearly in every form */
@@ -190,6 +190,10 @@ div#loginbox span#links a {
 	font-weight:400;
 }
 
+div#edit_add_comment {
+	margin-top:1em;
+}
+
 /* The div containing the main menu */
 div#menu {
 	border:1px solid #ccc;
@@ -233,6 +237,16 @@ ul#menu-list li {
 
 .hide {
 	display:none;
+}
+
+ul.comment_changes {
+    margin:0 2em;
+	padding:0;
+    color:gray;
+}
+
+ul.comment_changes li {
+	margin:0;
 }
 
 div#mysearches {

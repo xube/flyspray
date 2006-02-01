@@ -97,8 +97,7 @@ class Backend
     */
     function AddToAssignees(&$user, $tasks)
     {
-        global $db, $fs;
-        global $notify;
+        global $db, $fs, $notify;
 
         settype($tasks, 'array');
 
@@ -124,6 +123,40 @@ class Backend
                 }
             }
         }
+    }
+    
+    function add_comment($task, $comment_text, $time = null) {
+        global $db, $user, $fs, $notify, $proj;
+        
+        if(!($user->perms['add_comments'] && (!$task['is_closed'] || $proj->prefs['comment_closed']))) {
+            return false;
+        }
+        
+        if (!$comment_text) {
+            return false;
+        }
+
+        $db->Query('INSERT INTO  {comments}
+                                 (task_id, date_added, user_id, comment_text)
+                         VALUES  ( ?, ?, ?, ? )',
+                    array($task['task_id'], ( (is_null($time)) ? time() : $time ), $user->id, $comment_text));
+
+        $result = $db->Query('SELECT  comment_id
+                                FROM  {comments}
+                               WHERE  task_id = ?
+                            ORDER BY  comment_id DESC',
+                            array($task['task_id']), 1);
+        $cid = $db->FetchOne($result);
+
+        $fs->logEvent($task['task_id'], 4, $cid);
+
+        if ($this->UploadFiles($user, $task['task_id'], $cid)) {
+            $notify->Create('7', $task['task_id'], 'files');
+        } else {
+            $notify->Create('7', $task['task_id']);
+        }
+
+        return true;
     }
 
     /*

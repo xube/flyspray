@@ -92,6 +92,13 @@ else {
                        array($task_id));
     $page->assign('comments', $db->fetchAllArray($sql));
 
+    $sql = get_events($task_id, ' AND (event_type = 0 OR event_type = 14)');
+    $comment_changes = array();
+    while ($row = $db->FetchRow($sql)) {
+        $comment_changes[$row['event_date']][] = $row;
+    }
+    $page->assign('comment_changes', $comment_changes);
+
     $sql = $db->Query("SELECT  *
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON r.related_task = t.task_id
@@ -143,54 +150,7 @@ else {
 
         $page->assign('details', $details);
 
-        $sql = $db->Query("SELECT h.*,
-                                  tt1.tasktype_name AS task_type1,
-                                  tt2.tasktype_name AS task_type2,
-                                  los1.os_name AS operating_system1,
-                                  los2.os_name AS operating_system2,
-                                  lc1.category_name AS product_category1,
-                                  lc2.category_name AS product_category2,
-                                  p1.project_title AS attached_to_project1,
-                                  p2.project_title AS attached_to_project2,
-                                  lv1.version_name AS product_version1,
-                                  lv2.version_name AS product_version2,
-                                  ls1.status_name AS item_status1,
-                                  ls2.status_name AS item_status2,
-                                  lr.resolution_name,
-                                  c.date_added AS c_date_added,
-                                  c.user_id AS c_user_id,
-                                  att.orig_name, att.file_desc
-
-                            FROM  {history} h
-
-                        LEFT JOIN {list_tasktype} tt1 ON tt1.tasktype_id = h.old_value AND h.field_changed='task_type'
-                        LEFT JOIN {list_tasktype} tt2 ON tt2.tasktype_id = h.new_value AND h.field_changed='task_type'
-
-                        LEFT JOIN {list_os} los1 ON los1.os_id = h.old_value AND h.field_changed='operating_system'
-                        LEFT JOIN {list_os} los2 ON los2.os_id = h.new_value AND h.field_changed='operating_system'
-
-                        LEFT JOIN {list_category} lc1 ON lc1.category_id = h.old_value AND h.field_changed='product_category'
-                        LEFT JOIN {list_category} lc2 ON lc2.category_id = h.new_value AND h.field_changed='product_category'
-                        
-                        LEFT JOIN {list_status} ls1 ON ls1.status_id = h.old_value AND h.field_changed='item_status'
-                        LEFT JOIN {list_status} ls2 ON ls2.status_id = h.new_value AND h.field_changed='item_status'
-                        
-                        LEFT JOIN {list_resolution} lr ON lr.resolution_id = h.new_value AND h.event_type = 2
-
-                        LEFT JOIN {projects} p1 ON p1.project_id = h.old_value AND h.field_changed='attached_to_project'
-                        LEFT JOIN {projects} p2 ON p2.project_id = h.new_value AND h.field_changed='attached_to_project'
-                        
-                        LEFT JOIN {comments} c ON c.comment_id = h.field_changed AND h.event_type = 5
-                        
-                        LEFT JOIN {attachments} att ON att.attachment_id = h.new_value AND h.event_type = 7
-
-                        LEFT JOIN {list_version} lv1 ON lv1.version_id = h.old_value
-                                  AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
-                        LEFT JOIN {list_version} lv2 ON lv2.version_id = h.new_value
-                                  AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
-
-                            WHERE h.task_id = ? $details
-                         ORDER BY event_date ASC, event_type ASC", array($task_id));
+        $sql = get_events($task_id, $details);
         $page->assign('histories', $db->fetchAllArray($sql));
 
         $page->pushTpl('details.tabs.history.tpl');

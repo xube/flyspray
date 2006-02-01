@@ -137,7 +137,8 @@ class Flyspray
         
         $query = 'SELECT  project_id, project_title FROM {projects}';
         
-        if ($activeOnly)  {            
+        if ($activeOnly)  {
+            
             $query .= " WHERE  project_is_active = 1";
         }
 
@@ -190,7 +191,7 @@ class Flyspray
         return $proj->UserList($excluded, true);
     } // }}}
     // Log events to the history table {{{
-    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '')
+    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '', $time = null)
     {
         global $db, $user;
 
@@ -229,7 +230,7 @@ class Flyspray
 
         $db->Query("INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                                 VALUES(?, ?, ?, ?, ?, ?, ?)",
-                array($task, intval($user->id), date('U'), $type, $field, $oldvalue, $newvalue));
+                array($task, intval($user->id), ( (is_null($time)) ? time() : $time ), $type, $field, $oldvalue, $newvalue));
     } // }}}
     // Log a request for an admin/project manager to do something {{{
     function AdminRequest($type, $project, $task, $submitter, $reason)
