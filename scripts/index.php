@@ -6,6 +6,10 @@
    allowed to view.
 */
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 if ($proj->id !== '0' && !$user->can_view_project($proj)) {
     $fs->Redirect( CreateURL('error', null) );
 }

@@ -8,6 +8,10 @@
   | members, group permissions, and dropdown list items.   |
   \********************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 if (!$user->perms['manage_project']) {
     $fs->Redirect( CreateURL('error', null) );
 }

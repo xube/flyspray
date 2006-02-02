@@ -6,6 +6,10 @@
   | Restricted to admins and project managers |
   \*******************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 if (!$user->can_create_group()) {
     $fs->redirect(CreateURL('error'));
 }

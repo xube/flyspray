@@ -5,6 +5,10 @@
   | ~~~~~~~~~~~~~~~~~~~                                     |
   \*********************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 if (!$user->can_register()) {
     $fs->Redirect( CreateURL('error', null) );
 }

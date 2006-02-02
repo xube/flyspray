@@ -1,4 +1,9 @@
 <?php
+
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 require_once($basedir . '/includes/dokuwiki/inc/utf8.php');
 
 // a-z A-Z . _ -, extended latin chars, Cyrillic and Greek

@@ -7,6 +7,10 @@
   | to edit comments attached to tasks |
   \************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 $sql = $db->Query("SELECT  c.*, u.real_name
                      FROM  {comments} c
                INNER JOIN  {users}    u ON c.user_id = u.user_id

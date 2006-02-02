@@ -6,6 +6,10 @@
   | Restricted to admins (or *very* permissive projects) |
   \******************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 if (!$user->can_create_user()) {
     $fs->redirect( CreateURL('error') );
 }

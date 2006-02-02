@@ -5,6 +5,7 @@
    in.  Mostly what it does is check the user permissions
    to see what they have access to.
 */
+define('IN_FS', true);
 
 require_once(dirname(__FILE__).'/header.php');
 

@@ -6,6 +6,10 @@
    ------------------------------------------------------------
 */
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 class Backend
 {
     /* This function is used to ADD a user to the

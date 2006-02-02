@@ -5,6 +5,10 @@
   | ~~~~~~~~~~~~~~~~~~~~~~  |
   \*************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 // Include the notifications class
 include_once "$basedir/includes/notify.inc.php";
 $notify = new Notifications;

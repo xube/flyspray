@@ -5,6 +5,10 @@
   | ~~~~~~~~~~~~~~~~~~~~~~~~                                |
   \*********************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 $page->setTitle('Flyspray:: ' . $language['lostpw']);
 
 if (!Get::has('magic') && $user->isAnon()) {

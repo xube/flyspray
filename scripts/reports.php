@@ -1,4 +1,14 @@
 <?php
+
+  /********************************************************\
+  | Show various reports on tasks                          |
+  | ~~~~~~~~~~~~~~~~~~~~~~~~                               |
+  \********************************************************/
+
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 require_once($basedir . '/includes/events.inc.php');
 $page->setTitle('Flyspray:: ' . $language['reports']);
 

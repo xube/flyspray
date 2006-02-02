@@ -8,6 +8,10 @@
   | It also shows comments, attachments, notifications etc.     |
   \*************************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 $task_id = Get::val('id');
 
 if ( !($task_details = $fs->GetTaskDetails($task_id))

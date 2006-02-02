@@ -5,6 +5,9 @@
   | ~~~~~~~~~~~~~~~~~~~~~                                  |
   \********************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
 
 // Checks if a function is disabled
 function function_disabled($func_name)

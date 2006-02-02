@@ -5,6 +5,10 @@
   | ~~~~~~~~~~~~~                                          |
   \********************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 if (!$user->can_open_task($proj)) {
     $fs->Redirect( CreateURL('error', null) );
 }

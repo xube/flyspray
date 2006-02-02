@@ -1,4 +1,9 @@
 <?php
+
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 define('DOKU_PLUGIN', $basedir . '/includes/dokuwiki/lib/plugins/');
 define('DOKU_CONF', $basedir . '/includes/dokuwiki/conf/');
 define('DOKU_INTERNAL_LINK', $conf['general']['doku_url']);

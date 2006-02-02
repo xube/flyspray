@@ -4,6 +4,10 @@
   | ~~~~~~~~~~~~~~~~~~~                                     |
   \*********************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 $page->setTitle('Flyspray :: ' . $language['roadmap']);
 
 // Get milestones

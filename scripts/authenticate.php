@@ -5,6 +5,10 @@
   | ~~~~~~~~~~~~~~~~~~~                                    |
   \********************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 if (Req::val('action') == 'logout') {
 
     // Set cookie expiry time to the past, thus removing them

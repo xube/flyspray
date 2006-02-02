@@ -5,6 +5,10 @@
   | ~~~~~~~~~~~~~~~~~~~~                                    |
   \*********************************************************/
 
+if(!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
 if ($user->isAnon()) {
     $fs->redirect(CreateURL('error'));
 }
