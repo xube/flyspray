@@ -25,15 +25,15 @@
 	 <?php endif; ?>
   </table>
 
-  <?php if ($details && isset($details_previous) && isset($details_new)): ?>
+  <?php if ($details && isset($GLOBALS['details_previous']) && isset($GLOBALS['details_new'])): ?>
   <table class="history">
 	 <tr>
 		<th>{$language['previousvalue']}</th>
 		<th>{$language['newvalue']}</th>
 	 </tr>
 	 <tr>
-		<td>{!$details_previous}</td>
-		<td>{!$details_new}</td>
+		<td>{!$GLOBALS['details_previous']}</td>
+		<td>{!$GLOBALS['details_new']}</td>
 	 </tr>
   </table>
   <?php endif; ?>

@@ -914,7 +914,7 @@ class Setup extends Flyspray
             array ('Safe Mode','safe_mode','OFF'),
             array ('Display Errors','display_errors','ON'),
             array ('File Uploads','file_uploads','ON'),
-            array ('Magic Quotes GPC','magic_quotes_gpc','ON'),
+            array ('Magic Quotes GPC','magic_quotes_gpc','OFF'),
             array ('Magic Quotes Runtime','magic_quotes_runtime','OFF'),
             array ('Register Globals','register_globals','OFF'),
             array ('Output Buffering','output_buffering','OFF'),

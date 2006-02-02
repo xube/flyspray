@@ -42,7 +42,7 @@
   <?php endforeach; ?>
   <?php endif; ?>
   
-  <?php if (!count($related_to) && !count($related_)): ?>
+  <?php if (!count($related_to) && !count($related)): ?>
   <p><em>{$language['norelated']}</em></p>
   <?php endif; ?>
 </div>

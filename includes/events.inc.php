@@ -53,7 +53,7 @@ function get_events($task_id, $where = '') {
 
 function event_description($history) {
     $return = '';
-    global $fs, $baseurl, $language, $priority_list, $severity_list;
+    global $fs, $baseurl, $language, $priority_list, $severity_list, $details;
     
     $translate = array('item_summary' => 'summary', 'attached_to_project' => 'attachedtoproject',
                        'task_type' => 'tasktype', 'product_category' => 'category', 'item_status' => 'status',
@@ -107,7 +107,7 @@ function event_description($history) {
                     $field = "<a href=\"{$baseurl}index.php?do=details&amp;id={$history['task_id']}&amp;details={$history['history_id']}&history=yep#history\">{$language['details']}</a>";
                     if (!empty($details)) {
                         $details_previous = tpl_formatText($old_value);
-                        $details_new =  tpl_formatText($old_value);
+                        $details_new =  tpl_formatText($new_value);
                     }
                     $old_value = '';
                     $new_value = '';
@@ -243,6 +243,8 @@ function event_description($history) {
             $return .= $language['addedtoassignees'];
             break;
     }
+    $GLOBALS['details_previous'] = $details_previous;
+    $GLOBALS['details_new'] = $details_new;
     return $return;    
 }
 

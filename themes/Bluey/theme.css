@@ -941,6 +941,7 @@ div.tab {
 }
 
 div#permissions {
+        width:18em;
 	visibility:hidden;
 	position:absolute;
 	top:25px !important;
@@ -952,7 +953,6 @@ div#permissions {
 }
 
 div#permissions table {
-	width:15em;
 	color:#000;
 	background:#fff;
 	border:1px dotted #000;
@@ -966,6 +966,10 @@ div#permissions table td,div#permissions table th {
 
 div#permissions table thead th {
 	font-weight:700;
+}
+
+div#permissions table td.good,div#permissions table td.bad  {
+	text-align:right;
 }
 
 div#fileupload {

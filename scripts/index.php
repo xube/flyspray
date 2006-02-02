@@ -63,7 +63,7 @@ $keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
         'project', 'task', 'opened', 'changedsincedate');
 $keys   = array_map('keep', $keys);
 $keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
-$keys[] = $proj->id === '0' ? "project=0" : "project=".$proj->id;
+$keys[] = $proj->id === '0' ? 'project=0' : "project=".$proj->id;
 $get    = htmlspecialchars(join('&', $keys));
 
 // Get the visibility state of all columns
@@ -73,18 +73,52 @@ $page->uses('offset', 'perpage', 'pagenum', 'get', 'visible');
 
 /* build SQL statement {{{ */
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/
+$select = '';
 $from   = '             {tasks}         t
              LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
              LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
-             LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id
-             LEFT JOIN  {list_version}  lv  ON t.product_version = lv.version_id
-             LEFT JOIN  {list_version}  lvc ON t.closedby_version = lvc.version_id
-             LEFT JOIN  {list_os}       los ON t.operating_system = los.os_id
-             LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id
-             LEFT JOIN  {users}         u   ON t.assigned_to = u.user_id
-             LEFT JOIN  {users}         uo  ON t.opened_by = uo.user_id
-             LEFT JOIN  {history}       h   ON t.task_id = h.task_id 
-             LEFT JOIN  {votes}         vot ON t.task_id = vot.task_id ';
+             LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id ';
+// Only join tables which are really necessary to speed up the db-query
+if (Get::has('cat') || in_array('category', $visible)) {
+    $from   .= ' LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id ';
+    $select .= ' lc.category_name               AS category_name, ';
+}
+if (in_array('votes', $visible)) {
+    $from   .= ' LEFT JOIN  {votes} vot         ON t.task_id = vot.task_id ';
+    $select .= ' COUNT(DISTINCT vot.vote_id)    AS num_votes, ';
+}
+if (in_array('lastedit', $visible)) {
+    $from   .= ' LEFT JOIN  {history} h         ON t.task_id = h.task_id ';
+    $select .= ' max(h.event_date)              AS event_date, ';
+}
+if (Get::has('search_in_comments') || in_array('comments', $visible)) {
+    $from   .= ' LEFT JOIN  {comments} c        ON t.task_id = c.task_id ';
+    $select .= ' COUNT(DISTINCT c.comment_id)   AS num_comments, ';
+}
+if (in_array('reportedin', $visible)) {
+    $from   .= ' LEFT JOIN  {list_version} lv   ON t.product_version = lv.version_id ';
+    $select .= ' lv.version_name                AS product_version, ';
+}
+if (Get::has('opened') || in_array('openedby', $visible)) {
+    $from   .= ' LEFT JOIN  {users} uo          ON t.opened_by = uo.user_id ';
+    $select .= ' uo.real_name                   AS opened_by_name, ';
+}
+if (Get::has('due') || in_array('dueversion', $visible)) {
+    $from   .= ' LEFT JOIN  {list_version} lvc  ON t.closedby_version = lvc.version_id ';
+    $select .= ' lvc.version_name               AS closedby_version, ';
+}
+if (in_array('os', $visible)) {
+    $from   .= ' LEFT JOIN  {list_os} los       ON t.operating_system = los.os_id ';
+    $select .= ' los.os_name                    AS os_name, ';
+}
+if (in_array('attachments', $visible)) {
+    $from   .= ' LEFT JOIN  {attachments} att   ON t.task_id = att.task_id ';
+    $select .= ' COUNT(DISTINCT att.attachment_id) AS num_attachments, ';
+}
+if (Get::has('dev') || in_array('assignedto', $visible)) {
+    $from   .= ' LEFT JOIN  {users} u           ON t.assigned_to = u.user_id ';
+    $select .= ' u.real_name                    AS assigned_to_name, ';
+}
 
 $where      = array('project_is_active = ?');
 $sql_params = array('1');
@@ -120,24 +154,16 @@ if (Get::val('tasks') == 'assigned') {
 $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version',
                  'cat' => 'product_category', 'status' => 'item_status',
                  'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
-                 'opened' => array('opened_by', 'usopen.user_name', 'usopen.real_name'));
+                 'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'));
 foreach ($submits as $key => $db_key) {
     $type = Get::val($key, ($key == 'status') ? 'open' : '');
     settype($type, 'array');
     
-/*    if($key == 'dev' || $key == 'opened') {
-        $type = explode(' ', Get::val($key));
-    }*/
-    
     if (in_array('', $type)) continue;
     
-    if($key == 'dev') {
+    if ($key == 'dev') {
         $from .= 'LEFT JOIN {assigned} a  ON t.task_id = a.task_id ';
         $from .= 'LEFT JOIN {users} us  ON a.user_id = us.user_id ';
-    }
-    
-    if($key == 'opened') {
-        $from .= 'LEFT JOIN {users} usopen  ON t.opened_by = usopen.user_id ';
     }
     
     $temp = '';
@@ -194,7 +220,6 @@ if (Get::val('string')) {
     $where_temp = array();
     
     if (Get::has('search_in_comments')) {
-        $from .= ' LEFT JOIN  {comments}         c  ON t.task_id = c.task_id';
         $comments = 'OR c.comment_text LIKE ?';
     }
     
@@ -226,43 +251,28 @@ $where = join(' AND ', $where);
 
 /* }}} */
 
-$sql = $db->Query("SELECT  t.task_id,
-                           COUNT(DISTINCT vot.vote_id) AS num_votes
-                     FROM  $from
-                    WHERE  $where
-                 GROUP BY  t.task_id
-                 ORDER BY  $sortorder", $sql_params);
-
-// Store the order of the tasks returned for the next/previous links in the task details
-$_SESSION['tasklist'] = $id_list = $db->fetchCol($sql);
-$page->assign('total', count($id_list));
-
 // Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
 $sql = $db->Query("
-     SELECT
-             t.*, max(h.event_date) AS event_date,
-             p.project_title, p.project_is_active,
-             lt.tasktype_name         AS task_type,
-             lc.category_name         AS category_name,
-             lv.version_name          AS product_version,
-             lvc.version_name         AS closedby_version,
-             lst.status_name          AS status_name,
-             u.real_name              AS assigned_to_name,
-             los.os_name              AS os_name,
-             uo.real_name             AS opened_by_name,
-             COUNT(DISTINCT com.comment_id)    AS num_comments,
-             COUNT(DISTINCT att.attachment_id) AS num_attachments,
-             COUNT(DISTINCT vot.vote_id)       AS num_votes
-     FROM
-             $from
-             LEFT JOIN  {comments}      com ON t.task_id = com.task_id
-             LEFT JOIN  {attachments}   att ON t.task_id = att.task_id
-     WHERE
-             $where
-     GROUP BY
-             t.task_id
-     ORDER BY
-             $sortorder", $sql_params, $perpage, $offset);
+     SELECT   t.*, $select
+              p.project_title, p.project_is_active,
+              lst.status_name AS status_name,
+              lt.tasktype_name AS task_type
+     FROM     $from
+     WHERE    $where 
+     GROUP BY t.task_id
+     ORDER BY $sortorder", $sql_params);
+
+$tasks = $db->fetchAllArray($sql);
+$id_list = array();
+foreach ($tasks as $key => $task) {
+    $id_list[] = $task['task_id'];
+    if ($key < $offset + ($offset ? 1 : 0) || ($key > $offset + $perpage)) {
+        unset($tasks[$key]);
+    }
+}
+// List of task IDs for next/previous links
+$_SESSION['tasklist'] = $id_list;
+$page->assign('total', count($id_list));
 
 // tpl function that Displays a header cell for report list {{{
 
@@ -435,7 +445,7 @@ if(Get::has('hideupdatemsg')) {
 }
 // }}}
 
-$page->assign('tasks', $db->fetchAllArray($sql));
+$page->uses('tasks');
 $page->setTitle("Flyspray :: {$proj->prefs['project_title']}: {$language['tasklist']} ");
 $page->pushTpl('index.tpl');
 

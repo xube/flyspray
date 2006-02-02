@@ -49,7 +49,6 @@ class Project
     function _cached_query($idx, $sql, $sqlargs = array())
     {
         global $db;
-
         if (isset($this->cache[$idx])) {
             return $this->cache[$idx];
         }
@@ -131,6 +130,7 @@ class Project
 
     function listCatsIn($pm = false, $mother_cat = null)
     {
+        global $db;
         if ($pm) {
             if (is_null($mother_cat)) {
                 return $this->_cached_query(
@@ -156,18 +156,30 @@ class Project
                         array($this->id, $mother_cat));
             }
         } else {
-            return $this->_cached_query('cats_in',
-                    "SELECT  a.category_id,
-                             IF(a.parent_id,
-                                 CONCAT('...', a.category_name),
-                                 a.category_name) AS category_name,
-                             IF(a.parent_id, b.list_position, a.list_position) AS main_pos
-                       FROM  {list_category} a
-                  LEFT JOIN  {list_category} b ON a.parent_id = b.category_id
-                      WHERE  a.show_in_list = '1'
-                             AND ( a.project_id = ? OR a.project_id = '0' )
-                   ORDER BY  main_pos, a.list_position",
-                       array($this->id));
+            $sql = $this->_cached_query('allcats',
+                              'SELECT * FROM {list_category}
+                               WHERE  show_in_list = 1 AND ( project_id = ? OR project_id = 0 )
+                               ORDER BY list_position', array($this->id));
+            $cats = array();
+            $return = array();
+            foreach ($sql as $row) {
+                $cats[$row['parent_id']][] = $row;
+            }
+
+            foreach ($cats as $pcats) {
+                foreach($pcats as $cat) {
+                    if ($cat['parent_id']) {
+                        continue;
+                    }
+                    $return[$cat['category_id']] = $cat['category_name'];
+                    if (isset($cats[$cat['category_id']])) {
+                        foreach ($cats[$cat['category_id']] as $subcat){
+                            $return[$subcat['category_id']] = '... ' . $subcat['category_name'];
+                        }
+                    }
+                }
+            }
+            return $return;
         }
     }
 
