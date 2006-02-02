@@ -12,6 +12,7 @@ require_once ( $conf['general']['adodbpath'] );
 class Database
 {
     var $dbprefix;
+    var $cache = array();
 
     function dbOpenFast($conf)
     {
@@ -119,6 +120,16 @@ class Database
         return $this->dbExec($sql, $inputarr, $numrows, $offset);
     }
 
+    function _cached_query($idx, $sql, $sqlargs = array())
+    {
+        if (isset($this->cache[$idx])) {
+            return $this->cache[$idx];
+        }
+
+        $sql = $this->Query($sql, $sqlargs);
+        return ($this->cache[$idx] = $this->fetchAllArray($sql));
+    }
+    
     function FetchArray(&$result)
     {
         return $this->FetchRow($result);

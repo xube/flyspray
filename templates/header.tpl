@@ -25,7 +25,7 @@
     <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>
     <script type="text/javascript" src='{$baseurl}javascript/perms.js'></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar_stripped.js"></script>
-    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/lang/calendar-en.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/lang/calendar-{substr($language['locale'], 0, 2)}.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar-setup_stripped.js"></script>
     <!--[if IE 6]>
     <script type="text/javascript" src="{$baseurl}javascript/ie_hover.js"></script>
