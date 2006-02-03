@@ -4,6 +4,8 @@
     and returns them in nicely formatted HTML.
 */
 
+define('IN_FS', true);
+
 $path = dirname(dirname(__FILE__));
 require_once($path . '../../header.php');
 

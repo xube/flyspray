@@ -243,8 +243,10 @@ function event_description($history) {
             $return .= $language['addedtoassignees'];
             break;
     }
-    $GLOBALS['details_previous'] = $details_previous;
-    $GLOBALS['details_new'] = $details_new;
+    
+    if (isset($details_previous)) $GLOBALS['details_previous'] = $details_previous;
+    if (isset($details_new))      $GLOBALS['details_new'] = $details_new;
+    
     return $return;    
 }
 

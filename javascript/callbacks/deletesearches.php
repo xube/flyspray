@@ -3,6 +3,8 @@
     This script is the AJAX callback that deletes a user's saved search
 */
 
+define('IN_FS', true);
+
 $path = dirname(dirname(__FILE__));
 require_once($path . '../../header.php');
 

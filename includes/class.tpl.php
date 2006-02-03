@@ -227,7 +227,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
 
 function tpl_userlink($uid)
 {
-    global $db, $fs;
+    global $db, $fs, $language;
 
     static $cache = array();
 
