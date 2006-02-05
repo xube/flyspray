@@ -335,8 +335,9 @@ elseif (Post::val('action') == 'addcomment') {
 elseif (Post::val('action') == 'sendcode') {
 
     if (!Post::val('user_name') || !Post::val('real_name')
-            || !(  (Post::val('email_address') && Post::val('notify_type') == '1')
-                || (Post::val('jabber_id') && Post::val('notify_type') == '2')  )
+        || (!Post::val('email_address') && Post::val('notify_type') == '1')
+        || (!Post::val('jabber_id') && Post::val('notify_type') == '2')
+        || (!Post::val('jabber_id') && !Post::val('email_address') && Post::val('notify_type') == '3')
     ) {
         // If the form wasn't filled out correctly, show an error
         $_SESSION['ERROR'] = $language['erroronform'];

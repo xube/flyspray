@@ -15,6 +15,7 @@
 
  */
 
+define('IN_FS', true);
 require('header.php');
 
 // default server (for easier testing)

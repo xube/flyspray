@@ -9,6 +9,7 @@
    List of errors:
 */
 
+define('IN_FS', true);
 define('LOGIN_FAILED',-1);    //Login failed.
 define('PERMISSION_DENIED',-2);   //No permission
 define('NO_SUCH_TASK',-3);    //Task does not exist
