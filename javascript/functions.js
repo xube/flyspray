@@ -279,32 +279,17 @@ function setUpSearchBox() {
     }
   }
 }
-var toggling = false;
 function toggleSearchBox() {
-  if (toggling) {return;}
-  toggling=true;
   var state = Cookie.getVar('advancedsearch');
   if ('1' == state) {
       var showState = document.getElementById('advancedsearchstate');
       showState.replaceChild(document.createTextNode('+'),showState.firstChild);
-      if (window.opera) {
-        $('sc2').style.display = 'none';
-        toggling = false;
-      } else {
-        Effect.BlindUp('sc2',{duration: .25,
-                              afterFinish: function(){toggling=false}});
-      }
+      hidestuff('sc2');  
       Cookie.setVar('advancedsearch','0');
   } else {
       var showState = document.getElementById('advancedsearchstate');
       showState.replaceChild(document.createTextNode('-'),showState.firstChild);
-      if (window.opera) {
-        $('sc2').style.display = 'block';
-        toggling = false;
-      } else {
-        Effect.BlindDown('sc2',{duration: .25,
-                                afterFinish: function(){toggling=false}});
-      }                              
+      showstuff('sc2'); 
       Cookie.setVar('advancedsearch','1');
   }
 }
@@ -345,6 +330,6 @@ var useAltForKeyboardNavigation = false;  // Set this to true if you don't want 
 function getVoters(id, baseurl, field)
 {
     var url = baseurl + 'javascript/callbacks/getvoters.php?id=' + id;
-    var myAjax = new Ajax.Updater(field, url, { method: 'get', });
+    var myAjax = new Ajax.Updater(field, url, { method: 'get'});
 }
 
