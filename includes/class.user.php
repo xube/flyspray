@@ -54,8 +54,10 @@ class User
         if ($do == 'index') {
             if(!$this->didSearch() || Get::val('tasks') == 'last') {
                 $arr = unserialize($this->infos['last_search']);
-                $_GET = array_merge($_GET, $arr);
-                $_GET['tasks'] = 'last';
+                if (count($arr)) {
+                    $_GET = array_merge($_GET, $arr);
+                    $_GET['tasks'] = 'last';
+                }
             }
             
             $arr = array();

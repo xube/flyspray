@@ -25,7 +25,7 @@ if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
 // Configuration information:
 // [FIXME: in the future, this will come from the initial configuration.]
 $path_to_dot = $conf['general']['dot_path']; // Where's the dot executable?
-$path_for_images = "attachments"; // What directory do we use for output?
+$path_for_images = "$basedir/attachments"; // What directory do we use for output?
 $fmt = "png"; 
 $id = Req::val('id');
 $page->assign('taskid', 0);
