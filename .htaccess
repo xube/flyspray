@@ -33,6 +33,7 @@ RewriteRule ^newuser$ index.php?do=newuser [L,QSA]
 RewriteRule ^register$ index.php?do=register [L,QSA]
 RewriteRule ^lostpw$ index.php?do=lostpw [L,QSA]
 RewriteRule ^newtask$ index.php?do=newtask [L,QSA]
+RewriteRule ^roadmap$ index.php?do=roadmap [L,QSA]
 
 RewriteRule ^error$ index.php?do=error [L,QSA]
 </IfModule>
