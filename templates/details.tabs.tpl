@@ -22,10 +22,7 @@
 
   <?php if ($user->perms['view_history']): ?>
   <li id="historytab">
-  <a <?php if(!Get::has('history')): ?>id="nohistorytab"<?php endif; ?>
-     href="<?php if(!Get::has('history')):
-        ?>{CreateURL('details', $task_details['task_id'], null, array('history' => 'yep'))}<?php endif; ?>#history">
-        {$language['history']}</a>
+    <a href="{CreateURL('details', $task_details['task_id'], null)}#history">{$language['history']}</a>
   </li>
   <?php endif; ?>
 </ul>

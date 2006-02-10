@@ -333,3 +333,15 @@ function getVoters(id, baseurl, field)
     var myAjax = new Ajax.Updater(field, url, { method: 'get'});
 }
 
+function getHistory(id, baseurl, field)
+{
+    var url = baseurl + 'javascript/callbacks/gethistory.php?id=' + id;
+    var myAjax = new Ajax.Updater(field, url, { method: 'get'});
+}
+
+function getHistoryDetail(id, baseurl, field, details)
+{
+    var url = baseurl + 'javascript/callbacks/gethistory.php?id=' + id + '&details=' + details;
+    var myAjax = new Ajax.Updater(field, url, { method: 'get'});
+}
+

@@ -23,30 +23,47 @@ if (!$user->perms['view_history'])
     die();
 }
 
-/*if ($user->perms['view_history'] && Get::has('history')) {
-        if (is_numeric($details = Get::val('details'))) {
-            $details = " AND h.history_id = $details";
-        } else {
-            $details = null;
-        }
 
-        $page->assign('details', $details);
 
-        $page->assign('histories', $db->fetchAllArray($sql));
-*/
+if (is_numeric($details = Get::val('details'))) {
+    $details = " AND h.history_id = $details";
+} else {
+    $details = null;
+}
 
-$sql = get_events(Get::val('id'));
+$sql = get_events(Get::val('id'), $details);
 $histories = $db->fetchAllArray($sql);
 
-$html = '';
+if ($details && isset($GLOBALS['details_previous']) && isset($GLOBALS['details_new']))
+{
+    $html = '<table class="history">';
+    $html .= '<tr>';
+    $html .= '<th>' . $language['previousvalue'] . '</th>';
+    $html .= '<th>' . $language['newvalue'] . '</th>';
+    $html .= '</tr><tr>';
+    $html .= '<td>' . $GLOBALS['details_previous'] . '</td>';
+    $html .= '<td>' . $GLOBALS['details_new'] . '</td>';
+    $html .= '</tr></table>';
+    
+    echo $html;
+    die();
+}
 
+
+$html = '<table class="history"><tr>';
+$html .= '<th>' . $language['eventdate'] . '</th>';
+$html .= '<th>' . $language['user'] . '</th>';
+$html .= '<th>' . $language['event'] . '</th>';
+$html .= '</tr>';
 foreach($histories as $history)
 {
     $html .= '<tr>';
-    $html .= '<td>' . formatDate($history['event_date'], true) . '</td>';
-    $html .= '<td>' . !tpl_userlink($history['user_id']) . '</td>';
-    $html .= '<td>' . !event_description($history) . '</td>';
+    $html .= '<td>' . formatDate($history['event_date'], false) . '</td>';
+    $html .= '<td>' . tpl_userlink($history['user_id']) . '</td>';
+    $html .= '<td>' . event_description($history) . '</td>';
     $html .= '</tr>';
 }
+
+$html .= '</table>';
 
 echo $html;
