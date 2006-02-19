@@ -2,6 +2,9 @@
 // We can't include this script as part of index.php?do= etc, 
 // as that would introduce html code into it.  HTML != Valid XML
 // So, include the headerfile to set up database access etc
+
+define('IN_FS', true);
+
 require_once(dirname(__FILE__).'/header.php');
 require_once(dirname(__FILE__).'/includes/class.tpl.php');
 $page = new FSTpl();
