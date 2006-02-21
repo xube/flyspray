@@ -277,3 +277,6 @@ UPDATE `flyspray_tasks` SET `due_date` = 0 WHERE `due_date` = '';
 
 -- Florian Schmitz, 31 January 2006
 ALTER TABLE `flyspray_projects` ADD `comment_closed` MEDIUMINT( 1 ) DEFAULT '0' NOT NULL ;
+
+-- Florian Schmitz, 21 February 2006
+ALTER TABLE `flyspray_users` MODIFY `last_search` LONGTEXT NOT NULL DEFAULT '';
