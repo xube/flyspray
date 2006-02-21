@@ -224,9 +224,7 @@ class Notifications {
    // {{{ Send email
    function SendEmail($to, $subject, $body)
    {
-      global $fs;
-      global $proj;
-      global $user;
+      global $fs, $proj, $user;
 
       $body = str_replace('&amp;', '&', $body);
 
@@ -766,8 +764,8 @@ class Notifications {
       $task_details = $fs->getTaskDetails($task_id);
       if ($task_details['mark_private'] != '1')
       {
-         $proj_emails = explode(",", $proj->prefs['notify_email']);
-         $proj_jids = explode(",", $proj->prefs['notify_jabber']);
+         $proj_emails = explode(',', $proj->prefs['notify_email']);
+         $proj_jids = explode(',', $proj->prefs['notify_jabber']);
 
          foreach ($proj_emails AS $key => $val)
          {

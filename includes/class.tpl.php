@@ -381,6 +381,9 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
 
     $opt2 = '';
     foreach ($selected as $value) {
+        if (!isset($selectedones[$value])) {
+            continue;
+        }
         $label = htmlspecialchars($selectedones[$value], ENT_QUOTES, "utf-8");
         $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
 

@@ -120,8 +120,10 @@ if (in_array('attachments', $visible)) {
     $select .= ' COUNT(DISTINCT att.attachment_id) AS num_attachments, ';
 }
 if (Get::has('dev') || in_array('assignedto', $visible)) {
-    $from   .= ' LEFT JOIN  {users} u           ON t.assigned_to = u.user_id ';
+    $from   .= ' LEFT JOIN  {assigned} ass      ON t.task_id = ass.task_id ';
+    $from   .= ' LEFT JOIN  {users} u           ON ass.user_id = u.user_id ';
     $select .= ' u.real_name                    AS assigned_to_name, ';
+    $select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
 }
 
 $where      = array('project_is_active = ?');
@@ -410,6 +412,13 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
                     $task['percent_complete'].'% '.$language['complete']);
             break;
 
+        case 'assignedto':
+            $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+            if ($task['num_assigned'] > 1) {
+                $value .= ', +' . ($task['num_assigned'] - 1);
+            }
+            break;
+            
         default:
             $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
             break;
