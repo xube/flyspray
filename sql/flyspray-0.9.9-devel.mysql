@@ -280,3 +280,6 @@ ALTER TABLE `flyspray_projects` ADD `comment_closed` MEDIUMINT( 1 ) DEFAULT '0' 
 
 -- Florian Schmitz, 21 February 2006
 ALTER TABLE `flyspray_users` MODIFY `last_search` LONGTEXT NOT NULL DEFAULT '';
+
+-- Florian Schmitz, 28 February 2006, FS#824
+ALTER TABLE `flyspray_tasks` MODIFY `closure_comment` LONGTEXT NOT NULL DEFAULT '';
