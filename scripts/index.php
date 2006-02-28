@@ -272,7 +272,7 @@ $tasks = $db->fetchAllArray($sql);
 $id_list = array();
 foreach ($tasks as $key => $task) {
     $id_list[] = $task['task_id'];
-    if ($key < $offset + ($offset ? 1 : 0) || ($key > $offset + $perpage)) {
+    if ($key < $offset || ($key > $offset - 1 + $perpage)) {
         unset($tasks[$key]);
     }
 }

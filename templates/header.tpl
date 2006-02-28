@@ -32,6 +32,7 @@
     <![endif]-->
   </head>
   <body onload="perms = new Perms('permissions')">
+  <div id="container">
     <!-- Remove this to remove the logo -->
     <h1 id="title">{$proj->prefs['project_title']}</h1>
     <?php
