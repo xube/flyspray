@@ -91,7 +91,7 @@ if (in_array('votes', $visible)) {
     $from   .= ' LEFT JOIN  {votes} vot         ON t.task_id = vot.task_id ';
     $select .= ' COUNT(DISTINCT vot.vote_id)    AS num_votes, ';
 }
-if (in_array('lastedit', $visible)) {
+if (Get::has('changedsincedate') || in_array('lastedit', $visible)) {
     $from   .= ' LEFT JOIN  {history} h         ON t.task_id = h.task_id ';
     $select .= ' max(h.event_date)              AS event_date, ';
 }
