@@ -1069,7 +1069,7 @@ elseif (Req::val('action') == "remove_notification") {
     $fs->redirect(CreateURL('details', Req::val('ids')) . '#notify');
 } // }}}
 // editing a comment {{{
-elseif (Post::val('action') == "editcomment" && $user->perms['edit_comments'] || $user->perms['edit_own_comments']) {
+elseif (Post::val('action') == "editcomment" && ($user->perms['edit_comments'] || $user->perms['edit_own_comments'])) {
     $where = '';
     if ($user->perms['edit_own_comments'] && !$user->perms['edit_comments']) {
         $where = ' AND user_id = ' . $user->id;
