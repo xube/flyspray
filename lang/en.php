@@ -654,6 +654,7 @@ Regards,',
 'allowclosedcomments'     => 'Allow comments on closed tasks',
 'norelated'               => 'No related tasks.',
 'comment'                 => 'Comment',
+'editowncomments'         => 'Edit own comments',
 );
 
 ?>

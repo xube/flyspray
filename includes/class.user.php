@@ -88,7 +88,7 @@ class User
     {
         global $db;
 
-        $fields = array('is_admin', 'manage_project', 'view_tasks',
+        $fields = array('is_admin', 'manage_project', 'view_tasks', 'edit_own_comments',
                 'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                 'view_comments', 'add_comments', 'edit_comments',
                 'delete_comments', 'view_attachments', 'create_attachments',
@@ -164,15 +164,8 @@ class User
 
     function can_edit_comment($comment)
     {
-        return $this->perms['edit_comments'];
-        /*  || (isset($comment['user_id']) && $comment['user_id'] == $this->id);
-         *
-         * TODO : do we want users to be able to edit their own comments ?
-         *
-         * Tony says: not really, as it destroys the proper flow of conversation
-         *            between users and developers.
-         *            perhaps this could be made an project-level option in the future.
-         */
+        return $this->perms['edit_comments']
+               || ($comment['user_id'] == $this->id && $this->perms['edit_own_comments']);
     }
 
     function can_view_project($proj)

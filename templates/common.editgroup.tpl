@@ -46,6 +46,10 @@
         <td>{!tpl_checkbox('add_comments', $group_details['add_comments'], 'canaddcomments')}</td>
       </tr>
       <tr>
+        <td><label for="editowncomments">{$language['editowncomments']}</label></td>
+        <td>{!tpl_checkbox('edit_own_comments', $group_details['edit_own_comments'], 'editowncomments')}</td>
+      </tr>
+      <tr>
         <td><label for="editcomments">{$language['editcomments']}</label></td>
         <td>{!tpl_checkbox('edit_comments', $group_details['edit_comments'], 'editcomments')}</td>
       </tr>

@@ -11,7 +11,7 @@
   </em>
 
   <span class="DoNotPrint">
-    <?php if ($user->perms['edit_comments']): ?>
+    <?php if ($user->perms['edit_comments'] || ($user->perms['edit_own_comments'] && $row['user_id'] == $user->id)): ?>
     &mdash;
     <a href="{$baseurl}?do=editcomment&amp;task_id={Get::val('id')}&amp;id={$row['comment_id']}">
       {$language['edit']}</a>

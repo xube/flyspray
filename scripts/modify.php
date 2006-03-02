@@ -803,7 +803,7 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
     
     // Allow all groups to update permissions except for global Admin
     if (Post::val('group_id') != '1') {
-        $cols = $cols + array('manage_project', 'view_tasks',
+        $cols = $cols + array('manage_project', 'view_tasks', 'edit_own_comments',
                               'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                               'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
                               'view_attachments', 'create_attachments', 'delete_attachments',
@@ -1069,10 +1069,14 @@ elseif (Req::val('action') == "remove_notification") {
     $fs->redirect(CreateURL('details', Req::val('ids')) . '#notify');
 } // }}}
 // editing a comment {{{
-elseif (Post::val('action') == "editcomment" && $user->perms['edit_comments']) {
+elseif (Post::val('action') == "editcomment" && $user->perms['edit_comments'] || $user->perms['edit_own_comments']) {
+    $where = '';
+    if ($user->perms['edit_own_comments'] && !$user->perms['edit_comments']) {
+        $where = ' AND user_id = ' . $user->id;
+    }
     $db->Query("UPDATE  {comments}
                    SET  comment_text = ?
-                 WHERE  comment_id = ?",
+                 WHERE  comment_id = ? $where",
             array(Post::val('comment_text'), Post::val('comment_id')));
 
     $fs->logEvent(Post::val('task_id'), 5, Post::val('comment_text'),
