@@ -416,14 +416,14 @@ class Flyspray
                      'detailed_desc','project_title');
                      
         $changes = array();
-        foreach($old as $key => $value)
+        foreach ($old as $key => $value)
         {
-            if(!in_array($key, $comp)) {
+            if (!in_array($key, $comp) || ($key == 'due_date' && intval($old[$key]) == intval($new[$key]))) {
                 continue;
             }
             
             if($old[$key] != $new[$key]) {
-                switch($key)
+                switch ($key)
                 {
                     case 'due_date':
                         $new[$key] = formatDate($new[$key]);
