@@ -17,6 +17,7 @@ if (substr($baseurl = $conf['general']['baseurl'], -1) != '/') {
     $baseurl .= '/';
 }
 
+require_once "$basedir/includes/constants.inc.php";
 require_once "$basedir/includes/fix.inc.php";
 require_once "$basedir/includes/class.gpc.php";
 

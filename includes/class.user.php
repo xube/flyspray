@@ -54,14 +54,14 @@ class User
         if ($do == 'index') {
             if(!$this->didSearch() || Get::val('tasks') == 'last') {
                 $arr = unserialize($this->infos['last_search']);
-                if (count($arr)) {
+                if (is_array($arr)) {
                     $_GET = array_merge($_GET, $arr);
                     $_GET['tasks'] = 'last';
                 }
             }
             
             $arr = array();
-            foreach($this->search_keys as $key) {
+            foreach ($this->search_keys as $key) {
                 $arr[$key] = Get::val($key);
             }
             
@@ -70,10 +70,10 @@ class User
                          WHERE  user_id = ?",
                         array(serialize($arr), $this->id));
                         
-            if(Get::val('search_name') && $this->didSearch()) {
+            if (Get::val('search_name') && $this->didSearch()) {
                 $db->Query('UPDATE {searches} SET search_string = ?, time = ? WHERE user_id = ? AND name = ?',
                             array($url->get(false), time(), $this->id, Get::val('search_name')));
-                if(!$db->affectedRows()) {
+                if (!$db->affectedRows()) {
                     $db->Query('INSERT INTO {searches} (user_id, name, search_string, time) VALUES(?, ?, ?, ?)',
                                 array($this->id, Get::val('search_name'), $url->get(false), time()));
                 }
@@ -102,14 +102,12 @@ class User
             foreach ($fields as $key) {
                 $this->perms[$key] = 0;
             }
-            $this->perms['global_view'] = 0;
         } else {
             $max = array_map(create_function('$x', 'return "MAX($x) AS $x";'),
                     $fields);
 
             // Get the global group permissions for the current user
-            $sql = $db->Query("SELECT  ".join(', ', $max).",
-                                       MAX(g.belongs_to_project* view_tasks) AS global_view
+            $sql = $db->Query("SELECT  ".join(', ', $max)."
                                  FROM  {groups} g
                             LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
                                 WHERE  uig.user_id = ?  AND
@@ -178,11 +176,12 @@ class User
     {
         global $fs, $proj;        
         
-        if ($this->isAnon() && !$proj->prefs['others_view'])
+        if ($this->isAnon() && !$proj->prefs['others_view'] && !$task['others_view']) {
             return false;
+        }
 
         if ($task['opened_by'] == $this->id && !$this->isAnon()
-            || !$task['mark_private']
+            || (!$task['mark_private'] && ($this->perms['view_tasks'] || $proj->prefs['others_view'] || $task['others_view']))
             || $this->perms['manage_project']) {
             return true;
         }

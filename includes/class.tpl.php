@@ -4,12 +4,6 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-define('DOKU_PLUGIN', $basedir . '/includes/dokuwiki/lib/plugins/');
-define('DOKU_CONF', $basedir . '/includes/dokuwiki/conf/');
-define('DOKU_INTERNAL_LINK', $conf['general']['doku_url']);
-define('DOKU_BASE', $baseurl .'includes/dokuwiki/');
-define('DOKU_URL', $baseurl .'includes/dokuwiki/');
-
 class Tpl
 {
     var $_uses  = array();
@@ -523,7 +517,7 @@ function tpl_draw_perms($perms)
             'view_attachments', 'create_attachments', 'delete_attachments',
             'view_history', 'close_own_tasks', 'close_other_tasks',
             'assign_to_self', 'assign_others_to_self', 'view_reports',
-            'add_votes', 'global_view');
+            'add_votes', 'edit_own_comments');
 
     $yesno = array(
             '<td class="bad">No</td>',

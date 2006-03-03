@@ -14,7 +14,7 @@ if ($proj->id !== '0' && !$user->can_view_project($proj)) {
     $fs->Redirect( CreateURL('error', null) );
 }
 
-if ($proj->id === '0' && !$user->perms['global_view']) {
+if ($proj->id === '0' && !$user->perms['is_admin']) {
     $fs->Redirect( CreateURL('error', null) );
 }
 

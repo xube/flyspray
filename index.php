@@ -135,25 +135,15 @@ if ($proj->prefs['project_is_active']
    $page->assign('intro_message', $proj->prefs['intro_message']);
 }
 
-if (!$user->isAnon() && !$user->perms['global_view']) {
-    // or, if the user is logged in
-    $sql = $db->Query(
-            "SELECT  DISTINCT p.project_id, p.project_title
-               FROM  {projects} p
-          LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project AND g.view_tasks=1
-          LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
-              WHERE  p.project_is_active='1' AND (p.others_view = '1' OR uig.user_id IS NOT NULL)
-           ORDER BY  p.project_title", array($user->id));
-}
-else {
-    // XXX kludge, to merge request for power users with anonymous ones.
-    $sql = $db->Query("SELECT  project_id, project_title
-                         FROM  {projects}
-                        WHERE  project_is_active = '1'
-                               AND ('1' = ? OR others_view = '1')
-                     ORDER BY  project_title",
-                     array($user->perms['global_view']));
-}
+
+$sql = $db->Query(
+        "SELECT  DISTINCT p.project_id, p.project_title
+           FROM  {projects} p
+      LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project OR g.belongs_to_project=0
+      LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
+          WHERE  (p.project_is_active='1' AND p.others_view = '1')
+                 OR (uig.user_id IS NOT NULL AND (g.is_admin=1 OR g.view_tasks=1))
+       ORDER BY  p.project_title", array($user->id));
 
 $page->assign('project_list', $project_list = $db->FetchAllArray($sql));
 
@@ -166,7 +156,7 @@ if ($user->isAnon() && !$fs->prefs['user_notify']) {
     $page->assign('admin_emails', $db->FetchAllArray($sql));
 }
 
-// default title;
+// default title
 $page->setTitle("Flyspray :: {$proj->prefs['project_title']}");
 
 $page->assign('do', $do);

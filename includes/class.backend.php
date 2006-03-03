@@ -468,11 +468,11 @@ class Backend
     */
    function getTaskIdList($args) 
    {
-      if (!is_array($args))
-         return "We were not given an array of arguments to process.";
+      if (!is_array($args)) {
+         return 'We were not given an array of arguments to process.';
+      }
 
-      global $db;
-      global $fs;
+      global $db, $fs;
 
       /*
       Since all variables will be passed to this function by Ander's
@@ -501,11 +501,10 @@ class Backend
             OR !is_numeric($sev)
             OR !is_numeric($dev)
             OR !is_numeric($cat)
-            //OR !is_numeric($status) // ok to remove? e.g. status can be 'closed'
             OR !is_numeric($due)
             OR !is_numeric($limit)
          )
-         return "At least one required argument was not numerical.";
+         return 'At least one required argument was not numerical.';
 
       /*
       I trust that Ander's funky javascript can handle sorting and paginating
@@ -533,12 +532,8 @@ class Backend
       $user->get_perms($project);
 
       // Check if the user can view tasks from this project
-      if ($user->perms['view_tasks'] == '1' OR $user->perms['global_view'] == '1' OR $project->prefs['others_view'] == '1')
-      {
-         // If they have permission, let's carry on.  Otherwise, give up.
-      } else
-      {
-         return "You don't have permission to view tasks from that project.";
+      if ($user->perms['view_tasks'] == '0' && $project->prefs['others_view'] == '0') {
+        return 'You don\'t have permission to view tasks from that project.';
       }
 
       $where = array();
@@ -626,7 +621,7 @@ class Backend
       }
 
       // Expand the $params
-      $sql_where = implode(" AND ", $where);
+      $sql_where = implode(' AND ', $where);
 
       // Alrighty.  We should be ok to build the query now!
       $search = $db->Query("SELECT DISTINCT t.task_id
@@ -644,10 +639,6 @@ class Backend
          $tasklist[] = $row['task_id'];
 
       return $tasklist;
-
-      //return $where;
-
-      //return $search;
 
    // End of GenerateTaskList() function
    }

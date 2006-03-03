@@ -193,16 +193,9 @@ function getTask($args)
    if (!is_numeric($task_details['task_id']))
       return new xmlrpcresp (0,NO_SUCH_TASK, 'The requested task does not exist.');
 
-   // Compare permissions to view this task
-   if ($task_details['project_is_active'] == '1'
-         && ($task_details['others_view'] == '1' OR $permissions['view_tasks'] == '1')
-         && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $user_id)
-               OR $permissions['manage_project'] == '1' OR $task_details['mark_private'] != '1'))
-      $can_view = true;
-
-
-   if (!$can_view)
+   if (!$user->can_view_task($task_details)) {
       return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to perform this function.');
+   }
 
    $result = array (
                      'task_id'              =>    $task_details['task_id'],
@@ -810,10 +803,7 @@ function getUser($args)
 function filterTasks($args)
 {
    
-   global $fs;
-   global $db;
-   global $be;
-   global $proj;
+   global $fs, $db, $be, $proj;
    
    
    $user_id = checkRPCLogin($args);
@@ -835,14 +825,9 @@ function filterTasks($args)
    }
    
    // Compare permissions to view this task
-   if ($user->perms['view_tasks'] == '1' OR $user->perms['global_view'] == '1' OR $proj->prefs['others_view'] == '1') {
-      $can_view = true;
-   }
-   
-   if (!$can_view) {
+   if ($user->perms['view_tasks'] == '0' && $proj->prefs['others_view'] == '0') {
       return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to perform this function.');
-   }
-   
+   }  
    
    // clean up the input arguments
    if ($requestArgs['status_id'] == "not closed") {
