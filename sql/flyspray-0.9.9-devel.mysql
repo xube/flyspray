@@ -290,3 +290,6 @@ ALTER TABLE `flyspray_groups` ADD `edit_own_comments` MEDIUMINT( 1 ) DEFAULT '0'
 -- Florian Schmitz, 2 March 2006, FS#836
 ALTER TABLE `flyspray_projects` MODIFY `notify_email` LONGTEXT NOT NULL DEFAULT '';
 ALTER TABLE `flyspray_projects` MODIFY `notify_jabber` LONGTEXT NOT NULL DEFAULT ''; 
+
+-- Florian Schmitz, 4 March 2006
+UPDATE flyspray_groups SET add_votes = 1 WHERE group_id = 2 OR group_id = 3 OR group_id = 6;

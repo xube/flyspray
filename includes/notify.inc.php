@@ -228,7 +228,7 @@ class Notifications {
 
       $body = str_replace('&amp;', '&', $body);
 
-      if (empty($to) || $to == $user->id)
+      if (empty($to) || empty( $to[0] ) || $to == $user->id)
          return;
 
       // Get the new email class
