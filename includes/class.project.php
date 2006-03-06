@@ -46,6 +46,13 @@ class Project
 
     function _pm_list_sql($type, $join)
     {
+        global $db;
+        //Get the column names of list tables for the group by statement
+        $column_names = $db->GetColumnNames('{list_' . $type . '}');
+        foreach ($column_names as $key => $value){
+            $column_names[$key] = 'l.' . $value;
+        }
+        $groupby = implode(', ' , $column_names);
         settype($join, 'array');
         $join = 't.'.join(" = l.{$type}_id OR t.", $join)." = l.{$type}_id";
         return "SELECT  l.*, count(t.task_id) AS used_in_tasks
@@ -53,7 +60,7 @@ class Project
              LEFT JOIN  {tasks}        t  ON ($join)
                             AND t.attached_to_project = l.project_id
                  WHERE  project_id = ?
-              GROUP BY  l.{$type}_id
+              GROUP BY  $groupby
               ORDER BY  list_position";
     }
 

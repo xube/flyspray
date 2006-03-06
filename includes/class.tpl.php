@@ -611,7 +611,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
         }
         
         switch ($type) {
-            case 'admin':     $return = $url . '&area=' . $arg1; break;
+            case 'admin':     $return = $url . '&area=' . $arg1 . '&project=0'; break;
             case 'edittask':  $return = $url . '&id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
             case 'user':      $return = $conf['general']['baseurl'] . '?do=admin&area=users&id=' . $arg1; break;

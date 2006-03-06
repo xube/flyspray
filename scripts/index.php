@@ -78,6 +78,7 @@ $page->uses('offset', 'perpage', 'pagenum', 'get', 'visible');
 /* build SQL statement {{{ */
 // This SQL courtesy of Lance Conry http://www.rhinosw.com/
 $select = '';
+$groupby = '';
 $from   = '             {tasks}         t
              LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
              LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
@@ -86,6 +87,7 @@ $from   = '             {tasks}         t
 if (Get::has('cat') || in_array('category', $visible)) {
     $from   .= ' LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id ';
     $select .= ' lc.category_name               AS category_name, ';
+    $groupby .= 'lc.category_name, ';
 }
 if (in_array('votes', $visible)) {
     $from   .= ' LEFT JOIN  {votes} vot         ON t.task_id = vot.task_id ';
@@ -102,18 +104,22 @@ if (Get::has('search_in_comments') || in_array('comments', $visible)) {
 if (in_array('reportedin', $visible)) {
     $from   .= ' LEFT JOIN  {list_version} lv   ON t.product_version = lv.version_id ';
     $select .= ' lv.version_name                AS product_version, ';
+    $groupby .= 'lv.version_name, ';
 }
 if (Get::has('opened') || in_array('openedby', $visible)) {
     $from   .= ' LEFT JOIN  {users} uo          ON t.opened_by = uo.user_id ';
     $select .= ' uo.real_name                   AS opened_by_name, ';
+    $groupby .= 'uo.real_name, ';
 }
 if (Get::has('due') || in_array('dueversion', $visible)) {
     $from   .= ' LEFT JOIN  {list_version} lvc  ON t.closedby_version = lvc.version_id ';
     $select .= ' lvc.version_name               AS closedby_version, ';
+    $groupby .= 'lvc.version_name, ';
 }
 if (in_array('os', $visible)) {
     $from   .= ' LEFT JOIN  {list_os} los       ON t.operating_system = los.os_id ';
     $select .= ' los.os_name                    AS os_name, ';
+    $groupby .= 'los.os_name, ';
 }
 if (in_array('attachments', $visible)) {
     $from   .= ' LEFT JOIN  {attachments} att   ON t.task_id = att.task_id ';
@@ -124,6 +130,7 @@ if (Get::has('dev') || in_array('assignedto', $visible)) {
     $from   .= ' LEFT JOIN  {users} u           ON ass.user_id = u.user_id ';
     $select .= ' u.real_name                    AS assigned_to_name, ';
     $select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
+    $groupby .= 'u.real_name, ';
 }
 
 $where      = array('project_is_active = ?');
@@ -255,6 +262,12 @@ if (Get::val('tasks') == 'watched') {
 
 $where = join(' AND ', $where);
 
+//Get the column names of table tasks for the group by statement
+$column_names = $db->GetColumnNames('{tasks}');
+foreach ($column_names as $key => $value){
+    $column_names[$key] = 't.' . $value;
+}
+$groupby .= implode(', ' , $column_names);
 /* }}} */
 
 // Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
@@ -265,7 +278,7 @@ $sql = $db->Query("
               lt.tasktype_name AS task_type
      FROM     $from
      WHERE    $where 
-     GROUP BY t.task_id
+     GROUP BY $groupby, p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name
      ORDER BY $sortorder", $sql_params);
 
 $tasks = $db->fetchAllArray($sql);

@@ -150,6 +150,11 @@ class Database
         return $result->GetArray();
     }
 
+    function GetColumnNames($table)
+    {
+        $table = preg_replace('/{([\w\-]*?)}/', $this->dbprefix.'\1', $table);
+        return $this->dblink->MetaColumnNames($table,$numericIndex=true);
+    }
     // End of Database Class
 }
 

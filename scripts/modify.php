@@ -20,9 +20,9 @@ if ($lt = Post::val('list_type')) {
 }
 
 function Post_to0($key) { return Post::val($key, 0); }
-
-$old_details = $fs->GetTaskDetails(Req::val('task_id'));
-
+if (Req::has('task_id')){
+    $old_details = $fs->GetTaskDetails(Req::val('task_id'));
+}
 // Adding a new task  {{{
 if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     /*
@@ -835,7 +835,7 @@ elseif (Post::val('action') == "update_list" && $user->perms['manage_project']) 
     $redirectmessage = $language['listupdated'];
 
     for($i = 0; $i < count($listname); $i++) {
-        if (is_numeric($listposition[$i])) {
+        if (is_numeric($listposition[$i]) && $listname[$i] != '') {
             $update = $db->Query("UPDATE  $list_table_name
                                      SET  $list_column_name = ?, list_position = ?, show_in_list = ?
                                    WHERE  $list_id = '{$listid[$i]}'",
@@ -861,6 +861,11 @@ elseif (Post::val('action') == "add_to_list" && $user->perms['manage_project']) 
         $fs->redirect(Post::val('prev_page'));
     }
 
+    if (!is_numeric(Post::val('list_position'))){
+        $_SESSION['ERROR'] = $language['listPmustN'];
+        $fs->redirect(Post::val('prev_page'));
+    }
+    
     $db->Query("INSERT INTO  $list_table_name
                              (project_id, $list_column_name, list_position, show_in_list)
                      VALUES  (?, ?, ?, ?)",
@@ -884,7 +889,7 @@ elseif (Post::val('action') == "update_version_list" && $user->perms['manage_pro
     $redirectmessage = $language['listupdated'];
 
     for($i = 0; $i < count($listname); $i++) {
-        if (is_numeric($listposition[$i])) {
+        if (is_numeric($listposition[$i])  && $listname[$i] != '') {
 
             $update = $db->Query("UPDATE  $list_table_name
                                      SET  $list_column_name = ?, list_position = ?,
@@ -912,7 +917,12 @@ elseif (Post::val('action') == "add_to_version_list" && $user->perms['manage_pro
        $_SESSION['ERROR'] = $language['fillallfields'];
        $fs->redirect(Post::val('prev_page'));
    }
-
+   
+   if (!is_numeric(Post::val('list_position'))){
+        $_SESSION['ERROR'] = $language['listPmustN'];
+        $fs->redirect(Post::val('prev_page'));
+   }
+   
    $db->Query("INSERT INTO  $list_table_name
                             (project_id, $list_column_name, list_position, show_in_list, version_tense)
                     VALUES  (?, ?, ?, ?, ?)",
@@ -936,7 +946,7 @@ elseif (Post::val('action') == "update_category" && $user->perms['manage_project
     $redirectmessage = $language['listupdated'];
 
     for ($i = 0; $i < count($listname); $i++) {
-        if (is_numeric($listposition[$i])) {
+        if (is_numeric($listposition[$i])  && $listname[$i] != '') {
             $update = $db->Query("UPDATE  {list_category}
                                      SET  category_name = ?, list_position = ?,
                                           show_in_list = ?, category_owner = ?
@@ -963,14 +973,19 @@ elseif (Post::val('action') == "add_category" && $user->perms['manage_project'])
         $_SESSION['ERROR'] = $language['fillallfields'];
         $fs->redirect(Post::val('prev_page'));
     }
+    
+    if (!is_numeric(Post::val('list_position'))){
+        $_SESSION['ERROR'] = $language['listPmustN'];
+        $fs->redirect(Post::val('prev_page'));
+    }
 
     $db->Query("INSERT INTO  {list_category}
                              ( project_id, category_name, list_position,
                                show_in_list, category_owner, parent_id )
                      VALUES  (?, ?, ?, 1, ?, ?)",
             array(Post::val('project_id', 0), Post::val('list_name'),
-                Post::val('list_position'), Post::val('category_owner', 0),
-                Post::val('parent_id', 0)));
+                Post::val('list_position'), Post::val('category_owner', 0) ? Post::val('category_owner', 0) : 0,
+                Post::val('parent_id', 0) ? Post::val('parent_id', 0) : 0));
 
     $_SESSION['SUCCESS'] = $language['listitemadded'];
     $fs->redirect(Post::val('prev_page'));
@@ -1145,7 +1160,12 @@ elseif (Post::val('action') == "addreminder" && $user->perms['manage_project']) 
 
     $how_often  = Post::val('timeamount1') * Post::val('timetype1');
     $start_time = Post::val('timeamount2') * Post::val('timetype2') + date('U');
-
+    
+    if (!is_numeric(Post::val('timeamount1')) || !is_numeric(Post::val('timeamount2'))) {
+        $_SESSION['ERROR'] = $language['formnotnumeric'];
+        $fs->redirect(CreateURL('details', Req::val('task_id')));
+    }
+    
     $db->Query("INSERT INTO  {reminders}
                              ( task_id, to_user_id, from_user_id,
                                start_time, how_often, reminder_message )
@@ -1329,7 +1349,12 @@ elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details))
         $_SESSION['ERROR'] = $language['formnotcomplete'];
         $fs->redirect(CreateURL('details', Req::val('task_id')));
     }
-
+    
+    if (!is_numeric(Post::val('dep_task_id'))) {
+        $_SESSION['ERROR'] = $language['formnotnumeric'];
+        $fs->redirect(CreateURL('details', Req::val('task_id')));
+    }
+    					
     // First check that the user hasn't tried to add this twice
     $sql1 = $db->Query("SELECT  COUNT(*) FROM {dependencies}
                          WHERE  task_id = ? AND dep_task_id = ?",
