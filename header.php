@@ -37,6 +37,10 @@ $db->dbOpenFast($conf['database']);
 $fs = new Flyspray;
 $be = new Backend;
 
+if (file_exists($basedir . '/sql/index.html') && strpos($fs->version, 'dev') === false) {
+    die('Please empty the folder "' . $basedir . DIRECTORY_SEPARATOR . 'sql" before you start using Flyspray.');
+}
+
 require_once "$basedir/includes/regexp.php";
 
 // Any "do" mode that accepts a task_id or id field should be added here.
