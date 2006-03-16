@@ -175,7 +175,7 @@ class Notifications {
 
                // send notification
                if ( $JABBER->connected ) {
-                  if ($JABBER->SendMessage($jid, NULL, NULL,
+                  if ($JABBER->SendMessage($jid, 'normal', NULL,
                      array(
                         "subject"   => $subject,
                         "body"      => htmlspecialchars($body),

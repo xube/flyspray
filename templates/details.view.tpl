@@ -1,3 +1,4 @@
+<div id="taskdetails" <?php if ($user->can_edit_task($task_details)): ?>ondblclick='openTask("{CreateURL('edittask', $task_details['task_id'])}")'<?php endif;?>>
 <span id="navigation"> <?php if ($prev_id): ?>
   {!tpl_tasklink($prev_id, $language['previoustask'], false, array('id'=>'prev', 'accesskey' => 'p'))}
   <?php endif; ?>
@@ -6,7 +7,6 @@
   {!tpl_tasklink($next_id, $language['nexttask'], false, array('id'=>'next', 'accesskey' => 'n'))}
   <?php endif; ?>
 </span>
-<div id="taskdetails" ondblclick='openTask("{CreateURL('edittask', $task_details['task_id'])}")'>
 
   <h2 class="severity{$task_details['task_severity']}">
 	 FS#{$task_details['task_id']} &mdash; {$task_details['item_summary']}
@@ -233,6 +233,17 @@
 		  </div>
 		</form>
 	 </div>
+	 <?php endif; ?>
+     <?php if (!$user->isAnon()): ?>
+	 <?php if (!$watched): ?>
+	 <a id="addnotif" class="button" accesskey="w"
+		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
+		{$language['watchtask']}</a>
+	 <?php else: ?>
+	 <a id="removenotif" class="button" accesskey="w"
+		href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
+		{$language['stopwatching']}</a>
+	 <?php endif; ?>
 	 <?php endif; ?>
 
 	 <?php else: ?>

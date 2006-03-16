@@ -459,6 +459,7 @@ div#taskdetails {
 	background-color:#e6eef6;
 	border:1px solid #000;
 	margin:2em 0 1em;
+	position:relative;
 }
 
 div#taskdetails h2 {
@@ -994,6 +995,7 @@ a.pendingreq {
 span#navigation {
 	position:absolute;
 	right:1em;
+	top:-2em;
 }
 
 span#navigation a#next {

@@ -128,9 +128,8 @@ if (in_array('attachments', $visible)) {
 if (Get::has('dev') || in_array('assignedto', $visible)) {
     $from   .= ' LEFT JOIN  {assigned} ass      ON t.task_id = ass.task_id ';
     $from   .= ' LEFT JOIN  {users} u           ON ass.user_id = u.user_id ';
-    $select .= ' u.real_name                    AS assigned_to_name, ';
+    $select .= ' min(u.real_name)                    AS assigned_to_name, ';
     $select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
-    $groupby .= 'u.real_name, ';
 }
 
 $where      = array('project_is_active = ?');

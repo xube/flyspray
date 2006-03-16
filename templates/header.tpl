@@ -90,4 +90,4 @@
         </form>
       </div>
 
-      <div id="intromessage">{!@$intro_message}</div>
+      <div <?php if (!@$intro_message): ?>style="height:0"<?php endif; ?> id="intromessage">{!@$intro_message} &nbsp;</div>
