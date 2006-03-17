@@ -369,6 +369,7 @@ div#search input.text,div#search button {
 
 div#search label.multisel {
 	position:absolute;
+	margin-left:-0.3em;
 }
 	
 div#search input.users {
@@ -387,6 +388,14 @@ div#search input#searchtext {
 div#search fieldset {
 	padding:0 0.5em 0.5em;
 	margin:0.3em 0;
+}
+
+div#search img {
+	vertical-align:middle;
+}
+
+span#searchstate {
+	font-weight:bold;
 }
 
 div#search select {

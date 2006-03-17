@@ -100,7 +100,7 @@ class Notifications {
 
       debug_print("We are configured to use Jabber...");
 
-      require_once(BASEDIR '/includes/class.jabber.php');
+      require_once(BASEDIR . '/includes/class.jabber.php');
       $JABBER = new Jabber;
 
       $JABBER->server      = $fs->prefs['jabber_server'];

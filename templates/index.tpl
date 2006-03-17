@@ -25,9 +25,10 @@
         <input class="text" id="searchtext" name="string" type="text" size="20"
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
-        <span onclick="toggleSearchBox();" style="cursor:pointer">
+        <span id="searchstate" onclick="toggleSearchBox('{$this->themeUrl()}');" style="cursor:pointer">
         <span id="advancedsearchstate" class="showstate">
-          <?php echo (Cookie::val('advancedsearch')) ? '-' : '+'; ?>
+        <img id="advancedsearchstateimg" src="<?php echo (Cookie::val('advancedsearch')) ? $this->themeUrl() . 'edit_remove.png' : $this->themeUrl() . 'edit_add.png'; ?>"
+             alt="<?php echo (Cookie::val('advancedsearch')) ? '-' : '+'; ?>" width="16" height="16" />
         </span>{$language['advanced']}
         </span>
         
@@ -58,6 +59,11 @@
         <label class="default multisel" for="due">{$language['dueversion']}</label>
         <select name="due[]" id="due" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
           {!tpl_options(array('' => $language['dueanyversion']) + $proj->listVersions(false, 3), Get::val('due', ''))}
+        </select>
+        
+        <label class="default multisel" for="reported">{$language['reportedversion']}</label>
+        <select name="reported[]" id="reported" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
+          {!tpl_options(array('' => $language['anyversion']) + $proj->listVersions(false), Get::val('reported', ''))}
         </select>
         
         <label class="default multisel" for="cat">{$language['category']}</label>

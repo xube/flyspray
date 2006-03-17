@@ -5,7 +5,7 @@
   <table class="admin">
     <tr>
       <td><label for="username">{$language['username']}</label></td>
-      <td><input class="required text" id="username" name="user_name" type="text" size="20" maxlength="32" onKeyup="checkname(this.value);" /> {$language['validusername']}<br><strong><span id="errormessage"></span></strong></td>
+      <td><input class="required text" id="username" name="user_name" type="text" size="20" maxlength="32" onBlur="checkname(this.value);" /> {$language['validusername']}<br><strong><span id="errormessage"></span></strong></td>
     </tr>
     <tr>
       <td><label for="realname">{$language['realname']}</label></td>
@@ -27,7 +27,7 @@
           <option value="2">{$language['jabber']}</option>
           <option value="3">{$language['both']}</option>
         </select>
-      </td>
+      </td> 
     </tr>
   </table>
  <div>

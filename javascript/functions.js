@@ -279,16 +279,14 @@ function setUpSearchBox() {
     }
   }
 }
-function toggleSearchBox() {
+function toggleSearchBox(themeurl) {
   var state = Cookie.getVar('advancedsearch');
   if ('1' == state) {
-      var showState = document.getElementById('advancedsearchstate');
-      showState.replaceChild(document.createTextNode('+'),showState.firstChild);
+      $('advancedsearchstateimg').src = themeurl + 'edit_add.png';
       hidestuff('sc2');  
       Cookie.setVar('advancedsearch','0');
   } else {
-      var showState = document.getElementById('advancedsearchstate');
-      showState.replaceChild(document.createTextNode('-'),showState.firstChild);
+      $('advancedsearchstateimg').src = themeurl + 'edit_remove.png';
       showstuff('sc2'); 
       Cookie.setVar('advancedsearch','1');
   }

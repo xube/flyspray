@@ -163,7 +163,7 @@ if (Get::val('tasks') == 'assigned') {
 /// }}}
 
 /// process search-conditions {{{
-$submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version',
+$submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version', 'reported' => 'product_version',
                  'cat' => 'product_category', 'status' => 'item_status',
                  'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
                  'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'));

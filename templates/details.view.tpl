@@ -113,7 +113,7 @@
 
   <div id="taskdetailsfull">
 	 <h3 class="taskdesc">{$language['details']}</h3>
-	 {!tpl_formatText($task_details['detailed_desc'])}
+     <div id="taskdetailstext">{!tpl_formatText($task_details['detailed_desc'])}</div>
 
 	 <?php // XXX stolen from details.tab.comment.tpl keep in sync
 	 if ($user->perms['view_attachments'] || $proj->prefs['others_view']):

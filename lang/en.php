@@ -333,6 +333,7 @@ $language = array(
 'progress'                => 'Progress',
 'searchthisproject'       => 'Search this project for',
 'dueanyversion'           => 'Due In Any Version',
+'anyversion'              => 'Reported In Any Version',
 'dueversion'              => 'Due In Version',
 'lastedit'                => 'Last Edited',
 'os'                      => 'Operating System',
