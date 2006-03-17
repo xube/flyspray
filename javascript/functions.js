@@ -343,7 +343,7 @@ function allow(booler){
     }
     else {
         $('username').style.color ="green";
-        $('buSubmit').style.visibility = "show";
+        $('buSubmit').style.visibility = "visible";
         $('errormessage').innerHTML = "";
     }  
 }
