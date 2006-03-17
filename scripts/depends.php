@@ -25,7 +25,7 @@ if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
 // Configuration information:
 // [FIXME: in the future, this will come from the initial configuration.]
 $path_to_dot = $conf['general']['dot_path']; // Where's the dot executable?
-$path_for_images = "$basedir/attachments"; // What directory do we use for output?
+$path_for_images = BASEDIR . '/attachments'; // What directory do we use for output?
 $fmt = "png"; 
 $id = Req::val('id');
 $page->assign('taskid', 0);
@@ -227,7 +227,7 @@ if (!function_disabled('system')) {
 
     // Now run dot on it:
     $out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
-    $cmd = "$path_to_dot -T $fmt -o$basedir/$out $tname";
+    $cmd = "$path_to_dot -T $fmt -o" . BASEDIR . "/$out $tname";
     $stat = 0;
     $rv  = system($cmd, $stat);
     if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }

@@ -10,7 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 // Include the notifications class
-include_once "$basedir/includes/notify.inc.php";
+include_once BASEDIR . '/includes/notify.inc.php';
 $notify = new Notifications;
 
 if ($lt = Post::val('list_type')) {
@@ -454,6 +454,16 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
 
     if ($reg_details['confirm_code'] != Post::val('confirmation_code')) {
         $_SESSION['ERROR'] = $language['confirmwrong'];
+        $fs->redirect(CreateURL('register'));
+    }
+
+    // Check that no user still exist with this username
+    $sql = $db->Query("SELECT count(*) FROM {users} WHERE user_name = ?",
+            array($reg_details['user_name']));
+    $check = $db->FetchArray($sql);
+    
+    if ($check['count'] >= '1'){
+        $_SESSION['ERROR'] = $language['usernametaken'];
         $fs->redirect(CreateURL('register'));
     }
 

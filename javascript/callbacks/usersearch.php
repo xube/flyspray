@@ -6,8 +6,7 @@
 
 define('IN_FS', true);
 
-$path = dirname(dirname(__FILE__));
-require_once($path . '../../header.php');
+require_once('../../header.php');
 
 if (Req::has('opened')) {
     $searchterm = '%' . Req::val('opened') . '%';

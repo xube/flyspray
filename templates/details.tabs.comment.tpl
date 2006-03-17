@@ -41,10 +41,11 @@
   <span class="attachments">
     <a href="{$baseurl}?getfile={$attachment['attachment_id']}" title="{$attachment['file_type']}">
       <?php
-      // Let's strip the mimetype to get the icon image name
+      // Strip the mimetype to get the icon image name
       list($main) = explode('/', $attachment['file_type']);
+      $imgdir = BASEDIR . "/themes/{$proj->prefs['theme_style']}/mime/";
       $imgpath = "{$baseurl}themes/{$proj->prefs['theme_style']}/mime/";
-      if (file_exists($imgpath.$attachment['file_type'].".png")):
+      if (file_exists($imgdir.$attachment['file_type'] . '.png')):
       ?>
       <img src="{$imgpath}{$attachment['file_type']}.png" alt="({$attachment['file_type']})" title="{$attachment['file_type']}" />
       <?php else: ?>

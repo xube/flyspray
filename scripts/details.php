@@ -20,7 +20,7 @@ if ( !($task_details = $fs->GetTaskDetails($task_id))
     $fs->Redirect( CreateURL('error', null) );
 }
 
-require_once($basedir . '/includes/events.inc.php');
+require_once(BASEDIR . '/includes/events.inc.php');
 
 $page->uses('priority_list', 'severity_list', 'task_details',
             'status_list');

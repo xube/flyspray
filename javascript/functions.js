@@ -332,7 +332,21 @@ function getVoters(id, baseurl, field)
     var url = baseurl + 'javascript/callbacks/getvoters.php?id=' + id;
     var myAjax = new Ajax.Updater(field, url, { method: 'get'});
 }
-
+function checkname(value){
+    new Ajax.Request('javascript/callbacks/searchnames.php?name='+value, {onSuccess: function(t){ allow(t.responseText); } });
+}
+function allow(booler){
+    if(booler.indexOf("false") > -1) {
+        $('username').style.color ="red";
+        $('buSubmit').style.visibility = "hidden";
+        $('errormessage').innerHTML = booler.substring(6,booler.length);
+    }
+    else {
+        $('username').style.color ="green";
+        $('buSubmit').style.visibility = "show";
+        $('errormessage').innerHTML = "";
+    }  
+}
 function getHistory(id, baseurl, field)
 {
     var url = baseurl + 'javascript/callbacks/gethistory.php?id=' + id;
@@ -344,4 +358,3 @@ function getHistoryDetail(id, baseurl, field, details)
     var url = baseurl + 'javascript/callbacks/gethistory.php?id=' + id + '&details=' + details;
     var myAjax = new Ajax.Updater(field, url, { method: 'get'});
 }
-

@@ -42,8 +42,8 @@ define('FS_XMLRPC_VERSION','1.2');
 
 
 // use xmlrpc library (library + server library)
-$basedir . '/includes/xmlrpc.inc';
-$basedir . '/includes/xmlrpcs.inc';
+BASEDIR . '/includes/xmlrpc.inc';
+BASEDIR . '/includes/xmlrpcs.inc';
 
 //////////////////////////////////////////////////
 // Login/Authentication functions               //

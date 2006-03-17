@@ -164,9 +164,8 @@ class Flyspray
     // List languages {{{
     function listLangs()
     {
-        global $basedir;
         $lang_array = array();
-        if ($handle = dir($basedir . '/lang')) {
+        if ($handle = dir(BASEDIR . '/lang')) {
             while (false !== ($file = $handle->read())) {
                 if ($file{0} != '.') {
                     $lang_array[] = str_replace('.php', '', $file);

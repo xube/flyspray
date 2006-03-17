@@ -4,9 +4,7 @@
 // move flyspray.conf.php to a directory where a browser can't access it.
 // (RECOMMENDED).
 
-// Change this line if you move flyspray.conf.php elsewhere
-$basedir = dirname(__FILE__);
-$conf    = @parse_ini_file($basedir . '/flyspray.conf.php', true);
+require_once 'includes/constants.inc.php';
 
 // If it is empty, or lacks 0.9.8 variables, take the user to the setup page
 if (count($conf) == 0 || !isset($conf['general']['baseurl'])) {
@@ -17,31 +15,30 @@ if (substr($baseurl = $conf['general']['baseurl'], -1) != '/') {
     $baseurl .= '/';
 }
 
-require_once "$basedir/includes/constants.inc.php";
-require_once "$basedir/includes/fix.inc.php";
-require_once "$basedir/includes/class.gpc.php";
+require_once BASEDIR . '/includes/fix.inc.php';
+require_once BASEDIR . '/includes/class.gpc.php';
 
-require_once "$basedir/includes/utf8.inc.php";
-require_once "$basedir/includes/db.inc.php";
-require_once "$basedir/includes/functions.inc.php";
+require_once BASEDIR . '/includes/utf8.inc.php';
+require_once BASEDIR . '/includes/db.inc.php';
+require_once BASEDIR . '/includes/functions.inc.php';
 
-require_once "$basedir/includes/class.backend.php";
-require_once "$basedir/includes/class.project.php";
-require_once "$basedir/includes/class.user.php";
-require_once "$basedir/includes/class.tpl.php";
+require_once BASEDIR . '/includes/class.backend.php';
+require_once BASEDIR . '/includes/class.project.php';
+require_once BASEDIR . '/includes/class.user.php';
+require_once BASEDIR . '/includes/class.tpl.php';
 
-require_once "$basedir/lang/en.php";
+require_once BASEDIR . '/lang/en.php';
 
 $db = new Database;
 $db->dbOpenFast($conf['database']);
 $fs = new Flyspray;
 $be = new Backend;
 
-if (file_exists($basedir . '/sql/index.html') && strpos($fs->version, 'dev') === false) {
-    die('Please empty the folder "' . $basedir . DIRECTORY_SEPARATOR . 'sql" before you start using Flyspray.');
+if (file_exists(BASEDIR . '/sql/index.html') && strpos($fs->version, 'dev') === false) {
+    die('Please empty the folder "' . BASEDIR . DIRECTORY_SEPARATOR . 'sql" before you start using Flyspray.');
 }
 
-require_once "$basedir/includes/regexp.php";
+require_once BASEDIR . '/includes/regexp.php';
 
 // Any "do" mode that accepts a task_id or id field should be added here.
 if (in_array(Req::val('do'), array('details', 'depends', 'modify'))) {
@@ -68,7 +65,7 @@ $proj->checkExists();
 $proj->setCookie();
 
 // Load translations
-$translation = "$basedir/lang/{$proj->prefs['lang_code']}.php";
+$translation = BASEDIR . "/lang/{$proj->prefs['lang_code']}.php";
 if ($proj->prefs['lang_code'] != 'en' && file_exists($translation)) {
     include_once($translation);
     $language = array_merge($language, $translation);

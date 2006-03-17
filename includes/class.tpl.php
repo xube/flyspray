@@ -74,7 +74,6 @@ class Tpl
     
     function display($_tpl, $_arg0 = null, $_arg1 = null)
     {
-        global $basedir;
         // if only plain text
         if(is_array($_tpl)) {
             echo $_tpl[0];
@@ -82,10 +81,10 @@ class Tpl
         }
         
         // theming part
-        if (file_exists($basedir . '/' . $this->_theme.$_tpl)) {
-            $_tpl_data = file_get_contents($basedir . '/' . $this->_theme.$_tpl);
+        if (file_exists(BASEDIR . '/' . $this->_theme.$_tpl)) {
+            $_tpl_data = file_get_contents(BASEDIR . '/' . $this->_theme.$_tpl);
         } else {
-            $_tpl_data = file_get_contents($basedir . '/' . 'templates/'.$_tpl);
+            $_tpl_data = file_get_contents(BASEDIR . '/' . 'templates/'.$_tpl);
         }
 
         // compilation part
@@ -414,7 +413,7 @@ function tpl_img($src, $alt)
 // {{{ Text formatting
 function tpl_formattext($text, $onyfs = false)
 {
-    global $conf, $baseurl, $basedir;
+    global $conf, $baseurl;
     if ($conf['general']['wiki_syntax'] && !$onyfs) {
         // Unfortunately dokuwiki also uses $conf
         $fs_conf = $conf;
@@ -423,9 +422,9 @@ function tpl_formattext($text, $onyfs = false)
         // Dokuwiki generates some notices
         error_reporting(E_ALL ^ E_NOTICE);
         
-        require_once($basedir . '/includes/dokuwiki/inc/parser/parser.php');
-        require_once($basedir . '/includes/dokuwiki/inc/common.php');
-        require_once($basedir . '/includes/dokuwiki/inc/parser/xhtml.php');
+        require_once(BASEDIR . '/includes/dokuwiki/inc/parser/parser.php');
+        require_once(BASEDIR . '/includes/dokuwiki/inc/common.php');
+        require_once(BASEDIR . '/includes/dokuwiki/inc/parser/xhtml.php');
         
         $modes = p_get_parsermodes();
         

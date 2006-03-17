@@ -6,9 +6,8 @@
 
 define('IN_FS', true);
 
-$path = dirname(dirname(__FILE__));
-require_once($path . '../../header.php');
-require_once($path . '../../includes/events.inc.php');
+require_once('../../header.php');
+require_once('../../includes/events.inc.php');
 
 // Initialise user
 if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {

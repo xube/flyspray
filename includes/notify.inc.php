@@ -87,7 +87,7 @@ class Notifications {
    // {{{ Send Jabber messages that were stored earlier
    function SendJabber()
    {
-      global $db, $fs, $basedir;
+      global $db, $fs;
 
       debug_print("Checking Flyspray Jabber configuration...");
 
@@ -100,7 +100,7 @@ class Notifications {
 
       debug_print("We are configured to use Jabber...");
 
-      require_once("$basedir/includes/class.jabber.php");
+      require_once(BASEDIR '/includes/class.jabber.php');
       $JABBER = new Jabber;
 
       $JABBER->server      = $fs->prefs['jabber_server'];

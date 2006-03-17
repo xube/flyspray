@@ -124,8 +124,9 @@
 		  <?php
 		  // Strip the mimetype to get the icon image name
 		  list($main) = explode('/', $attachment['file_type']);
-		  $imgpath = "{$baseurl}themes/{$proj->prefs['theme_style']}/mime/";
-		  if (file_exists($imgpath.$attachment['file_type'].".png")):
+		  $imgdir = BASEDIR . "/themes/{$proj->prefs['theme_style']}/mime/";
+          $imgpath = "{$baseurl}themes/{$proj->prefs['theme_style']}/mime/";
+		  if (file_exists($imgdir.$attachment['file_type'] . '.png')):
 		  ?>
 		  <img src="{$imgpath}{$attachment['file_type']}.png" alt="({$attachment['file_type']})" title="{$attachment['file_type']}" />
 		  <?php else: ?>

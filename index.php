@@ -63,7 +63,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
     if (file_exists("attachments/$file_name")
             && ($proj->prefs['others_view'] || $user->perms['view_attachments']))
     {
-        $path = "$basedir/attachments/$file_name";
+        $path = BASEDIR . "/attachments/$file_name";
 
         header('Pragma: public');
         header("Content-type: $file_type");
@@ -163,7 +163,7 @@ $page->assign('do', $do);
 $page->pushTpl('header.tpl');
 
 // Show the page the user wanted
-require("$basedir/scripts/$do.php");
+require(BASEDIR . "/scripts/$do.php");
 
 $page->pushTpl('footer.tpl');
 $page->setTheme($proj->prefs['theme_style']);
@@ -172,6 +172,6 @@ $page->render();
 unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
 
 if (!empty($conf['debug'])) {
-    require ($basedir . '/includes/debug.inc.php');
+    require (BASEDIR . '/includes/debug.inc.php');
 }
 ?>
