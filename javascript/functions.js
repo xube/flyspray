@@ -176,7 +176,7 @@ function updateDualSelectValue(id)
 
     var i;
     for (i=0; i < rt.options.length; i++) {
-        val.value += ' ' + rt.options[i].value;
+        val.value += (i > 0 ? ' ' : '') + rt.options[i].value;
     }
 }
 

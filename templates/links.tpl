@@ -11,7 +11,7 @@
 	</div>
   </li>
 <?php
-if ($proj->id != '0' && $user->perms['open_new_tasks']): ?>
+if ($proj->id != 0 && $user->perms['open_new_tasks']): ?>
   <li>
   <a id="newtasklink" href="{CreateURL('newtask', $proj_id)}"
     accesskey="a">{$language['addnewtask']}</a>
@@ -19,7 +19,7 @@ if ($proj->id != '0' && $user->perms['open_new_tasks']): ?>
 <?php
 endif;
 
-if ($proj->id != '0' && $user->perms['view_reports']): ?>
+if ($proj->id != 0 && $user->perms['view_reports']): ?>
   <li>
   <a id="reportslink" href="{CreateURL('reports', null)}">{$language['reports']}</a>
   </li>
@@ -48,7 +48,7 @@ endif; ?>
   </li>
 <?php endif; ?>
 
-<?php if ($proj->id != '0' && $user->perms['manage_project']): ?>
+<?php if ($proj->id != 0 && $user->perms['manage_project']): ?>
   <li>
   <a id="projectslink"
     href="{CreateURL('pm', 'prefs', $proj_id)}">{$language['manageproject']}</a>

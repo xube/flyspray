@@ -1,6 +1,15 @@
 <p>{$language['listnote']}</p>
 <form action="{$baseurl}" method="post">
   <table class="list">
+   <thead>
+     <tr>
+       <th>{$language['name']}</th>
+       <th>{$language['order']}</th>
+       <th>{$language['show']}</th>
+       <?php if ($list_type == 'version'): ?><th>{$language['tense']}</th><?php endif; ?>
+       <th>{$language['delete']}</th>
+     </tr>
+   </thead>
     <?php
     $countlines = -1;
     foreach ($rows as $row):
@@ -8,31 +17,28 @@
     <tr>
       <td>
         <input type="hidden" name="id[]" value="{$row[$list_type.'_id']}" />
-        <label for="listname{$countlines}">{$language['name']}</label>
         <input id="listname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]"
           value="{$row[$list_type.'_name']}" />
       </td>
       <td title="The order these items will appear in the list">
-        <label for="listposition{$countlines}">{$language['order']}</label>
         <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$row['list_position']}" />
       </td>
       <td title="Show this item in the list">
-        <label for="showinlist{$countlines}">{$language['show']}</label>
         {!tpl_checkbox('show_in_list['.$countlines.']', $row['show_in_list'], 'showinlist'.$countlines)}
       </td>
       <?php if ($list_type == 'version'): ?>
       <td title="{$language['listtensetip']}">
-        <label for="tense{$countlines}">{$language['tense']}</label>
         <select id="tense{$countlines}" name="{$list_type}_tense[]">
           {!tpl_options(array(1=>$language['past'], 2=>$language['present'], 3=>$language['future']), $row[$list_type.'_tense'])}
         </select>
       </td>
       <?php endif; ?>
       <td title="Delete this item from the list">
-        <?php if (!$row['used_in_tasks'] && !($list_type == 'status' && $row[$list_type.'_id'] < 8)): ?>
-        <label for="delete{$row[$list_type.'_id']}">{$language['delete']}</label>
-        <input id="delete{$row[$list_type.'_id']}" type="checkbox" name="delete[{$row[$list_type.'_id']}]" value="1" />
+        <input id="delete{$row[$list_type.'_id']}" type="checkbox"
+        <?php if ($row['used_in_tasks'] || ($list_type == 'status' && $row[$list_type.'_id'] < 8)): ?>
+        disabled="disabled"
         <?php endif; ?>
+        name="delete[{$row[$list_type.'_id']}]" value="1" />
       </td>
     </tr>
     <?php endforeach; ?>
@@ -70,20 +76,16 @@
         <input type="hidden" name="project_id" value="{$proj->id}" />
         <?php endif; ?>
         <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-        <label for="listnamenew">{$language['name']}</label>
         <input id="listnamenew" class="text" type="text" size="15" maxlength="40" name="list_name" />
       </td>
       <td>
-        <label for="listpositionnew">{$language['order']}</label>
         <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" name="list_position" />
       </td>
       <td>
-        <label for="showinlistnew">{$language['show']}</label>
         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
       </td>
       <?php if ($list_type == 'version'): ?>
       <td title="{$language['listtensetip']}">
-        <label for="tensenew">{$language['tense']}</label>
         <select id="tensenew" name="{$list_type}_tense">
           {!tpl_options(array(1=>$language['past'], 2=>$language['present'], 3=>$language['future']), 2)}
         </select>

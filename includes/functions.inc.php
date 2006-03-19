@@ -260,7 +260,7 @@ class Flyspray
         global $db;
 
         // Get current user details.  We need this to see if their account is enabled or disabled
-        $result = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array($user_id));
+        $result = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array(intval($user_id)));
         return $db->FetchArray($result);
     } // }}}
     // Get group details {{{

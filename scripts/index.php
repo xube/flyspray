@@ -10,11 +10,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if ($proj->id !== '0' && !$user->can_view_project($proj)) {
-    $fs->Redirect( CreateURL('error', null) );
-}
-
-if ($proj->id === '0' && !$user->perms['is_admin']) {
+if ($proj->id != 0 && !$user->can_view_project($proj)) {
     $fs->Redirect( CreateURL('error', null) );
 }
 
@@ -67,7 +63,7 @@ $keys   = array('string', 'type', 'sev', 'dev', 'due', 'cat', 'status', 'date',
         'project', 'task', 'opened', 'changedsincedate');
 $keys   = array_map('keep', $keys);
 $keys   = array_filter($keys,  create_function('$x', 'return !is_null($x);'));
-$keys[] = $proj->id === '0' ? 'project=0' : "project=".$proj->id;
+$keys[] = $proj->id == 0 ? 'project=0' : "project=".$proj->id;
 $get    = htmlspecialchars(join('&', $keys));
 
 // Get the visibility state of all columns
@@ -135,7 +131,7 @@ if (Get::has('dev') || in_array('assignedto', $visible)) {
 $where      = array('project_is_active = ?');
 $sql_params = array('1');
 
-if ($proj->id == '0') {
+if ($proj->id == 0) {
     // If the user wants to view tasks from all projects
     // XXX take $project_list from index.php
 
@@ -262,12 +258,15 @@ if (Get::val('tasks') == 'watched') {
 $where = join(' AND ', $where);
 
 //Get the column names of table tasks for the group by statement
-$column_names = $db->GetColumnNames('{tasks}');
-foreach ($column_names as $key => $value){
-    $column_names[$key] = 't.' . $value;
+if ($conf['database']['dbtype'] == 'pgsql') {
+    $column_names = $db->GetColumnNames('{tasks}');
+    foreach ($column_names as $key => $value){
+        $column_names[$key] = 't.' . $value;
+    }
+    $groupby .= implode(', ' , $column_names) . ', p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name';
+} elseif ($conf['database']['dbtype'] == 'mysql') {
+    $groupby = 't.task_id';
 }
-$groupby .= implode(', ' , $column_names);
-/* }}} */
 
 // Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
 $sql = $db->Query("
@@ -277,7 +276,7 @@ $sql = $db->Query("
               lt.tasktype_name AS task_type
      FROM     $from
      WHERE    $where 
-     GROUP BY $groupby, p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name
+     GROUP BY $groupby
      ORDER BY $sortorder", $sql_params);
 
 $tasks = $db->fetchAllArray($sql);

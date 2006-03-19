@@ -24,6 +24,10 @@ div#votes {
 	padding-bottom:0.5em;
 }
 
+table.list thead th {
+	text-align:left;
+}
+
 /* fancy dual selects */
 .double_select td {
 	vertical-align: middle;
