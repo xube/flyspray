@@ -26,6 +26,10 @@ class Database
 
     function dbOpen($dbhost = '', $dbuser = '', $dbpass = '', $dbname = '', $dbtype = '', $dbprefix = '')
     {
+        if (strcasecmp($dbtype, 'mysql') && strcasecmp($dbtype, 'pgsql')) {
+            die('Unsupported database type: '. $dbtype);
+        }
+        
         $this->dbtype   = $dbtype;
         $this->dbprefix = $dbprefix;
 

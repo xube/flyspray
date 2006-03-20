@@ -8,7 +8,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$page->setTitle('Flyspray :: ' . $language['roadmap']);
+$page->setTitle('Flyspray :: ' . L('roadmap'));
 
 // Get milestones
 $milestones = $db->Query('SELECT   version_id, version_name

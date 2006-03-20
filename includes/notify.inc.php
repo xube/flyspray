@@ -294,7 +294,7 @@ class Notifications {
    // {{{ Create a message for any occasion
    function GenerateMsg($type, $task_id, $arg1='0')
    {
-      global $db, $fs, $user, $language;
+      global $db, $fs, $user;
 
       // Get the task details
       $task_details = $fs->getTaskDetails($task_id);
@@ -302,14 +302,14 @@ class Notifications {
 
       // Set the due date correctly
       if ($task_details['due_date'] == '0') {
-         $due_date = $language['undecided'];
+         $due_date = L('undecided');
       } else {
          $due_date = formatDate($task_details['due_date']);
       }
 
       // Set the due version correctly
       if ($task_details['closedby_version'] == '0') {
-         $task_details['closedby_version'] = $language['undecided'];
+         $task_details['closedby_version'] = L('undecided');
       }
 
       // Generate the nofication message
@@ -318,7 +318,7 @@ class Notifications {
                                     array($proj->prefs['project_title'], $task_details['item_summary'], $task_id),
                                     $proj->prefs['notify_subject']);
       } else {
-          $subject = $language['notifyfrom'] . $proj->prefs['project_title'];
+          $subject = L('notifyfrom') . $proj->prefs['project_title'];
       }
 
 
@@ -346,51 +346,51 @@ class Notifications {
       // {{{ New task opened
       if ($type == '1')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .=  $language['newtaskopened'] . "\n\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $language['attachedtoproject'] . ' - ' .  $task_details['project_title'] . "\n";
-         $body .= $language['summary'] . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['tasktype'] . ' - ' . $task_details['tasktype_name'] . "\n";
-         $body .= $language['category'] . ' - ' . $task_details['category_name'] . "\n";
-         $body .= $language['status'] . ' - ' . $task_details['status_name'] . "\n";
-         $body .= $language['assignedto'] . ' - ' . implode(', ', $task_details['assigned_to_name']) . "\n";
-         $body .= $language['operatingsystem'] . ' - ' . $task_details['os_name'] . "\n";
-         $body .= $language['severity'] . ' - ' . $task_details['severity_name'] . "\n";
-         $body .= $language['priority'] . ' - ' . $task_details['priority_name'] . "\n";
-         $body .= $language['reportedversion'] . ' - ' . $task_details['reported_version_name'] . "\n";
-         $body .= $language['dueinversion'] . ' - ' . $task_details['due_in_version_name'] . "\n";
-         $body .= $language['duedate'] . ' - ' . $due_date . "\n";
-         $body .= $language['details'] . ' - ' . $task_details['detailed_desc'] . "\n\n";
-         $body .= $language['moreinfo'] . "\n";
+         $body = L('donotreply') . "\n\n";
+         $body .=  L('newtaskopened') . "\n\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+         $body .= L('attachedtoproject') . ' - ' .  $task_details['project_title'] . "\n";
+         $body .= L('summary') . ' - ' . $task_details['item_summary'] . "\n";
+         $body .= L('tasktype') . ' - ' . $task_details['tasktype_name'] . "\n";
+         $body .= L('category') . ' - ' . $task_details['category_name'] . "\n";
+         $body .= L('status') . ' - ' . $task_details['status_name'] . "\n";
+         $body .= L('assignedto') . ' - ' . implode(', ', $task_details['assigned_to_name']) . "\n";
+         $body .= L('operatingsystem') . ' - ' . $task_details['os_name'] . "\n";
+         $body .= L('severity') . ' - ' . $task_details['severity_name'] . "\n";
+         $body .= L('priority') . ' - ' . $task_details['priority_name'] . "\n";
+         $body .= L('reportedversion') . ' - ' . $task_details['reported_version_name'] . "\n";
+         $body .= L('dueinversion') . ' - ' . $task_details['due_in_version_name'] . "\n";
+         $body .= L('duedate') . ' - ' . $due_date . "\n";
+         $body .= L('details') . ' - ' . $task_details['detailed_desc'] . "\n\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
       // {{{ Task details changed
       if ($type == '2')
       {
-         $translation = array('priority_name' => $language['priority'],
-                              'severity_name' => $language['severity'],
-                              'status_name'   => $language['status'],
-                              'assigned_to_name' => $language['assignedto'],
-                              'due_in_version_name' => $language['dueinversion'],
-                              'reported_version_name' => $language['reportedversion'],
-                              'tasktype_name' => $language['tasktype'],
-                              'os_name' => $language['operatingsystem'],
-                              'category_name' => $language['category'],
-                              'due_date' => $language['duedate'],
-                              'percent_complete' => $language['percentcomplete'],
-                              'item_summary' => $language['summary'],
-                              'due_in_version_name' => $language['dueinversion'],
-                              'detailed_desc' => $language['taskedited'],
-                              'project_title' => $language['attachedtoproject']);
+         $translation = array('priority_name' => L('priority'),
+                              'severity_name' => L('severity'),
+                              'status_name'   => L('status'),
+                              'assigned_to_name' => L('assignedto'),
+                              'due_in_version_name' => L('dueinversion'),
+                              'reported_version_name' => L('reportedversion'),
+                              'tasktype_name' => L('tasktype'),
+                              'os_name' => L('operatingsystem'),
+                              'category_name' => L('category'),
+                              'due_date' => L('duedate'),
+                              'percent_complete' => L('percentcomplete'),
+                              'item_summary' => L('summary'),
+                              'due_in_version_name' => L('dueinversion'),
+                              'detailed_desc' => L('taskedited'),
+                              'project_title' => L('attachedtoproject'));
                               
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['taskchanged'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('taskchanged') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ': ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= L('userwho') . ': ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          
          foreach($arg1 as $change)
          {
@@ -405,9 +405,9 @@ class Notifications {
                 $body .= $translation[$change[0]] . ': ' . ( ($change[1]) ? $change[1] : '[-]' ) . ' -> ' . ( ($change[2]) ? $change[2] : '[-]' ) . "\n";
             }
          }
-         $body .= "\n" . $language['moreinfo'] . "\n";
+         $body .= "\n" . L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
 
@@ -415,20 +415,20 @@ class Notifications {
       // {{{ Task closed
       if ($type == '3')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .=  $language['notify.taskclosed'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .=  L('notify.taskclosed') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $language['reasonforclosing'] . ' ' . $task_details['resolution_name'] . "\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+         $body .= L('reasonforclosing') . ' ' . $task_details['resolution_name'] . "\n";
 
          if (!empty($task_details['closure_comment']))
          {
-            $body .= $language['closurecomment'] . ' - ' . $task_details['closure_comment'] . "\n\n";
+            $body .= L('closurecomment') . ' - ' . $task_details['closure_comment'] . "\n\n";
          }
 
-         $body .= $language['moreinfo'] . "\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
 
@@ -436,13 +436,13 @@ class Notifications {
       // {{{ Task re-opened
       if ($type == '4')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .=  $language['notify.taskreopened'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .=  L('notify.taskreopened') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] .  ")\n\n";
-         $body .= $language['moreinfo'] . "\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] .  ")\n\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
@@ -451,15 +451,15 @@ class Notifications {
       {
          $depend_task = $fs->getTaskDetails($arg1);
 
-         $body = $language['donotreply'] . "\n\n";
-         $body .=  $language['newdep'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .=  L('newdep') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
-         $body .= $language['newdepis'] . ':' . "\n\n";
+         $body .= L('newdepis') . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
          $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
 
@@ -469,15 +469,15 @@ class Notifications {
       {
          $depend_task = $fs->getTaskDetails($arg1);
          
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['notify.depremoved'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('notify.depremoved') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
-         $body .= $language['removeddepis'] . ':' . "\n\n";
+         $body .= L('removeddepis') . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
          $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
@@ -494,20 +494,20 @@ class Notifications {
                              );
          $comment = $db->FetchArray($result);
 
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['notify.commentadded'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('notify.commentadded') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= "----------\n";
          $body .= $comment['comment_text'] . "\n";
          $body .= "----------\n\n";
 
          if ($arg1 == 'files')
-            $body .= $language['fileaddedtoo'] . "\n\n";
+            $body .= L('fileaddedtoo') . "\n\n";
 
-         $body .= $language['moreinfo'] . "\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . '#comment' . $comment['comment_id'] . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
 
@@ -515,13 +515,13 @@ class Notifications {
       // {{{ Attachment added
       if ($type == '8')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['newattachment'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('newattachment') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $language['moreinfo'] . "\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
@@ -530,28 +530,28 @@ class Notifications {
       {
          $related_task = $fs->getTaskDetails($arg1);
 
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['notify.relatedadded'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('notify.relatedadded') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
-         $body .= $language['relatedis'] . ':' . "\n\n";
+         $body .= L('relatedis') . ':' . "\n\n";
          $body .= 'FS#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\n";
          $body .= CreateURL('details', $related_task['task_id']) . "\n\n";
 
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
       // {{{ Ownership taken
       if ($type == '10')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .= implode(', ', $task_details['assigned_to_name']) . ' ' . $language['takenownership'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= implode(', ', $task_details['assigned_to_name']) . ' ' . L('takenownership') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n\n";
-         $body .= $language['moreinfo'] . "\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
@@ -561,52 +561,52 @@ class Notifications {
          // We need to work out how to move the confirmation code message generation
          // from scripts/modify.php to here.
 
-         $language['notifyfrom'] . $proj->prefs['project_title'];
+         L('notifyfrom') . $proj->prefs['project_title'];
 
-         $body = $language['donotreply'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
          // Confirmation code message goes here
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
       // {{{ Pending PM request
       if ($type == '12')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['requiresaction'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('requiresaction') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $language['moreinfo'] . "\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
       // {{{ PM request denied
       if ($type == '13')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['pmdeny'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('pmdeny') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $language['denialreason'] . ':' . "\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+         $body .= L('denialreason') . ':' . "\n";
          $body .= $arg1 . "\n\n";
-         $body .= $language['moreinfo'] . "\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
       // {{{ New assignee
       if ($type == '14')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['assignedtoyou'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('assignedtoyou') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
-         $body .= $language['moreinfo'] . "\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+         $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
@@ -615,15 +615,15 @@ class Notifications {
       {
          $depend_task = $fs->getTaskDetails($arg1);
 
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['taskwatching'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('taskwatching') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
-         $body .= $language['isdepfor'] . ':' . "\n\n";
+         $body .= L('isdepfor') . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
          $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
@@ -632,27 +632,27 @@ class Notifications {
       {
          $depend_task = $fs->getTaskDetails($arg1);
 
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['taskwatching'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('taskwatching') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
-         $body .= $language['isnodepfor'] . ':' . "\n\n";
+         $body .= L('isnodepfor') . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
          $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
 
          return array($subject, $body);
       } // }}}
       // {{{ User added to assignees list
       if ($type == '16')
       {
-         $body = $language['donotreply'] . "\n\n";
-         $body .= $language['useraddedtoassignees'] . "\n\n";
+         $body = L('donotreply') . "\n\n";
+         $body .= L('useraddedtoassignees') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
-         $body .= $language['userwho'] . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+         $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
-         $body .= $language['disclaimer'];
+         $body .= L('disclaimer');
       } // }}}
    
    } // }}}

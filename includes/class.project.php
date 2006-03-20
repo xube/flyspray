@@ -7,7 +7,7 @@ class Project
 
     function Project($id)
     {
-        global $db, $language, $fs;
+        global $db, $fs;
 
         if ($id != 0) {
             $sql = $db->Query("SELECT * FROM {projects} WHERE project_id = ?", array($id));
@@ -19,7 +19,7 @@ class Project
         }
         
         $this->id = 0;
-        $this->prefs['project_title'] = $language['allprojects'];
+        $this->prefs['project_title'] = L('allprojects');
         $this->prefs['theme_style']   = $fs->prefs['global_theme'];
         $this->prefs['lang_code']   = $fs->prefs['lang_code'];
         $this->prefs['project_is_active'] = 1;
@@ -295,7 +295,7 @@ class Project
       }
     
       // Get the list of global groups that can be assigned tasks
-      $these_groups = explode(' ', $fs->prefs['assigned_groups']);
+      $these_groups = $fs->int_explode(' ', $fs->prefs['assigned_groups']);
       foreach ($these_groups AS $key => $val)
       {
          // Get the list of users from the global groups above

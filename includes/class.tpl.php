@@ -132,7 +132,7 @@ class FSTpl extends Tpl
 
 function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','assignedto','percent_complete'))
 {
-    global $fs, $language, $user, $db, $proj;
+    global $fs, $user, $db, $proj;
 
     if (!is_array($task)) {
         $task = $fs->GetTaskDetails($task, true);
@@ -145,7 +145,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     if ($user->can_view_task($task)) {
         $summary = htmlspecialchars(utf8_substr($task['item_summary'], 0, 64), ENT_QUOTES, 'utf-8');
     } else {
-        $summary = $language['taskmadeprivate'];
+        $summary = L('taskmadeprivate');
     }
     
     $title_text = array();
@@ -220,7 +220,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
 
 function tpl_userlink($uid)
 {
-    global $db, $fs, $language;
+    global $db, $fs;
 
     static $cache = array();
 
@@ -233,7 +233,7 @@ function tpl_userlink($uid)
                 .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
                 .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
         } else {
-            $cache[$uid] = $language['anonymous'];
+            $cache[$uid] = L('anonymous');
         }
     }
 
@@ -508,7 +508,7 @@ function formatDate($timestamp, $extended = false, $default = '')
 // {{{ Draw permissions table
 function tpl_draw_perms($perms)
 {
-    global $language,$proj;
+    global $proj;
 
     $perm_fields = array('is_admin', 'manage_project', 'view_tasks',
             'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
@@ -523,8 +523,8 @@ function tpl_draw_perms($perms)
             '<td class="good">Yes</td>');
 
     // FIXME: html belongs in a template, not in the template class
-    $html = '<table border="1" onmouseover="perms.show()" onmouseout="perms.hide()">';
-    $html .= '<thead><tr><th colspan="2">'.$language['permissionsforproject'].$proj->prefs['project_title'].'</th></tr></thead><tbody>';
+    $html = '<table border="1" onmouseover="perms.hide()" onmouseout="perms.hide()">';
+    $html .= '<thead><tr><th colspan="2">'.L('permissionsforproject').$proj->prefs['project_title'].'</th></tr></thead><tbody>';
 
     foreach ($perms as $key => $val) {
         if (!is_numeric($key) && in_array($key, $perm_fields)) {
@@ -643,7 +643,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
 function pagenums($pagenum, $perpage, $totalcount, $extraurl)
 {
-    global $db, $language, $fs;
+    global $db, $fs;
 
     $extraurl = '&amp;' . $extraurl;
 
@@ -652,7 +652,7 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
         $perpage = $totalcount > 0 ? $totalcount : 1;
     }
     $pages  = ceil($totalcount / $perpage);
-    $output = sprintf($language['page'], $pagenum, $pages);
+    $output = sprintf(L('page'), $pagenum, $pages);
 
     if (!($totalcount / $perpage <= 1)) {
         $output .= '<span class="DoNotPrint"> &nbsp;&nbsp;--&nbsp;&nbsp; ';
@@ -661,10 +661,10 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
         $finish = min($pages, $pagenum + 3);
 
         if ($start > 1)
-            $output .= '<a href="?pagenum=1' . $extraurl . "\">&lt;&lt; {$language['first']} </a>";
+            $output .= '<a href="?pagenum=1' . $extraurl . '">&lt;&lt;' . L('first') . ' </a>';
 
         if ($pagenum > 1)
-            $output .= '<a id="previous" accesskey="p" href="?pagenum=' . ($pagenum - 1) . $extraurl . "\">&lt; {$language['previous']}</a> - ";
+            $output .= '<a id="previous" accesskey="p" href="?pagenum=' . ($pagenum - 1) . $extraurl . '">&lt; ' . L('previous') . '</a> - ';
 
         for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
             if ($pagelink != $start)
@@ -678,9 +678,9 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
         }
 
         if ($pagenum < $pages)
-            $output .= ' - <a id="next" accesskey="n" href="?pagenum=' . ($pagenum + 1). $extraurl . "\">{$language['next']} &gt;</a>";
+            $output .= ' - <a id="next" accesskey="n" href="?pagenum=' . ($pagenum + 1). $extraurl . '">' . L('next') . ' &gt;</a>';
         if ($finish < $pages)
-            $output .= '<a href="?pagenum=' . $pages . $extraurl . "\"> {$language['last']} &gt;&gt;</a>";
+            $output .= '<a href="?pagenum=' . $pages . $extraurl . '"> ' . L('last') . ' &gt;&gt;</a>';
         $output .= '</span>';
     }
 

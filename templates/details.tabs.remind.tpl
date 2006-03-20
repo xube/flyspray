@@ -7,69 +7,69 @@
       <input type="hidden" name="action" value="deletereminder" />
       <input type="hidden" name="task_id" value="{Get::val('id')}" />
       <input type="hidden" name="reminder_id" value="{$row['reminder_id']}" />
-      <button type="submit">{$language['remove']}</button>
+      <button type="submit">{L('remove')}</button>
     </div>
   </form>
-  <em>{$language['remindthisuser']}:</em>
+  <em>{L('remindthisuser')}:</em>
   <a href="?do=admin&amp;area=users&amp;id={$row['to_user_id']}">
     {$row['real_name']} ({$row['user_name']})</a>
   <br />
   <?php
       // Work out the unit of time to display
       if ($row['how_often'] < 86400) {
-          $how_often = $row['how_often'] / 3600 . " " . $language['hours'];
+          $how_often = $row['how_often'] / 3600 . " " . L('hours');
       } elseif ($row['how_often'] < 604800) {
-          $how_often = $row['how_often'] / 86400 . " " . $language['days'];
+          $how_often = $row['how_often'] / 86400 . " " . L('days');
       } else {
-          $how_often = $row['how_often'] / 604800 . " " . $language['weeks'];
+          $how_often = $row['how_often'] / 604800 . " " . L('weeks');
       }
   ?>
 
-  <em>{$language['thisoften']}:</em> {$how_often}
+  <em>{L('thisoften')}:</em> {$how_often}
   <br />
-  <em>{$language['message']}:</em> {!tpl_formatText($row['reminder_message'])}
+  <em>{L('message')}:</em> {!tpl_formatText($row['reminder_message'])}
   <br /><br />
   <?php endforeach; ?>
 
-  <fieldset><legend>{$language['addreminder']}</legend>
+  <fieldset><legend>{L('addreminder')}</legend>
   <form action="{$baseurl}" method="post" id="formaddreminder">
     <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addreminder" />
       <input type="hidden" name="task_id" value="{Get::val('id')}" />
 
-      <em>{$language['remindthisuser']}</em>
+      <em>{L('remindthisuser')}</em>
       <select class="adminlist" name="to_user_id">
         {!tpl_options($proj->UserList())}
       </select>
 
       <br />
 
-      <em>{$language['thisoften']}</em>
+      <em>{L('thisoften')}</em>
       <input class="text" type="text" name="timeamount1" size="3" maxlength="3" />
       <select class="adminlist" name="timetype1">
-        <option value="3600">{$language['hours']}</option>
-        <option value="86400">{$language['days']}</option>
-        <option value="604800">{$language['weeks']}</option>
+        <option value="3600">{L('hours')}</option>
+        <option value="86400">{L('days')}</option>
+        <option value="604800">{L('weeks')}</option>
       </select>
 
       <br />
 
-      <em>{$language['startafter']}</em>
+      <em>{L('startafter')}</em>
       <input class="text" type="text" name="timeamount2" size="3" maxlength="3" />
       <select class="adminlist" name="timetype2">
-        <option value="3600">{$language['hours']}</option>
-        <option value="86400">{$language['days']}</option>
-        <option value="604800">{$language['weeks']}</option>
+        <option value="3600">{L('hours')}</option>
+        <option value="86400">{L('days')}</option>
+        <option value="604800">{L('weeks')}</option>
       </select>
 
       <br />
       <textarea class="text" name="reminder_message"
-        rows="10" cols="72">{$language['defaultreminder']}
+        rows="10" cols="72">{L('defaultreminder')}
 
 {CreateURL('details', Get::val('id'))}</textarea>
       <br />
-      <button type="submit">{$language['addreminder']}</button>
+      <button type="submit">{L('addreminder')}</button>
     </div>
   </form>
   </fieldset>

@@ -11,6 +11,8 @@
 --
 -- ========================================================================={{{=
 
+BEGIN;
+
 UPDATE flyspray_admin_requests SET
 	 reason_given = REPLACE(REPLACE(reason_given, '\\\'', '\''), '\\"', '"'),
 	 time_submitted = REPLACE(REPLACE(time_submitted, '\\\'', '\''), '\\"', '"'),
@@ -39,7 +41,7 @@ UPDATE flyspray_history SET
 	 event_date = REPLACE(REPLACE(event_date, '\\\'', '\''), '\\"', '"'),
 	 field_changed = REPLACE(REPLACE(field_changed,  '\\\'', '\''), '\\"', '"'),
 	 old_value = REPLACE(REPLACE(old_value,  '\\\'', '\''), '\\"', '"'),
-	 flyspray_value = REPLACE(REPLACE(flyspray_value,  '\\\'', '\''), '\\"', '"');
+	 new_value = REPLACE(REPLACE(new_value,  '\\\'', '\''), '\\"', '"');
 
 UPDATE flyspray_list_category SET
 	 category_name = REPLACE(REPLACE(category_name,  '\\\'', '\''), '\\"', '"');
@@ -139,32 +141,14 @@ ALTER TABLE flyspray_projects ALTER COLUMN feed_description SET DEFAULT '';
 INSERT INTO flyspray_prefs VALUES ((SELECT nextval('flyspray_prefs_pref_id_seq')), 'cache_feeds', '0', '0 = do not cache feeds, 1 = cache feeds on disk, 2 = cache feeds in DB');
 
 CREATE TABLE flyspray_cache (
-  id smallint NOT NULL DEFAULT nextval('"flyspray_cache_id_seq"'::text),
+  id SERIAL PRIMARY KEY,
   type varchar NOT NULL default '',
   content text NOT NULL,
   topic varchar NOT NULL default '',
   last_updated int NOT NULL default '0',
   project int NOT NULL default '0',
-  max_items int NOT NULL default '0',
-  PRIMARY KEY  (id)
+  max_items int NOT NULL default '0'
 );
-
---
--- Name: flyspray_cache_id_seq; Type: SEQUENCE; Schema: public; Owner: cr
---
-
-CREATE SEQUENCE flyspray_cache_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
---
--- Name: flyspray_admin_cache_id_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
---
-
-SELECT pg_catalog.setval('flyspray_cache_id_seq', 1, false);
 
 -- Mac Newbold, 08 November 2005
 -- Fix closure_comment from '0' to '' so they are properly blank.
@@ -281,31 +265,12 @@ ALTER TABLE flyspray_projects ALTER COLUMN lang_code SET DEFAULT 'en';
 -- Florian Schmitz, 24 December 2005 (FS#287)
 
 CREATE TABLE flyspray_list_status (
-  status_id BIGINT NOT NULL default nextval('" flyspray_list_status_seq"'::text)  ,
+  status_id SERIAL PRIMARY KEY,
   status_name varchar(20) NOT NULL default '',
   list_position BIGINT NOT NULL default '0',
   show_in_list BIGINT NOT NULL default '0',
-  project_id BIGINT NOT NULL default '0',
-  PRIMARY KEY  (status_id)
+  project_id BIGINT NOT NULL default '0'
 ) ;
-
-
---
--- Name: flyspray_list_status_seq; Type: SEQUENCE; Schema: public; Owner: cr
---
-
-CREATE SEQUENCE flyspray_list_status_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
---
--- Name: flyspray_list_status_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
---
-
-SELECT pg_catalog.setval('flyspray_list_status_seq', 1, false);
 
 INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in_list, project_id) VALUES (1, 'Unconfirmed', 1, 1, 0);
 INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in_list, project_id) VALUES (2, 'New', 2, 1, 0);
@@ -315,36 +280,20 @@ INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in
 INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in_list, project_id) VALUES (6, 'Requires testing', 6, 1, 0);
 INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in_list, project_id) VALUES (7, 'Reopened', 7, 1, 0);
 
+SELECT pg_catalog.setval('flyspray_list_status_status_id_seq', 7, true);
+
 -- Florian Schmitz, 5 January 2006
 INSERT INTO flyspray_prefs ( pref_name , pref_value , pref_desc )
 VALUES ('last_update_check', '0', 'Time when the last update check was done.');
 
 -- Florian Schmitz, 14 January 2006
 CREATE TABLE flyspray_searches (
-id INT NOT NULL default nextval('"flyspray_searches_seq"'::text) ,
+id SERIAL PRIMARY KEY,
 user_id INT NOT NULL ,
 name VARCHAR( 50 ) NOT NULL ,
 search_string TEXT NOT NULL ,
-time INT NOT NULL ,
-PRIMARY KEY ( id )
+time INT NOT NULL
 ) ;
-
---
--- Name: flyspray_searches_seq; Type: SEQUENCE; Schema: public; Owner: cr
---
-
-CREATE SEQUENCE flyspray_searches_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
---
--- Name: flyspray_searches_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
---
-
-SELECT pg_catalog.setval('flyspray_searches_seq', 1, false);
 
 -- Tony Collins, 22 January 2006
 ALTER TABLE flyspray_groups ADD add_votes TEXT;
@@ -437,3 +386,5 @@ ALTER TABLE flyspray_projects ALTER COLUMN notify_jabber SET NOT NULL;
 
 -- Florian Schmitz, 4 March 2006
 UPDATE flyspray_groups SET add_votes = 1 WHERE group_id = 2 OR group_id = 3 OR group_id = 6;
+
+COMMIT;

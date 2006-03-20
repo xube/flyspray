@@ -1,8 +1,8 @@
 <div id="toolbox">
-  <h3>{$language['admintoolboxlong']} :: {$language['oslist']}</h3>
+  <h3>{L('admintoolboxlong')} :: {L('oslist')}</h3>
 
   <fieldset class="admin">
-    <legend>{$language['operatingsystems']}</legend>
+    <legend>{L('operatingsystems')}</legend>
     <?php
     $this->assign('list_type', 'os');
     $this->assign('rows', $proj->listOs(true));

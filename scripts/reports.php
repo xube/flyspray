@@ -10,7 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 require_once(BASEDIR . '/includes/events.inc.php');
-$page->setTitle('Flyspray:: ' . $language['reports']);
+$page->setTitle('Flyspray:: ' . L('reports'));
 
 /**********************\
 *  Event reports       *

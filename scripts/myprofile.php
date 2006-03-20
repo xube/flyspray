@@ -21,7 +21,7 @@ $page->assign('groups', $db->fetchAllArray($sql));
         
 $page->assign('theuser', $user);
 
-$page->setTitle('Flyspray:: ' . $language['editmydetails']);
+$page->setTitle('Flyspray:: ' . L('editmydetails'));
 $page->pushTpl('myprofile.tpl');
 
 ?>

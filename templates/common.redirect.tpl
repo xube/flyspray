@@ -7,7 +7,7 @@
   </head>
   <body>
     <div align="center">
-    {!sprintf($language['redirectmsg'], '<a href="' . htmlspecialchars($url) . '">', '</a>')}
+    {!sprintf(L('redirectmsg'), '<a href="' . htmlspecialchars($url) . '">', '</a>')}
     </div>
   </body>
 </html>

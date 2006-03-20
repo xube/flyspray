@@ -1,4 +1,4 @@
 <div id="toolbox">
-  <h3>{$language['admintoolboxlong']} :: {$language['categorylist']}</h3>
+  <h3>{L('admintoolboxlong')} :: {L('categorylist')}</h3>
   <?php $this->display('common.cat.tpl'); ?>
 </div>

@@ -1,8 +1,8 @@
 <?php if(isset($updatemsg)): ?>
 <div id="updatemsg">
-    <a href="http://flyspray.rocks.cc/">{$language['updatefs']}</a> {$language['currentversion']}
-    <span class="bad">{$fs->version}</span> {$language['latestversion']} <span class="good">{$_SESSION['latest_version']}</span>.
-    <a href="?hideupdatemsg=yep">{$language['hidemessage']}</a>
+    <a href="http://flyspray.rocks.cc/">{L('updatefs')}</a> {L('currentversion')}
+    <span class="bad">{$fs->version}</span> {L('latestversion')} <span class="good">{$_SESSION['latest_version']}</span>.
+    <a href="?hideupdatemsg=yep">{L('hidemessage')}</a>
 </div>
 <?php endif; ?>
 
@@ -16,12 +16,12 @@
         <input type="hidden" name="project" value="{$proj->id}" />
         <?php endif; ?>
         <?php if(!$user->isAnon()): ?>
-        <span class="save_search"><label for="save_search" id="lblsaveas">{$language['saveas']}</label>
+        <span class="save_search"><label for="save_search" id="lblsaveas">{L('saveas')}</label>
         <input class="text" type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
-        <button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{$language['saved']}')" type="button">{$language['OK']}</button></span>
+        <button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{L('saved')}')" type="button">{L('OK')}</button></span>
         <?php endif; ?>
         
-        <button type="submit">{$language['searchthisproject']}</button>
+        <button type="submit">{L('searchthisproject')}</button>
         <input class="text" id="searchtext" name="string" type="text" size="20"
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
@@ -29,66 +29,66 @@
         <span id="advancedsearchstate" class="showstate">
         <img id="advancedsearchstateimg" src="<?php echo (Cookie::val('advancedsearch')) ? $this->themeUrl() . 'edit_remove.png' : $this->themeUrl() . 'edit_add.png'; ?>"
              alt="<?php echo (Cookie::val('advancedsearch')) ? '-' : '+'; ?>" width="16" height="16" />
-        </span>{$language['advanced']}
+        </span>{L('advanced')}
         </span>
         
         <div id="sc2" class="switchcontent" <?php if (!Cookie::val('advancedsearch')):?>style="display:none;"<?php endif; ?> >
-        <fieldset><legend>{$language['miscellaneous']}</legend>
+        <fieldset><legend>{L('miscellaneous')}</legend>
         {!tpl_checkbox('search_in_comments', Get::has('search_in_comments'), 'sic')}
-        <label class="left" for="sic">{$language['searchcomments']}</label>
+        <label class="left" for="sic">{L('searchcomments')}</label>
         
         {!tpl_checkbox('search_for_all', Get::has('search_for_all'), 'sfa')}
-        <label class="left" for="sfa">{$language['searchforall']}</label>
+        <label class="left" for="sfa">{L('searchforall')}</label>
         
-        {!tpl_datepicker('', $language['selectduedate'], $language['due'])}
-        {!tpl_datepicker('changedsince', $language['selectsincedate'], $language['changedsince'])}
+        {!tpl_datepicker('', L('selectduedate'), L('due'))}
+        {!tpl_datepicker('changedsince', L('selectsincedate'), L('changedsince'))}
 
         </fieldset>
 
-        <fieldset><legend>{$language['taskproperties']}</legend>
-        <label class="default multisel" for="type">{$language['tasktype']}</label>
+        <fieldset><legend>{L('taskproperties')}</legend>
+        <label class="default multisel" for="type">{L('tasktype')}</label>
         <select name="type[]" id="type" multiple="multiple" size="5">
-          {!tpl_options(array('' => $language['alltasktypes']) + $proj->listTaskTypes(), Get::val('type', ''))}
+          {!tpl_options(array('' => L('alltasktypes')) + $proj->listTaskTypes(), Get::val('type', ''))}
         </select>
         
-        <label class="default multisel" for="sev">{$language['severity']}</label>
+        <label class="default multisel" for="sev">{L('severity')}</label>
         <select name="sev[]" id="sev" multiple="multiple" size="5">
-          {!tpl_options(array('' => $language['allseverities']) + $severity_list, Get::val('sev', ''))}
+          {!tpl_options(array('' => L('allseverities')) + $severity_list, Get::val('sev', ''))}
         </select>
         
-        <label class="default multisel" for="due">{$language['dueversion']}</label>
+        <label class="default multisel" for="due">{L('dueversion')}</label>
         <select name="due[]" id="due" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
-          {!tpl_options(array('' => $language['dueanyversion']) + $proj->listVersions(false, 3), Get::val('due', ''))}
+          {!tpl_options(array('' => L('dueanyversion')) + $proj->listVersions(false, 3), Get::val('due', ''))}
         </select>
         
-        <label class="default multisel" for="reported">{$language['reportedversion']}</label>
+        <label class="default multisel" for="reported">{L('reportedversion')}</label>
         <select name="reported[]" id="reported" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
-          {!tpl_options(array('' => $language['anyversion']) + $proj->listVersions(false), Get::val('reported', ''))}
+          {!tpl_options(array('' => L('anyversion')) + $proj->listVersions(false), Get::val('reported', ''))}
         </select>
         
-        <label class="default multisel" for="cat">{$language['category']}</label>
+        <label class="default multisel" for="cat">{L('category')}</label>
         <select name="cat[]" id="cat" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
-          {!tpl_options(array('' => $language['allcategories']) + $proj->listCatsIn(), Get::val('cat', ''))}
+          {!tpl_options(array('' => L('allcategories')) + $proj->listCatsIn(), Get::val('cat', ''))}
         </select>
 
-        <label class="default multisel" for="status">{$language['status']}</label>
+        <label class="default multisel" for="status">{L('status')}</label>
         <select name="status[]" id="status" multiple="multiple" size="5">
-          {!tpl_options(array('' => $language['allstatuses']) +
-                        array('open' => $language['allopentasks']) +
-                        array('closed' => $language['allclosedtasks']) +
+          {!tpl_options(array('' => L('allstatuses')) +
+                        array('open' => L('allopentasks')) +
+                        array('closed' => L('allclosedtasks')) +
                         $proj->listTaskStatuses(), Get::val('status', 'open'))}
         </select>
         </fieldset>
 
-        <fieldset><legend>{$language['users']}</legend>
-        <label class="default multisel" for="opened">{$language['openedby']}</label>
+        <fieldset><legend>{L('users')}</legend>
+        <label class="default multisel" for="opened">{L('openedby')}</label>
         <input class="users text" size="30" type="text" name="opened" id="opened" value="{Get::val('opened')}" />
         <div class="autocomplete" id="opened_complete"></div>
         <script type="text/javascript">
             new Ajax.Autocompleter('opened', 'opened_complete', 'javascript/callbacks/usersearch.php', {})
         </script>
 
-        <label class="default multisel" for="dev">{$language['assignedto']}</label>
+        <label class="default multisel" for="dev">{L('assignedto')}</label>
         <input class="users text" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" /> 
         <div class="autocomplete" id="dev_complete"></div>
         <script type="text/javascript">
@@ -142,29 +142,29 @@
         <tr>
           <?php if ($total): ?>
           <td id="taskrange">
-            {!sprintf($language['taskrange'], $offset + 1,
+            {!sprintf(L('taskrange'), $offset + 1,
               ($offset + $perpage > $total ? $total : $offset + $perpage), $total)}
             <?php if (!$user->isAnon() && $total): ?>
             &nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">
-              {$language['toggleselected']}</a>
+              {L('toggleselected')}</a>
             <?php endif; ?>
           </td>
           <td id="numbers">
             {!pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order') . '&amp;tasks=' . Get::val('tasks'))}
           </td>
           <?php else: ?>
-          <td id="taskrange"><strong>{$language['noresults']}</strong></td>
+          <td id="taskrange"><strong>{L('noresults')}</strong></td>
           <?php endif; ?>
         </tr>
       </table>
       <?php if (!$user->isAnon() && $total): ?>
       <div id="massopsactions">
         <select name="action">
-          <option value="add_notification">{$language['watchtasks']}</option>
-          <option value="remove_notification">{$language['stopwatchingtasks']}</option>
-          <option value="takeownership">{$language['assigntaskstome']}</option>
+          <option value="add_notification">{L('watchtasks')}</option>
+          <option value="remove_notification">{L('stopwatchingtasks')}</option>
+          <option value="takeownership">{L('assigntaskstome')}</option>
         </select>
-        <button type="submit">{$language['takeaction']}</button>
+        <button type="submit">{L('takeaction')}</button>
       </div>
       <?php endif ?>
     </div>

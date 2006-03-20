@@ -22,15 +22,15 @@ class Backend
 
         settype($tasks, 'array');
 
-        foreach ($tasks AS $key => $task_id) {
-            $sql = $db->Query("SELECT notify_id
+        foreach ($tasks as $key => $task_id) {
+            $sql = $db->Query('SELECT notify_id
                                  FROM {notifications}
-                                WHERE task_id = ? and user_id = ?",
+                                WHERE task_id = ? and user_id = ?',
                               array($task_id, $user_id));
            
             if (!$db->CountRows($sql)) {
-                $db->Query("INSERT INTO {notifications} (task_id, user_id)
-                                 VALUES  (?,?)", array($task_id, $user_id));
+                $db->Query('INSERT INTO {notifications} (task_id, user_id)
+                                 VALUES  (?,?)', array($task_id, $user_id));
                 $fs->logEvent($task_id, 9, $user_id);
             }
         }
@@ -48,8 +48,8 @@ class Backend
         settype($tasks, 'array');
 
         foreach ($tasks AS $key => $task_id) {
-            $db->Query("DELETE FROM  {notifications}
-                              WHERE  task_id = ? AND user_id = ?",
+            $db->Query('DELETE FROM  {notifications}
+                              WHERE  task_id = ? AND user_id = ?',
                     array($task_id, $user_id));
             if ($db->affectedRows()) {
                 $fs->logEvent($task_id, 10, $user_id);

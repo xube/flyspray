@@ -194,16 +194,16 @@ foreach ($node_list as $n => $r) {
     if ($n==$id) { $col = "#ffff$x"; } else {  $col = "#$x$x$x"; }
     // Make sure label terminates in \n!
     $label = "FS#$n - ".
-        ($r['clsd'] ? $language['closed'] :
-         "$r[pct]% ".$language['complete']).#" status $r[stat]".
+        ($r['clsd'] ? L('closed') :
+         "$r[pct]% ".L('complete')).#" status $r[stat]".
          "\n".wordwrap(addslashes($r['sum']), 20)."\n";
     $tooltip =
-      ($r['clsd'] ? "$language[closed]: $r[res]".
+      ($r['clsd'] ? "L(closed): $r[res]".
        (!empty($r['clsdby']) ? " ($r[clsdby])" : "").
        ($r['com']!='' ? " - $r[com]" : "")
-       : $severity_list[$r['sev']]." $language[severity]/".
-       $priority_list[$r['pri']]." $language[priority] - ".
-       "$language[status]: ".$r['status_name'].
+       : $severity_list[$r['sev']]." L(severity)/".
+       $priority_list[$r['pri']]." L(priority) - ".
+       "L(status): ".$r['status_name'].
        ($r['assg'] ? " ($r[assg])" : ""));
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
         "href=\"".CreateURL("details", $n)."\", ".
@@ -254,6 +254,6 @@ if (!function_disabled('system')) {
 
 #echo "<pre>$dotgraph</pre>\n";
 
-$page->setTitle('FS#' . $id . ': ' . $language['dependencygraph']);
+$page->setTitle('FS#' . $id . ': ' . L('dependencygraph'));
 $page->pushTpl('depends.tpl');
 ?>

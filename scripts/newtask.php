@@ -20,7 +20,7 @@ $page->assign('assigned_users', array());
 
 $page->uses('severity_list', 'priority_list');
 
-$page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . $language['newtask']);
+$page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . L('newtask'));
 $page->pushTpl('newtask.tpl');
 
 ?>

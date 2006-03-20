@@ -37,8 +37,8 @@ if ($details && isset($GLOBALS['details_previous']) && isset($GLOBALS['details_n
 {
     $html = '<table class="history">';
     $html .= '<tr>';
-    $html .= '<th>' . $language['previousvalue'] . '</th>';
-    $html .= '<th>' . $language['newvalue'] . '</th>';
+    $html .= '<th>' . L('previousvalue') . '</th>';
+    $html .= '<th>' . L('newvalue') . '</th>';
     $html .= '</tr><tr>';
     $html .= '<td>' . $GLOBALS['details_previous'] . '</td>';
     $html .= '<td>' . $GLOBALS['details_new'] . '</td>';
@@ -50,9 +50,9 @@ if ($details && isset($GLOBALS['details_previous']) && isset($GLOBALS['details_n
 
 
 $html = '<table class="history"><tr>';
-$html .= '<th>' . $language['eventdate'] . '</th>';
-$html .= '<th>' . $language['user'] . '</th>';
-$html .= '<th>' . $language['event'] . '</th>';
+$html .= '<th>' . L('eventdate') . '</th>';
+$html .= '<th>' . L('user') . '</th>';
+$html .= '<th>' . L('event') . '</th>';
 $html .= '</tr>';
 foreach($histories as $history)
 {

@@ -47,7 +47,7 @@ while ($row = $db->FetchRow($get_reminders)) {
       }
    }
 
-   $subject = $language['notifyfromfs'];
+   $subject = L('notifyfromfs');
    $message = $row['reminder_message'];
 
    // Pass the recipients and message onto the notification function

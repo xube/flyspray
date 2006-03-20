@@ -1,13 +1,13 @@
-<p>{$language['listnote']}</p>
+<p>{L('listnote')}</p>
 <form action="{$baseurl}" method="post">
   <table class="list">
    <thead>
      <tr>
-       <th>{$language['name']}</th>
-       <th>{$language['order']}</th>
-       <th>{$language['show']}</th>
-       <?php if ($list_type == 'version'): ?><th>{$language['tense']}</th><?php endif; ?>
-       <th>{$language['delete']}</th>
+       <th>{L('name')}</th>
+       <th>{L('order')}</th>
+       <th>{L('show')}</th>
+       <?php if ($list_type == 'version'): ?><th>{L('tense')}</th><?php endif; ?>
+       <th>{L('delete')}</th>
      </tr>
    </thead>
     <?php
@@ -27,9 +27,9 @@
         {!tpl_checkbox('show_in_list['.$countlines.']', $row['show_in_list'], 'showinlist'.$countlines)}
       </td>
       <?php if ($list_type == 'version'): ?>
-      <td title="{$language['listtensetip']}">
+      <td title="{L('listtensetip')}">
         <select id="tense{$countlines}" name="{$list_type}_tense[]">
-          {!tpl_options(array(1=>$language['past'], 2=>$language['present'], 3=>$language['future']), $row[$list_type.'_tense'])}
+          {!tpl_options(array(1=>L('past'), 2=>L('present'), 3=>L('future')), $row[$list_type.'_tense'])}
         </select>
       </td>
       <?php endif; ?>
@@ -54,7 +54,7 @@
         <?php endif; ?>
         <input type="hidden" name="list_type" value="{$list_type}" />
         <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-        <button type="submit">{$language['update']}</button>
+        <button type="submit">{L('update')}</button>
       </td>
     </tr>
     <?php endif; ?>
@@ -85,14 +85,14 @@
         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
       </td>
       <?php if ($list_type == 'version'): ?>
-      <td title="{$language['listtensetip']}">
+      <td title="{L('listtensetip')}">
         <select id="tensenew" name="{$list_type}_tense">
-          {!tpl_options(array(1=>$language['past'], 2=>$language['present'], 3=>$language['future']), 2)}
+          {!tpl_options(array(1=>L('past'), 2=>L('present'), 3=>L('future')), 2)}
         </select>
       </td>
       <?php endif; ?>
       <td class="buttons">
-        <button type="submit">{$language['addnew']}</button>
+        <button type="submit">{L('addnew')}</button>
       </td>
     </tr>
   </table>

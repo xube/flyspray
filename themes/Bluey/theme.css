@@ -601,7 +601,6 @@ you'll have to adjust the javascript*/
 .severity1:hover {
 	background-color:#ffe9b4 !important;
 	color:#000;
-	cursor:pointer;
 }
 
 .severity2 {
@@ -612,7 +611,6 @@ you'll have to adjust the javascript*/
 .severity2:hover {
 	background-color:#efca80 !important;
 	color:#000;
-	cursor:pointer;
 }
 
 .severity3 {
@@ -623,7 +621,6 @@ you'll have to adjust the javascript*/
 .severity3:hover {
 	background-color:#f7b390 !important;
 	color:#000;
-	cursor:pointer;
 }
 
 .severity4 {
@@ -634,7 +631,6 @@ you'll have to adjust the javascript*/
 .severity4:hover {
 	background-color:#ffb2ac !important;
 	color:#000;
-	cursor:pointer;
 }
 
 .severity5 {
@@ -645,8 +641,12 @@ you'll have to adjust the javascript*/
 .severity5:hover {
 	background-color:#f3867e !important;
 	color:#000;
+}
+
+#tasklist_table td {
 	cursor:pointer;
 }
+
 
 /* .fineprint is merely used for the details about when a task has
 been created and changed (in the details pages) */

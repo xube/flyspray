@@ -258,13 +258,13 @@ if (Get::val('tasks') == 'watched') {
 $where = join(' AND ', $where);
 
 //Get the column names of table tasks for the group by statement
-if ($conf['database']['dbtype'] == 'pgsql') {
+if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
     $column_names = $db->GetColumnNames('{tasks}');
     foreach ($column_names as $key => $value){
         $column_names[$key] = 't.' . $value;
     }
     $groupby .= implode(', ' , $column_names) . ', p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name';
-} elseif ($conf['database']['dbtype'] == 'mysql') {
+} elseif (!strcasecmp($conf['database']['dbtype'], 'mysql')) {
     $groupby = 't.task_id';
 }
 
@@ -295,7 +295,7 @@ $page->assign('total', count($id_list));
 
 function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 {
-    global $proj, $language, $get;
+    global $proj, $get;
 
     $keys = array (
             'id'         => 'id',
@@ -323,7 +323,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 
     $imgbase = '<img src="themes/'.$proj->prefs['theme_style'].'/%s.png" alt="%s" />';
     $class   = '';
-    $html    = $language[$colname];
+    $html    = L($colname);
     if ($colname == 'comments' || $colname == 'attachments') {
         $html = sprintf($imgbase, substr($colname, 0, -1), $html);
     }
@@ -349,7 +349,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 
         $link = "?order=$orderkey&amp;$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";
         $html = sprintf('<a title="%s" href="%s">%s</a>',
-                $language['sortthiscolumn'], $link, $html);
+                L('sortthiscolumn'), $link, $html);
     }
 
     return sprintf($format, $class, $html);
@@ -359,7 +359,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 // tpl function that draws a cell {{{
 
 function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
-    global $fs, $proj, $language, $priority_list,
+    global $fs, $proj, $priority_list,
            $severity_list;
 
     $indexes = array (
@@ -411,16 +411,16 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
         case 'status':
             if ($task['is_closed']) {
-                $value = $language['closed'];
+                $value = L('closed');
             } else {
                 $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
             }
             break;
 
         case 'progress':
-            $value = tpl_img("themes/".$proj->prefs['theme_style']
-                    ."/percent-".$task['percent_complete'].".png",
-                    $task['percent_complete'].'% '.$language['complete']);
+            $value = tpl_img('themes/'.$proj->prefs['theme_style']
+                    . '/percent-' . $task['percent_complete'] . '.png',
+                    $task['percent_complete'] . '% ' . L('complete'));
             break;
 
         case 'assignedto':
@@ -470,7 +470,7 @@ if(Get::has('hideupdatemsg')) {
 // }}}
 
 $page->uses('tasks');
-$page->setTitle("Flyspray :: {$proj->prefs['project_title']}: {$language['tasklist']} ");
+$page->setTitle("Flyspray :: {$proj->prefs['project_title']}: " . L('tasklist') . ' ');
 $page->pushTpl('index.tpl');
 
 ?>

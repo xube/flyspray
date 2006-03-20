@@ -10,7 +10,7 @@ define('IN_FS', true);
 require_once(dirname(__FILE__).'/header.php');
 
 // Get the translation for the wrapper page (this page)
-setlocale(LC_ALL, str_replace('-','_',$language['locale']));
+setlocale(LC_ALL, str_replace('-','_',L('locale')));
 
 /*
    FS#329 allows tasks to be assigned to multiple users.
@@ -113,7 +113,7 @@ if ($show_task = Get::val('show_task')) {
 
 if ($fs->requestDuplicated()) {
     // Check that this page isn't being submitted twice
-    $_SESSION['ERROR'] = $language['duplicated'];
+    $_SESSION['ERROR'] = L('duplicated');
     $fs->Redirect( '?id='.$proj->id );
 }
 

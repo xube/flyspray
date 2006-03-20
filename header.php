@@ -27,7 +27,7 @@ require_once BASEDIR . '/includes/class.project.php';
 require_once BASEDIR . '/includes/class.user.php';
 require_once BASEDIR . '/includes/class.tpl.php';
 
-require_once BASEDIR . '/lang/en.php';
+require_once BASEDIR . '/includes/i18n.inc.php';
 
 $db = new Database;
 $db->dbOpenFast($conf['database']);
@@ -65,15 +65,13 @@ $proj->checkExists();
 $proj->setCookie();
 
 // Load translations
-$translation = BASEDIR . "/lang/{$proj->prefs['lang_code']}.php";
-if ($proj->prefs['lang_code'] != 'en' && file_exists($translation)) {
-    include_once($translation);
-    $language = array_merge($language, $translation);
-}
+load_translations();
+
 for ($i = 6; $i >= 1; $i--) {
-    $priority_list[$i] = $language['priority' . $i];
+    $priority_list[$i] = L('priority' . $i);
 }
 for ($i = 5; $i >= 1; $i--) {
-    $severity_list[$i] = $language['severity' . $i];
+    $severity_list[$i] = L('severity' . $i);
 }
+
 ?>

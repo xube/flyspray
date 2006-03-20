@@ -1,1 +1,1 @@
-<div id="error">{!$language['errorpage']}</div>
+<div id="error">{!L('errorpage')}</div>

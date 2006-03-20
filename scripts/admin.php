@@ -39,7 +39,7 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'status':
     case 'ver':
 
-        $page->setTitle('Flyspray:: ' . $language['admintoolboxlong']);
+        $page->setTitle('Flyspray:: ' . L('admintoolboxlong'));
         $page->pushTpl('admin.'.$area.'.tpl');
         break;
 

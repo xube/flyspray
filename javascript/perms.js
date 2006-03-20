@@ -19,7 +19,7 @@ Perms.prototype.clearTimeout = function() {
 Perms.prototype.do_later = function(action) {
     this.clearTimeout();
     closure = createClosure(this, action);
-    this.timeout = setTimeout(closure, 1000);
+    this.timeout = setTimeout(closure, 400);
 }
 
 Perms.prototype.show = function() {

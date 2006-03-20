@@ -30,7 +30,6 @@ class Flyspray
     //  Redirects the browser to the page in $url {{{
     function Redirect($url)
     {
-        global $language;
         @ob_clean();
         if (count($_SESSION)) {
             session_write_close();
@@ -77,7 +76,7 @@ class Flyspray
     // Retrieve task details {{{
     function GetTaskDetails($task_id, $cacheenabled = false)
     {
-        global $db, $language, $severity_list, $priority_list;
+        global $db, $severity_list, $priority_list;
 
         static $cache = array();
 
@@ -473,6 +472,19 @@ class Flyspray
         }
 
         return $assignees;
+    } /// }}}
+    
+    // Explode string to the array of integers {{{
+    function int_explode($separator, $string)
+    {
+    	$ret = array();
+    	foreach (explode($separator, $string) as $v)
+    	{
+            if (ctype_digit($v)) {// $v is always string, this func returns false if $v == ''
+    			$ret[] = intval($v); // convert to int
+            }
+    	}
+    	return $ret;
     } /// }}}
 }
 ?>

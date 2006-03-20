@@ -1,6 +1,6 @@
 <div id="related" class="tab">
   <?php if (count($related)): ?>
-  <p><em>{$language['thesearerelated']}</em></p>
+  <p><em>{L('thesearerelated')}</em></p>
   <?php
   foreach ($related as $row):
   if ($user->can_edit_task($task_details) && !$task_details['is_closed']):
@@ -13,7 +13,7 @@
         <input type="hidden" name="id" value="{Get::val('id')}" />
         <input type="hidden" name="related_id" value="{$row['related_id']}" />
         <input type="hidden" name="related_task" value="{$row['related_task']}" />
-        <button type="submit">{$language['remove']}</button>
+        <button type="submit">{L('remove')}</button>
       </p>
     </form>
   </div>
@@ -28,21 +28,21 @@
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="add_related" />
       <input type="hidden" name="this_task" value="{Get::val('id')}" />
-      <label>{$language['addnewrelated']}
+      <label>{L('addnewrelated')}
         <input name="related_task" type="text" class="text" size="10" maxlength="10" /></label>
-      <button type="submit">{$language['add']}</button>
+      <button type="submit">{L('add')}</button>
     </p>
   </form>
   <?php endif; ?>
 
   <?php if (count($related_to)): ?>
-  <p><em>{$language['otherrelated']}</em></p>
+  <p><em>{L('otherrelated')}</em></p>
   <?php foreach ($related_to as $row): ?>
   <p>{!tpl_tasklink($row)}</p>
   <?php endforeach; ?>
   <?php endif; ?>
   
   <?php if (!count($related_to) && !count($related)): ?>
-  <p><em>{$language['norelated']}</em></p>
+  <p><em>{L('norelated')}</em></p>
   <?php endif; ?>
 </div>

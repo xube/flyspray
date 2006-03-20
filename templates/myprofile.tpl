@@ -1,2 +1,2 @@
-<h2>{$language['editmydetails']}</h2>
+<h2>{L('editmydetails')}</h2>
 <?php $this->display('common.profile.tpl'); ?>

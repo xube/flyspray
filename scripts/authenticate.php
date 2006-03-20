@@ -32,7 +32,7 @@ if (Req::has('user_name') && Req::has('password')) {
 
     // Run the username and password through the login checker
     if (!$fs->checkLogin($username, $password)) {
-        $_SESSION['ERROR'] = $language['loginfailed'];
+        $_SESSION['ERROR'] = L('loginfailed');
         $_SESSION['failed_login'] = Req::val('user_name');
         $fs->redirect(Req::val('prev_page'));
     }
@@ -59,12 +59,12 @@ if (Req::has('user_name') && Req::has('password')) {
                 array($user->id)
             );
 
-        $_SESSION['SUCCESS'] = $language['loginsuccessful'];
+        $_SESSION['SUCCESS'] = L('loginsuccessful');
     }
 }
 else {
     // If the user didn't provide both a username and a password, show this error:
-    $_SESSION['ERROR'] = $language['loginfailed'] . ' - ' . $language['userandpass'];
+    $_SESSION['ERROR'] = L('loginfailed') . ' - ' . L('userandpass');
 }
 $fs->redirect(Req::val('prev_page'));
 ?>

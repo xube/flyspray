@@ -1,8 +1,8 @@
 <div id="toolbox">
-  <h3>{$language['pmtoolbox']} :: {$proj->prefs['project_title']} : {$language['resed']}</h3>
+  <h3>{L('pmtoolbox')} :: {$proj->prefs['project_title']} : {L('resed')}</h3>
 
   <fieldset class="admin">
-    <legend>{$language['resolutions']}</legend>
+    <legend>{L('resolutions')}</legend>
     <?php
     $this->assign('list_type', 'resolution');
     $this->assign('rows', $proj->listResolutions(true));

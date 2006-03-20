@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="{$language['locale']}" xml:lang="{$language['locale']}">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{L('locale')}" xml:lang="{L('locale')}">
   <head>
     <title>{$this->_title}</title>
 
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>
     <script type="text/javascript" src='{$baseurl}javascript/perms.js'></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar_stripped.js"></script>
-    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/lang/calendar-{substr($language['locale'], 0, 2)}.js"></script>
+    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/lang/calendar-{substr(L('locale'), 0, 2)}.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar-setup_stripped.js"></script>
     <!--[if IE 6]>
     <script type="text/javascript" src="{$baseurl}javascript/ie_hover.js"></script>
@@ -54,20 +54,20 @@
       <div id="projectselector">
         <form id="projectselectorform" action="{$baseurl}index.php" method="get">
            <div>
-            <button type="submit" value="1" name="switch">{$language['switchto']}</button>
+            <button type="submit" value="1" name="switch">{L('switchto')}</button>
             <select name="project">
-              {!tpl_options(array_merge(array(0 => $language['allprojects']), $project_list), $proj->id)}
+              {!tpl_options(array_merge(array(0 => L('allprojects')), $project_list), $proj->id)}
             </select>
             &nbsp;            
             <select name="tasks">
-              <option value="all">{$language['tasksall']}</option>
+              <option value="all">{L('tasksall')}</option>
               <?php
               if (!$user->isAnon()) {
                   echo tpl_options(array(
-                              'assigned' => $language['tasksassigned'],
-                              'reported' => $language['tasksreported'],
-                              'watched'  => $language['taskswatched'],
-                              'last'     => $language['lastsearch']), Get::val('tasks'));
+                              'assigned' => L('tasksassigned'),
+                              'reported' => L('tasksreported'),
+                              'watched'  => L('taskswatched'),
+                              'last'     => L('lastsearch')), Get::val('tasks'));
               }
               ?>
             </select>
@@ -76,7 +76,7 @@
             <?php if(!in_array($key, array('area', 'id'))) continue; ?>
             <input type="hidden" name="{$key}" value="{$value}" />
             <?php endforeach; ?>
-            <button accesskey="u" value="1" name="show" type="submit">{$language['show']}</button>
+            <button accesskey="u" value="1" name="show" type="submit">{L('show')}</button>
           </div>
         </form>
       </div>
@@ -84,7 +84,7 @@
       <div id="showtask">
         <form action="{$baseurl}index.php" method="get">
           <div>
-            <button type="submit">{$language['showtask']} #</button>
+            <button type="submit">{L('showtask')} #</button>
             <input id="taskid" name="show_task" class="text" type="text" size="10" maxlength="10" accesskey="t" />
           </div>
         </form>

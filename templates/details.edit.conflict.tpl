@@ -1,4 +1,4 @@
-{$language['alreadyedited']}
+{L('alreadyedited')}
 <br /><br />
 <span>
   <form name="form1" action="index.php" method="post">
@@ -19,7 +19,7 @@
     <input type="hidden" name="task_severity" value="{Post::val('task_severity')}" />
     <input type="hidden" name="task_priority" value="{Post::val('task_priority')}" />
     <input type="hidden" name="percent_complete" value="{Post::val('percent_complete')}" />
-    <button type="submit">{$language['saveanyway']}</button>
+    <button type="submit">{L('saveanyway')}</button>
   </form>
 </span>
 &nbsp;&nbsp;&nbsp;
@@ -27,6 +27,6 @@
   <form action="index.php" method="get">
     <input type="hidden" name="do" value="details" />
     <input type="hidden" name="id" value="{Post::val('task_id')}" />
-    <button type="submit">{$language['cancel']}</button>
+    <button type="submit">{L('cancel')}</button>
   </form>
 </span>

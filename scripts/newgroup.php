@@ -16,10 +16,10 @@ if (!$user->can_create_group()) {
 
 if (Get::val('project')) {
     $forproject = $proj->prefs['project_title'];
-    $page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . $language['createnewgroup']);
+    $page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . L('createnewgroup'));
 } else {
-    $forproject = $language['globalgroups'];
-    $page->setTitle('Flyspray:: ' . $language['createnewgroup']);
+    $forproject = L('globalgroups');
+    $page->setTitle('Flyspray:: ' . L('createnewgroup'));
 }
 
 $page->assign('forproject', $forproject);
