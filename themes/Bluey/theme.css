@@ -471,7 +471,7 @@ table.list th,table.list td {
 div#taskdetails {
 	background-color:#e6eef6;
 	border:1px solid #000;
-	margin:2em 0 1em;
+	margin:2em 0 0 0;
 	position:relative;
 }
 
@@ -583,6 +583,12 @@ div.modifycomment p {
 	display:inline;
 	margin:0;
 	padding:0;
+}
+
+strong.reopened {
+	background:white;
+	border:red solid 1px;
+	padding:0.1em 0.2em;
 }
 
 /* Some generic classes; severity classes are used for colour
@@ -932,8 +938,8 @@ a.grouptitle {
 	padding:2px 1ex;
 }
 
-* html #submenu {
-	margin-bottom:-1em;
+html #submenu {
+	padding-top:1.5em;
 }
 
 div.tab {
@@ -955,7 +961,7 @@ div.tab {
 }
 
 div#permissions {
-        width:18em;
+	width:18em;
 	visibility:hidden;
 	position:absolute;
 	top:25px !important;
@@ -1327,6 +1333,5 @@ div.autocomplete ul li.selected {
 	cursor:pointer;
 	color:HighlightText;
 }
-
 
 /* }}} */

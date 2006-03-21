@@ -47,6 +47,9 @@
 			 {L('closed')}
 			 <?php else: ?>
 			 {$task_details['status_name']}
+               <?php if ($reopened): ?>
+                &nbsp; <strong class="reopened">{L('reopened')}</strong>
+               <?php endif; ?>
 			 <?php endif; ?>
 		  </td>
 		</tr>
@@ -265,7 +268,7 @@
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>
 			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="30"></textarea>
-			 <input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;{L('mark100')}
+			 <label><input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;{L('mark100')}</label>
 		  </div>
 		</form>
 	 </div>

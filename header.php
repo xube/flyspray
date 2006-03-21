@@ -14,6 +14,9 @@ if (count($conf) == 0 || !isset($conf['general']['baseurl'])) {
 if (substr($baseurl = $conf['general']['baseurl'], -1) != '/') {
     $baseurl .= '/';
 }
+if (substr($baseurl, 0, 7) != 'http://') {
+    $baseurl = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $baseurl;
+}
 
 require_once BASEDIR . '/includes/fix.inc.php';
 require_once BASEDIR . '/includes/class.gpc.php';

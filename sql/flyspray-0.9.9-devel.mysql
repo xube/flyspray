@@ -293,3 +293,6 @@ ALTER TABLE `flyspray_projects` MODIFY `notify_jabber` LONGTEXT NOT NULL DEFAULT
 
 -- Florian Schmitz, 4 March 2006
 UPDATE flyspray_groups SET add_votes = 1 WHERE group_id = 2 OR group_id = 3 OR group_id = 6;
+
+-- Florian Schmitz, 21 March 2006
+DELETE FROM flyspray_list_status WHERE status_id = 7;

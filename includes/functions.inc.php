@@ -112,7 +112,7 @@ class Flyspray
                                    WHERE  t.task_id = ?', array($task_id));
 
         if (!$db->CountRows($get_details)) {
-           return false;
+            return false;
         }
 
         if ($get_details = $db->FetchArray($get_details)) {

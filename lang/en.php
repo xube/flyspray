@@ -658,6 +658,7 @@ Regards,',
 'norelated'               => 'No related tasks.',
 'comment'                 => 'Comment',
 'editowncomments'         => 'Edit own comments',
+'reopened'                => 'Reopened',
 );
 
 ?>

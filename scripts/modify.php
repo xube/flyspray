@@ -291,11 +291,22 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
 } // }}}
 // re-opening an task {{{
 elseif (Get::val('action') == 'reopen' && $user->can_close_task($old_details)) {
+    // Get last %
+    $old_percent = $db->Query("SELECT old_value, new_value
+                                 FROM {history}
+                                WHERE field_changed = 'percent_complete'
+                                      AND task_id = ? AND old_value != '100'
+                             ORDER BY event_date DESC",
+                              array(Get::val('task_id')));
+    $old_percent = $db->FetchArray($old_percent);
+    
     $db->Query("UPDATE  {tasks}
                    SET  resolution_reason = '0', closure_comment = '0', date_closed = 0,
-                        last_edited_time = ?, last_edited_by = ?, is_closed = '0'
+                        last_edited_time = ?, last_edited_by = ?, is_closed = '0', percent_complete = ?
                  WHERE  task_id = ?",
-                array(time(), $user->id, Get::val('task_id')));
+                array(time(), $user->id, $old_percent['old_value'], Get::val('task_id')));
+    
+    $fs->logEvent(Get::val('task_id'), '0', $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
 
     $notify->Create('4', Get::val('task_id'));
 

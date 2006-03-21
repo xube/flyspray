@@ -637,7 +637,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
     if (count($arg3)) {
         $url->addvars($arg3);
     }
-    return $url->get(substr($baseurl, 0, 7) == 'http://');
+    return $url->get();
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
