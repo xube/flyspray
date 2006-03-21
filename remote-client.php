@@ -72,7 +72,7 @@ if (!isset($_REQUEST['username']))
          <tr>
          <td>Action:</td>
          <td>
-         <select id="task" name="action">
+         <select id="task" name="rpcAction">
          <option value="getVersion">Get Flyspray version information</option>
          <option value="getTask">Get Task Information</option>
          <option value="getUser">Get User Information</option>
@@ -150,53 +150,53 @@ else
    if (isset($_REQUEST['debug']) && $_REQUEST['debug'] == '1')
       $client->debug = true;
    
-   $action = $_REQUEST['action'];
+   $rpcAction = $_REQUEST['rpcAction'];
    $msg = "";
 
-   if (!isset($action)) {
+   if (!isset($rpcAction)) {
       die ("no action specified");
    }
 
-   if ("getTask" == $action) {
+   if ("getTask" == $rpcAction) {
       $response = remoteCall("fs.getTask",$_REQUEST['taskid']);
       showResponse($response);
    }
 
-   if ("getUser" == $action) {
+   if ("getUser" == $rpcAction) {
       $response = remoteCall("fs.getUser",$_REQUEST['userid']);
       showResponse($response);
    }
 
-   /*if ("getTaskTypeList" == $action) {
+   /*if ("getTaskTypeList" == $rpcAction) {
       $response = remoteCall("fs.getTaskTypeList",array("projectid"=>$_REQUEST['projectid']));
       showResponse($response);
    }
 */
-   if ("getProjects" == $action) {
+   if ("getProjects" == $rpcAction) {
       $response = remoteCall("fs.getProjects",array("activeonly"=>$_REQUEST['activeOnly']));
       showResponse($response);
    }
    
 
-   if ("getNewTaskData" == $action) {
+   if ("getNewTaskData" == $rpcAction) {
 
       $response = remoteCall("fs.getNewTaskData",array("projectid"=>$_REQUEST['projectid']));
       showResponse($response);
    }
 
-   if ("getArrayListForName" == $action) {
+   if ("getArrayListForName" == $rpcAction) {
 
       $response = remoteCall("fs.getArrayListForName",array("arrayname"=>$_REQUEST['arrayname'],"projectid"=>$_REQUEST['projectid']));
       showResponse($response);
    }
 
-   if ("getVersion" == $action) {
+   if ("getVersion" == $rpcAction) {
 
       $response = remoteCall("fs.getVersion");
       showResponse($response);
    }
    
-   if ("filterTasks" == $action) {
+   if ("filterTasks" == $rpcAction) {
 
        $filterTaskData['search'] = $_REQUEST['filterSearch'];
        
@@ -204,7 +204,7 @@ else
        showResponse($response);
    }
 
-   if ("createNewTask" == $action) {
+   if ("createNewTask" == $rpcAction) {
       $response = remoteCall("fs.getNewTaskData");
 
 
@@ -219,7 +219,7 @@ else
          <td>
          <input type="hidden" name="debug" value="<?php echo $_REQUEST['debug']?>" />
          <input type="hidden" name="do" value="modify" />
-         <input type="hidden" name="action" value="newTask" />
+         <input type="hidden" name="rpcAction" value="newTask" />
          <input type="hidden" name="project_id" value="<?php echo $_REQUEST['projectid']?>" />
          <input type="hidden" name="username" value="<?php echo $_REQUEST['username']?>">
          <input type="hidden" name="password" value="<?php echo $_REQUEST['password']?>">
@@ -358,7 +358,7 @@ Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></
       }
    }
 
-   if ("newTask" == $action) {
+   if ("newTask" == $rpcAction) {
 
       $taskArray = $_REQUEST;
 
@@ -379,7 +379,7 @@ Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></
 
    }
 
-   if ("openTask" == $action) {
+   if ("openTask" == $rpcAction) {
 
       $taskArray['item_summary'] = "test task summary";
       $taskArray['detailed_desc'] = "test task description";

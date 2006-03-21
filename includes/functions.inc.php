@@ -36,7 +36,7 @@ class Flyspray
         }
         header('Location: ' . $url);
         $page = new FSTpl;
-        $page->setTitle($language['Redirect']);
+        $page->setTitle(L('Redirect'));
         $page->assign('url', $url);
         $page->display('common.redirect.tpl');
         

@@ -80,7 +80,6 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     {
         // Convert assigned_to and store them in the 'assigned' table
         foreach ($fs->int_explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
-        foreach ($fs->int_explode(" ", trim(Post::val('assigned_to'))) as $key => $val)
         {
             if (!empty($val))
             {           
@@ -96,7 +95,6 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
 
         // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
         $to   = $notify->SpecificAddresses($fs->int_explode(' ', Post::val('assigned_to')) );
-        $to   = $notify->SpecificAddresses( $fs->int_explode(" ", Post::val('assigned_to')) );
         $msg  = $notify->GenerateMsg('14', $task_id);
         $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
@@ -240,7 +238,6 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
             if (Post::val('assigned_to') != '') {
                 $to   = $notify->SpecificAddresses( array_diff($fs->int_explode(' ', Post::val('assigned_to')), $fs->int_explode(' ', Post::val('old_assigned') ) ) );
-                $to   = $notify->SpecificAddresses( array_diff($fs->int_explode(" ", Post::val('assigned_to')), $fs->int_explode(" ", Post::val('old_assigned') ) ) );
                 $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
                 $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
                 $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);

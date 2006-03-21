@@ -1,12 +1,12 @@
 <h3>{$proj->prefs['project_title']} :: {L('newtask')}</h3>
 
 <div id="taskdetails">
+    <form enctype="multipart/form-data" action="{$baseurl}" method="post" onsubmit="return checknewtask('{L('summaryanddetails')}')">
     <h2 class="severity2" id="edit_summary">
       <label for="itemsummary">{L('summary')}</label>
       <input id="itemsummary" class="text severity2" type="text"
         name="item_summary" size="80" maxlength="100" />
     </h2>
-  <form enctype="multipart/form-data" action="{$baseurl}" method="post" onsubmit="return checknewtask('{L('summaryanddetails')}')">
     <div id="taskfields1">
 
       <table>

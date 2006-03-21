@@ -1,6 +1,6 @@
 <?php
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
@@ -75,7 +75,7 @@ class Tpl
     function display($_tpl, $_arg0 = null, $_arg1 = null)
     {
         // if only plain text
-        if(is_array($_tpl)) {
+        if (is_array($_tpl)) {
             echo $_tpl[0];
             return;
         }
@@ -138,7 +138,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $task = $fs->GetTaskDetails($task, true);
     }
 
-    if($strict && !$user->can_view_task($task)) {
+    if ($strict && !$user->can_view_task($task)) {
         return '';
     }
 
@@ -171,7 +171,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
                 break;
             
             case 'assignedto':
-                if($task['assigned_to']) {
+                if ($task['assigned_to']) {
                     if (!isset($task['assigned_to_name'])) {
                         $task = $fs->GetTaskDetails($task['task_id'], true);
                     }
@@ -180,13 +180,13 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
                 break;
             
             case 'percent_complete':
-                if($task['percent_complete']) {
+                if ($task['percent_complete']) {
                     $title_text[] = $task['percent_complete'].'%';
                 }
                 break;
             
             case 'category':
-                if($task['product_category']) {
+                if ($task['product_category']) {
                     if (!isset($task['category_name'])) {
                         $task = $fs->GetTaskDetails($task['task_id'], true);
                     }
@@ -205,7 +205,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     }
     
     $params = array('histring' => Get::val('string'));
-    if($user->didSearch()) {
+    if ($user->didSearch()) {
         $params['tasks'] = Get::val('tasks', 'last');
     }
     $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, $params));
@@ -472,7 +472,7 @@ function tpl_formattext($text, $onyfs = false)
         $text = nl2br(htmlspecialchars($text));
         
         // Change URLs into hyperlinks
-        if(!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
+        if (!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
         
         // Change FS#123 into hyperlinks to tasks
         return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
@@ -491,15 +491,15 @@ function formatDate($timestamp, $extended = false, $default = '')
     $dateformat = '';
     $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
 
-    if(!$user->isAnon()) {
+    if (!$user->isAnon()) {
         $dateformat = $user->infos[$format_id];
     }
 
-    if(!$dateformat) {
+    if (!$dateformat) {
         $dateformat = $fs->prefs[$format_id];
     }
 
-    if(!$dateformat) {
+    if (!$dateformat) {
         $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
     }
 
@@ -564,7 +564,7 @@ function html_hilight_callback($m) {
   return $hlight;
 }
 
-function tpl_disableif($if)
+function tpl_disableif ($if)
 {
     if ($if) {
         return 'disabled="disabled"';
@@ -574,12 +574,12 @@ function tpl_disableif($if)
 // Create an URL based upon address-rewriting preferences {{{
 function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 {
-    global $conf;
+    global $baseurl, $conf;
 
-    $url = $conf['general']['baseurl'];
+    $url = $baseurl;
        
     // If we do want address rewriting
-    if(!empty($conf['general']['address_rewriting'])) {
+    if ($conf['general']['address_rewriting'] == '1') {
         switch ($type) {
             case 'depends':   $return = $url . 'task/' .  $arg1 . '/' . $type; break;
             case 'details':   $return = $url . 'task/' . $arg1; break;
@@ -613,8 +613,8 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'admin':     $return = $url . '&area=' . $arg1 . '&project=0'; break;
             case 'edittask':  $return = $url . '&id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
-            case 'user':      $return = $conf['general']['baseurl'] . '?do=admin&area=users&id=' . $arg1; break;
-            case 'logout':    $return = $conf['general']['baseurl'] . '?do=authenticate&action=logout'; break;
+            case 'user':      $return = $baseurl . '?do=admin&area=users&id=' . $arg1; break;
+            case 'logout':    $return = $baseurl . '?do=authenticate&action=logout'; break;
 
             case 'details':
             case 'depends':   $return = $url . '&id=' . $arg1; break;
@@ -622,7 +622,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'newgroup':
             case 'newtask':   $return = $url . '&project=' . $arg1; break;
 
-            case 'editgroup': $return = $conf['general']['baseurl'] . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1; break;
+            case 'editgroup': $return = $baseurl . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1; break;
 
             case 'error':
             case 'lostpw':
@@ -637,7 +637,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
     if (count($arg3)) {
         $url->addvars($arg3);
     }
-    return $url->get();
+    return $url->get(substr($baseurl, 0, 7) == 'http://');
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
@@ -701,9 +701,9 @@ class Url {
 	}
 	
 	function getinfo($type = null) {		
-		if(is_null($type)) {
+		if (is_null($type)) {
 			return $this->parsed;
-		} elseif(isset($this->parsed[$type])) {
+		} elseif (isset($this->parsed[$type])) {
 			return $this->parsed[$type];
 		} else {
 			return '';
@@ -718,17 +718,17 @@ class Url {
 		$append = '';
 		foreach($vars as $key) {
 			$source = ($method == 'get') ? Get::val($key) : Post::val($key);
-            if(is_array($source)) {
+            if (is_array($source)) {
                 foreach($source as $value) {
-                    if($value) $append .= rawurlencode($key) . '[]=' . rawurlencode($value) . '&';
+                    if ($value) $append .= rawurlencode($key) . '[]=' . rawurlencode($value) . '&';
                 }
             } else {
-                if($source) $append .= rawurlencode($key) . '=' . rawurlencode($source) . '&';
+                if ($source) $append .= rawurlencode($key) . '=' . rawurlencode($source) . '&';
             }
         }
         $append = substr($append, 0, -1);
         
-        if($this->getinfo('query')) {
+        if ($this->getinfo('query')) {
         	$this->parsed['query'] .= '&' . $append;
         } else {
         	$this->parsed['query'] = $append;
@@ -738,17 +738,17 @@ class Url {
 	function addvars($vars = array()) {
 		$append = '';
 		foreach($vars as $key => $value) {
-            if(is_array($value)) {
+            if (is_array($value)) {
                 foreach($value as $valuei) {
-                    if($valuei) $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
+                    if ($valuei) $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
                 }
             } else {
-                if($value) $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
+                if ($value) $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
             }
         }
         $append = substr($append, 0, -1);
         
-        if($this->getinfo('query')) {
+        if ($this->getinfo('query')) {
         	$this->parsed['query'] .= '&' . $append;
         } else {
         	$this->parsed['query'] = $append;
@@ -757,24 +757,24 @@ class Url {
 	
 	function get($fullpath = true) {
 		$return = '';
-		if($fullpath) {
+		if ($fullpath) {
 			$return .= $this->getinfo('scheme') . '://' . $this->getinfo('host');
-		}
-        
-        if($this->getinfo('port')) {
-            $return .= ':' . $this->getinfo('port');
+            
+            if ($this->getinfo('port')) {
+                $return .= ':' . $this->getinfo('port');
+            }
         }
 		
 		$return .= $this->getinfo('path');
 		
-		if($this->getinfo('query')) {
+		if ($this->getinfo('query')) {
             $return .= '?' . $this->getinfo('query');
 		}
 		 
-		if($this->getinfo('fragment')) {
+		if ($this->getinfo('fragment')) {
 		 	$return .= '#' . $this->getinfo('fragment');
 		}
-		 
+
 		return $return;
 	}
 }
