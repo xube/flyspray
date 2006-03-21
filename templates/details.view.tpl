@@ -268,7 +268,9 @@
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>
 			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="30"></textarea>
-			 <label><input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;{L('mark100')}</label>
+			 <?php if($task_details['percent_complete'] != '100'): ?>
+             <label><input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;{L('mark100')}</label>
+             <?php endif; ?>
 		  </div>
 		</form>
 	 </div>

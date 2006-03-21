@@ -25,8 +25,12 @@ if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
 // Configuration information:
 // [FIXME: in the future, this will come from the initial configuration.]
 $path_to_dot = $conf['general']['dot_path']; // Where's the dot executable?
-$path_for_images = BASEDIR . '/attachments'; // What directory do we use for output?
-$fmt = "png"; 
+/* March 10 2006 Jason Porter: Removed the $basedir as $path_for_images
+ * should be relative, we use this path also in the HTML output.  Saving
+ * the file from dot happens later, and that should be the absolute path.
+ */
+$path_for_images = '/attachments'; // What directory do we use for output?
+$fmt = 'png';
 $id = Req::val('id');
 $page->assign('taskid', 0);
 
