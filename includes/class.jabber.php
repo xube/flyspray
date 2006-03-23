@@ -184,7 +184,7 @@ class Jabber
 		if ($this->CONNECTOR->OpenSocket($this->server, $this->port))
 		{
 			$this->SendPacket("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
-			$this->SendPacket("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>\n");
+			$this->SendPacket("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
 
 			sleep(2);
 
@@ -240,18 +240,18 @@ class Jabber
 		{
 			// yes, now check for auth method availability in descending order (best to worst)
 
-			if (!function_exists(mhash))
+			if (!function_exists("mhash"))
 			{
 				$this->AddToLog("ATTENTION: SendAuth() - mhash() is not available; screw 0k and digest method, we need to go with plaintext auth");
 			}
 
 			// auth_0k
-			if (function_exists(mhash) && isset($packet['iq']['#']['query'][0]['#']['sequence'][0]["#"]) && isset($packet['iq']['#']['query'][0]['#']['token'][0]["#"]))
+			if (function_exists("mhash") && isset($packet['iq']['#']['query'][0]['#']['sequence'][0]["#"]) && isset($packet['iq']['#']['query'][0]['#']['token'][0]["#"]))
 			{
 				return $this->_sendauth_0k($packet['iq']['#']['query'][0]['#']['token'][0]["#"], $packet['iq']['#']['query'][0]['#']['sequence'][0]["#"]);
 			}
 			// digest
-			elseif (function_exists(mhash) && isset($packet['iq']['#']['query'][0]['#']['digest']))
+			elseif (function_exists("mhash") && isset($packet['iq']['#']['query'][0]['#']['digest']))
 			{
 				return $this->_sendauth_digest();
 			}
@@ -1043,7 +1043,14 @@ class Jabber
 			{
 				$this->stream_id = $incoming_array["stream:stream"]['@']['id'];
 
-				return TRUE;
+				if ($incoming_array["stream:stream"]["#"]["stream:features"][0]["#"]["starttls"][0]["@"]["xmlns"] == "urn:ietf:params:xml:ns:xmpp-tls")
+				{
+					return $this->_starttls();
+				}
+				else
+				{
+					return TRUE;
+				}
 			}
 			else
 			{
@@ -1056,6 +1063,55 @@ class Jabber
 			$this->AddToLog("ERROR: _check_connected() #2");
 			return FALSE;
 		}
+	}
+
+
+
+	function _starttls()
+	{
+		if (!function_exists("stream_socket_enable_crypto"))
+		{
+			$this->AddToLog("WARNING: TLS is not available");
+			return TRUE;
+		}
+
+		$this->SendPacket("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>\n");
+		sleep(2);
+		$incoming_array = $this->_listen_incoming();
+
+		if (!is_array($incoming_array))
+		{
+			$this->AddToLog("ERROR: _starttls() #1");
+			return FALSE;
+		}
+
+		if ($incoming_array["proceed"]["@"]["xmlns"] != "urn:ietf:params:xml:ns:xmpp-tls")
+		{
+			$this->AddToLog("ERROR: _starttls() #2");
+			return FALSE;
+		}
+
+		$meta = stream_get_meta_data($this->CONNECTOR->active_socket);
+		socket_set_blocking($this->CONNECTOR->active_socket, 1);
+		if (!stream_socket_enable_crypto($this->CONNECTOR->active_socket, TRUE, STREAM_CRYPTO_METHOD_TLS_CLIENT))
+		{
+			socket_set_blocking($this->CONNECTOR->active_socket, $meta["blocked"]);
+			$this->AddToLog("ERROR: _starttls() #3");
+			return FALSE;
+		}
+		socket_set_blocking($this->CONNECTOR->active_socket, $meta["blocked"]);
+
+		$this->SendPacket("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
+		$this->SendPacket("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
+		sleep(2);
+
+		if (!$this->_check_connected())
+		{
+			$this->AddToLog("ERROR: _starttls() #4");
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 
@@ -1629,20 +1685,28 @@ class Jabber
 	// xmlize()
 	// (c) Hans Anderson / http://www.hansanderson.com/php/xml/
 
-	function xmlize($data)
-	{
+	function xmlize($data, $WHITE=1, $encoding='UTF-8') {
+
+		$data = trim($data);
 		$vals = $index = $array = array();
-		$parser = xml_parser_create();
+		$parser = xml_parser_create($encoding);
 		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
-		xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
+		xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, $WHITE);
 		xml_parse_into_struct($parser, $data, $vals, $index);
 		xml_parser_free($parser);
 
 		$i = 0;
 
 		$tagname = $vals[$i]['tag'];
-		$array[$tagname]['@'] = $vals[$i]['attributes'];
-		$array[$tagname]['#'] = $this->_xml_depth($vals, $i);
+		if ( isset ($vals[$i]['attributes'] ) )
+		{
+			$array[$tagname]['@'] = $vals[$i]['attributes'];
+		} else {
+			$array[$tagname]['@'] = array();
+		}
+
+		$array[$tagname]["#"] = $this->_xml_depth($vals, $i);
+
 
 		return $array;
 	}
@@ -1652,54 +1716,82 @@ class Jabber
 	// _xml_depth()
 	// (c) Hans Anderson / http://www.hansanderson.com/php/xml/
 
-	function _xml_depth($vals, &$i)
-	{
+	function _xml_depth($vals, &$i) {
 		$children = array();
 
-		if ($vals[$i]['value'])
+		if ( isset($vals[$i]['value']) )
 		{
-			array_push($children, trim($vals[$i]['value']));
+			array_push($children, $vals[$i]['value']);
 		}
 
-		while (++$i < count($vals))
-		{
-			switch ($vals[$i]['type'])
-			{
+		while (++$i < count($vals)) {
+
+			switch ($vals[$i]['type']) {
+
+				case 'open':
+
+					if ( isset ( $vals[$i]['tag'] ) )
+					{
+						$tagname = $vals[$i]['tag'];
+					} else {
+						$tagname = '';
+					}
+
+					if ( isset ( $children[$tagname] ) )
+					{
+						$size = sizeof($children[$tagname]);
+					} else {
+						$size = 0;
+					}
+
+					if ( isset ( $vals[$i]['attributes'] ) ) {
+						$children[$tagname][$size]['@'] = $vals[$i]["attributes"];
+
+					}
+
+					$children[$tagname][$size]['#'] = $this->_xml_depth($vals, $i);
+
+					break;
+
+
 				case 'cdata':
-					array_push($children, trim($vals[$i]['value']));
-	 				break;
+					array_push($children, $vals[$i]['value']);
+					break;
 
 				case 'complete':
 					$tagname = $vals[$i]['tag'];
-					$size = sizeof($children[$tagname]);
-					$children[$tagname][$size]['#'] = trim($vals[$i]['value']);
-					if ($vals[$i]['attributes'])
-					{
-						$children[$tagname][$size]['@'] = $vals[$i]['attributes'];
-					}
-					break;
 
-				case 'open':
-					$tagname = $vals[$i]['tag'];
-					$size = sizeof($children[$tagname]);
-					if ($vals[$i]['attributes'])
+					if( isset ($children[$tagname]) )
 					{
-						$children[$tagname][$size]['@'] = $vals[$i]['attributes'];
-						$children[$tagname][$size]['#'] = $this->_xml_depth($vals, $i);
+						$size = sizeof($children[$tagname]);
+					} else {
+						$size = 0;
 					}
-					else
+
+					if( isset ( $vals[$i]['value'] ) )
 					{
-						$children[$tagname][$size]['#'] = $this->_xml_depth($vals, $i);
+						$children[$tagname][$size]["#"] = $vals[$i]['value'];
+					} else {
+						$children[$tagname][$size]["#"] = array();
 					}
+
+					if ( isset ($vals[$i]['attributes']) ) {
+						$children[$tagname][$size]['@']
+						= $vals[$i]['attributes'];
+					}
+
 					break;
 
 				case 'close':
 					return $children;
 					break;
 			}
+
 		}
 
 		return $children;
+
+
 	}
 
 
@@ -1707,22 +1799,20 @@ class Jabber
 	// TraverseXMLize()
 	// (c) acebone@f2s.com, a HUGE help!
 
-	function TraverseXMLize($array, $arrName = "array", $level = 0)
-	{
+	function TraverseXMLize($array, $arrName = "array", $level = 0) {
+
 		if ($level == 0)
 		{
 			echo "<pre>";
 		}
 
-		while (list($key, $val) = @each($array))
+		foreach($array as $key=>$val)
 		{
-			if (is_array($val))
+			if ( is_array($val) )
 			{
 				$this->TraverseXMLize($val, $arrName . "[" . $key . "]", $level + 1);
-			}
-			else
-			{
-				echo '$' . $arrName . '[' . $key . '] = "' . $val . "\"\n";
+			} else {
+				$GLOBALS['traverse_array'][] = '$' . $arrName . '[' . $key . '] = "' . $val . "\"\n";
 			}
 		}
 
@@ -1730,6 +1820,9 @@ class Jabber
 		{
 			echo "</pre>";
 		}
+
+		return 1;
+
 	}
 }
 
@@ -1851,6 +1944,16 @@ class CJP_StandardConnector
 
 	function OpenSocket($server, $port)
 	{
+		if (function_exists("dns_get_record"))
+		{
+			$record = dns_get_record("_xmpp-client._tcp.$server", DNS_SRV);
+			if (!empty($record))
+			{
+				$server = $record[0]["target"];
+				$port = $record[0]["port"];
+			}
+		}
+
 		if ($this->active_socket = fsockopen($server, $port))
 		{
 			socket_set_blocking($this->active_socket, 0);
