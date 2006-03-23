@@ -21,7 +21,7 @@
   <?php endif; ?>
 
   <?php if ($user->perms['view_history']): ?>
-  <li id="historytab">
+  <li id="historytab" onclick="getHistory('{Get::val('id')}', '{$baseurl}', 'history');">
     <a href="{CreateURL('details', $task_details['task_id'], null)}#history">{L('history')}</a>
   </li>
   <?php endif; ?>

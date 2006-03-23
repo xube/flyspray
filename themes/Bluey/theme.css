@@ -58,6 +58,10 @@ a.offsite:after {
 }
 
 h1 {
+	font-size:160%;
+}
+
+h2 {
 	font-size:150%;
 }
 
@@ -70,10 +74,11 @@ h1#title {
 	text-indent:-9000px;
 }
 
-h2 {
-	font-size:150%;
+h2.summary {
 	margin:0;
-	padding:0;
+	font-size:115%;
+	font-weight:700;
+	padding:0.3ex 1ex;
 }
 
 h4 {
@@ -472,12 +477,6 @@ div#taskdetails {
 	background-color:#e6eef6;
 	border:1px solid #000;
 	margin:2em 0 0 0;
-}
-
-div#taskdetails h2 {
-	font-size:115%;
-	font-weight:700;
-	padding:0.3ex 1ex;
 }
 
 /* Task details are listed within a table */
@@ -1088,7 +1087,7 @@ a:hover {
 	text-decoration:none;
 }
 
-div#loginbox em,p#tabs small,div#toolboxmenu small,div.tab h2 {
+div#loginbox em,p#tabs small,div#toolboxmenu small {
 	display:none;
 }
 
@@ -1219,6 +1218,40 @@ div#updatemsg {
 	text-decoration:none;
 }
 
+div#taskdetailstext h1,.commenttext h1 {
+	border-bottom:dotted 1px black;
+}
+
+div#taskdetailstext h2, .commenttext h2 {
+	border-bottom:dotted 1px black;
+	padding-left:0.2em;   
+	margin:1em 0.5em 0.5em;
+}
+
+div#taskdetailstext h3, .commenttext h3 {
+	padding-left:0.2em;   
+	margin:1em 1.5em 0;
+}
+
+
+div#taskdetailstext h4, .commenttext h4,div#taskdetailstext h5, .commenttext h5 {
+	font-size:1em;    
+	padding-left:0.3em;   
+	margin:1em 2.5em 0;
+}
+
+div.level2 {
+	margin-left:1em;
+}
+
+div.level3 {
+	margin-left:2em;
+}
+
+div.level4,div.level5 {
+	margin-left:3em;
+}
+
 /* inline tables */
 table.inline {
 	background-color: #ffffff;
@@ -1269,9 +1302,20 @@ table.inline td {
 }
 
 blockquote {
+	border:dotted 1px gray;
 	border-left: 2px solid #8cacbb;
-	padding-left: 3px;
-	margin-left: 0;
+	padding:0 3px 0 0.3em;
+	margin-left: 0.5em;
+	background:white;
+}
+
+blockquote p  {
+	padding:0;
+}
+
+blockquote blockquote {
+	border:0;
+	border-left: 2px solid #8cacbb;
 }
 
 .search_hit {
@@ -1298,7 +1342,7 @@ blockquote {
 .code .co1,.code .co2,.code .coMULTI {color:gray;font-style:italic;}
 .code .kw5,.code .re0,.code .re1,.code .re2 {color:#00f;}
 
-.acronym {cursor: help;}
+.acronym {cursor:help;}
 /* }}} */
 /* Stuff for the autocomplete lists {{{ */
 
@@ -1332,5 +1376,6 @@ div.autocomplete ul li.selected {
 	cursor:pointer;
 	color:HighlightText;
 }
+
 
 /* }}} */

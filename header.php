@@ -11,12 +11,6 @@ if (count($conf) == 0 || !isset($conf['general']['baseurl'])) {
     header('Location:'. 'http://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\') .  "/" .'setup/index.php');
     exit;
 }
-if (substr($baseurl = $conf['general']['baseurl'], -1) != '/') {
-    $baseurl .= '/';
-}
-if (substr($baseurl, 0, 7) != 'http://') {
-    $baseurl = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $baseurl;
-}
 
 require_once BASEDIR . '/includes/fix.inc.php';
 require_once BASEDIR . '/includes/class.gpc.php';

@@ -51,7 +51,8 @@ function showTabById(tabid) { // {{{
   var tab = document.getElementById(tabid);
   var submenu = document.getElementById('submenu');
   var i;
-
+  var el = document.getElementById(tabid + "tab");
+  eval(el.getAttribute('onclick'));
   for (i=0; i<divs.length; i++) {
     if (divs[i].className && (divs[i].className.indexOf('tab') > -1)) {
       divs[i].style.display = 'none';
@@ -83,9 +84,6 @@ function makeTabLinks() { // {{{
   if (submenu) {
     links = submenu.getElementsByTagName('a');
     for (i=0; i<links.length; i++) {
-      if(links[i].id == 'nohistorytab') {
-        continue;
-      }
       var href = links[i].getAttribute('href');
       target = href.substring(href.indexOf('#')+1);
       links[i]['onclick'] = new Function("showTabById('"+target+"'); return false;");

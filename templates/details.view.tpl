@@ -8,7 +8,7 @@
   <?php endif; ?>
 </span>
 
-  <h2 class="severity{$task_details['task_severity']}">
+  <h2 class="summary severity{$task_details['task_severity']}">
 	 FS#{$task_details['task_id']} &mdash; {$task_details['item_summary']}
   </h2>
 

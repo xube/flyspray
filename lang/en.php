@@ -659,6 +659,7 @@ Regards,',
 'comment'                 => 'Comment',
 'editowncomments'         => 'Edit own comments',
 'reopened'                => 'Reopened',
+'loading'                 => 'Loading...',
 );
 
 ?>

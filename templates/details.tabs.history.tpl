@@ -1,3 +1,3 @@
 <div id="history" class="tab">
-  <a href="#history" onclick="getHistory('{Get::val('id')}', '{$baseurl}', 'history');">Load history</a>
+  <h3>{L('loading')}</h3>
 </div>
