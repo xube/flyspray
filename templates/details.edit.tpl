@@ -1,7 +1,7 @@
 <div id="taskdetails">
   <form action="{$baseurl}" method="post">
 	 <div>
-		<h2 class="severity{$task_details['task_severity']}">
+		<h2 class="summary severity{$task_details['task_severity']}">
 		  FS#{$task_details['task_id']} &mdash;
 		  <input class="text severity{$task_details['task_severity']}" type="text"
 			name="item_summary" size="80" maxlength="100"

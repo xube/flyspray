@@ -34,7 +34,7 @@ class Flyspray
      */
 
 
-    function Redirect ($url, $exit = true, $rfc2616 = true)
+    function Redirect($url, $exit = true, $rfc2616 = true)
     {
         @ob_clean();
 
@@ -43,7 +43,6 @@ class Flyspray
         }
 
         if (headers_sent()) {
-
             return false;
         }
 
@@ -51,15 +50,15 @@ class Flyspray
 
         header('Location: '. $url);
 
-        if (    $rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&
-                $_SERVER['REQUEST_METHOD'] != 'HEAD') {
-            printf('%s to: <a href="%s?RTFM=cea78d14a44e252bd6d82bdb08a691af">%s</a>.',$language['Redirect'] , $url, $url);
+        if ($rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&
+            $_SERVER['REQUEST_METHOD'] != 'HEAD') {
+            printf('%s to: <a href="%s">%s</a>.',$language['Redirect'] , $url, $url);
         }
         if ($exit) {
             exit;
         }
-            return true;
-
+        
+        return true;
     } // }}}
 
     /**

@@ -18,7 +18,6 @@ if (count($conf) == 0) {
 require_once BASEDIR . '/includes/class.gpc.php';
 require_once BASEDIR . '/includes/utf8.inc.php';
 require_once BASEDIR . '/includes/db.inc.php';
-require_once BASEDIR . '/includes/functions.inc.php';
 require_once BASEDIR . '/includes/class.backend.php';
 require_once BASEDIR . '/includes/class.project.php';
 require_once BASEDIR . '/includes/class.user.php';
