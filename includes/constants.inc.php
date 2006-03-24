@@ -1,17 +1,13 @@
 <?php
 
-define('BASEDIR',            realpath(dirname(__FILE__) . '/..')); 
+define('BASEDIR', dirname(dirname(__FILE__))); 
 
 // Change this line if you move flyspray.conf.php elsewhere
 $conf    = @parse_ini_file(BASEDIR . '/flyspray.conf.php', true);
 
 // $baseurl
-if (substr($baseurl = $conf['general']['baseurl'], -1) != '/') {
-    $baseurl .= '/';
-}
-if (substr($baseurl, 0, 7) != 'http://') {
-    $baseurl = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $baseurl;
-}
+// htmlspecialchars because PHP_SELF is user submitted data, and can be used as an XSS vector.
+$baseurl = Flyspray::absoluteURI(dirname(htmlspecialchars($_SERVER['PHP_SELF']))) .'/';
 
 define('DOKU_PLUGIN',        BASEDIR . '/includes/dokuwiki/lib/plugins/');
 define('DOKU_CONF',          BASEDIR . '/includes/dokuwiki/conf/');

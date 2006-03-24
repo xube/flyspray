@@ -10,7 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 // Include the notifications class
-include_once BASEDIR . '/includes/notify.inc.php';
+require_once BASEDIR . '/includes/notify.inc.php';
 $notify = new Notifications;
 
 if ($lt = Post::val('list_type')) {
@@ -421,7 +421,7 @@ elseif (Post::val('action') == 'sendcode') {
 
     $message = L('noticefrom')." {$proj->prefs['project_title']}\n\n"
              . L('addressused')."\n\n"
-             . "{$conf['general']['baseurl']}index.php?do=register&magic=$magic_url\n\n"
+             . "{$baseurl}index.php?do=register&magic=$magic_url\n\n"
                // In case that spaces in the username have been removed
              . L('username').": ".$user_name."\n"
              . L('confirmcodeis')." {$confirm_code}";

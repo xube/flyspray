@@ -12,14 +12,14 @@ class Flyspray
     var $version = '0.9.9 dev';
 
     var $prefs   = array();
-    
+
     // Application-wide preferences {{{
     function Flyspray()
     {
         global $db;
-        
+
         $this->startSession();
-        
+
         $res = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
 
         while ($row = $db->FetchRow($res)) {
@@ -27,21 +27,134 @@ class Flyspray
         }
     } // }}}
 
-    //  Redirects the browser to the page in $url {{{
-    function Redirect($url)
+    /**{{{ Redirect to $url
+     * Redirects the browser to the page in $url
+     * This function is based on PEAR HTTP class , released under
+     * the BSD license
+     */
+
+
+    function Redirect ($url, $exit = true, $rfc2616 = true)
     {
         @ob_clean();
+
         if (count($_SESSION)) {
             session_write_close();
         }
-        header('Location: ' . $url);
-        $page = new FSTpl;
-        $page->setTitle(L('Redirect'));
-        $page->assign('url', $url);
-        $page->display('common.redirect.tpl');
-        
-        exit;
+
+        if (headers_sent()) {
+
+            return false;
+        }
+
+        $url = FlySpray::absoluteURI($url);
+
+        header('Location: '. $url);
+
+        if (    $rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&
+                $_SERVER['REQUEST_METHOD'] != 'HEAD') {
+            printf('%s to: <a href="%s?RTFM=cea78d14a44e252bd6d82bdb08a691af">%s</a>.',$language['Redirect'] , $url, $url);
+        }
+        if ($exit) {
+            exit;
+        }
+            return true;
+
     } // }}}
+
+    /**
+     * Absolute URI (This function is part of PEAR::HTTP licensed under the BSD) {{{
+     *
+     * This function returns the absolute URI for the partial URL passed.
+     * The current scheme (HTTP/HTTPS), host server, port, current script
+     * location are used if necessary to resolve any relative URLs.
+     *
+     * Offsets potentially created by PATH_INFO are taken care of to resolve
+     * relative URLs to the current script.
+     *
+     * You can choose a new protocol while resolving the URI.  This is
+     * particularly useful when redirecting a web browser using relative URIs
+     * and to switch from HTTP to HTTPS, or vice-versa, at the same time.
+     *
+     * @author  Philippe Jausions <Philippe.Jausions@11abacus.com>
+     * @static
+     * @access  public
+     * @return  string  The absolute URI.
+     * @param   string  $url Absolute or relative URI the redirect should go to.
+     * @param   string  $protocol Protocol to use when redirecting URIs.
+     * @param   integer $port A new port number.
+     */
+    function absoluteURI($url = null, $protocol = null, $port = null)
+    {
+        // filter CR/LF
+        $url = str_replace(array("\r", "\n"), ' ', $url);
+
+        // Mess around with already absolute URIs
+        if (preg_match('!^([a-z0-9]+)://!i', $url)) {
+            if (empty($protocol) && empty($port)) {
+                return $url;
+            }
+            if (!empty($protocol)) {
+                $url = $protocol .':'. end($array = explode(':', $url, 2));
+            }
+            if (!empty($port)) {
+                $url = preg_replace('!^(([a-z0-9]+)://[^/:]+)(:[\d]+)?!i',
+                    '\1:'. $port, $url);
+            }
+            return $url;
+        }
+
+        $host = 'localhost';
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            list($host) = explode(':', $_SERVER['HTTP_HOST']);
+        } elseif (!empty($_SERVER['SERVER_NAME'])) {
+            list($host) = explode(':', $_SERVER['SERVER_NAME']);
+        }
+
+        if (empty($protocol)) {
+            if (isset($_SERVER['HTTPS']) && !strcasecmp($_SERVER['HTTPS'], 'on')) {
+                $protocol = 'https';
+            } else {
+                $protocol = 'http';
+            }
+            if (!isset($port) || $port != intval($port)) {
+                $port = isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : 80;
+            }
+        }
+
+        if ($protocol == 'http' && $port == 80) {
+            unset($port);
+        }
+        if ($protocol == 'https' && $port == 443) {
+            unset($port);
+        }
+
+        $server = $protocol .'://'. $host . (isset($port) ? ':'. $port : '');
+
+        if (!strlen($url)) {
+            $url = isset($_SERVER['REQUEST_URI']) ?
+                $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF'];
+        }
+
+        if ($url{0} == '/') {
+            return $server . $url;
+        }
+
+        // Check for PATH_INFO
+        if (isset($_SERVER['PATH_INFO']) && strlen($_SERVER['PATH_INFO']) &&
+                $_SERVER['PHP_SELF'] != $_SERVER['PATH_INFO']) {
+            $path = dirname(substr($_SERVER['PHP_SELF'], 0, -strlen($_SERVER['PATH_INFO'])));
+        } else {
+            $path = dirname($_SERVER['PHP_SELF']);
+        }
+
+        if (substr($path = strtr($path, '\\', '/'), -1) != '/') {
+            $path .= '/';
+        }
+
+        return $server . $path . $url;
+    } // }}}
+
     // Duplicate submission check {{{
     /** Test to see if user resubmitted a form.
       Checks only newtask and addcomment actions.
@@ -83,7 +196,7 @@ class Flyspray
         if(isset($cache[$task_id]) && $cacheenabled) {
             return $cache[$task_id];
         }
-        
+
         $get_details = $db->Query('SELECT t.*, p.*,
                                           c.category_name, c.category_owner, c.parent_id,
                                           pc.category_name AS parent_category_name,
@@ -122,7 +235,7 @@ class Flyspray
             $get_details += array('severity_name' => $severity_list[$severity_id]);
             $get_details += array('priority_name' => $priority_list[$priority_id]);
         }
-        
+
         $get_details['assigned_to'] = $this->GetAssignees($task_id);
         $get_details['assigned_to_name'] = $this->GetAssignees($task_id, true);
         $cache[$task_id] = $get_details;
@@ -133,11 +246,11 @@ class Flyspray
     function listProjects($activeOnly=true)
     {
         global $db;
-        
+
         $query = 'SELECT  project_id, project_title FROM {projects}';
-        
+
         if ($activeOnly)  {
-            
+
             $query .= " WHERE  project_is_active = 1";
         }
 
@@ -150,7 +263,7 @@ class Flyspray
         if ($handle = opendir(dirname(dirname(__FILE__)).'/themes/')) {
             $theme_array = array();
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != ".." && file_exists("themes/$file/theme.css")) {
+                if ($file != "." && $file != ".." && is_file("themes/$file/theme.css")) {
                     $theme_array[] = $file;
                 }
             }
@@ -334,22 +447,31 @@ class Flyspray
     // Reminder daemon {{{
     function startReminderDaemon()
     {
+
+    /**
+     * XXX:  I will rewrite this stuff from the scratch later
+    */
+
         $script  = 'scripts/daemon.php';
         $include = 'schedule.php';
         $runfile = 'running';
         $timeout = 600;
 
-        if (!file_exists($runfile) or filemtime($runfile) < time() - ($timeout * 2)) {
+        if (!is_file($runfile) or filemtime($runfile) < time() - ($timeout * 2)) {
             // Starting runner...
             $php = '';
+         /**
+          * Fixme : move the function CheckPhpCli( ) here and let it to do this work.
+          */
+
             foreach (array('/usr/local/bin/php', '/usr/bin/php') as $path) {
-                if (file_exists($path) and is_executable($path)) {
+                if (is_file($path) || is_executable($path)) {
                     $php = $path;
                     break;
                 }
             }
 
-            if (!$php) {
+            if (!$php || strpos( ini_get( 'disable_functions' , 'exec') ) ) {
                 // No PHP executable found... sorry!";
                 return;
             }
@@ -371,12 +493,12 @@ class Flyspray
                         'VisitAU',
                         'SubliminalAdvertising',
                       );
-        
+
         foreach ($names as $val)
         {
             session_name($val);
             session_start();
-            
+
             if (isset($_SESSION['SESSNAME']))
             {
                 $sessname = $_SESSION['SESSNAME'];
@@ -385,7 +507,7 @@ class Flyspray
             session_destroy();
             setcookie(session_name(), '', time()-60, '/');
         }
-                
+
         if (empty($sessname))
         {
             $rand_key = array_rand($names);
@@ -394,8 +516,8 @@ class Flyspray
             session_start();
             $_SESSION['SESSNAME'] = $sessname;
         }
-        
-            
+
+
     }  // }}}
 
     // Generate a long random number {{{
@@ -404,22 +526,22 @@ class Flyspray
         list($usec, $sec) = explode(' ', microtime());
         return (float) $sec + ((float) $usec * 100000);
     } // }}}
-    
+
     // Compare tasks {{{
     function compare_tasks($old, $new)
-    {        
+    {
         $comp = array('priority_name','severity_name','status_name','assigned_to_name','due_in_version_name',
                      'reported_version_name','tasktype_name','os_name', 'category_name',
                      'due_date','percent_complete','item_summary', 'due_in_version_name',
                      'detailed_desc','project_title');
-                     
+
         $changes = array();
         foreach ($old as $key => $value)
         {
             if (!in_array($key, $comp) || ($key == 'due_date' && intval($old[$key]) == intval($new[$key]))) {
                 continue;
             }
-            
+
             if($old[$key] != $new[$key]) {
                 switch ($key)
                 {
@@ -427,21 +549,21 @@ class Flyspray
                         $new[$key] = formatDate($new[$key]);
                         $value = formatDate($value);
                         break;
-                        
+
                     case 'percent_complete':
                         $new[$key] .= '%';
                         $value .= '%';
                         break;
-                    
+
                     case 'category_name':
                         if($new['parent_category_name']) {
                             $new['parent_category_name'] . ' ... ' . $new[$key];
                         }
-                        
+
                         if($old['parent_category_name'])  {
                             $value = $old['parent_category_name'] . ' ... ' . $value;
                         }
-                        break;                    
+                        break;
                 }
                 $changes[] = array($key, $value, $new[$key]);
             }
@@ -453,7 +575,7 @@ class Flyspray
     function GetAssignees($taskid, $name = false)
     {
         global $db;
-        
+
         if($name) {
             $sql = $db->Query("SELECT u.real_name
                                 FROM {users} u, {assigned} a
@@ -465,7 +587,7 @@ class Flyspray
                                 WHERE task_id = ?",
                                   array($taskid));
         }
-        
+
         $assignees = array();
         while ($row = $db->FetchArray($sql)) {
             $assignees[] = ($name) ? $row['real_name'] : $row['user_id'];
@@ -473,7 +595,7 @@ class Flyspray
 
         return $assignees;
     } /// }}}
-    
+
     // Explode string to the array of integers {{{
     function int_explode($separator, $string)
     {

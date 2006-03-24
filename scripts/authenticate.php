@@ -22,7 +22,7 @@ if (Req::val('action') == 'logout') {
     // Unset all of the session variables.
     $_SESSION = array();
     session_destroy();
-    $fs->redirect($conf['general']['baseurl']);
+    $fs->redirect($baseurl);
 }
 
 if (Req::has('user_name') && Req::has('password')) {

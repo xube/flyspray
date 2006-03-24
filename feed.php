@@ -1,5 +1,5 @@
 <?php
-// We can't include this script as part of index.php?do= etc, 
+// We can't include this script as part of index.php?do= etc,
 // as that would introduce html code into it.  HTML != Valid XML
 // So, include the headerfile to set up database access etc
 
@@ -10,7 +10,7 @@ require_once(dirname(__FILE__).'/includes/class.tpl.php');
 $page = new FSTpl();
 
 // Set up the basic XML head
-header ('Content-type: text/xml; charset=utf-8');
+header ('Content-type: text/html; charset=utf-8');
 
 $max_items  = (intval(Req::val('num', 10)) == 10) ? 10 : 20;
 $proj->id   = ($proj->id) ? $proj->id : $fs->prefs['default_project'];
@@ -27,7 +27,7 @@ switch (Req::val('topic')) {
     case 'edit':$orderby = 'last_edited_time'; $closed = 1;
                 $title   = 'Recently edited tasks';
     break;
-       
+
     default:    $orderby = 'date_opened'; $closed = 1;
                 $title   = 'Recently opened tasks';
     break;
@@ -45,14 +45,14 @@ $sql = $db->Query("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_ed
                     WHERE  t.is_closed <> '$closed' AND p.project_id = ? AND t.mark_private <> '1'
                            AND p.others_view = '1' ",
                            array($proj->id));
-$most_recent = max($db->fetchRow($sql));
+$most_recent = intval(max($db->fetchRow($sql)));
 
 // }}}
 
 /* test cache */
 if ($fs->prefs['cache_feeds']) {
     if ($fs->prefs['cache_feeds'] == '1') {
-        if (file_exists('cache/'.$filename) && $most_recent <= filemtime('cache/'.$filename)) {
+        if (is_file('cache/'.$filename) && $most_recent <= filemtime('cache/'.$filename)) {
             readfile('cache/'.$filename);
             exit;
         }
@@ -61,7 +61,7 @@ if ($fs->prefs['cache_feeds']) {
         $sql = $db->Query("SELECT  content
                              FROM  {cache}
                             WHERE  type = ? AND topic = ? AND project = ?
-                                   AND max_items = ?  AND last_updated >= ?", 
+                                   AND max_items = ?  AND last_updated >= ?",
                         array($feed_type, $orderby, $proj->id, $max_items, $most_recent));
         if ($content = $db->FetchOne($sql)) {
             echo $content;
@@ -71,14 +71,14 @@ if ($fs->prefs['cache_feeds']) {
 }
 
 /* build a new feed if cache didn't work */
-$sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed, 
+$sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed,
                            t.last_edited_time, t.opened_by, u.real_name
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
-               INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1' 
-                    WHERE  t.is_closed <> '$closed' AND p.project_id = ? AND t.mark_private <> '1'
+               INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1'
+                    WHERE  t.is_closed <> ? AND p.project_id = ? AND t.mark_private <> '1'
                            AND p.others_view = '1'
-                 ORDER BY  $orderby DESC", array($proj->id), $max_items);
+                 ORDER BY  $orderby DESC", array($closed,$proj->id), $max_items);
 
 $task_details     = $db->fetchAllArray($sql);
 $feed_description = $proj->prefs['feed_description'] ? $proj->prefs['feed_description'] : 'Flyspray:: '.$proj->prefs['project_title'].': '.$title;
@@ -102,18 +102,26 @@ if ($fs->prefs['cache_feeds'])
         }
 
         // Remove old cached files
-        $handle = fopen('cache/'.$filename, 'w+');
+        $handle = fopen('cache/'.$filename, 'w+b');
         fwrite($handle, $content);
         fclose($handle);
     }
-    else { 
-        $db->Query("UPDATE {cache} SET content = ?, last_updated = ? WHERE  type = ? AND topic = ? AND project = ? AND max_items = ?", 
-                array($content, time(), $feed_type, $orderby, $proj->id, $max_items));
+    else {
 
-        if (!$db->affectedRows()) {
-            $db->Query("INSERT INTO {cache} (content, type, topic, project, max_items, last_updated) VALUES(?, ?, ?, ?, ?, ?)", 
-                    array($content, $feed_type, $orderby, $proj->id, $max_items, time()));
-        }
+       /**
+        * See http://phplens.com/adodb/reference.functions.replace.html
+        *
+        * " Try to update a record, and if the record is not found,
+        *   an insert statement is generated and executed "
+        */
+
+        $fields = array(  'content'=> $content , 'type'=> $feed_type , 'topic'=> $orderby ,
+                          'project'=> $proj->id ,'max_items'=> $max_items , 'last_updated'=> time() );
+
+        $keys = array('type','topic','project','max_items');
+
+        $db->Replace ("{cache}", $fields, $keys, $autoquote = true );
+
     }
 }
 

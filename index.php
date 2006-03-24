@@ -60,7 +60,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
     }
 
     // Check if file exists, and user permission to access it!
-    if (file_exists("attachments/$file_name")
+    if (is_file(BASEDIR . "/attachments/$file_name")
             && ($proj->prefs['others_view'] || $user->perms['view_attachments']))
     {
         $path = BASEDIR . "/attachments/$file_name";
@@ -72,6 +72,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
         header('Content-length: ' . filesize($path));
 
         readfile($path);
+        exit();
     }
     else {
         $fs->Redirect( CreateURL('error', null) );
@@ -163,7 +164,7 @@ $page->assign('do', $do);
 $page->pushTpl('header.tpl');
 
 // Show the page the user wanted
-require(BASEDIR . "/scripts/$do.php");
+require_once BASEDIR . "/scripts/$do.php" ;
 
 $page->pushTpl('footer.tpl');
 $page->setTheme($proj->prefs['theme_style']);
@@ -172,6 +173,6 @@ $page->render();
 unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
 
 if (!empty($conf['debug'])) {
-    require (BASEDIR . '/includes/debug.inc.php');
+    include_once BASEDIR . '/includes/debug.inc.php';
 }
 ?>

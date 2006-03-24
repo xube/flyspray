@@ -16,12 +16,14 @@
  */
 
 define('IN_FS', true);
-require('header.php');
+
+require_once 'header.php';
 
 // default server (for easier testing)
 
 //$server = "http://flyspray.rocks.cc/bts/remote.php";
-$server = $conf['general']['baseurl']."remote.php";
+
+$server = Flyspray::absoluteURI('remote.php');
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -138,7 +140,7 @@ else
    // Include a copy of the xml-rpc library. This can reside anywhere.
    // We're just calling the same copy as the server for convenience.
    // (switched to xmlrpc)
-   require_once 'includes/xmlrpc.inc';
+   require_once dirname(__FILE__) .'/includes/xmlrpc.inc';
 
    //extract parts of the submitted url
    $urlParts = parse_url($_REQUEST['url']);
