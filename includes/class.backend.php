@@ -139,11 +139,13 @@ class Backend
         if (!$comment_text) {
             return false;
         }
+        
+        $time = ( (is_null($time)) ? time() : $time );
 
         $db->Query('INSERT INTO  {comments}
-                                 (task_id, date_added, user_id, comment_text)
-                         VALUES  ( ?, ?, ?, ? )',
-                    array($task['task_id'], ( (is_null($time)) ? time() : $time ), $user->id, $comment_text));
+                                 (task_id, date_added, last_edited_time, user_id, comment_text)
+                         VALUES  ( ?, ?, ?, ?, ? )',
+                    array($task['task_id'], $time, $time, $user->id, $comment_text));
 
         $result = $db->Query('SELECT  comment_id
                                 FROM  {comments}

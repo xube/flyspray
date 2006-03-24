@@ -411,9 +411,9 @@ function tpl_img($src, $alt)
     }
 } // }}}
 // {{{ Text formatting
-function tpl_formattext($text, $onyfs = false)
+function tpl_formattext($text, $onyfs = false, $type = null, $id = null, $instructions = null)
 {
-    global $conf, $baseurl;
+    global $conf, $baseurl, $db;
     if ($conf['general']['wiki_syntax'] && !$onyfs) {
         // Unfortunately dokuwiki also uses $conf
         $fs_conf = $conf;
@@ -421,28 +421,47 @@ function tpl_formattext($text, $onyfs = false)
         
         // Dokuwiki generates some notices
         error_reporting(E_ALL ^ E_NOTICE);
-        
-        require_once(BASEDIR . '/includes/dokuwiki/inc/parser/parser.php');
+        if (!$instructions) {
+            require_once(BASEDIR . '/includes/dokuwiki/inc/parser/parser.php');
+        }
         require_once(BASEDIR . '/includes/dokuwiki/inc/common.php');
         require_once(BASEDIR . '/includes/dokuwiki/inc/parser/xhtml.php');
         
-        $modes = p_get_parsermodes();
-        
-        $Parser = & new Doku_Parser();
-        
-        // Add the Handler
-        $Parser->Handler = & new Doku_Handler();
-        
-        //add modes to parser
-        foreach($modes as $mode){
-            $Parser->addMode($mode['mode'], $mode['obj']);
-        }
-        
-        // Do the parsing
-        $instructions = $Parser->parse($text);
-        
         // Create a renderer
         $Renderer = & new Doku_Renderer_XHTML();
+        
+        if (!$instructions) {
+            $modes = p_get_parsermodes();
+            
+            $Parser = & new Doku_Parser();
+            
+            // Add the Handler
+            $Parser->Handler = & new Doku_Handler();
+            
+            // Add modes to parser
+            foreach($modes as $mode){
+                $Parser->addMode($mode['mode'], $mode['obj']);
+            }
+            $instructions = $Parser->parse($text);
+            for ($i = 0; $i < count($instructions); ++$i) {
+                if ($instructions[$i][0] == 'code' && isset($instructions[$i][1][1])) {
+                    $instructions[$i][1] = call_user_func_array(array(&$Renderer, $instructions[$i][0]), $instructions[$i][1]);
+                    $instructions[$i][0] = 'geshi_cached';
+                }
+            }
+            
+            // Cache the parsed text
+            if (!is_null($type) && !is_null($id)) {
+                $fields = array('content'=> serialize($instructions), 'type'=> $type , 'topic'=> $id,
+                                'last_updated'=> time());
+
+                $keys = array('type','topic');
+
+                $db->Replace('{cache}', $fields, $keys, $autoquote = true);
+            }
+        } else {
+            $instructions = unserialize($instructions);
+        }
         
         $Renderer->smileys = getSmileys();
         $Renderer->entities = getEntities();

@@ -1109,9 +1109,9 @@ elseif (Post::val('action') == "editcomment" && ($user->perms['edit_comments'] |
         $where = ' AND user_id = ' . $user->id;
     }
     $db->Query("UPDATE  {comments}
-                   SET  comment_text = ?
+                   SET  comment_text = ?, last_edited_time = ?
                  WHERE  comment_id = ? $where",
-            array(Post::val('comment_text'), Post::val('comment_id')));
+            array(Post::val('comment_text'), time(), Post::val('comment_id')));
 
     $fs->logEvent(Post::val('task_id'), 5, Post::val('comment_text'),
             Post::val('previous_text'), Post::val('comment_id'));

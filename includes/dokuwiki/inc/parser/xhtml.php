@@ -338,6 +338,10 @@ class Doku_Renderer_xhtml extends Doku_Renderer {
         }
     }
     
+    function geshi_cached($text) {
+          $this->doc .= $text;
+    }
+    
     function preformatted($text) {
         $this->doc .= '<pre class="code">' . $this->_xmlEntities($text) . '</pre>'. DOKU_LF;
     }
@@ -379,7 +383,7 @@ class Doku_Renderer_xhtml extends Doku_Renderer {
             $geshi->set_link_target($conf['target']['extern']);
             
             $text = $geshi->parse_code();
-            $this->doc .= $text;
+            return $text;
         }
     }
     

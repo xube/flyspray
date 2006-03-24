@@ -22,8 +22,7 @@ if ( !($task_details = $fs->GetTaskDetails($task_id))
 
 require_once(BASEDIR . '/includes/events.inc.php');
 
-$page->uses('priority_list', 'severity_list', 'task_details',
-            'status_list');
+$page->uses('priority_list', 'severity_list', 'task_details');
 
 $userlist = $proj->UserList();
 
@@ -85,9 +84,23 @@ else {
                                    FROM  {history}
                                   WHERE  task_id = ?  AND event_type = 13',
                                   array($task_id));
+    
+    // Check for cached version
+    $cached = $db->Query('SELECT content, last_updated
+                            FROM {cache}
+                           WHERE topic = ? AND type = "task"',
+                           array($task_details['task_id']));
+    $cached = $db->FetchArray($cached);
+
+    if ($task_details['last_edited_time'] > $cached['last_updated'] || !$conf['general']['wiki_syntax']) {
+        $task_text = tpl_formatText($task_details['detailed_desc'], false, 'task', $task_details['task_id']);
+    } else {
+        $task_text = tpl_formatText($task_details['detailed_desc'], false, 'task', $task_details['task_id'], $cached['content']);
+    }
 
     $page->assign('prev_id',  $prev_id);
     $page->assign('next_id',  $next_id);
+    $page->assign('task_text',  $task_text);
     $page->assign('deps',     $db->fetchAllArray($check_deps));
     $page->assign('blocks',   $db->fetchAllArray($check_blocks));
     $page->assign('penreqs',  $db->fetchAllArray($get_pending));
@@ -99,8 +112,12 @@ else {
     ////////////////////////////
     // tabbed area
 
-    $sql = $db->Query('SELECT * FROM {comments} WHERE task_id = ? ORDER BY date_added ASC',
-                       array($task_id));
+    $sql = $db->Query('  SELECT * FROM {comments} c
+                      LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = "comm" AND c.last_edited_time <= ca.last_updated)
+                          WHERE task_id = ?
+                       ORDER BY date_added ASC',
+                           array($task_id));
+
     $page->assign('comments', $db->fetchAllArray($sql));
 
     $sql = get_events($task_id, ' AND (event_type = 0 OR event_type = 14)');

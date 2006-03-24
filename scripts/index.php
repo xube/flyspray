@@ -14,7 +14,7 @@ if ($proj->id != 0 && !$user->can_view_project($proj)) {
     $fs->Redirect( CreateURL('error', null) );
 }
 
-$page->uses('severity_list', 'priority_list', 'status_list');
+$page->uses('severity_list', 'priority_list');
 
 $perpage = '20';
 if (@$user->infos['tasks_perpage'] > 0) {

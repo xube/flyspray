@@ -32,7 +32,7 @@
   <?php endforeach; ?>
   </ul>
   <?php endif; ?>
-  <div class="commenttext">{!tpl_formatText($row['comment_text'])}</div></div>
+  <div class="commenttext">{!tpl_formatText($row['comment_text'], false, 'comm', $row['comment_id'], $row['content'])}</div></div>
 
   <?php // XXX the same lives in details.view.tpl, keep in sync
   if ($user->perms['view_attachments'] || $proj->prefs['others_view']):

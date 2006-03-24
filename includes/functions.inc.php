@@ -32,8 +32,6 @@ class Flyspray
      * This function is based on PEAR HTTP class , released under
      * the BSD license
      */
-
-
     function Redirect($url, $exit = true, $rfc2616 = true)
     {
         @ob_clean();
@@ -234,9 +232,11 @@ class Flyspray
             $get_details += array('severity_name' => $severity_list[$severity_id]);
             $get_details += array('priority_name' => $priority_list[$priority_id]);
         }
+        
+        $assignees = $this->GetAssignees($task_id, true);
 
-        $get_details['assigned_to'] = $this->GetAssignees($task_id);
-        $get_details['assigned_to_name'] = $this->GetAssignees($task_id, true);
+        $get_details['assigned_to'] = $assignees[0];
+        $get_details['assigned_to_name'] = $assignees[1];
         $cache[$task_id] = $get_details;
 
         return $get_details;
@@ -575,21 +575,19 @@ class Flyspray
     {
         global $db;
 
-        if($name) {
-            $sql = $db->Query("SELECT u.real_name
-                                FROM {users} u, {assigned} a
-                                WHERE task_id = ? AND u.user_id = a.user_id",
-                                  array($taskid));
-        } else {
-            $sql = $db->Query("SELECT user_id
-                                FROM {assigned}
-                                WHERE task_id = ?",
-                                  array($taskid));
-        }
+        $sql = $db->Query('SELECT u.real_name, u.user_id
+                             FROM {users} u, {assigned} a
+                            WHERE task_id = ? AND u.user_id = a.user_id',
+                              array($taskid));
 
         $assignees = array();
         while ($row = $db->FetchArray($sql)) {
-            $assignees[] = ($name) ? $row['real_name'] : $row['user_id'];
+            if ($name) {
+                $assignees[0][] = $row['user_id'];
+                $assignees[1][] = $row['real_name'];
+            } else {
+                $assignees[] = $row['user_id'];
+            }
         }
 
         return $assignees;

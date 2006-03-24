@@ -107,7 +107,6 @@ if ($fs->prefs['cache_feeds'])
         fclose($handle);
     }
     else {
-
        /**
         * See http://phplens.com/adodb/reference.functions.replace.html
         *
@@ -120,7 +119,7 @@ if ($fs->prefs['cache_feeds'])
 
         $keys = array('type','topic','project','max_items');
 
-        $db->Replace ("{cache}", $fields, $keys, $autoquote = true );
+        $db->Replace('{cache}', $fields, $keys, $autoquote = true );
 
     }
 }

@@ -11,7 +11,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-require_once ( $conf['general']['adodbpath'] );
+require_once ($conf['general']['adodbpath']);
 
 class Database
 {
@@ -25,22 +25,24 @@ class Database
     }
 
     function dbOpen($dbhost = '', $dbuser = '', $dbpass = '', $dbname = '', $dbtype = '', $dbprefix = '')
-    {
-        if (strcasecmp($dbtype, 'mysql') && strcasecmp($dbtype, 'pgsql')) {
+    {       
+        if (strpos($dbtype, 'mysql') === false && strpos($dbtype, 'pgsql') === false) {
             die('Unsupported database type: '. $dbtype);
-        }
+        }       
         
         $this->dbtype   = $dbtype;
         $this->dbprefix = $dbprefix;
+        $ADODB_COUNTRECS = false;
+        $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname";
+        $this->dblink = NewADOConnection($dsn);
 
-        $this->dblink = NewADOConnection($dbtype);
-        $res = $this->dblink->Connect($dbhost, $dbuser, $dbpass, $dbname);
-        $this->dblink->SetFetchMode(ADODB_FETCH_BOTH);
+        if ($this->dblink === false ) {
 
-        if (!$res) {
             die('Flyspray was unable to connect to the database.  '
                .'Check your settings in flyspray.conf.php');
         }
+            //$this->dblink->debug = true;
+            $this->dblink->SetFetchMode(ADODB_FETCH_BOTH);
     }
 
     function dbClose()
@@ -79,12 +81,21 @@ class Database
         //$inputarr = $this->dbMakeSqlSafe($inputarr);
 
         $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-        if (($numrows>=0) or ($offset>=0)) {
+
+       if($this->dblink->hasTransactions === true) {
+
+            $this->dblink->StartTrans();
+       }
+       
+        if (($numrows >= 0 ) or ($offset >= 0 )) {
             $result =  $this->dblink->SelectLimit($sql, $numrows, $offset, $inputarr);
         } else {
-            $result =  $this->dblink->Execute($sql, $inputarr);
+
+           $result =  $this->dblink->Execute($sql, $inputarr);
         }
-        if (!$result) {
+       
+       if (!$result) {
+           
             if (function_exists("debug_backtrace")) {
                 echo "<pre style='text-align: left;'>";
                 var_dump(debug_backtrace());
@@ -95,6 +106,12 @@ class Database
                         $sql, implode(', ', $inputarr),
                         $this->dblink->ErrorMsg()));
         }
+
+        if($this->dblink->hasTransactions === true) {
+
+           $this->dblink->CompleteTrans();
+        }
+        
         return $result;
     }
 
@@ -102,12 +119,12 @@ class Database
     {
         return $result->RecordCount();
     }
-    
+
     function AffectedRows()
     {
         return $this->dblink->Affected_Rows();
     }
-    
+
     function FetchRow(&$result)
     {
         return $result->FetchRow();
@@ -157,8 +174,15 @@ class Database
     function GetColumnNames($table)
     {
         $table = preg_replace('/{([\w\-]*?)}/', $this->dbprefix.'\1', $table);
-        return $this->dblink->MetaColumnNames($table,$numericIndex=true);
+        return $this->dblink->MetaColumnNames($table, $numericIndex = true);
     }
+    
+    function Replace($table, $field, $keys, $autoquote = true)
+    {
+        $table = preg_replace('/{([\w\-]*?)}/', $this->dbprefix.'\1', $table);
+        return $this->dblink->Replace($table, $field, $keys, $autoquote);
+    }
+    
     // End of Database Class
 }
 
