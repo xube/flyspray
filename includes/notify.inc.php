@@ -228,8 +228,9 @@ class Notifications {
 
       $body = str_replace('&amp;', '&', $body);
 
-      if (empty($to) || empty( $to[0] ) || $to == $user->id)
+      if (empty($to) || empty( $to[0] ) || ($to == $user->id && !$user->infos['notify_own'])) {
          return;
+      }
 
       // Get the new email class
       require_once("class.phpmailer.php");
@@ -276,7 +277,7 @@ class Notifications {
       $mail->WordWrap = 70;                                 // set word wrap to 70 characters
       //$mail->IsHTML(true);                                  // set email format to HTML
 
-      $mail->Subject = $subject;            // CHANGE ME WHEN WE MAKE NOTIFICATION SUBJECTS CUSTOMISABLE
+      $mail->Subject = $subject;
       $mail->Body = $body;
       //$mail->AltBody = $body;
 
@@ -714,7 +715,7 @@ class Notifications {
 
       while ($row = $db->FetchArray($get_users))
       {
-         if ($row['user_id'] == $user->id) {
+         if ($row['user_id'] == $user->id && !$user->infos['notify_own']) {
             continue;
          }
         
@@ -741,7 +742,7 @@ class Notifications {
 
       while ($row = $db->FetchArray($get_users))
       {
-         if ($row['user_id'] == $user->id) {
+         if ($row['user_id'] == $user->id && !$user->infos['notify_own']) {
             continue;
          }
          

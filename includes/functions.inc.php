@@ -50,7 +50,7 @@ class Flyspray
 
         if ($rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&
             $_SERVER['REQUEST_METHOD'] != 'HEAD') {
-            printf('%s to: <a href="%s">%s</a>.',$language['Redirect'] , $url, $url);
+            printf('%s to: <a href="%s">%s</a>.', L('Redirect'), $url, $url);
         }
         if ($exit) {
             exit;
@@ -233,10 +233,11 @@ class Flyspray
             $get_details += array('priority_name' => $priority_list[$priority_id]);
         }
         
-        $assignees = $this->GetAssignees($task_id, true);
-
-        $get_details['assigned_to'] = $assignees[0];
-        $get_details['assigned_to_name'] = $assignees[1];
+        $get_details['assigned_to'] = $get_details['assigned_to_name'] = array();
+        if ($assignees = $this->GetAssignees($task_id, true)) {
+            $get_details['assigned_to'] = $assignees[0];
+            $get_details['assigned_to_name'] = $assignees[1];
+        }
         $cache[$task_id] = $get_details;
 
         return $get_details;

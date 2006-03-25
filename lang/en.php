@@ -660,6 +660,7 @@ Regards,',
 'editowncomments'         => 'Edit own comments',
 'reopened'                => 'Reopened',
 'loading'                 => 'Loading...',
+'notifyown'               => 'Notify for own changes',
 );
 
 ?>

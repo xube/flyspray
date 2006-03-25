@@ -761,7 +761,7 @@ elseif (Post::val('action') == "addattachment" && $user->perms['create_attachmen
     $fs->redirect(CreateURL('details', Post::val('task_id')));
 
 } // }}}
-// Start of modifying user details {{{
+// Start of modifying user details/profile {{{
 elseif (Post::val('action') == "edituser"
           && ($user->perms['is_admin'] || $user->id == Post::val('user_id')))
 {
@@ -788,12 +788,12 @@ elseif (Post::val('action') == "edituser"
     }
 
     $db->Query("UPDATE  {users}
-                   SET  real_name = ?, email_address = ?,
+                   SET  real_name = ?, email_address = ?, notify_own = ?,
                         jabber_id = ?, notify_type = ?,
                         dateformat = ?, dateformat_extended = ?,
                         tasks_perpage = ?
                  WHERE  user_id = ?",
-            array(Post::val('real_name'), Post::val('email_address'),
+            array(Post::val('real_name'), Post::val('email_address'), Post::val('notify_own'),
                 Post::val('jabber_id'), Post::val('notify_type', 0),
                 Post::val('dateformat'), Post::val('dateformat_extended'),
                 Post::val('tasks_perpage'), Post::val('user_id')));

@@ -307,3 +307,6 @@ ALTER TABLE `flyspray_cache` ADD UNIQUE (
 `project` ,
 `limit`
 );
+
+-- FS#750 — Per-user option to enable notifications for own changes
+ALTER TABLE `flyspray_users` ADD `notify_own` SMALLINT NOT NULL DEFAULT '0' AFTER `notify_type` ;

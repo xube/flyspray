@@ -19,7 +19,7 @@ $sql = $db->Query("SELECT  group_id, group_name
                          ORDER BY  group_id ASC");
 $page->assign('groups', $db->fetchAllArray($sql));
         
-$page->assign('theuser', $user);
+$page->assign('user', $user);
 
 $page->setTitle('Flyspray:: ' . L('editmydetails'));
 $page->pushTpl('myprofile.tpl');
