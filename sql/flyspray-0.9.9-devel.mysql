@@ -299,3 +299,11 @@ DELETE FROM flyspray_list_status WHERE status_id = 7;
 
 -- Florian Schmitz, 24 March 2006
 ALTER TABLE `flyspray_comments` ADD `last_edited_time` VARCHAR( 12 ) NOT NULL DEFAULT '0';
+
+-- Florian Schmitz, 25 March 2006
+ALTER TABLE `flyspray_cache` ADD UNIQUE (
+`type` ,
+`topic` ,
+`project` ,
+`limit`
+);
