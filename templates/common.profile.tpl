@@ -1,4 +1,3 @@
-<fieldset class="admin">
   <form action="{$baseurl}" method="post">
     <table class="admin">
       <tr>

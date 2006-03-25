@@ -1,2 +1,2 @@
-<h2>{L('editmydetails')}</h2>
+<fieldset class="admin"><legend>{L('editmydetails')}</legend>
 <?php $this->display('common.profile.tpl'); ?>

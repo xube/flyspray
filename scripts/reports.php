@@ -62,18 +62,19 @@ switch (Req::val('date')) {
                 $wheredate *= 30;
             } elseif ($within == 'year') {
                 $wheredate *= 365;
-            };
+            }
+            
             $wheredate = time() - $wheredate;
-            $wheredate = "AND h.event_date > {$wheredate}";
-        };
+            $wheredate = 'AND h.event_date > ' . $wheredate;
+        }
         break;
 
     case 'from':
         $date      = 'from';
-        $fromdate  = Req::val('fromdate', date("d-M-Y"));
-        $todate    = Req::val('todate', date("d-M-Y"));
+        $fromdate  = Req::val('fromdate', date('d-m-Y'));
+        $todate    = Req::val('todate', date('d-m-Y'));
 
-        $ufromdate = strtotime($fromdate);
+        $ufromdate = strtotime($fromdate) + 0;
         // Add 24 hours to the end to make it include that date
         $utodate   = strtotime($todate) + 86400;
 

@@ -72,10 +72,13 @@
               ?>
             </select>
             <input type="hidden" name="do" value="{$do}" />
-            <?php foreach($_GET as $key => $value): ?>
-            <?php if(!in_array($key, array('area', 'id'))) continue; ?>
-            <input type="hidden" name="{$key}" value="{$value}" />
-            <?php endforeach; ?>
+            <?php $check = array('area', 'id', 'open', 'close', 'edit', 'assign', 'date', 'comments', 'attachments',
+                                 'related', 'notifications', 'reminders', 'within', 'duein', 'fromdate', 'todate');
+                  foreach ($check as $key):
+                  if (Get::has($key)): ?>
+            <input type="hidden" name="{$key}" value="{Get::val($key)}" />
+            <?php endif;
+                  endforeach; ?>
             <button accesskey="u" value="1" name="show" type="submit">{L('show')}</button>
           </div>
         </form>

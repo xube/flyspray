@@ -263,7 +263,7 @@ function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
     global $fs, $user;
     
     if ($value) {
-        $date = date('d-M-Y', $value);
+        $date = date('Y/m/d', $value);
     } else {
         $date = Req::val($name . 'date', '0');
     }
