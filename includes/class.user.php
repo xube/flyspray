@@ -7,7 +7,7 @@ class User
     var $infos = array();
     var $searches = array();
     var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort',
-                             'opened', 'search_in_comments', 'search_for_all');
+                             'opened', 'search_in_comments', 'search_for_all', 'reported');
 
     function User($uid = 0)
     {
@@ -46,9 +46,6 @@ class User
         if($this->isAnon()) {
             return;
         }
-
-        $url = new Url($baseurl);
-        $url->addfrom('get', $this->search_keys);
         
         // Only logged in users get to use the 'last search' functionality     
         if ($do == 'index') {
@@ -65,18 +62,18 @@ class User
                 $arr[$key] = Get::val($key);
             }
             
-            $db->Query("UPDATE  {users}
+            $db->Query('UPDATE  {users}
                            SET  last_search = ?
-                         WHERE  user_id = ?",
+                         WHERE  user_id = ?',
                         array(serialize($arr), $this->id));
                         
             if (Get::val('search_name') && $this->didSearch()) {
-                $db->Query('UPDATE {searches} SET search_string = ?, time = ? WHERE user_id = ? AND name = ?',
-                            array($url->get(false), time(), $this->id, Get::val('search_name')));
-                if (!$db->affectedRows()) {
-                    $db->Query('INSERT INTO {searches} (user_id, name, search_string, time) VALUES(?, ?, ?, ?)',
-                                array($this->id, Get::val('search_name'), $url->get(false), time()));
-                }
+                $fields = array('search_string'=> serialize($arr), 'time'=> time(),
+                                'user_id'=> $this->id , 'name'=> Get::val('search_name'));
+
+                $keys = array('name','user_id');
+
+                $db->Replace('{searches}', $fields, $keys, $autoquote = true );
             }
         }
         

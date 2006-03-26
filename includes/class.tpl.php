@@ -736,14 +736,7 @@ class Url {
 	function addfrom($method = 'get', $vars = array()) {
 		$append = '';
 		foreach($vars as $key) {
-			$source = ($method == 'get') ? Get::val($key) : Post::val($key);
-            if (is_array($source)) {
-                foreach($source as $value) {
-                    if ($value) $append .= rawurlencode($key) . '[]=' . rawurlencode($value) . '&';
-                }
-            } else {
-                if ($source) $append .= rawurlencode($key) . '=' . rawurlencode($source) . '&';
-            }
+			$append .= Url::query_from_array( (($method == 'get') ? Get::val($key) : Post::val($key)) ) . '&';
         }
         $append = substr($append, 0, -1);
         
@@ -753,19 +746,23 @@ class Url {
         	$this->parsed['query'] = $append;
         }
 	}
-	
-	function addvars($vars = array()) {
-		$append = '';
-		foreach($vars as $key => $value) {
+    
+    function query_from_array($vars) {
+        $append = '';
+		foreach ($vars as $key => $value) {
             if (is_array($value)) {
-                foreach($value as $valuei) {
+                foreach ($value as $valuei) {
                     if ($valuei) $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
                 }
             } else {
                 if ($value) $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
             }
         }
-        $append = substr($append, 0, -1);
+        return substr($append, 0, -1);
+    }
+	
+	function addvars($vars = array()) {
+        $append = Url::query_from_array($vars);
         
         if ($this->getinfo('query')) {
         	$this->parsed['query'] .= '&' . $append;
