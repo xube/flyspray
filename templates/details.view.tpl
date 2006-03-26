@@ -17,6 +17,9 @@
 	 <a href="{$baseurl}?project={$task_details['attached_to_project']}">{$task_details['project_title']}</a>
 	 <br />
 	 {L('openedby')} {!tpl_userlink($task_details['opened_by'])}
+     <?php if ($task_details['anon_email'] && $user->perms['view_tasks']): ?>
+     ({$task_details['anon_email']})
+     <?php endif; ?>
 	 - {!formatDate($task_details['date_opened'], true)}
 	 <?php if ($task_details['last_edited_by']): ?>
 	 <br />

@@ -23,6 +23,8 @@ class User
             $this->id = $uid;
         } else {
             $this->id = -1;
+            $this->infos['real_name'] = L('anonuser');
+            $this->infos['user_name'] = '';
         }
     }
 
@@ -172,6 +174,10 @@ class User
     function can_view_task($task)
     {
         global $fs, $proj;        
+        
+        if($this->isAnon() && $task['task_token'] && Get::val('task_token') == $task['task_token']) {
+            return true;
+        }
         
         if ($this->isAnon() && !$proj->prefs['others_view'] && !$task['others_view']) {
             return false;

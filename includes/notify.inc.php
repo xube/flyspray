@@ -655,6 +655,13 @@ class Notifications {
          $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= L('disclaimer');
       } // }}}
+      // {{{ Anon-task has been opened
+      if ($type == '17')
+      {
+         $body = L('donotreply') . "\n\n";
+         $body .= L('thankyouforbug') . "\n\n";
+         $body .= CreateURL('details', $task_id, null, array('task_token' => $arg1));
+      } // }}}
    
    } // }}}
    // {{{ Create an address list for specific users

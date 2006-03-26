@@ -158,7 +158,7 @@ else {
 
     $page->pushTpl('details.tabs.tpl');
 
-    if ($user->perms['view_comments'] || $proj->prefs['others_view']) {
+    if ($user->perms['view_comments'] || $proj->prefs['others_view'] || ($user->isAnon() && $task_details['task_token'] && Get::val('task_token') == $task_details['task_token'])) {
         $page->pushTpl('details.tabs.comment.tpl');
     }
 

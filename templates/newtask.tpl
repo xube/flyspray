@@ -35,13 +35,9 @@
             </select>
           </td>
         </tr>
-
+        <?php if ($user->perms['modify_all_tasks']): ?>
         <tr>
           <td>
-            <?php if (!$user->perms['modify_all_tasks']): ?>
-            <input type="hidden" name="item_status"   value="1" />
-            <input type="hidden" name="task_priority" value="2" />
-            <?php endif; ?>
             <label>{L('assignedto')}</label>
           </td>
           <td>
@@ -54,6 +50,7 @@
             <?php endif; ?>
           </td>
         </tr>
+        <?php endif; ?>
         <tr>
           <td><label for="os">{L('operatingsystem')}</label></td>
           <td>
@@ -70,7 +67,7 @@
         <tr>
           <td><label for="severity">{L('severity')}</label></td>
           <td>
-            <select onchange="getElementById('edit_summary').className = 'severity' + this.value;
+            <select onchange="getElementById('edit_summary').className = 'summary severity' + this.value;
                               getElementById('itemsummary').className = 'text severity' + this.value;"
                               id="severity" class="adminlist" name="task_severity">
               {!tpl_options($severity_list, 2)}
@@ -102,15 +99,15 @@
             </select>
           </td>
         </tr>
+        <?php if ($user->perms['modify_all_tasks']): ?>
         <tr>
           <td><label for="duedate">{L('duedate')}</label></td>
           <td id="duedate">
             <input id="duedatehidden" type="hidden" name="due_date" value="" />
-            <?php if ($user->perms['modify_all_tasks']): ?>
             {!tpl_datepicker('due_', L('selectduedate'), L('selectduedate'))}
-            <?php endif; ?>
           </td>
         </tr>
+        <?php endif; ?>
       </table>
     </div>
 
@@ -131,10 +128,14 @@
         </button>
         
       <?php endif; ?>
-      
     </div>
 
     <div>
+    <label for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30" /><br />
+    <?php if (!$user->perms['modify_all_tasks']): ?>
+    <input type="hidden" name="item_status"   value="1" />
+    <input type="hidden" name="task_priority" value="2" />
+    <?php endif; ?>
     <input type="hidden" name="do" value="modify" />
     <input type="hidden" name="action" value="newtask" />
     <input type="hidden" name="project_id" value="{$proj->id}" />

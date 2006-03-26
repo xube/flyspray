@@ -1,5 +1,5 @@
 <ul id="submenu">
-  <?php if ($user->perms['view_comments'] || $proj->prefs['others_view']): ?>
+  <?php if ($user->perms['view_comments'] || $proj->prefs['others_view'] || ($user->isAnon() && $task_details['task_token'] && Get::val('task_token') == $task_details['task_token'])): ?>
   <li id="commentstab">
   <a href="#comments">{L('comments')} ({!count($comments)})</a>
   </li>

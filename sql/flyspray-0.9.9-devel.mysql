@@ -310,3 +310,7 @@ ALTER TABLE `flyspray_cache` ADD UNIQUE (
 
 -- FS#750 — Per-user option to enable notifications for own changes
 ALTER TABLE `flyspray_users` ADD `notify_own` SMALLINT NOT NULL DEFAULT '0' AFTER `notify_type` ;
+
+-- Florian Schmitz, 26 March 2006
+ALTER TABLE `flyspray_tasks` ADD `anon_email` VARCHAR( 100 ) NOT NULL DEFAULT '',
+ADD `task_token` VARCHAR( 32 ) NOT NULL DEFAULT '0';

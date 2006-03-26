@@ -61,9 +61,19 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     $sql_params[] = 'due_date';
     $sql_values[] = $due_date;
     
+    // Token for anonymous users
+    if ($user->isAnon()) {
+        $token = md5(time(). $_SERVER['REQUEST_URI'] . mt_rand() . microtime());
+        $sql_params[] = 'task_token';
+        $sql_values[] = $token;
+        
+        $sql_params[] = 'anon_email';
+        $sql_values[] = Post::val('anon_email');
+    }
+    
     $sql_params = join(', ', $sql_params);
     $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
-
+    
     $result = $db->Query('SELECT  max(task_id)+1
                             FROM  {tasks}');
     $task_id = $db->FetchOne($result);
@@ -144,7 +154,16 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
 
     // Status and redirect
     $_SESSION['SUCCESS'] = L('newtaskadded');
-    $fs->redirect(CreateURL('details', $task_id));
+    
+    if ($user->isAnon()) {
+        $to   = $notify->SpecificAddresses(array(Post::val('anon_email')));
+        $msg  = $notify->GenerateMsg('17', $task_id, $token);
+        $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+        
+        $fs->redirect(CreateURL('details', $task_id, null, array('task_token' => $token)));
+    } else {
+        $fs->redirect(CreateURL('details', $task_id));
+    }
 
 } // }}}
 // Modifying an existing task {{{
