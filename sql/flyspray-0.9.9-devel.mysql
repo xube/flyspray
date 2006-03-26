@@ -305,7 +305,7 @@ ALTER TABLE `flyspray_cache` ADD UNIQUE (
 `type` ,
 `topic` ,
 `project` ,
-`limit`
+`max_items`
 );
 
 -- FS#750 — Per-user option to enable notifications for own changes

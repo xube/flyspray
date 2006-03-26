@@ -1,6 +1,6 @@
 <ul id="submenu">
-  <li id="eventstab"><a href="#events">{L('events')}</a></li>
-  <li id="votestab"><a href="#votes">{L('votes')}</a></li>
+  <li><a href="#events">{L('events')}</a></li>
+  <li><a href="#votes">{L('votes')}</a></li>
 </ul>
 <div id="events" class="tab">
   <form action="{$baseurl}index.php" method="get">

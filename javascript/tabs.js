@@ -52,7 +52,9 @@ function showTabById(tabid) { // {{{
   var submenu = document.getElementById('submenu');
   var i;
   var el = document.getElementById(tabid + "tab");
-  eval(el.getAttribute('onclick'));
+  if (el) {
+    eval(el.getAttribute('onclick'));
+  }
   for (i=0; i<divs.length; i++) {
     if (divs[i].className && (divs[i].className.indexOf('tab') > -1)) {
       divs[i].style.display = 'none';

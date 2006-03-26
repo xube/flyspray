@@ -26,7 +26,7 @@ class Database
 
     function dbOpen($dbhost = '', $dbuser = '', $dbpass = '', $dbname = '', $dbtype = '', $dbprefix = '')
     {       
-        if (strpos($dbtype, 'mysql') === false && strpos($dbtype, 'pgsql') === false) {
+        if (strpos(strtolower($dbtype), 'mysql') === false && strpos(strtolower($dbtype), 'pgsql') === false) {
             die('Unsupported database type: '. $dbtype);
         }       
         

@@ -6,8 +6,12 @@ define('BASEDIR', dirname(dirname(__FILE__)));
 $conf    = @parse_ini_file(BASEDIR . '/flyspray.conf.php', true);
 
 // $baseurl
+$baseurl = dirname(htmlspecialchars($_SERVER['PHP_SELF']));
+if (DIRECTORY_SEPARATOR == '\\') {
+    $baseurl = str_replace('\\', '/', $baseurl );
+}
 // htmlspecialchars because PHP_SELF is user submitted data, and can be used as an XSS vector.
-$baseurl = Flyspray::absoluteURI(dirname(htmlspecialchars($_SERVER['PHP_SELF']))) .'/';
+$baseurl = Flyspray::absoluteURI($baseurl) .'/';
 
 define('DOKU_PLUGIN',        BASEDIR . '/includes/dokuwiki/lib/plugins/');
 define('DOKU_CONF',          BASEDIR . '/includes/dokuwiki/conf/');
