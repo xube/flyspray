@@ -10,8 +10,9 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if ($proj->id != 0 && !$user->can_view_project($proj)) {
-    $fs->Redirect( CreateURL('error', null) );
+if (!$user->can_view_project($proj)) {
+    $proj = new Project(0);
+    $user->get_perms($proj);
 }
 
 $page->uses('severity_list', 'priority_list');

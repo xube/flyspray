@@ -664,6 +664,11 @@ Regards,',
 'youremail'               => 'Your e-mail address',
 'thankyouforbug'          => 'Thank you for reporting your problem. You can see the task and observe its progress any time using the following URL:',
 'anonuser'                => 'Anonymous user',
+'conflict'                => 'Conflict',
+'file'                    => 'File',
+'KiB'                     => 'KiB',
+'MiB'                     => 'MiB',
+'size'                    => 'Size',
 );
 
 ?>

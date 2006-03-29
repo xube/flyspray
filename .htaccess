@@ -4,7 +4,7 @@
 ###############################################################################
 <IfModule mod_rewrite.c>
 RewriteEngine on
-RewriteBase /flyspray
+#RewriteBase /flyspray
 
 RewriteRule ^.*\?do=admin&area=prefs$ index.php?do=admin&area=prefs [L,QSA]
 

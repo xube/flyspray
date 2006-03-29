@@ -20,7 +20,7 @@ class Flyspray
 
         $this->startSession();
 
-        $res = $db->Query("SELECT pref_name, pref_value FROM {prefs}");
+        $res = $db->Query('SELECT pref_name, pref_value FROM {prefs}');
 
         while ($row = $db->FetchRow($res)) {
             $this->prefs[$row['pref_name']] = $row['pref_value'];
@@ -175,7 +175,7 @@ class Flyspray
         if (Post::val('do') == 'modify' and preg_match('/^newtask|addcomment$/',
                     Post::val('action')))
         {
-            $currentrequest = md5(join(':', $requestarray));
+            $currentrequest = md5(serialize($requestarray));
             if (!empty($_SESSION['requests_hash'][$currentrequest])) {
                 return true;
             }

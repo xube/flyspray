@@ -1,5 +1,5 @@
-{L('alreadyedited')}
-<br /><br />
+<fieldset><legend>{L('conflict')}</legend>
+<p>{L('alreadyedited')}</p>
 <span>
   <form name="form1" action="index.php" method="post">
     <input type="hidden" name="do" value="modify" />
@@ -15,6 +15,7 @@
     <input type="hidden" name="product_category" value="{Post::val('product_category')}" />
     <input type="hidden" name="closedby_version" value="{Post::val('closedby_version')}" />
     <input type="hidden" name="due_date" value="{Post::val('due_date')}" />
+    <input type="hidden" name="reportedver" value="{Post::val('reportedver')}" />
     <input type="hidden" name="operating_system" value="{Post::val('operating_system')}" />
     <input type="hidden" name="task_severity" value="{Post::val('task_severity')}" />
     <input type="hidden" name="task_priority" value="{Post::val('task_priority')}" />
@@ -30,3 +31,4 @@
     <button type="submit">{L('cancel')}</button>
   </form>
 </span>
+</fieldset>

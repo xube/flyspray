@@ -135,15 +135,18 @@ function ToggleSelectedTasks() {
   return false;
 }
 
-function addUploadFields() {
-  var el = document.getElementById('uploadfilebox');
+function addUploadFields(id) {
+  if (!id) {
+    id = 'uploadfilebox';
+  }
+  var el = document.getElementById(id);
   var span = el.getElementsByTagName('span')[0];
   if ('none' == span.style.display) {
     // Show the file upload box
     span.style.display = 'inline';
     // Switch the buttons
-    document.getElementById('attachafile').style.display = 'none';
-    document.getElementById('attachanotherfile').style.display = 'inline';
+    document.getElementById(id + '_attachafile').style.display = 'none';
+    document.getElementById(id + '_attachanotherfile').style.display = 'inline';
     
   } else {
     // Copy the first file upload box and clear it's value
@@ -152,16 +155,19 @@ function addUploadFields() {
     el.appendChild(newBox);
   }
 }
-function removeUploadField(element) {
-  var el = document.getElementById('uploadfilebox');
+function removeUploadField(element, id) {
+  if (!id) {
+    id = 'uploadfilebox';
+  }
+  var el = document.getElementById(id);
   var span = el.getElementsByTagName('span');
   if (1 == span.length) {
     // Clear and hide the box
     span[0].style.display='none';
     span[0].getElementsByTagName('input')[0].value = '';
     // Switch the buttons
-    document.getElementById('attachafile').style.display = 'inline';
-    document.getElementById('attachanotherfile').style.display = 'none';
+    document.getElementById(id + '_attachafile').style.display = 'inline';
+    document.getElementById(id + '_attachanotherfile').style.display = 'none';
   } else {
     el.removeChild(element.parentNode);
   }

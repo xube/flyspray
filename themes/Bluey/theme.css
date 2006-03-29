@@ -307,7 +307,8 @@ ul#menu-list li.last {
 }
 
 div#projectselector {
-	margin-bottom:-0.5em;
+	margin-bottom:0.5em;
+	float:left;
 }
 
 div#anonopen {
@@ -357,6 +358,10 @@ div#anonopen a {
 	padding:0;
 }
 
+td.searches_delete {
+	width:16px;
+}
+
 table.userlist td,table.userlist th {
 	border:1px solid #ccc;
 }
@@ -365,7 +370,6 @@ table.userlist td,table.userlist th {
 div#showtask {
 	text-align:right;
 	float:right;
-	margin-top:-1em;
 }
 
 /* The paragraph containing the search form */
@@ -484,7 +488,7 @@ div#taskdetails {
 }
 
 /* Task details are listed within a table */
-div#taskdetails table {
+div#taskfields1 table, div#taskfields2 table {
 	width:90%;
 }
 
@@ -681,8 +685,12 @@ table.history td {
 }
 
 div#intromessage {
-	margin:1.5em 1px 1em 1px;
+	margin:0.5em 1px 1em 1px;
+}
+
+div.clear {
 	clear:both;
+	margin-bottom:0.5em;
 }
 
 map#formselecttasks {
@@ -1029,9 +1037,29 @@ span#navigation a#prev {
 	background:url(prev.png) no-repeat left;
 }
 
-.attachments {
+div.attachments {
 	display:block;
-	padding:10px 15px 0 20px;
+	padding:5px 15px 5px 35px;
+	background:#BBE0EB url(attachment.png) no-repeat 0 -10px;
+	border:dotted 1px gray;
+	width:22em;
+	margin:0 0 0.5em 1em;
+}
+
+table.attachments {
+	margin:0 0 0.5em 0.1em;
+	background:#BBE0EB url(attachment.png) no-repeat 0 -10px;
+	border:dotted 1px gray;
+}
+
+table.attachments th {
+	text-align:center;
+	padding:0 0.3em;
+}
+
+table.attachments td {
+	padding:0 0.3em;
+	vertical-align:middle;
 }
 
 div#error {
@@ -1099,7 +1127,7 @@ td,th {
 	vertical-align:top;
 }
 
-.inline,table.list label,div#showtask label,p.admin label,form#formaddrelatedtask label {
+.inline,table.list label,p.admin label,form#formaddrelatedtask label {
 	display:inline;
 }
 
@@ -1151,7 +1179,7 @@ td.caret {
 
 pre.code {
 	border:dotted 1px gray;
-	background:#FBFDFE;
+	background:url(klipper_dock.png) 97% 1% #FBFDFE no-repeat;
 	padding:0.8em;
 	margin:1em;
 	overflow:auto;

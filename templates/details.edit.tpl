@@ -1,5 +1,5 @@
 <div id="taskdetails">
-  <form action="{$baseurl}" method="post">
+  <form action="{$baseurl}" enctype="multipart/form-data" method="post">
 	 <div>
 		<h2 class="summary severity{$task_details['task_severity']}">
 		  FS#{$task_details['task_id']} &mdash;
@@ -129,40 +129,54 @@
 		</div>
 
 		<div id="taskdetailsfull">
+        <?php $attachments = $proj->listTaskAttachments($task_details['task_id']);
+          $this->display('common.editattachments.tpl', 'attachments', $attachments); ?>
 		  <label for="details">{L('details')}</label>
+          
+          <?php if ($user->perms['create_attachments']): ?>
+          <div id="uploadfilebox">
+            <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
+              <input tabindex="5" class="file" type="file" size="55" name="usertaskfile[]" />
+                <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
+            </span>    
+          </div>
+          <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields()">
+            {L('uploadafile')}
+          </button>
+          <button id="uploadfilebox_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
+             {L('attachanotherfile')}
+          </button>
+          <?php endif; ?>
+          
 		  <textarea id="details" name="detailed_desc"
 			 cols="70" rows="10">{$task_details['detailed_desc']}</textarea><br />
           <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
               <button type="button" onclick="showstuff('edit_add_comment');this.style.display='none';">{L('addcomment')}</button>
               <div id="edit_add_comment" class="hide">
               <label for="comment_text">{L('comment')}</label>
+              
               <?php if ($user->perms['create_attachments']): ?>
-              <div id="uploadfilebox">
+              <div id="uploadfilebox_c">
                 <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
                   <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
-                    <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
+                    <a href="javascript://" tabindex="6" onclick="removeUploadField(this, 'uploadfilebox_c');">{L('remove')}</a><br />
                 </span>    
               </div>
-              <button id="attachafile" tabindex="7" type="button" onclick="addUploadFields()">
+              <button id="uploadfilebox_c_attachafile" tabindex="7" type="button" onclick="addUploadFields('uploadfilebox_c')">
                 {L('uploadafile')}
               </button>
-              <button id="attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
+              <button id="uploadfilebox_c_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields('uploadfilebox_c')">
                  {L('attachanotherfile')}
               </button>
-                
               <?php endif; ?>
+              
               <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
               </div>
           <?php endif; ?>
-		  <table class="taskdetails">
-			 <tr><td>&nbsp;</td></tr>
-			 <tr>
-				<td class="buttons">
-				  <button type="submit" accesskey="s">{L('savedetails')}</button>
-				  <button type="reset">{L('reset')}</button>
-				</td>
-			 </tr>
-		  </table>
+		  <p class="buttons">
+              <button type="submit" accesskey="s">{L('savedetails')}</button>
+              <button type="reset">{L('reset')}</button>
+          </p>
 		</div>
 	 </div>
   </form>

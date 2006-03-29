@@ -30,7 +30,6 @@ class Project
 
     function checkExists()
     {
-        global $fs;
         return !is_null($this->id);
     }
 

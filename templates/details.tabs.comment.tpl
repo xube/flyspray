@@ -34,38 +34,9 @@
   <?php endif; ?>
   <div class="commenttext">{!tpl_formatText($row['comment_text'], false, 'comm', $row['comment_id'], $row['content'])}</div></div>
 
-  <?php // XXX the same lives in details.view.tpl, keep in sync
-  if ($user->perms['view_attachments'] || $proj->prefs['others_view']):
-  foreach ($attachments = $proj->listAttachments($row['comment_id']) as $attachment):
-  ?>
-  <span class="attachments">
-    <a href="{$baseurl}?getfile={$attachment['attachment_id']}" title="{$attachment['file_type']}">
-      <?php
-      // Strip the mimetype to get the icon image name
-      list($main) = explode('/', $attachment['file_type']);
-      $imgdir = BASEDIR . "/themes/{$proj->prefs['theme_style']}/mime/";
-      $imgpath = "{$baseurl}themes/{$proj->prefs['theme_style']}/mime/";
-      if (file_exists($imgdir.$attachment['file_type'] . '.png')):
-      ?>
-      <img src="{$imgpath}{$attachment['file_type']}.png" alt="({$attachment['file_type']})" title="{$attachment['file_type']}" />
-      <?php else: ?>
-      <img src="{$imgpath}{$main}.png" alt="" title="{$attachment['file_type']}" />
-      <?php endif; ?>
-      &nbsp;&nbsp;{$attachment['orig_name']}</a>
+  <?php $attachments = $proj->listAttachments($row['comment_id']);
+        $this->display('common.attachments.tpl', 'attachments', $attachments); ?>
 
-    <?php if ($user->perms['delete_attachments']): ?>
-    &mdash;
-    <a href="{$baseurl}?do=modify&amp;action=deleteattachment&amp;id={$attachment['attachment_id']}"
-      onclick="return confirm('{L('confirmdeleteattach')}');">
-      {L('delete')}</a>
-    <?php endif; ?>
-  </span>
-  <?php endforeach; ?>
-  <br />
-  <?php elseif (count($attachments)): ?>
-  <span class="attachments">{L('attachnoperms')}</span>
-  <br />
-  <?php endif; ?>
   <?php endforeach; ?>
 
   <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
@@ -77,18 +48,17 @@
       <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
       <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
-        <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
+        <span style="display: none;"><?php // this span is shown/copied in javascript when adding files ?>
           <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
             <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
         </span>    
       </div>
-      <button id="attachafile" tabindex="7" type="button" onclick="addUploadFields()">
+      <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields()">
         {L('uploadafile')}
       </button>
-      <button id="attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
+      <button id="uploadfilebox_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
          {L('attachanotherfile')}
       </button>
-        
       <?php endif; ?>
       <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
 

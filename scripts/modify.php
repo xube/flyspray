@@ -228,7 +228,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
         $new_details_full = $fs->GetTaskDetails(Post::val('task_id'));
         // Not very nice...maybe combine compare_tasks() and logEvent() ?
         $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?",
-                array(Post::val('task_id')));
+                             array(Post::val('task_id')));
         $new_details = $db->FetchRow($result);
 
         foreach ($new_details as $key => $val) {
@@ -251,8 +251,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
             // Log to task history
-            $fs->logEvent(Post::val('task_id'), 14, trim(Post::val('assigned_to')),
-                    Post::val('old_assigned'));
+            $fs->logEvent(Post::val('task_id'), 14, trim(Post::val('assigned_to')), Post::val('old_assigned'), null, $time);
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
             if (Post::val('assigned_to') != '') {
@@ -264,6 +263,8 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
         }
         
         $be->add_comment($old_details, Post::val('comment_text'), $time);
+        $be->DeleteFiles($user, Post::val('task_id'));
+        $be->UploadFiles($user, Post::val('task_id'), '0', 'usertaskfile');
 
         $_SESSION['SUCCESS'] = L('taskupdated');
         $fs->redirect(CreateURL('details', Post::val('task_id')));
@@ -1134,6 +1135,9 @@ elseif (Post::val('action') == "editcomment" && ($user->perms['edit_comments'] |
 
     $fs->logEvent(Post::val('task_id'), 5, Post::val('comment_text'),
             Post::val('previous_text'), Post::val('comment_id'));
+            
+    $be->UploadFiles($user, Post::val('task_id'), Post::val('comment_id'));
+    $be->DeleteFiles($user, Post::val('task_id'));
 
     $_SESSION['SUCCESS'] = L('editcommentsaved');
     $fs->Redirect(CreateURL('details', Req::val('task_id')));
@@ -1175,23 +1179,6 @@ elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments']
     $_SESSION['SUCCESS'] = L('commentdeletedmsg');
     $fs->redirect(CreateURL('details', Req::val('task_id')));
 
-} // }}}
-// deleting an attachment {{{
-elseif (Req::val('action') == 'deleteattachment' && $user->perms['delete_attachments']) {
-    // if an attachment needs to be deleted do it right now
-    $result = $db->Query("SELECT  * FROM {attachments}
-                           WHERE  attachment_id = ?",
-            array(Req::val('id')));
-    $row = $db->FetchArray($result);
-
-    @unlink("attachments/" . $row['file_name']);
-    $db->Query("DELETE FROM {attachments} WHERE attachment_id = ?",
-            array(Req::val('id')));
-
-    $fs->logEvent($row['task_id'], 8, $row['orig_name']);
-
-    $_SESSION['SUCCESS'] = L('attachmentdeletedmsg');
-    $fs->redirect(CreateURL('details', $row['task_id']));
 } // }}}
 // adding a reminder {{{
 elseif (Post::val('action') == "addreminder" && $user->perms['manage_project']) {

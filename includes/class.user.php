@@ -173,13 +173,13 @@ class User
 
     function can_view_task($task)
     {
-        global $fs, $proj;        
+        global $fs, $proj;
         
         if($this->isAnon() && $task['task_token'] && Get::val('task_token') == $task['task_token']) {
             return true;
         }
         
-        if ($this->isAnon() && !$proj->prefs['others_view'] && !$task['others_view']) {
+        if ($this->isAnon() && !$proj->prefs['others_view']) {
             return false;
         }
 

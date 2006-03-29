@@ -171,10 +171,9 @@ class Backend
        $taskid is the task that the files will be attached to
        $commentid is only valid if the files are to be attached to a comment
      */
-    function UploadFiles(&$user, $taskid, $commentid = '0')
+    function UploadFiles(&$user, $taskid, $commentid = '0', $source = 'userfile')
     {
-        global $db, $fs;
-        global $notify;
+        global $db, $fs, $notify, $conf;
 
         mt_srand($fs->make_seed());
 
@@ -189,7 +188,7 @@ class Backend
 
         $res = false;
 
-        foreach ($_FILES['userfile']['error'] as $key => $error) {
+        foreach ($_FILES[$source]['error'] as $key => $error) {
             if ($error != UPLOAD_ERR_OK) {
                 continue;
             }
@@ -199,7 +198,7 @@ class Backend
                 $fname = $taskid.'_'.mt_rand();
             }
 
-            $tmp_name = $_FILES['userfile']['tmp_name'][$key];
+            $tmp_name = $_FILES[$source]['tmp_name'][$key];
 
             // Then move the uploaded file and remove exe permissions
             @move_uploaded_file($tmp_name, $path);
@@ -212,6 +211,12 @@ class Backend
             }
 
             $res = true;
+            
+            // Use a different MIME type
+            $extension = end(explode('.', $_FILES[$source]['name'][$key]));
+            if (isset($conf['attachments'][$extension])) {
+                $_FILES[$source]['type'][$key] = $conf['attachments'][$extension];
+            }
 
             $db->Query("INSERT INTO  {attachments}
                                      ( task_id, comment_id, file_name,
@@ -219,16 +224,16 @@ class Backend
                                        added_by, date_added )
                              VALUES  (?, ?, ?, ?, ?, ?, ?, ?)",
                     array($taskid, $commentid, $fname,
-                        $_FILES['userfile']['type'][$key],
-                        $_FILES['userfile']['size'][$key],
-                        $_FILES['userfile']['name'][$key],
+                        $_FILES[$source]['type'][$key],
+                        $_FILES[$source]['size'][$key],
+                        $_FILES[$source]['name'][$key],
                         $user->id, time()));
 
             // Fetch the attachment id for the history log
-            $result = $db->Query("SELECT  attachment_id
+            $result = $db->Query('SELECT  attachment_id
                                     FROM  {attachments}
                                    WHERE  task_id = ?
-                                ORDER BY  attachment_id DESC",
+                                ORDER BY  attachment_id DESC',
                     array($taskid), 1);
             $fs->logEvent($taskid, 7, $db->fetchOne($result));
         }
@@ -236,6 +241,34 @@ class Backend
         return $res;
     }
 
+    /*
+       This function handles file deletions.
+     */
+    function DeleteFiles(&$user, $task_id)
+    {
+        global $db, $fs;
+        
+        if(!$user->perms['delete_attachments'] || !count(Post::val('delete_att'))) {
+            return false;
+        }
+        
+        $attachments = array_map('intval', Post::val('delete_att'));
+        $where = array();
+        
+        foreach ($attachments as $attachment) {
+            $where[] = 'attachment_id = ' . $attachment;
+        }
+        
+        $where = '(' . implode(' OR ', $where) . ') AND task_id = ' . intval($task_id);
+        
+        $db->Query("DELETE FROM {attachments} WHERE $where");
+        $result = $db->Query("SELECT * FROM {attachments} WHERE $where");
+        
+        while($row = $db->FetchRow($result)) {
+            @unlink(BASEDIR . '/attachments/' . $row['file_name']);
+            $fs->logEvent($row['task_id'], 8, $row['orig_name']);
+        }
+    }
     /************************************************************************************************
      * below this line, functions are old wrt new flyspray internals.  they will
      * need to be refactored
@@ -247,12 +280,9 @@ class Backend
    */
    function CreateTask($args)
    {
-      global $db;
-      global $fs;
-      global $user;
+      global $db, $fs, $user;
 
       $notify = new Notifications();
-
 
       if (!is_array($args))
          return "We were not given an array of arguments to process.";
@@ -303,7 +333,6 @@ class Backend
       
       foreach ($checkArray as $item) 
       {
-
          if (!is_numeric($args[$item])) 
          {
             return "value for $item is not numeric ($item='".($args[$item])."')";
@@ -327,7 +356,6 @@ class Backend
       // remove any value/key pairs that are not in valid_keys (or check_array)
       foreach ($args as $key => $val) 
       {
-         
          if (!in_array($key,$valid_keys)) 
          {
             unset($args[$key]);
@@ -357,7 +385,6 @@ class Backend
       
       if ($assigned_user_list)  
       {
-         
           foreach ($assigned_user_list as $assigned_user_id)
           {
             $db->Query("INSERT INTO {assigned} 
@@ -441,25 +468,6 @@ class Backend
 
         return false;
     }
-
-   /* This function takes an array of arguments, and returns a
-      nested array of task details ready to be formatted for display.
-   */
-   function GenerateTaskList($args)
-   {
-       global $fs;
-       
-       $taskIdList =  $this->getTaskIdList($args);
-       
-       $taskList = array();
-       
-       foreach($taskIdList as $taskId) {
-           
-           $taskList[] = $fs->GetTaskDetails($taskId);
-       }
-      
-       return $taskList;
-   }
     
    /*
       This function takes an array of arguments and returns a list of 

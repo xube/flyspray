@@ -92,5 +92,9 @@
           </div>
         </form>
       </div>
+      
+      <div class="clear"></div>
 
-      <div <?php if (!@$intro_message): ?>style="height:0"<?php endif; ?> id="intromessage">{!@$intro_message} &nbsp;</div>
+      <?php if ($proj->prefs['intro_message'] && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))): ?>
+      <div id="intromessage">{!$proj->prefs['intro_message']}</div>
+      <?php endif; ?>

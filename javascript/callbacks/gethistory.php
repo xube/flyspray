@@ -22,8 +22,6 @@ if (!$user->perms['view_history'])
     die();
 }
 
-
-
 if (is_numeric($details = Get::val('details'))) {
     $details = " AND h.history_id = $details";
 } else {
