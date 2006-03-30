@@ -128,8 +128,8 @@ UPDATE flyspray_users SET
 --
 -- =============================================================================
 
-ALTER TABLE flyspray_projects ADD feed_img_url TEXT NOT NULL DEFAULT '';
-ALTER TABLE flyspray_projects ADD feed_description TEXT NOT NULL DEFAULT '';
+ALTER TABLE flyspray_projects ADD COLUMN feed_img_url TEXT NOT NULL DEFAULT '';
+ALTER TABLE flyspray_projects ADD COLUMN feed_description TEXT NOT NULL DEFAULT '';
 
 INSERT INTO flyspray_prefs(pref_name, pref_value, pref_desc) VALUES ('cache_feeds', '0', '0 = do not cache feeds, 1 = cache feeds on disk, 2 = cache feeds in DB');
 
@@ -160,8 +160,9 @@ ALTER TABLE flyspray_projects DROP show_logo;
 
 -- Florian Schmitz, 13 November 2005
 
-ALTER TABLE flyspray_users ALTER COLUMN user_name TYPE VARCHAR;
-ALTER TABLE flyspray_registrations ALTER COLUMN user_name TYPE VARCHAR;
+-- Ondrej Jirman: useless hassle, types TEXT and VARCHAR are essentially the same in postgres
+--ALTER TABLE flyspray_users ALTER COLUMN user_name TYPE VARCHAR;
+--ALTER TABLE flyspray_registrations ALTER COLUMN user_name TYPE VARCHAR;
 
 -- Tony Collins, 19 November 2005
 -- Changed field for FS#329
@@ -216,7 +217,7 @@ CREATE INDEX flyspray_tasks_due_date_idx ON flyspray_tasks(due_date);
 
 -- Florian Schmitz, 21 November 2005, FS#344
 
-ALTER TABLE flyspray_projects ADD notify_subject VARCHAR(100) NOT NULL DEFAULT '';
+ALTER TABLE flyspray_projects ADD COLUMN notify_subject VARCHAR(100) NOT NULL DEFAULT '';
 
 -- Tony Collins, 22 November 2005 (FS#329)
 
@@ -226,14 +227,14 @@ CREATE INDEX flyspray_assigned_task_id_user_id_idx ON flyspray_assigned( task_id
 
 -- Tony Collins, 23 November 2005 (FS#329)
 
-ALTER TABLE flyspray_groups ADD add_to_assignees SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE flyspray_groups ADD COLUMN add_to_assignees SMALLINT NOT NULL DEFAULT 0;
 UPDATE flyspray_groups SET add_to_assignees = assign_others_to_self;
 
 -- Florian Schmitz, 18 December 2005 (FS#723)
 -- Ondrej Jirman: default changed to 'en', this fixes problem when incorrect
 -- language code (de) is shown on project mgmt page for the first time after
 -- update
-ALTER TABLE flyspray_projects ADD lang_code VARCHAR(10) NOT NULL DEFAULT 'en';
+ALTER TABLE flyspray_projects ADD COLUMN lang_code VARCHAR(10) NOT NULL DEFAULT 'en';
 
 -- Florian Schmitz, 24 December 2005 (FS#287)
 CREATE TABLE flyspray_list_status (
@@ -268,7 +269,7 @@ CREATE TABLE flyspray_searches (
 );
 
 -- Tony Collins, 22 January 2006
-ALTER TABLE flyspray_groups ADD add_votes SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE flyspray_groups ADD COLUMN add_votes SMALLINT NOT NULL DEFAULT 0;
 UPDATE flyspray_groups SET add_votes = view_reports;
 
 CREATE TABLE flyspray_votes (
@@ -287,21 +288,20 @@ update flyspray_prefs set pref_value ='0.9.9(devel)' where pref_name = 'fs_ver';
 UPDATE flyspray_tasks SET due_date = 0 WHERE due_date = '';
 
 -- Florian Schmitz, 31 January 2006
-ALTER TABLE flyspray_projects ADD comment_closed INT DEFAULT '0' NOT NULL ;
+ALTER TABLE flyspray_projects ADD COLUMN comment_closed INT NOT NULL DEFAULT 0;
 
 -- Florian Schmitz, 21 February 2006
-ALTER TABLE flyspray_users ALTER last_search SET DEFAULT '';
+ALTER TABLE flyspray_users ALTER COLUMN last_search SET DEFAULT '';
 UPDATE flyspray_users SET last_search = '' WHERE last_search IS NULL;
-ALTER TABLE flyspray_users ALTER last_search SET NOT NULL;
+ALTER TABLE flyspray_users ALTER COLUMN last_search SET NOT NULL;
 
 -- Florian Schmitz, 28 February 2006, FS#824
-ALTER TABLE flyspray_tasks ALTER closure_comment SET DEFAULT '';
+ALTER TABLE flyspray_tasks ALTER COLUMN closure_comment SET DEFAULT '';
 UPDATE flyspray_tasks SET closure_comment = '' WHERE closure_comment IS NULL;
-ALTER TABLE flyspray_tasks ALTER closure_comment SET NOT NULL;
+ALTER TABLE flyspray_tasks ALTER COLUMN closure_comment SET NOT NULL;
 
 -- Florian Schmitz, 2 March 2006, FS#829
---ALTER TABLE flyspray_groups ADD edit_own_comments INT DEFAULT 0 NOT NULL AFTER edit_comments ;
-ALTER TABLE flyspray_groups ADD edit_own_comments SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE flyspray_groups ADD COLUMN edit_own_comments SMALLINT NOT NULL DEFAULT 0;
 UPDATE flyspray_groups SET edit_own_comments = edit_comments;
 
 -- Florian Schmitz, 2 March 2006, FS#836
@@ -311,5 +311,21 @@ UPDATE flyspray_groups SET edit_own_comments = edit_comments;
 
 -- Florian Schmitz, 4 March 2006
 UPDATE flyspray_groups SET add_votes = 1 WHERE group_id = 2 OR group_id = 3 OR group_id = 6;
+
+DELETE FROM flyspray_list_status WHERE status_id = 7;
+
+-- Florian Schmitz, 24 March 2006
+ALTER TABLE flyspray_comments ADD COLUMN last_edited_time VARCHAR(12) NOT NULL DEFAULT '0';
+
+-- Florian Schmitz, 25 March 2006
+ALTER TABLE flyspray_cache ADD UNIQUE (type, topic, project, max_items);
+
+-- FS#750 Per-user option to enable notifications for own changes
+ALTER TABLE flyspray_users ADD COLUMN notify_own SMALLINT NOT NULL DEFAULT 0;
+UPDATE flyspray_users SET notify_own = notify_type;
+
+-- Florian Schmitz, 26 March 2006
+ALTER TABLE flyspray_tasks ADD COLUMN anon_email VARCHAR(100) NOT NULL DEFAULT '';
+ALTER TABLE flyspray_tasks ADD COLUMN task_token VARCHAR(32) NOT NULL DEFAULT '0';
 
 COMMIT;

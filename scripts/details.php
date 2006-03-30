@@ -88,7 +88,7 @@ else {
     // Check for cached version
     $cached = $db->Query('SELECT content, last_updated
                             FROM {cache}
-                           WHERE topic = ? AND type = "task"',
+                           WHERE topic = ? AND type = \'task\'',
                            array($task_details['task_id']));
     $cached = $db->FetchArray($cached);
 
@@ -113,7 +113,7 @@ else {
     // tabbed area
 
     $sql = $db->Query('  SELECT * FROM {comments} c
-                      LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = "comm" AND c.last_edited_time <= ca.last_updated)
+                      LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = \'comm\' AND c.last_edited_time <= ca.last_updated)
                           WHERE task_id = ?
                        ORDER BY date_added ASC',
                            array($task_id));

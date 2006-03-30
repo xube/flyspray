@@ -9,6 +9,9 @@ require_once BASEDIR . '/lang/en.php';
 function L($key)
 {
     global $language;
+    if (empty($key)) {
+        return '';
+    }
     if (isset($language[$key])) {
         return $language[$key];
     }

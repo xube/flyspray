@@ -471,7 +471,7 @@ class Flyspray
                 }
             }
 
-            if (!$php || strpos( ini_get( 'disable_functions' , 'exec') ) ) {
+            if (!$php || strpos(ini_get('disable_functions', 'exec')) !== false) {
                 // No PHP executable found... sorry!";
                 return;
             }
