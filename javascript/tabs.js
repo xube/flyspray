@@ -51,7 +51,7 @@ function showTabById(tabid) { // {{{
   var tab = document.getElementById(tabid);
   var submenu = document.getElementById('submenu');
   var i;
-  var el = document.getElementById(tabid + "tab");
+  var el = document.getElementById(tabid + "taba");
   if (el) {
     eval(el.getAttribute('onclick'));
   }

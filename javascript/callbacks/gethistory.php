@@ -8,6 +8,7 @@ define('IN_FS', true);
 
 require_once('../../header.php');
 require_once('../../includes/events.inc.php');
+$baseurl = dirname(dirname($baseurl)) .'/' ;
 
 // Initialise user
 if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
@@ -31,8 +32,9 @@ if (is_numeric($details = Get::val('details'))) {
 $sql = get_events(Get::val('id'), $details);
 $histories = $db->fetchAllArray($sql);
 
-if ($details && isset($GLOBALS['details_previous']) && isset($GLOBALS['details_new']))
+if ($details)
 {
+    event_description($histories[0]);
     $html = '<table class="history">';
     $html .= '<tr>';
     $html .= '<th>' . L('previousvalue') . '</th>';

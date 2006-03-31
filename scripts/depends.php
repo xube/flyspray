@@ -231,7 +231,7 @@ if (!function_disabled('system')) {
 
     // Now run dot on it:
     $out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
-    $cmd = "$path_to_dot -T $fmt -o" . BASEDIR . "/$out $tname";
+    $cmd = "$path_to_dot -T $fmt -o" . BASEDIR . "$out $tname";
     $stat = 0;
     $rv  = system($cmd, $stat);
     if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }

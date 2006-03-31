@@ -351,9 +351,12 @@ function allow(booler){
         $('errormessage').innerHTML = "";
     }  
 }
-function getHistory(id, baseurl, field)
+function getHistory(id, baseurl, field, details)
 {
     var url = baseurl + 'javascript/callbacks/gethistory.php?id=' + id;
+    if (details) {
+        url += '&details=' + details;
+    }
     var myAjax = new Ajax.Updater(field, url, { method: 'get'});
 }
 

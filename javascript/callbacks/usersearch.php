@@ -7,6 +7,7 @@
 define('IN_FS', true);
 
 require_once('../../header.php');
+$baseurl = dirname(dirname($baseurl)) .'/' ;
 
 if (Req::has('opened')) {
     $searchterm = '%' . Req::val('opened') . '%';
