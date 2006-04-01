@@ -14,9 +14,6 @@ UPDATE flyspray_admin_requests SET
 	 time_resolved = REPLACE(REPLACE(time_resolved, "\\'", "'"), '\\"', '"'),
 	 deny_reason = REPLACE(REPLACE(deny_reason, "\\'", "'"), '\\"', '"');
 
-UPDATE flyspray_assigned SET
-	 user_or_group = REPLACE(REPLACE(user_or_group, "\\'", "'"), '\\"', '"');
-
 UPDATE flyspray_attachments SET
 	 orig_name = REPLACE(REPLACE(orig_name, "\\'", "'"), '\\"', '"'),
 	 file_name = REPLACE(REPLACE(file_name, "\\'", "'"), '\\"', '"'),

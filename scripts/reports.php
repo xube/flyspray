@@ -50,7 +50,7 @@ foreach ($type as $eventtype) {
 $where = implode(' OR ', $where);
 
 $date = $wheredate = $within = '';
-switch (Req::val('date')) {
+switch (Req::val('repdate')) {
     case 'within':
         $date   = 'within';
         $within = Req::val('within');

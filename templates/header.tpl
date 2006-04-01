@@ -72,8 +72,11 @@
               ?>
             </select>
             <input type="hidden" name="do" value="{$do}" />
-            <?php $check = array('area', 'id', 'open', 'close', 'edit', 'assign', 'date', 'comments', 'attachments',
-                                 'related', 'notifications', 'reminders', 'within', 'duein', 'fromdate', 'todate');
+            <?php $check = array('area', 'id');
+                  if ($do == 'reports') {
+                    $check = array_merge($check, array('open', 'close', 'edit', 'assign', 'repdate', 'comments', 'attachments',
+                                    'related', 'notifications', 'reminders', 'within', 'duein', 'fromdate', 'todate'));
+                  }
                   foreach ($check as $key):
                   if (Get::has($key)): ?>
             <input type="hidden" name="{$key}" value="{Get::val($key)}" />

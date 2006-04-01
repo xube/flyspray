@@ -37,7 +37,7 @@
     <table>
       <tr>
         <td>
-          <input type="radio" id="datewithin" name="date" value="within" <?php if (Req::val('date') == 'within') echo 'checked="checked"';?> />
+          <input type="radio" id="datewithin" name="repdate" value="within" <?php if (Req::val('repdate') == 'within') echo 'checked="checked"';?> />
           <label class="inline" for="datewithin">{L('within')}</label>
         </td>
         <td colspan="6">
