@@ -10,18 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 if (Req::val('action') == 'logout') {
-
-    // Set cookie expiry time to the past, thus removing them
-    $fs->setcookie('flyspray_userid',   '', time()-60);
-    $fs->setcookie('flyspray_passhash', '', time()-60);
-    $fs->setcookie('flyspray_project',  '', time()-60);
-    if (Cookie::has(session_name())) {
-        $fs->setcookie(session_name(), '', time()-60);
-    }
-
-    // Unset all of the session variables.
-    $_SESSION = array();
-    session_destroy();
+    $user->logout();
     $fs->redirect($baseurl);
 }
 

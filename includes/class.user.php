@@ -271,6 +271,24 @@ class User
 
         return $this->perms['add_votes'] && !$db->CountRows($check);
     }
+    
+    function logout()
+    {
+        global $fs;
+        // Set cookie expiry time to the past, thus removing them
+        $fs->setcookie('flyspray_userid',   '', time()-60);
+        $fs->setcookie('flyspray_passhash', '', time()-60);
+        $fs->setcookie('flyspray_project',  '', time()-60);
+        if (Cookie::has(session_name())) {
+            $fs->setcookie(session_name(), '', time()-60);
+        }
+
+        // Unset all of the session variables.
+        $_SESSION = array();
+        session_destroy();
+        
+        return !$this->isAnon();
+    }
 
     /* }}} */
 }

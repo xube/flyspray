@@ -362,7 +362,7 @@ elseif (Post::val('action') == 'addcomment') {
 } // }}}
 // sending a new user a confirmation code {{{
 elseif (Post::val('action') == 'sendcode') {
-
+    
     if (!Post::val('user_name') || !Post::val('real_name')
         || (!Post::val('email_address') && Post::val('notify_type') == '1')
         || (!Post::val('jabber_id') && Post::val('notify_type') == '2')
@@ -789,13 +789,23 @@ elseif (Post::val('action') == "edituser"
         $_SESSION['ERROR'] = L('realandnotify');
         $fs->redirect(Post::val('prev_page'));
     }
-
+    if (!$user->perms['is_admin'] && !Post::val('oldpass')) {
+        $_SESSION['ERROR'] = L('nooldpass');
+        $fs->redirect(Post::val('prev_page'));
+    }
     if (Post::val('changepass') || Post::val('confirmpass')) {
         if (Post::val('changepass') != Post::val('confirmpass')) {
             $_SESSION['ERROR'] = L('passnomatch');
             $fs->redirect(Post::val('prev_page'));
         }
-
+        if (!$user->perms['is_admin']){
+          $sql = $db->Query("select user_pass from {users} where user_id = ?", array(Post::val('user_id')));
+          $oldpass =  $db->FetchRow($sql);
+          if ($fs->cryptPassword(Post::val('oldpass')) != $oldpass["user_pass"]){
+            $_SESSION['ERROR'] = L('oldpasswrong');
+            $fs->redirect(Post::val('prev_page'));
+          }  
+        }
         $new_hash = $fs->cryptPassword(Post::val('changepass'));
         $db->Query("UPDATE {users} SET user_pass = ? WHERE user_id = ?",
                 array($new_hash, Post::val('user_id')));
@@ -813,9 +823,9 @@ elseif (Post::val('action') == "edituser"
                         dateformat = ?, dateformat_extended = ?,
                         tasks_perpage = ?
                  WHERE  user_id = ?",
-            array(Post::val('real_name'), Post::val('email_address'), Post::val('notify_own'),
-                Post::val('jabber_id'), Post::val('notify_type', 0),
-                Post::val('dateformat'), Post::val('dateformat_extended'),
+            array(Post::val('real_name'), Post::val('email_address'), Post::val('notify_own', 0),
+                Post::val('jabber_id', 0), Post::val('notify_type', 0),
+                Post::val('dateformat', 0), Post::val('dateformat_extended', 0),
                 Post::val('tasks_perpage'), Post::val('user_id')));
 
     if ($user->perms['is_admin']) {

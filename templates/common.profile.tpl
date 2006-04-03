@@ -79,6 +79,12 @@
       <tr>
         <td colspan="2"><hr /></td>
       </tr>
+      <?php if (!$user->perms['is_admin']): ?>
+      <tr>
+        <td><label for="oldpass">{L('oldpass')}</label></td>
+        <td><input id="oldpass" class="password" type="password" name="oldpass" size="40" maxlength="100" /></td>
+      </tr>
+      <?php endif; ?>
       <tr>
         <td><label for="changepass">{L('changepass')}</label></td>
         <td><input id="changepass" class="password" type="password" name="changepass" size="40" maxlength="100" /></td>

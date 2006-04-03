@@ -10,7 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->can_register()) {
-    $fs->Redirect( CreateURL('error', null) );
+    $fs->Redirect($baseurl);
 }
 
 $page->setTitle('Flyspray:: ' . L('registernewuser'));

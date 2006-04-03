@@ -131,13 +131,14 @@ if ($user->perms['manage_project']) {
 }
 
 $sql = $db->Query(
-        "SELECT  DISTINCT p.project_id, p.project_title
+        "SELECT  DISTINCT p.project_id, p.project_title,
+                 upper(p.project_title) as sort_names
            FROM  {projects} p
       LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project OR g.belongs_to_project=0
       LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
           WHERE  (p.project_is_active='1' AND p.others_view = '1')
                  OR (uig.user_id IS NOT NULL AND (g.is_admin=1 OR g.view_tasks=1))
-       ORDER BY  p.project_title", array($user->id));
+       ORDER BY  sort_names", array($user->id));
 
 $page->assign('project_list', $project_list = $db->FetchAllArray($sql));
 
