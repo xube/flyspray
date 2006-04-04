@@ -9,7 +9,7 @@ class User
     var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort',
                              'opened', 'search_in_comments', 'search_for_all', 'reported');
 
-    function User($uid = 0, &$project = null)
+    function User($uid = 0, $project = null)
     {
         global $db;
 
@@ -21,13 +21,14 @@ class User
         if ($db->countRows($sql)) {
             $this->infos = $db->FetchArray($sql);
             $this->id = $uid;
-            if (!is_null($project)) {
-                $this->get_perms($project);
-            }
         } else {
             $this->id = -1;
             $this->infos['real_name'] = L('anonuser');
             $this->infos['user_name'] = '';
+        }
+        
+        if (!is_null($project)) {
+            $this->get_perms($project);
         }
     }
 
@@ -86,7 +87,7 @@ class User
         $this->searches = $db->FetchAllArray($sql);
     }
 
-    function get_perms(&$proj)
+    function get_perms($proj)
     {
         global $db;
 

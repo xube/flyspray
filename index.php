@@ -10,7 +10,7 @@ define('IN_FS', true);
 require_once(dirname(__FILE__).'/header.php');
 
 // Get the translation for the wrapper page (this page)
-setlocale(LC_ALL, str_replace('-','_',L('locale')));
+setlocale(LC_ALL, str_replace('-', '_', L('locale')));
 
 /*
    FS#329 allows tasks to be assigned to multiple users.
@@ -35,13 +35,11 @@ if($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
 
 /* permission stuff */
 if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
-    $user = new User(Cookie::val('flyspray_userid'));
-    $user->get_perms($proj);
+    $user = new User(Cookie::val('flyspray_userid'), $proj);
     $user->check_account_ok();
     $user->save_search($do);
 } else {
-    $user = new User();
-    $user->get_perms($proj);
+    $user = new User(0, $proj);
 }
 
 if (Get::has('getfile') && Get::val('getfile')) {
