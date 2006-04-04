@@ -9,7 +9,7 @@ class User
     var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort',
                              'opened', 'search_in_comments', 'search_for_all', 'reported');
 
-    function User($uid = 0)
+    function User($uid = 0, &$project = null)
     {
         global $db;
 
@@ -21,6 +21,9 @@ class User
         if ($db->countRows($sql)) {
             $this->infos = $db->FetchArray($sql);
             $this->id = $uid;
+            if (!is_null($project)) {
+                $this->get_perms($project);
+            }
         } else {
             $this->id = -1;
             $this->infos['real_name'] = L('anonuser');
@@ -96,12 +99,11 @@ class User
                 'add_to_assignees', 'view_reports', 'add_votes', 'group_open');
 
         $this->perms = array();
-
-        if ($this->isAnon()) {
-            foreach ($fields as $key) {
-                $this->perms[$key] = 0;
-            }
-        } else {
+        foreach ($fields as $key) {
+            $this->perms[$key] = 0;
+        }
+            
+        if (!$this->isAnon()) {
             $max = array_map(create_function('$x', 'return "MAX($x) AS $x";'),
                     $fields);
 

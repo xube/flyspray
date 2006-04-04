@@ -25,7 +25,7 @@ $page->pushTpl('admin.menu.tpl');
 
 switch ($area = Get::val('area', 'prefs')) {
     case 'users':
-        $page->assign('theuser', new User(Get::val('id')));
+        $page->assign('theuser', new User(Get::val('id'), $proj));
         $page->assign('groups', $fs->ListGroups());
     case 'cat':
     case 'editgroup':

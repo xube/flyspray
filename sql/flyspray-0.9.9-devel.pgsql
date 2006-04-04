@@ -1,6 +1,5 @@
 -- This wonderful pgsql updatescript is brought to you by Gutzmann EDV (Arne Kršger feat. Heiko Reese)
 
--- Simplified by Ondrej Jirman
 
 -- =============================================================================
 --
@@ -11,8 +10,6 @@
 -- this is exhaustive (maybe a bit too much, but It can't harm)
 --
 -- ========================================================================={{{=
-
-BEGIN;
 
 UPDATE flyspray_admin_requests SET
 	 reason_given = REPLACE(REPLACE(reason_given, '\\\'', '\''), '\\"', '"'),
@@ -128,20 +125,46 @@ UPDATE flyspray_users SET
 --
 -- =============================================================================
 
-ALTER TABLE flyspray_projects ADD COLUMN feed_img_url TEXT NOT NULL DEFAULT '';
-ALTER TABLE flyspray_projects ADD COLUMN feed_description TEXT NOT NULL DEFAULT '';
+ALTER TABLE flyspray_projects ADD feed_img_url TEXT;
+UPDATE flyspray_projects set feed_img_url = ' ' where feed_img_url is Null;
+ALTER TABLE flyspray_projects ALTER COLUMN feed_img_url set NOT NULL;
+ALTER TABLE flyspray_projects ALTER COLUMN feed_img_url SET DEFAULT '';
 
-INSERT INTO flyspray_prefs(pref_name, pref_value, pref_desc) VALUES ('cache_feeds', '0', '0 = do not cache feeds, 1 = cache feeds on disk, 2 = cache feeds in DB');
+ALTER TABLE flyspray_projects ADD feed_description TEXT;
+UPDATE flyspray_projects set feed_description = ' ' where feed_description is Null;
+ALTER TABLE flyspray_projects ALTER COLUMN feed_description set NOT NULL;
+ALTER TABLE flyspray_projects ALTER COLUMN feed_description SET DEFAULT '';
+
+
+INSERT INTO flyspray_prefs VALUES ((SELECT nextval('flyspray_prefs_pref_id_seq')), 'cache_feeds', '0', '0 = do not cache feeds, 1 = cache feeds on disk, 2 = cache feeds in DB');
 
 CREATE TABLE flyspray_cache (
-  id SERIAL,
-  type varchar(4) NOT NULL default '',
+  id smallint NOT NULL DEFAULT nextval('"flyspray_cache_id_seq"'::text),
+  type varchar NOT NULL default '',
   content text NOT NULL,
-  topic varchar(30) NOT NULL default '',
-  last_updated int NOT NULL default 0,
-  project int NOT NULL default 0,
-  max_items int NOT NULL default 0
+  topic varchar NOT NULL default '',
+  last_updated int NOT NULL default '0',
+  project int NOT NULL default '0',
+  max_items int NOT NULL default '0',
+  PRIMARY KEY  (id)
 );
+
+--
+-- Name: flyspray_cache_id_seq; Type: SEQUENCE; Schema: public; Owner: cr
+--
+
+CREATE SEQUENCE flyspray_cache_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+--
+-- Name: flyspray_admin_cache_id_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
+--
+
+SELECT pg_catalog.setval('flyspray_cache_id_seq', 1, false);
 
 -- Mac Newbold, 08 November 2005
 -- Fix closure_comment from '0' to '' so they are properly blank.
@@ -160,15 +183,32 @@ ALTER TABLE flyspray_projects DROP show_logo;
 
 -- Florian Schmitz, 13 November 2005
 
--- Ondrej Jirman: useless hassle, types TEXT and VARCHAR are essentially the same in postgres
---ALTER TABLE flyspray_users ALTER COLUMN user_name TYPE VARCHAR;
---ALTER TABLE flyspray_registrations ALTER COLUMN user_name TYPE VARCHAR;
+ALTER TABLE flyspray_users ADD COLUMN user_name_new varchar ;
+UPDATE flyspray_users SET user_name_new = CAST(user_name AS varchar);
+ALTER TABLE flyspray_users DROP COLUMN user_name;
+Alter table flyspray_users rename user_name_new to user_name;
+UPDATE flyspray_users SET user_name = ' ' where user_name is Null;
+ALTER TABLE flyspray_users ALTER COLUMN user_name SET NOT NULL;
+ALTER TABLE flyspray_users ALTER COLUMN user_name SET DEFAULT '';
+
+ALTER TABLE flyspray_registrations ADD COLUMN user_name_new varchar ;
+UPDATE flyspray_registrations SET user_name_new = CAST(user_name AS varchar);
+ALTER TABLE flyspray_registrations DROP COLUMN user_name;
+Alter table flyspray_registrations rename user_name_new to user_name;
+UPDATE flyspray_registrations SET user_name = ' ' where user_name is Null;
+ALTER TABLE flyspray_registrations ALTER COLUMN user_name SET NOT NULL;
+ALTER TABLE flyspray_registrations ALTER COLUMN user_name SET DEFAULT '';
 
 -- Tony Collins, 19 November 2005
 -- Changed field for FS#329
 
-ALTER TABLE flyspray_tasks ALTER COLUMN assigned_to TYPE VARCHAR ;
-ALTER TABLE flyspray_tasks ALTER COLUMN assigned_to SET DEFAULT '0' ;
+ALTER TABLE flyspray_tasks ADD COLUMN assigned_to_new varchar ;
+UPDATE flyspray_tasks SET assigned_to_new = CAST(assigned_to AS varchar);
+ALTER TABLE flyspray_tasks DROP COLUMN assigned_to;
+Alter table flyspray_tasks rename assigned_to_new to assigned_to;
+UPDATE flyspray_tasks SET assigned_to = ' ' where assigned_to is Null;
+ALTER TABLE flyspray_tasks ALTER COLUMN assigned_to SET NOT NULL;
+ALTER TABLE flyspray_tasks ALTER COLUMN assigned_to SET DEFAULT '';
 
 -- =============================================================================
 --
@@ -179,71 +219,93 @@ ALTER TABLE flyspray_tasks ALTER COLUMN assigned_to SET DEFAULT '0' ;
 --
 -- =========================================================================={{{
 -- lists tables
-
--- already exists
---CREATE INDEX flyspray_list_category_project_id_idx ON flyspray_list_category(project_id);
-
-CREATE INDEX flyspray_list_category_project_id_idx ON flyspray_list_category(project_id);
-CREATE INDEX flyspray_list_os_project_id_idx ON flyspray_list_os(project_id);
-CREATE INDEX flyspray_list_resolution_project_id_idx ON flyspray_list_resolution(project_id);
-CREATE INDEX flyspray_list_tasktype_project_id_idx ON flyspray_list_tasktype(project_id);
-CREATE INDEX flyspray_list_version_project_id_version_tense_idx ON flyspray_list_version(project_id, version_tense);
+CREATE INDEX flyspray_list_category_index ON flyspray_list_category (project_id);
+CREATE INDEX flyspray_list_os_index ON flyspray_list_os (project_id);
+CREATE INDEX flyspray_list_resolution_index ON flyspray_list_resolution (project_id);
+CREATE INDEX flyspray_list_tasktype_index ON flyspray_list_tasktype (project_id);
+CREATE INDEX flyspray_list_version_index ON flyspray_list_version (project_id, version_tense);
 
 -- join tables
-CREATE UNIQUE INDEX flyspray_related_this_task_related_task_idx ON flyspray_related(this_task, related_task);
-CREATE UNIQUE INDEX flyspray_dependencies_task_id_dep_task_id_idx ON flyspray_dependencies(task_id, dep_task_id);
-CREATE UNIQUE INDEX flyspray_notifications_task_id_user_id_idx ON flyspray_notifications(task_id, user_id);
+CREATE INDEX flyspray_related_index ON flyspray_related (this_task, related_task);
+CREATE INDEX flyspray_dependencies_index ON flyspray_dependencies (task_id, dep_task_id);
+CREATE INDEX flyspray_notificationsn_index ON flyspray_notifications (task_id, user_id);
 
 -- user and group related indexes
-CREATE UNIQUE INDEX flyspray_users_in_groups_group_id_user_id_idx ON flyspray_users_in_groups(group_id, user_id);
-CREATE INDEX flyspray_users_in_groups_user_id_idx ON flyspray_users_in_groups(user_id);
-CREATE INDEX flyspray_groups_belongs_to_project_idx ON flyspray_groups(belongs_to_project);
+CREATE INDEX flyspray_users_in_groups_index_unique ON flyspray_users_in_groups (group_id, user_id);
+CREATE INDEX flyspray_users_in_groups_index ON flyspray_users_in_groups (user_id);
+CREATE INDEX flyspray_groups_index ON flyspray_groups (belongs_to_project);
 
 -- task related indexes
-CREATE INDEX flyspray_attachments_task_id_comment_id_idx ON flyspray_attachments(task_id, comment_id);
-CREATE INDEX flyspray_comments_task_id_idx ON flyspray_comments(task_id);
+CREATE INDEX flyspray_attachments_index ON flyspray_attachments (task_id, comment_id);
+CREATE INDEX flyspray_comments_index ON flyspray_comments (task_id);
 
-CREATE INDEX flyspray_tasks_attached_to_project_idx ON flyspray_tasks(attached_to_project);
-CREATE INDEX flyspray_tasks_task_severity_idx ON flyspray_tasks(task_severity);
-CREATE INDEX flyspray_tasks_task_type_idx ON flyspray_tasks(task_type);
-CREATE INDEX flyspray_tasks_product_category_idx ON flyspray_tasks(product_category);
-CREATE INDEX flyspray_tasks_item_status_idx ON flyspray_tasks(item_status);
-CREATE INDEX flyspray_tasks_is_closed_idx ON flyspray_tasks(is_closed);
-CREATE INDEX flyspray_tasks_assigned_to_idx ON flyspray_tasks(assigned_to);
-CREATE INDEX flyspray_tasks_closedby_version_idx ON flyspray_tasks(closedby_version);
-CREATE INDEX flyspray_tasks_due_date_idx ON flyspray_tasks(due_date);
+CREATE INDEX flyspray_tasks_index ON flyspray_tasks (attached_to_project, task_severity, task_type, product_category, item_status, is_closed, assigned_to, closedby_version, due_date);
 
 -- ==========================================================================}}}
 
 -- Florian Schmitz, 21 November 2005, FS#344
 
-ALTER TABLE flyspray_projects ADD COLUMN notify_subject VARCHAR(100) NOT NULL DEFAULT '';
-
+ALTER TABLE flyspray_projects ADD COLUMN notify_subject VARCHAR( 100 ); 
+UPDATE flyspray_projects SET notify_subject = ' ' where notify_subject is Null;
+ALTER TABLE flyspray_projects ALTER COLUMN notify_subject SET NOT NULL;
+ALTER TABLE flyspray_projects ALTER COLUMN notify_subject SET DEFAULT '';
 -- Tony Collins, 22 November 2005 (FS#329)
 
 ALTER TABLE flyspray_assigned DROP user_or_group;
-ALTER TABLE flyspray_assigned RENAME assignee_id TO user_id;
-CREATE INDEX flyspray_assigned_task_id_user_id_idx ON flyspray_assigned( task_id , user_id );
+
+ALTER TABLE flyspray_assigned ADD COLUMN assignee_id_new BIGINT ;
+UPDATE flyspray_assigned SET assignee_id_new = CAST(assignee_id AS BIGINT);
+ALTER TABLE flyspray_assigned DROP COLUMN assignee_id;
+Alter table flyspray_assigned rename assignee_id_new to user_id;
+ALTER TABLE flyspray_assigned ALTER COLUMN user_id SET DEFAULT '0';
+ALTER TABLE flyspray_assigned ALTER COLUMN user_id SET NOT NULL;
+
+
+CREATE INDEX flyspray_assigned_index ON flyspray_assigned (task_id, user_id);
 
 -- Tony Collins, 23 November 2005 (FS#329)
 
-ALTER TABLE flyspray_groups ADD COLUMN add_to_assignees SMALLINT NOT NULL DEFAULT 0;
-UPDATE flyspray_groups SET add_to_assignees = assign_others_to_self;
+ALTER TABLE flyspray_groups ADD add_to_assignees BIGINT;
+UPDATE flyspray_groups set add_to_assignees = '0' where add_to_assignees is Null;
+ALTER TABLE flyspray_groups ALTER COLUMN add_to_assignees set NOT NULL;
+ALTER TABLE flyspray_groups ALTER COLUMN add_to_assignees SET DEFAULT '0';
+
+UPDATE flyspray_groups SET add_to_assignees = '1' WHERE assign_others_to_self =1 ;
 
 -- Florian Schmitz, 18 December 2005 (FS#723)
--- Ondrej Jirman: default changed to 'en', this fixes problem when incorrect
--- language code (de) is shown on project mgmt page for the first time after
--- update
-ALTER TABLE flyspray_projects ADD COLUMN lang_code VARCHAR(10) NOT NULL DEFAULT 'en';
+ALTER TABLE flyspray_projects ADD lang_code VARCHAR( 10 ) ;
+UPDATE flyspray_projects set lang_code = 'en' where lang_code is Null;
+ALTER TABLE flyspray_projects ALTER COLUMN lang_code set NOT NULL;
+ALTER TABLE flyspray_projects ALTER COLUMN lang_code SET DEFAULT 'en';
 
 -- Florian Schmitz, 24 December 2005 (FS#287)
+
 CREATE TABLE flyspray_list_status (
-  status_id SERIAL PRIMARY KEY,
+  status_id BIGINT NOT NULL default nextval('"flyspray_list_status_seq"'::text)  ,
   status_name varchar(20) NOT NULL default '',
-  list_position INT NOT NULL default 0,
-  show_in_list INT NOT NULL default 0,
-  project_id INT NOT NULL default 0
-);
+  list_position BIGINT NOT NULL default '0',
+  show_in_list BIGINT NOT NULL default '0',
+  project_id BIGINT NOT NULL default '0',
+  PRIMARY KEY  (status_id)
+) ;
+
+
+--
+-- Name: flyspray_list_status_seq; Type: SEQUENCE; Schema: public; Owner: cr
+--
+
+CREATE SEQUENCE flyspray_list_status_seq
+    START WITH 6
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+--
+-- Name: flyspray_list_status_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
+--
+
+SELECT pg_catalog.setval('flyspray_list_status_seq', 1, false);
 
 INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in_list, project_id) VALUES (1, 'Unconfirmed', 1, 1, 0);
 INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in_list, project_id) VALUES (2, 'New', 2, 1, 0);
@@ -253,33 +315,72 @@ INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in
 INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in_list, project_id) VALUES (6, 'Requires testing', 6, 1, 0);
 INSERT INTO flyspray_list_status (status_id, status_name, list_position, show_in_list, project_id) VALUES (7, 'Reopened', 7, 1, 0);
 
-SELECT pg_catalog.setval('flyspray_list_status_status_id_seq', 7, true);
-
 -- Florian Schmitz, 5 January 2006
 INSERT INTO flyspray_prefs ( pref_name , pref_value , pref_desc )
 VALUES ('last_update_check', '0', 'Time when the last update check was done.');
 
 -- Florian Schmitz, 14 January 2006
 CREATE TABLE flyspray_searches (
-  id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL,
-  name VARCHAR(50) NOT NULL,
-  search_string TEXT NOT NULL,
-  time INT NOT NULL
-);
+id INT NOT NULL default nextval('"flyspray_searches_seq"'::text) ,
+user_id INT NOT NULL ,
+name VARCHAR( 50 ) NOT NULL ,
+search_string TEXT NOT NULL ,
+time INT NOT NULL ,
+PRIMARY KEY ( id )
+) ;
+
+--
+-- Name: flyspray_searches_seq; Type: SEQUENCE; Schema: public; Owner: cr
+--
+
+CREATE SEQUENCE flyspray_searches_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+--
+-- Name: flyspray_searches_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
+--
+
+SELECT pg_catalog.setval('flyspray_searches_seq', 1, false);
 
 -- Tony Collins, 22 January 2006
-ALTER TABLE flyspray_groups ADD COLUMN add_votes SMALLINT NOT NULL DEFAULT 0;
-UPDATE flyspray_groups SET add_votes = view_reports;
+ALTER TABLE flyspray_groups ADD add_votes TEXT;
+UPDATE flyspray_groups set add_votes = ' ' where add_votes is Null;
+ALTER TABLE flyspray_groups ALTER COLUMN add_votes set NOT NULL;
+ALTER TABLE flyspray_groups ALTER COLUMN add_votes SET DEFAULT ' ';
+
 
 CREATE TABLE flyspray_votes (
-  vote_id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL,
-  task_id INT NOT NULL,
-  date_time VARCHAR(12) NOT NULL
-);
+vote_id INT NOT NULL default nextval('"flyspray_votes_seq"'::text) ,
+user_id INT NOT NULL ,
+task_id INT NOT NULL ,
+date_time VARCHAR( 12 ) NOT NULL ,
+PRIMARY KEY ( vote_id )
+) ;
+
+--
+-- Name: flyspray_votes_seq; Type: SEQUENCE; Schema: public; Owner: cr
+--
+
+CREATE SEQUENCE flyspray_votes_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+--
+-- Name: flyspray_votes_seq; Type: SEQUENCE SET; Schema: public; Owner: cr
+--
+
+SELECT pg_catalog.setval('flyspray_votes_seq', 1, false);
+
 
 UPDATE flyspray_groups SET add_votes = '1' WHERE group_id = 1;
+
 
 -- Gutzmann EDV, 23 January 2006
 update flyspray_prefs set pref_value ='0.9.9(devel)' where pref_name = 'fs_ver';
@@ -288,26 +389,51 @@ update flyspray_prefs set pref_value ='0.9.9(devel)' where pref_name = 'fs_ver';
 UPDATE flyspray_tasks SET due_date = 0 WHERE due_date = '';
 
 -- Florian Schmitz, 31 January 2006
-ALTER TABLE flyspray_projects ADD COLUMN comment_closed INT NOT NULL DEFAULT 0;
+ALTER TABLE flyspray_projects ADD comment_closed INT;
+ALTER TABLE flyspray_projects ALTER COLUMN comment_closed SET DEFAULT '0';
+UPDATE flyspray_projects SET comment_closed = 0 where comment_closed IS NULL;
+ALTER TABLE flyspray_projects ALTER COLUMN comment_closed SET NOT NULL;
 
 -- Florian Schmitz, 21 February 2006
-ALTER TABLE flyspray_users ALTER COLUMN last_search SET DEFAULT '';
-UPDATE flyspray_users SET last_search = '' WHERE last_search IS NULL;
-ALTER TABLE flyspray_users ALTER COLUMN last_search SET NOT NULL;
+ALTER TABLE flyspray_users ADD COLUMN last_search_new TEXT ;
+UPDATE flyspray_users SET last_search_new = CAST(last_search AS TEXT);
+ALTER TABLE flyspray_users DROP COLUMN last_search;
+Alter table flyspray_users rename last_search_new to last_search;
+ALTER TABLE flyspray_users ALTER COLUMN last_search SET DEFAULT ' ';
+update flyspray_users set last_search = ' ' where last_search is Null;
+ALTER TABLE flyspray_users ALTER COLUMN last_search SET NOT NULL ;
 
 -- Florian Schmitz, 28 February 2006, FS#824
-ALTER TABLE flyspray_tasks ALTER COLUMN closure_comment SET DEFAULT '';
-UPDATE flyspray_tasks SET closure_comment = '' WHERE closure_comment IS NULL;
+ALTER TABLE flyspray_tasks ADD COLUMN closure_comment_new TEXT ;
+UPDATE flyspray_tasks SET closure_comment_new = CAST(closure_comment AS TEXT);
+ALTER TABLE flyspray_tasks DROP COLUMN closure_comment;
+Alter table flyspray_tasks rename closure_comment_new to closure_comment;
+ALTER TABLE flyspray_tasks ALTER COLUMN closure_comment SET DEFAULT ' ';
+update flyspray_tasks set closure_comment = ' ' where closure_comment is Null;
 ALTER TABLE flyspray_tasks ALTER COLUMN closure_comment SET NOT NULL;
 
 -- Florian Schmitz, 2 March 2006, FS#829
-ALTER TABLE flyspray_groups ADD COLUMN edit_own_comments SMALLINT NOT NULL DEFAULT 0;
-UPDATE flyspray_groups SET edit_own_comments = edit_comments;
+ALTER TABLE flyspray_groups ADD edit_own_comments INT;
+ALTER TABLE flyspray_groups ALTER COLUMN edit_own_comments SET DEFAULT 0;
+UPDATE flyspray_groups SET edit_own_comments = 0 where edit_own_comments IS NULL;
+ALTER TABLE flyspray_groups ALTER COLUMN edit_own_comments SET NOT NULL;
 
 -- Florian Schmitz, 2 March 2006, FS#836
--- Ondrej Jirman: already in 0.9.8 pgsql schema dump
---ALTER TABLE flyspray_projects MODIFY notify_email TEXT NOT NULL DEFAULT '';
---ALTER TABLE flyspray_projects MODIFY notify_jabber TEXT NOT NULL DEFAULT ''; 
+ALTER TABLE flyspray_projects ADD COLUMN notify_email_new TEXT;
+UPDATE flyspray_projects SET notify_email_new = CAST(notify_email AS TEXT);
+ALTER TABLE flyspray_projects DROP COLUMN notify_email;
+Alter table flyspray_projects rename notify_email_new to notify_email;
+ALTER TABLE flyspray_projects ALTER COLUMN notify_email SET DEFAULT '';
+UPDATE flyspray_projects SET notify_email = '' where notify_email IS NULL;
+ALTER TABLE flyspray_projects ALTER COLUMN notify_email SET NOT NULL;
+
+ALTER TABLE flyspray_projects ADD COLUMN notify_jabber_new TEXT;
+UPDATE flyspray_projects SET notify_jabber_new = CAST(notify_jabber AS TEXT);
+ALTER TABLE flyspray_projects DROP COLUMN notify_jabber;
+Alter table flyspray_projects rename notify_jabber_new to notify_jabber;
+ALTER TABLE flyspray_projects ALTER COLUMN notify_jabber SET DEFAULT '';
+UPDATE flyspray_projects SET notify_jabber = '' where notify_jabber IS NULL;
+ALTER TABLE flyspray_projects ALTER COLUMN notify_jabber SET NOT NULL;
 
 -- Florian Schmitz, 4 March 2006
 UPDATE flyspray_groups SET add_votes = 1 WHERE group_id = 2 OR group_id = 3 OR group_id = 6;
@@ -315,17 +441,30 @@ UPDATE flyspray_groups SET add_votes = 1 WHERE group_id = 2 OR group_id = 3 OR g
 DELETE FROM flyspray_list_status WHERE status_id = 7;
 
 -- Florian Schmitz, 24 March 2006
-ALTER TABLE flyspray_comments ADD COLUMN last_edited_time VARCHAR(12) NOT NULL DEFAULT '0';
+ALTER TABLE flyspray_comments ADD COLUMN last_edited_time VARCHAR(12); 
+ALTER TABLE flyspray_comments ALTER COLUMN last_edited_time SET DEFAULT '0';
+UPDATE flyspray_comments SET last_edited_time = 0 where last_edited_time IS NULL;
+ALTER TABLE flyspray_comments ALTER COLUMN last_edited_time SET NOT NULL;
 
 -- Florian Schmitz, 25 March 2006
 ALTER TABLE flyspray_cache ADD UNIQUE (type, topic, project, max_items);
 
 -- FS#750 Per-user option to enable notifications for own changes
-ALTER TABLE flyspray_users ADD COLUMN notify_own SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE flyspray_users ADD COLUMN notify_own SMALLINT; 
+ALTER TABLE flyspray_users ALTER COLUMN notify_own SET DEFAULT '0';
+UPDATE flyspray_users SET notify_own = 0 where notify_own IS NULL;
+ALTER TABLE flyspray_users ALTER COLUMN notify_own SET NOT NULL;
 UPDATE flyspray_users SET notify_own = notify_type;
 
 -- Florian Schmitz, 26 March 2006
-ALTER TABLE flyspray_tasks ADD COLUMN anon_email VARCHAR(100) NOT NULL DEFAULT '';
-ALTER TABLE flyspray_tasks ADD COLUMN task_token VARCHAR(32) NOT NULL DEFAULT '0';
+ALTER TABLE flyspray_tasks ADD COLUMN anon_email VARCHAR(100); 
+ALTER TABLE flyspray_tasks ALTER COLUMN anon_email SET DEFAULT '';
+UPDATE flyspray_tasks SET anon_email = 0 where anon_email IS NULL;
+ALTER TABLE flyspray_tasks ALTER COLUMN anon_email SET NOT NULL;
+ALTER TABLE flyspray_tasks ADD COLUMN task_token VARCHAR(32);
+ALTER TABLE flyspray_tasks ALTER COLUMN task_token SET DEFAULT '0';
+UPDATE flyspray_tasks SET task_token = 0 where task_token IS NULL;
+ALTER TABLE flyspray_tasks ALTER COLUMN task_token SET NOT NULL;
 
 COMMIT;
+
