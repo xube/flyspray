@@ -359,7 +359,7 @@ class Jabber
 
 	function Listen()
 	{
-		unset($incoming);
+		$incoming = '';
 
 		while ($line = $this->CONNECTOR->ReadFromSocket(4096))
 		{
@@ -1012,7 +1012,7 @@ class Jabber
 
 	function _listen_incoming()
 	{
-		unset($incoming);
+		$incoming = '';
 
 		while ($line = $this->CONNECTOR->ReadFromSocket(4096))
 		{
