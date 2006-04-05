@@ -20,7 +20,7 @@ $sql = $db->Query("SELECT  c.*, u.real_name
 $page->assign('comment', $comment = $db->FetchArray($sql));
 
 if (!$user->can_edit_comment($comment)) {
-    $fs->Redirect( CreateURL('error') );
+    Flyspray::Redirect( CreateURL('error') );
 }
 
 $page->pushTpl('editcomment.tpl');

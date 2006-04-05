@@ -45,7 +45,7 @@ function check_value(&$value, $allowed) {
     } else if ($allowed == 'num') {
         $value = intval($value);
     } else if($value && !preg_match($allowed, $value)) {
-        $fs->Redirect(CreateURL('error', null));
+        Flyspray::Redirect(CreateURL('error', null));
     }
 }
 

@@ -11,7 +11,7 @@ if(!defined('IN_FS')) {
 
 if (Req::val('action') == 'logout') {
     $user->logout();
-    $fs->redirect($baseurl);
+    Flyspray::Redirect($baseurl);
 }
 
 if (Req::has('user_name') && Req::has('password')) {
@@ -23,7 +23,7 @@ if (Req::has('user_name') && Req::has('password')) {
     if (!$fs->checkLogin($username, $password)) {
         $_SESSION['ERROR'] = L('loginfailed');
         $_SESSION['failed_login'] = Req::val('user_name');
-        $fs->redirect(Req::val('prev_page'));
+        Flyspray::Redirect(Req::val('prev_page'));
     }
     else {
         $user_id = $fs->checkLogin($username, $password);
@@ -55,5 +55,5 @@ else {
     // If the user didn't provide both a username and a password, show this error:
     $_SESSION['ERROR'] = L('loginfailed') . ' - ' . L('userandpass');
 }
-$fs->redirect(Req::val('prev_page'));
+Flyspray::Redirect(Req::val('prev_page'));
 ?>

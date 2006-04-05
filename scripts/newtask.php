@@ -10,7 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->can_open_task($proj)) {
-    $fs->Redirect( CreateURL('error', null) );
+    Flyspray::Redirect( CreateURL('error', null) );
 }
 
 $userlist = $proj->UserList();

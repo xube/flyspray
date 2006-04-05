@@ -134,7 +134,7 @@ class User
         {
             $fs->setcookie('flyspray_userid',   '', time()-60);
             $fs->setcookie('flyspray_passhash', '', time()-60);
-            $fs->Redirect(CreateURL('logout', null));
+            Flyspray::Redirect(CreateURL('logout', null));
         }
     }
 

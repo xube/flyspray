@@ -23,10 +23,10 @@ elseif (Get::has('magic') && $user->isAnon()) {
 
     if (!$db->CountRows($check_magic)) {
         $_SESSION['ERROR'] = L('badmagic');
-        $fs->redirect(CreateURL('error'));
+        Flyspray::Redirect(CreateURL('error'));
     }
     $page->pushTpl('lostpw.step2.tpl');
 } else {
-    $fs->redirect($baseurl);
+    Flyspray::Redirect($baseurl);
 }
 ?>

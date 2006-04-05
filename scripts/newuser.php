@@ -11,7 +11,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->can_create_user()) {
-    $fs->redirect( CreateURL('error') );
+    Flyspray::Redirect( CreateURL('error') );
 }
 
 if ($user->perms['is_admin']) {

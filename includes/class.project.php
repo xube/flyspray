@@ -294,7 +294,7 @@ class Project
       }
     
       // Get the list of global groups that can be assigned tasks
-      $these_groups = $fs->int_explode(' ', $fs->prefs['assigned_groups']);
+      $these_groups = Flyspray::int_explode(' ', $fs->prefs['assigned_groups']);
       foreach ($these_groups AS $key => $val)
       {
          // Get the list of users from the global groups above

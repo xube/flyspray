@@ -17,7 +17,7 @@ $task_id = Get::val('id');
 if ( !($task_details = $fs->GetTaskDetails($task_id))
         || !$user->can_view_task($task_details))
 {
-    $fs->Redirect( CreateURL('error', null) );
+    Flyspray::Redirect( CreateURL('error', null) );
 }
 
 require_once(BASEDIR . '/includes/events.inc.php');
@@ -86,9 +86,9 @@ else {
                                   array($task_id));
     
     // Check for cached version
-    $cached = $db->Query('SELECT content, last_updated
+    $cached = $db->Query("SELECT content, last_updated
                             FROM {cache}
-                           WHERE topic = ? AND type = \'task\'',
+                           WHERE topic = ? AND type = 'task'",
                            array($task_details['task_id']));
     $cached = $db->FetchArray($cached);
 

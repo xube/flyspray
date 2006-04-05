@@ -10,7 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->can_register()) {
-    $fs->Redirect($baseurl);
+    Flyspray::Redirect($baseurl);
 }
 
 $page->setTitle('Flyspray:: ' . L('registernewuser'));
@@ -21,7 +21,7 @@ if (Get::has('magic')) {
             array(Get::val('magic')));
 
     if (!$db->CountRows($sql)) {
-        $fs->Redirect( CreateURL('error', null) );
+        Flyspray::Redirect( CreateURL('error', null) );
     }
 
     $page->pushTpl('register.magic.tpl');

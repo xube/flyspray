@@ -13,7 +13,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->perms['manage_project']) {
-    $fs->Redirect( CreateURL('error', null) );
+    Flyspray::Redirect( CreateURL('error', null) );
 }
 
 switch ($area = Get::val('area', 'prefs')) {
@@ -44,6 +44,6 @@ switch ($area = Get::val('area', 'prefs')) {
         break;
 
     default:
-        $fs->Redirect( CreateURL('error', null) );
+        Flyspray::Redirect( CreateURL('error', null) );
 }
 ?>

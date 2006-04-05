@@ -233,7 +233,7 @@ class Notifications {
       }
 
       // Get the new email class
-      require_once("class.phpmailer.php");
+      require_once('class.phpmailer.php');
 
       // Define the class
       $mail = new PHPMailer();
@@ -241,7 +241,7 @@ class Notifications {
       $mail->From = $fs->prefs['admin_email'];
       $mail->Sender = $fs->prefs['admin_email'];
       $mail->FromName = 'Flyspray';
-      $mail->CharSet = "UTF-8";
+      $mail->CharSet = 'UTF-8';
 
       // Do we want to use a remote mail server?
       if (!empty($fs->prefs['smtp_server']))
@@ -263,11 +263,11 @@ class Notifications {
 
       if (is_array($to))
       {
-         $mail->AddAddress($fs->prefs['admin_email']);
+         $mail->AddAddress($fs->prefs['admin_email']); // do not disclose user's address
          foreach ($to as $key => $val)
          {
             // Unlike the docs say, it *does (appear to)* work with mail()
-            $mail->AddBcc($val);                        // Add each address
+            $mail->AddBcc($val);
          }
 
       } else {

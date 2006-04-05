@@ -19,7 +19,7 @@ function function_disabled($func_name)
 if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
         || !$user->can_view_task($task_details))
 {
-    $fs->Redirect( CreateURL('error', null) );
+    Flyspray::Redirect( CreateURL('error', null) );
 }
 
 // Configuration information:

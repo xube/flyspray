@@ -10,7 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 if ($user->isAnon()) {
-    $fs->redirect(CreateURL('error'));
+    Flyspray::Redirect(CreateURL('error'));
 }
 
 $sql = $db->Query("SELECT  group_id, group_name

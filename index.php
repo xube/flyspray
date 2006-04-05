@@ -75,7 +75,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
         exit();
     }
     else {
-        $fs->Redirect( CreateURL('error', null) );
+        Flyspray::Redirect( CreateURL('error', null) );
     }
     exit;
 }
@@ -106,16 +106,16 @@ $page = new FSTpl();
 if ($show_task = Get::val('show_task')) {
     // If someone used the 'show task' form, redirect them
     if (is_numeric($show_task)) {
-        $fs->Redirect( CreateURL('details', $show_task) );
+        Flyspray::Redirect( CreateURL('details', $show_task) );
     } else {
-        $fs->Redirect( CreateURL('error', null) );
+        Flyspray::Redirect( CreateURL('error', null) );
     }
 }
 
 if ($fs->requestDuplicated()) {
     // Check that this page isn't being submitted twice
     $_SESSION['ERROR'] = L('duplicated');
-    $fs->Redirect( '?id='.$proj->id );
+    Flyspray::Redirect( '?id='.$proj->id );
 }
 
 if ($user->perms['manage_project']) {

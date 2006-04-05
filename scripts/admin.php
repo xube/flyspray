@@ -14,7 +14,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->perms['is_admin']) {
-    $fs->Redirect( CreateURL('error', null) );
+    Flyspray::Redirect( CreateURL('error', null) );
 }
 
 $old_project = $proj->id;
@@ -44,7 +44,7 @@ switch ($area = Get::val('area', 'prefs')) {
         break;
 
     default:
-        $fs->Redirect( CreateURL('error', null) );
+        Flyspray::Redirect( CreateURL('error', null) );
 }
 
 ?>
