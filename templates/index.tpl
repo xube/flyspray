@@ -27,7 +27,7 @@
         
         <span id="searchstate" onclick="toggleSearchBox('{$this->themeUrl()}');" style="cursor:pointer">
         <span id="advancedsearchstate" class="showstate">
-        <img id="advancedsearchstateimg" src="<?php echo (Cookie::val('advancedsearch')) ? $this->themeUrl() . 'edit_remove.png' : $this->themeUrl() . 'edit_add.png'; ?>"
+        <img id="advancedsearchstateimg" src="<?php echo (Cookie::val('advancedsearch')) ? $this->get_image('edit_remove') : $this->get_image('edit_add'); ?>"
              alt="<?php echo (Cookie::val('advancedsearch')) ? '-' : '+'; ?>" width="16" height="16" />
         </span>{L('advanced')}
         </span>

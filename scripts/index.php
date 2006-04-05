@@ -296,7 +296,7 @@ $page->assign('total', count($id_list));
 
 function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 {
-    global $proj, $get;
+    global $proj, $get, $page;
 
     $keys = array (
             'id'         => 'id',
@@ -322,11 +322,11 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
             'votes'      => 'votes',
     );
 
-    $imgbase = '<img src="themes/'.$proj->prefs['theme_style'].'/%s.png" alt="%s" />';
+    $imgbase = '<img src="%s" alt="%s" />';
     $class   = '';
     $html    = L($colname);
     if ($colname == 'comments' || $colname == 'attachments') {
-        $html = sprintf($imgbase, substr($colname, 0, -1), $html);
+        $html = sprintf($imgbase, $page->get_image(substr($colname, 0, -1)), $html);
     }
 
     if ($orderkey = $keys[$colname]) {
@@ -335,7 +335,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
             $sort1  = Get::val('sort', 'desc') == 'desc' ? 'asc' : 'desc';
             $sort2  = Get::val('sort2', 'desc');
             $order2 = Get::val('order2');
-            $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, Get::val('sort'), Get::val('sort'));
+            $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, $page->get_image(Get::val('sort')), Get::val('sort'));
         }
         else {
             $sort1  = 'desc';
@@ -360,8 +360,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 // tpl function that draws a cell {{{
 
 function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
-    global $fs, $proj, $priority_list,
-           $severity_list;
+    global $fs, $proj, $priority_list, $page, $severity_list;
 
     $indexes = array (
             'id'         => 'task_id',
@@ -419,8 +418,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             break;
 
         case 'progress':
-            $value = tpl_img('themes/'.$proj->prefs['theme_style']
-                    . '/percent-' . $task['percent_complete'] . '.png',
+            $value = tpl_img($page->get_image('percent-' . $task['percent_complete'], false),
                     $task['percent_complete'] . '% ' . L('complete'));
             break;
 

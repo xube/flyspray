@@ -48,6 +48,6 @@ while ($row = $db->FetchArray($milestones)) {
                     'all_tasks' => $all_tasks, 'name' => $row['version_name']);
 }
 
-$page->uses('data');
+$page->uses('data', 'page');
 $page->pushTpl('roadmap.tpl');
 ?>

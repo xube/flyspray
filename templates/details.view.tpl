@@ -109,7 +109,7 @@
 		<tr class="percent">
 		  <th id="percent">{L('percentcomplete')}</th>
 		  <td headers="percent">
-			 <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/percent-{$task_details['percent_complete']}.png"
+			 <img src="{$this->get_image('percent-' . $task_details['percent_complete'])}"
 				title="{$task_details['percent_complete']}% {L('complete')}"
 				alt="{$task_details['percent_complete']}%" />
 		  </td>

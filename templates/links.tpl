@@ -35,7 +35,7 @@ endif; ?>
       <td><a href="{$baseurl}?{Url::query_from_array(unserialize($search['search_string']))}">{$search['name']}</a></td>
       <td class="searches_delete">
         <a href="javascript:deletesearch('{$search['id']}','{$baseurl}')">
-        <img src="{$this->themeUrl()}button_cancel.png" width="16" height="16" title="{L('delete')}" alt="{L('delete')}" /></a>
+        <img src="{$this->get_image('button_cancel')}" width="16" height="16" title="{L('delete')}" alt="{L('delete')}" /></a>
       </td>
     </tr>
     <?php endforeach; ?>

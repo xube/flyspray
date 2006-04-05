@@ -127,7 +127,7 @@
             <tr>
               <td>
                 <a class="DoNotPrint" href="#" onclick="showhidestuff('dropdown{$key}');getVoters('{$key}', '{$baseurl}', 'dropdown{$key}')">
-                  <img src="{$baseurl}themes/{$proj->prefs['theme_style']}/dropdown.png" title="{L('showvoters')}" alt="" />
+                  <img src="{$this->get_image('dropdown')}" title="{L('showvoters')}" alt="" />
                 </a>
               </td>
               <td valign="top">{$val}</td>

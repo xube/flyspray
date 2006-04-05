@@ -126,6 +126,24 @@ class Tpl
 class FSTpl extends Tpl
 {
     var $_uses = array('fs', 'conf', 'baseurl', 'language', 'proj', 'user');
+    
+    function get_image($name, $base = true)
+	{
+        global $proj, $baseurl, $basedir;
+        $pathinfo = pathinfo($name);
+        $link = 'themes/' . $proj->prefs['theme_style'] . '/';
+        if ($pathinfo['dirname'] != '.') {
+            $link .= $pathinfo['dirname'] . '/';
+        }
+
+        $folder = opendir($link);
+        while (false !== ($file = readdir($folder))) {
+           if (preg_match('/' . preg_quote($pathinfo['basename'], '/') . '/', $file)){
+                $folder = closedir($folder);
+                return ($base) ? $baseurl . $link . $file : $link . $file;
+            }
+        }
+	}
 }
 
 // {{{ costful templating functions, TODO: optimize them

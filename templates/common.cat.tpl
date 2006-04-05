@@ -75,6 +75,7 @@
           </td>
         </tr>
         <?php endforeach; endforeach; ?>
+        <?php if(count($proj->listCatsIn(true))): ?>
         <tr>
           <td colspan="4"></td>
           <td class="buttons">
@@ -86,6 +87,7 @@
             <button type="submit">{L('update')}</button>
           </td>
         </tr>
+        <?php endif; ?>
       </table>
     </form>
 

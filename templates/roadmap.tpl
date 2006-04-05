@@ -9,7 +9,7 @@ foreach($milestone['open_tasks'] as $task): ?>
 <?php endforeach; ?>
 ">{L('roadmapfor')} {$milestone['name']} <span class="DoNotPrint fade">[++]</span></h3>
 
-<p><img src="{$baseurl}themes/{$proj->prefs['theme_style']}/percent-{(round($milestone['percent_complete']/10)*10)}.png"
+<p><img src="{$this->get_image('percent-' . round($milestone['percent_complete']/10)*10)}"
 				title="{(round($milestone['percent_complete']/10)*10)}% {L('complete')}"
 				alt="" width="200" height="20" />
 </p>

@@ -2,7 +2,7 @@
 
 class Project
 {
-    var $id;
+    var $id = 0;
     var $prefs = array();
 
     function Project($id)
@@ -18,7 +18,6 @@ class Project
             }
         }
         
-        $this->id = 0;
         $this->prefs['project_title'] = L('allprojects');
         $this->prefs['theme_style']   = $fs->prefs['global_theme'];
         $this->prefs['lang_code']   = $fs->prefs['lang_code'];
