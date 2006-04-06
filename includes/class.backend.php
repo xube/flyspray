@@ -123,7 +123,7 @@ class Backend
 
                 if ($db->affectedRows()) {
                     $fs->logEvent($task_id, 29, $user->id, implode(' ', $task['assigned_to']));
-                    $notify->Create('16', $task_id);
+                    $notify->Create('17', $task_id);
                 }
             }
         }

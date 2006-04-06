@@ -15,7 +15,7 @@
     foreach($task_details as $row):?>
     <item>
       <title>{$row['item_summary']}</title>
-      <pubDate>{date('r',$row['last_edited_time'])}</pubDate>
+      <pubDate>{date('r',intval($row['last_edited_time']))}</pubDate>
       <description>{strip_tags($row['detailed_desc'])}</description>
       <link>{CreateURL('details', $row['task_id'])}</link>
     </item>

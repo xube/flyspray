@@ -1,3 +1,10 @@
+<?php if(isset($update_error)): ?>
+<div id="updatemsg">
+	<span class="bad"> {L('updatewrong')}</span>
+	<a href="?hideupdatemsg=yep">{L('hidemessage')}</a>
+</div>
+<?php endif; ?>
+
 <?php if(isset($updatemsg)): ?>
 <div id="updatemsg">
     <a href="http://flyspray.rocks.cc/">{L('updatefs')}</a> {L('currentversion')}

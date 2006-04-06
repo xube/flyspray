@@ -15,8 +15,8 @@
   <entry>
     <title>{$row['item_summary']}</title>
     <link href="{CreateURL('details', $row['task_id'])}" />    
-    <updated>{date('Y-m-d\TH:i:s\Z',$row['last_edited_time'])}</updated>    
-    <published>{date('Y-m-d\TH:i:s\Z',$row['date_opened'])}</published>
+    <updated>{date('Y-m-d\TH:i:s\Z',intval($row['last_edited_time']))}</updated>    
+    <published>{date('Y-m-d\TH:i:s\Z',intval($row['date_opened']))}</published>
     <content type="xhtml" xml:lang="en" xml:base="http://diveintomark.org/">
       <div xmlns="http://www.w3.org/1999/xhtml">
         {!tpl_FormatText($row['detailed_desc'])}

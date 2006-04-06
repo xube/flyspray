@@ -341,7 +341,8 @@ class Notifications {
          |14. New assignee             |
          |15. Reversed dep             |
          |16. Reversed dep removed     |
-         |16. Added to assignees list  |
+         |17. Added to assignees list  |
+         |18. Anon-task opened         |
          -------------------------------
       */
       // {{{ New task opened
@@ -646,7 +647,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ User added to assignees list
-      if ($type == '16')
+      if ($type == '17')
       {
          $body = L('donotreply') . "\n\n";
          $body .= L('useraddedtoassignees') . "\n\n";
@@ -656,7 +657,7 @@ class Notifications {
          $body .= L('disclaimer');
       } // }}}
       // {{{ Anon-task has been opened
-      if ($type == '17')
+      if ($type == '18')
       {
          $body = L('donotreply') . "\n\n";
          $body .= L('thankyouforbug') . "\n\n";

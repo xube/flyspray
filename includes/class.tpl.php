@@ -81,8 +81,8 @@ class Tpl
         }
         
         // theming part
-        if (file_exists(BASEDIR . '/' . $this->_theme.$_tpl)) {
-            $_tpl_data = file_get_contents(BASEDIR . '/' . $this->_theme.$_tpl);
+        if (file_exists(BASEDIR . '/themes/' . $this->_theme.$_tpl)) {
+            $_tpl_data = file_get_contents(BASEDIR . '/themes/' . $this->_theme.$_tpl);
         } else {
             $_tpl_data = file_get_contents(BASEDIR . '/' . 'templates/'.$_tpl);
         }
@@ -340,7 +340,7 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         if (in_array($value, $selected)) {
             $html .= ' selected="selected"';
         }
-        $html .= join_attrs($attr).'>'.$label.'</option>';
+        $html .= ($attr ? join_attrs($attr): '') . '>' . $label . '</option>';
     }
     if (!$html) {
         $html .= '<option value="0">---</option>';
@@ -410,13 +410,14 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
     $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
     $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
     if ($id) {
+        
         $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, "utf-8").'" ';
     }
-    if ($checked) {
+    if ($checked == true) {
         $html .= 'checked="checked" ';
     }
-
-    return $html.join_attrs($attr).' />';
+    // do not call join_attrs if $attr is null or nothing..
+    return $attr ? $html.join_attrs($attr).' />' : $html . '/>';
 } // }}}
 // {{{ Image display
 function tpl_img($src, $alt)
@@ -440,7 +441,7 @@ function tpl_formattext($text, $onyfs = false, $type = null, $id = null, $instru
         // Dokuwiki generates some notices
         error_reporting(E_ALL ^ E_NOTICE);
         if (!$instructions) {
-            require_once(BASEDIR . '/includes/dokuwiki/inc/parser/parser.php');
+            include_once(BASEDIR . '/includes/dokuwiki/inc/parser/parser.php');
         }
         require_once(BASEDIR . '/includes/dokuwiki/inc/common.php');
         require_once(BASEDIR . '/includes/dokuwiki/inc/parser/xhtml.php');
@@ -474,8 +475,8 @@ function tpl_formattext($text, $onyfs = false, $type = null, $id = null, $instru
                                 'last_updated'=> time());
 
                 $keys = array('type','topic');
-
-                $db->Replace('{cache}', $fields, $keys, $autoquote = true);
+                //autoquote is always true on db class
+                $db->Replace('{cache}', $fields, $keys);
             }
         } else {
             $instructions = unserialize($instructions);
