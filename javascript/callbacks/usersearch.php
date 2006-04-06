@@ -19,7 +19,7 @@ if (Req::has('dev')) {
 
 
 // Get the list of users from the global groups above
-$get_users = $db->Query("SELECT DISTINCT u.real_name, u.user_name
+$get_users = $db->Query("SELECT u.real_name, u.user_name
                          FROM {users} u
                          WHERE u.user_name LIKE ? OR u.real_name LIKE ?",
                          array($searchterm, $searchterm)

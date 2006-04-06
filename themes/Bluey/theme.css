@@ -852,6 +852,10 @@ div.denyform {
 	padding:5px 30px 5px 5px;
 }
 
+table#profile th {
+	padding:0.1em 0.8em 0.1em 0.2em;
+}
+
 fieldset {
 	margin:1em 0.5em;
 	padding:0.5em 0.7em 0.5em;

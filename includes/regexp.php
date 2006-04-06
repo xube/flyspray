@@ -9,7 +9,7 @@ $check['getfile']       = $check['project'] = $check['page'] = $check['perpage']
                         = $check['notify_type'] = $check['sev'] = $check['type'] = $check['cat']
                         = $check['due'] = $check['id'] = 'num';
 $check['action']        = array('logout', 'newtask', 'update', 'close', 'reopen', 'addcomment', 'chpass', 'registeruser',
-                                'newuser', 'newgroup', 'globaloptions', 'newproject', 'updateproject', 'addattachment',
+                                'newuser', 'newgroup', 'globaloptions', 'newproject', 'updateproject',
                                 'edituser', 'editgroup', 'update_list', 'add_to_list', 'update_category', 'add_category',
                                 'add_related', 'remove_related', 'add_notification', 'remove_notification', 'editcomment',
                                 'deletecomment', 'deleteattachment', 'addreminder', 'deletereminder', 'update_version_list',
@@ -22,7 +22,7 @@ $check['area']          = array('comments', 'editcomment', 'attachments', 'relat
                                 'newproject');
 $check['do']            = array('index', 'admin', 'pm', 'reports', 'authenticate', 'chpass', 'roadmap', 'details', 'depends',
                                 'loginbox', 'modify', 'newgroup', 'newproject', 'newtask', 'newuser', 'changelog', 'register',
-                                'report', 'myprofile', 'lostpw', 'editcomment', 'error');
+                                'report', 'myprofile', 'lostpw', 'editcomment', 'error', 'user');
 $check['order']         = array('id', 'proj', 'type', 'date', 'sev', 'cat', 'os', 'status', 'due', 'dateclosed', 'event_date', 'pri',
                                 'openedby', 'reportedin', 'assignedto', 'prog', 'duedate', 'votes');
 $check['sort']          = array('asc', 'desc');

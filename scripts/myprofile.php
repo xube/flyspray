@@ -13,11 +13,9 @@ if ($user->isAnon()) {
     Flyspray::Redirect(CreateURL('error'));
 }
 
-$sql = $db->Query("SELECT  group_id, group_name
-                             FROM  {groups}
-                            WHERE  belongs_to_project = '0'
-                         ORDER BY  group_id ASC");
-$page->assign('groups', $db->fetchAllArray($sql));
+$page->assign('groups', $fs->ListGroups());
+
+$page->assign('project_groups', $proj->ListGroups());
         
 $page->assign('theuser', $user);
 

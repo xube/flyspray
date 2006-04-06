@@ -2,7 +2,7 @@
 
 class User
 {
-    var $id = null;
+    var $id = -1;
     var $perms = array();
     var $infos = array();
     var $searches = array();
@@ -109,7 +109,7 @@ class User
                     $fields);
 
             // Get the global group permissions for the current user
-            $sql = $db->Query("SELECT  ".join(', ', $max)."
+            $sql = $db->Query("SELECT  ".join(', ', $max).", MAX(IF(g.belongs_to_project = '0', 0, g.group_id)) as project_group
                                  FROM  {groups} g
                             LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
                                 WHERE  uig.user_id = ?  AND
@@ -117,6 +117,10 @@ class User
                                 array($this->id, $proj->id));
 
             $this->perms = $db->fetchArray($sql);
+            
+            $this->infos['project_group'] = $this->perms['project_group'];
+            unset($this->perms['project_group']);
+
             if ($this->perms['is_admin']) {
                 $this->perms = array_map(create_function('$x', 'return 1;'), $this->perms);
             }

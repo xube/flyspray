@@ -505,11 +505,11 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
     $db->Query("INSERT INTO  {users}
                              ( user_name, user_pass, real_name, jabber_id,
                                email_address, notify_type, account_enabled,
-                               tasks_perpage )
-                     VALUES  (?, ?, ?, ?, ?, ?, 1, 25)",
+                               tasks_perpage, register_date)
+                     VALUES  (?, ?, ?, ?, ?, ?, 1, 25, ?)",
             array($reg_details['user_name'], $pass_hash,
                 $reg_details['real_name'], $reg_details['jabber_id'],
-                $reg_details['email_address'], $reg_details['notify_type']));
+                $reg_details['email_address'], $reg_details['notify_type'], time()));
 
     // Get this user's id for the record
     $sql = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
@@ -571,11 +571,11 @@ elseif (Post::val('action') == "newuser" &&
     $db->Query("INSERT INTO  {users}
                              ( user_name, user_pass, real_name, jabber_id,
                                email_address, notify_type, account_enabled,
-                               tasks_perpage)
-                     VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25)",
+                               tasks_perpage, register_date)
+                     VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25, ?)",
             array($user_name, $pass_hash, $real_name,
                 Post::val('jabber_id'), Post::val('email_address'),
-                Post::val('notify_type')));
+                Post::val('notify_type'), time()));
 
     // Get this user's id for the record
     $sql = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
@@ -742,47 +742,6 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
     Flyspray::Redirect(CreateURL('pm', 'prefs', $proj->id));
 
 } // }}}
-// uploading an attachment {{{
-elseif (Post::val('action') == "addattachment" && $user->perms['create_attachments'])
-{
-    mt_srand($fs->make_seed());
-    $randval = mt_rand();
-    $file_name = Post::val('task_id')."_$randval";
-
-    if (!$_FILES['userfile']['name']) {
-        $_SESSION['ERROR'] = L('selectfileerror');
-        Flyspray::Redirect(CreateURL('details', Post::val('task_id')));
-    }
-
-    @move_uploaded_file($_FILES['userfile']['tmp_name'], "attachments/$file_name");
-    @chmod("attachments/$file_name", 0644);
-
-    if (!file_exists("attachments/$file_name")) {
-        $_SESSION['ERROR'] = L('fileerror');
-        Flyspray::Redirect(CreateURL('details', Post::val('task_id')));
-    }
-
-    $file_desc = Post::val('file_desc');
-    $db->Query("INSERT INTO  {attachments}
-                             ( task_id, orig_name, file_name, file_desc,
-                               file_type, file_size, added_by, date_added )
-                     VALUES  ( ?, ?, ?, ?, ?, ?, ?, ?)",
-            array(Post::val('task_id'), $_FILES['userfile']['name'], $file_name,
-                $file_desc, $_FILES['userfile']['type'],
-                $_FILES['userfile']['size'], $user->id, time()));
-
-    $notify->Create('8', Post::val('task_id'));
-
-    $sql = $db->Query("SELECT attachment_id FROM {attachments}
-                        WHERE task_id = ? ORDER BY attachment_id DESC",
-            array(Post::val('task_id')), 1);
-    $aid = $db->fetchOne($sql);
-    $fs->logEvent(Post::val('task_id'), 7, $aid);
-
-    $_SESSION['SUCCESS'] = L('fileuploaded');
-    Flyspray::Redirect(CreateURL('details', Post::val('task_id')));
-
-} // }}}
 // Start of modifying user details/profile {{{
 elseif (Post::val('action') == "edituser"
           && ($user->perms['is_admin'] || $user->id == Post::val('user_id')))
@@ -791,7 +750,8 @@ elseif (Post::val('action') == "edituser"
         $_SESSION['ERROR'] = L('realandnotify');
         Flyspray::Redirect(Post::val('prev_page'));
     }
-    if (!$user->perms['is_admin'] && !Post::val('oldpass')) {
+    if ( (!$user->perms['is_admin'] || $user->id == Post::val('user_id')) && !Post::val('oldpass')
+         && (Post::val('changepass') || Post::val('confirmpass')) ) {
         $_SESSION['ERROR'] = L('nooldpass');
         Flyspray::Redirect(Post::val('prev_page'));
     }
@@ -800,16 +760,17 @@ elseif (Post::val('action') == "edituser"
             $_SESSION['ERROR'] = L('passnomatch');
             Flyspray::Redirect(Post::val('prev_page'));
         }
-        if (!$user->perms['is_admin']){
-          $sql = $db->Query("select user_pass from {users} where user_id = ?", array(Post::val('user_id')));
+        if (Post::val('oldpass')) {
+          $sql = $db->Query('SELECT user_pass FROM {users} WHERE user_id = ?', array(Post::val('user_id')));
           $oldpass =  $db->FetchRow($sql);
-          if ($fs->cryptPassword(Post::val('oldpass')) != $oldpass["user_pass"]){
+
+          if ($fs->cryptPassword(Post::val('oldpass')) != $oldpass['user_pass']){
             $_SESSION['ERROR'] = L('oldpasswrong');
             Flyspray::Redirect(Post::val('prev_page'));
           }  
         }
         $new_hash = $fs->cryptPassword(Post::val('changepass'));
-        $db->Query("UPDATE {users} SET user_pass = ? WHERE user_id = ?",
+        $db->Query('UPDATE {users} SET user_pass = ? WHERE user_id = ?',
                 array($new_hash, Post::val('user_id')));
 
         // If the user is changing their password, better update their cookie hash
@@ -835,8 +796,18 @@ elseif (Post::val('action') == "edituser"
                 array(Post::val('account_enabled'), Post::val('user_id')));
 
         $db->Query("UPDATE {users_in_groups} SET group_id = ?
-                     WHERE record_id = ?",
-                array(Post::val('group_in'), Post::val('record_id')));
+                     WHERE group_id = ? AND user_id = ?",
+                array(Post::val('group_in'), Post::val('old_global_id'), Post::val('user_id')));
+    }
+    
+    if ($user->perms['is_admin'] || $user->perms['manage_project'] && Post::val('project_group_in')) {
+        $sql = $db->Query("UPDATE {users_in_groups} SET group_id = ?
+                            WHERE group_id = ? AND user_id = ?",
+                          array(Post::val('project_group_in'), Post::val('old_project_id'), Post::val('user_id')));
+        if (!$db->affectedRows($sql)) {
+            $db->Query('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
+                       array(Post::val('old_project_id'), Post::val('user_id')));
+        }
     }
 
     $_SESSION['SUCCESS'] = L('userupdated');

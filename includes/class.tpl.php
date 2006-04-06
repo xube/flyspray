@@ -238,18 +238,18 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
 
 function tpl_userlink($uid)
 {
-    global $db, $fs;
+    global $db, $fs, $user;
 
     static $cache = array();
 
     if (empty($cache[$uid])) {
-        $sql = $db->Query("SELECT user_name, real_name FROM {users} WHERE user_id = ?",
+        $sql = $db->Query('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
                 array($uid));
         if ($db->countRows($sql)) {
             list($uname, $rname) = $db->fetchRow($sql);
-            $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL('user', $uid)).'">'
-                .htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
-                .htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
+            $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms['is_admin']) ? 'edituser' : 'user', $uid)).'">'
+                           . htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
+                           . htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
         } else {
             $cache[$uid] = L('anonymous');
         }
@@ -625,6 +625,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'pm':        $return = $url . 'pm/proj' . $arg2 . '/' . $arg1; break;
 
             case 'admin':
+            case 'edituser':
             case 'user':      $return = $url . $type . '/' . $arg1; break;
 
             case 'newgroup':

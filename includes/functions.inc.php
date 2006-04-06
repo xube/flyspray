@@ -471,7 +471,7 @@ class Flyspray
                 }
             }
 
-            if (!$php || strpos(ini_get('disable_functions', 'exec')) !== false) {
+            if (!$php || Flyspray::function_disabled('exec')) {
                 // No PHP executable found... sorry!";
                 return;
             }
@@ -606,5 +606,22 @@ class Flyspray
     	}
     	return $ret;
     } /// }}}
+    
+    // Checks if a function is disabled
+    function function_disabled($func_name)
+    {
+        $disabled_functions = explode(',', ini_get('disable_functions'));
+        return in_array($func_name, $disabled_functions);
+    }
+    
+    function array_find($key, $value, $array)
+    {
+        foreach ($array as $num => $part) {
+            if (isset($part[$key]) && $part[$key] == $value) {
+                return $num;
+            }
+        }
+        print_r($array); echo $key.'...'.$value;
+    }
 }
 ?>

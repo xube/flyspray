@@ -311,3 +311,26 @@ ALTER TABLE `flyspray_users` ADD `notify_own` SMALLINT NOT NULL DEFAULT '0' AFTE
 -- Florian Schmitz, 26 March 2006
 ALTER TABLE `flyspray_tasks` ADD `anon_email` VARCHAR( 100 ) NOT NULL DEFAULT '',
 ADD `task_token` VARCHAR( 32 ) NOT NULL DEFAULT '0';
+
+-- Florian Schmitz, 6 April 2006
+ALTER TABLE `flyspray_users` ADD `register_date` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_users` ADD UNIQUE (
+`user_name`
+);
+ALTER TABLE `flyspray_admin_requests` CHANGE `time_submitted` `time_submitted` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_admin_requests` CHANGE `time_resolved` `time_resolved` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_attachments` CHANGE `date_added` `date_added` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_comments` CHANGE `date_added` `date_added` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_comments` CHANGE `last_edited_time` `last_edited_time` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_history` CHANGE `event_date` `event_date` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_notification_messages` CHANGE `time_created` `time_created` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_registrations` CHANGE `reg_time` `reg_time` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_reminders` CHANGE `start_time` `start_time` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_reminders` CHANGE `last_sent` `last_sent` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_tasks` CHANGE `date_closed` `date_closed` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_tasks` CHANGE `date_opened` `date_opened` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_tasks` CHANGE `last_edited_time` `last_edited_time` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_tasks` CHANGE `due_date` `due_date` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_votes` CHANGE `date_time` `date_time` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_history` CHANGE `field_changed` `field_changed` VARCHAR( 50 ) NOT NULL;
+ 

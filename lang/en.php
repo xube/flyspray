@@ -672,6 +672,11 @@ Regards,',
 'KiB'                     => 'KiB',
 'MiB'                     => 'MiB',
 'size'                    => 'Size',
+'projectgroup'            => 'Project Group',
+'profile'                 => 'Profile:',
+'viewprofile'             => 'View Profile',
+'regdate'                 => 'Registered since',
+'tasksopened'             => 'Tasks opened',
 );
 
 ?>
