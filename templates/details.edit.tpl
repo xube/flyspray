@@ -10,7 +10,7 @@
 		<input type="hidden" name="do" value="modify" />
 		<input type="hidden" name="action" value="update" />
 		<input type="hidden" name="task_id" value="{Get::val('id')}" />
-		<input type="hidden" name="edit_start_time" value="{date('U')}" />
+		<input type="hidden" name="edit_start_time" value="{time()}" />
 
 		<div id="fineprint">
 		  {L('attachedtoproject')} &mdash;

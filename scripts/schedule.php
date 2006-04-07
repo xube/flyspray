@@ -12,7 +12,7 @@ require_once("$path/header.php");
 require_once("$path/includes/notify.inc.php");
 
 $notify = new Notifications;
-$now = date('U');
+$now = time();
 
 $get_reminders = $db->Query("SELECT  r.*, t.*, p.*
                                FROM  {reminders} r

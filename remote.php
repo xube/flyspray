@@ -738,7 +738,7 @@ function closeTask($args)
    $fs->logEvent($task_id, 2, $reason, $comment);
 
    // Generate notifications
-   $notify->Create('3', $task_id);
+   $notify->Create(NOTIFY_TASK_CLOSED, $task_id);
 
    return true;
 

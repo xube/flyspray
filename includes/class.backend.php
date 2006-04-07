@@ -90,7 +90,7 @@ class Backend
 
                 if ($db->affectedRows()) {
                     $fs->logEvent($task_id, 19, $user->id, implode(' ', $task['assigned_to']));
-                    $notify->Create('10', $task_id);
+                    $notify->Create(NOTIFY_OWNERSHIP, $task_id);
                 }
             }
         }
@@ -123,7 +123,7 @@ class Backend
 
                 if ($db->affectedRows()) {
                     $fs->logEvent($task_id, 29, $user->id, implode(' ', $task['assigned_to']));
-                    $notify->Create('17', $task_id);
+                    $notify->Create(NOTIFY_ADDED_ASSIGNEES, $task_id);
                 }
             }
         }
@@ -157,9 +157,9 @@ class Backend
         $fs->logEvent($task['task_id'], 4, $cid);
 
         if ($this->UploadFiles($user, $task['task_id'], $cid)) {
-            $notify->Create('7', $task['task_id'], 'files');
+            $notify->Create(NOTIFY_COMMENT_ADDED, $task['task_id'], 'files');
         } else {
-            $notify->Create('7', $task['task_id']);
+            $notify->Create(NOTIFY_COMMENT_ADDED, $task['task_id']);
         }
 
         return true;
@@ -344,8 +344,8 @@ class Backend
 
       $args['task_id'] = $task_id;
       $args['opened_by'] = $args['user_id'];
-      $args['date_opened'] = date('U');
-      $args['last_edited_time'] = date('U');
+      $args['date_opened'] = time();
+      $args['last_edited_time'] = time();
       
      
       
@@ -399,11 +399,7 @@ class Backend
          $fs->logEvent($task_id, 14, join(" ",$assigned_user_list));
          
          // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-         $to   = $notify->SpecificAddresses($assigned_user_list);
-         $msg  = $notify->GenerateMsg('14', $task_id);
-         $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-         $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-         
+         $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null, $notify->SpecificAddresses($assigned_user_list));         
       }
       
       // Log that the task was opened
@@ -445,7 +441,7 @@ class Backend
       }
       
       // Create the Notification
-      $notify->Create('1', $task_id);
+      $notify->Create(NOTIFY_TASK_OPENED, $task_id);
       
       // If the reporter wanted to be added to the notification list
       if ($args['notifyme'] == '1' && $userid != $owner) 

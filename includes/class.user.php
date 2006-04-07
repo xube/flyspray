@@ -22,7 +22,6 @@ class User
             $this->infos = $db->FetchArray($sql);
             $this->id = $uid;
         } else {
-            $this->id = -1;
             $this->infos['real_name'] = L('anonuser');
             $this->infos['user_name'] = '';
         }

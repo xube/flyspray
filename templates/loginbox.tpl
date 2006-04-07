@@ -1,5 +1,4 @@
 <div id="loginbox">
-  <em>{L('login')}</em>
   <form action="{$baseurl}?do=authenticate" method="post">
     <div>
       <label for="lbl_user_name">{L('username')}</label>

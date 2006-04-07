@@ -333,4 +333,8 @@ ALTER TABLE `flyspray_tasks` CHANGE `last_edited_time` `last_edited_time` INT NO
 ALTER TABLE `flyspray_tasks` CHANGE `due_date` `due_date` INT NOT NULL DEFAULT '0';
 ALTER TABLE `flyspray_votes` CHANGE `date_time` `date_time` INT NOT NULL DEFAULT '0';
 ALTER TABLE `flyspray_history` CHANGE `field_changed` `field_changed` VARCHAR( 50 ) NOT NULL;
- 
+
+-- Florian Schmitz, 7 April 2006
+ALTER TABLE `flyspray_projects` ADD `notify_reply` TEXT NOT NULL AFTER `notify_jabber_when` ;
+ALTER TABLE `flyspray_projects` DROP `notify_jabber_when` ;
+ALTER TABLE `flyspray_projects` DROP `notify_email_when` ;

@@ -107,6 +107,12 @@
             <input id="jabberid" class="text" name="notify_jabber" type="text" value="{$proj->prefs['notify_jabber']}" />
           </td>
         </tr>
+        <tr>
+          <td><label for="notify_reply">{L('replyto')}</label></td>
+          <td>
+            <input id="notify_reply" name="notify_reply" class="text" type="text" value="{$proj->prefs['notify_reply']}" />
+          </td>
+        </tr>
       </table>
     </fieldset>
 

@@ -677,6 +677,7 @@ Regards,',
 'viewprofile'             => 'View Profile',
 'regdate'                 => 'Registered since',
 'tasksopened'             => 'Tasks opened',
+'replyto'                 => 'Reply to',
 );
 
 ?>

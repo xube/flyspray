@@ -99,16 +99,14 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
                                         array($task_id, $val));
             }
         }
-
-        // Log to task history
-        $fs->logEvent($task_id, 14, trim(Post::val('assigned_to')));
-
-        // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-        $to   = $notify->SpecificAddresses(Flyspray::int_explode(' ', Post::val('assigned_to')) );
-        $msg  = $notify->GenerateMsg('14', $task_id);
-        $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-        $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
     }
+
+    // Log to task history
+    $fs->logEvent($task_id, 14, trim(Post::val('assigned_to')));
+
+    // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
+    $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null,
+                    $notify->SpecificAddresses(Flyspray::int_explode(' ', Post::val('assigned_to'))));
                 
     // Log that the task was opened
     $fs->logEvent($task_id, 1);
@@ -145,7 +143,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     }
 
     // Create the Notification
-    $notify->Create('1', $task_id);
+    $notify->Create(NOTIFY_TASK_OPENED, $task_id);
 
     // If the reporter wanted to be added to the notification list
     if (Post::val('notifyme') == '1' && $user->id != $owner) {
@@ -156,9 +154,7 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     $_SESSION['SUCCESS'] = L('newtaskadded');
     
     if ($user->isAnon()) {
-        $to   = $notify->SpecificAddresses(array(Post::val('anon_email')));
-        $msg  = $notify->GenerateMsg('17', $task_id, $token);
-        $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
+        $notify->Create(NOTIFY_ANON_TASK, $task_id, null, Post::val('anon_email'));
         
         Flyspray::Redirect(CreateURL('details', $task_id, null, array('task_token' => $token)));
     } else {
@@ -243,7 +239,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
         
         $changes = $fs->compare_tasks($old_details, $new_details_full);
         if(count($changes) > 0) {
-            $notify->Create('2', Post::val('task_id'), $changes);
+            $notify->Create(NOTIFY_TASK_CHANGED, Post::val('task_id'), $changes);
         }
 
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
@@ -257,10 +253,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                 if (!$user->prefs['notify_own']) {
                     $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
                 }
-                $to   = $notify->SpecificAddresses($new_assignees);
-                $msg  = $notify->GenerateMsg('14', Post::val('task_id'));
-                $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-                $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+                $notify->Create(NOTIFY_NEW_ASSIGNEE, Post::val('task_id'), null, $notify->SpecificAddresses($new_assignees));
             }
         }
         
@@ -295,7 +288,7 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
                 $old_details['percent_complete'], 'percent_complete');
     }
 
-    $notify->Create('3', Post::val('task_id'));
+    $notify->Create(NOTIFY_TASK_CLOSED, Post::val('task_id'));
     $fs->logEvent(Post::val('task_id'), 2, Post::val('resolution_reason'),
             Post::val('closure_comment'));
 
@@ -330,14 +323,14 @@ elseif (Get::val('action') == 'reopen' && $user->can_close_task($old_details)) {
     
     $fs->logEvent(Get::val('task_id'), '0', $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
 
-    $notify->Create('4', Get::val('task_id'));
+    $notify->Create(NOTIFY_TASK_REOPENED, Get::val('task_id'));
 
     if ($fs->AdminRequestCheck(2, Get::val('task_id')) == '1') {
         // If there's an admin request related to this, close it
         $db->Query("UPDATE  {admin_requests}
                        SET  resolved_by = ?, time_resolved = ?
                      WHERE  task_id = ? AND request_type = ?",
-                  array($user->id, date('U'), Get::val('task_id'), 2));
+                  array($user->id, time(), Get::val('task_id'), 2));
     }
 
     $fs->logEvent(Get::val('task_id'), 13);
@@ -392,7 +385,7 @@ elseif (Post::val('action') == 'sendcode') {
     }
 
     // Delete registration codes older than 24 hours
-    $yesterday = date('U') - '86400';
+    $yesterday = time() - 86400;
     $db->Query("DELETE FROM {registrations} WHERE reg_time < ?", array($yesterday));
 
     $sql = $db->Query('SELECT COUNT(*) FROM {users} u, {registrations} r
@@ -439,28 +432,8 @@ elseif (Post::val('action') == 'sendcode') {
                     Post::val('email_address'), Post::val('jabber_id'),
                     Post::val('notify_type'), $magic_url));
 
-    $subject = L('noticefrom') . ' ' . $proj->prefs['project_title'];
-
-    $message = L('noticefrom')." {$proj->prefs['project_title']}\n\n"
-             . L('addressused')."\n\n"
-             . "{$baseurl}index.php?do=register&magic=$magic_url\n\n"
-               // In case that spaces in the username have been removed
-             . L('username').": ".$user_name."\n"
-             . L('confirmcodeis')." {$confirm_code}";
-
-    // Check how they want to receive their code
-    switch (Post::val('notify_type')) {
-        case '1':
-            $notify->SendEmail(Post::val('email_address'), $subject, $message);
-            break;
-
-        case '2':
-            $notify->StoreJabber(array(Post::val('jabber_id')), $subject,
-                    htmlspecialchars($message),ENT_COMPAT,'utf-8');
-            break;
-
-        default: ;
-    }
+    $notify->Create(NOTIFY_CONFIRMATION, null, array($baseurl, $magic_url, $user_name, $confirm_code),
+                    array(Post::val('email_address')), Post::val('notify_type'));
 
     $_SESSION['SUCCESS'] = L('codesent');
     Flyspray::Redirect('./');
@@ -725,8 +698,8 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
 
     $cols = array( 'project_title', 'theme_style', 'default_cat_owner', 'lang_code',
             'intro_message', 'project_is_active', 'others_view', 'anon_open',
-            'notify_email', 'notify_email_when', 'notify_jabber', 'notify_subject',
-            'notify_jabber_when', 'feed_description', 'feed_img_url', 'comment_closed');
+            'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
+            'feed_description', 'feed_img_url', 'comment_closed');
     $args = array_map('Post_to0', $cols);
     $args[] = Post::val('project_id', 0);
 
@@ -1050,7 +1023,7 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
         $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
         $fs->logEvent(Post::val('related_task'), 15, Post::val('this_task'));
 
-        $notify->Create('9', Post::val('this_task'), Post::val('related_task'));
+        $notify->Create(NOTIFY_REL_ADDED, Post::val('this_task'), Post::val('related_task'));
 
         $_SESSION['SUCCESS'] = L('relatedaddedmsg');
         Flyspray::Redirect(CreateURL('details', Post::val('this_task').'#related'));
@@ -1168,7 +1141,7 @@ elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments']
 elseif (Post::val('action') == "addreminder" && $user->perms['manage_project']) {
 
     $how_often  = Post::val('timeamount1') * Post::val('timetype1');
-    $start_time = Post::val('timeamount2') * Post::val('timetype2') + date('U');
+    $start_time = Post::val('timeamount2') * Post::val('timetype2') + time();
     
     if (!is_numeric(Post::val('timeamount1')) || !is_numeric(Post::val('timeamount2'))) {
         $_SESSION['ERROR'] = L('formnotnumeric');
@@ -1295,10 +1268,7 @@ elseif (Post::val('action') == 'requestclose') {
     $pms = $db->fetchCol($sql);
 
     // Call the functions to create the address arrays, and send notifications
-    $to   = $notify->SpecificAddresses($pms);
-    $msg  = $notify->GenerateMsg('12', Post::val('task_id'));
-    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
+    $notify->Create(NOTIFY_PM_REQUEST, Post::val('task_id'), null, $notify->SpecificAddresses($pms));
 
     $_SESSION['SUCCESS'] = L('adminrequestmade');
     Flyspray::Redirect(CreateURL('details', Req::val('task_id')));
@@ -1321,11 +1291,7 @@ elseif (Post::val('action') == 'requestreopen') {
     $pms = $db->fetchCol($sql);
 
     // Call the functions to create the address arrays, and send notifications
-    $to   = $notify->SpecificAddresses($pms);
-    $msg  = $notify->GenerateMsg('12', Post::val('task_id'));
-    $mail = $notify->SendEmail($to[0], $msg[0], $msg[1]);
-    $jabb = $notify->StoreJabber($to[1], $msg[0], $msg[1]);
-
+    $notify->Create(NOTIFY_PM_REQUEST, Post::val('task_id'), null, $notify->SpecificAddresses($pms));
 
     $_SESSION['SUCCESS'] = L('adminrequestmade');
     Flyspray::Redirect(CreateURL('details', Req::val('task_id')));
@@ -1346,7 +1312,7 @@ elseif (Req::val('action') == 'denypmreq' && $user->perms['manage_project']) {
                 array($user->id, time(), Req::val('deny_reason'), Req::val('req_id')));
 
     $fs->logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
-    $notify->Create('13', $req_details['task_id'], Req::val('deny_reason'));
+    $notify->Create(NOTIFY_PM_DENY_REQUEST, $req_details['task_id'], Req::val('deny_reason'));
 
     $_SESSION['SUCCESS'] = L('pmreqdeniedmsg');
     Flyspray::Redirect(Req::val('prev_page'));
@@ -1386,8 +1352,8 @@ elseif (Post::val('action') == 'newdep' && $user->can_edit_task($old_details))
         Flyspray::Redirect(CreateURL('details', Req::val('task_id')));
     }
 
-    $notify->Create('5', Post::val('task_id'), Post::val('dep_task_id'));
-    $notify->Create('15', Post::val('dep_task_id'), Post::val('task_id'));
+    $notify->Create(NOTIFY_DEP_ADDED, Post::val('task_id'), Post::val('dep_task_id'));
+    $notify->Create(NOTIFY_REV_DEP, Post::val('dep_task_id'), Post::val('task_id'));
 
     // Log this event to the task history, both ways
     $fs->logEvent(Post::val('task_id'), 22, Post::val('dep_task_id'));
@@ -1409,8 +1375,8 @@ elseif (Get::val('action') == 'removedep' && $user->can_edit_task($old_details))
                         array(Get::val('depend_id')));
     $dep_info = $db->FetchArray($result);
 
-    $notify->Create('6', $dep_info['task_id'], $dep_info['dep_task_id']);
-    $notify->Create('16', $dep_info['dep_task_id'], $dep_info['task_id']);
+    $notify->Create(NOTIFY_DEP_REMOVED, $dep_info['task_id'], $dep_info['dep_task_id']);
+    $notify->Create(NOTIFY_REV_DEP_REMOVED, $dep_info['dep_task_id'], $dep_info['task_id']);
 
     $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
     $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
@@ -1444,15 +1410,7 @@ elseif (Post::val('action') == 'sendmagic') {
                  WHERE user_id = ?",
             array($magic_url, $user_details['user_id']));
 
-    $subject = L('changefspass');
-
-    $message = L('messagefrom')." $baseurl. \n\n"
-             . L('magicurlmessage')." \n"
-             . "{$baseurl}index.php?do=lostpw&amp;magic=$magic_url\n";
-
-    $to   = $notify->SpecificAddresses(array($user_details), true);
-    $mail = $notify->SendEmail($to[0], $subject, $message);
-    $jabb = $notify->StoreJabber($to[1], $subject, $message);
+    $notify->Create(NOTIFY_PW_CHANGE, null, array($baseurl, $magic_url), $notify->SpecificAddresses(array($user_details), true));
 
     $_SESSION['SUCCESS'] = L('magicurlsent');
     Flyspray::Redirect('./');

@@ -22,12 +22,20 @@ function debug_print($message){
 class Notifications {
 
    // {{{ Wrapper function for all others 
-   function Create ( $type, $task_id, $info = null)
+   function Create ( $type, $task_id, $info = null, $to = null, $ntype = 3)
    {
-      $to = $this->Address($task_id);
+      if (is_null($to)) {
+          $to = $this->Address($task_id);
+      }
+
       $msg = $this->GenerateMsg($type, $task_id, $info);
-      $this->SendEmail($to[0], $msg[0], $msg[1]);
-      $this->StoreJabber($to[1], $msg[0], $msg[1]);
+      
+      if ($ntype == 3 || $ntype == 1) {
+          $this->SendEmail($to[0], $msg[0], $msg[1]);
+      }
+      if ($ntype == 3 || $ntype == 2) {
+          $this->StoreJabber($to[1], $msg[0], $msg[1]);
+      }
 
    // End of Create() function
    } // }}}
@@ -240,6 +248,9 @@ class Notifications {
 
       $mail->From = $fs->prefs['admin_email'];
       $mail->Sender = $fs->prefs['admin_email'];
+      if ($proj->prefs['notify_reply']) {
+          $mail->AddReplyTo($proj->prefs['notify_reply']);
+      }
       $mail->FromName = 'Flyspray';
       $mail->CharSet = 'UTF-8';
 
@@ -295,11 +306,13 @@ class Notifications {
    // {{{ Create a message for any occasion
    function GenerateMsg($type, $task_id, $arg1='0')
    {
-      global $db, $fs, $user;
+      global $db, $fs, $user, $proj;
 
       // Get the task details
       $task_details = $fs->getTaskDetails($task_id);
-      $proj = new Project($task_details['attached_to_project']);
+      if ($task_id) {
+          $proj = new Project($task_details['attached_to_project']);
+      }
 
       // Set the due date correctly
       if ($task_details['due_date'] == '0') {
@@ -314,7 +327,7 @@ class Notifications {
       }
 
       // Generate the nofication message
-      if($proj->prefs['notify_subject']) {
+      if ($proj->prefs['notify_subject']) {
           $subject = str_replace(array('%p','%s','%t'),
                                     array($proj->prefs['project_title'], $task_details['item_summary'], $task_id),
                                     $proj->prefs['notify_subject']);
@@ -343,10 +356,11 @@ class Notifications {
          |16. Reversed dep removed     |
          |17. Added to assignees list  |
          |18. Anon-task opened         |
+         |19. Password change          |
          -------------------------------
       */
       // {{{ New task opened
-      if ($type == '1')
+      if ($type == NOTIFY_TASK_OPENED)
       {
          $body = L('donotreply') . "\n\n";
          $body .=  L('newtaskopened') . "\n\n";
@@ -371,7 +385,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ Task details changed
-      if ($type == '2')
+      if ($type == NOTIFY_TASK_CHANGED)
       {
          $translation = array('priority_name' => L('priority'),
                               'severity_name' => L('severity'),
@@ -415,7 +429,7 @@ class Notifications {
 
       } // }}}
       // {{{ Task closed
-      if ($type == '3')
+      if ($type == NOTIFY_TASK_CLOSED)
       {
          $body = L('donotreply') . "\n\n";
          $body .=  L('notify.taskclosed') . "\n\n";
@@ -436,7 +450,7 @@ class Notifications {
 
       } // }}}
       // {{{ Task re-opened
-      if ($type == '4')
+      if ($type == NOTIFY_TASK_REOPENED)
       {
          $body = L('donotreply') . "\n\n";
          $body .=  L('notify.taskreopened') . "\n\n";
@@ -449,7 +463,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ Dependency added
-      if ($type == '5')
+      if ($type == NOTIFY_DEP_ADDED)
       {
          $depend_task = $fs->getTaskDetails($arg1);
 
@@ -467,7 +481,7 @@ class Notifications {
 
       } // }}}
       // {{{ Dependency removed
-      if ($type == '6')
+      if ($type == NOTIFY_DEP_REMOVED)
       {
          $depend_task = $fs->getTaskDetails($arg1);
          
@@ -484,7 +498,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ Comment added
-      if ($type == '7')
+      if ($type == NOTIFY_COMMENT_ADDED)
       {
          // Get the comment information
          $result = $db->Query("SELECT comment_id, comment_text
@@ -504,8 +518,9 @@ class Notifications {
          $body .= $comment['comment_text'] . "\n";
          $body .= "----------\n\n";
 
-         if ($arg1 == 'files')
+         if ($arg1 == 'files') {
             $body .= L('fileaddedtoo') . "\n\n";
+         }
 
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . '#comment' . $comment['comment_id'] . "\n\n";
@@ -515,7 +530,7 @@ class Notifications {
 
       } // }}}
       // {{{ Attachment added
-      if ($type == '8')
+      if ($type == NOTIFY_ATT_ADDED)
       {
          $body = L('donotreply') . "\n\n";
          $body .= L('newattachment') . "\n\n";
@@ -528,7 +543,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ Related task added
-      if ($type == '9')
+      if ($type == NOTIFY_REL_ADDED)
       {
          $related_task = $fs->getTaskDetails($arg1);
 
@@ -546,7 +561,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ Ownership taken
-      if ($type == '10')
+      if ($type == NOTIFY_OWNERSHIP)
       {
          $body = L('donotreply') . "\n\n";
          $body .= implode(', ', $task_details['assigned_to_name']) . ' ' . L('takenownership') . "\n\n";
@@ -557,22 +572,22 @@ class Notifications {
 
          return array($subject, $body);
       } // }}}
-      // {{{ Confirmation code - FIXME
-      if ($type == '11')
+      // {{{ Confirmation code
+      if ($type == NOTIFY_CONFIRMATION)
       {
-         // We need to work out how to move the confirmation code message generation
-         // from scripts/modify.php to here.
-
-         L('notifyfrom') . $proj->prefs['project_title'];
-
          $body = L('donotreply') . "\n\n";
-         // Confirmation code message goes here
-         $body .= L('disclaimer');
+         $body .= L('noticefrom') . " {$proj->prefs['project_title']}\n\n"
+               . L('addressused') . "\n\n"
+               . "{$arg1[0]}index.php?do=register&magic={$arg1[1]}\n\n"
+                // In case that spaces in the username have been removed
+               . L('username') . ': '. $arg1[2] . "\n"
+               . L('confirmcodeis') . " $arg1[3] \n\n"
+               . L('disclaimer');
 
          return array($subject, $body);
       } // }}}
       // {{{ Pending PM request
-      if ($type == '12')
+      if ($type == NOTIFY_PM_REQUEST)
       {
          $body = L('donotreply') . "\n\n";
          $body .= L('requiresaction') . "\n\n";
@@ -585,7 +600,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ PM request denied
-      if ($type == '13')
+      if ($type == NOTIFY_PM_DENY_REQUEST)
       {
          $body = L('donotreply') . "\n\n";
          $body .= L('pmdeny') . "\n\n";
@@ -600,7 +615,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ New assignee
-      if ($type == '14')
+      if ($type == NOTIFY_NEW_ASSIGNEE)
       {
          $body = L('donotreply') . "\n\n";
          $body .= L('assignedtoyou') . "\n\n";
@@ -613,7 +628,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ Reversed dep
-      if ($type == '15')
+      if ($type == NOTIFY_REV_DEP)
       {
          $depend_task = $fs->getTaskDetails($arg1);
 
@@ -630,7 +645,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ Reversed dep - removed
-      if ($type == '16')
+      if ($type == NOTIFY_REV_DEP_REMOVED)
       {
          $depend_task = $fs->getTaskDetails($arg1);
 
@@ -647,7 +662,7 @@ class Notifications {
          return array($subject, $body);
       } // }}}
       // {{{ User added to assignees list
-      if ($type == '17')
+      if ($type == NOTIFY_ADDED_ASSIGNEES)
       {
          $body = L('donotreply') . "\n\n";
          $body .= L('useraddedtoassignees') . "\n\n";
@@ -655,24 +670,37 @@ class Notifications {
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= L('disclaimer');
+         
+         return array($subject, $body);
       } // }}}
       // {{{ Anon-task has been opened
-      if ($type == '18')
+      if ($type == NOTIFY_ANON_TASK)
       {
          $body = L('donotreply') . "\n\n";
          $body .= L('thankyouforbug') . "\n\n";
          $body .= CreateURL('details', $task_id, null, array('task_token' => $arg1));
+         
+         return array($subject, $body);
       } // }}}
+      // {{{ Password change
+      if ($type == NOTIFY_PW_CHANGE)
+      {
+          $body = L('messagefrom'). $arg1[0] . "\n\n"
+                  . L('magicurlmessage')." \n"
+                  . "{$arg1[0]}index.php?do=lostpw&amp;magic=$arg1[0]\n";
+            
+          return array($subject, $body);
+      } // }}}      
    
    } // }}}
    // {{{ Create an address list for specific users
    function SpecificAddresses($users, $ignoretype = false)
    {
-
       global $db, $fs;
 
       $jabber_users = array();
       $email_users = array();
+      settype($users, 'array');
 
       foreach ($users AS $key => $val)
       {
