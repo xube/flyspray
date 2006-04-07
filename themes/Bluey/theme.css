@@ -510,7 +510,7 @@ p#footer {
 	color:#fff;
 	text-align:center;
 	clear:both;
-	margin:15px 0.5em 0;
+	margin:20px 0.5em 0;
 	padding:5px;
 }
 
@@ -900,8 +900,9 @@ div#successbar {
 }
 
 div#toolboxmenu {
-	float:left;
-	margin:15px 25px 15px 0;
+	position:absolute;
+	left:15px;
+	padding-top:15px;
 }
 
 div#toolboxmenu a {
@@ -926,16 +927,30 @@ a.grouptitle {
 	font-size:1.4em;
 }
 
+div.tbuttons {
+	background-color:#e6eef6;
+	width:20em;
+	margin:-11px 0 0 0.5em;
+	border:solid 1px gray;
+	border-top:solid 1px #e6eef6;
+	padding:0 0 0 0.5em;
+}
+
 /* The new tabs stuff colors */
 #submenu a,div.tab {
 	color:#000;
-	background-color:#e6eef6;
 	border:solid 1px gray;
+	background-color:#e6eef6;
+}
+
+#submenu a {
+	background-color:#EFEFEF;
 }
 
 #submenu a.active {
 	color:#000;
 	border-bottom-color:#e6eef6;
+	background-color:#e6eef6;
 	z-index:5;
 }
 

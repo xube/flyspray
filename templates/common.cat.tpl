@@ -49,27 +49,22 @@
           <td>
             <input type="hidden" name="id[]" value="{$subrow['category_id']}" />
             &rarr;
-            <label for="categoryname{$countlines}">{L('name')}</label>
             <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" value="{$subrow['category_name']}" />
           </td>
           <td title="{L('listordertip')}">
-            <label for="listposition{$countlines}">{L('order')}</label>
             <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$subrow['list_position']}" />
           </td>
           <td title="{L('categoryownertip')}">
-            <label for="categoryowner{$countlines}">{L('owner')}</label>
             <select id="categoryowner{$countlines}" name="category_owner[]">
               <option value="">{L('selectowner')}</option>
               {!tpl_options($proj->UserList(), $subrow['category_owner'])}
             </select>
           </td>
           <td title="{L('listshowtip')}">
-            <label for="showinlist{$countlines}">{L('show')}</label>
             {!tpl_checkbox('show_in_list['.$countlines.']', $subrow['show_in_list'], 'showinlist'.$countlines)}
           </td>
           <td title="{L('listdeletetip')}">
             <?php if (!$subrow['used_in_tasks']): ?>
-            <label for="delete{$subrow['category_id']}">{L('delete')}</label>
             <input id="delete{$subrow['category_id']}" type="checkbox" name="delete[{$subrow['category_id']}]" value="1" />
             <?php endif; ?>
           </td>

@@ -2,8 +2,14 @@
   <h3>{L('admintoolboxlong')} :: {L('preferences')}</h3>
 
   <form action="{$baseurl}" method="post">
-    <fieldset class="admin">
-      <legend>{L('general')}</legend>
+  <ul id="submenu">
+   <li><a href="#general">{L('general')}</a></li>
+   <li><a href="#userregistration">{L('userregistration')}</a></li>
+   <li><a href="#notifications">{L('notifications')}</a></li>
+   <li><a href="#lookandfeel">{L('lookandfeel')}</a></li>
+  </ul>
+  
+   <div id="general" class="tab">
       <table class="admin">
         <tr>
           <td><label for="defaultproject">{L('defaultproject')}</label></td>
@@ -42,10 +48,9 @@
           </td>
         </tr>
       </table>
-    </fieldset>
+    </div>
 
-    <fieldset class="admin">
-      <legend>{L('userregistration')}</legend>
+    <div id="userregistration" class="tab">
       <table class="admin">
         <tr>
           <td><label for="allowusersignups">{L('anonreg')}</label></td>
@@ -74,10 +79,9 @@
           </td>
         </tr>
       </table>
-    </fieldset>
+    </div>
 
-    <fieldset class="admin">
-      <legend>{L('notifications')}</legend>
+    <div id="notifications" class="tab">
       <table class="admin">
         <tr>
           <td><label for="usernotify">{L('forcenotify')}</label></td>
@@ -146,10 +150,9 @@
           </td>
         </tr>
       </table>
-    </fieldset>
+    </div>
 
-    <fieldset class="admin">
-      <legend>{L('lookandfeel')}</legend>
+    <div id="lookandfeel" class="tab">
       <table class="admin">
         <tr>
           <td><label for="globaltheme">{L('globaltheme')}</label></td>
@@ -173,21 +176,17 @@
           </td>
         </tr>
       </table>
-    </fieldset>
+    </div>
 
-    <table>
-      <tr>
-        <td class="buttons">
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="globaloptions" />
-          <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-          <button type="submit">{L('saveoptions')}</button>
-        </td>
-        <td class="buttons">
-          <button type="reset">{L('resetoptions')}</button>
-        </td>
-      </tr>
-    </table>
+    <div class="tbuttons">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="globaloptions" />
+      <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
+      <button type="submit">{L('saveoptions')}</button>
+
+      <button type="reset">{L('resetoptions')}</button>
+    </div>
+
   </form>
 
 </div>

@@ -1,10 +1,15 @@
 <div id="toolbox">
   <h3>{L('pmtoolbox')} ::  {$proj->prefs['project_title']} : {L('preferences')}</h3>
 
-  <form action="{$baseurl}" method="post">
-    <fieldset class="admin">
-      <legend>{L('general')}</legend>
-
+  <form style="clear:both;" action="{$baseurl}" method="post">
+  <ul id="submenu">
+   <li><a href="#general">{L('general')}</a></li>
+   <li><a href="#lookandfeel">{L('lookandfeel')}</a></li>
+   <li><a href="#notifications">{L('notifications')}</a></li>
+   <li><a href="#feeds">{L('feeds')}</a></li>
+  </ul>
+  
+  <div id="general" class="tab">
       <table class="admin">
         <tr>
           <td><label for="projecttitle">{L('projecttitle')}</label></td>
@@ -54,11 +59,9 @@
           <td>{!tpl_checkbox('comment_closed', $proj->prefs['comment_closed'], 'comment_closed')}</td>
         </tr>
       </table>
-    </fieldset>
-
-    <fieldset class="admin">
-      <legend>{L('lookandfeel')}</legend>
-
+    </div>
+    
+    <div id="lookandfeel" class="tab">
       <table class="admin">
         <tr>
           <td><label for="themestyle">{L('themestyle')}</label></td>
@@ -82,11 +85,9 @@
           </td>
         </tr>
       </table>
-    </fieldset>
+    </div>
 
-    <fieldset class="admin">
-      <legend>{L('notifications')}</legend>
-
+    <div id="notifications" class="tab">
       <table class="admin">
         <tr>
           <td><label for="notify_subject">{L('notifysubject')}</label></td>
@@ -114,10 +115,10 @@
           </td>
         </tr>
       </table>
-    </fieldset>
+    </div>
 
-    <fieldset class="admin">
-      <legend>{L('feeds')}</legend>
+    <div id="feeds" class="tab">
+      <legend></legend>
 
       <table class="admin">
         <tr>
@@ -133,21 +134,16 @@
           </td>
         </tr>
       </table>
-    </fieldset>
-    
-    <table>
-      <tr>
-        <td class="buttons">
-          <input type="hidden" name="do" value="modify" />
-          <input type="hidden" name="action" value="updateproject" />
-          <input type="hidden" name="project_id" value="{$proj->id}" />
-          <button type="submit">{L('saveoptions')}</button>
-        </td>
-        <td class="buttons">
-          <button type="reset">{L('resetoptions')}</button>
-        </td>
-      </tr>
-    </table>
+    </div>
+
+    <div class="tbuttons">
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="updateproject" />
+      <input type="hidden" name="project_id" value="{$proj->id}" />
+      <button type="submit">{L('saveoptions')}</button>
+
+      <button type="reset">{L('resetoptions')}</button>
+    </div>
   </form>
 
 </div>
