@@ -701,6 +701,8 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
             'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
             'feed_description', 'feed_img_url', 'comment_closed');
     $args = array_map('Post_to0', $cols);
+    $cols[] = 'notify_types';
+    $args[] = implode(' ', Post::val('notify_types'));
     $args[] = Post::val('project_id', 0);
 
     $update = $db->Query("UPDATE  {projects}

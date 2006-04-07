@@ -25,7 +25,7 @@ class Notifications {
    function Create ( $type, $task_id, $info = null, $to = null, $ntype = 3)
    {
       if (is_null($to)) {
-          $to = $this->Address($task_id);
+          $to = $this->Address($task_id, $type);
       }
 
       $msg = $this->GenerateMsg($type, $task_id, $info);
@@ -799,7 +799,7 @@ class Notifications {
       // Now, we add the project contact addresses...
       // ...but only if the task is public
       $task_details = $fs->getTaskDetails($task_id);
-      if ($task_details['mark_private'] != '1')
+      if ($task_details['mark_private'] != '1' && in_array($type, Flyspray::int_explode($proj->prefs['notify_types'])))
       {
          $proj_emails = preg_split('/[\s,;]+/', $proj->prefs['notify_email'], -1, PREG_SPLIT_NO_EMPTY);
          $proj_jids = explode(',', $proj->prefs['notify_jabber']);

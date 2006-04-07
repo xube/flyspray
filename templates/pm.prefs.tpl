@@ -114,6 +114,31 @@
             <input id="notify_reply" name="notify_reply" class="text" type="text" value="{$proj->prefs['notify_reply']}" />
           </td>
         </tr>
+        <tr>
+          <td><label for="notify_types">{L('notifytypes')}</label></td>
+          <td>
+            <select id="notify_types" size="10" multiple="multiple" name="notify_types[]">
+            {!tpl_options(array(0 => L('none'),
+                                1 => L('taskopened'),
+                                2 => L('pm.taskchanged'),
+                                3 => L('taskclosed'),
+                                4 => L('pm.taskreopened'),
+                                5 => L('pm.depadded'),
+                                6 => L('pm.depremoved'),
+                                7 => L('commentadded'),
+                                8 => L('attachmentadded'),
+                                9 => L('relatedadded'),
+                               10 => L('ownershiptaken'),
+                               12 => L('pmrequest'),
+                               13 => L('pmrequestdenied'),
+                               14 => L('newassignee'),
+                               15 => L('revdepadded'),
+                               16 => L('revdepaddedremoved'),
+                               17 => L('assigneeadded'))
+                               , Flyspray::int_explode(' ', $proj->prefs['notify_types']))}
+            </select>
+          </td>
+        </tr>
       </table>
     </div>
 

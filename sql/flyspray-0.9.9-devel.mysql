@@ -338,3 +338,5 @@ ALTER TABLE `flyspray_history` CHANGE `field_changed` `field_changed` VARCHAR( 5
 ALTER TABLE `flyspray_projects` ADD `notify_reply` TEXT NOT NULL AFTER `notify_jabber_when` ;
 ALTER TABLE `flyspray_projects` DROP `notify_jabber_when` ;
 ALTER TABLE `flyspray_projects` DROP `notify_email_when` ;
+
+ALTER TABLE `flyspray_projects` ADD `notify_types` VARCHAR( 100 ) NOT NULL DEFAULT '0' AFTER `notify_reply` ;

@@ -678,6 +678,17 @@ Regards,',
 'regdate'                 => 'Registered since',
 'tasksopened'             => 'Tasks opened',
 'replyto'                 => 'Reply to',
-);
+'notifytypes'             => 'Notification types',
+'pm.taskchanged'          => 'Task changed',
+'pm.taskreopened'         => 'Task reopened',
+'pm.depadded'             => 'Dependency added',
+'pm.depremoved'           => 'Dependency removed',
+'pmrequest'               => 'PM request',
+'pmrequestdenied'         => 'PM request denied',
+'newassignee'             => 'New assignee',
+'revdepadded'             => 'Reverse dependency added',
+'revdepaddedremoved'      => 'Reverse dependency removed',
+'assigneeadded'           => 'Assignee added',
+); 
 
 ?>
