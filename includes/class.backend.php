@@ -286,9 +286,6 @@ class Backend
 
       if (!is_array($args))
          return "We were not given an array of arguments to process.";
-
-
-      $args['user_id'] = $args['user_id'];    // The user id of the user creating this task (numerical, 0 = anon)
      
       // Get some information about the project and the user's permissions
       $project       = new Project($args['attached_to_project']);
@@ -298,13 +295,12 @@ class Backend
       // Check permissions for the specified user (or anonymous) to open tasks
       if ($user->perms['open_new_tasks'] != '1' && $project->prefs['anon_open'] != '1')
       {
-         return "permission denied";
+         return 'Permission denied';
       }
 
       // Some fields can have default values set
       if ($user->perms['modify_all_tasks'] != '1')
       {
-         
          $args['closedby_version'] = 0;
          $args['task_priority'] = 2;
          $args['due_date'] = 0;

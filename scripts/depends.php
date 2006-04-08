@@ -215,7 +215,7 @@ foreach ($edge_list as $src => $dstlist) {
 // all done
 $dotgraph .= "}\n";
 
-if (!function_disabled('system')) {
+if (!Flyspray::function_disabled('system')) {
     // All done with the graph. Save it to a temp file.
     $tname = tempnam('', 'fs_depends_dot_');
     $tmp   = fopen($tname, 'w');

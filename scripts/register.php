@@ -17,11 +17,11 @@ $page->setTitle('Flyspray:: ' . L('registernewuser'));
 
 if (Get::has('magic')) {
     // If the user came here from their notification link
-    $sql = $db->Query("SELECT * FROM {registrations} WHERE magic_url = ?",
-            array(Get::val('magic')));
+    $sql = $db->Query('SELECT * FROM {registrations} WHERE magic_url = ?',
+                      array(Get::val('magic')));
 
     if (!$db->CountRows($sql)) {
-        Flyspray::Redirect( CreateURL('error', null) );
+        Flyspray::Redirect(CreateURL('error'));
     }
 
     $page->pushTpl('register.magic.tpl');

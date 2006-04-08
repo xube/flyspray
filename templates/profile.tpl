@@ -39,7 +39,7 @@
     </td>
   </tr>
   <tr>
-    <th><a href="{$baseurl}?opened={$theuser->id}">{L('tasksopened')}</a></th>
+    <th><a href="{$baseurl}?opened={$theuser->id}&amp;status[]=">{L('tasksopened')}</a></th>
     <td>
       {$tasks}
     </td>

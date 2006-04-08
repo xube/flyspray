@@ -119,23 +119,23 @@
           <td>
             <select id="notify_types" size="10" multiple="multiple" name="notify_types[]">
             {!tpl_options(array(0 => L('none'),
-                                1 => L('taskopened'),
-                                2 => L('pm.taskchanged'),
-                                3 => L('taskclosed'),
-                                4 => L('pm.taskreopened'),
-                                5 => L('pm.depadded'),
-                                6 => L('pm.depremoved'),
-                                7 => L('commentadded'),
-                                8 => L('attachmentadded'),
-                                9 => L('relatedadded'),
-                               10 => L('ownershiptaken'),
-                               12 => L('pmrequest'),
-                               13 => L('pmrequestdenied'),
-                               14 => L('newassignee'),
-                               15 => L('revdepadded'),
-                               16 => L('revdepaddedremoved'),
-                               17 => L('assigneeadded'))
-                               , Flyspray::int_explode(' ', $proj->prefs['notify_types']))}
+                                NOTIFY_TASK_OPENED     => L('taskopened'),
+                                NOTIFY_TASK_CHANGED    => L('pm.taskchanged'),
+                                NOTIFY_TASK_CLOSED     => L('taskclosed'),
+                                NOTIFY_TASK_REOPENED   => L('pm.taskreopened'),
+                                NOTIFY_DEP_ADDED       => L('pm.depadded'),
+                                NOTIFY_DEP_REMOVED     => L('pm.depremoved'),
+                                NOTIFY_COMMENT_ADDED   => L('commentadded'),
+                                NOTIFY_ATT_ADDED       => L('attachmentadded'),
+                                NOTIFY_REL_ADDED       => L('relatedadded'),
+                                NOTIFY_OWNERSHIP       => L('ownershiptaken'),
+                                NOTIFY_PM_REQUEST      => L('pmrequest'),
+                                NOTIFY_PM_DENY_REQUEST => L('pmrequestdenied'),
+                                NOTIFY_NEW_ASSIGNEE    => L('newassignee'),
+                                NOTIFY_REV_DEP         => L('revdepadded'),
+                                NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
+                                NOTIFY_ADDED_ASSIGNEES => L('assigneeadded')),
+                                Flyspray::int_explode(' ', $proj->prefs['notify_types']))}
             </select>
           </td>
         </tr>
@@ -143,8 +143,6 @@
     </div>
 
     <div id="feeds" class="tab">
-      <legend></legend>
-
       <table class="admin">
         <tr>
           <td><label for="feed_description">{L('feeddescription')}</label></td>

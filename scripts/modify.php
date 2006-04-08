@@ -779,9 +779,9 @@ elseif (Post::val('action') == "edituser"
         $sql = $db->Query("UPDATE {users_in_groups} SET group_id = ?
                             WHERE group_id = ? AND user_id = ?",
                           array(Post::val('project_group_in'), Post::val('old_project_id'), Post::val('user_id')));
-        if (!$db->affectedRows($sql)) {
+        if (!$db->affectedRows($sql) && Post::val('project_group_in')) {
             $db->Query('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
-                       array(Post::val('old_project_id'), Post::val('user_id')));
+                       array(Post::val('project_group_in'), Post::val('user_id')));
         }
     }
 
