@@ -854,21 +854,23 @@ elseif (Post::val('action') == "update_list" && $user->perms['manage_project']) 
 // adding a list item {{{
 elseif (Post::val('action') == "add_to_list" && $user->perms['manage_project']) {
 
-    if (!Post::val('list_name') || !Post::val('list_position')) {
+    if (!Post::val('list_name')) {
         $_SESSION['ERROR'] = L('fillallfields');
         Flyspray::Redirect(Post::val('prev_page'));
     }
-
-    if (!is_numeric(Post::val('list_position'))){
-        $_SESSION['ERROR'] = L('listPmustN');
-        Flyspray::Redirect(Post::val('prev_page'));
+    
+    $position = intval(Post::val('list_position'));
+    if (!$position) {
+        $position = $db->FetchOne($db->Query("SELECT max(list_position)+1
+                                                FROM $list_table_name
+                                               WHERE project_id = ?",
+                                             array(Post::val('project_id', '0'))));
     }
     
     $db->Query("INSERT INTO  $list_table_name
                              (project_id, $list_column_name, list_position, show_in_list)
                      VALUES  (?, ?, ?, ?)",
-            array(Post::val('project_id', '0'), Post::val('list_name'),
-                Post::val('list_position'), '1'));
+            array(Post::val('project_id', '0'), Post::val('list_name'), $position, '1'));
 
     $_SESSION['SUCCESS'] = L('listitemadded');
     Flyspray::Redirect(Post::val('prev_page'));
