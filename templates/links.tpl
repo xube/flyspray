@@ -19,9 +19,9 @@ if ($proj->id != 0 && $user->perms['open_new_tasks']): ?>
 <?php
 endif;
 
-if ($proj->id != 0 && $user->perms['view_reports']): ?>
+if ($user->perms['view_reports']): ?>
   <li>
-  <a id="reportslink" href="{CreateURL('reports', null)}">{L('reports')}</a>
+  <a id="reportslink" href="{CreateURL('reports', null, null, array('project' => $proj->id))}">{L('reports')}</a>
   </li>
 <?php
 endif; ?>

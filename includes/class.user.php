@@ -220,10 +220,8 @@ class User
     function can_add_to_assignees($task)
 	 { 
         global $fs;
-        $assignees = $fs->GetAssignees($task['task_id']);
          
-        return ($this->perms['add_to_assignees'] && !in_array($this->id, $assignees)
-            && !empty($assignees));
+        return ($this->perms['add_to_assignees'] && !in_array($this->id, $fs->GetAssignees($task['task_id'])));
     }
 	 
     function can_close_task($task)

@@ -58,6 +58,10 @@
           <td><label for="comment_closed">{L('allowclosedcomments')}</label></td>
           <td>{!tpl_checkbox('comment_closed', $proj->prefs['comment_closed'], 'comment_closed')}</td>
         </tr>
+        <tr>
+          <td><label for="auto_assign">{L('autoassign')}</label></td>
+          <td>{!tpl_checkbox('auto_assign', $proj->prefs['auto_assign'], 'auto_assign')}</td>
+        </tr>
       </table>
     </div>
     
@@ -79,7 +83,7 @@
             'priority', 'summary', 'dateopened', 'status', 'openedby',
             'assignedto', 'lastedit', 'reportedin', 'dueversion', 'duedate',
             'comments', 'attachments', 'progress', 'dateclosed', 'os', 'votes');
-            $selectedcolumns = explode(" ", $proj->prefs['visible_columns']);
+            $selectedcolumns = explode(' ', $proj->prefs['visible_columns']);
             ?>
             {!tpl_double_select('visible_columns', $columnnames, $selectedcolumns, true)}
           </td>

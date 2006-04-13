@@ -3,7 +3,7 @@
   <em>
     <a name="comment{$row['comment_id']}" id="comment{$row['comment_id']}"
       href="{CreateURL('details', $task_details['task_id'])}#comment{$row['comment_id']}">
-      <img src="{$this->get_image('menu/comment')}"
+      <img src="{$this->get_image('comment')}"
         title="{L('commentlink')}" alt="" />
     </a>
     {L('commentby')} {!tpl_userlink($row['user_id'])} -

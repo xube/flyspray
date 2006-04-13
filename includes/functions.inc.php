@@ -273,6 +273,17 @@ class Flyspray
         sort($theme_array);
         return $theme_array;
     } // }}}
+    // List a project's group {{{
+    function listGroups($proj = 0)
+    {
+        global $db;
+        return $db->FetchAllArray(
+                    $db->Query('SELECT  *
+                                  FROM  {groups}
+                                 WHERE  belongs_to_project = ?
+                              ORDER BY  group_id ASC', array($proj)));
+    }
+    // }}}
     // List languages {{{
     function listLangs()
     {
@@ -288,12 +299,6 @@ class Flyspray
 
         sort($lang_array);
         return $lang_array;
-    } // }}}
-    // List groups {{{
-    function listGroups()
-    {
-        global $proj;
-        return $proj->listGroups(true);
     } // }}}
     // User list {{{
     function UserList($excluded = array())
@@ -337,11 +342,13 @@ class Flyspray
         // 27: Task was made public
         // 28: PM request denied
         // 29: User added to the list of assignees
+        // 30: New user registration
+        // 31: User deletion
 
 
-        $db->Query("INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
-                                VALUES(?, ?, ?, ?, ?, ?, ?)",
-                array($task, intval($user->id), ( (is_null($time)) ? time() : $time ), $type, $field, $oldvalue, $newvalue));
+        $db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
+                         VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    array($task, intval($user->id), ( (is_null($time)) ? time() : $time ), $type, $field, $oldvalue, $newvalue));
     } // }}}
     // Log a request for an admin/project manager to do something {{{
     function AdminRequest($type, $project, $task, $submitter, $reason)
@@ -352,8 +359,8 @@ class Flyspray
         //  2: Task re-open
         //  3: Application for project membership (not implemented yet)
 
-        $db->Query("INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
-                VALUES(?, ?, ?, ?, ?, ?)",
+        $db->Query('INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
+                         VALUES (?, ?, ?, ?, ?, ?)',
                 array($project, $task, $submitter, $type, $reason, date(U)));
     } // }}}
     // Check for an existing admin request for a task and event type {{{
@@ -361,9 +368,10 @@ class Flyspray
     {
         global $db;
 
-        $check = $db->Query("SELECT * FROM {admin_requests}
-                WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
-                array($type, $task));
+        $check = $db->Query("SELECT *
+                               FROM {admin_requests}
+                              WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
+                            array($type, $task));
         return (bool)($db->CountRows($check));
     } // }}}
     // Get the current user's details {{{
@@ -372,14 +380,14 @@ class Flyspray
         global $db;
 
         // Get current user details.  We need this to see if their account is enabled or disabled
-        $result = $db->Query("SELECT * FROM {users} WHERE user_id = ?", array(intval($user_id)));
+        $result = $db->Query('SELECT * FROM {users} WHERE user_id = ?', array(intval($user_id)));
         return $db->FetchArray($result);
     } // }}}
     // Get group details {{{
     function getGroupDetails($group_id)
     {
         global $db;
-        $sql = $db->Query("SELECT * FROM {groups} WHERE group_id = ?", array($group_id));
+        $sql = $db->Query('SELECT * FROM {groups} WHERE group_id = ?', array($group_id));
         return $db->FetchArray($sql);
     } // }}}
     // Crypt a password with the method set in the configfile {{{
@@ -388,9 +396,9 @@ class Flyspray
         global $conf;
         $pwcrypt = $conf['general']['passwdcrypt'];
 
-        if(strtolower($pwcrypt) == 'sha1') {
+        if (strtolower($pwcrypt) == 'sha1') {
             return sha1($password);
-        } elseif(strtolower($pwcrypt) == 'md5') {
+        } elseif (strtolower($pwcrypt) == 'md5') {
             return md5($password);
         }
         // use random salted crypt by default
@@ -621,7 +629,6 @@ class Flyspray
                 return $num;
             }
         }
-        print_r($array); echo $key.'...'.$value;
     }
 }
 ?>

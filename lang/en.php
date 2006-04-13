@@ -689,6 +689,11 @@ Regards,',
 'revdepadded'             => 'Reverse dependency added',
 'revdepaddedremoved'      => 'Reverse dependency removed',
 'assigneeadded'           => 'Assignee added',
+'addusergroup'            => 'Add user to this group',
+'groupmembers'            => 'Group Members',
+'deleteuser'              => 'Delete this user',
+'userdeleted'             => 'User deleted',
+'autoassign'              => 'Auto-assign a task to the category owner',
 ); 
 
 ?>

@@ -9,6 +9,10 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
+if (!$user->perms['view_reports']) {
+    Flyspray::Redirect($baseurl);
+}
+
 require_once(BASEDIR . '/includes/events.inc.php');
 $page->setTitle('Flyspray:: ' . L('reports'));
 
@@ -47,7 +51,11 @@ $where = array();
 foreach ($type as $eventtype) {
     $where[] = 'h.event_type = ' . $eventtype;
 }
-$where = implode(' OR ', $where);
+$where = '(' . implode(' OR ', $where) . ')';
+
+if ($proj->id) {
+    $where = 't.attached_to_project = ' . $proj->id . ' AND ' . $where;
+}
 
 $date = $wheredate = $within = '';
 switch (Req::val('repdate')) {
@@ -139,8 +147,8 @@ if (count($type)) {
                               AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
                     LEFT JOIN {list_version} lv2 ON lv2.version_id = h.new_value
                               AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
-                        WHERE t.attached_to_project = ? AND ($where) $wheredate
-                     ORDER BY $orderby", array($proj->id));
+                        WHERE $where $wheredate
+                     ORDER BY $orderby");
              
     $histories = $db->FetchAllArray($histories);
 }

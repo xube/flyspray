@@ -12,10 +12,16 @@ if(!defined('IN_FS')) {
 $page->assign('groups', $fs->ListGroups());
 
 if ($proj->id) {
-    $page->assign('project_groups', $proj->ListGroups());
+    $page->assign('project_groups', $fs->ListGroups($proj->id));
 }
 
-$theuser = new User(Get::val('id'), $proj);
+$id = Get::val('id', Get::val('uid'));
+if (!is_numeric($id)) {
+    $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($id));
+    $id = $db->FetchOne($sql);
+}
+
+$theuser = new User($id, $proj);
 if ($theuser->isAnon()) {
     Flyspray::Redirect(CreateURL('error'));
 }

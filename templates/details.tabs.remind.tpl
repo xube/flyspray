@@ -17,11 +17,11 @@
   <?php
       // Work out the unit of time to display
       if ($row['how_often'] < 86400) {
-          $how_often = $row['how_often'] / 3600 . " " . L('hours');
+          $how_often = $row['how_often'] / 3600 . ' ' . L('hours');
       } elseif ($row['how_often'] < 604800) {
-          $how_often = $row['how_often'] / 86400 . " " . L('days');
+          $how_often = $row['how_often'] / 86400 . ' ' . L('days');
       } else {
-          $how_often = $row['how_often'] / 604800 . " " . L('weeks');
+          $how_often = $row['how_often'] / 604800 . ' ' . L('weeks');
       }
   ?>
 

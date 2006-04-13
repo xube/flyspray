@@ -30,10 +30,10 @@ class Notifications {
 
       $msg = $this->GenerateMsg($type, $task_id, $info);
       
-      if ($ntype == 3 || $ntype == 1) {
+      if ($ntype == NOTIFY_EMAIL || $ntype == NOTIFY_BOTH) {
           $this->SendEmail($to[0], $msg[0], $msg[1]);
       }
-      if ($ntype == 3 || $ntype == 2) {
+      if ($ntype == NOTIFY_JABBER || $ntype == NOTIFY_BOTH) {
           $this->StoreJabber($to[1], $msg[0], $msg[1]);
       }
 
@@ -506,8 +506,7 @@ class Notifications {
                                WHERE user_id = ?
                                AND task_id = ?
                                ORDER BY comment_id DESC",
-                               array($user->id, $task_id), '1'
-                             );
+                               array($user->id, $task_id), '1');
          $comment = $db->FetchArray($result);
 
          $body = L('donotreply') . "\n\n";
@@ -711,14 +710,14 @@ class Notifications {
             $user_details = $fs->getUserDetails($val);
         }
 
-         if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == '1' || $user_details['notify_type'] == '3') )
+         if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == NOTIFY_EMAIL || $user_details['notify_type'] == NOTIFY_BOTH) )
              || $fs->prefs['user_notify'] == '2' || $ignoretype)
          {
                array_push($email_users, $user_details['email_address']);
 
          }
          
-         if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == '2' || $user_details['notify_type'] == '3') )
+         if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == NOTIFY_JABBER || $user_details['notify_type'] == NOTIFY_BOTH) )
              || $fs->prefs['user_notify'] == '3' || $ignoretype)
          {
                array_push($jabber_users, $user_details['jabber_id']);
@@ -755,14 +754,14 @@ class Notifications {
             continue;
          }
         
-         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == '1' || $row['notify_type'] == '3') )
+         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == NOTIFY_EMAIL || $row['notify_type'] == NOTIFY_BOTH) )
              || $fs->prefs['user_notify'] == '2')
          {
                array_push($email_users, $row['email_address']);
 
          }
          
-         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == '2' || $row['notify_type'] == '3') )
+         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == NOTIFY_JABBER || $row['notify_type'] == NOTIFY_BOTH) )
              || $fs->prefs['user_notify'] == '3')
          {
                array_push($jabber_users, $row['jabber_id']);
@@ -782,14 +781,14 @@ class Notifications {
             continue;
          }
          
-         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == '1' || $row['notify_type'] == '3') )
+         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == NOTIFY_EMAIL || $row['notify_type'] == NOTIFY_BOTH) )
              || $fs->prefs['user_notify'] == '2')
          {
                array_push($email_users, $row['email_address']);
 
          }
          
-         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == '2' || $row['notify_type'] == '3') )
+         if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == NOTIFY_JABBER || $row['notify_type'] == NOTIFY_BOTH) )
              || $fs->prefs['user_notify'] == '3')
          {
                array_push($jabber_users, $row['jabber_id']);

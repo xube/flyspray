@@ -109,6 +109,25 @@
       </tr>
       <?php endif; ?>
       <?php endif; ?>
+      <?php if ($group_details['group_id'] != '1'): ?>
+      <tr>
+        <td><label><input type="checkbox" name="delete_group" /> Delete this group and move users to</label></td>
+        <td><select name="move_to">
+              {!tpl_options( array_merge( ($proj->id) ? array(L('nogroup')) : array(), $fs->listGroups($proj->id)), null, false, null, $group_details['group_id'])}
+            </select>
+        </td>
+      </tr>
+      <?php endif; ?>
+      <tr>
+        <td><label for="add_user">{L('addusergroup')}</label></td>
+        <td>
+            <input class="users text" size="30" type="text" name="uid" id="add_user" />
+            <div class="autocomplete" id="add_user_complete"></div>
+            <script type="text/javascript">
+                new Ajax.Autocompleter('add_user', 'add_user_complete', '{$baseurl}javascript/callbacks/usersearch.php', {})
+            </script>
+        </td>
+      </tr>
       <tr>
         <td colspan="2" class="buttons">
           <input type="hidden" name="do" value="modify" />
@@ -120,4 +139,57 @@
       </tr>
     </table>
   </form>
+  
+  <hr />
+
+  <form action="{$baseurl}" method="post">
+   <div>
+    <h3>{L('groupmembers')}</h3>
+    <table id="manage_users_in_groups" class="userlist">
+    <tr>
+      <th>
+        <a href="javascript:ToggleSelected('manage_users_in_groups')">
+          <img title="{L('toggleselected')}" alt="{L('toggleselected')}" src="{$this->get_image('kaboodleloop')}" width="16" height="16" />
+        </a>
+      </th>
+      <th>{L('username')}</th>
+      <th>{L('realname')}</th>
+      <th>{L('accountenabled')}</th>
+    </tr>
+    <?php
+    foreach($proj->listUsersIn($group_details['group_id']) as $usr): ?>
+    <tr>
+      <td>{!tpl_checkbox('users['.$usr['user_id'].']')}</td>
+      <td><a href="{CreateURL('edituser', $usr['user_id'])}">{$usr['user_name']}</a></td>
+      <td>{$usr['real_name']}</td>
+      <?php if ($user->infos['account_enabled']): ?>
+      <td class="imgcol"><img src="{$this->get_image('button_ok')}" alt="{L('yes')}" /></td>
+      <?php else: ?>
+      <td class="imgcol"><img src="{$this->get_image('button_cancel')}" alt="{L('no')}" /></td>
+      <?php endif; ?>
+    </tr>
+    <?php
+    $users_in[] = $usr['user_id'];
+    endforeach;
+    ?>
+
+    <tr>
+      <td colspan="4">
+        <button type="submit">{L('moveuserstogroup')}</button>
+        <select class="adminlist" name="switch_to_group">
+          <?php if ($proj->id): ?>
+          <option value="0">{L('nogroup')}</option>
+          <?php endif; ?>
+          {!tpl_options($fs->listGroups($proj->id), null, false, null, $group_details['group_id'])}
+        </select>
+      </td>
+    </tr>
+  </table>
+  <input type="hidden" name="do" value="modify" />
+  <input type="hidden" name="project_id" value="{$proj->id}" />
+  <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
+  <input type="hidden" name="action" value="movetogroup" />
+  <input type="hidden" name="old_group" value="{$group_details['group_id']}" />
+  </div> 
+ </form>
 </fieldset>

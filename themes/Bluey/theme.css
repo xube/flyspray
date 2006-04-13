@@ -162,6 +162,19 @@ div.admin,p.admin,table.userlist {
 	padding:0;
 }
 
+table.userlist {
+	border-collapse:collapse;
+}
+
+table.userlist td,table.userlist th {
+	border:1px solid #ccc;
+	padding:0.1em 0.2em;
+}
+
+table.userlist td.imgcol {
+	padding:0 0.2em;
+}
+
 div#loginbox {
 	border:1px solid #ccc;
 	background-color:#e6eef6;
@@ -360,10 +373,6 @@ div#anonopen a {
 
 td.searches_delete {
 	width:16px;
-}
-
-table.userlist td,table.userlist th {
-	border:1px solid #ccc;
 }
 
 /* div#showtask contains the form to search for a specific task number */
@@ -801,6 +810,12 @@ div#massopsactions {
 	padding:0 0 0 3px;
 }
 
+div.groupedit {
+	background:url(kgpg_edit.png) no-repeat top left;
+	padding-left:50px;
+	height:64px;
+}
+
 div#closeform {
 	visibility:hidden;
 	position:absolute;
@@ -1144,6 +1159,10 @@ div#loginbox em,p#tabs small,div#toolboxmenu small {
 
 td,th {
 	vertical-align:top;
+}
+
+img.middle {
+	vertical-align:middle;
 }
 
 .inline,table.list label,p.admin label,form#formaddrelatedtask label {

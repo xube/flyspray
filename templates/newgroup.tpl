@@ -1,4 +1,4 @@
-<h1>{L('createnewgroup')} - {$forproject}</h1>
+<fieldset><legend>{L('createnewgroup')} - {$forproject}</legend>
 <p><em>{L('requiredfields')}</em> <strong>*</strong></p>
 
 <form action="{$baseurl}" method="post" id="newgroup">
@@ -97,4 +97,4 @@
     </tr>
   </table>
 </form>
-
+</fieldset>

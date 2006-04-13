@@ -1061,7 +1061,7 @@
 			}
 
 			$op= "POST " . $this->path. " HTTP/1.0\r\n" .
-				"User-Agent: " . $xmlrpcName . " " . $xmlrpcVersion . "\r\n" .
+				"User-Agent: " . $xmlrpcName . ' ' . $xmlrpcVersion . "\r\n" .
 				"Host: ". $server . "\r\n" .
 				$credentials .
 				"Accept-Charset: " . $xmlrpc_defencoding . "\r\n" .

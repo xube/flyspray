@@ -20,7 +20,7 @@
      <?php if ($task_details['anon_email'] && $user->perms['view_tasks']): ?>
      ({$task_details['anon_email']})
      <?php endif; ?>
-	 - {!formatDate($task_details['date_opened'], true)}
+	 - {formatDate($task_details['date_opened'], true)}
 	 <?php if ($task_details['last_edited_by']): ?>
 	 <br />
 	 {L('editedby')}  {!tpl_userlink($task_details['last_edited_by'])}
@@ -273,7 +273,7 @@
 		{L('assigntome')}</a>
 	 <?php endif; ?>
 
-	 <?php if ($user->can_add_to_assignees($task_details)): ?>
+	 <?php if ($user->can_add_to_assignees($task_details) && !empty($task_details['assigned_to'])): ?>
 	 <a id="own_add" class="button"
 		href="{$baseurl}?do=modify&amp;action=addtoassignees&amp;ids={Get::val('id')}">
 		{L('addmetoassignees')}</a>

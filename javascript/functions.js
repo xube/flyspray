@@ -124,15 +124,13 @@ function eventGetSrc(e) {
   }
 }
 
-function ToggleSelectedTasks() {
-  var inputs = document.getElementById('massops').getElementsByTagName('input');
+function ToggleSelected(id) {
+  var inputs = document.getElementById(id).getElementsByTagName('input');
   for (var i = 0; i < inputs.length; i++) {
     if(inputs[i].type == 'checkbox'){
       inputs[i].checked = !(inputs[i].checked);
     }
   }
-  // Return false to prevent the the browser from following the href
-  return false;
 }
 
 function addUploadFields(id) {
@@ -364,4 +362,41 @@ function getHistoryDetail(id, baseurl, field, details)
 {
     var url = baseurl + 'javascript/callbacks/gethistory.php?id=' + id + '&details=' + details;
     var myAjax = new Ajax.Updater(field, url, { method: 'get'});
+}
+
+/*********  Permissions popup  ***********/
+
+function createClosure(obj, method) {
+    return (function() { obj[method](); });
+}
+
+function Perms(id) {
+    this.div = document.getElementById(id);
+}
+
+Perms.prototype.timeout = null;
+Perms.prototype.div     = null;
+
+Perms.prototype.clearTimeout = function() {
+    if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = null;
+    }
+}
+
+Perms.prototype.do_later = function(action) {
+    this.clearTimeout();
+    closure = createClosure(this, action);
+    this.timeout = setTimeout(closure, 400);
+}
+
+Perms.prototype.show = function() {
+    this.clearTimeout();
+    this.div.style.display = 'block';
+    this.div.style.visibility = 'visible';
+}
+
+Perms.prototype.hide = function() {
+    this.clearTimeout();
+    this.div.style.display = 'none';
 }

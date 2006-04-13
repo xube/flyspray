@@ -29,7 +29,7 @@ switch ($area = Get::val('area', 'prefs')) {
 
     case 'prefs':
     case 'groups':
-        $page->assign('groups', $proj->ListGroups());
+        $page->assign('groups', $fs->ListGroups($proj->id));
     case 'editgroup':
     case 'tt':
     case 'res':

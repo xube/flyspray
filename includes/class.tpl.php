@@ -135,12 +135,12 @@ class FSTpl extends Tpl
         if ($pathinfo['dirname'] != '.') {
             $link .= $pathinfo['dirname'] . '/';
         }
+        
+        $extensions = array('.png', '.gif', '.jpg');
 
-        $folder = opendir($link);
-        while (false !== ($file = readdir($folder))) {
-           if (preg_match('/' . preg_quote($pathinfo['basename'], '/') . '/', $file)){
-                $folder = closedir($folder);
-                return ($base) ? $baseurl . $link . $file : $link . $file;
+        foreach ($extensions as $ext) {
+            if (file_exists($link . $name . $ext)) {
+                return ($base) ? ($baseurl . $link . $name . $ext) : ($link . $name . $ext);
             }
         }
 	}
@@ -317,7 +317,7 @@ function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
 }
 // }}}
 // {{{ Options for a <select>
-function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null)
+function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null, $remove = null)
 {
     $html = '';
 
@@ -335,6 +335,10 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         $label = htmlspecialchars($label, ENT_QUOTES, "utf-8");
         $value = $labelIsValue ? $label
                                : htmlspecialchars($value, ENT_QUOTES, "utf-8");
+                               
+        if ($value === $remove) {
+            continue;
+        }
 
         $html .= '<option value="'.$value.'"';
         if (in_array($value, $selected)) {
@@ -653,6 +657,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'edittask':  $return = $url . '&id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
             case 'user':      $return = $baseurl . '?do=admin&area=users&id=' . $arg1; break;
+            case 'edituser':  $return = $baseurl . '?do=admin&area=users&uid=' . $arg1; break;
             case 'logout':    $return = $baseurl . '?do=authenticate&action=logout'; break;
 
             case 'details':
@@ -775,7 +780,7 @@ class Url {
                     if ($valuei) $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
                 }
             } else {
-                if ($value) $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
+                $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
             }
         }
         return substr($append, 0, -1);

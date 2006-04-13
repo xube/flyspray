@@ -24,12 +24,12 @@ if ($conf['general']['reminder_daemon'] == '1') {
     $fs->startReminderDaemon();
 }
 
-$do = Req::val('do', 'index');
-if($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
+$do = Req::val('do', 'index');//print_r($_REQUEST);die();
+if ($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
     $do = 'pm';
-} elseif($do == 'pm' && Req::has('switch') && Req::val('project') == '0') {
+} elseif ($do == 'pm' && Req::has('switch') && Req::val('project') == '0') {
     $do = 'admin';
-} elseif(Req::has('show') || (Req::has('switch') && (Req::val('project') == '0' || $do == 'details' ))) {
+} elseif (Req::has('show') || (Req::has('switch') && ($do == 'details'))) {
     $do = 'index';
 }
 
@@ -58,8 +58,12 @@ if (Get::has('getfile') && Get::val('getfile')) {
     }
 
     // Check if file exists, and user permission to access it!
-    if (is_file(BASEDIR . "/attachments/$file_name")
-            && ($proj->prefs['others_view'] || $user->perms['view_attachments']))
+    if (!is_file(BASEDIR . "/attachments/$file_name")) {
+        header('HTTP/1.0 404 Not Found');
+        die('File does not exist anymore.');
+    }
+    
+    if($proj->prefs['others_view'] || $user->perms['view_attachments'])
     {
         output_reset_rewrite_vars();
         ob_end_clean();

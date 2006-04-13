@@ -69,6 +69,10 @@
         <td><label for="accountenabled">{L('accountenabled')}</label></td>
         <td>{!tpl_checkbox('account_enabled', $theuser->infos['account_enabled'], 'accountenabled')}</td>
       </tr>
+      <tr>
+        <td><label for="delete_user">{L('deleteuser')}</label></td>
+        <td>{!tpl_checkbox('delete_user', false, 'delete_user')}</td>
+      </tr>
       <?php endif; ?>
       <tr>
         <td><label for="groupin">{L('globalgroup')}</label></td>
@@ -83,7 +87,7 @@
       <tr>
         <td><label for="projectgroupin">{L('projectgroup')}</label></td>
         <td>
-          <select id="projectgroupin" class="adminlist" name="project_group_in" {tpl_disableif(!$user->perms['is_admin'])}>
+          <select id="projectgroupin" class="adminlist" name="project_group_in" {tpl_disableif(!$user->perms['manage_project'])}>
             {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), $theuser->infos['project_group'])}
           </select>
           <input type="hidden" name="old_project_id" value="{$theuser->infos['project_group']}" />

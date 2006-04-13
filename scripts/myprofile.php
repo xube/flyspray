@@ -15,7 +15,7 @@ if ($user->isAnon()) {
 
 $page->assign('groups', $fs->ListGroups());
 
-$page->assign('project_groups', $proj->ListGroups());
+$page->assign('project_groups', $fs->ListGroups($proj->id));
         
 $page->assign('theuser', $user);
 

@@ -9,27 +9,25 @@ define('IN_FS', true);
 require_once('../../header.php');
 $baseurl = dirname(dirname($baseurl)) .'/' ;
 
-if (Req::has('opened')) {
-    $searchterm = '%' . Req::val('opened') . '%';
-}
+$names = array('opened', 'dev', 'uid');
 
-if (Req::has('dev')) {
-    $searchterm = '%' . Req::val('dev') . '%';
+foreach ($names as $name) {
+    if (Req::has($name)) {
+        $searchterm = '%' . Req::val($name) . '%';
+    }
 }
-
 
 // Get the list of users from the global groups above
-$get_users = $db->Query("SELECT u.real_name, u.user_name
+$get_users = $db->Query('SELECT u.real_name, u.user_name
                          FROM {users} u
-                         WHERE u.user_name LIKE ? OR u.real_name LIKE ?",
-                         array($searchterm, $searchterm)
-                        );
+                         WHERE u.user_name LIKE ? OR u.real_name LIKE ?',
+                         array($searchterm, $searchterm), 20);
 
 $html = '<ul class="autocomplete">';
 
 while ($row = $db->FetchArray($get_users))
 {
-   $html .= '<li title="' . $row['user_name'] . '">' . $row['real_name'] . '</li>';
+   $html .= '<li title="' . $row['real_name'] . '">' . $row['user_name'] . '</li>';
 }
 
 $html .= '</ul>';

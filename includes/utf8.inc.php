@@ -7,7 +7,6 @@ if(!defined('IN_FS')) {
 require_once(BASEDIR . '/includes/dokuwiki/inc/utf8.php');
 
 // a-z A-Z . _ -, extended latin chars, Cyrillic and Greek
-// a-z A-Z . _ -, extended latin chars, Cyrillic and Greek
 $UTF8_ALPHA_CHARS = array(
   0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c,
   0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
@@ -60,9 +59,9 @@ function utf8_keepalphanum($string)
     global $UTF8_ALPHA_CHARS;
     $chars = utf8_to_unicode($string);
 
-    for($i = 0, $size = count($chars); $i < $size; ++$i)
+    for ($i = 0, $size = count($chars); $i < $size; ++$i)
     {
-        if(!in_array($chars[$i],$UTF8_ALPHA_CHARS))
+        if (!in_array($chars[$i], $UTF8_ALPHA_CHARS))
         {
             unset($chars[$i]);
         }

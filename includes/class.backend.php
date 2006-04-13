@@ -63,8 +63,7 @@ class Backend
     */
     function AssignToMe(&$user, $tasks)
     {
-        global $db, $fs;
-        global $notify;
+        global $db, $fs, $notify;
 
         settype($tasks, 'array');
 
@@ -79,18 +78,23 @@ class Backend
                     && $user->can_view_task($task)
                     && $user->can_take_ownership($task))
             {
-               $db->Query("DELETE FROM {assigned}
-                                 WHERE task_id = ?",
-                                       array($task_id));
+                $db->Query('DELETE FROM {assigned}
+                                  WHERE task_id = ?',
+                            array($task_id));
 
-               $db->Query("INSERT INTO {assigned}
-                                       (task_id, user_id)
-                                VALUES (?,?)",
-                                       array($task_id, $user->id));
-
+                $db->Query('INSERT INTO {assigned}
+                                        (task_id, user_id)
+                                 VALUES (?,?)',
+                            array($task_id, $user->id));
+                
                 if ($db->affectedRows()) {
                     $fs->logEvent($task_id, 19, $user->id, implode(' ', $task['assigned_to']));
                     $notify->Create(NOTIFY_OWNERSHIP, $task_id);
+                }
+                
+                if ($task['item_status'] == STATUS_UNCONFIRMED || $task['item_status'] == STATUS_NEW) {
+                    $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($task_id));
+                    $fs->logEvent($task_id, 0, 3, 1, 'item_status');
                 }
             }
         }
@@ -99,9 +103,13 @@ class Backend
     /* This function is for a user to assign multiple tasks to themselves.
        Expected args are user_id and an array of tasks.
     */
-    function AddToAssignees(&$user, $tasks)
+    function AddToAssignees($user, $tasks)
     {
         global $db, $fs, $notify;
+        
+        if (!is_object($user)) {
+            $user = new User($user);
+        }
 
         settype($tasks, 'array');
 
@@ -111,7 +119,7 @@ class Backend
             $task = @$fs->getTaskDetails($task_id);
             $proj = new Project($task['attached_to_project']);
             $user->get_perms($proj);
-
+            
             if ($user->can_view_project($proj)
                     && $user->can_view_task($task)
                     && $user->can_add_to_assignees($task))
@@ -125,11 +133,17 @@ class Backend
                     $fs->logEvent($task_id, 29, $user->id, implode(' ', $task['assigned_to']));
                     $notify->Create(NOTIFY_ADDED_ASSIGNEES, $task_id);
                 }
+                
+                if ($task['item_status'] == STATUS_UNCONFIRMED || $task['item_status'] == STATUS_NEW) {
+                    $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($task_id));
+                    $fs->logEvent($task_id, 0, 3, 1, 'item_status');
+                }
             }
         }
     }
     
-    function add_comment($task, $comment_text, $time = null) {
+    function add_comment($task, $comment_text, $time = null)
+    {
         global $db, $user, $fs, $notify, $proj;
         
         if(!($user->perms['add_comments'] && (!$task['is_closed'] || $proj->prefs['comment_closed']))) {
@@ -171,7 +185,7 @@ class Backend
        $taskid is the task that the files will be attached to
        $commentid is only valid if the files are to be attached to a comment
      */
-    function UploadFiles(&$user, $taskid, $commentid = '0', $source = 'userfile')
+    function UploadFiles(&$user, $taskid, $commentid = 0, $source = 'userfile')
     {
         global $db, $fs, $notify, $conf;
 
@@ -269,6 +283,73 @@ class Backend
             $fs->logEvent($row['task_id'], 8, $row['orig_name']);
         }
     }
+    
+    // returns false if user name is taken, else true
+    function create_user($user_name, $password, $real_name, $jabber_id, $email, $notify_type, $group_in)
+    {
+        global $fs, $db;
+        
+        // Limit lengths
+        $user_name = substr(trim(Post::val('user_name')), 0, 32);
+        $real_name = substr(trim(Post::val('real_name')), 0, 100);
+        // Remove doubled up spaces and control chars
+        if (version_compare(PHP_VERSION, '4.3.4') == 1) {
+            $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
+            $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
+        }
+        // Strip special chars
+        $user_name = utf8_keepalphanum($user_name);
+
+        // Check to see if the username is available
+        $sql = $db->Query('SELECT COUNT(*) FROM {users} u, {registrations} r
+                           WHERE  u.user_name = ? OR r.user_name = ?',
+                           array($user_name, $user_name));
+        
+        if ($db->fetchOne($sql)) {
+            return false;
+        }
+                       
+        $password = $fs->cryptPassword($password);
+        $db->Query("INSERT INTO  {users}
+                             ( user_name, user_pass, real_name, jabber_id,
+                               email_address, notify_type, account_enabled,
+                               tasks_perpage, register_date)
+                     VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25, ?)",
+            array($user_name, $password, $real_name, $jabber_id, $email, $notify_type, time()));
+
+        // Get this user's id for the record
+        $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($user_name));
+        $uid = $db->fetchOne($sql);
+
+        // Now, create a new record in the users_in_groups table
+        $db->Query('INSERT INTO  {users_in_groups} (user_id, group_id)
+                         VALUES  ( ?, ?)', array($uid, $group_in));
+        
+        $fs->logEvent(0, 30, serialize($fs->getUserDetails($uid)));
+        
+        return true;
+    }
+    
+    function delete_user($uid)
+    {
+        global $fs, $db;
+        
+        $user = serialize($fs->getUserDetails($uid));
+        
+        $sql = $db->Query('DELETE a, b
+                             FROM {users} a, {users_in_groups} b
+                            WHERE a.user_id = b.user_id AND b.user_id = ?',
+                            array($uid));
+        // Other necessary deletions (merge all into one not possible?)
+        $db->Query('DELETE FROM {searches}      WHERE user_id = ?', array($uid));
+        $db->Query('DELETE FROM {notifications} WHERE user_id = ?', array($uid));
+        $db->Query('DELETE FROM {assigned}      WHERE user_id = ?', array($uid));
+        
+        $fs->logEvent(0, 31, $user);
+        
+        return (bool) $db->affectedRows($sql);
+    }
+    
     /************************************************************************************************
      * below this line, functions are old wrt new flyspray internals.  they will
      * need to be refactored
@@ -392,7 +473,7 @@ class Backend
          
          // Log to task history
                   
-         $fs->logEvent($task_id, 14, join(" ",$assigned_user_list));
+         $fs->logEvent($task_id, 14, join(' ',$assigned_user_list));
          
          // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
          $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null, $notify->SpecificAddresses($assigned_user_list));         
@@ -602,8 +683,8 @@ class Backend
       // The search string
       if (!empty($string))
       {
-         $string = ereg_replace('\(', " ", $string);
-         $string = ereg_replace('\)', " ", $string);
+         $string = ereg_replace('\(', ' ', $string);
+         $string = ereg_replace('\)', ' ', $string);
          $string = trim($string);
 
          $where[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ?)";

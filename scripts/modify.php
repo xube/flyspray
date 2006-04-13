@@ -91,13 +91,10 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
         // Convert assigned_to and store them in the 'assigned' table
         foreach (Flyspray::int_explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
         {
-            if (!empty($val))
-            {           
-                $db->Query('INSERT INTO {assigned}
-                                        (task_id, user_id)
-                                 VALUES (?,?)',
-                                        array($task_id, $val));
-            }
+            $db->Query('INSERT INTO {assigned}
+                                    (task_id, user_id)
+                             VALUES (?,?)',
+                                    array($task_id, $val));
         }
     }
 
@@ -139,6 +136,9 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     }
 
     if ($owner) {
+        if ($proj->prefs['auto_assign'] && Post::val('item_status') == 1) {
+            $be->AddToAssignees($owner, $task_id);
+        }
         $be->AddToNotifyList($owner, array($task_id));
     }
 
@@ -372,7 +372,7 @@ elseif (Post::val('action') == 'sendcode') {
     $user_name = substr(trim(Post::val('user_name')), 0, 32);
     $real_name = substr(trim(Post::val('real_name')), 0, 100);
     // Remove doubled up spaces and control chars
-    if(version_compare(PHP_VERSION, '4.3.4') == 1) {
+    if (version_compare(PHP_VERSION, '4.3.4') == 1) {
         $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
         $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
     }
@@ -461,37 +461,11 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
         Flyspray::Redirect(CreateURL('register'));
     }
 
-    // Check that no user still exist with this username
-    $sql = $db->Query("SELECT count(*) FROM {users} WHERE user_name = ?",
-            array($reg_details['user_name']));
-    $check = $db->FetchArray($sql);
-    
-    if ($check['count'] >= '1'){
+    if (!$be->create_user($reg_details['user_name'], Post::val('user_pass'), $reg_details['real_name'], $reg_details['jabber_id'],
+                     $reg_details['email_address'], $reg_details['notify_type'], $fs->prefs['anon_group'])) {
         $_SESSION['ERROR'] = L('usernametaken');
         Flyspray::Redirect(CreateURL('register'));
     }
-
-    // Encrypt their password
-    $pass_hash = $fs->cryptPassword(Post::val('user_pass'));
-
-    // Add the user to the database
-    $db->Query("INSERT INTO  {users}
-                             ( user_name, user_pass, real_name, jabber_id,
-                               email_address, notify_type, account_enabled,
-                               tasks_perpage, register_date)
-                     VALUES  (?, ?, ?, ?, ?, ?, 1, 25, ?)",
-            array($reg_details['user_name'], $pass_hash,
-                $reg_details['real_name'], $reg_details['jabber_id'],
-                $reg_details['email_address'], $reg_details['notify_type'], time()));
-
-    // Get this user's id for the record
-    $sql = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
-            array($reg_details['user_name']));
-    $uid = $db->fetchOne($sql);
-
-    // Now, create a new record in the users_in_groups table
-    $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
-                     VALUES  (?, ?)", array($uid, $fs->prefs['anon_group']));
 
     $_SESSION['SUCCESS'] = L('accountcreated');
     $page->pushTpl('register.ok.tpl');
@@ -513,51 +487,17 @@ elseif (Post::val('action') == "newuser" &&
         Flyspray::Redirect(CreateURL('newuser'));
     }
     
-    // Limit lengths
-    $user_name = substr(trim(Post::val('user_name')), 0, 32);
-    $real_name = substr(trim(Post::val('real_name')), 0, 100);
-    // Remove doubled up spaces and control chars
-    if(version_compare(PHP_VERSION, '4.3.4') == 1) {
-        $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
-        $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
-    }
-    // Strip special chars
-    $user_name = utf8_keepalphanum($user_name);
-
-    // Check to see if the username is available
-    $sql = $db->Query('SELECT COUNT(*) FROM {users} u, {registrations} r
-                       WHERE  u.user_name = ? OR r.user_name = ?',
-                       array($user_name, $user_name));
-    if ($db->fetchOne($sql)) {
-        $_SESSION['ERROR'] = L('usernametaken');
-        Flyspray::Redirect(CreateURL('newuser'));
-    }
-
-    $pass_hash = $fs->cryptPassword(Post::val('user_pass'));
-
     if ($user->perms['is_admin']) {
         $group_in = Post::val('group_in');
     } else {
         $group_in = $fs->prefs['anon_group'];
     }
 
-    $db->Query("INSERT INTO  {users}
-                             ( user_name, user_pass, real_name, jabber_id,
-                               email_address, notify_type, account_enabled,
-                               tasks_perpage, register_date)
-                     VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25, ?)",
-            array($user_name, $pass_hash, $real_name,
-                Post::val('jabber_id'), Post::val('email_address'),
-                Post::val('notify_type'), time()));
-
-    // Get this user's id for the record
-    $sql = $db->Query("SELECT user_id FROM {users} WHERE user_name = ?",
-            array($user_name));
-    $uid = $db->fetchOne($sql);
-
-    // Now, create a new record in the users_in_groups table
-    $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
-                     VALUES  ( ?, ?)", array($uid, $group_in));
+    if (!$be->create_user($user_name, Post::val('user_pass'), $real_name, Post::val('jabber_id'),
+                          Post::val('email_address'), Post::val('notify_type'), $group_in)) {
+        $_SESSION['ERROR'] = L('usernametaken');
+        Flyspray::Redirect(CreateURL('newuser'));
+    }
 
     if ($user->perms['is_admin']) {
         $_SESSION['SUCCESS'] = L('newusercreated');
@@ -657,7 +597,7 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
     $cols = array( 'manage_project', 'view_tasks', 'open_new_tasks',
             'modify_own_tasks', 'modify_all_tasks', 'view_comments',
             'add_comments', 'edit_comments', 'delete_comments', 'view_attachments',
-            'create_attachments', 'delete_attachments', 'view_history',
+            'create_attachments', 'delete_attachments', 'view_history', 'add_votes',
             'close_own_tasks', 'close_other_tasks', 'assign_to_self',
             'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
     $args = array_fill(0, count($cols), '1');
@@ -699,7 +639,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
     $cols = array( 'project_title', 'theme_style', 'default_cat_owner', 'lang_code',
             'intro_message', 'project_is_active', 'others_view', 'anon_open',
             'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
-            'feed_description', 'feed_img_url', 'comment_closed');
+            'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign');
     $args = array_map('Post_to0', $cols);
     $cols[] = 'notify_types';
     $args[] = implode(' ', Post::val('notify_types'));
@@ -718,9 +658,18 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
 
 } // }}}
 // Start of modifying user details/profile {{{
-elseif (Post::val('action') == "edituser"
-          && ($user->perms['is_admin'] || $user->id == Post::val('user_id')))
+elseif (Post::val('action') == "edituser" && $user->perms['manage_project'])
 {
+    if (Post::val('delete_user') && $user->perms['is_admin']) {
+        $be->delete_user(Post::val('user_id'));
+                   
+        $_SESSION['SUCCESS'] = L('userdeleted');
+        Flyspray::Redirect(CreateURL('admin', 'groups'));
+    }
+    
+    if (!Post::val('onlypmgroup')):
+    if ($user->perms['is_admin'] || $user->id == Post::val('user_id')): // only admin or user himself can change
+    
     if (!Post::val('real_name') || (!Post::val('email_address') && !Post::val('jabber_id'))) {
         $_SESSION['ERROR'] = L('realandnotify');
         Flyspray::Redirect(Post::val('prev_page'));
@@ -755,29 +704,33 @@ elseif (Post::val('action') == "edituser"
         }
     }
 
-    $db->Query("UPDATE  {users}
+    $db->Query('UPDATE  {users}
                    SET  real_name = ?, email_address = ?, notify_own = ?,
                         jabber_id = ?, notify_type = ?,
                         dateformat = ?, dateformat_extended = ?,
                         tasks_perpage = ?
-                 WHERE  user_id = ?",
+                 WHERE  user_id = ?',
             array(Post::val('real_name'), Post::val('email_address'), Post::val('notify_own', 0),
                 Post::val('jabber_id', 0), Post::val('notify_type', 0),
                 Post::val('dateformat', 0), Post::val('dateformat_extended', 0),
                 Post::val('tasks_perpage'), Post::val('user_id')));
 
+    endif; // end only admin or user himself can change
+    
     if ($user->perms['is_admin']) {
-        $db->Query("UPDATE {users} SET account_enabled = ?  WHERE user_id = ?",
+        $db->Query('UPDATE {users} SET account_enabled = ?  WHERE user_id = ?',
                 array(Post::val('account_enabled'), Post::val('user_id')));
 
-        $db->Query("UPDATE {users_in_groups} SET group_id = ?
-                     WHERE group_id = ? AND user_id = ?",
+        $db->Query('UPDATE {users_in_groups} SET group_id = ?
+                     WHERE group_id = ? AND user_id = ?',
                 array(Post::val('group_in'), Post::val('old_global_id'), Post::val('user_id')));
     }
     
-    if ($user->perms['is_admin'] || $user->perms['manage_project'] && Post::val('project_group_in')) {
-        $sql = $db->Query("UPDATE {users_in_groups} SET group_id = ?
-                            WHERE group_id = ? AND user_id = ?",
+    endif; // end non project group changes
+
+    if ($user->perms['manage_project'] && !is_null(Post::val('project_group_in')) && Post::val('project_group_in') != Post::val('old_project_id')) {
+        $sql = $db->Query('UPDATE {users_in_groups} SET group_id = ?
+                            WHERE group_id = ? AND user_id = ?',
                           array(Post::val('project_group_in'), Post::val('old_project_id'), Post::val('user_id')));
         if (!$db->affectedRows($sql) && Post::val('project_group_in')) {
             $db->Query('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
@@ -790,7 +743,7 @@ elseif (Post::val('action') == "edituser"
 } // }}}
 // updating a group definition {{{
 elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
-
+    
     if (!Post::val('group_name') && !Post::val('group_desc')) {
         $_SESSION['ERROR'] = L('groupanddesc');
         Flyspray::Redirect(Post::val('prev_page'));
@@ -798,6 +751,42 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
 
     $cols = array('group_name', 'group_desc');
     
+    // Add a user to a group
+    if ($uid = Post::val('uid')) {
+        $uids = preg_split('/[\s,;]+/', $uid, -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($uids as $uid) {
+            if (!is_numeric($uid)) {
+                $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($uid));
+                $uid = $db->FetchOne($sql);
+            }
+            
+            // If user is already a member of one of the project's groups, **move** (not add) him to the new group
+            $sql = $db->Query('SELECT g.group_id
+                                 FROM {users_in_groups} uig, {groups} g
+                                WHERE g.group_id = uig.group_id AND uig.user_id = ? AND belongs_to_project = ?',
+                                array($uid, $proj->id));
+            if ($db->CountRows($sql)) {
+                $oldid = $db->FetchOne($sql);
+                $db->Query('UPDATE {users_in_groups} SET group_id = ? WHERE user_id = ? AND group_id = ?',
+                            array(Post::val('group_id'), $uid, $oldid));
+            } else {
+                $db->Query('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
+                            array(Post::val('group_id'), $uid));
+            }
+        }
+    }
+    
+    if (Post::val('delete_group') && Post::val('group_id') != '1') {
+        $db->Query('DELETE FROM {groups} WHERE group_id = ?', Post::val('group_id'));
+        
+        if (Post::val('move_to')) {
+            $db->Query('UPDATE {users_in_groups} SET group_id = ? WHERE group_id = ?',
+                        array(Post::val('move_to'), Post::val('group_id')));
+        }
+        
+        $_SESSION['SUCCESS'] = L('groupupdated');
+        Flyspray::Redirect(CreateURL( (($proj->id) ? 'pm' : 'admin'), 'groups', $proj->id));
+    }
     // Allow all groups to update permissions except for global Admin
     if (Post::val('group_id') != '1') {
         $cols = array_merge($cols,
@@ -812,10 +801,11 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
 
     $args = array_map('Post_to0', $cols);
     $args[] = Post::val('group_id');
+    $args[] = $proj->id;
 
     $db->Query("UPDATE  {groups}
                    SET  ".join('=?,', $cols)."=?
-                 WHERE  group_id = ?", $args);
+                 WHERE  group_id = ? AND belongs_to_project = ?", $args);
 
     $_SESSION['SUCCESS'] = L('groupupdated');
     Flyspray::Redirect(Post::val('prev_page'));
@@ -833,13 +823,13 @@ elseif (Post::val('action') == "update_list" && $user->perms['manage_project']) 
     $redirectmessage = L('listupdated');
 
     for($i = 0; $i < count($listname); $i++) {
-        if (is_numeric($listposition[$i]) && $listname[$i] != '') {
+        if ($listname[$i] != '') {
             $update = $db->Query("UPDATE  $list_table_name
                                      SET  $list_column_name = ?, list_position = ?, show_in_list = ?
                                    WHERE  $list_id = '{$listid[$i]}'",
-                    array($listname[$i], $listposition[$i], intval($listshow[$i])));
+                    array($listname[$i], intval($listposition[$i]), intval($listshow[$i])));
         } else {
-            $redirectmessage = L('listupdated') . " " . L('fieldsmissing');
+            $redirectmessage = L('listupdated') . ' ' . L('fieldsmissing');
         }
     }
 
@@ -898,7 +888,7 @@ elseif (Post::val('action') == "update_version_list" && $user->perms['manage_pro
                     array($listname[$i], $listposition[$i],
                         intval($listshow[$i]), intval($listtense[$i])));
         } else {
-            $redirectmessage = L('listupdated') . " " . L('fieldsmissing');
+            $redirectmessage = L('listupdated') . ' ' . L('fieldsmissing');
         }
     }
 
@@ -954,7 +944,7 @@ elseif (Post::val('action') == "update_category" && $user->perms['manage_project
                               array($listname[$i], $listposition[$i],
                                   intval($listshow[$i]), intval($listowner[$i]), $listid[$i]));
         } else {
-            $redirectmessage = L('listupdated') . " " . L('fieldsmissing');
+            $redirectmessage = L('listupdated') . ' ' . L('fieldsmissing');
         }
     }
 
@@ -1178,36 +1168,18 @@ elseif (Post::val('action') == "deletereminder" && $user->perms['manage_project'
     $_SESSION['SUCCESS'] = L('reminderdeletedmsg');
     Flyspray::Redirect(CreateURL('details', Req::val('task_id')).'#remind');
 } // }}}
-// adding a bunch of users to a group {{{
-elseif (Post::val('action') == "addtogroup" && $user->perms['manage_project']) {
-
-    if (!is_array(Post::val('user_list'))) {
-        $_SESSION['ERROR'] = L('nouserselected');
-        Flyspray::Redirect(Post::val('prev_page'));
-    }
-
-    foreach (Post::val('user_list') as $key => $val) {
-        $db->Query("INSERT INTO  {users_in_groups} (user_id, group_id)
-                         VALUES  (?, ?)",
-                array($val, Post::val('add_to_group')));
-    }
-
-    $_SESSION['SUCCESS'] = L('groupswitchupdated');
-    Flyspray::Redirect(Post::val('prev_page'));
-
-} // }}}
 // change a bunch of users' groups {{{
 elseif (Post::val('action') == 'movetogroup' && $user->perms['manage_project']) {
 
     foreach (Post::val('users') as $user_id => $val) {
         if (Post::val('switch_to_group') == '0') {
-            $db->Query("DELETE FROM  {users_in_groups}
-                              WHERE  user_id = ? AND group_id = ?",
+            $db->Query('DELETE FROM  {users_in_groups}
+                              WHERE  user_id = ? AND group_id = ?',
                     array($user_id, Post::val('old_group')));
         } else {
-            $db->Query("UPDATE  {users_in_groups}
+            $db->Query('UPDATE  {users_in_groups}
                            SET  group_id = ?
-                         WHERE  user_id = ? AND group_id = ?",
+                         WHERE  user_id = ? AND group_id = ?',
                      array(Post::val('switch_to_group'), $user_id, Post::val('old_group')));
         }
     }
@@ -1250,9 +1222,6 @@ elseif (Req::val('action') == 'addtoassignees') {
 
    $_SESSION['SUCCESS'] = L('addedtoassignees');
    Flyspray::Redirect($redirect_url);
-
-
-
 } // }}}
 // requesting task closure {{{
 elseif (Post::val('action') == 'requestclose') {

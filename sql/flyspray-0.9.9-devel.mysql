@@ -340,3 +340,6 @@ ALTER TABLE `flyspray_projects` DROP `notify_jabber_when` ;
 ALTER TABLE `flyspray_projects` DROP `notify_email_when` ;
 
 ALTER TABLE `flyspray_projects` ADD `notify_types` VARCHAR( 100 ) NOT NULL DEFAULT '0' AFTER `notify_reply` ;
+
+-- Florian Schmitz, 11 April 2006
+ALTER TABLE `flyspray_projects` ADD `auto_assign` MEDIUMINT( 1 ) NOT NULL DEFAULT '0';

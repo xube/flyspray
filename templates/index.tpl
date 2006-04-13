@@ -65,7 +65,7 @@
         
         <label class="default multisel" for="due">{L('dueversion')}</label>
         <select name="due[]" id="due" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
-          {!tpl_options(array('' => L('dueanyversion')) + $proj->listVersions(false, 3), Get::val('due', ''))}
+          {!tpl_options(array('' => L('dueanyversion')) + $proj->listVersions(false), Get::val('due', ''))}
         </select>
         
         <label class="default multisel" for="reported">{L('reportedversion')}</label>
@@ -121,7 +121,13 @@
             <th class="caret">
             </th>
             <?php if (!$user->isAnon()): ?>
-            <th class="ttcolumn"></th>
+            <th class="ttcolumn">
+                <?php if (!$user->isAnon() && $total): ?>
+                <a href="javascript:ToggleSelected('massops')">
+                  <img alt="{L('toggleselected')}" title="{L('toggleselected')}" src="{$this->get_image('kaboodleloop')}" width="16" height="16" />
+                </a>
+                <?php endif; ?>
+            </th>
             <?php endif; ?>
             <?php foreach ($visible as $col): ?>
             {!tpl_list_heading($col, "<th%s>%s</th>")}
@@ -151,10 +157,6 @@
           <td id="taskrange">
             {!sprintf(L('taskrange'), $offset + 1,
               ($offset + $perpage > $total ? $total : $offset + $perpage), $total)}
-            <?php if (!$user->isAnon() && $total): ?>
-            &nbsp;&nbsp;<a href="javascript://;" onclick="ToggleSelectedTasks()">
-              {L('toggleselected')}</a>
-            <?php endif; ?>
           </td>
           <td id="numbers">
             {!pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order') . '&amp;tasks=' . Get::val('tasks'))}

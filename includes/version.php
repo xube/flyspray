@@ -62,7 +62,7 @@ class Version
     $this->mCopyright = 'Copyright 2005 &copy; Tony Collins.  All rights reserved.';
     $this->mAuthor = 'Tony Collins';
     $this->mUrl = '<a href="http://flyspray.rocks.cc" title="Flyspray home page">Flyspray</a> is Free Software released under the GNU/GPL License.';
-    $this->mVersion = $this->mProductName . " " . $this->mRelease . ".". $this->mDevLevel . " " . $this->mDevStatus . " [".$this->mCodename ."] " . $this->mRelDate . " " . $this->mRelTime . " " . $this->mRelTimeZone;
+    $this->mVersion = $this->mProductName . ' ' . $this->mRelease . ".". $this->mDevLevel . " " . $this->mDevStatus . " [".$this->mCodename ."] " . $this->mRelDate . " " . $this->mRelTime . " " . $this->mRelTimeZone;
   }
 
 }

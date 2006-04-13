@@ -31,11 +31,27 @@
   <tr>
     <th>{L('projectgroup')}</th>
     <td>
+    <?php if ($user->perms['manage_project']): ?>
+    <form method="post" action="{$baseurl}"><div>
+      <select id="projectgroupin" class="adminlist" name="project_group_in">
+        {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), $theuser->infos['project_group'])}
+      </select>
+      <input type="hidden" name="old_project_id" value="{$theuser->infos['project_group']}" />
+      <input type="hidden" name="do" value="modify" />
+      <input type="hidden" name="action" value="edituser" />
+      <input type="hidden" name="user_id" value="{$theuser->id}" />
+      <input type="hidden" name="onlypmgroup" value="1" />
+      <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
+
+      <button type="submit">{L('update')}</button>
+    </div></form>
+    <?php else: ?>
       <?php if ($theuser->infos['project_group']): ?>
       {$project_groups[Flyspray::array_find('group_id', $theuser->infos['project_group'], $project_groups)]['group_name']}
       <?php else: ?>
       {L('none')}
       <?php endif; ?>
+    <?php endif; ?>
     </td>
   </tr>
   <tr>

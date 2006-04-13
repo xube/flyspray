@@ -222,25 +222,6 @@ class Project
                 array($group_id));
     }
 
-    function listGroups($admin = false)
-    {
-        global $db;
-        if(!$admin) {
-            return $db->_cached_query(
-                'groups',
-                "SELECT  * FROM {groups}
-                  WHERE  belongs_to_project = ?
-                  ORDER  BY group_id ASC",
-                  array($this->id));
-        } else {
-            return $db->_cached_query(
-                'admingroups',
-                "SELECT  * FROM {groups}
-                  WHERE  belongs_to_project = 0 
-                  ORDER  BY group_id ASC");
-        }        
-    }
-
     function listAttachments($cid)
     {
         global $db;
