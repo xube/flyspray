@@ -694,6 +694,7 @@ Regards,',
 'deleteuser'              => 'Delete this user',
 'userdeleted'             => 'User deleted',
 'autoassign'              => 'Auto-assign a task to the category owner',
+'ssl'                     => 'SSL',
 ); 
 
 ?>

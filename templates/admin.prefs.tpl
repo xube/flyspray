@@ -128,7 +128,8 @@
         <tr>
           <td><label for="jabberserver">{L('jabberserver')}</label></td>
           <td>
-            <input id="jabberserver" class="text" type="text" name="jabber_server" size="40" maxlength="100" value="{$fs->prefs['jabber_server']}" />
+            <input id="jabberserver" class="text" type="text" name="jabber_server" size="25" maxlength="100" value="{$fs->prefs['jabber_server']}" />
+            {!tpl_checkbox('jabber_ssl', $fs->prefs['jabber_ssl'], 'jabber_ssl')} <label class="inline" for="jabber_ssl">{L('ssl')}</label>
           </td>
         </tr>
         <tr>

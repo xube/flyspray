@@ -343,3 +343,9 @@ ALTER TABLE `flyspray_projects` ADD `notify_types` VARCHAR( 100 ) NOT NULL DEFAU
 
 -- Florian Schmitz, 11 April 2006
 ALTER TABLE `flyspray_projects` ADD `auto_assign` MEDIUMINT( 1 ) NOT NULL DEFAULT '0';
+
+-- Florian Schmitz, 14 April 2006
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES (
+24 , 'jabber_ssl', '0', 'Whether or not to use SSL for Jabber connections'
+);

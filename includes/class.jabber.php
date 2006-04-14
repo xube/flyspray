@@ -1944,6 +1944,7 @@ class CJP_StandardConnector
 
 	function OpenSocket($server, $port)
 	{
+        global $fs;
 		if (function_exists("dns_get_record"))
 		{
 			$record = dns_get_record("_xmpp-client._tcp.$server", DNS_SRV);
@@ -1953,6 +1954,10 @@ class CJP_StandardConnector
 				$port = $record[0]["port"];
 			}
 		}
+       
+        if ($fs->prefs['jabber_ssl']) {
+            $server = 'ssl://' . $server;
+        }
 
 		if ($this->active_socket = fsockopen($server, $port))
 		{

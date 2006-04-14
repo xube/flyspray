@@ -136,7 +136,7 @@ class FSTpl extends Tpl
             $link .= $pathinfo['dirname'] . '/';
         }
         
-        $extensions = array('.png', '.gif', '.jpg');
+        $extensions = array('.png', '.gif', '.jpg', '.ico');
 
         foreach ($extensions as $ext) {
             if (file_exists($link . $name . $ext)) {

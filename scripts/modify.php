@@ -552,7 +552,7 @@ elseif (Post::val('action') == "newgroup"
 elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin']) {
     $settings = array('jabber_server', 'jabber_port', 'jabber_username',
             'jabber_password', 'anon_group', 'user_notify', 'admin_email',
-            'lang_code', 'spam_proof', 'default_project', 'dateformat',
+            'lang_code', 'spam_proof', 'default_project', 'dateformat', 'jabber_ssl',
             'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server',
             'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds');
     foreach ($settings as $setting) {
