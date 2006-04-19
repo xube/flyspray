@@ -290,8 +290,8 @@ class Backend
         global $fs, $db;
         
         // Limit lengths
-        $user_name = substr(trim(Post::val('user_name')), 0, 32);
-        $real_name = substr(trim(Post::val('real_name')), 0, 100);
+        $user_name = substr(trim($user_name), 0, 32);
+        $real_name = substr(trim($real_name), 0, 100);
         // Remove doubled up spaces and control chars
         if (version_compare(PHP_VERSION, '4.3.4') == 1) {
             $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
@@ -350,10 +350,21 @@ class Backend
         return (bool) $db->affectedRows($sql);
     }
     
-    /************************************************************************************************
-     * below this line, functions are old wrt new flyspray internals.  they will
-     * need to be refactored
-     */
+    function delete_project($pid, $move_to = 0)
+    {
+        global $fs, $db;
+        
+        $db->Query('DELETE FROM {admin_requests}      WHERE project_id = ?', array($pid));
+        $db->Query('DELETE FROM {cache}               WHERE project = ?', array($pid));
+        $db->Query('DELETE FROM {groups}              WHERE belongs_to_project = ?', array($pid));
+        // if tasks are deleted, remove list entries
+        if (!$move_to) {
+            $db->Query('DELETE FROM {list_category}       WHERE project_id = ?', array($pid));
+            // and delete history entries for tasks of that project
+        } else { // else move them to the new project
+        }
+        
+    }
 
    /* This function creates a new task.  Due to the nature of lists
       being specified in the database, we can't really accept default
@@ -361,186 +372,150 @@ class Backend
    */
    function CreateTask($args)
    {
-      global $db, $fs, $user;
+        global $db, $fs, $user;
+        $notify = new Notifications();
+        
+        if (count($args) < 3) {
+            return null;
+        }
 
-      $notify = new Notifications();
+        if (!(($item_summary = $args['item_summary']) && ($detailed_desc = $args['detailed_desc']))) {
+            return null;
+        }
+        
+        // Some fields can have default values set
+        if ($user->perms['modify_all_tasks'] != '1')
+        {
+            $args['closedby_version'] = 0;
+            $args['task_priority'] = 2;
+            $args['due_date'] = 0;
+            $args['item_status'] = STATUS_UNCONFIRMED;
+        } 
 
-      if (!is_array($args))
-         return "We were not given an array of arguments to process.";
-     
-      // Get some information about the project and the user's permissions
-      $project       = new Project($args['attached_to_project']);
-      $user          = new User($args['user_id']);
-      $user->get_perms($project);
+        $param_names = array('task_type', 'item_status',
+                'product_category', 'product_version', 'closedby_version',
+                'operating_system', 'task_severity', 'task_priority');
 
-      // Check permissions for the specified user (or anonymous) to open tasks
-      if ($user->perms['open_new_tasks'] != '1' && $project->prefs['anon_open'] != '1')
-      {
-         return 'Permission denied';
-      }
+        $sql_values = array(time(), time(), $args['project_id'], $item_summary,
+                $detailed_desc, intval($user->id), '0');
 
-      // Some fields can have default values set
-      if ($user->perms['modify_all_tasks'] != '1')
-      {
-         $args['closedby_version'] = 0;
-         $args['task_priority'] = 2;
-         $args['due_date'] = 0;
-         $args['item_status'] = 1;
-      } 
-      
-      
-      $assigned_user_list = $args['assigned'];
-      // fix assigned user list o an array if it isn't currently
-      // but only if it isn't empty
-      if ($assigned_user_list) 
-      {
-         if (!is_array($args['assigned'])) 
-         {
-            $assigned_user_list = array($args['assigned']);
-         }
-      }
-      
-      
-      // check that values are numeric where necessary
-      $checkArray = array("attached_to_project", "task_type","product_category",
-                          "product_version","operating_system",
-                          "task_severity","closedby_version","task_priority","due_date","item_status");
+        $sql_params = array();
+        foreach ($param_names as $param_name) {
+            if (isset($args[$param_name])) {
+                $sql_params[] = $param_name;
+                $sql_values[] = $args[$param_name];
+            }
+        }
 
-      
-      
-      foreach ($checkArray as $item) 
-      {
-         if (!is_numeric($args[$item])) 
-         {
-            return "value for $item is not numeric ($item='".($args[$item])."')";
-         }
-      }
-      
-      $result = $db->Query("SELECT  max(task_id)+1 FROM {tasks}");
-      $task_id = $db->FetchOne($result);  
+        // Process the due_date
+        if ( ($due_date = $args['due_date']) || ($due_date = 0) ) {
+            $due_date = strtotime("$due_date +23 hours 59 minutes 59 seconds");
+        }
 
-      $args['task_id'] = $task_id;
-      $args['opened_by'] = $args['user_id'];
-      $args['date_opened'] = time();
-      $args['last_edited_time'] = time();
-      
-     
-      
-      $valid_keys = array_merge($checkArray, 
-                                array('task_id','date_opened', 'last_edited_time', 'opened_by', 'detailed_desc', 'item_summary'));
-      
-      
-      // remove any value/key pairs that are not in valid_keys (or check_array)
-      foreach ($args as $key => $val) 
-      {
-         if (!in_array($key,$valid_keys)) 
-         {
-            unset($args[$key]);
-         }
-      }
-      
-     // modified database insert, now the whole thing is built from the $args array
-      $cols = implode(",",array_keys($args));
-      $values = implode(",",array_fill(0,count($args),"?"));
-      
-            $db->Query("INSERT INTO {tasks} 
-                        ($cols)
-                        VALUES($values)",
-                        array_values($args)
-                      );
-      
-      if (!$result) 
-      {
-         // failure to insert task
-         return "failed to create new task (db failure)";
-      }
+        $sql_params[] = 'due_date';
+        $sql_values[] = $due_date;
+        
+        // Token for anonymous users
+        if ($user->isAnon()) {
+            $token = md5(time() . $_SERVER['REQUEST_URI'] . mt_rand() . microtime());
+            $sql_params[] = 'task_token';
+            $sql_values[] = $token;
+            
+            $sql_params[] = 'anon_email';
+            $sql_values[] = $args['anon_email'];
+        }
+        
+        $sql_params = join(', ', $sql_params);
+        $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
+        
+        $result = $db->Query('SELECT  max(task_id)+1
+                                FROM  {tasks}');
+        $task_id = $db->FetchOne($result);
+                            
+        $result = $db->Query("INSERT INTO  {tasks}
+                                 ( task_id, date_opened, last_edited_time,
+                                   attached_to_project, item_summary,
+                                   detailed_desc, opened_by,
+                                   percent_complete, $sql_params )
+                         VALUES  ($task_id, $sql_placeholder)", $sql_values);
 
-      
-      
-      $task_details = array('task_id'=>$task_id,'item_summary'=>$args['item_summary']);
-      $task_id = $args['task_id'];
-      
-      if ($assigned_user_list)  
-      {
-          foreach ($assigned_user_list as $assigned_user_id)
-          {
-            $db->Query("INSERT INTO {assigned} 
-                        (task_id, user_id) 
-                        VALUES (?,?)",
-                       array($task_id, $assigned_user_id));
-          }
-         
-         
-         // Log to task history
-                  
-         $fs->logEvent($task_id, 14, join(' ',$assigned_user_list));
-         
-         // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-         $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null, $notify->SpecificAddresses($assigned_user_list));         
-      }
-      
-      // Log that the task was opened
-      $fs->logEvent($task_details['task_id'], 1);
+        // Log the assignments and send notifications to the assignees
+        if (trim($args['assigned_to']))
+        {
+            // Convert assigned_to and store them in the 'assigned' table
+            foreach (Flyspray::int_explode(' ', trim($args['assigned_to'])) as $key => $val)
+            {
+                $db->Query('INSERT INTO {assigned}
+                                        (task_id, user_id)
+                                 VALUES (?,?)',
+                            array($task_id, $val));
+            }
+        }
 
-      $result = $db->Query("SELECT * FROM {list_category}
-                            WHERE category_id = ?",
-                            array($category)
-                          );
-      $cat_details = $db->FetchArray($result);
+        // Log to task history
+        $fs->logEvent($task_id, 14, trim($args['assigned_to']));
 
-      // We need to figure out who is the category owner for this task
-      if (!empty($cat_details['category_owner']))
-      {
-         $owner = $cat_details['category_owner'];
+        // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
+        $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null,
+                        $notify->SpecificAddresses(Flyspray::int_explode(' ', $args['assigned_to'])));
+                    
+        // Log that the task was opened
+        $fs->logEvent($task_id, 1);
 
-      } elseif (!empty($cat_details['parent_id']))
-      {
-         $result = $db->Query("SELECT category_owner
-                               FROM {list_category}
-                               WHERE category_id = ?",
-                               array($cat_details['parent_id']));
-         $parent_cat_details = $db->FetchArray($result);
+        $this->UploadFiles($user, $task_id);
 
-         // If there's a parent category owner, send to them
-         if (!empty($parent_cat_details['category_owner']))
-            $owner = $parent_cat_details['category_owner'];
-      }
+        $result = $db->Query('SELECT  *
+                                FROM  {list_category}
+                               WHERE  category_id = ?',
+                               array($args['product_category']));
+        $cat_details = $db->FetchArray($result);
 
-      // Otherwise send it to the default category owner
-      if (empty($owner))
-         $owner = $project->prefs['default_cat_owner'];
+        // We need to figure out who is the category owner for this task
+        if (!empty($cat_details['category_owner'])) {
+            $owner = $cat_details['category_owner'];
+        }
+        elseif (!empty($cat_details['parent_id'])) {
+            $result = $db->Query('SELECT  category_owner
+                                    FROM  {list_category}
+                                   WHERE  category_id = ?', array($cat_details['parent_id']));
+            $parent_cat_details = $db->FetchArray($result);
 
-      if ($owner) 
-      {
-         $be->AddToNotifyList($owner, array($task_id));
-         
-         $fs->logEvent($task_id, 9, $owner);
-      }
-      
-      // Create the Notification
-      $notify->Create(NOTIFY_TASK_OPENED, $task_id);
-      
-      // If the reporter wanted to be added to the notification list
-      if ($args['notifyme'] == '1' && $userid != $owner) 
-      {
-         $be->AddToNotifyList($user->id, $userid);
-      }
+            // If there's a parent category owner, send to them
+            if (!empty($parent_cat_details['category_owner'])) {
+                $owner = $parent_cat_details['category_owner'];
+            }
+        }
 
-      // give some information back
-      return $task_details;
+        if (empty($owner)) {
+            $owner = $proj->prefs['default_cat_owner'];
+        }
 
-   // End of CreateTask() function
+        if ($owner) {
+            if ($proj->prefs['auto_assign'] && $args['item_status'] == 1) {
+                $this->AddToAssignees($owner, $task_id);
+            }
+            $this->AddToNotifyList($owner, array($task_id));
+        }
+
+        // Create the Notification
+        $notify->Create(NOTIFY_TASK_OPENED, $task_id);
+
+        // If the reporter wanted to be added to the notification list
+        if ($args['notifyme'] == '1' && $user->id != $owner) {
+            $this->AddToNotifyList($user->id, $task_id);
+        }
+        
+        if ($user->isAnon()) {
+            $notify->Create(NOTIFY_ANON_TASK, $task_id, null, $args['anon_email']);
+        }
+        
+        return $task_id;
    }
-    
-    function isNewTaskValid($taskResult)
-    {
-        if (empty($taskResult))
-            return false;
-        if (is_array($taskResult))
-            return true;
 
-        return false;
-    }
+    /************************************************************************************************
+     * below this line, functions are old wrt new flyspray internals.  they will
+     * need to be refactored
+     */
     
    /*
       This function takes an array of arguments and returns a list of 

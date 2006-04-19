@@ -148,12 +148,12 @@ class FSTpl extends Tpl
 
 // {{{ costful templating functions, TODO: optimize them
 
-function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','assignedto','percent_complete'))
+function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','percent_complete'))
 {
     global $fs, $user, $db, $proj;
 
-    if (!is_array($task)) {
-        $task = $fs->GetTaskDetails($task, true);
+    if (!is_array($task) || !isset($task['status_name'])) {
+        $task = $fs->GetTaskDetails( ((is_array($task)) ? $task['task_id'] : $task), true);
     }
 
     if ($strict && !$user->can_view_task($task)) {
@@ -174,9 +174,6 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         {
             case 'status':
                 if ($task['is_closed']) {
-                    if (!isset($task['resolution_name'])) {
-                        $task = $fs->GetTaskDetails($task['task_id'], true);
-                    }
                     $title_text[] = $task['resolution_name'];
                     $attrs['class'] = 'closedtasklink';
                 } else {
@@ -189,18 +186,17 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
                 break;
             
             case 'assignedto':
-                if ($task['assigned_to']) {
-                    if (!isset($task['assigned_to_name'])) {
-                        $task = $fs->GetTaskDetails($task['task_id'], true);
-                    }
-                    $title_text[] = implode(', ', $task['assigned_to_name']);
+                if (isset($task['assigned_to_name']) ) {
+                    if (is_array($task['assigned_to_name'])) {
+                        $title_text[] = implode(', ', $task['assigned_to_name']);
+                    } else {
+                        $title_text[] = $task['assigned_to_name'];
+                    }  
                 }
                 break;
             
             case 'percent_complete':
-                if ($task['percent_complete']) {
                     $title_text[] = $task['percent_complete'].'%';
-                }
                 break;
             
             case 'category':

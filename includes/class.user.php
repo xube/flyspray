@@ -13,12 +13,15 @@ class User
     {
         global $db;
 
-        $sql = $db->Query('SELECT *, g.group_id AS global_group, uig.record_id AS global_record_id
-					         FROM {users} u, {users_in_groups} uig, {groups} g
-					        WHERE u.user_id = ? AND uig.user_id = ? AND g.belongs_to_project = 0
-					              AND uig.group_id = g.group_id',
-                            array($uid, $uid));
-        if ($db->countRows($sql)) {
+        if ($uid > 0) {
+            $sql = $db->Query('SELECT *, g.group_id AS global_group, uig.record_id AS global_record_id
+                                 FROM {users} u, {users_in_groups} uig, {groups} g
+                                WHERE u.user_id = ? AND uig.user_id = ? AND g.belongs_to_project = 0
+                                      AND uig.group_id = g.group_id',
+                                array($uid, $uid));
+        }
+        
+        if ($uid > 0 && $db->countRows($sql)) {
             $this->infos = $db->FetchArray($sql);
             $this->id = $uid;
         } else {

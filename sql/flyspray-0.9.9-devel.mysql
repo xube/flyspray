@@ -349,3 +349,6 @@ INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_de
 VALUES (
 24 , 'jabber_ssl', '0', 'Whether or not to use SSL for Jabber connections'
 );
+
+-- Florian Schmitz, 15 April 2006
+ALTER TABLE `flyspray_tasks` DROP `assigned_to`;

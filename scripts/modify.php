@@ -25,137 +25,18 @@ if (Req::has('task_id')){
 }
 // Adding a new task  {{{
 if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
-    /*
-     * TODO  : merge code with Backend::newTask
-     * FIXME : try to reset the form to the previous submited data
-     */
 
     if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
         $_SESSION['ERROR'] = L('summaryanddetails');
         Flyspray::Redirect(CreateURL('newtask', $proj->id));
     }
-
-    $item_summary  = Post::val('item_summary');
-    $detailed_desc = Post::val('detailed_desc');
-
-    $param_names = array('task_type', 'item_status',
-            'product_category', 'product_version', 'closedby_version',
-            'operating_system', 'task_severity', 'task_priority');
-
-    $sql_values = array(time(), time(), Post::val('project_id'), $item_summary,
-            $detailed_desc, intval($user->id), '0');
-
-    $sql_params = array();
-    foreach ($param_names as $param_name) {
-        if (Post::has($param_name)) {
-            $sql_params[] = $param_name;
-            $sql_values[] = Post::val($param_name);
-        }
-    }
-
-    // Process the due_date
-    if ($due_date = Post::val('due_date', 0)) {
-        $due_date = strtotime("$due_date +23 hours 59 minutes 59 seconds");
-    }
-
-    $sql_params[] = 'due_date';
-    $sql_values[] = $due_date;
     
-    // Token for anonymous users
-    if ($user->isAnon()) {
-        $token = md5(time(). $_SERVER['REQUEST_URI'] . mt_rand() . microtime());
-        $sql_params[] = 'task_token';
-        $sql_values[] = $token;
-        
-        $sql_params[] = 'anon_email';
-        $sql_values[] = Post::val('anon_email');
-    }
-    
-    $sql_params = join(', ', $sql_params);
-    $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
-    
-    $result = $db->Query('SELECT  max(task_id)+1
-                            FROM  {tasks}');
-    $task_id = $db->FetchOne($result);
-                        
-    $result = $db->Query("INSERT INTO  {tasks}
-                             ( task_id, date_opened, last_edited_time,
-                               attached_to_project, item_summary,
-                               detailed_desc, opened_by,
-                               percent_complete, $sql_params )
-                     VALUES  ($task_id, $sql_placeholder)", $sql_values);
-
-    // Log the assignments and send notifications to the assignees
-    if (trim(Post::val('assigned_to')))
-    {
-        // Convert assigned_to and store them in the 'assigned' table
-        foreach (Flyspray::int_explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
-        {
-            $db->Query('INSERT INTO {assigned}
-                                    (task_id, user_id)
-                             VALUES (?,?)',
-                                    array($task_id, $val));
-        }
-    }
-
-    // Log to task history
-    $fs->logEvent($task_id, 14, trim(Post::val('assigned_to')));
-
-    // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-    $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null,
-                    $notify->SpecificAddresses(Flyspray::int_explode(' ', Post::val('assigned_to'))));
-                
-    // Log that the task was opened
-    $fs->logEvent($task_id, 1);
-
-    $be->UploadFiles($user, $task_id);
-
-    $result = $db->Query('SELECT  *
-                            FROM  {list_category}
-                           WHERE  category_id = ?', array(Post::val('product_category')));
-    $cat_details = $db->FetchArray($result);
-
-    // We need to figure out who is the category owner for this task
-    if (!empty($cat_details['category_owner'])) {
-        $owner = $cat_details['category_owner'];
-    }
-    elseif (!empty($cat_details['parent_id'])) {
-        $result = $db->Query('SELECT  category_owner
-                                FROM  {list_category}
-                               WHERE  category_id = ?', array($cat_details['parent_id']));
-        $parent_cat_details = $db->FetchArray($result);
-
-        // If there's a parent category owner, send to them
-        if (!empty($parent_cat_details['category_owner'])) {
-            $owner = $parent_cat_details['category_owner'];
-        }
-    }
-
-    if (empty($owner)) {
-        $owner = $proj->prefs['default_cat_owner'];
-    }
-
-    if ($owner) {
-        if ($proj->prefs['auto_assign'] && Post::val('item_status') == 1) {
-            $be->AddToAssignees($owner, $task_id);
-        }
-        $be->AddToNotifyList($owner, array($task_id));
-    }
-
-    // Create the Notification
-    $notify->Create(NOTIFY_TASK_OPENED, $task_id);
-
-    // If the reporter wanted to be added to the notification list
-    if (Post::val('notifyme') == '1' && $user->id != $owner) {
-        $be->AddToNotifyList($user->id, $task_id);
-    }
+    $task_id = $be->CreateTask($_POST);
 
     // Status and redirect
     $_SESSION['SUCCESS'] = L('newtaskadded');
     
-    if ($user->isAnon()) {
-        $notify->Create(NOTIFY_ANON_TASK, $task_id, null, Post::val('anon_email'));
-        
+    if ($user->isAnon()) {        
         Flyspray::Redirect(CreateURL('details', $task_id, null, array('task_token' => $token)));
     } else {
         Flyspray::Redirect(CreateURL('details', $task_id));
@@ -456,7 +337,7 @@ elseif (Post::val('action') == "registeruser" && $fs->prefs['anon_reg']) {
             array(Post::val('magic_url')));
     $reg_details = $db->FetchArray($sql);
 
-    if ($reg_details['confirm_code'] != Post::val('confirmation_code')) {
+    if ($reg_details['confirm_code'] != trim(Post::val('confirmation_code'))) {
         $_SESSION['ERROR'] = L('confirmwrong');
         Flyspray::Redirect(CreateURL('register'));
     }

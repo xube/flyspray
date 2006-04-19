@@ -1,41 +1,43 @@
 <div id="comments" class="tab">
-  <?php foreach($comments as $row): ?>
+  <?php foreach($comments as $comment): ?>
   <em>
-    <a name="comment{$row['comment_id']}" id="comment{$row['comment_id']}"
-      href="{CreateURL('details', $task_details['task_id'])}#comment{$row['comment_id']}">
+    <a name="comment{$comment['comment_id']}" id="comment{$comment['comment_id']}"
+      href="{CreateURL('details', $task_details['task_id'])}#comment{$comment['comment_id']}">
       <img src="{$this->get_image('comment')}"
         title="{L('commentlink')}" alt="" />
     </a>
-    {L('commentby')} {!tpl_userlink($row['user_id'])} -
-    {formatDate($row['date_added'], true)}
+    {L('commentby')} {!tpl_userlink($comment['user_id'])} -
+    {formatDate($comment['date_added'], true)}
   </em>
 
   <span class="DoNotPrint">
-    <?php if ($user->perms['edit_comments'] || ($user->perms['edit_own_comments'] && $row['user_id'] == $user->id)): ?>
+    <?php if ($user->perms['edit_comments'] || ($user->perms['edit_own_comments'] && $comment['user_id'] == $user->id)): ?>
     &mdash;
-    <a href="{$baseurl}?do=editcomment&amp;task_id={Get::val('id')}&amp;id={$row['comment_id']}">
+    <a href="{$baseurl}?do=editcomment&amp;task_id={Get::val('id')}&amp;id={$comment['comment_id']}">
       {L('edit')}</a>
     <?php endif; ?>
 
     <?php if ($user->perms['delete_comments']): ?>
     &mdash;
-    <a href="{$baseurl}?do=modify&amp;action=deletecomment&amp;task_id={Get::val('id')}&amp;comment_id={$row['comment_id']}"
+    <a href="{$baseurl}?do=modify&amp;action=deletecomment&amp;task_id={Get::val('id')}&amp;comment_id={$comment['comment_id']}"
       onclick="return confirm('{L('confirmdeletecomment')}');">
       {L('delete')}</a>
     <?php endif ?>
   </span>
   <div class="comment">
-  <?php if(isset($comment_changes[$row['date_added']])): ?>
+  <?php if(isset($comment_changes[$comment['date_added']])): ?>
   <ul class="comment_changes">
-  <?php foreach($comment_changes[$row['date_added']] as $change): ?>
+  <?php foreach($comment_changes[$comment['date_added']] as $change): ?>
     <li>{!event_description($change)}</li>
   <?php endforeach; ?>
   </ul>
   <?php endif; ?>
-  <div class="commenttext">{!tpl_formatText($row['comment_text'], false, 'comm', $row['comment_id'], $row['content'])}</div></div>
+  <div class="commenttext">{!tpl_formatText($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'])}</div></div>
 
-  <?php $attachments = $proj->listAttachments($row['comment_id']);
-        $this->display('common.attachments.tpl', 'attachments', $attachments); ?>
+  <?php if (isset($comment_attachments[$comment['comment_id']])) {
+            $this->display('common.attachments.tpl', 'attachments', $comment_attachments[$comment['comment_id']]);
+        }
+  ?>
 
   <?php endforeach; ?>
 

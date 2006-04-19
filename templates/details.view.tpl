@@ -121,7 +121,7 @@
 	 <h3 class="taskdesc">{L('details')}</h3>
      <div id="taskdetailstext">{!$task_text}</div>
 
-     <?php $attachments = $attachments = $proj->listTaskAttachments($task_details['task_id']);
+     <?php $attachments = $proj->listTaskAttachments($task_details['task_id']);
            $this->display('common.attachments.tpl', 'attachments', $attachments); ?>
   </div>
 

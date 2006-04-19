@@ -636,7 +636,7 @@ function openTask($args)
 
    // if the result isn't valid return a failure message
 
-   if (!$be->isNewTaskValid($result))
+   if (is_null($result))
    {
       return new xmlrpcresp (0,CREATE_TASK_FAILED, $result);
    }

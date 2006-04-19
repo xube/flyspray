@@ -111,7 +111,8 @@ else {
 
     ////////////////////////////
     // tabbed area
-
+    
+    // Comments + cache
     $sql = $db->Query('  SELECT * FROM {comments} c
                       LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = \'comm\' AND c.last_edited_time <= ca.last_updated)
                           WHERE task_id = ?
@@ -120,13 +121,26 @@ else {
 
     $page->assign('comments', $db->fetchAllArray($sql));
 
+    // Comment events
     $sql = get_events($task_id, ' AND (event_type = 0 OR event_type = 14)');
     $comment_changes = array();
     while ($row = $db->FetchRow($sql)) {
         $comment_changes[$row['event_date']][] = $row;
     }
     $page->assign('comment_changes', $comment_changes);
+    
+    // Comment attachments
+    $attachments = array();
+    $sql = $db->Query('SELECT *
+                         FROM {attachments} a, {comments} c
+                        WHERE c.task_id = ? AND a.comment_id = c.comment_id',
+                       array($task_id));
+    while ($row = $db->FetchRow($sql)) {
+        $attachments[$row['comment_id']][] = $row;
+    } 
+    $page->assign('comment_attachments', $attachments);
 
+    // Relations, notifications and reminders
     $sql = $db->Query('SELECT  *
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON r.related_task = t.task_id
