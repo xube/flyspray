@@ -245,7 +245,7 @@ if (Get::val('string')) {
 }
 
 if (!$user->perms['manage_project']) {
-    $where[]      = "(t.mark_private <> '1' OR t.opened_by = ? OR t.assigned_to = ?)";
+    $where[]      = "(t.mark_private <> '1' OR t.opened_by = ? OR u.user_id = ?)";
     array_push($sql_params, $user->id, $user->id);
 }
 

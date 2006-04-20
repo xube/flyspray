@@ -623,7 +623,7 @@ class Backend
       // Restrict query results based upon (lack of) PM permissions
       if (!$user->isAnon() && $user->perms['manage_project'] != '1')
       {
-         $where[] = "(t.mark_private = '0' OR t.assigned_to = ?)";
+         $where[] = "(t.mark_private = '0')";
          $params[] = $userid;
 
       } elseif (empty($userid))
@@ -632,12 +632,7 @@ class Backend
       }
 
       // Change query results based upon type of tasks requested
-      if($tasks_req == 'assigned')
-      {
-         $where[] = "t.assigned_to = ?";
-         $params[] = $userid;
-
-      } elseif ($tasks_req == 'reported')
+      if ($tasks_req == 'reported')
       {
          $where[] = "t.opened_by = ?";
          $params[] = $userid;
