@@ -6,6 +6,10 @@
    | to be run once to do the conversion, but will be included |
    | in the index page until the 0.9.9 release.                |
    \***********************************************************/
+   
+define('IN_FS', true);
+
+require('../header.php');
 
 $check_sql = $db->Query("SELECT task_id, assigned_to
                            FROM {tasks}

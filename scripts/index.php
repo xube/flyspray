@@ -122,12 +122,11 @@ if (in_array('attachments', $visible)) {
     $from   .= ' LEFT JOIN  {attachments} att   ON t.task_id = att.task_id ';
     $select .= ' COUNT(DISTINCT att.attachment_id) AS num_attachments, ';
 }
-if (Get::has('dev') || in_array('assignedto', $visible)) {
-    $from   .= ' LEFT JOIN  {assigned} ass      ON t.task_id = ass.task_id ';
-    $from   .= ' LEFT JOIN  {users} u           ON ass.user_id = u.user_id ';
-    $select .= ' min(u.real_name)                    AS assigned_to_name, ';
-    $select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
-}
+
+$from   .= ' LEFT JOIN  {assigned} ass      ON t.task_id = ass.task_id ';
+$from   .= ' LEFT JOIN  {users} u           ON ass.user_id = u.user_id ';
+$select .= ' min(u.real_name)                    AS assigned_to_name, ';
+$select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
 
 $where      = array('project_is_active = ?');
 $sql_params = array('1');
