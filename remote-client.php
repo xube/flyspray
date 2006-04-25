@@ -84,6 +84,7 @@ if (!isset($_REQUEST['username']))
          <option value="openTask">openTask (with sample data)</option>
          <option value="filterTasks">Filter tasks</option>
           <option value="getProjects">getProjects</option>
+         <option value="addComment">addComment</option>
          </select>
          </td>
          </tr>
@@ -99,18 +100,23 @@ if (!isset($_REQUEST['username']))
          <td>Array name:</td>
          <td><input name="arrayname" type="text" class="text" size="16" value="status"/></td>
          </tr>
-		  <tr id="getProjectIdForm">
-		  <td>Project id:</td>
-		  <td><input name="projectid" type="text" class="text" size="16" value="2"/></td>
-		  </tr>
-          <tr id="getSearchTermForm">
-		  <td>Seach String:</td>
-		  <td><input name="filterSearch" type="text" class="text" size="20" value=""/></td>
-		  </tr>
-          <tr id="activeProjectsOnlyForm">
-		  <td>Active Projects Only:</td>
-		  <td><input name="activeOnly" type="checkbox" checked/></td>
-		  </tr>
+         <tr id="getProjectIdForm">
+         <td>Project id:</td>
+         <td><input name="projectid" type="text" class="text" size="16" value="2"/></td>
+         </tr>
+         <tr id="getSearchTermForm">
+         <td>Seach String:</td>
+         <td><input name="filterSearch" type="text" class="text" size="20" value=""/></td>
+         </tr>
+         <tr id="activeProjectsOnlyForm">
+         <td>Active Projects Only:</td>
+         <td><input name="activeOnly" type="checkbox" checked/></td>
+         </tr>
+         
+         <tr id="">
+         <td>New comment text:</td>
+         <td><input name="commenttext" type="text" class="text" size="40" value=""/></td>
+         </tr>
          <tr>
          <td colspan="2"><hr /></td>
          </tr>
@@ -205,6 +211,16 @@ else
        $response = remoteCall("fs.filterTasks",$filterTaskData);
        showResponse($response);
    }
+   
+   if ("addComment" == $rpcAction) {
+      
+      $commentData['taskid'] = $_REQUEST['taskid'];
+      $commentData['commenttext'] = $_REQUEST['commenttext'];
+      
+      $response = remoteCall("fs.addComment",$commentData);
+      showResponse($response);
+   }
+   
 
    if ("createNewTask" == $rpcAction) {
       $response = remoteCall("fs.getNewTaskData");

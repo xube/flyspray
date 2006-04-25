@@ -15,6 +15,7 @@ define('PERMISSION_DENIED',-2);   //No permission
 define('NO_SUCH_TASK',-3);    //Task does not exist
 define('NO_SUCH_USER',-3);    //user does not exist (also -3 for compatibility)
 define('CREATE_TASK_FAILED',-4);    //Error creating task
+define('CREATE_COMMENT_FAILED',-4);    //Error creating task
 
 /*
    Changes:
@@ -38,12 +39,12 @@ $lang = "en";
 // define a version for this interface so that clients can figure out
 // if a particular function is available
 // not sure how this should work, but increase the number if a function gets added
-define('FS_XMLRPC_VERSION','1.2');
+define('FS_XMLRPC_VERSION','1.3');
 
 
 // use xmlrpc library (library + server library)
-BASEDIR . '/includes/xmlrpc.inc';
-BASEDIR . '/includes/xmlrpcs.inc';
+require_once BASEDIR . '/includes/xmlrpc.inc';
+require_once BASEDIR . '/includes/xmlrpcs.inc';
 
 //////////////////////////////////////////////////
 // Login/Authentication functions               //
@@ -813,10 +814,11 @@ function filterTasks($args)
       return loginErrorResponse();
    }
    
+   $user = new user($user_id);
+   
    $requestArgs = php_xmlrpc_decode($args->getParam(2));
    
    
-   //error_log(print_r($requestArgs,true));
    
    if (empty($requestArgs['project_id'])) {
       $requestArgs['project_id'] = $proj->id;
@@ -867,6 +869,74 @@ function filterTasks($args)
    // end of filter tasks function   
 }
 
+
+////////////////////////////////////////////////////
+// Start of function to add comment//
+////////////////////////////////////////////////////
+function addComment($args)
+{
+	
+   global $fs, $db, $be, $proj,$user,$notify,$_FILES;
+   include_once('includes/notify.inc.php');
+   $notify = new Notifications();
+	
+   
+   
+	
+   $user_id = checkRPCLogin($args);
+   
+   // if the user doesn't have a valid login then return an error response
+   if (!$user_id) {
+      return loginErrorResponse();
+   }
+   
+   
+   
+   
+   
+   $requestArgs = php_xmlrpc_decode($args->getParam(2));
+   
+   
+   $task_id = $requestArgs['taskid'];
+   $comment_text = $requestArgs['commenttext'];
+   
+   
+   
+   
+   
+   $task = $fs->getTaskDetails($task_id);
+   
+   setProject($task['project_id']);
+   
+   $user = new user($user_id);
+   $user->get_perms($proj);
+   
+   
+   
+   if(!$user->perms['add_comments']) {
+      
+      return xmlrpcError(PERMISSION_DENIED,'No permissions to add comment for user');
+   }
+   
+   if ($task['is_closed'] || $proj->prefs['comment_closed']) {
+      return xmlrpcError(PERMISSION_DENIED,'Comment closed');
+   }
+   
+   
+   
+   
+   $result = $be->add_comment($task, $comment_text, $time = null);
+   
+   if ($result == false) {
+      return xmlrpcError(CREATE_COMMENT_FAILED,'Failed to create comment');
+   }
+   
+   $result = $tast['task_id'];
+   
+   return xmlrpcEncodedArrayResponse($result);
+   
+}
+
 // Define the server
 
 $server = new xmlrpc_server(NULL,0);
@@ -880,5 +950,6 @@ $server->add_to_map('fs.openTask','openTask',NULL,NULL);
 $server->add_to_map('fs.getArrayListForName','getArrayListForName',NULL,NULL);
 $server->add_to_map('fs.filterTasks','filterTasks',NULL,NULL);
 $server->add_to_map('fs.getProjects','getProjects',NULL,NULL);
+$server->add_to_map('fs.addComment','addComment',NULL,NULL);
 $server->service();
 ?>

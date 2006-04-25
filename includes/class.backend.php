@@ -201,6 +201,10 @@ class Backend
         }
 
         $res = false;
+		
+		if (!isset($_FILES[$source]['error'])) {
+			return false;
+		}
 
         foreach ($_FILES[$source]['error'] as $key => $error) {
             if ($error != UPLOAD_ERR_OK) {
