@@ -12,7 +12,6 @@ require_once(dirname(__FILE__).'/header.php');
 // Get the translation for the wrapper page (this page)
 setlocale(LC_ALL, str_replace('-', '_', L('locale')));
 
-
 // Background daemon that does scheduled reminders
 if ($conf['general']['reminder_daemon'] == '1') {
     $fs->startReminderDaemon();

@@ -23,13 +23,14 @@ class User
         
         if ($uid > 0 && $db->countRows($sql)) {
             $this->infos = $db->FetchArray($sql);
-            $this->id = $uid;
+            $this->id = intval($uid);
         } else {
             $this->infos['real_name'] = L('anonuser');
             $this->infos['user_name'] = '';
         }
-        
-        if (!is_null($project)) {
+        //it not only needs to be not null 
+        //it should be an object, instance of the Project class 
+        if (is_a($project,'Project')) {
             $this->get_perms($project);
         }
     }
@@ -81,7 +82,7 @@ class User
 
                 $keys = array('name','user_id');
 
-                $db->Replace('{searches}', $fields, $keys, $autoquote = true );
+                $db->Replace('{searches}', $fields, $keys);
             }
         }
         

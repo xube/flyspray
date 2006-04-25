@@ -374,7 +374,8 @@ elseif (Post::val('action') == "newuser" &&
         $group_in = $fs->prefs['anon_group'];
     }
 
-    if (!$be->create_user($user_name, Post::val('user_pass'), $real_name, Post::val('jabber_id'),
+    if (!$be->create_user(Post::val('user_name'), Post::val('user_pass'),
+                          Post::val('real_name'), Post::val('jabber_id'),
                           Post::val('email_address'), Post::val('notify_type'), $group_in)) {
         $_SESSION['ERROR'] = L('usernametaken');
         Flyspray::Redirect(CreateURL('newuser'));

@@ -129,8 +129,10 @@
           <td><label for="jabberserver">{L('jabberserver')}</label></td>
           <td>
             <input id="jabberserver" class="text" type="text" name="jabber_server" size="25" maxlength="100" value="{$fs->prefs['jabber_server']}" />
+		<?php if(extension_loaded('openssl')) : ?>
             {!tpl_checkbox('jabber_ssl', $fs->prefs['jabber_ssl'], 'jabber_ssl')} <label class="inline" for="jabber_ssl">{L('ssl')}</label>
-          </td>
+        <?php endif; ?>  
+		</td>
         </tr>
         <tr>
           <td><label for="jabberport">{L('jabberport')}</label></td>
