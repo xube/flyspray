@@ -61,12 +61,19 @@ h1 {
 	font-size:160%;
 }
 
+h1#title {
+	padding:0;
+	margin:0;
+}
+
 h2 {
 	font-size:150%;
 }
 
 /* the main title; h1 alone is also used in the popup windows. */
-h1#title {
+h1#title a {
+	display:block;
+	width:100%;
 	background:#47617b url("title.png") no-repeat;
 	height:45px;	
 	margin:0;

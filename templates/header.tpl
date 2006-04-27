@@ -32,7 +32,7 @@
   <body onload="perms = new Perms('permissions')">
   <div id="container">
     <!-- Remove this to remove the logo -->
-    <h1 id="title">{$proj->prefs['project_title']}</h1>
+    <h1 id="title"><a href="{$baseurl}">{$proj->prefs['project_title']}</a></h1>
     <?php
     if ($user->isAnon()):
         $this->display('loginbox.tpl');
@@ -97,5 +97,5 @@
       <div class="clear"></div>
 
       <?php if ($proj->prefs['intro_message'] && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))): ?>
-      <div id="intromessage">{!$proj->prefs['intro_message']}</div>
+      <div id="intromessage">{!tpl_formattext($proj->prefs['intro_message'], false, 'msg', $proj->id, $proj->prefs['pm_instructions'])}</div>
       <?php endif; ?>
