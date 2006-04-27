@@ -7,7 +7,7 @@ $conf    = @parse_ini_file(BASEDIR . '/flyspray.conf.php', true);
 
 // $baseurl
 // htmlspecialchars because PHP_SELF is user submitted data, and can be used as an XSS vector.
-$webdir = dirname(htmlspecialchars($_SERVER['PHP_SELF']));
+$webdir = dirname(htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'utf-8'));
 
 $baseurl = rtrim(Flyspray::absoluteURI($webdir),'/\\') . '/' ;
 
@@ -16,7 +16,7 @@ define('DOKU_PLUGIN',        BASEDIR . '/includes/dokuwiki/lib/plugins/');
 define('DOKU_CONF',          BASEDIR . '/includes/dokuwiki/conf/');
 define('DOKU_INTERNAL_LINK', $conf['general']['doku_url']);
 define('DOKU_BASE',          $baseurl .'includes/dokuwiki/');
-define('DOKU_URL',           BASEDIR .'includes/dokuwiki/');
+define('DOKU_URL',           BASEDIR .'/includes/dokuwiki/');
 
 define('NOTIFY_TASK_OPENED',      1);
 define('NOTIFY_TASK_CHANGED',     2);
@@ -45,4 +45,8 @@ define('NOTIFY_BOTH',             3);
 define('STATUS_UNCONFIRMED',      1);
 define('STATUS_NEW',              2);
 define('STATUS_ASSIGNED',         3);
+
+// developers or advanced users only
+//define('DEBUG_SQL',true);
+
 ?>

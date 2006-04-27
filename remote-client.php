@@ -17,7 +17,7 @@
 
 define('IN_FS', true);
 
-require_once 'header.php';
+require_once('header.php');
 
 // default server (for easier testing)
 
@@ -30,8 +30,8 @@ $server = Flyspray::absoluteURI('remote.php');
 <html>
 <head>
 
-<link href="/flyspray-dev/themes/Bluey/theme.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="/flyspray-dev/javascript/functions.js"></script>
+<link href="themes/Bluey/theme.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="javascript/functions.js"></script>
 <title>Test page for the Flyspray XML-RPC interface</title>
 </head>
 
@@ -473,7 +473,7 @@ function remoteCall($name,$args=array())
    if ($response->faultCode() != 0) {
 
       $result->message = 'XML_RPC Error ('.$response->faultCode().') <br /> '.$response->faultString();
-      if ($_REQUEST['debug'])  {
+      if (isset($_REQUEST['debug']))  {
          $result->message .= "\n<br />".print_r($response,true);
       } else {
             $result->message .= "\n<br />Enable debug mode to see more details";

@@ -59,7 +59,6 @@ if (Get::has('getfile') && Get::val('getfile')) {
     if($proj->prefs['others_view'] || $user->perms['view_attachments'])
     {
         output_reset_rewrite_vars();
-        ob_end_clean();
         $path = BASEDIR . "/attachments/$file_name";
 
         header('Pragma: public');

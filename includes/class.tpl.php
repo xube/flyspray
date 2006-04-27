@@ -22,11 +22,9 @@ class Tpl
     {
         if (is_string($arg0)) {
             $this->_vars[$arg0] = $arg1;
-        }
-        if (is_array($arg0)) {
+        }elseif (is_array($arg0)) {
             $this->_vars += $arg0;
-        }
-        if (is_object($arg0)) {
+        }elseif (is_object($arg0)) {
             $this->_vars += get_object_vars($arg0);
         }
     }
@@ -100,19 +98,22 @@ class Tpl
         if (!is_null($_arg0)) {
             $this->assign($_arg0, $_arg1);
         }
-
+       
         foreach ($this->_uses as $_var) {
             global $$_var;
         }
-        extract($this->_vars);
-        eval( '?>'.$_tpl_data );
+        
+        extract($this->_vars, EXTR_REFS|EXTR_SKIP);
+        eval( '?>'. $_tpl_data );
+
     } // }}}
 
     function render()
-    {
+    {        
         while (count($this->_tpls)) {
             $this->display(array_shift($this->_tpls));
         }
+
     }
 
     function fetch($tpl, $arg0 = null, $arg1 = null)
@@ -129,7 +130,7 @@ class FSTpl extends Tpl
     
     function get_image($name, $base = true)
 	{
-        global $proj, $baseurl, $basedir;
+        global $proj, $baseurl ;
         $pathinfo = pathinfo($name);
         $link = 'themes/' . $proj->prefs['theme_style'] . '/';
         if ($pathinfo['dirname'] != '.') {

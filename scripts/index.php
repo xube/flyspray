@@ -267,7 +267,7 @@ if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
         $column_names[$key] = 't.' . $value;
     }
     $groupby .= implode(', ' , $column_names) . ', p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name';
-} elseif (!strcasecmp($conf['database']['dbtype'], 'mysql')) {
+} elseif (strpos($conf['database']['dbtype'], 'mysql') !== false) {
     $groupby = 't.task_id';
 }
 

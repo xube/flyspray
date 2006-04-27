@@ -11,7 +11,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-require_once ($conf['general']['adodbpath']);
+require_once ( $conf['general']['adodbpath']);
 
 class Database
 {
@@ -20,15 +20,12 @@ class Database
 
     function dbOpenFast($conf)
     {
-        extract($conf);
+        extract($conf, EXTR_REFS|EXTR_SKIP);
         $this->dbOpen($dbhost, $dbuser, $dbpass, $dbname, $dbtype, $dbprefix);
     }
 
     function dbOpen($dbhost = '', $dbuser = '', $dbpass = '', $dbname = '', $dbtype = '', $dbprefix = '')
-    {       
-        if (strpos(strtolower($dbtype), 'mysql') === false && strpos(strtolower($dbtype), 'pgsql') === false) {
-            die('Unsupported database type: '. $dbtype);
-        }       
+    {
         
         $this->dbtype   = $dbtype;
         $this->dbprefix = $dbprefix;
@@ -41,8 +38,9 @@ class Database
             die('Flyspray was unable to connect to the database.  '
                .'Check your settings in flyspray.conf.php');
         }
-            //$this->dblink->debug = true;
             $this->dblink->SetFetchMode(ADODB_FETCH_BOTH);
+
+           !defined('DEBUG_SQL') || $this->dblink->debug= true;
     }
 
     function dbClose()
@@ -65,7 +63,7 @@ class Database
                     $arr[$i] = '';
                 }
                 // This line safely escapes sql before it goes to the db
-                $this->dblink->qmagic($arr[$i]);
+                $this->dblink->qstr($arr[$i]);
             }
         }
         return $arr;
@@ -74,7 +72,7 @@ class Database
     function dbExec($sql, $inputarr=false, $numrows=-1, $offset=-1)
     {
         // auto add $dbprefix where we have {table}
-        $sql = preg_replace('/{([\w\-]*?)}/', $this->dbprefix.'\1', $sql);
+        $sql = $this->_add_prefix($sql);
         // replace undef values (treated as NULL in SQL database) with empty
         // strings
         $inputarr = $this->dbUndefToEmpty($inputarr);
@@ -86,16 +84,16 @@ class Database
 
             $this->dblink->StartTrans();
        }
-       
+
         if (($numrows >= 0 ) or ($offset >= 0 )) {
             $result =  $this->dblink->SelectLimit($sql, $numrows, $offset, $inputarr);
         } else {
 
            $result =  $this->dblink->Execute($sql, $inputarr);
         }
-       
+
        if (!$result) {
-           
+
             if (function_exists("debug_backtrace")) {
                 echo "<pre style='text-align: left;'>";
                 var_dump(debug_backtrace());
@@ -111,18 +109,18 @@ class Database
 
            $this->dblink->CompleteTrans();
         }
-        
+
         return $result;
     }
 
     function CountRows(&$result)
     {
-        return $result->RecordCount();
+        return (int) $result->RecordCount();
     }
 
     function AffectedRows()
     {
-        return $this->dblink->Affected_Rows();
+        return (int) $this->dblink->Affected_Rows();
     }
 
     function FetchRow(&$result)
@@ -154,7 +152,7 @@ class Database
         $sql = $this->Query($sql, $sqlargs);
         return ($this->cache[$idx] = $this->fetchAllArray($sql));
     }
-    
+
     function FetchArray(&$result)
     {
         return $this->FetchRow($result);
@@ -163,7 +161,7 @@ class Database
     function FetchOne(&$result)
     {
         $row = $this->FetchArray($result);
-        return (count($row) > 0 ? $row[0] : null);
+        return (count($row) ? $row[0] : '');
     }
 
     function FetchAllArray(&$result)
@@ -171,18 +169,44 @@ class Database
         return $result->GetArray();
     }
 
-    function GetColumnNames($table)
+    function GetColumnNames($table, $numericIndex = true)
     {
-        $table = preg_replace('/{([\w\-]*?)}/', $this->dbprefix.'\1', $table);
-        return $this->dblink->MetaColumnNames($table, $numericIndex = true);
+        $table = $this->_add_prefix($table);
+        return $this->dblink->MetaColumnNames($table, $numericIndex);
     }
-    
+
     function Replace($table, $field, $keys, $autoquote = true)
     {
-        $table = preg_replace('/{([\w\-]*?)}/', $this->dbprefix.'\1', $table);
+        $table = $this->_add_prefix($table);
         return $this->dblink->Replace($table, $field, $keys, $autoquote);
     }
+
+    /**
+     * Adds the table prefix
+     * @param string $sql_data table name or sql query
+     * @return string sql with correct,quoted table prefix
+     * @access private
+     * @since 0.9.9
+     */
+
+    function _add_prefix($sql_data)
+    {
+        return (string) preg_replace('/{([\w\-]*?)}/', $this->QuoteIdentifier($this->dbprefix . '\1'), $sql_data);
+    }
     
+    /**
+     * Helper method to quote an indentifier 
+     * (table or field name) with the database specific quote
+     * @param string $ident table or field name to be quoted
+     * @return string
+     * @access public
+     * @since 0.9.9
+     */
+    
+    function QuoteIdentifier($ident)
+    {
+        return (string) $this->dblink->nameQuote . $ident . $this->dblink->nameQuote ;
+    }
     // End of Database Class
 }
 

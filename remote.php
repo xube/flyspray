@@ -29,7 +29,7 @@ define('CREATE_COMMENT_FAILED',-4);    //Error creating task
 */
 
 // Get the main headerfile.  It calls other important files
-require('header.php');
+require_once 'header.php';
 
 //require('includes/class.tpl.php');
 

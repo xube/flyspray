@@ -112,7 +112,7 @@ class User
                     $fields);
 
             // Get the global group permissions for the current user
-            $sql = $db->Query("SELECT  ".join(', ', $max).", MAX(IF(g.belongs_to_project = '0', 0, g.group_id)) as project_group
+            $sql = $db->Query("SELECT  ".join(', ', $max).", MAX(CASE WHEN g.belongs_to_project = '0' THEN 0 ELSE g.group_id END) as project_group
                                  FROM  {groups} g
                             LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
                                 WHERE  uig.user_id = ?  AND

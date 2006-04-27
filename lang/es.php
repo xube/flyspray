@@ -558,6 +558,11 @@ $translation = array(
 'usersandgroups'          => 'Usuarios y grupos',
 'taskstatuses'            => 'Estados de las tareas',
 'switchto'                => 'Cambiar a',
+'updatewrong'             => 'Ud. tiene habilitado la verificacion de nuevas versiones, pero ha acurrido un error 
+                             contactandose con el servidor de actualizaciones. Es probable que su servidor no 
+                             permita conexiones hacia el exterior o que haya ocurrido un problema de red.
+                             Por favor visite el sitio web de flyspray para asegurarse que esta utilizando la 
+                             version mas reciente',
 );
 
 ?>

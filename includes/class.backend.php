@@ -398,10 +398,10 @@ class Backend
 
         $param_names = array('task_type', 'item_status',
                 'product_category', 'product_version', 'closedby_version',
-                'operating_system', 'task_severity', 'task_priority');
+                'operating_system', 'task_severity', 'task_priority', 'closure_comment');
 
         $sql_values = array(time(), time(), $args['project_id'], $item_summary,
-                $detailed_desc, intval($user->id), '0');
+                $detailed_desc, intval($user->id), '0', '');
 
         $sql_params = array();
         foreach ($param_names as $param_name) {

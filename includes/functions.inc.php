@@ -169,7 +169,9 @@ class Flyspray
                 }
             }
         }
-
+      
+      if(count($_POST)) {
+      
         $requestarray = array_merge(array_keys($_POST), array_values($_POST));
 
         if (Post::val('do') == 'modify' and preg_match('/^newtask|addcomment$/',
@@ -181,6 +183,7 @@ class Flyspray
             }
             $_SESSION['requests_hash'][$currentrequest] = time();
         }
+      }
         return false;
     } // }}}
     // Retrieve task details {{{

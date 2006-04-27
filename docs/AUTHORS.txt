@@ -12,6 +12,7 @@ The Development Team:
 
       Anders Betner (Javascript)
       Patrick Dubbert (Code handyman, initial German translation)
+      Florian Schmitz (various coding)
 
 
 We would particularly like to thank:
@@ -49,3 +50,5 @@ Other contributors:
       Configurable tasklist columns by Jonathan Oxer
       http://oxer.com.au/
 
+      Bugfixes,installer improvements, PHP5 testing by Cristian Rodriguez
+	  http://www.onfocus.cl/

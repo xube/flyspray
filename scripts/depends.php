@@ -48,7 +48,8 @@ foreach ($pmodes as $mode => $desc) {
     if ($mode == $prunemode) {
         $strlist[] = $desc;
     } else {
-        $strlist[] = "<a href='".htmlspecialchars($selfurl).($mode!=0 ? "&amp;prune=$mode" : "")."'>$desc</a>\n";
+        $strlist[] = "<a href='". htmlspecialchars($selfurl, ENT_QUOTES, 'utf-8') . 
+                      ($mode !=0 ? "&amp;prune=$mode" : "") . "'>$desc</a>\n";
     }
 }
 
@@ -88,7 +89,8 @@ $edge_list = array();
 $rvrs_list = array();
 $node_list = array();
 while ($row = $db->FetchArray($get_edges)) {
-    extract($row);
+    
+    extract($row, EXTR_REFS|EXTR_SKIP);
     $edge_list[$id1][] = $id2;
     $rvrs_list[$id2][] = $id1;
     if (!isset($node_list[$id1])) {
@@ -218,7 +220,7 @@ $dotgraph .= "}\n";
 if (!Flyspray::function_disabled('system')) {
     // All done with the graph. Save it to a temp file.
     $tname = tempnam('', 'fs_depends_dot_');
-    $tmp   = fopen($tname, 'w');
+    $tmp   = fopen($tname, 'wb');
     fwrite($tmp, $dotgraph);
     fclose($tmp);
 

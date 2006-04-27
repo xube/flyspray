@@ -695,6 +695,10 @@ Regards,',
 'userdeleted'             => 'User deleted',
 'autoassign'              => 'Auto-assign a task to the category owner',
 'ssl'                     => 'SSL',
+'updatewrong'            => 'You have the update check feature enabled, but an error ocurred while trying
+                             to contact the update server, either your host do not allow outbound connections
+                             or the error was caused by a network problem.
+                             Please visit the flyspray website to make sure you are running the latest version.',
 ); 
 
 ?>
