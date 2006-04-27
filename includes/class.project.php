@@ -102,9 +102,15 @@ class Project
         }
     }
 
-    function listVersions($pm = false, $tense = 2, $reported_version = null)
+    function listVersions($pm = false, $tense = null, $reported_version = null)
     {
         global $db;
+        if (is_null($tense)) {
+            $where = '';
+        } else {
+            $where = "AND version_tense = '$tense'";
+        }
+        
         if ($pm) {
             return $db->_cached_query(
                     'pm_version',
@@ -113,12 +119,12 @@ class Project
         } elseif(is_null($reported_version)) {
             return $db->_cached_query(
                     'version_'.$tense,
-                    $this->_list_sql('version', "AND version_tense = '$tense'"),
+                    $this->_list_sql('version', $where),
                     array($this->id));
         } else {
             return $db->_cached_query(
                     'version_'.$tense,
-                    $this->_list_sql('version', "AND version_tense = '$tense' OR version_id = '$reported_version' "),
+                    $this->_list_sql('version', $where . " OR version_id = '$reported_version' "),
                     array($this->id));
         }
     }

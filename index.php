@@ -104,7 +104,7 @@ if ($show_task = Get::val('show_task')) {
     if (is_numeric($show_task)) {
         Flyspray::Redirect( CreateURL('details', $show_task) );
     } else {
-        Flyspray::Redirect( CreateURL('error', null) );
+        Flyspray::Redirect( $baseurl . '?string=' .  $show_task);
     }
 }
 
