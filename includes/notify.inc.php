@@ -686,8 +686,8 @@ class Notifications {
       {
           $body = L('messagefrom'). $arg1[0] . "\n\n"
                   . L('magicurlmessage')." \n"
-                  . "{$arg1[0]}index.php?do=lostpw&amp;magic=$arg1[0]\n";
-            
+                  . "{$arg1[0]}index.php?do=lostpw&magic=$arg1[1]\n";
+
           return array($subject, $body);
       } // }}}      
    
