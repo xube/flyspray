@@ -525,6 +525,8 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
     $args = array_map('Post_to0', $cols);
     $cols[] = 'notify_types';
     $args[] = implode(' ', Post::val('notify_types'));
+    $cols[] = 'last_updated';
+    $args[] = time();
     $args[] = Post::val('project_id', 0);
 
     $update = $db->Query("UPDATE  {projects}

@@ -267,20 +267,20 @@ if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
         $column_names[$key] = 't.' . $value;
     }
     $groupby .= implode(', ' , $column_names) . ', p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name';
-} elseif (strpos($conf['database']['dbtype'], 'mysql') !== false) {
+} else { // mysql
     $groupby = 't.task_id';
 }
 
 // Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
 $sql = $db->Query("
-     SELECT   t.*, $select
-              p.project_title, p.project_is_active,
-              lst.status_name AS status_name,
-              lt.tasktype_name AS task_type
-     FROM     $from
-     WHERE    $where 
-     GROUP BY $groupby
-     ORDER BY $sortorder", $sql_params);
+                  SELECT   t.*, $select
+                           p.project_title, p.project_is_active,
+                           lst.status_name AS status_name,
+                           lt.tasktype_name AS task_type
+                  FROM     $from
+                  WHERE    $where 
+                  GROUP BY $groupby
+                  ORDER BY $sortorder", $sql_params);
 
 $tasks = $db->fetchAllArray($sql);
 $id_list = array();

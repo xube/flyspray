@@ -10,10 +10,10 @@ class Project
         global $db, $fs;
 
         if ($id != 0) {
-            $sql = $db->Query('SELECT p.*, c.content AS pm_instructions
+            $sql = $db->Query("SELECT p.*, c.content AS pm_instructions, c.last_updated AS cache_update
                                  FROM {projects} p
-                            LEFT JOIN {cache} c ON c.topic = p.project_id
-                                WHERE project_id = ?', array($id));
+                            LEFT JOIN {cache} c ON c.topic = p.project_id AND c.type = 'msg'
+                                WHERE project_id = ?", array($id));
             if ($db->countRows($sql)) {
                 $this->prefs = $db->fetchArray($sql);
                 $this->id    = $id;

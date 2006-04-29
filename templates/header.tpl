@@ -97,5 +97,6 @@
       <div class="clear"></div>
 
       <?php if ($proj->prefs['intro_message'] && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))): ?>
-      <div id="intromessage">{!tpl_formattext($proj->prefs['intro_message'], false, 'msg', $proj->id, $proj->prefs['pm_instructions'])}</div>
+      <div id="intromessage">{!tpl_formattext($proj->prefs['intro_message'], false, 'msg', $proj->id,
+                               ($proj->prefs['last_updated'] < $proj->prefs['cache_update']) ? $proj->prefs['pm_instructions'] : '')}</div>
       <?php endif; ?>
