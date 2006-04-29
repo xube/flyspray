@@ -354,4 +354,4 @@ VALUES (
 ALTER TABLE `flyspray_tasks` DROP `assigned_to`;
 
 -- Florian Schmitz, 29 April 2006
-ALTER TABLE `flysprayold_projects` ADD `last_updated` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_projects` ADD `last_updated` INT NOT NULL DEFAULT '0';
