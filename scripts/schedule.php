@@ -7,6 +7,8 @@
   | and sends them at the right time.                      |
   \********************************************************/
 
+define('IN_FS', true);
+
 $path = dirname(dirname(__FILE__));
 require_once("$path/header.php");
 require_once("$path/includes/notify.inc.php");
