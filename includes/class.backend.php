@@ -358,14 +358,34 @@ class Backend
     {
         global $fs, $db;
         
-        $db->Query('DELETE FROM {admin_requests}      WHERE project_id = ?', array($pid));
-        $db->Query('DELETE FROM {cache}               WHERE project = ?', array($pid));
-        $db->Query('DELETE FROM {groups}              WHERE belongs_to_project = ?', array($pid));
-        // if tasks are deleted, remove list entries
         if (!$move_to) {
-            $db->Query('DELETE FROM {list_category}       WHERE project_id = ?', array($pid));
-            // and delete history entries for tasks of that project
+            $db->Query('DELETE FROM {list_category}     WHERE project_id = ?', array($pid));
+            $db->Query('DELETE FROM {list_os}           WHERE project_id = ?', array($pid));
+            $db->Query('DELETE FROM {list_resolution}   WHERE project_id = ?', array($pid));
+            $db->Query('DELETE FROM {list_status}       WHERE project_id = ?', array($pid));
+            $db->Query('DELETE FROM {list_tasktype}     WHERE project_id = ?', array($pid));
+            $db->Query('DELETE FROM {list_version}       WHERE project_id = ?', array($pid));
+            
+            $db->Query('DELETE FROM {admin_requests}    WHERE project_id = ?', array($pid));
+            $db->Query('DELETE FROM {cache}             WHERE project = ?', array($pid));
+            $db->Query('DELETE FROM {groups}            WHERE belongs_to_project = ?', array($pid));
+            $db->Query('DELETE FROM {projects}          WHERE project_id = ?', array($pid));
+            $db->Query('DELETE FROM {tasks}             WHERE attached_to_project = ?', array($pid));
+            // if we want to increase complexity of this process, we can remove all entries which
+            // belong to tasks or groups of this project too
         } else { // else move them to the new project
+            $db->Query('UPDATE {list_category} SET project_id = ?      WHERE project_id = ?', array($move_to, $pid));
+            $db->Query('UPDATE {list_os} SET project_id = ?            WHERE project_id = ?', array($move_to, $pid));
+            $db->Query('UPDATE {list_resolution} SET project_id = ?    WHERE project_id = ?', array($move_to, $pid));
+            $db->Query('UPDATE {list_status} SET project_id = ?        WHERE project_id = ?', array($move_to, $pid));
+            $db->Query('UPDATE {list_tasktype} SET project_id = ?      WHERE project_id = ?', array($move_to, $pid));
+            $db->Query('UPDATE {list_version} SET project_id = ?        WHERE project_id = ?', array($move_to, $pid));
+            
+            $db->Query('UPDATE {admin_requests} SET  project_id = ?    WHERE project_id = ?', array($move_to, $pid));
+            $db->Query('UPDATE {cache} SET project = ?                 WHERE project = ?', array($move_to, $pid));
+            $db->Query('UPDATE {groups} SET belongs_to_project = ?     WHERE belongs_to_project = ?', array($move_to, $pid));
+            $db->Query('UPDATE {tasks} SET attached_to_project = ?     WHERE attached_to_project = ?', array($move_to, $pid));
+            $db->Query('DELETE FROM {projects}          WHERE project_id = ?', array($pid));
         }
         
     }

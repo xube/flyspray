@@ -47,6 +47,12 @@
           <td>{!tpl_checkbox('project_is_active', $proj->prefs['project_is_active'], 'isactive')}</td>
         </tr>
         <tr>
+          <td><label>{!tpl_checkbox('delete_project', null)} {L('deleteproject')}</label></td>
+          <td>
+              <select name="move_to">{!tpl_options(array_merge(array(0 => L('none')), $fs->listProjects()), null, false, null, (string) $proj->id)}</select>
+          </td>
+        </tr>
+        <tr>
           <td><label for="othersview">{L('othersview')}</label></td>
           <td>{!tpl_checkbox('others_view', $proj->prefs['others_view'], 'othersview')}</td>
         </tr>

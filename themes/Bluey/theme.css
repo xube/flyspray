@@ -1331,7 +1331,6 @@ div.level4,div.level5 {
 
 /* inline tables */
 table.inline {
-	background-color: #ffffff;
 	border-spacing: 0px;
 	border-collapse: collapse;
 }
@@ -1345,6 +1344,7 @@ table.inline th {
 table.inline td {
 	padding: 3px;
 	border: 1px solid #8cacbb;
+	background:#ffffff;
 }
 
 .leftalign{

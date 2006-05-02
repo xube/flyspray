@@ -513,6 +513,16 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
 // updating project preferences {{{
 elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']) {
 
+    if (Post::val('delete_project')) {
+        $be->delete_project(Post::val('project_id'), Post::val('move_to'));
+        $_SESSION['SUCCESS'] = L('projectdeleted');
+        if (Post::val('move_to')) {
+            Flyspray::Redirect(CreateURL('pm', 'prefs', Post::val('move_to')));
+        } else {
+            Flyspray::Redirect($baseurl);
+        }
+    }
+    
     if (!Post::val('project_title')) {
         $_SESSION['ERROR'] = L('emptytitle');
         Flyspray::Redirect(CreateURL('pm', 'prefs', $proj->id));

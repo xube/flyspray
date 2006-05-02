@@ -253,8 +253,7 @@ class Flyspray
         $query = 'SELECT  project_id, project_title FROM {projects}';
 
         if ($activeOnly)  {
-
-            $query .= " WHERE  project_is_active = 1";
+            $query .= ' WHERE  project_is_active = 1';
         }
 
         $sql = $db->Query($query);
