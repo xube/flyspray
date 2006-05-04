@@ -355,3 +355,5 @@ ALTER TABLE `flyspray_tasks` DROP `assigned_to`;
 
 -- Florian Schmitz, 29 April 2006
 ALTER TABLE `flyspray_projects` ADD `last_updated` INT NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_groups` CHANGE `add_to_assignees` `add_to_assignees` INT( 1 ) NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_groups` CHANGE `add_votes` `add_votes` INT( 1 ) NOT NULL DEFAULT '0';

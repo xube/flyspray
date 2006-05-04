@@ -60,24 +60,22 @@ $starttime = microtime();
 $sql= "SELECT t1.task_id AS id1, t1.item_summary AS sum1, 
              t1.percent_complete AS pct1, t1.is_closed AS clsd1, 
              lst1.status_name AS stat1, t1.task_severity AS sev1,
-             t1.task_priority AS pri1, u1a.real_name AS assg1,
+             t1.task_priority AS pri1,
              t1.closure_comment AS com1, u1c.real_name AS clsdby1,
              r1.resolution_name as res1,
              t2.task_id AS id2, t2.item_summary AS sum2, 
              t2.percent_complete AS pct2, t2.is_closed AS clsd2, 
              lst2.status_name AS stat2, t2.task_severity AS sev2,
-             t2.task_priority AS pri2, u2a.real_name AS assg2,
+             t2.task_priority AS pri2,
              t2.closure_comment AS com2, u2c.real_name AS clsdby2,
              r2.resolution_name as res2
        FROM  {dependencies} AS d
        JOIN  {tasks} AS t1 ON d.task_id=t1.task_id
-  LEFT JOIN  {users} AS u1a ON t1.assigned_to=u1a.user_id
   LEFT JOIN  {users} AS u1c ON t1.closed_by=u1c.user_id
   LEFT JOIN  {list_status} AS lst1 ON t1.item_status = lst1.status_id
   LEFT JOIN  {list_resolution} AS r1 ON t1.resolution_reason=r1.resolution_id
        JOIN  {tasks} AS t2 ON d.dep_task_id=t2.task_id
   LEFT JOIN  {list_status} AS lst2 ON t2.item_status = lst2.status_id
-  LEFT JOIN  {users} AS u2a ON t2.assigned_to=u2a.user_id
   LEFT JOIN  {users} AS u2c ON t2.closed_by=u2c.user_id
   LEFT JOIN  {list_resolution} AS r2 ON t2.resolution_reason=r2.resolution_id
       WHERE  t1.attached_to_project= ?
@@ -96,13 +94,13 @@ while ($row = $db->FetchArray($get_edges)) {
     if (!isset($node_list[$id1])) {
         $node_list[$id1] =
 	  array('id'=>$id1, 'sum'=>$sum1, 'pct'=>$pct1, 'clsd'=>$clsd1,
-		'status_name'=>$stat1, 'sev'=>$sev1, 'pri'=>$pri1, 'assg'=>$assg1,
+		'status_name'=>$stat1, 'sev'=>$sev1, 'pri'=>$pri1,
 		'com'=>$com1, 'clsdby'=>$clsdby1, 'res'=>$res1);
     }
     if (!isset($node_list[$id2])) {
         $node_list[$id2] =
 	  array('id'=>$id2, 'sum'=>$sum2, 'pct'=>$pct2, 'clsd'=>$clsd2,
-		'status_name'=>$stat2, 'sev'=>$sev2, 'pri'=>$pri2, 'assg'=>$assg2,
+		'status_name'=>$stat2, 'sev'=>$sev2, 'pri'=>$pri2,
 		'com'=>$com2, 'clsdby'=>$clsdby2, 'res'=>$res2);
     }
 }
@@ -202,8 +200,7 @@ foreach ($node_list as $n => $r) {
        ($r['com']!='' ? " - $r[com]" : "")
        : $severity_list[$r['sev']]." L(severity)/".
        $priority_list[$r['pri']]." L(priority) - ".
-       "L(status): ".$r['status_name'].
-       ($r['assg'] ? " ($r[assg])" : ""));
+       "L(status): ".$r['status_name']);
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
         "href=\"".CreateURL("details", $n)."\", ".
         "tooltip=\"$tooltip\", fillcolor=\"$col\"];\n";

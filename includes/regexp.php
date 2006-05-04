@@ -7,7 +7,7 @@
 
 $check['getfile']       = $check['project'] = $check['page'] = $check['perpage'] = $check['pagenum']
                         = $check['notify_type'] = $check['sev'] = $check['type'] = $check['cat']
-                        = $check['due'] = $check['id'] = 'num';
+                        = $check['id'] = 'num';
 $check['action']        = array('logout', 'newtask', 'update', 'close', 'reopen', 'addcomment', 'chpass', 'registeruser',
                                 'newuser', 'newgroup', 'globaloptions', 'newproject', 'updateproject',
                                 'edituser', 'editgroup', 'update_list', 'add_to_list', 'update_category', 'add_category',

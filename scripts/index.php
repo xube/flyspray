@@ -169,7 +169,7 @@ $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'clos
 foreach ($submits as $key => $db_key) {
     $type = Get::val($key, ($key == 'status') ? 'open' : '');
     settype($type, 'array');
-    
+ 
     if (in_array('', $type)) continue;
     
     if ($key == 'dev') {

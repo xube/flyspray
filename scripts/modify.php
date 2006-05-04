@@ -810,7 +810,7 @@ elseif (Post::val('action') == "add_to_version_list" && $user->perms['manage_pro
    $db->Query("INSERT INTO  $list_table_name
                             (project_id, $list_column_name, list_position, show_in_list, version_tense)
                     VALUES  (?, ?, ?, ?, ?)",
-             array(Post::val('project_id'), Post::val('list_name'),
+             array(Post::val('project_id','0'), Post::val('list_name'),
                  Post::val('list_position'), '1', Post::val('version_tense')));
 
    $_SESSION['SUCCESS'] = L('listitemadded');
