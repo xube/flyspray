@@ -7,6 +7,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <link rel="icon" type="image/png" href="{$this->get_image('favicon')}" />
+    <?php foreach ($project_list as $project): ?>
+    <link rel="section" type="text/html" href="{$baseurl}?project={$project[0]}" />
+    <?php endforeach; ?>
     <link media="screen" href="{$this->themeUrl()}theme.css" rel="stylesheet" type="text/css" />
     <link media="print"  href="{$this->themeUrl()}theme_print.css" rel="stylesheet" type="text/css" />
     <link rel="alternate" type="application/rss+xml" title="Flyspray RSS 1.0 Feed"

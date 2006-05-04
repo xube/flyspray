@@ -457,7 +457,7 @@ class Backend
         
         $result = $db->Query('SELECT  max(task_id)+1
                                 FROM  {tasks}');
-        $task_id = $db->FetchOne($result);
+        $task_id = $db->FetchOne($result) or 1;
                             
         $result = $db->Query("INSERT INTO  {tasks}
                                  ( task_id, date_opened, last_edited_time,
