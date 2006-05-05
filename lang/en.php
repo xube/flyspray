@@ -701,6 +701,7 @@ Regards,',
                              Please visit the flyspray website to make sure you are running the latest version.',
 'deleteproject'           => 'Delete this project and move contents to',
 'projectdeleted'          => 'Project deleted successfully',
+'feedforall'              => 'Feed for all projects',
 ); 
 
 ?>

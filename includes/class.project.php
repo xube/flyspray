@@ -28,6 +28,8 @@ class Project
         $this->prefs['others_view'] = 1;
         $this->prefs['intro_message'] = '';
         $this->prefs['anon_open'] = 0;
+        $this->prefs['feed_description']  = L('feedforall');
+        $this->prefs['feed_img_url'] = '';
     }
 
     function checkExists()

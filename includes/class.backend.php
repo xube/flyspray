@@ -367,7 +367,7 @@ class Backend
             $db->Query('DELETE FROM {list_version}      WHERE project_id = ?', array($pid));
             
             $db->Query('DELETE FROM {admin_requests}    WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {cache}             WHERE project = ?', array($pid));
+            $db->Query('DELETE FROM {cache}             WHERE project_id = ?', array($pid));
             $db->Query('DELETE FROM {groups}            WHERE belongs_to_project = ?', array($pid));
             $db->Query('DELETE FROM {projects}          WHERE project_id = ?', array($pid));
             $db->Query('DELETE FROM {tasks}             WHERE attached_to_project = ?', array($pid));
@@ -382,7 +382,7 @@ class Backend
             $db->Query('UPDATE {list_version} SET project_id = ?       WHERE project_id = ?', array($move_to, $pid));
             
             $db->Query('UPDATE {admin_requests} SET  project_id = ?    WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {cache} SET project = ?                 WHERE project = ?', array($move_to, $pid));
+            $db->Query('UPDATE {cache} SET project = ?                 WHERE project_id = ?', array($move_to, $pid));
             $db->Query('UPDATE {groups} SET belongs_to_project = ?     WHERE belongs_to_project = ?', array($move_to, $pid));
             $db->Query('UPDATE {tasks} SET attached_to_project = ?     WHERE attached_to_project = ?', array($move_to, $pid));
             $db->Query('DELETE FROM {projects}                         WHERE project_id = ?', array($pid));

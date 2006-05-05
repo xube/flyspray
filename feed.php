@@ -13,7 +13,11 @@ $page = new FSTpl();
 header ('Content-type: text/html; charset=utf-8');
 
 $max_items  = (intval(Req::val('num', 10)) == 10) ? 10 : 20;
-$proj->id   = ($proj->id) ? $proj->id : $fs->prefs['default_project'];
+$sql_project = '';
+if ($proj->id) {
+    $sql_project = ' AND p.project_id = ' . $proj->id;
+}
+
 $feed_type  = Req::val('feed_type', 'rss2');
 if ($feed_type != 'rss1' && $feed_type != 'rss2') {
     $feed_type = 'atom';
@@ -42,9 +46,8 @@ $filename = $feed_type.'-'.$orderby.'-'.$proj->id.'-'.$max_items;
 $sql = $db->Query("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
                      FROM  {tasks}    t
                INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1'
-                    WHERE  t.is_closed <> '$closed' AND p.project_id = ? AND t.mark_private <> '1'
-                           AND p.others_view = '1' ",
-                           array($proj->id));
+                    WHERE  t.is_closed <> '$closed' $sql_project AND t.mark_private <> '1'
+                           AND p.others_view = '1' ");
 $most_recent = intval(max($db->fetchRow($sql)));
 
 // }}}
@@ -60,9 +63,9 @@ if ($fs->prefs['cache_feeds']) {
     else {
         $sql = $db->Query("SELECT  content
                              FROM  {cache}
-                            WHERE  type = ? AND topic = ? AND project = ?
+                            WHERE  type = ? AND topic = ? $sql_project
                                    AND max_items = ?  AND last_updated >= ?",
-                        array($feed_type, $orderby, $proj->id, $max_items, $most_recent));
+                        array($feed_type, $orderby, $max_items, $most_recent));
         if ($content = $db->FetchOne($sql)) {
             echo $content;
             exit;
@@ -76,9 +79,9 @@ $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_op
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
                INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1'
-                    WHERE  t.is_closed <> ? AND p.project_id = ? AND t.mark_private <> '1'
+                    WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
                            AND p.others_view = '1'
-                 ORDER BY  $orderby DESC", array($closed,$proj->id), $max_items);
+                 ORDER BY  $orderby DESC", array($closed), $max_items);
 
 $task_details     = $db->fetchAllArray($sql);
 $feed_description = $proj->prefs['feed_description'] ? $proj->prefs['feed_description'] : 'Flyspray:: '.$proj->prefs['project_title'].': '.$title;
@@ -115,9 +118,9 @@ if ($fs->prefs['cache_feeds'])
         */
 
         $fields = array(  'content'=> $content , 'type'=> $feed_type , 'topic'=> $orderby ,
-                          'project'=> $proj->id ,'max_items'=> $max_items , 'last_updated'=> time() );
+                          'project_id'=> $proj->id ,'max_items'=> $max_items , 'last_updated'=> time() );
 
-        $keys = array('type','topic','project','max_items');
+        $keys = array('type','topic','project_id','max_items');
 
         $db->Replace('{cache}', $fields, $keys, $autoquote = true );
 
