@@ -242,6 +242,12 @@ function event_description($history) {
             break;
     case '29': // User added to assignees list
             $return .= L('addedtoassignees');
+            break;    
+    case '30': // user created
+            $return .= L('usercreated');
+            break;
+    case '31': // user deleted
+            $return .= L('userdeleted');
             break;
     }
     

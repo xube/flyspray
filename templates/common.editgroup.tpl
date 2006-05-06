@@ -159,7 +159,7 @@
     <?php
     foreach($proj->listUsersIn($group_details['group_id']) as $usr): ?>
     <tr>
-      <td>{!tpl_checkbox('users['.$usr['user_id'].']')}</td>
+      <td class="ttcolumn">{!tpl_checkbox('users['.$usr['user_id'].']')}</td>
       <td><a href="{CreateURL('edituser', $usr['user_id'])}">{$usr['user_name']}</a></td>
       <td>{$usr['real_name']}</td>
       <?php if ($user->infos['account_enabled']): ?>

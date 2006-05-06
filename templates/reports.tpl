@@ -1,6 +1,9 @@
 <ul id="submenu">
   <li><a href="#events">{L('events')}</a></li>
   <li><a href="#votes">{L('votes')}</a></li>
+  <?php if ($proj->id == 0): ?>
+  <li><a href="#users">{L('users')}</a></li>
+  <?php endif; ?>
 </ul>
 <div id="events" class="tab">
   <form action="{$baseurl}index.php" method="get">
@@ -37,7 +40,7 @@
     <table>
       <tr>
         <td>
-          <input type="radio" id="datewithin" name="repdate" value="within" <?php if (Req::val('repdate') == 'within') echo 'checked="checked"';?> />
+          <input type="radio" id="datewithin" name="repdate" value="within" <?php if (!Req::val('repdate') || Req::val('repdate') == 'within' ) echo 'checked="checked"';?> />
           <label class="inline" for="datewithin">{L('within')}</label>
         </td>
         <td colspan="6">
@@ -79,7 +82,7 @@
     <button type="submit" name="submit">{L('show')}</button>
   </form>
   
-  <?php if($histories): ?>
+  <?php if ($histories): ?>
   <div id="tasklist">
   <table id="tasklist_table">
    <thead>
@@ -140,3 +143,77 @@
         </table>
     <?php endif; ?>
 </div>
+
+<?php if ($proj->id == 0): ?>
+<div id="users" class="tab">
+    <form action="{$baseurl}index.php#users" method="get">
+    <table>
+      <tr>
+        <td>{L('user')}</td>
+        <td><label class="inline">{!tpl_checkbox('created', Req::has('created'))}
+            {L('created')}</label></td>
+        <td><label class="inline">{!tpl_checkbox('deleted', Req::has('deleted'))}
+            {L('deleted')}</label></td>
+        <td>
+    
+    <table>
+      <tr>
+        <td>
+          <input type="radio" id="datewithin_users" name="repdate" value="within" <?php if (!Req::val('repdate') || Req::val('repdate') == 'within') echo 'checked="checked"';?> />
+          <label class="inline" for="datewithin_users">{L('within')}</label>
+        </td>
+        <td colspan="6">
+          <select onclick="getElementById('datewithin_users').checked=true" name="within">
+          {!tpl_options(array('day' => L('pastday'),
+                              'week' => L('pastweek'),
+                              'month' => L('pastmonth'),
+                              'year' => L('pastyear'),
+                              'all' => L('nolimit')), Req::val('within'))}
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="radio" id="datefrom_users" name="repdate" value="from" <?php if (Req::val('repdate') == 'from') echo 'checked="checked"';?> />
+          <label class="inline" for="datefrom_users">{L('from')}</label>
+        </td>
+        <td onclick="getElementById('datefrom_users').checked=true">
+            {!tpl_datepicker('from_user', L('selectfromdate'), L('from'))}
+          &mdash;
+            {!tpl_datepicker('to_user', L('selecttodate'), L('to'))}
+        </td>
+      </tr>
+    </table>
+    </td>
+    </tr>
+    </table>
+    
+    <input type="hidden" name="project" value="{$proj->id}" />
+    <input type="hidden" name="do" value="reports" />
+    <button type="submit" name="submit">{L('show')}</button>
+</form>
+ <?php if (isset($userhistory)): ?>
+ <table class="userlist">
+  <thead>
+   <tr><th>{L('userid')}</th><th>{L('username')}</th><th>{L('realname')}</th><th>{L('email')}</th><th>{L('jabberid')}</th><th>{L('date')}</th><th>{L('user')}</th><th>{L('event')}</th></tr>
+  </thead>
+  
+  <tbody>
+  <?php foreach ($userhistory as $history):
+        $data = unserialize($history['new_value']);  ?>
+    <tr>
+      <td>{$data['user_id']}</td
+      <td>{$data['user_name']}</td>
+      <td>{$data['real_name']}</td>
+      <td><a href="mailto:{$data['email_address']}">{$data['email_address']}</a></td>
+      <td>{$data['jabber_id']}</td>
+      <td>{formatDate($history['event_date'])}</td>
+      <td>{!tpl_userlink($history['user_id'])}</td>
+      <td>{!event_description($history)}</td>
+    </tr>
+  <?php endforeach; ?>
+  </tbody>
+ </table>
+ <?php endif; ?>
+</div>
+<?php endif; ?>

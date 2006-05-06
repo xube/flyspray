@@ -235,7 +235,7 @@ $language = array(
 'message'                 => 'Message',
 'closed'                  => 'Closed',
 'filename'                => 'Filename:',
-'date'                    => 'Date:',
+'date'                    => 'Date',
 'filesize'                => 'File Size:',
 'closurecomment'          => 'Additional comments about closing:',
 'history'                 => 'History',
@@ -702,6 +702,11 @@ Regards,',
 'deleteproject'           => 'Delete this project and move contents to',
 'projectdeleted'          => 'Project deleted successfully',
 'feedforall'              => 'Feed for all projects',
+'usercreated'             => 'User created',
+'userdeleted'             => 'User deleted',
+'created'                 => 'Created',
+'deleted'                 => 'Deleted',
+'userid'                  => 'User ID',
 ); 
 
 ?>

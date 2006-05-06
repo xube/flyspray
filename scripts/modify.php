@@ -391,10 +391,7 @@ elseif (Post::val('action') == "newuser" &&
 
 } // }}}
 // adding a new group {{{
-elseif (Post::val('action') == "newgroup"
-          && ((Post::val('belongs_to_project') && $user->perms['manage_project'])
-              || $user->perms['is_admin'])
-) {
+elseif (Post::val('action') == "newgroup" && $user->perms['manage_project']) {
 
     if (!Post::val('group_name') || !Post::val('group_desc')) {
         $_SESSION['ERROR'] = L('formnotcomplete');

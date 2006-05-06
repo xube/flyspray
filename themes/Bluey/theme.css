@@ -171,6 +171,7 @@ div.admin,p.admin,table.userlist {
 
 table.userlist {
 	border-collapse:collapse;
+	width:98%;
 }
 
 table.userlist td,table.userlist th {

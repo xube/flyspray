@@ -79,8 +79,8 @@ switch (Req::val('repdate')) {
 
     case 'from':
         $date      = 'from';
-        $fromdate  = Req::val('fromdate', date('d-m-Y'));
-        $todate    = Req::val('todate', date('d-m-Y'));
+        $fromdate  = Req::val('fromdate', Req::val('from_userdate', date('d-m-Y')));
+        $todate    = Req::val('todate', Req::val('to_userdate', date('d-m-Y')));
 
         $ufromdate = strtotime($fromdate) + 0;
         // Add 24 hours to the end to make it include that date
@@ -171,5 +171,25 @@ while ($row = $db->FetchArray($sql)) {
 }
 
 $page->uses('histories', 'sort', 'tasks_voted_for');
+
+
+/**********************\
+*  User reports       *
+\**********************/
+
+if (Req::has('created')) {array_push($type, 30); }
+if (Req::has('deleted')) {array_push($type, 31); }
+
+$where = array();
+foreach ($type as $eventtype) {
+    $where[] = 'h.event_type = ' . $eventtype;
+}
+$where = '(' . implode(' OR ', $where) . ')';
+
+if (count($type)) {
+    $userhistory = $db->Query("SELECT user_id, new_value, old_value, event_date, event_type FROM {history} h WHERE $where $wheredate");
+    $page->assign('userhistory', $db->FetchAllArray($userhistory));
+}
+
 $page->pushTpl('reports.tpl');
 ?>
