@@ -58,9 +58,9 @@ if (empty($project_id) || (Req::has('project') && Req::has('switch'))) {
 if (Post::val('action') == 'movetogroup') {
     $sql = $db->Query('SELECT belongs_to_project FROM {groups} WHERE group_id = ? OR group_id = ?',
                       array(Post::val('switch_to_group'), Post::val('old_group')));
-    $new_pr = $db->FetchOne($sql);
     $old_pr = $db->FetchOne($sql);
-    if ($new_pr !== $old_pr) {
+    $new_pr = $db->FetchOne($sql);
+    if ($new_pr !== $old_pr && $new_pr) {
         Flyspray::Redirect(CreateURL('error'));
     }
     $project_id = $new_pr;
