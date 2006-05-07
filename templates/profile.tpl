@@ -71,7 +71,7 @@
   <tr>
     <th>{L('regdate')}</th>
     <td>
-      {formatDate($user->infos['register_date'])}
+      {formatDate($theuser->infos['register_date'])}
     </td>
   </tr> 
   <?php endif; ?>
