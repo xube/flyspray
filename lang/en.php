@@ -707,6 +707,7 @@ Regards,',
 'created'                 => 'Created',
 'deleted'                 => 'Deleted',
 'userid'                  => 'User ID',
+'editassignments'         => 'Edit assignments',
 ); 
 
 ?>

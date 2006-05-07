@@ -56,12 +56,23 @@
 			<tr>
 			 <td><label>{L('assignedto')}</label></td>
 			 <td>
+                <?php if ($user->perms['edit_assignments']): ?>
 				<a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{L('selectusers')}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
 				<div id="multiuserlist">
 				 {!tpl_double_select('assigned_to', $userlist, $assigned_users, false, false)}
                  <button type="button" onclick="hidestuff('multiuserlist')">{L('OK')}</button>
 				</div>
+                <?php else: ?>
+                    <?php if (empty($assigned_users)): ?>
+                     {L('noone')}
+                     <?php else:
+                     foreach ($assigned_users as $userid):
+                     ?>
+                     {!tpl_userlink($userid)}<br />
+                     <?php endforeach;
+                     endif; ?>
+                <?php endif; ?>
 			 </td>
 			</tr>
 			<tr class="os">

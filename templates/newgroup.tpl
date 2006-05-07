@@ -84,6 +84,14 @@
       <td><input id="viewreports" type="checkbox" name="view_reports" value="1" checked="checked" /></td>
     </tr>
     <tr>
+      <td><label for="canvote">{L('canvote')}</label></td>
+      <td><input id="canvote" type="checkbox" name="can_vote" value="1" checked="checked" /></td>
+    </tr>
+    <tr>
+      <td><label for="editassignments">{L('editassignments')}</label></td>
+      <td><input id="editassignments" type="checkbox" name="edit_assignments" value="1" /></td>
+    </tr>
+    <tr>
       <td><label for="groupopen">{L('groupenabled')}</label></td>
       <td><input id="groupopen" type="checkbox" name="group_open" value="1" checked="checked" /></td>
     </tr>

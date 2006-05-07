@@ -101,6 +101,10 @@
         <td><label for="canvote">{L('canvote')}</label></td>
         <td>{!tpl_checkbox('add_votes', $group_details['add_votes'], 'canvote')}</td>
       </tr>
+      <tr>
+        <td><label for="editassignments">{L('editassignments')}</label></td>
+        <td>{!tpl_checkbox('edit_assignments', $group_details['edit_assignments'], 'editassignments')}</td>
+      </tr>
 
       <?php if (!$proj->id): ?>
       <tr>

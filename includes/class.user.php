@@ -96,7 +96,7 @@ class User
 
         $fields = array('is_admin', 'manage_project', 'view_tasks', 'edit_own_comments',
                 'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
-                'view_comments', 'add_comments', 'edit_comments',
+                'view_comments', 'add_comments', 'edit_comments', 'edit_assignments',
                 'delete_comments', 'view_attachments', 'create_attachments',
                 'delete_attachments', 'view_history', 'close_own_tasks',
                 'close_other_tasks', 'assign_to_self', 'assign_others_to_self',
@@ -217,15 +217,16 @@ class User
         global $fs;
         $assignees = $fs->GetAssignees($task['task_id']);
             
-        return ($this->perms['assign_to_self'] && empty($assignees))
-            || ($this->perms['assign_others_to_self'] && !in_array($this->id, $assignees));
+        return $this->perms['edit_assignments'] &&
+                  (($this->perms['assign_to_self'] && empty($assignees))
+               || ($this->perms['assign_others_to_self'] && !in_array($this->id, $assignees)));
     }
     
     function can_add_to_assignees($task)
 	 { 
         global $fs;
          
-        return ($this->perms['add_to_assignees'] && !in_array($this->id, $fs->GetAssignees($task['task_id'])));
+        return ($this->perms['edit_assignments'] && $this->perms['add_to_assignees'] && !in_array($this->id, $fs->GetAssignees($task['task_id'])));
     }
 	 
     function can_close_task($task)

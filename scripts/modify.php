@@ -80,7 +80,7 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
                     Post::val('task_id')));
         
         // Update the list of users assigned this task
-        if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
+        if ($user->perms['edit_assignments'] && Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
             
             // Delete the current assignees for this task
             $db->Query('DELETE FROM {assigned}
@@ -406,8 +406,8 @@ elseif (Post::val('action') == "newgroup" && $user->perms['manage_project']) {
             $_SESSION['ERROR'] = L('groupnametaken');
         } else {
             $cols = array('project', 'group_name', 'group_desc', 'manage_project',
-                    'view_tasks', 'open_new_tasks', 'modify_own_tasks',
-                    'modify_all_tasks', 'view_comments', 'add_comments',
+                    'view_tasks', 'open_new_tasks', 'modify_own_tasks', 'can_vote',
+                    'modify_all_tasks', 'view_comments', 'add_comments', 'edit_assignments',
                     'edit_comments', 'delete_comments', 'create_attachments',
                     'delete_attachments', 'view_history', 'close_own_tasks',
                     'close_other_tasks', 'assign_to_self', 'view_attachments',
@@ -685,7 +685,7 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
                               'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                               'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
                               'view_attachments', 'create_attachments', 'delete_attachments',
-                              'view_history', 'close_own_tasks', 'close_other_tasks',
+                              'view_history', 'close_own_tasks', 'close_other_tasks', 'edit_assignments',
                               'assign_to_self', 'assign_others_to_self', 'view_reports', 'add_votes',
                               'group_open'));
     }
