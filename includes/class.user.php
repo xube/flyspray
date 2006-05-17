@@ -274,8 +274,8 @@ class User
         
         // Check that the user hasn't already voted today or for this task
         $check = $db->Query('SELECT vote_id
-                             FROM {votes}
-                             WHERE user_id = ? AND (task_id = ? OR date_time > ?)',
+                               FROM {votes}
+                              WHERE user_id = ? AND (task_id = ? OR date_time > ?)',
                              array($this->id, $task_id, time() - 86400));
 
         return $this->perms['add_votes'] && !$db->CountRows($check);

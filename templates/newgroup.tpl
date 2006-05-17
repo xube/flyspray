@@ -44,6 +44,10 @@
       <td><input id="editcomments" type="checkbox" name="edit_comments" value="1" /></td>
     </tr>
     <tr>
+      <td><label for="editowncomments">{L('editowncomments')}</label></td>
+      <td><input id="editowncomments" type="checkbox" name="edit_own_comments" value="1" /></td>
+    </tr>
+    <tr>
       <td><label for="viewattachments">{L('viewattachments')}</label></td>
       <td><input id="viewattachments" type="checkbox" name="view_attachments" value="1" /></td>
     </tr>
@@ -85,7 +89,7 @@
     </tr>
     <tr>
       <td><label for="canvote">{L('canvote')}</label></td>
-      <td><input id="canvote" type="checkbox" name="can_vote" value="1" checked="checked" /></td>
+      <td><input id="canvote" type="checkbox" name="add_votes" value="1" checked="checked" /></td>
     </tr>
     <tr>
       <td><label for="editassignments">{L('editassignments')}</label></td>

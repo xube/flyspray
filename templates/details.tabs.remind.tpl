@@ -38,10 +38,12 @@
       <input type="hidden" name="action" value="addreminder" />
       <input type="hidden" name="task_id" value="{Get::val('id')}" />
 
-      <em>{L('remindthisuser')}</em>
-      <select class="adminlist" name="to_user_id">
-        {!tpl_options($proj->UserList())}
-      </select>
+        <label class="default multisel" for="to_user_id">{L('remindthisuser')}</label>
+        <input class="users text" size="30" type="text" name="to_user_id" id="to_user_id" />
+        <div class="autocomplete" id="to_user_id_complete"></div>
+        <script type="text/javascript">
+            new Ajax.Autocompleter('to_user_id', 'to_user_id_complete', '{$baseurl}/javascript/callbacks/usersearch.php', {})
+        </script>
 
       <br />
 

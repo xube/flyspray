@@ -10,14 +10,16 @@
   <?php if ($user->perms['manage_project']): ?>
   <form action="{$baseurl}" method="get">
     <p>
-      <label for="notifuser_id">{L('addusertolist')}</label>
-      <select class="adminlist" id="notifuser_id" name="user_id">
-        {!tpl_options($proj->UserList())}
-      </select>
+        <label class="default multisel" for="notif_user_id">{L('addusertolist')}</label>
+        <input class="users text" size="30" type="text" name="user_id" id="notif_user_id" /><button type="submit">{L('addtolist')}</button>
+        <div class="autocomplete" id="notif_complete"></div>
+        <script type="text/javascript">
+            new Ajax.Autocompleter('notif_user_id', 'notif_complete', '{$baseurl}/javascript/callbacks/usersearch.php', {})
+        </script>
+        
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="ids" value="{Get::val('id')}" />
       <input type="hidden" name="action" value="add_notification" />
-      <button type="submit">{L('addtolist')}</button>
     </p>
   </form>
   <?php endif; ?>

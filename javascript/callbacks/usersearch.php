@@ -9,7 +9,7 @@ define('IN_FS', true);
 require_once('../../header.php');
 $baseurl = dirname(dirname($baseurl)) .'/' ;
 
-$names = array('opened', 'dev', 'uid');
+$names = array('opened', 'dev', 'uid', 'user_id', 'to_user_id');
 
 foreach ($names as $name) {
     if (Req::has($name)) {

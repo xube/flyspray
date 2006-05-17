@@ -34,7 +34,8 @@
     <?php if ($user->perms['manage_project']): ?>
     <form method="post" action="{$baseurl}"><div>
       <select id="projectgroupin" class="adminlist" name="project_group_in">
-        {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), $theuser->infos['project_group'])}
+        <?php $sel = $theuser->infos['project_group'] == '' ? 0 : $theuser->infos['project_group']; ?>
+        {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), $sel)}
       </select>
       <input type="hidden" name="old_project_id" value="{$theuser->infos['project_group']}" />
       <input type="hidden" name="do" value="modify" />

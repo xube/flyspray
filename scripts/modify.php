@@ -405,8 +405,8 @@ elseif (Post::val('action') == "newgroup" && $user->perms['manage_project']) {
         if ($db->fetchOne($sql)) {
             $_SESSION['ERROR'] = L('groupnametaken');
         } else {
-            $cols = array('project', 'group_name', 'group_desc', 'manage_project',
-                    'view_tasks', 'open_new_tasks', 'modify_own_tasks', 'can_vote',
+            $cols = array('project', 'group_name', 'group_desc', 'manage_project', 'edit_own_comments',
+                    'view_tasks', 'open_new_tasks', 'modify_own_tasks', 'add_votes',
                     'modify_all_tasks', 'view_comments', 'add_comments', 'edit_assignments',
                     'edit_comments', 'delete_comments', 'create_attachments',
                     'delete_attachments', 'view_history', 'close_own_tasks',
@@ -477,7 +477,7 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
             'modify_own_tasks', 'modify_all_tasks', 'view_comments',
             'add_comments', 'edit_comments', 'delete_comments', 'view_attachments',
             'create_attachments', 'delete_attachments', 'view_history', 'add_votes',
-            'close_own_tasks', 'close_other_tasks', 'assign_to_self',
+            'close_own_tasks', 'close_other_tasks', 'assign_to_self', 'edit_own_comments',
             'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
     $args = array_fill(0, count($cols), '1');
     array_unshift($args, 'Project Managers',
@@ -681,7 +681,7 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
     // Allow all groups to update permissions except for global Admin
     if (Post::val('group_id') != '1') {
         $cols = array_merge($cols,
-                            array('manage_project', 'view_tasks', 'edit_own_comments',
+                            array('manage_project', 'view_tasks', 'edit_own_comments', 'edit_own_comments',
                               'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                               'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
                               'view_attachments', 'create_attachments', 'delete_attachments',
@@ -936,15 +936,19 @@ elseif (Req::val('action') == "add_notification") {
         settype($ids, 'array');
 
         if (!empty($ids)) {
-            $be->AddToNotifyList($user->id, array_keys($ids));
+            $result = $be->AddToNotifyList($user->id, array_keys($ids));
         }
         Flyspray::Redirect(Req::val('prev_page'));
     } else {
-        $be->AddToNotifyList(Req::val('user_id'), Req::val('ids'));
+        $result = $be->AddToNotifyList(Req::val('user_id'), Req::val('ids'));
     }
 
-    $_SESSION['SUCCESS'] = L('notifyadded');
-    Flyspray::Redirect(CreateURL('details', Req::val('ids')) . '#notify');
+    if ($result) {
+        $_SESSION['SUCCESS'] = L('notifyadded');
+        Flyspray::Redirect(CreateURL('details', Req::val('ids')) . '#notify');
+    } else {
+        Flyspray::Redirect( CreateURL('error', null) );
+    }
 } // }}}
 // removing a notification entry {{{
 elseif (Req::val('action') == "remove_notification") {
@@ -1025,19 +1029,20 @@ elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments']
 // adding a reminder {{{
 elseif (Post::val('action') == "addreminder" && $user->perms['manage_project']) {
 
-    $how_often  = Post::val('timeamount1') * Post::val('timetype1');
-    $start_time = Post::val('timeamount2') * Post::val('timetype2') + time();
+    $how_often  = Post::val('timeamount1', 1) * Post::val('timetype1');
+    $start_time = Post::val('timeamount2', 0) * Post::val('timetype2') + time();
     
-    if (!is_numeric(Post::val('timeamount1')) || !is_numeric(Post::val('timeamount2'))) {
-        $_SESSION['ERROR'] = L('formnotnumeric');
-        Flyspray::Redirect(CreateURL('details', Req::val('task_id')));
+    $id = Post::val('to_user_id');
+    if (!is_numeric($id)) {
+        $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($id));
+        $id = $db->FetchOne($sql);
     }
     
     $db->Query("INSERT INTO  {reminders}
                              ( task_id, to_user_id, from_user_id,
                                start_time, how_often, reminder_message )
                      VALUES  (?,?,?,?,?,?)",
-            array(Post::val('task_id'), Post::val('to_user_id'), $user->id,
+            array(Post::val('task_id'), $id, $user->id,
                 $start_time, $how_often, Post::val('reminder_message')));
 
     $fs->logEvent(Post::val('task_id'), 17, Post::val('to_user_id'));
@@ -1079,7 +1084,7 @@ elseif (Post::val('action') == 'movetogroup' && $user->perms['manage_project']) 
     Flyspray::Redirect(Post::val('prev_page'));
 } // }}}
 // taking ownership {{{
-elseif (Req::val('action') == 'takeownership') {
+elseif (Req::val('action') == 'takeownership' && $user->perms['edit_assignments']) {
    if (Req::val('prev_page')) {
       $ids = Req::val('ids');
       settype($ids, 'array');
@@ -1097,7 +1102,7 @@ elseif (Req::val('action') == 'takeownership') {
    Flyspray::Redirect($redirect_url);
 } // }}}
 // add to assignees list {{{
-elseif (Req::val('action') == 'addtoassignees') {
+elseif (Req::val('action') == 'addtoassignees' && $user->perms['edit_assignments']) {
    if (Req::val('prev_page')) {
       $ids = Req::val('ids');
       settype($ids, 'array');

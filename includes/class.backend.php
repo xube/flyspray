@@ -16,24 +16,57 @@ class Backend
        Notification list of multiple tasks (if desired).
        Expected args are user_id and an array of tasks
     */
-    function AddToNotifyList($user_id, $tasks)
+    function AddToNotifyList($user_id, $tasks, $do = false)
     {
-        global $db, $fs;
+        global $db, $fs, $user;
 
         settype($tasks, 'array');
+        
+        if (!is_numeric($user_id)) {
+            $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($user_id));
+            $user_id = $db->FetchOne($sql);
+        }
+        
+        foreach ($tasks as $key => $task) {
+            $tasks[$key] = 't.task_id = ' . $task;
+        }
+        $where = implode(' OR ', $tasks);
 
-        foreach ($tasks as $key => $task_id) {
-            $sql = $db->Query('SELECT notify_id
-                                 FROM {notifications}
-                                WHERE task_id = ? and user_id = ?',
-                              array($task_id, $user_id));
+        // XXX keep permission checks in sync with class.user.php!
+        $sql = $db->Query(" SELECT t.task_id
+                              FROM {tasks} t
+                         LEFT JOIN {projects} p ON p.project_id = t.task_id
+                         LEFT JOIN {assigned} a ON t.task_id = a.task_id AND a.user_id = ?
+                         LEFT JOIN {groups} g ON g.belongs_to_project=p.project_id OR g.belongs_to_project = 0
+                         LEFT JOIN {groups} g2 ON g2.belongs_to_project=p.project_id OR g2.belongs_to_project = 0
+                         LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
+                         LEFT JOIN {users_in_groups} uig2 ON uig2.group_id = g2.group_id
+                         LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
+                         LEFT JOIN {users} u2 ON u2.user_id = uig2.user_id AND uig2.user_id = ?
+                             WHERE ($where) AND u.user_name is NOT NULL AND u2.user_name is NOT NULL
+                                   AND (? = ?
+                                       AND (t.opened_by = u.user_id
+                                        OR (t.mark_private = 0 AND (g.view_tasks = 1 OR p.others_view = 1))
+                                        OR a.user_id is NOT NULL
+                                        OR g.manage_project = 1
+                                        OR g.is_admin = 1)
+                                   OR (g2.is_admin = 1 OR g2.manage_project = 1))
+                          GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id));
+
+        while ($row = $db->FetchRow($sql)) {
+            $notif = $db->Query('SELECT notify_id
+                                   FROM {notifications}
+                                  WHERE task_id = ? and user_id = ?',
+                              array($row['task_id'], $user_id));
            
-            if (!$db->CountRows($sql)) {
+            if (!$db->CountRows($notif)) {
                 $db->Query('INSERT INTO {notifications} (task_id, user_id)
-                                 VALUES  (?,?)', array($task_id, $user_id));
-                $fs->logEvent($task_id, 9, $user_id);
+                                 VALUES  (?,?)', array($row['task_id'], $user_id));
+                $fs->logEvent($row['task_id'], 9, $user_id);
             }
         }
+        
+        return (bool) $db->CountRows($sql);
     }
 
 
@@ -43,16 +76,36 @@ class Backend
     */
     function RemoveFromNotifyList($user_id, $tasks)
     {
-        global $db, $fs;
+        global $db, $fs, $user;
 
         settype($tasks, 'array');
+                
+        foreach ($tasks as $key => $task) {
+            $tasks[$key] = 't.task_id = ' . $task;
+        }
+        $where = implode(' OR ', $tasks);
 
-        foreach ($tasks AS $key => $task_id) {
+        // XXX keep permission checks in sync with class.user.php!
+        $sql = $db->Query(" SELECT t.task_id
+                              FROM {tasks} t
+                         LEFT JOIN {projects} p ON p.project_id = t.task_id
+                         LEFT JOIN {assigned} a ON t.task_id = a.task_id AND a.user_id = ?
+                         LEFT JOIN {groups} g ON g.belongs_to_project=p.project_id OR g.belongs_to_project = 0
+                         LEFT JOIN {groups} g2 ON g2.belongs_to_project=p.project_id OR g2.belongs_to_project = 0
+                         LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
+                         LEFT JOIN {users_in_groups} uig2 ON uig2.group_id = g2.group_id
+                         LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
+                         LEFT JOIN {users} u2 ON u2.user_id = uig2.user_id AND uig2.user_id = ?
+                             WHERE ($where) AND u.user_name is NOT NULL AND u2.user_name is NOT NULL
+                                   AND (? = ? OR g2.is_admin = 1 OR g2.manage_project = 1)
+                          GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id));
+
+        while ($row = $db->FetchRow($sql)) {
             $db->Query('DELETE FROM  {notifications}
                               WHERE  task_id = ? AND user_id = ?',
-                    array($task_id, $user_id));
+                        array($row['task_id'], $user_id));
             if ($db->affectedRows()) {
-                $fs->logEvent($task_id, 10, $user_id);
+                $fs->logEvent($row['task_id'], 10, $user_id);
             }
         }
     }
@@ -61,41 +114,48 @@ class Backend
     /* This function is for a user to assign multiple tasks to themselves.
        Expected args are user_id and an array of tasks.
     */
-    function AssignToMe(&$user, $tasks)
+    function AssignToMe($user_id, $tasks)
     {
         global $db, $fs, $notify;
 
         settype($tasks, 'array');
+        
+        // XXX keep permission checks in sync with class.user.php!
+        foreach ($tasks as $key => $task) {
+            $tasks[$key] = 't.task_id = ' . $task;
+        }
+        $where = implode(' OR ', $tasks);
+        
+        $sql = $db->Query(" SELECT t.task_id
+                              FROM {tasks} t
+                         LEFT JOIN {projects} p ON p.project_id = t.task_id
+                         LEFT JOIN {groups} g ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
+                         LEFT JOIN {users_in_groups} uig ON g.group_id = uig.group_id
+                         LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
+                         LEFT JOIN {assigned} ass ON t.task_id = ass.task_id
+                             WHERE ($where) AND u.user_name is NOT NULL
+                                            AND g.edit_assignments = 1
+                                            AND (g.assign_to_self = 1 AND ass.user_id is NULL OR g.assign_others_to_self = 1 AND ass.user_id != ?)
+                          GROUP BY t.task_id", array($user_id, $user_id));
+        
+        while ($row = $db->FetchRow($sql)) {
+            $db->Query('DELETE FROM {assigned}
+                              WHERE task_id = ?',
+                        array($row['task_id']));
 
-        foreach ($tasks as $key => $task_id) {
-            // Get the task details
-            // FIXME make it less greedy in term of SQL
-            $task = @$fs->getTaskDetails($task_id);
-            $proj = new Project($task['attached_to_project']);
-            $user->get_perms($proj);
-
-            if ($user->can_view_project($proj)
-                    && $user->can_view_task($task)
-                    && $user->can_take_ownership($task))
-            {
-                $db->Query('DELETE FROM {assigned}
-                                  WHERE task_id = ?',
-                            array($task_id));
-
-                $db->Query('INSERT INTO {assigned}
-                                        (task_id, user_id)
-                                 VALUES (?,?)',
-                            array($task_id, $user->id));
-                
-                if ($db->affectedRows()) {
-                    $fs->logEvent($task_id, 19, $user->id, implode(' ', $task['assigned_to']));
-                    $notify->Create(NOTIFY_OWNERSHIP, $task_id);
-                }
-                
-                if ($task['item_status'] == STATUS_UNCONFIRMED || $task['item_status'] == STATUS_NEW) {
-                    $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($task_id));
-                    $fs->logEvent($task_id, 0, 3, 1, 'item_status');
-                }
+            $db->Query('INSERT INTO {assigned}
+                                    (task_id, user_id)
+                             VALUES (?,?)',
+                        array($row['task_id'], $user_id));
+            
+            if ($db->affectedRows()) {
+                $fs->logEvent($row['task_id'], 19, $user_id, implode(' ', $task['assigned_to']));
+                $notify->Create(NOTIFY_OWNERSHIP, $row['task_id']);
+            }
+            
+            if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
+                $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
+                $fs->logEvent($task_id, 0, 3, 1, 'item_status');
             }
         }
     }
@@ -146,7 +206,7 @@ class Backend
     {
         global $db, $user, $fs, $notify, $proj;
         
-        if(!($user->perms['add_comments'] && (!$task['is_closed'] || $proj->prefs['comment_closed']))) {
+        if (!($user->perms['add_comments'] && (!$task['is_closed'] || $proj->prefs['comment_closed']))) {
             return false;
         }
         
@@ -521,7 +581,7 @@ class Backend
             if ($proj->prefs['auto_assign'] && $args['item_status'] == 1) {
                 $this->AddToAssignees($owner, $task_id);
             }
-            $this->AddToNotifyList($owner, array($task_id));
+            $this->AddToNotifyList($owner, array($task_id), true);
         }
 
         // Create the Notification
@@ -529,7 +589,7 @@ class Backend
 
         // If the reporter wanted to be added to the notification list
         if ($args['notifyme'] == '1' && $user->id != $owner) {
-            $this->AddToNotifyList($user->id, $task_id);
+            $this->AddToNotifyList($user->id, $task_id, true);
         }
         
         if ($user->isAnon()) {
