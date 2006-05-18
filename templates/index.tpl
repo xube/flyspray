@@ -159,7 +159,7 @@
               ($offset + $perpage > $total ? $total : $offset + $perpage), $total)}
           </td>
           <td id="numbers">
-            {!pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order') . '&amp;sort=' . Get::val('sort') . '&amp;tasks=' . Get::val('tasks'))}
+            {!pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order') . '&amp;sort=' . Get::val('sort') . '&amp;tasks=' . Get::val('tasks') . '&amp;order2=' . Get::val('order2') . '&amp;sort2=' . Get::val('sort2'))}
           </td>
           <?php else: ?>
           <td id="taskrange"><strong>{L('noresults')}</strong></td>
