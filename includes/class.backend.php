@@ -365,9 +365,7 @@ class Backend
         $user_name = utf8_keepalphanum($user_name);
 
         // Check to see if the username is available
-        $sql = $db->Query('SELECT COUNT(*) FROM {users} u, {registrations} r
-                           WHERE  u.user_name = ? OR r.user_name = ?',
-                           array($user_name, $user_name));
+        $sql = $db->Query('SELECT COUNT(*) FROM {users} WHERE user_name = ?', array($user_name));
         
         if ($db->fetchOne($sql)) {
             return false;
