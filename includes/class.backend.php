@@ -119,7 +119,7 @@ class Backend
         global $db, $fs, $notify;
 
         settype($tasks, 'array');
-        
+
         // XXX keep permission checks in sync with class.user.php!
         foreach ($tasks as $key => $task) {
             $tasks[$key] = 't.task_id = ' . $task;
@@ -134,8 +134,9 @@ class Backend
                          LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
                          LEFT JOIN {assigned} ass ON t.task_id = ass.task_id
                              WHERE ($where) AND u.user_name is NOT NULL
-                                            AND g.edit_assignments = 1
-                                            AND (g.assign_to_self = 1 AND ass.user_id is NULL OR g.assign_others_to_self = 1 AND ass.user_id != ?)
+                                            AND (g.edit_assignments = 1
+                                                AND (g.assign_to_self = 1 AND ass.user_id is NULL OR g.assign_others_to_self = 1 AND ass.user_id != ?)
+                                                OR g.is_admin = 1 OR g.manage_project = 1)
                           GROUP BY t.task_id", array($user_id, $user_id));
         
         while ($row = $db->FetchRow($sql)) {
@@ -172,32 +173,39 @@ class Backend
         }
 
         settype($tasks, 'array');
+        
+        // XXX keep permission checks in sync with class.user.php!
+        foreach ($tasks as $key => $task) {
+            $tasks[$key] = 't.task_id = ' . $task;
+        }
+        $where = implode(' OR ', $tasks);
+        
+        $sql = $db->Query(" SELECT t.task_id
+                              FROM {tasks} t
+                         LEFT JOIN {projects} p ON p.project_id = t.task_id
+                         LEFT JOIN {groups} g ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
+                         LEFT JOIN {users_in_groups} uig ON g.group_id = uig.group_id
+                         LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
+                         LEFT JOIN {assigned} ass ON t.task_id = ass.task_id
+                             WHERE ($where) AND u.user_name is NOT NULL
+                                            AND (g.add_to_assignees = 1 AND g.edit_assignments = 1 OR g.is_admin = 1 or g.manage_project = 1)
+                                            AND ass.user_id != ?
+                          GROUP BY t.task_id", array($user->id, $user->id));
+                          
+        while ($row = $db->FetchRow($sql)) {
+           $db->Query("INSERT INTO {assigned}
+                                   (task_id, user_id)
+                            VALUES (?,?)",
+                                   array($row['task_id'], $user->id));
 
-        foreach ($tasks as $key => $task_id) {
-            // Get the task details
-            // FIXME make it less greedy in term of SQL
-            $task = @$fs->getTaskDetails($task_id);
-            $proj = new Project($task['attached_to_project']);
-            $user->get_perms($proj);
+            if ($db->affectedRows()) {
+                $fs->logEvent($row['task_id'], 29, $user->id, implode(' ', $task['assigned_to']));
+                $notify->Create(NOTIFY_ADDED_ASSIGNEES, $row['task_id']);
+            }
             
-            if ($user->can_view_project($proj)
-                    && $user->can_view_task($task)
-                    && $user->can_add_to_assignees($task))
-            {
-               $db->Query("INSERT INTO {assigned}
-                                       (task_id, user_id)
-                                VALUES (?,?)",
-                                       array($task_id, $user->id));
-
-                if ($db->affectedRows()) {
-                    $fs->logEvent($task_id, 29, $user->id, implode(' ', $task['assigned_to']));
-                    $notify->Create(NOTIFY_ADDED_ASSIGNEES, $task_id);
-                }
-                
-                if ($task['item_status'] == STATUS_UNCONFIRMED || $task['item_status'] == STATUS_NEW) {
-                    $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($task_id));
-                    $fs->logEvent($task_id, 0, 3, 1, 'item_status');
-                }
+            if ($task['item_status'] == STATUS_UNCONFIRMED || $task['item_status'] == STATUS_NEW) {
+                $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
+                $fs->logEvent($row['task_id'], 0, 3, 1, 'item_status');
             }
         }
     }

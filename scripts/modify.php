@@ -1091,10 +1091,10 @@ elseif (Req::val('action') == 'takeownership' && $user->perms['edit_assignments'
       $redirect_url = Req::val('prev_page');
 
       if (!empty($ids)) {
-          $be->AssignToMe($user, array_keys($ids));
+          $be->AssignToMe($user->id, array_keys($ids));
       }
    } else {
-       $be->AssignToMe($user, Req::val('ids'));
+       $be->AssignToMe($user->id, Req::val('ids'));
        $redirect_url = CreateURL('details', Req::val('ids'));
    }
 
