@@ -158,7 +158,7 @@
              {L('attachanotherfile')}
           </button>
           <?php endif; ?>
-          
+          <div class="hide preview" id="preview">{L('loading')}</div>
 		  <textarea id="details" name="detailed_desc"
 			 cols="70" rows="10">{$task_details['detailed_desc']}</textarea><br />
           <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
@@ -186,6 +186,7 @@
           <?php endif; ?>
 		  <p class="buttons">
               <button type="submit" accesskey="s">{L('savedetails')}</button>
+              <button tabindex="9" type="button" onclick="showPreview('details', '{$baseurl}', 'preview')">{L('preview')}</button>
               <button type="reset">{L('reset')}</button>
           </p>
 		</div>

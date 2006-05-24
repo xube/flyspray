@@ -21,7 +21,8 @@
       </button>
     <?php endif; ?>
     
-    <textarea cols="72" rows="10" name="comment_text">{$comment['comment_text']}</textarea>
+    <div class="hide preview" id="preview">{L('loading')}</div>
+    <textarea cols="72" rows="10" id="comment_text" name="comment_text">{$comment['comment_text']}</textarea>
 
     <input type="hidden" name="do" value="modify" />
     <input type="hidden" name="action" value="editcomment" />
@@ -29,6 +30,7 @@
     <input type="hidden" name="comment_id" value="{$comment['comment_id']}" />
     <input type="hidden" name="previous_text" value="{$comment['comment_text']}" />
     <button type="submit">{L('saveeditedcomment')}</button>
+    <button tabindex="9" type="button" onclick="showPreview('comment_text', '{$baseurl}', 'preview')">{L('preview')}</button>
     </div>
 </form>
 </fieldset>

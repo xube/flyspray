@@ -334,6 +334,18 @@ function getVoters(id, baseurl, field)
     var url = baseurl + 'javascript/callbacks/getvoters.php?id=' + id;
     var myAjax = new Ajax.Updater(field, url, { method: 'get'});
 }
+function showPreview(textfield, baseurl, field)
+{
+    var text = document.getElementById(textfield).value;
+    var url = baseurl + 'javascript/callbacks/getpreview.php';
+    var myAjax = new Ajax.Updater(field, url, {parameters:'text=' + text, method: 'post'});
+    
+    if (text == '') {
+        hidestuff(field);
+    } else {
+        showstuff(field);
+    }
+}
 function checkname(value){
     new Ajax.Request('javascript/callbacks/searchnames.php?name='+value, {onSuccess: function(t){ allow(t.responseText); } });
 }

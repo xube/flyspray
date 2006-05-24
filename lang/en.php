@@ -708,6 +708,7 @@ Regards,',
 'deleted'                 => 'Deleted',
 'userid'                  => 'User ID',
 'editassignments'         => 'Edit assignments',
+'preview'                 => 'Preview',
 ); 
 
 ?>

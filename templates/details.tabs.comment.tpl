@@ -45,6 +45,7 @@
   <fieldset><legend>{L('addcomment')}</legend>
   <form enctype="multipart/form-data" action="{$baseurl}" method="post">
     <div>
+      <div class="hide preview" id="preview">{L('loading')}</div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
@@ -66,6 +67,7 @@
 
 
       <button tabindex="9" type="submit">{L('addcomment')}</button>
+      <button tabindex="9" type="button" onclick="showPreview('comment_text', '{$baseurl}', 'preview')">{L('preview')}</button>
       <?php if (!$watched): ?>
       {!tpl_checkbox('notifyme', true, 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
       <?php endif; ?>

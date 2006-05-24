@@ -39,7 +39,9 @@
         <tr>
           <td><label for="intromesg">{L('intromessage')}</label></td>
           <td>
-            <textarea id="intromesg" name="intro_message" rows="12" cols="70">{$proj->prefs['intro_message']}</textarea>
+            <div class="hide preview" id="preview">{L('loading')}</div>
+            <textarea id="intromesg" name="intro_message" rows="12" cols="70">{$proj->prefs['intro_message']}</textarea><br />
+            <button tabindex="9" type="button" onclick="showPreview('intromesg', '{$baseurl}', 'preview')">{L('preview')}</button>
           </td>
         </tr>
         <tr>

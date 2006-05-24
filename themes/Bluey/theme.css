@@ -590,6 +590,13 @@ div.tabentries {
 	margin:0 0 1em;
 }
 
+div.preview {
+	border:solid 1px #47617b;
+	border-left-width:0.2em;
+	margin-bottom:0.5em;
+	padding-left:0.2em;
+}
+
 .tabentry {
 	border-bottom:1px solid #ccc;
 	margin:2px 1em;
@@ -1312,7 +1319,7 @@ div#taskdetailstext h3, .commenttext h3 {
 }
 
 
-div#taskdetailstext h4, .commenttext h4,div#taskdetailstext h5, .commenttext h5 {
+div#taskdetailstext h4, div.preview h4, .commenttext h4,div.preview h5,div#taskdetailstext h5, .commenttext h5 {
 	font-size:1em;    
 	padding-left:0.3em;   
 	margin:1em 2.5em 0;
