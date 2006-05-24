@@ -845,13 +845,12 @@ div#closeform {
 }
 
 div#multiuserlist {
-	visibility:hidden;
 	position:absolute;
 	background-color:#e6eef6;
 	color:#000;
 	border:3px ridge #000;
 	margin-top:5px;
-	display:block;
+	display:none;
 	width:42em;
 	padding:5px 30px 5px 5px;
 	text-align:right;

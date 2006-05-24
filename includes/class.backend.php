@@ -51,7 +51,8 @@ class Backend
                                         OR g.manage_project = 1
                                         OR g.is_admin = 1)
                                    OR (g2.is_admin = 1 OR g2.manage_project = 1))
-                          GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id));
+                                   OR ? = 1
+                          GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id, $do));
 
         while ($row = $db->FetchRow($sql)) {
             $notif = $db->Query('SELECT notify_id
@@ -543,10 +544,10 @@ class Backend
                                  VALUES (?,?)',
                             array($task_id, $val));
             }
+            // Log to task history
+            $fs->logEvent($task_id, 14, trim($args['assigned_to']));
         }
 
-        // Log to task history
-        $fs->logEvent($task_id, 14, trim($args['assigned_to']));
 
         // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
         $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null,
@@ -579,7 +580,7 @@ class Backend
             }
         }
 
-        if (empty($owner)) {
+        if (!isset($owner)) {
             $owner = $proj->prefs['default_cat_owner'];
         }
 
