@@ -113,7 +113,7 @@
 
     <div id="taskdetailsfull">
       <label for="details">{L('details')}</label>
-      <div class="hide preview" id="preview">{L('loading')}</div>
+      <div class="hide preview" id="preview"></div>
       <textarea id="details" name="detailed_desc" cols="70" rows="10"></textarea>
       <?php if ($user->perms['create_attachments']): ?>
         <div id="uploadfilebox">

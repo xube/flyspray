@@ -334,17 +334,37 @@ function getVoters(id, baseurl, field)
     var url = baseurl + 'javascript/callbacks/getvoters.php?id=' + id;
     var myAjax = new Ajax.Updater(field, url, { method: 'get'});
 }
+function emptyElement(el) {
+    while(el.firstChild) {
+        emptyElement(el.firstChild);
+        var oNodeToRemove = el.firstChild;
+        oNodeToRemove.parentNode.removeChild(oNodeToRemove);
+    }
+}
 function showPreview(textfield, baseurl, field)
 {
+    var preview = document.getElementById('preview');
+    emptyElement(preview);
+    
+    var img = document.createElement('img');
+    img.src = baseurl + 'themes/Bluey/ajax_load.gif';
+    img.id = 'temp_img';
+    img.alt = 'Loading...';
+    preview.appendChild(img);
+    
     var text = document.getElementById(textfield).value;
     var url = baseurl + 'javascript/callbacks/getpreview.php';
-    var myAjax = new Ajax.Updater(field, url, {parameters:'text=' + text, method: 'post'});
-    
+    var myAjax = new Ajax.Updater(field, url, {parameters:'text=' + text, method: 'post', onComplete:previewComplete});
+
     if (text == '') {
         hidestuff(field);
     } else {
         showstuff(field);
     }
+}
+function previewComplete() {
+    var oNodeToRemove = document.getElementById('temp_img');
+    oNodeToRemove.parentNode.removeChild(oNodeToRemove);
 }
 function checkname(value){
     new Ajax.Request('javascript/callbacks/searchnames.php?name='+value, {onSuccess: function(t){ allow(t.responseText); } });

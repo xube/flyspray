@@ -158,7 +158,7 @@
              {L('attachanotherfile')}
           </button>
           <?php endif; ?>
-          <div class="hide preview" id="preview">{L('loading')}</div>
+          <div class="hide preview" id="preview"></div>
 		  <textarea id="details" name="detailed_desc"
 			 cols="70" rows="10">{$task_details['detailed_desc']}</textarea><br />
           <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>

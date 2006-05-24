@@ -21,7 +21,7 @@
       </button>
     <?php endif; ?>
     
-    <div class="hide preview" id="preview">{L('loading')}</div>
+    <div class="hide preview" id="preview"></div>
     <textarea cols="72" rows="10" id="comment_text" name="comment_text">{$comment['comment_text']}</textarea>
 
     <input type="hidden" name="do" value="modify" />
