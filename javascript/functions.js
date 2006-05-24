@@ -8,11 +8,6 @@ function Disable(formid)
    document.formid.submit();
 }
 
-function openTask( url )
-{
-   window.location = url;
-}
-
  function showstuff(boxid){
    document.getElementById(boxid).style.visibility="visible";
    document.getElementById(boxid).style.display="block";
@@ -296,28 +291,35 @@ function toggleSearchBox(themeurl) {
   }
 }
 function deletesearch(id, url) {
-    var oNodeToRemove = document.getElementById('rs' + id)
-    oNodeToRemove.parentNode.removeChild(oNodeToRemove);
-    var table = document.getElementById('mysearchestable');
-    if(table.rows.length > 0) {
-        table.getElementsByTagName('tr')[table.rows.length-1].style.borderBottom = '0';
-    }
-    if(table.rows.length == 0) {
-        showstuff('nosearches');
-    }
+    var img = document.getElementById('rs' + id).getElementsByTagName('img')[0].src = url + 'themes/Bluey/ajax_load.gif';
     url = url + 'javascript/callbacks/deletesearches.php';
-    var myAjax = new Ajax.Request(url, {method: 'get', parameters: 'id=' + id });
+    var myAjax = new Ajax.Request(url, {method: 'get', parameters: 'id=' + id,
+                     onSuccess:function remove_sentry()
+                     {
+                        var oNodeToRemove = document.getElementById('rs' + id);
+                        oNodeToRemove.parentNode.removeChild(oNodeToRemove);
+                        var table = document.getElementById('mysearchestable');
+                        if(table.rows.length > 0) {
+                            table.getElementsByTagName('tr')[table.rows.length-1].style.borderBottom = '0';
+                        } else {
+                            showstuff('nosearches');
+                        }
+                     }
+                });
 }
-function savesearch(query, url, savetext) {
-    url = url + 'javascript/callbacks/savesearches.php?' + query + '&search_name=' + document.getElementById('save_search').value;
+function savesearch(query, baseurl, savetext) {
+    url = baseurl + 'javascript/callbacks/savesearches.php?' + query + '&search_name=' + document.getElementById('save_search').value;
     if(document.getElementById('save_search').value != '') {
-        setTimeout('reverttext("' + document.getElementById('lblsaveas').firstChild.nodeValue + '")', 2000)
+        var old_text = document.getElementById('lblsaveas').firstChild.nodeValue;
         document.getElementById('lblsaveas').firstChild.nodeValue = savetext;
+        var myAjax = new Ajax.Request(url, {method: 'get',
+                     onComplete:function revert_saved()
+                     {
+                        document.getElementById('lblsaveas').firstChild.nodeValue=old_text;
+                        var myAjax2 = new Ajax.Updater('mysearches', baseurl + 'javascript/callbacks/getsearches.php', { method: 'get'});
+                     }
+                     });
     }
-    var myAjax = new Ajax.Request(url, {method: 'get'});
-}
-function reverttext(text) {
-    document.getElementById('lblsaveas').firstChild.nodeValue = text;
 }
 function activelink(id) {
     if(document.getElementById(id).className == 'active') {

@@ -1,4 +1,4 @@
-<div id="taskdetails" <?php if ($user->can_edit_task($task_details)): ?>ondblclick='openTask("{CreateURL('edittask', $task_details['task_id'])}")'<?php endif;?>>
+<div id="taskdetails">
 <span id="navigation"> <?php if ($prev_id): ?>
   {!tpl_tasklink($prev_id, L('previoustask'), false, array('id'=>'prev', 'accesskey' => 'p'))}
   <?php endif; ?>

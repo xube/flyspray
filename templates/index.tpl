@@ -25,7 +25,7 @@
         <?php if(!$user->isAnon()): ?>
         <span class="save_search"><label for="save_search" id="lblsaveas">{L('saveas')}</label>
         <input class="text" type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
-        <button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{L('saved')}')" type="button">{L('OK')}</button></span>
+        <button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{L('saving')}')" type="button">{L('OK')}</button></span>
         <?php endif; ?>
         
         <button type="submit">{L('searchthisproject')}</button>

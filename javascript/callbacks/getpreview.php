@@ -6,8 +6,8 @@
 
 define('IN_FS', true);
 
+$webdir = dirname(dirname(dirname(htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'utf-8'))));
 require_once('../../header.php');
-$baseurl = dirname(dirname($baseurl)) .'/' ;
 
 if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     $user = new User(Cookie::val('flyspray_userid'));

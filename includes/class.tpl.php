@@ -130,7 +130,7 @@ class FSTpl extends Tpl
     
     function get_image($name, $base = true)
 	{
-        global $proj, $baseurl ;
+        global $proj, $baseurl;
         $pathinfo = pathinfo($name);
         $link = 'themes/' . $proj->prefs['theme_style'] . '/';
         if ($pathinfo['dirname'] != '.') {
@@ -140,7 +140,7 @@ class FSTpl extends Tpl
         $extensions = array('.png', '.gif', '.jpg', '.ico');
 
         foreach ($extensions as $ext) {
-            if (file_exists($link . $name . $ext)) {
+            if (file_exists(BASEDIR . '/' . $link . $name . $ext)) {
                 return ($base) ? ($baseurl . $link . $name . $ext) : ($link . $name . $ext);
             }
         }

@@ -470,6 +470,10 @@ div#tasklist table td {
 	vertical-align:middle;
 }
 
+div#tasklist table tr input {
+	margin-top:-0.3em;
+}
+
 div#tasklist table td.taskdate {
 	text-align:left;
 	white-space:nowrap;

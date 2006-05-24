@@ -7,7 +7,9 @@ $conf    = @parse_ini_file(BASEDIR . '/flyspray.conf.php', true);
 
 // $baseurl
 // htmlspecialchars because PHP_SELF is user submitted data, and can be used as an XSS vector.
-$webdir = dirname(htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'utf-8'));
+if (!isset($webdir)) {
+    $webdir = dirname(htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'utf-8'));
+}
 
 $baseurl = rtrim(Flyspray::absoluteURI($webdir),'/\\') . '/' ;
 
