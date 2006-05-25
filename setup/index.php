@@ -1293,7 +1293,7 @@ class Setup extends Flyspray
       $config[] = "address_rewriting = \"$re_writing\"	; Boolean. 0 = off, 1 = on.";
       $config[] = "reminder_daemon = \"$daemonise\"		; Boolean. 0 = off, 1 = on.";
       $config[] = "doku_url = \"http://en.wikipedia.org/wiki/\"      ; URL to your external wiki for [[dokulinks]] in FS";
-      $config[] = "wiki_syntax = \"0\"                               ; Boolean. 0 = off, 1 = on.";
+      $config[] = "syntax_plugin = \"none\"                               ; Plugin name for Flyspray's syntax (use any non-existing plugin name for deafult syntax)
       $config[] = "update_check = \"1\"                               ; Boolean. 0 = off, 1 = on.";
       $config[] = "\n";
       $config[] = "[attachments]";

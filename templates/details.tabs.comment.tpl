@@ -32,7 +32,7 @@
   <?php endforeach; ?>
   </ul>
   <?php endif; ?>
-  <div class="commenttext">{!tpl_formatText($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'])}</div></div>
+  <div class="commenttext">{!TextFormatter::render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'])}</div></div>
 
   <?php if (isset($comment_attachments[$comment['comment_id']])) {
             $this->display('common.attachments.tpl', 'attachments', $comment_attachments[$comment['comment_id']]);
@@ -45,7 +45,9 @@
   <fieldset><legend>{L('addcomment')}</legend>
   <form enctype="multipart/form-data" action="{$baseurl}" method="post">
     <div>
+      <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>
+      <?php endif; ?>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
@@ -63,11 +65,12 @@
          {L('attachanotherfile')}
       </button>
       <?php endif; ?>
-      <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
-
+      {!TextFormatter::textarea('comment_text', 10, 72, array('accesskey' => 'r', 'tabindex' => 8, 'id' => 'comment_text'))}
 
       <button tabindex="9" type="submit">{L('addcomment')}</button>
+      <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <button tabindex="9" type="button" onclick="showPreview('comment_text', '{$baseurl}', 'preview')">{L('preview')}</button>
+      <?php endif; ?>
       <?php if (!$watched): ?>
       {!tpl_checkbox('notifyme', true, 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
       <?php endif; ?>

@@ -25,8 +25,8 @@
     <link>{CreateURL('details', $row['task_id'])}</link>
     <dc:date>{date('Y-m-d\TH:i:s\Z',intval($row['last_edited_time']))}</dc:date>
     <dc:creator>{$row['real_name']}</dc:creator>
-    <description>{strip_tags(tpl_FormatText($row['detailed_desc']))}</description>
-    <content:encoded><![CDATA[{!tpl_FormatText($row['detailed_desc'])}]]></content:encoded>
+    <description>{strip_tags(TextFormatter::render($row['detailed_desc']))}</description>
+    <content:encoded><![CDATA[{!TextFormatter::render($row['detailed_desc'])}]]></content:encoded>
   </item>
   <?php endforeach; ?>
 </rdf:RDF>

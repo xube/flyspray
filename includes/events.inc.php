@@ -107,8 +107,8 @@ function event_description($history) {
                 case 'detailed_desc':
                     $field = "<a href=\"javascript:getHistory('{$history['task_id']}', '$baseurl', 'history', '{$history['history_id']}');\">" . L('details') . '</a>';
                     if (!empty($details)) {
-                        $details_previous = tpl_formatText($old_value);
-                        $details_new =  tpl_formatText($new_value);
+                        $details_previous = TextFormatter::render($old_value);
+                        $details_new =  TextFormatter::render($new_value);
                     }
                     $old_value = '';
                     $new_value = '';
@@ -126,7 +126,7 @@ function event_description($history) {
             $return .= L('taskclosed');
             $return .= " ({$history['resolution_name']}";
             if (!empty($old_value)) {
-                 $return .= ': ' . tpl_formatText($old_value, true);
+                 $return .= ': ' . TextFormatter::render($old_value, true);
             }
             $return .= ')';
             break;
@@ -142,8 +142,8 @@ function event_description($history) {
                  $return .= " (".L('commentby').' ' . tpl_userlink($history['c_user_id']) . " - " . formatDate($history['c_date_added'], true) . ")";
             }
             if ($details) {
-                 $details_previous = tpl_formatText($old_value);
-                 $details_new      = tpl_formatText($new_value);
+                 $details_previous = TextFormatter::render($old_value);
+                 $details_new      = TextFormatter::render($new_value);
             }
             break;
     case '6':     //Comment deleted
@@ -152,7 +152,7 @@ function event_description($history) {
                  $return .= " (".L('commentby').' ' . tpl_userlink($new_value) . " - " . formatDate($history['field_changed'], true) . ")";
             }
             if (!empty($details)) {
-                 $details_previous = tpl_formatText($old_value);
+                 $details_previous = TextFormatter::render($old_value);
                  $details_new = '';
             }
             break;

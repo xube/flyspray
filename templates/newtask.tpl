@@ -113,8 +113,10 @@
 
     <div id="taskdetailsfull">
       <label for="details">{L('details')}</label>
+      <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>
-      <textarea id="details" name="detailed_desc" cols="70" rows="10"></textarea>
+      <?php endif; ?>
+      {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'))}
       <?php if ($user->perms['create_attachments']): ?>
         <div id="uploadfilebox">
           <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
@@ -143,7 +145,9 @@
     <input type="hidden" name="action" value="newtask" />
     <input type="hidden" name="project_id" value="{$proj->id}" />
     <button accesskey="s" type="submit">{L('addthistask')}</button>
+    <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
     <button tabindex="9" type="button" onclick="showPreview('details', '{$baseurl}', 'preview')">{L('preview')}</button>
+    <?php endif; ?>
 
     <?php if (!$user->isAnon()): ?>
     &nbsp;&nbsp;<input class="text" type="checkbox" id="notifyme" name="notifyme" value="1" checked="checked" />

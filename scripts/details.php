@@ -51,17 +51,19 @@ else {
     }
 
     // Check for task dependencies that block closing this task
-    $check_deps   = $db->Query('SELECT  t.*, s.status_name
+    $check_deps   = $db->Query('SELECT  t.*, s.status_name, r.resolution_name, d.depend_id
                                   FROM  {dependencies} d
                              LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
                              LEFT JOIN  {list_status} s ON t.item_status = s.status_id 
+                             LEFT JOIN  {list_resolution} r ON t.resolution_reason = r.resolution_id 
                                  WHERE  d.task_id = ?', array($task_id));
 
     // Check for tasks that this task blocks
-    $check_blocks = $db->Query('SELECT  t.*, s.status_name
+    $check_blocks = $db->Query('SELECT  t.*, s.status_name, r.resolution_name
                                   FROM  {dependencies} d
                              LEFT JOIN  {tasks} t on d.task_id = t.task_id
                              LEFT JOIN  {list_status} s ON t.item_status = s.status_id
+                             LEFT JOIN  {list_resolution} r ON t.resolution_reason = r.resolution_id 
                                  WHERE  d.dep_task_id = ?', array($task_id));
 
     // Check for pending PM requests
@@ -94,10 +96,10 @@ else {
                            array($task_details['task_id']));
     $cached = $db->FetchArray($cached);
 
-    if ($task_details['last_edited_time'] > $cached['last_updated'] || !$conf['general']['wiki_syntax']) {
-        $task_text = tpl_formatText($task_details['detailed_desc'], false, 'task', $task_details['task_id']);
+    if ($task_details['last_edited_time'] > $cached['last_updated'] || !defined('FLYSPRAY_USE_CACHE')) {
+        $task_text = TextFormatter::render($task_details['detailed_desc'], false, 'task', $task_details['task_id']);
     } else {
-        $task_text = tpl_formatText($task_details['detailed_desc'], false, 'task', $task_details['task_id'], $cached['content']);
+        $task_text = TextFormatter::render($task_details['detailed_desc'], false, 'task', $task_details['task_id'], $cached['content']);
     }
 
     $page->assign('prev_id',  $prev_id);

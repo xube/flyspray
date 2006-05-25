@@ -13,12 +13,10 @@ if (!isset($webdir)) {
 
 $baseurl = rtrim(Flyspray::absoluteURI($webdir),'/\\') . '/' ;
 
-
-define('DOKU_PLUGIN',        BASEDIR . '/includes/dokuwiki/lib/plugins/');
-define('DOKU_CONF',          BASEDIR . '/includes/dokuwiki/conf/');
-define('DOKU_INTERNAL_LINK', $conf['general']['doku_url']);
-define('DOKU_BASE',          $baseurl .'includes/dokuwiki/');
-define('DOKU_URL',           BASEDIR .'/includes/dokuwiki/');
+$path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_constants.inc.php';
+if (is_readable($path_to_plugin)) {
+    require($path_to_plugin);
+}
 
 define('NOTIFY_TASK_OPENED',      1);
 define('NOTIFY_TASK_CHANGED',     2);

@@ -431,91 +431,77 @@ function tpl_img($src, $alt)
     }
 } // }}}
 // {{{ Text formatting
-function tpl_formattext($text, $onyfs = false, $type = null, $id = null, $instructions = null)
+$path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_formattext.inc.php';
+        
+if (is_readable($path_to_plugin)) {
+    require($path_to_plugin);
+}
+
+class TextFormatter
 {
-    global $conf, $baseurl, $db;
-    if ($conf['general']['wiki_syntax'] && !$onyfs) {
-        // Unfortunately dokuwiki also uses $conf
-        $fs_conf = $conf;
-        $conf = array();
+    function get_javascript()
+    {
+        global $conf;
         
-        // Dokuwiki generates some notices
-        error_reporting(E_ALL ^ E_NOTICE);
-        if (!$instructions) {
-            include_once(BASEDIR . '/includes/dokuwiki/inc/parser/parser.php');
+        $path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'];
+         $return = array();
+         
+        if (!is_readable($path_to_plugin)) {
+            return $return;
         }
-        require_once(BASEDIR . '/includes/dokuwiki/inc/common.php');
-        require_once(BASEDIR . '/includes/dokuwiki/inc/parser/xhtml.php');
         
-        // Create a renderer
-        $Renderer = & new Doku_Renderer_XHTML();
+        $d = dir($path_to_plugin);
+        while (false !== ($entry = $d->read())) {
+           if (substr($entry, -3) == '.js') {
+                $return[] = $conf['general']['syntax_plugin'] . '/' . $entry;
+            }
+        }
         
-        if (!$instructions) {
-            $modes = p_get_parsermodes();
-            
-            $Parser = & new Doku_Parser();
-            
-            // Add the Handler
-            $Parser->Handler = & new Doku_Handler();
-            
-            // Add modes to parser
-            foreach($modes as $mode){
-                $Parser->addMode($mode['mode'], $mode['obj']);
-            }
-            $instructions = $Parser->parse($text);
-            for ($i = 0; $i < count($instructions); ++$i) {
-                if ($instructions[$i][0] == 'code' && isset($instructions[$i][1][1])) {
-                    $instructions[$i][1] = call_user_func_array(array(&$Renderer, $instructions[$i][0]), $instructions[$i][1]);
-                    $instructions[$i][0] = 'geshi_cached';
-                }
-            }
-            
-            // Cache the parsed text
-            if (!is_null($type) && !is_null($id)) {
-                $fields = array('content'=> serialize($instructions), 'type'=> $type , 'topic'=> $id,
-                                'last_updated'=> time());
-
-                $keys = array('type','topic');
-                //autoquote is always true on db class
-                $db->Replace('{cache}', $fields, $keys);
-            }
+        return $return;
+    }
+    
+    function render($text, $onyfs = false, $type = null, $id = null, $instructions = null)
+    {
+        global $conf;
+                
+        if (in_array('render', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter')) && !$onyfs) {
+            return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'render'), 
+                                  $text, $onyfs, $type, $id, $instructions);
         } else {
-            $instructions = unserialize($instructions);
+            $text = nl2br(htmlspecialchars($text));
+            
+            // Change URLs into hyperlinks
+            if (!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
+            
+            // Change FS#123 into hyperlinks to tasks
+            return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
+        }
+    }
+    
+    function textarea($name, $rows, $cols, $attrs = null, $content = null)
+    {
+        global $conf;
+        
+        if (in_array('textarea', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter'))) {
+            return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'textarea'), 
+                                  $name, $rows, $cols, $attrs, $content);
         }
         
-        $Renderer->smileys = getSmileys();
-        $Renderer->entities = getEntities();
-        $Renderer->acronyms = getAcronyms();
-        $Renderer->interwiki = getInterwiki();
-
-        $conf = $fs_conf;
+        $name = htmlspecialchars($name, ENT_QUOTES, 'utf-8');
+        $rows = intval($rows);
+        $cols = intval($cols);
         
-        // Loop through the instructions
-        foreach ($instructions as $instruction) {
-            // Execute the callback against the Renderer
-            call_user_func_array(array(&$Renderer, $instruction[0]), $instruction[1]);
+        $return = "<textarea name=\"{$name}\" cols=\"$cols\" rows=\"$rows\" ";
+        if (is_array($attrs)) {
+            $return .= join_attrs($attrs);
         }
-              
-        // Display the output
-        if (Get::val('histring')) {
-            $words = explode(' ', Get::val('histring'));
-            $ret = $Renderer->doc;
-            foreach($words as $word) {
-                $ret = html_hilight($ret, $word);
-            }
-            return $ret;
-        } else {
-            return $Renderer->doc;
+        $return .= '>';
+        if (!is_null($content)) {
+            $return .= htmlspecialchars($content, ENT_QUOTES, 'utf-8');
         }
-   } else {
-        $text = nl2br(htmlspecialchars($text));
-        
-        // Change URLs into hyperlinks
-        if (!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
-        
-        // Change FS#123 into hyperlinks to tasks
-        return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
-   }
+        $return .= '</textarea>';
+        return $return;
+    }
 }
 // }}}
 // Format Date {{{

@@ -21,9 +21,9 @@
 	      
     <script type="text/javascript" src="{$baseurl}javascript/prototype/prototype.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/script.aculo.us/scriptaculous.js"></script>
-<?php if ('index' == $do || 'details' == $do): ?>
-    <script type="text/javascript" src="{$baseurl}javascript/{$do}.js"></script>
-<?php endif; ?>    
+    <?php if ('index' == $do || 'details' == $do): ?>
+        <script type="text/javascript" src="{$baseurl}javascript/{$do}.js"></script>
+    <?php endif; ?>    
     <script type="text/javascript" src="{$baseurl}javascript/tabs.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar_stripped.js"></script>
@@ -31,6 +31,9 @@
     <!--[if IE 6]>
     <script type="text/javascript" src="{$baseurl}javascript/ie_hover.js"></script>
     <![endif]-->
+    <?php foreach(TextFormatter::get_javascript() as $file): ?>
+        <script type="text/javascript" src="{$baseurl}plugins/{$file}"></script>
+    <?php endforeach; ?>
   </head>
   <body onload="perms = new Perms('permissions')">
   <div id="container">
@@ -100,6 +103,6 @@
       <div class="clear"></div>
 
       <?php if ($proj->prefs['intro_message'] && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))): ?>
-      <div id="intromessage">{!tpl_formattext($proj->prefs['intro_message'], false, 'msg', $proj->id,
+      <div id="intromessage">{!TextFormatter::render($proj->prefs['intro_message'], false, 'msg', $proj->id,
                                ($proj->prefs['last_updated'] < $proj->prefs['cache_update']) ? $proj->prefs['pm_instructions'] : '')}</div>
       <?php endif; ?>

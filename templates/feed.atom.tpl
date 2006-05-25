@@ -19,7 +19,7 @@
     <published>{date('Y-m-d\TH:i:s\Z',intval($row['date_opened']))}</published>
     <content type="xhtml" xml:lang="en" xml:base="http://diveintomark.org/">
       <div xmlns="http://www.w3.org/1999/xhtml">
-        {!tpl_FormatText($row['detailed_desc'])}
+        {!TextFormatter::render($row['detailed_desc'])}
       </div>
     </content>
     <author><name>{$row['real_name']}</name></author>

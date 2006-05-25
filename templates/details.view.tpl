@@ -186,7 +186,7 @@
       {formatDate($task_details['date_closed'], true)}<br />
       <strong>{L('reasonforclosing')}</strong> &nbsp;{$task_details['resolution_name']}<br />
       <?php if ($task_details['closure_comment']): ?>
-      <strong>{L('closurecomment')}</strong> &nbsp;{!tpl_FormatText($task_details['closure_comment'], true)}
+      <strong>{L('closurecomment')}</strong> &nbsp;{!TextFormatter::render($task_details['closure_comment'], true)}
       <?php endif; ?>
   </div>
   <?php endif; ?>

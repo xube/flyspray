@@ -16,6 +16,6 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     $user->save_search();
 }
 
-echo tpl_formattext(Post::val('text'));
+echo TextFormatter::render(Post::val('text'));
 
 ?>

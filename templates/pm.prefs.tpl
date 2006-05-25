@@ -39,9 +39,14 @@
         <tr>
           <td><label for="intromesg">{L('intromessage')}</label></td>
           <td>
+            <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
             <div class="hide preview" id="preview"></div>
-            <textarea id="intromesg" name="intro_message" rows="12" cols="70">{$proj->prefs['intro_message']}</textarea><br />
+            <?php endif; ?>
+            {!TextFormatter::textarea('intro_message', 12, 70, array('accesskey' => 'r', 'tabindex' => 8, 'id' => 'intromesg'), $proj->prefs['intro_message'])}
+            <br />
+            <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
             <button tabindex="9" type="button" onclick="showPreview('intromesg', '{$baseurl}', 'preview')">{L('preview')}</button>
+            <?php endif; ?>
           </td>
         </tr>
         <tr>

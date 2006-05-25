@@ -158,9 +158,11 @@
              {L('attachanotherfile')}
           </button>
           <?php endif; ?>
+          <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
           <div class="hide preview" id="preview"></div>
-		  <textarea id="details" name="detailed_desc"
-			 cols="70" rows="10">{$task_details['detailed_desc']}</textarea><br />
+          <?php endif; ?>
+          {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'), $task_details['detailed_desc'])}
+          <br />
           <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
               <button type="button" onclick="showstuff('edit_add_comment');this.style.display='none';">{L('addcomment')}</button>
               <div id="edit_add_comment" class="hide">
@@ -186,7 +188,9 @@
           <?php endif; ?>
 		  <p class="buttons">
               <button type="submit" accesskey="s">{L('savedetails')}</button>
+              <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
               <button tabindex="9" type="button" onclick="showPreview('details', '{$baseurl}', 'preview')">{L('preview')}</button>
+              <?php endif; ?>
               <button type="reset">{L('reset')}</button>
           </p>
 		</div>

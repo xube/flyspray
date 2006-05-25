@@ -27,7 +27,7 @@
 
   <em>{L('thisoften')}:</em> {$how_often}
   <br />
-  <em>{L('message')}:</em> {!tpl_formatText($row['reminder_message'])}
+  <em>{L('message')}:</em> {!TextFormatter::render($row['reminder_message'])}
   <br /><br />
   <?php endforeach; ?>
 

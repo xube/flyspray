@@ -31,7 +31,7 @@ foreach($milestone['open_tasks'] as $task): ?>
         {!tpl_tasklink($task['task_id'])} <b class="DoNotPrint fade">[+]</b>
       </dt>
       <dd id="dd{$task['task_id']}" >
-        {!tpl_formatText(substr($task['detailed_desc'], 0, 500) . ((strlen($task['detailed_desc']) > 500) ? '...' : ''),
+        {!TextFormatter::render(substr($task['detailed_desc'], 0, 500) . ((strlen($task['detailed_desc']) > 500) ? '...' : ''),
                          false, 'task', $task['task_id'], $task['content'])}
         <br style="position:absolute;" />
       </dd>
