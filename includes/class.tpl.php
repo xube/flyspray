@@ -464,7 +464,7 @@ class TextFormatter
     {
         global $conf;
                 
-        if (in_array('render', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter')) && !$onyfs) {
+        if (@in_array('render', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter')) && !$onyfs) {
             return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'render'), 
                                   $text, $onyfs, $type, $id, $instructions);
         } else {
@@ -482,7 +482,7 @@ class TextFormatter
     {
         global $conf;
         
-        if (in_array('textarea', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter'))) {
+        if (@in_array('textarea', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter'))) {
             return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'textarea'), 
                                   $name, $rows, $cols, $attrs, $content);
         }
@@ -536,7 +536,7 @@ function tpl_draw_perms($perms)
     global $proj;
 
     $perm_fields = array('is_admin', 'manage_project', 'view_tasks',
-            'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
+            'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks', 'edit_assignments',
             'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
             'view_attachments', 'create_attachments', 'delete_attachments',
             'view_history', 'close_own_tasks', 'close_other_tasks',

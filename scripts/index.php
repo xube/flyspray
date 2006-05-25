@@ -163,7 +163,7 @@ if (Get::val('tasks') == 'assigned') {
 
 /// process search-conditions {{{
 $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version', 'reported' => 'product_version',
-                 'cat' => 'product_category', 'status' => 'item_status',
+                 'cat' => 'product_category', 'status' => 'item_status', 'percent' => 'percent_complete',
                  'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
                  'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'));
 foreach ($submits as $key => $db_key) {
@@ -189,13 +189,15 @@ foreach ($submits as $key => $db_key) {
             $temp .= ' ' . $db_key . ' = ?  OR';
             $sql_params[] = $val;
         } elseif (is_array($db_key)) {
-            if(!is_numeric($val)) $val = '%' . $val . '%';
-            foreach($db_key as $value) {
-                $temp .= ' ' . $value . ' LIKE ?  OR';
-                $sql_params[] = $val;
+            if ($key == 'dev' && ($val == 'notassigned' || $val == '0' || $val == '-1')) {
+                $temp .= ' a.user_id is NULL  OR';
+            } else {
+                if (!is_numeric($val)) $val = '%' . $val . '%';
+                foreach ($db_key as $value) {
+                    $temp .= ' ' . $value . ' LIKE ?  OR';
+                    $sql_params[] = $val;
+                }
             }
-        } elseif ($val == 'notassigned') {
-            $temp .= ' a.user_id is NULL  OR';
         }
         
         // Do some weird stuff to add the subcategories to the query

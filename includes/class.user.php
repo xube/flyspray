@@ -6,7 +6,7 @@ class User
     var $perms = array();
     var $infos = array();
     var $searches = array();
-    var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort',
+    var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort', 'percent',
                              'opened', 'search_in_comments', 'search_for_all', 'reported');
 
     function User($uid = 0, $project = null)

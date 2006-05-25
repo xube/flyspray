@@ -709,6 +709,7 @@ Regards,',
 'userid'                  => 'User ID',
 'editassignments'         => 'Edit assignments',
 'preview'                 => 'Preview',
+'anyprogress'             => 'Any Progress',
 ); 
 
 ?>

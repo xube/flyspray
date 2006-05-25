@@ -65,7 +65,7 @@
         
         <label class="default multisel" for="due">{L('dueversion')}</label>
         <select name="due[]" id="due" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
-          {!tpl_options(array('' => L('dueanyversion')) + $proj->listVersions(false), Get::val('due', ''))}
+          {!tpl_options(array('' => L('dueanyversion'), 0 => L('unassigned')) + $proj->listVersions(false), Get::val('due', ''))}
         </select>
         
         <label class="default multisel" for="reported">{L('reportedversion')}</label>
@@ -84,6 +84,12 @@
                         array('open' => L('allopentasks')) +
                         array('closed' => L('allclosedtasks')) +
                         $proj->listTaskStatuses(), Get::val('status', 'open'))}
+        </select>
+        
+        <label class="default multisel" for="cat">{L('percentcomplete')}</label>
+        <select name="percent[]" id="percent" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
+          <?php $percentages = array(); for ($i = 0; $i <= 100; $i += 10) $percentages[$i] = $i; ?>
+          {!tpl_options(array('' => L('anyprogress')) + $percentages, Get::val('percent', ''))}
         </select>
         </fieldset>
 
