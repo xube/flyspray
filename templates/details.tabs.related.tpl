@@ -1,48 +1,56 @@
 <div id="related" class="tab">
-  <?php if (count($related)): ?>
-  <p><em>{L('thesearerelated')}</em></p>
-  <?php
-  foreach ($related as $row):
-  if ($user->can_edit_task($task_details) && !$task_details['is_closed']):
-  ?>
-  <div class="modifycomment">
-    <form action="{$baseurl}" method="post">
-      <p>
-        <input type="hidden" name="do" value="modify" />
-        <input type="hidden" name="action" value="remove_related" />
-        <input type="hidden" name="id" value="{Get::val('id')}" />
-        <input type="hidden" name="related_id" value="{$row['related_id']}" />
-        <input type="hidden" name="related_task" value="{$row['related_task']}" />
-        <button type="submit">{L('remove')}</button>
-      </p>
+  <table> <?php // table based layout, sorry. if anyone has the desire to face browser bugs, feel free to rewrite it with floats ?>
+   <tr><td>
+    <form method="post" action="{$baseurl}" >
+        <table id="tasks_related" class="userlist" style="float:left;">
+        <tr>
+          <th>
+            <a href="javascript:ToggleSelected('tasks_related')">
+              <img title="{L('toggleselected')}" alt="{L('toggleselected')}" src="{$this->get_image('kaboodleloop')}" width="16" height="16" />
+            </a>
+          </th>
+          <th>{L('tasksrelated')} ({count($related)})</th>
+        </tr>
+        <?php
+          foreach ($related as $row):
+        ?>
+        <tr>
+          <td class="ttcolumn">
+            <input type="checkbox" name="related_id[]" {!tpl_disableif(!$user->can_edit_task($task_details))} value="{$row['related_id']}" /></td>
+          <td>{!tpl_tasklink($row)}</td>
+        </tr>
+        <?php endforeach; ?>
+        <td colspan="2">
+            <input type="hidden" name="do" value="modify" />
+            <input type="hidden" name="action" value="remove_related" />
+            <input type="hidden" name="id" value="{Get::val('id')}" />
+            <button type="submit">{L('remove')}</button>
+        </td>
+        </table>
     </form>
-  </div>
-  <?php endif; ?>
-  <p>{!tpl_tasklink($row)}</p>
-  <?php endforeach; ?>
-  <?php endif; ?>
+    </td><td>
+    
+    <table id="duplicate_tasks" class="userlist">
+        <tr>
+          <th>{L('duplicatetasks')} ({count($duplicates)})</th>
+        </tr>
+        <?php foreach ($duplicates as $row): ?>
+        <tr><td>{!tpl_tasklink($row)}</td></tr>
+        <?php endforeach; ?>
+    </table>
+    </td></tr>
+  </table>
 
   <?php if ($user->can_edit_task($task_details) && !$task_details['is_closed']): ?>
   <form action="{$baseurl}" method="post" id="formaddrelatedtask">
-    <p>
+    <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="add_related" />
       <input type="hidden" name="this_task" value="{Get::val('id')}" />
       <label>{L('addnewrelated')}
         <input name="related_task" type="text" class="text" size="10" maxlength="10" /></label>
       <button type="submit">{L('add')}</button>
-    </p>
+    </div>
   </form>
-  <?php endif; ?>
-
-  <?php if (count($related_to)): ?>
-  <p><em>{L('otherrelated')}</em></p>
-  <?php foreach ($related_to as $row): ?>
-  <p>{!tpl_tasklink($row)}</p>
-  <?php endforeach; ?>
-  <?php endif; ?>
-  
-  <?php if (!count($related_to) && !count($related)): ?>
-  <p><em>{L('norelated')}</em></p>
   <?php endif; ?>
 </div>

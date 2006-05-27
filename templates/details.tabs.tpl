@@ -6,7 +6,7 @@
   <?php endif; ?>
 
   <li id="relatedtab">
-  <a href="#related">{L('relatedtasks')} ({!count($related)}/{!count($related_to)})</a>
+  <a href="#related">{L('relatedtasks')} ({!count($related)}/{!count($duplicates)})</a>
   </li>
 
   <?php if ($user->perms['manage_project']): ?>

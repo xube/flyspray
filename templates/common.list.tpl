@@ -35,7 +35,7 @@
       <?php endif; ?>
       <td title="Delete this item from the list">
         <input id="delete{$row[$list_type.'_id']}" type="checkbox"
-        <?php if ($row['used_in_tasks'] || ($list_type == 'status' && $row[$list_type.'_id'] < 7)): ?>
+        <?php if ($row['used_in_tasks'] || ($list_type == 'status' && $row[$list_type.'_id'] < 7) || ($list_type == 'resolution' && $row[$list_type.'_id'] == 6)): ?>
         disabled="disabled"
         <?php endif; ?>
         name="delete[{$row[$list_type.'_id']}]" value="1" />

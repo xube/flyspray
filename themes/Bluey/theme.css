@@ -517,6 +517,17 @@ div#taskdetails table th {
 	font-weight:700;
 }
 
+table#tasks_related {
+	width:35em;
+	margin-bottom:0.5em;
+}
+
+table#duplicate_tasks {
+	width:25em;
+	margin-bottom:0.5em;
+	margin-left:0.5em;
+}
+
 /* div#content is a generic container for anything but the title and
 the footer paragraph */
 div#content {
@@ -1185,6 +1196,10 @@ img.middle {
 
 .inline,table.list label,p.admin label,form#formaddrelatedtask label {
 	display:inline;
+}
+
+form#formaddrelatedtask {
+	padding:0.2em;
 }
 
 div#loginbox p,div#search p {

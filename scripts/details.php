@@ -145,19 +145,23 @@ else {
     $page->assign('comment_attachments', $attachments);
 
     // Relations, notifications and reminders
-    $sql = $db->Query('SELECT  *
+    $sql = $db->Query('SELECT  t.*, r.*, s.status_name, res.resolution_name
                          FROM  {related} r
-                    LEFT JOIN  {tasks} t ON r.related_task = t.task_id
-                        WHERE  r.this_task = ?
-                               AND ( t.mark_private = 0 OR ? = 1 )',
-            array($task_id, $user->perms['manage_project']));
+                    LEFT JOIN  {tasks} t ON (r.related_task = t.task_id AND r.this_task = ? OR r.this_task = t.task_id AND r.related_task = ?)
+                    LEFT JOIN  {list_status} s ON t.item_status = s.status_id 
+                    LEFT JOIN  {list_resolution} res ON t.resolution_reason = res.resolution_id 
+                        WHERE  t.task_id is NOT NULL AND is_duplicate = 0 AND ( t.mark_private = 0 OR ? = 1 )',
+            array($task_id, $task_id, $user->perms['manage_project']));
     $page->assign('related', $db->fetchAllArray($sql));
 
-    $sql = $db->Query('SELECT  *
+    $sql = $db->Query('SELECT  t.*, r.*, s.status_name, res.resolution_name
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON r.this_task = t.task_id
-                        WHERE  r.related_task = ?', array($task_id));
-    $page->assign('related_to', $db->fetchAllArray($sql));
+                    LEFT JOIN  {list_status} s ON t.item_status = s.status_id 
+                    LEFT JOIN  {list_resolution} res ON t.resolution_reason = res.resolution_id 
+                        WHERE  is_duplicate = 1 AND r.related_task = ?',
+                      array($task_id));
+    $page->assign('duplicates', $db->fetchAllArray($sql));
 
     $sql = $db->Query('SELECT  *
                          FROM  {notifications} n

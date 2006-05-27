@@ -364,3 +364,8 @@ ALTER TABLE `flyspray_cache` CHANGE `project` `project_id` INT( 11 ) NOT NULL DE
 -- Florian Schmitz, 7 May 2006
 ALTER TABLE `flyspray_groups` ADD `edit_assignments` TINYINT( 1 ) NOT NULL DEFAULT '0' AFTER `add_votes` ;
 UPDATE `flyspray_groups` SET `edit_assignments` = '1' WHERE `group_id` =2 LIMIT 1 ;
+
+-- Florian Schmitz, 27 May 2006
+ALTER TABLE `flyspray_related` ADD `is_duplicate` TINYINT( 1 ) NOT NULL DEFAULT '0';
+ALTER TABLE `flyspray_related` DROP INDEX `this_task`;
+ALTER TABLE `flyspray_related` ADD UNIQUE `this_task` ( `this_task` , `related_task` , `is_duplicate` );

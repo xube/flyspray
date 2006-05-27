@@ -20,8 +20,8 @@ if ($lt = Post::val('list_type')) {
 }
 
 function Post_to0($key) { return Post::val($key, 0); }
-if (Req::has('task_id')){
-    $old_details = $fs->GetTaskDetails(Req::val('task_id'));
+if (Req::has('task_id') || Req::has('id')) {
+    $old_details = $fs->GetTaskDetails(Req::val('task_id', Req::has('id')));
 }
 // Adding a new task  {{{
 if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
@@ -179,6 +179,14 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
                        SET  resolved_by = ?, time_resolved = ?
                      WHERE  task_id = ? AND request_type = ?",
                 array($user->id, time(), Post::val('task_id'), 1));
+    }
+    
+    if (Post::val('resolution_reason') == 6) {
+        preg_match("/\b(?:FS#|bug )(\d+)\b/", Post::val('closure_comment'), $dupe_of);
+        if (count($dupe_of)) {
+            $db->Query('INSERT INTO {related} (this_task, related_task, is_duplicate) VALUES(?,?,1)',
+                        array(Post::val('task_id'), $dupe_of[1]));
+        }
     }
 
     $_SESSION['SUCCESS'] = L('taskclosedmsg');
@@ -920,13 +928,15 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
 // Removing a related task entry {{{
 elseif (Post::val('action') == "remove_related" && $user->can_edit_task($old_details)) {
 
-    $db->Query("DELETE FROM {related} WHERE related_id = ?", array(Post::val('related_id')));
-
-    $fs->logEvent(Post::val('id'), 12, Post::val('related_task'));
-    $fs->logEvent(Post::val('related_task'), 16, Post::val('id'));
+    foreach (Post::val('related_id') as $related) {
+        $db->Query('DELETE FROM {related} WHERE related_id = ? AND (this_task = ? OR related_task = ?)',
+                   array($related, Post::val('id'), Post::val('id')));
+        $fs->logEvent(Post::val('id'), 12, $related);
+        $fs->logEvent($related, 16, Post::val('id'));
+    }
 
     $_SESSION['SUCCESS'] = L('relatedremoved');
-    Flyspray::Redirect(CreateURL('details', Post::val('id')));
+    Flyspray::Redirect(CreateURL('details', Post::val('id')) . '#related');
 
 } // }}}
 // adding a user to the notification list {{{
@@ -1342,5 +1352,12 @@ elseif (Get::val('action') == 'addvote') {
         Flyspray::Redirect(CreateURL('details', Get::val('id')));
     }
     
-} // }}}
+} else {
+    $_SESSION['ERROR'] = L('databasemodfailed');
+    if (Req::has('task_id') || Req::has('id')) {
+        Flyspray::Redirect(CreateURL('details', Req::val('task_id', Req::val('id'))));
+    } else {
+        Flyspray::Redirect($baseurl);
+    }
+}// }}}
 ?>

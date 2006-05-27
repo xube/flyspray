@@ -658,7 +658,6 @@ Regards,',
 'Redirect'                => 'Redirect',
 'redirectmsg'             => 'If your browser does not support meta redirection please click %sHERE%s to be redirected',
 'allowclosedcomments'     => 'Allow comments on closed tasks',
-'norelated'               => 'No related tasks.',
 'comment'                 => 'Comment',
 'editowncomments'         => 'Edit own comments',
 'reopened'                => 'Reopened',
@@ -710,6 +709,9 @@ Regards,',
 'editassignments'         => 'Edit assignments',
 'preview'                 => 'Preview',
 'anyprogress'             => 'Any Progress',
+'tasksrelated'            => 'Tasks related to this task',
+'duplicatetasks'          => 'Duplicate tasks of this task',
+'databasemodfailed'       => 'Database modification failed. Possible reasons are insufficient permissions.',
 ); 
 
 ?>
