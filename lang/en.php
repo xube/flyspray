@@ -509,7 +509,7 @@ Regards,',
 'relatedproject'          => 'Task is attached to a different project.',
 'addanyway'               => 'Add anyway',
 'cancel'                  => 'Cancel',
-'alreadyedited'           => 'This task was edited by someone else before you saved.',
+'alreadyedited'           => 'This task was edited by someone else before you saved. Do you still want to save your changes?',
 'saveanyway'              => 'Save my changes anyway',
 'nouserselected'          => 'No user selected.  Select at least one user before trying again.',
 'groupswitchupdated'      => 'User groups modified successfully.',
@@ -712,6 +712,7 @@ Regards,',
 'tasksrelated'            => 'Tasks related to this task',
 'duplicatetasks'          => 'Duplicate tasks of this task',
 'databasemodfailed'       => 'Database modification failed. Possible reasons are insufficient permissions.',
+'frequency'               => 'Frequency',
 ); 
 
 ?>

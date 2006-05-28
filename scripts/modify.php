@@ -51,100 +51,95 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
         Flyspray::Redirect(CreateURL('edittask', $old_details['task_id']));
     }
 
-    if (Post::val('edit_start_time') < $old_details['last_edited_time']) {
-        // if this task has already been modified before we clicked "save"...
-        // we need to confirm that the we really wants to save our changes
-        $page->pushTpl('details.edit.conflict.tpl');
+
+    if ($due_date = Post::val('due_date', 0)) {
+        $due_date = strtotime(Post::val('due_date') . '+23 hours 59 minutes 59 seconds');
     }
-    else {
-        if ($due_date = Post::val('due_date', 0)) {
-            $due_date = strtotime(Post::val('due_date') . '+23 hours 59 minutes 59 seconds');
-        }
 
-        $time = time();
+    $time = time();
 
-        $db->Query('UPDATE  {tasks}
-                       SET  attached_to_project = ?, task_type = ?, item_summary = ?,
-                            detailed_desc = ?, item_status = ?,
-                            product_category = ?, closedby_version = ?, operating_system = ?,
-                            task_severity = ?, task_priority = ?, last_edited_by = ?,
-                            last_edited_time = ?, due_date = ?, percent_complete = ?, product_version = ?
-                     WHERE  task_id = ?',
-                array(Post::val('attached_to_project'), Post::val('task_type'),
-                    Post::val('item_summary'), Post::val('detailed_desc'),
-                    Post::val('item_status'),
-                    Post::val('product_category'), Post::val('closedby_version', 0),
-                    Post::val('operating_system'), Post::val('task_severity'),
-                    Post::val('task_priority'), intval($user->id), $time, $due_date,
-                    Post::val('percent_complete'), Post::val('reportedver'),
-                    Post::val('task_id')));
+    $db->Query('UPDATE  {tasks}
+                   SET  attached_to_project = ?, task_type = ?, item_summary = ?,
+                        detailed_desc = ?, item_status = ?,
+                        product_category = ?, closedby_version = ?, operating_system = ?,
+                        task_severity = ?, task_priority = ?, last_edited_by = ?,
+                        last_edited_time = ?, due_date = ?, percent_complete = ?, product_version = ?
+                 WHERE  task_id = ?',
+            array(Post::val('attached_to_project'), Post::val('task_type'),
+                Post::val('item_summary'), Post::val('detailed_desc'),
+                Post::val('item_status'),
+                Post::val('product_category'), Post::val('closedby_version', 0),
+                Post::val('operating_system'), Post::val('task_severity'),
+                Post::val('task_priority'), intval($user->id), $time, $due_date,
+                Post::val('percent_complete'), Post::val('reportedver'),
+                Post::val('task_id')));
+    
+    // Update the list of users assigned this task
+    if ($user->perms['edit_assignments'] && Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
         
-        // Update the list of users assigned this task
-        if ($user->perms['edit_assignments'] && Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
-            
-            // Delete the current assignees for this task
-            $db->Query('DELETE FROM {assigned}
-                              WHERE task_id = ?',
-                                    array(Post::val('task_id')));
+        // Delete the current assignees for this task
+        $db->Query('DELETE FROM {assigned}
+                          WHERE task_id = ?',
+                                array(Post::val('task_id')));
 
-            // Convert assigned_to and store them in the 'assigned' table
-            foreach (Flyspray::int_explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
-            {
-                $db->Query('INSERT INTO {assigned}
-                                      (task_id, user_id)
-                               VALUES (?,?)',
-                           array(Post::val('task_id'), $val));
-            }
-         }
+        // Convert assigned_to and store them in the 'assigned' table
+        foreach (Flyspray::int_explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
+        {
+            $db->Query('INSERT INTO {assigned}
+                                  (task_id, user_id)
+                           VALUES (?,?)',
+                       array(Post::val('task_id'), $val));
+        }
+     }
 
-        // Get the details of the task we just updated
-        // To generate the changed-task message
-        $new_details_full = $fs->GetTaskDetails(Post::val('task_id'));
-        // Not very nice...maybe combine compare_tasks() and logEvent() ?
-        $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?",
-                             array(Post::val('task_id')));
-        $new_details = $db->FetchRow($result);
+    // Get the details of the task we just updated
+    // To generate the changed-task message
+    $new_details_full = $fs->GetTaskDetails(Post::val('task_id'));
+    // Not very nice...maybe combine compare_tasks() and logEvent() ?
+    $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?",
+                         array(Post::val('task_id')));
+    $new_details = $db->FetchRow($result);
 
-        foreach ($new_details as $key => $val) {
-            if (strstr($key, 'last_edited_') || $key == 'assigned_to'
-                    || is_numeric($key))
-            {
-                continue;
-            }
-            
-            if ($val != $old_details[$key]) {
-                // Log the changed fields in the task history
-                $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key, $time);
-            }
+    foreach ($new_details as $key => $val) {
+        if (strstr($key, 'last_edited_') || $key == 'assigned_to'
+                || is_numeric($key))
+        {
+            continue;
         }
         
-        $changes = $fs->compare_tasks($old_details, $new_details_full);
-        if(count($changes) > 0) {
-            $notify->Create(NOTIFY_TASK_CHANGED, Post::val('task_id'), $changes);
+        if ($val != $old_details[$key]) {
+            // Log the changed fields in the task history
+            $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key, $time);
         }
-
-        if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
-            // Log to task history
-            $fs->logEvent(Post::val('task_id'), 14, trim(Post::val('assigned_to')), Post::val('old_assigned'), null, $time);
-
-            // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-            if (Post::val('assigned_to') != '') {
-                $new_assignees = array_diff(Flyspray::int_explode(' ', Post::val('assigned_to')), Flyspray::int_explode(' ', Post::val('old_assigned')));
-                // Remove current user from notification list
-                if (!$user->prefs['notify_own']) {
-                    $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
-                }
-                $notify->Create(NOTIFY_NEW_ASSIGNEE, Post::val('task_id'), null, $notify->SpecificAddresses($new_assignees));
-            }
-        }
-        
-        $be->add_comment($old_details, Post::val('comment_text'), $time);
-        $be->DeleteFiles($user, Post::val('task_id'));
-        $be->UploadFiles($user, Post::val('task_id'), '0', 'usertaskfile');
-
-        $_SESSION['SUCCESS'] = L('taskupdated');
-        Flyspray::Redirect(CreateURL('details', Post::val('task_id')));
     }
+    
+    $changes = $fs->compare_tasks($old_details, $new_details_full);
+    if(count($changes) > 0) {
+        $notify->Create(NOTIFY_TASK_CHANGED, Post::val('task_id'), $changes);
+    }
+
+    if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
+        // Log to task history
+        $fs->logEvent(Post::val('task_id'), 14, trim(Post::val('assigned_to')), Post::val('old_assigned'), null, $time);
+
+        // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
+        if (Post::val('assigned_to') != '') {
+            $new_assignees = array_diff(Flyspray::int_explode(' ', Post::val('assigned_to')), Flyspray::int_explode(' ', Post::val('old_assigned')));
+            // Remove current user from notification list
+            if (!$user->prefs['notify_own']) {
+                $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
+            }
+            $notify->Create(NOTIFY_NEW_ASSIGNEE, Post::val('task_id'), null, $notify->SpecificAddresses($new_assignees));
+        }
+    }
+    
+    $be->add_comment($old_details, Post::val('comment_text'), $time);
+    $be->DeleteFiles($user, Post::val('task_id'));
+    $be->UploadFiles($user, Post::val('task_id'), '0', 'usertaskfile');
+
+    $_SESSION['SUCCESS'] = L('taskupdated');
+    Flyspray::Redirect(CreateURL('details', Post::val('task_id')));
+
 } // }}}
 // closing a task {{{
 elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
@@ -1063,13 +1058,15 @@ elseif (Post::val('action') == "addreminder" && $user->perms['manage_project']) 
 // removing a reminder {{{
 elseif (Post::val('action') == "deletereminder" && $user->perms['manage_project']) {
 
-    $sql = $db->Query("SELECT to_user_id FROM {reminders} WHERE reminder_id = ?",
-            array(Post::val('reminder_id')));
-    $reminder = $db->fetchOne($sql);
-    $db->Query("DELETE FROM {reminders} WHERE reminder_id = ?",
-            array(Post::val('reminder_id')));
+    foreach (Post::val('reminder_id') as $reminder_id) {
+        $sql = $db->Query('SELECT to_user_id FROM {reminders} WHERE reminder_id = ?',
+                          array($reminder_id));
+        $reminder = $db->fetchOne($sql);
+        $db->Query('DELETE FROM {reminders} WHERE reminder_id = ?',
+                   array($reminder_id));
 
-    $fs->logEvent(Post::val('task_id'), 18, $reminder);
+        $fs->logEvent(Post::val('task_id'), 18, $reminder);
+    }
 
     $_SESSION['SUCCESS'] = L('reminderdeletedmsg');
     Flyspray::Redirect(CreateURL('details', Req::val('task_id')).'#remind');

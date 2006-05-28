@@ -135,8 +135,7 @@ class Backend
                          LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
                          LEFT JOIN {assigned} ass ON t.task_id = ass.task_id
                              WHERE ($where) AND u.user_name is NOT NULL
-                                            AND (g.edit_assignments = 1
-                                                AND (g.assign_to_self = 1 AND ass.user_id is NULL OR g.assign_others_to_self = 1 AND ass.user_id != ?)
+                                            AND ((g.assign_to_self = 1 AND ass.user_id is NULL OR g.assign_others_to_self = 1 AND ass.user_id != ?)
                                                 OR g.is_admin = 1 OR g.manage_project = 1)
                           GROUP BY t.task_id", array($user_id, $user_id));
         
@@ -189,7 +188,7 @@ class Backend
                          LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
                          LEFT JOIN {assigned} ass ON t.task_id = ass.task_id
                              WHERE ($where) AND u.user_name is NOT NULL
-                                            AND (g.add_to_assignees = 1 AND g.edit_assignments = 1 OR g.is_admin = 1 or g.manage_project = 1)
+                                            AND (g.add_to_assignees = 1 OR g.is_admin = 1 or g.manage_project = 1)
                                             AND ass.user_id != ?
                           GROUP BY t.task_id", array($user->id, $user->id));
                           

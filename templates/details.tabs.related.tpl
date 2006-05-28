@@ -2,7 +2,7 @@
   <table> <?php // table based layout, sorry. if anyone has the desire to face browser bugs, feel free to rewrite it with floats ?>
    <tr><td>
     <form method="post" action="{$baseurl}" >
-        <table id="tasks_related" class="userlist" style="float:left;">
+        <table id="tasks_related" class="userlist">
         <tr>
           <th>
             <a href="javascript:ToggleSelected('tasks_related')">

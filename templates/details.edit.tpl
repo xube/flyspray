@@ -1,5 +1,5 @@
 <div id="taskdetails">
-  <form action="{$baseurl}" enctype="multipart/form-data" method="post">
+  <form action="{$baseurl}" id="taskeditform" enctype="multipart/form-data" method="post">
 	 <div>
 		<h2 class="summary severity{$task_details['task_severity']}">
 		  FS#{$task_details['task_id']} &mdash;
@@ -187,7 +187,7 @@
               </div>
           <?php endif; ?>
 		  <p class="buttons">
-              <button type="submit" accesskey="s">{L('savedetails')}</button>
+              <button type="submit" accesskey="s" onclick="return checksave({$task_details['task_id']}, {time()}, '{$baseurl}', '{L('alreadyedited')}')">{L('savedetails')}</button>
               <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
               <button tabindex="9" type="button" onclick="showPreview('details', '{$baseurl}', 'preview')">{L('preview')}</button>
               <?php endif; ?>

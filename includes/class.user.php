@@ -217,16 +217,15 @@ class User
         global $fs;
         $assignees = $fs->GetAssignees($task['task_id']);
             
-        return $this->perms['edit_assignments'] &&
-                  (($this->perms['assign_to_self'] && empty($assignees))
-               || ($this->perms['assign_others_to_self'] && !in_array($this->id, $assignees)));
+        return ($this->perms['assign_to_self'] && empty($assignees))
+               || ($this->perms['assign_others_to_self'] && !in_array($this->id, $assignees));
     }
     
     function can_add_to_assignees($task)
 	 { 
         global $fs;
          
-        return ($this->perms['edit_assignments'] && $this->perms['add_to_assignees'] && !in_array($this->id, $fs->GetAssignees($task['task_id'])));
+        return ($this->perms['add_to_assignees'] && !in_array($this->id, $fs->GetAssignees($task['task_id'])));
     }
 	 
     function can_close_task($task)

@@ -148,6 +148,21 @@ function addUploadFields(id) {
     el.appendChild(newBox);
   }
 }
+
+function checksave(taskid, time, url, message) {
+    document.foo = "bar";
+    url = url + 'javascript/callbacks/checksave.php?time=' + time + '&taskid=' + taskid;
+    var myAjax = new Ajax.Request(url, {method: 'get', onComplete:function getResponse(originalRequest)
+	{
+        if(originalRequest.responseText == '') {
+        if (confirm(message)) {
+            document.getElementById('taskeditform').submit();
+        }
+        } else document.getElementById('taskeditform').submit();
+    
+	}});
+    return false;
+}
 function removeUploadField(element, id) {
   if (!id) {
     id = 'uploadfilebox';
@@ -233,19 +248,6 @@ function selectMove(id, step) {
         }
         i++;
     }
-}
-
-function checknewtask(message)
-{
-	var itemsummary = document.getElementById("itemsummary").value;
-	var details = document.getElementById("details").value;
-	
-	if(itemsummary == "" || details == "")
-	{
-		alert(message);
-		return false;
-	}
-	return true;
 }
 var Cookie = {
   getVar: function(name) {
@@ -354,19 +356,17 @@ function showPreview(textfield, baseurl, field)
     img.alt = 'Loading...';
     preview.appendChild(img);
     
-    var text = document.getElementById(textfield).value;
+    var text = new String(document.getElementById(textfield).value);
+    text = text.replace(/&/g,"%26");
+    text = text.replace(/=/g,"%3D");
     var url = baseurl + 'javascript/callbacks/getpreview.php';
-    var myAjax = new Ajax.Updater(field, url, {parameters:'text=' + text, method: 'post', onComplete:previewComplete});
+    var myAjax = new Ajax.Updater(field, url, {parameters:'text=' + text, method: 'post'});
 
     if (text == '') {
         hidestuff(field);
     } else {
         showstuff(field);
     }
-}
-function previewComplete() {
-    var oNodeToRemove = document.getElementById('temp_img');
-    oNodeToRemove.parentNode.removeChild(oNodeToRemove);
 }
 function checkname(value){
     new Ajax.Request('javascript/callbacks/searchnames.php?name='+value, {onSuccess: function(t){ allow(t.responseText); } });
