@@ -35,7 +35,12 @@
         <script type="text/javascript" src="{$baseurl}plugins/{$file}"></script>
     <?php endforeach; ?>
   </head>
-  <body onload="perms = new Perms('permissions')">
+  <body onload="perms = new Perms('permissions');<?php
+        if (!empty($_SESSION['SUCCESS'])):
+        ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)',2000);<?php
+        elseif (!empty($_SESSION['ERROR'])):
+        ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)',2000);<?php endif ?>">
+  
   <div id="container">
     <!-- Remove this to remove the logo -->
     <h1 id="title"><a href="{$baseurl}">{$proj->prefs['project_title']}</a></h1>

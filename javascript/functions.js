@@ -1,5 +1,3 @@
-// Set up the error/success bar fader
-addEvent(window,'load',setUpFade);
 // Set up the task list onclick handler
 addEvent(window,'load',setUpTasklistTable);
 function Disable(formid)
@@ -9,76 +7,34 @@ function Disable(formid)
 }
 
  function showstuff(boxid){
-   document.getElementById(boxid).style.visibility="visible";
-   document.getElementById(boxid).style.display="block";
+   $(boxid).style.visibility='visible';
+   $(boxid).style.display='block';
 }
 
 function hidestuff(boxid){
-   document.getElementById(boxid).style.visibility="hidden";
-   document.getElementById(boxid).style.display="none";
+   $(boxid).style.visibility='hidden';
+   $(boxid).style.display='none';
 }
 
 function showhidestuff(boxid) {
-   switch (document.getElementById(boxid).style.visibility) {
-      case '': document.getElementById(boxid).style.visibility="visible"; break
-      case 'hidden': document.getElementById(boxid).style.visibility="visible"; break
-      case 'visible': document.getElementById(boxid).style.visibility="hidden"; break
+   switch ($(boxid).style.visibility) {
+      case '': $(boxid).style.visibility='visible'; break
+      case 'hidden': $(boxid).style.visibility='visible'; break
+      case 'visible': $(boxid).style.visibility='hidden'; break
    }
-   switch (document.getElementById(boxid).style.display) {
-      case '': document.getElementById(boxid).style.display="block"; break
-      case 'none': document.getElementById(boxid).style.display="block"; break
-      case 'block': document.getElementById(boxid).style.display="none"; break
-      case 'inline': document.getElementById(boxid).style.display="none"; break
+   switch ($(boxid).style.display) {
+      case '': $(boxid).style.display='block'; break
+      case 'none': $(boxid).style.display='block'; break
+      case 'block': $(boxid).style.display='none'; break
+      case 'inline': $(boxid).style.display='none'; break
    }
-}
-
-function setUpFade() {
-  if (document.getElementById('errorbar')) {
-    elName = 'errorbar';
-  } else if (document.getElementById('successbar')) {
-    elName = 'successbar';
-  } else {
-    return;
-  }
-  fader(elName,2000,50,2500);
-}
-// Fades an element
-// elName - id of the element
-// start - time in ms when the fading should start
-// steps - number of fading steps
-// time - the length of the fade in ms
-function fader(elName,start,steps,time) {
-  setOpacity(elName,100); // To prevent flicker in Firefox
-                          // The first time the opacity is set
-                          // the element flickers in Firefox
-  fadeStep = 100/steps;
-  timeStep = time/steps;
-  opacity = 100;
-  time = start + 100;
-  while (opacity >=0) {
-    window.setTimeout("setOpacity('"+elName+"',"+opacity+")",time);
-    opacity -= fadeStep;
-    time += timeStep;
-  }
-}
-function setOpacity(elName,opacity) {
-  opacity = (opacity == 100)?99:opacity;
-  el = document.getElementById(elName);
-  // IE
-  el.style.filter = "alpha(opacity:"+opacity+")";
-  // Safari < 1.2, Konqueror
-  el.style.KHTMLOpacity = opacity/100;
-  // Old Mozilla
-  el.style.MozOpacity = opacity/100;
-  // Safari >= 1.2, Firefox and Mozilla, CSS3
-  el.style.opacity = opacity/100
 }
 function setUpTasklistTable() {
-  if (!document.getElementById('tasklist_table')) {
+  if (!$('tasklist_table')) {
     // No tasklist on the page
     return;
   }
-  var table = document.getElementById('tasklist_table');
+  var table = $('tasklist_table');
   addEvent(table,'click',tasklistTableClick);
 }
 function tasklistTableClick(e) {
@@ -120,7 +76,7 @@ function eventGetSrc(e) {
 }
 
 function ToggleSelected(id) {
-  var inputs = document.getElementById(id).getElementsByTagName('input');
+  var inputs = $(id).getElementsByTagName('input');
   for (var i = 0; i < inputs.length; i++) {
     if(inputs[i].type == 'checkbox'){
       inputs[i].checked = !(inputs[i].checked);
@@ -132,14 +88,14 @@ function addUploadFields(id) {
   if (!id) {
     id = 'uploadfilebox';
   }
-  var el = document.getElementById(id);
+  var el = $(id);
   var span = el.getElementsByTagName('span')[0];
   if ('none' == span.style.display) {
     // Show the file upload box
     span.style.display = 'inline';
     // Switch the buttons
-    document.getElementById(id + '_attachafile').style.display = 'none';
-    document.getElementById(id + '_attachanotherfile').style.display = 'inline';
+    $(id + '_attachafile').style.display = 'none';
+    $(id + '_attachanotherfile').style.display = 'inline';
     
   } else {
     // Copy the first file upload box and clear it's value
@@ -150,16 +106,12 @@ function addUploadFields(id) {
 }
 
 function checksave(taskid, time, url, message) {
-    document.foo = "bar";
     url = url + 'javascript/callbacks/checksave.php?time=' + time + '&taskid=' + taskid;
-    var myAjax = new Ajax.Request(url, {method: 'get', onComplete:function getResponse(originalRequest)
+    var myAjax = new Ajax.Request(url, {method: 'get', onComplete:function(originalRequest)
 	{
-        if(originalRequest.responseText == '') {
-        if (confirm(message)) {
-            document.getElementById('taskeditform').submit();
+        if(originalRequest.responseText == 'ok' || confirm(message)) {
+            $('taskeditform').submit();
         }
-        } else document.getElementById('taskeditform').submit();
-    
 	}});
     return false;
 }
@@ -167,15 +119,15 @@ function removeUploadField(element, id) {
   if (!id) {
     id = 'uploadfilebox';
   }
-  var el = document.getElementById(id);
+  var el = $(id);
   var span = el.getElementsByTagName('span');
   if (1 == span.length) {
     // Clear and hide the box
     span[0].style.display='none';
     span[0].getElementsByTagName('input')[0].value = '';
     // Switch the buttons
-    document.getElementById(id + '_attachafile').style.display = 'inline';
-    document.getElementById(id + '_attachanotherfile').style.display = 'none';
+    $(id + '_attachafile').style.display = 'inline';
+    $(id + '_attachanotherfile').style.display = 'none';
   } else {
     el.removeChild(element.parentNode);
   }
@@ -183,8 +135,8 @@ function removeUploadField(element, id) {
 
 function updateDualSelectValue(id)
 {
-    var rt  = document.getElementById('r'+id);
-    var val = document.getElementById('v'+id);
+    var rt  = $('r'+id);
+    var val = $('v'+id);
 
     val.value = '';
 
@@ -196,10 +148,10 @@ function updateDualSelectValue(id)
 
 function dualSelect(from, to, id) {
     if (typeof(from) == 'string') {
-        from = document.getElementById(from+id);
+        from = $(from+id);
     }
     if (typeof(to) == 'string') {
-        to = document.getElementById(to+id);
+        to = $(to+id);
     }
 
     var i = 0;
@@ -223,7 +175,7 @@ function dualSelect(from, to, id) {
 }
 
 function selectMove(id, step) {
-    var sel = document.getElementById('r'+id);
+    var sel = $('r'+id);
 
     var i = 0;
 
@@ -271,12 +223,12 @@ var Cookie = {
   }  
 };
 function setUpSearchBox() {
-  if (document.getElementById('advancedsearch')) {
+  if ($('advancedsearch')) {
     var state = Cookie.getVar('advancedsearch');
     if ('1' == state) {
-      var showState = document.getElementById('advancedsearchstate');
+      var showState = $('advancedsearchstate');
       showState.replaceChild(document.createTextNode('+'),showState.firstChild);
-      document.getElementById('sc2').style.display = 'block';
+      $('sc2').style.display = 'block';
     }
   }
 }
@@ -293,14 +245,14 @@ function toggleSearchBox(themeurl) {
   }
 }
 function deletesearch(id, url) {
-    var img = document.getElementById('rs' + id).getElementsByTagName('img')[0].src = url + 'themes/Bluey/ajax_load.gif';
+    var img = $('rs' + id).getElementsByTagName('img')[0].src = url + 'themes/Bluey/ajax_load.gif';
     url = url + 'javascript/callbacks/deletesearches.php';
     var myAjax = new Ajax.Request(url, {method: 'get', parameters: 'id=' + id,
-                     onSuccess:function remove_sentry()
+                     onSuccess:function()
                      {
-                        var oNodeToRemove = document.getElementById('rs' + id);
+                        var oNodeToRemove = $('rs' + id);
                         oNodeToRemove.parentNode.removeChild(oNodeToRemove);
-                        var table = document.getElementById('mysearchestable');
+                        var table = $('mysearchestable');
                         if(table.rows.length > 0) {
                             table.getElementsByTagName('tr')[table.rows.length-1].style.borderBottom = '0';
                         } else {
@@ -310,24 +262,24 @@ function deletesearch(id, url) {
                 });
 }
 function savesearch(query, baseurl, savetext) {
-    url = baseurl + 'javascript/callbacks/savesearches.php?' + query + '&search_name=' + document.getElementById('save_search').value;
-    if(document.getElementById('save_search').value != '') {
-        var old_text = document.getElementById('lblsaveas').firstChild.nodeValue;
-        document.getElementById('lblsaveas').firstChild.nodeValue = savetext;
+    url = baseurl + 'javascript/callbacks/savesearches.php?' + query + '&search_name=' + $('save_search').value;
+    if($('save_search').value != '') {
+        var old_text = $('lblsaveas').firstChild.nodeValue;
+        $('lblsaveas').firstChild.nodeValue = savetext;
         var myAjax = new Ajax.Request(url, {method: 'get',
-                     onComplete:function revert_saved()
+                     onComplete:function()
                      {
-                        document.getElementById('lblsaveas').firstChild.nodeValue=old_text;
+                        $('lblsaveas').firstChild.nodeValue=old_text;
                         var myAjax2 = new Ajax.Updater('mysearches', baseurl + 'javascript/callbacks/getsearches.php', { method: 'get'});
                      }
                      });
     }
 }
 function activelink(id) {
-    if(document.getElementById(id).className == 'active') {
-        document.getElementById(id).className = 'inactive';
+    if($(id).className == 'active') {
+        $(id).className = 'inactive';
     } else {
-        document.getElementById(id).className = 'active';
+        $(id).className = 'active';
     }
 }
 var useAltForKeyboardNavigation = false;  // Set this to true if you don't want to kill
@@ -347,7 +299,7 @@ function emptyElement(el) {
 }
 function showPreview(textfield, baseurl, field)
 {
-    var preview = document.getElementById('preview');
+    var preview = $('preview');
     emptyElement(preview);
     
     var img = document.createElement('img');
@@ -356,9 +308,9 @@ function showPreview(textfield, baseurl, field)
     img.alt = 'Loading...';
     preview.appendChild(img);
     
-    var text = new String(document.getElementById(textfield).value);
-    text = text.replace(/&/g,"%26");
-    text = text.replace(/=/g,"%3D");
+    var text = new String($(textfield).value);
+    text = text.replace(/&/g,'%26');
+    text = text.replace(/=/g,'%3D');
     var url = baseurl + 'javascript/callbacks/getpreview.php';
     var myAjax = new Ajax.Updater(field, url, {parameters:'text=' + text, method: 'post'});
 
@@ -372,15 +324,15 @@ function checkname(value){
     new Ajax.Request('javascript/callbacks/searchnames.php?name='+value, {onSuccess: function(t){ allow(t.responseText); } });
 }
 function allow(booler){
-    if(booler.indexOf("false") > -1) {
-        $('username').style.color ="red";
-        $('buSubmit').style.visibility = "hidden";
+    if(booler.indexOf('false') > -1) {
+        $('username').style.color ='red';
+        $('buSubmit').style.visibility = 'hidden';
         $('errormessage').innerHTML = booler.substring(6,booler.length);
     }
     else {
-        $('username').style.color ="green";
-        $('buSubmit').style.visibility = "visible";
-        $('errormessage').innerHTML = "";
+        $('username').style.color ='green';
+        $('buSubmit').style.visibility = 'visible';
+        $('errormessage').innerHTML = '';
     }  
 }
 function getHistory(id, baseurl, field, details)
@@ -399,7 +351,7 @@ function createClosure(obj, method) {
 }
 
 function Perms(id) {
-    this.div = document.getElementById(id);
+    this.div = $(id);
 }
 
 Perms.prototype.timeout = null;

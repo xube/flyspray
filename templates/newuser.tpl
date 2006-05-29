@@ -9,7 +9,7 @@
         <input type="hidden" name="action" value="newuser" />
         <label for="username">{L('username')}</label>
       </td>
-      <td><input id="username" name="user_name" class="required text" type="text" size="20" maxlength="20" onBlur="checkname(this.value);" /><br><span id="errormessage"></span></td>
+      <td><input id="username" name="user_name" class="required text" type="text" size="20" maxlength="20" onblur="checkname(this.value);" /><br><span id="errormessage"></span></td>
     </tr>
     <tr>
       <td><label for="userpass">{L('password')}</label></td>

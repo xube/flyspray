@@ -36,9 +36,9 @@ var Scriptaculous = {
         var path = scriptTags[i].src.replace(/scriptaculous\.js(\?.*)?$/,'');
         this.require(path + 'builder.js');
         this.require(path + 'effects.js');
-        this.require(path + 'dragdrop.js');
+        //this.require(path + 'dragdrop.js');
         this.require(path + 'controls.js');
-        this.require(path + 'slider.js');
+        //this.require(path + 'slider.js');
         break;
       }
     }

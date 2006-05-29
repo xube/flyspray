@@ -897,8 +897,11 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
     if ($proj->id == $relatedproject || Post::has('allprojects')) {
         $sql = $db->Query("SELECT related_id
                              FROM {related}
-                            WHERE this_task = ? and related_task = ?",
-                          array(Post::val('this_task'), Post::val('related_task')));
+                            WHERE this_task = ? AND related_task = ?
+                                  OR
+                                  related_task = ? AND this_task = ?",
+                          array(Post::val('this_task'), Post::val('related_task'),
+                                Post::val('this_task'), Post::val('related_task')));
        
         if ($db->CountRows($sql)) {
             $_SESSION['ERROR'] = L('relatederror');

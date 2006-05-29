@@ -27,4 +27,18 @@ while ($row = $db->FetchArray($check_sql))
     }
 }
 
+$check_sql = $db->Query('SELECT this_task, related_task FROM {related} WHERE is_duplicate = 0');
+$deleted = array();
+
+while ($row = $db->FetchArray($check_sql))
+{
+    $existing = $db->Query('SELECT related_id FROM {related} WHERE this_task = ? AND related_task = ? AND is_duplicate = 0',
+                            array($row['related_task'], $row['this_task']));
+                              
+    if ($db->CountRows($existing) == 1 && !isset($deleted[$row['related_task'].'-'.$row['this_task']])) {
+        $deleted[$row['this_task'].'-'.$row['related_task']] = true;
+        $db->Query('DELETE FROM {related} WHERE related_id = ?', array($db->FetchOne($existing)));
+    }
+}
+
 ?>
