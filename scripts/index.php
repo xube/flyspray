@@ -200,13 +200,19 @@ foreach ($submits as $key => $db_key) {
             }
         }
         
-        // Do some weird stuff to add the subcategories to the query
+        // Add the subcategories to the query
         if ($key == 'cat') {
-            $get_subs = $db->Query('SELECT  category_id
-                                      FROM  {list_category}
-                                     WHERE  parent_id = ?', array($val));
-
-            while ($row = $db->FetchArray($get_subs)) {
+            $result = $db->Query('SELECT  *
+                                    FROM  {list_category}
+                                   WHERE  category_id = ?',
+                                  array($val));
+            $cat_details = $db->FetchArray($result);
+        
+            $result = $db->Query('SELECT  *
+                                    FROM  {list_category}
+                                   WHERE  lft > ? AND rgt < ? AND project_id  = ?',
+                                   array($cat_details['lft'], $cat_details['rgt'], $cat_details['project_id']));
+            while ($row = $db->FetchRow($result)) {
                 $temp  .= ' product_category = ?  OR';
                 $sql_params[] = $row['category_id'];
             }

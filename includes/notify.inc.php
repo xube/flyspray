@@ -730,7 +730,7 @@ class Notifications {
 
    } // }}}
    // {{{ Create a standard address list of users (assignees, notif tab and proj addresses)
-   function Address($task_id)
+   function Address($task_id, $type)
    {
       global $db, $fs, $proj, $user;
 

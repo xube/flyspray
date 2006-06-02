@@ -133,60 +133,70 @@ class Project
                     array($this->id));
         }
     }
-
-    function listCatsIn($pm = false, $mother_cat = null)
+    
+    
+    function listCategories($project_id = null, $remove_root = true, $depth = true)
     {
         global $db;
-        if ($pm) {
-            if (is_null($mother_cat)) {
-                return $db->_cached_query(
-                        'pm_cats_in'.$mother_cat,
-                        "SELECT  c.*, count(t.task_id) AS used_in_tasks
-                           FROM  {list_category} c
-                      LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
-                          WHERE  project_id = ? AND parent_id < 1
-                       GROUP BY  c.category_id, c.project_id, c.category_name,
-                                 c.list_position, c.show_in_list, c.category_owner, c.parent_id
-                       ORDER BY  list_position",
-                        array($this->id));
-            } else {
-                return $db->_cached_query(
-                        'pm_cats_in'.$mother_cat,
-                        "SELECT  c.*, count(t.task_id) AS used_in_tasks
-                           FROM  {list_category} c
-                      LEFT JOIN  {tasks} t ON (t.product_category = c.category_id)
-                          WHERE  project_id = ? AND parent_id = ?
-                       GROUP BY  c.category_id, c.project_id, c.category_name,
-                                 c.list_position, c.show_in_list, c.category_owner, c.parent_id
-                       ORDER BY  list_position",
-                        array($this->id, $mother_cat));
+        
+        // start with a empty arrays
+        $right = array();
+        $cats = array();
+        $g_cats = array();
+        
+        // null = categories of current project + global project, int = categories of spcific project
+        if (is_null($project_id)) {
+            $project_id = $this->id;
+            if ($this->id != 0) {
+                $g_cats = $this->listCategories(0);
             }
-        } else {
-            $sql = $db->_cached_query('allcats',
-                              'SELECT * FROM {list_category}
-                               WHERE  show_in_list = 1 AND ( project_id = ? OR project_id = 0 )
-                               ORDER BY list_position', array($this->id));
-            $cats = array();
-            $return = array();
-            foreach ($sql as $row) {
-                $cats[$row['parent_id']][] = $row;
-            }
+        }
+        
+        // retrieve the left and right value of the root node
+        $result = $db->Query("SELECT lft, rgt
+                                FROM {list_category}
+                               WHERE category_name = 'root' AND lft = 1 AND project_id = ?",
+                             array($project_id));
+        $row = $db->FetchArray($result);
 
-            foreach ($cats as $pcats) {
-                foreach($pcats as $cat) {
-                    if ($cat['parent_id']) {
-                        continue;
-                    }
-                    $return[$cat['category_id']] = $cat['category_name'];
-                    if (isset($cats[$cat['category_id']])) {
-                        foreach ($cats[$cat['category_id']] as $subcat){
-                            $return[$subcat['category_id']] = '... ' . $subcat['category_name'];
-                        }
-                    }
+        // now, retrieve all descendants of the root node
+        $result = $db->Query('SELECT c.category_id, c.category_name, c.*, count(t.task_id) AS used_in_tasks
+                                FROM {list_category} c
+                           LEFT JOIN {tasks} t ON (t.product_category = c.category_id)
+                               WHERE project_id = ? AND lft BETWEEN ? AND ?
+                            GROUP BY c.category_id
+                            ORDER BY lft ASC',
+                             array($project_id, $row['lft'], $row['rgt']));
+
+        while ($row = $db->FetchRow($result)) {
+           // only check stack if there is one
+           if (count($right) > 0) {
+               // check if we should remove a node from the stack
+               while ($right[count($right)-1] < $row['rgt']) {
+                   array_pop($right);
+               }
+           }
+           $cats[] = $row + array('depth' => count($right)-1);
+
+           // add this node to the stack
+           $right[] = $row['rgt'];
+        }
+        
+        // Adjust output for select boxes
+        if ($depth) {
+            foreach ($cats as $key => $cat) {
+                if ($cat['depth'] > 0) {
+                    $cats[$key]['category_name'] = str_repeat('...', $cat['depth']) . $cat['category_name'];
+                    $cats[$key]['1'] = str_repeat('...', $cat['depth']) . $cat['1'];
                 }
             }
-            return $return;
         }
+        
+        if ($remove_root) {
+            unset($cats[0]);
+        }
+
+        return array_merge($cats, $g_cats);
     }
 
     function listResolutions($pm = false)

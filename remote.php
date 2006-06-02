@@ -331,7 +331,7 @@ function categoryArray()
 	
    global $proj;
 	
-   return rotateArray($proj->listCatsIn(),"category_id","category_name");
+   return rotateArray($proj->listCategories(),"category_id","category_name");
 	
 }
 /**

@@ -105,12 +105,12 @@ function addUploadFields(id) {
   }
 }
 
-function checksave(taskid, time, url, message) {
-    url = url + 'javascript/callbacks/checksave.php?time=' + time + '&taskid=' + taskid;
+function checkok(url, message, form) {
+
     var myAjax = new Ajax.Request(url, {method: 'get', onComplete:function(originalRequest)
 	{
         if(originalRequest.responseText == 'ok' || confirm(message)) {
-            $('taskeditform').submit();
+            $(form).submit();
         }
 	}});
     return false;

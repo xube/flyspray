@@ -35,7 +35,7 @@ class Backend
         // XXX keep permission checks in sync with class.user.php!
         $sql = $db->Query(" SELECT t.task_id
                               FROM {tasks} t
-                         LEFT JOIN {projects} p ON p.project_id = t.task_id
+                         LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
                          LEFT JOIN {assigned} a ON t.task_id = a.task_id AND a.user_id = ?
                          LEFT JOIN {groups} g ON g.belongs_to_project=p.project_id OR g.belongs_to_project = 0
                          LEFT JOIN {groups} g2 ON g2.belongs_to_project=p.project_id OR g2.belongs_to_project = 0
@@ -89,7 +89,7 @@ class Backend
         // XXX keep permission checks in sync with class.user.php!
         $sql = $db->Query(" SELECT t.task_id
                               FROM {tasks} t
-                         LEFT JOIN {projects} p ON p.project_id = t.task_id
+                         LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
                          LEFT JOIN {assigned} a ON t.task_id = a.task_id AND a.user_id = ?
                          LEFT JOIN {groups} g ON g.belongs_to_project=p.project_id OR g.belongs_to_project = 0
                          LEFT JOIN {groups} g2 ON g2.belongs_to_project=p.project_id OR g2.belongs_to_project = 0
@@ -129,7 +129,7 @@ class Backend
         
         $sql = $db->Query(" SELECT t.task_id
                               FROM {tasks} t
-                         LEFT JOIN {projects} p ON p.project_id = t.task_id
+                         LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
                          LEFT JOIN {groups} g ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
                          LEFT JOIN {users_in_groups} uig ON g.group_id = uig.group_id
                          LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
@@ -164,12 +164,12 @@ class Backend
     /* This function is for a user to assign multiple tasks to themselves.
        Expected args are user_id and an array of tasks.
     */
-    function AddToAssignees($user, $tasks)
+    function AddToAssignees($user, $tasks, $do = false)
     {
         global $db, $fs, $notify;
-        
-        if (!is_object($user)) {
-            $user = new User($user);
+
+        if (is_object($user)) {
+            $user = $user->id;
         }
 
         settype($tasks, 'array');
@@ -182,24 +182,23 @@ class Backend
         
         $sql = $db->Query(" SELECT t.task_id
                               FROM {tasks} t
-                         LEFT JOIN {projects} p ON p.project_id = t.task_id
+                         LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
                          LEFT JOIN {groups} g ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
                          LEFT JOIN {users_in_groups} uig ON g.group_id = uig.group_id
                          LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
-                         LEFT JOIN {assigned} ass ON t.task_id = ass.task_id
+                         LEFT JOIN {assigned} ass ON t.task_id = ass.task_id AND ass.user_id != ?
                              WHERE ($where) AND u.user_name is NOT NULL
-                                            AND (g.add_to_assignees = 1 OR g.is_admin = 1 or g.manage_project = 1)
-                                            AND ass.user_id != ?
-                          GROUP BY t.task_id", array($user->id, $user->id));
-                          
+                                            AND (g.add_to_assignees = 1 OR g.is_admin = 1 or g.manage_project = 1 OR 1 = ?)
+                          GROUP BY t.task_id", array($user, $do, $user));
+
         while ($row = $db->FetchRow($sql)) {
            $db->Query("INSERT INTO {assigned}
                                    (task_id, user_id)
                             VALUES (?,?)",
-                                   array($row['task_id'], $user->id));
+                                   array($row['task_id'], $user));
 
             if ($db->affectedRows()) {
-                $fs->logEvent($row['task_id'], 29, $user->id, implode(' ', $task['assigned_to']));
+                $fs->logEvent($row['task_id'], 29, $user, implode(' ', $task['assigned_to']));
                 $notify->Create(NOTIFY_ADDED_ASSIGNEES, $row['task_id']);
             }
             
@@ -208,6 +207,19 @@ class Backend
                 $fs->logEvent($row['task_id'], 0, 3, 1, 'item_status');
             }
         }
+    }
+    
+    function add_vote(&$user, $task_id)
+    {
+        global $db;
+        
+        if ($user->can_vote($task_id)) { 
+            $db->Query("INSERT INTO {votes}
+                                (user_id, task_id, date_time)
+                         VALUES (?,?,?)", array($user->id, $task_id, time()));
+            return true;
+        }
+        return false;
     }
     
     function add_comment($task, $comment_text, $time = null)
@@ -400,11 +412,15 @@ class Backend
         return true;
     }
     
-    function delete_user($uid)
+    function delete_user(&$user, $uid)
     {
         global $fs, $db;
         
-        $user = serialize($fs->getUserDetails($uid));
+        if (!$user->perms['is_admin']) {
+            return false;
+        }
+        
+        $user_data = serialize($fs->getUserDetails($uid));
         
         $sql = $db->Query('DELETE a, b
                              FROM {users} a, {users_in_groups} b
@@ -415,14 +431,18 @@ class Backend
         $db->Query('DELETE FROM {notifications} WHERE user_id = ?', array($uid));
         $db->Query('DELETE FROM {assigned}      WHERE user_id = ?', array($uid));
         
-        $fs->logEvent(0, 31, $user);
+        $fs->logEvent(0, 31, $user_data);
         
         return (bool) $db->affectedRows($sql);
     }
     
-    function delete_project($pid, $move_to = 0)
+    function delete_project(&$user, $pid, $move_to = 0)
     {
         global $fs, $db;
+        
+        if (!$user->perms['manage_project']) {
+            return false;
+        }
         
         if (!$move_to) {
             $db->Query('DELETE FROM {list_category}     WHERE project_id = ?', array($pid));
@@ -462,8 +482,11 @@ class Backend
    */
    function CreateTask($args)
    {
-        global $db, $fs, $user;
+        global $db, $fs, $user, $proj;
         $notify = new Notifications();
+        if ($proj->id !=  $args['project_id']) {
+            $proj = new Project($args['project_id']);
+        }
         
         if (count($args) < 3) {
             return null;
@@ -567,15 +590,19 @@ class Backend
         if (!empty($cat_details['category_owner'])) {
             $owner = $cat_details['category_owner'];
         }
-        elseif (!empty($cat_details['parent_id'])) {
-            $result = $db->Query('SELECT  category_owner
+        else {
+            // check parent categories
+            $result = $db->Query('SELECT  *
                                     FROM  {list_category}
-                                   WHERE  category_id = ?', array($cat_details['parent_id']));
-            $parent_cat_details = $db->FetchArray($result);
-
-            // If there's a parent category owner, send to them
-            if (!empty($parent_cat_details['category_owner'])) {
-                $owner = $parent_cat_details['category_owner'];
+                                   WHERE  lft < ? AND rgt > ? AND project_id  = ?
+                                ORDER BY  lft DESC',
+                                   array($cat_details['lft'], $cat_details['rgt'], $cat_details['project_id']));
+            while ($row = $db->FetchRow($result)) {
+                // If there's a parent category owner, send to them
+                if (!empty($row['category_owner'])) {
+                    $owner = $row['category_owner'];
+                    break;
+                }
             }
         }
 
@@ -584,8 +611,8 @@ class Backend
         }
 
         if ($owner) {
-            if ($proj->prefs['auto_assign'] && $args['item_status'] == 1) {
-                $this->AddToAssignees($owner, $task_id);
+            if ($proj->prefs['auto_assign'] && ($args['item_status'] == STATUS_UNCONFIRMED || $args['item_status'] == STATUS_NEW)) {
+                $this->AddToAssignees($owner, $task_id, true);
             }
             $this->AddToNotifyList($owner, array($task_id), true);
         }
@@ -603,6 +630,56 @@ class Backend
         }
         
         return $task_id;
+   }
+   
+   function close_task(&$user, $task_id, $reason, $comment, $mark100 = true)
+   {
+        global $db, $fs, $notify;
+        $old_details = $fs->GetTaskDetails($task_id);
+        
+        if (!$user->can_close_task($old_details)) {
+            return false;
+        }
+
+        $db->Query("UPDATE  {tasks}
+                       SET  date_closed = ?, closed_by = ?, closure_comment = ?,
+                            is_closed = '1', resolution_reason = ?
+                     WHERE  task_id = ?",
+                    array(time(), $user->id, $comment, $reason, $task_id));
+
+        if ($mark100) {
+        $db->Query("UPDATE {tasks} SET percent_complete = '100' WHERE task_id = ?",
+                array($task_id));
+
+        $fs->logEvent($task_id, '0', '100', $old_details['percent_complete'], 'percent_complete');
+        }
+
+        $notify->Create(NOTIFY_TASK_CLOSED, $task_id);
+        $fs->logEvent($task_id, 2, $reason, $comment);
+
+        if ($fs->AdminRequestCheck(1, $task_id)) {
+        // If there's an admin request related to this, close it
+        $db->Query("UPDATE  {admin_requests}
+                       SET  resolved_by = ?, time_resolved = ?
+                     WHERE  task_id = ? AND request_type = ?",
+                array($user->id, time(), $task_id, 1));
+        }
+
+        if ($reason == 6) {
+            preg_match("/\b(?:FS#|bug )(\d+)\b/", $comment, $dupe_of);
+            if (count($dupe_of)) {
+                $existing = $db->Query('SELECT * FROM {related} WHERE this_task = ? AND related_task = ? AND is_duplicate = 1',
+                                            array($task_id, $dupe_of[1]));
+                                       
+                if ($db->CountRows($existing) == 0) {  
+                    $db->Query('INSERT INTO {related} (this_task, related_task, is_duplicate) VALUES(?,?,1)',
+                                array($task_id, $dupe_of[1]));
+                }
+            }
+            $this->add_vote(new User($old_details['opened_by']), $dupe_of[1]);
+        }
+        
+        return true;
    }
 
     /************************************************************************************************

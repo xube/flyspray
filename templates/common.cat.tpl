@@ -6,7 +6,6 @@
          <thead>
          <tr>
            <th>{L('name')}</th>
-           <th>{L('order')}</th>
            <th>{L('owner')}</th>
            <th>{L('show')}</th>
            <th>{L('delete')}</th>
@@ -14,19 +13,19 @@
        </thead>
         <?php
         $countlines = -1;
-
-        foreach ($proj->listCatsIn(true) as $row):
+        $categories = $proj->listCategories($proj->id, false, false);
+        $root = $categories[0];
+        unset($categories[0]);
+        
+        foreach ($categories as $row):
             $countlines++;
-            $subrows = $proj->listCatsIn(true, $row['category_id']);
         ?>
         <tr>
           <td>
             <input type="hidden" name="id[]" value="{$row['category_id']}" />
+            {!str_repeat('&rarr;', $row['depth'])}
             <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" 
               value="{$row['category_name']}" />
-          </td>
-          <td title="{L('listordertip')}">
-            <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$row['list_position']}" />
           </td>
           <td title="{L('categoryownertip')}">
             <select id="categoryowner{$countlines}" name="category_owner[]">
@@ -39,38 +38,12 @@
           </td>
           <td title="{L('listdeletetip')}">
             <input id="delete{$row['category_id']}" type="checkbox"
-            <?php if ($row['used_in_tasks'] || count($subrows)): ?>disabled="disabled"<?php endif; ?>
+            <?php if ($row['used_in_tasks']): ?>disabled="disabled"<?php endif; ?>
             name="delete[{$row['category_id']}]" value="1" />
           </td>
         </tr>
-        <?php foreach ($subrows as $subrow):
-                $countlines++; ?>
-        <tr>
-          <td>
-            <input type="hidden" name="id[]" value="{$subrow['category_id']}" />
-            &rarr;
-            <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" value="{$subrow['category_name']}" />
-          </td>
-          <td title="{L('listordertip')}">
-            <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$subrow['list_position']}" />
-          </td>
-          <td title="{L('categoryownertip')}">
-            <select id="categoryowner{$countlines}" name="category_owner[]">
-              <option value="">{L('selectowner')}</option>
-              {!tpl_options($proj->UserList(), $subrow['category_owner'])}
-            </select>
-          </td>
-          <td title="{L('listshowtip')}">
-            {!tpl_checkbox('show_in_list['.$countlines.']', $subrow['show_in_list'], 'showinlist'.$countlines)}
-          </td>
-          <td title="{L('listdeletetip')}">
-            <?php if (!$subrow['used_in_tasks']): ?>
-            <input id="delete{$subrow['category_id']}" type="checkbox" name="delete[{$subrow['category_id']}]" value="1" />
-            <?php endif; ?>
-          </td>
-        </tr>
-        <?php endforeach; endforeach; ?>
-        <?php if(count($proj->listCatsIn(true))): ?>
+        <?php endforeach; ?>
+        <?php if($countlines > -1): ?>
         <tr>
           <td colspan="4"></td>
           <td class="buttons">
@@ -95,9 +68,6 @@
           <td>
             <input id="listnamenew" class="text" type="text" size="15" maxlength="40" name="list_name" />
           </td>
-          <td title="{L('listordertip')}">
-            <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" name="list_position" />
-          </td>
           <td title="{L('categoryownertip')}">
             <select id="categoryownernew" name="category_owner">
               <option value="">{L('selectowner')}</option>
@@ -107,10 +77,10 @@
           <td title="{L('categoryparenttip')}">
             <label for="parent_id">Parent</label>
             <select id="parent_id" name="parent_id">
-              <option value="">{L('notsubcategory')}</option>
+              <option value="{$root['category_id']}">{L('notsubcategory')}</option>
               <?php $cat_opts = array_map(
               create_function('$x', 'return array($x["category_id"], $x["category_name"]);'),
-              $proj->listCatsIn(true));
+              $categories);
               ?>
               {!tpl_options($cat_opts, Get::val('cat'))}
             </select>

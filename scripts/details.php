@@ -49,6 +49,13 @@ else {
         $prev_id = @$id_list[$i - 1];
         $next_id = @$id_list[$i + 1];
     }
+    
+    // Parent categories
+    $parent = $db->Query('SELECT  *
+                            FROM  {list_category}
+                           WHERE  lft < ? AND rgt > ? AND project_id  = ? AND lft != 1
+                        ORDER BY  lft ASC',
+                        array($task_details['lft'], $task_details['rgt'], $task_details['cproj']));
 
     // Check for task dependencies that block closing this task
     $check_deps   = $db->Query('SELECT  t.*, s.status_name, r.resolution_name, d.depend_id
@@ -106,6 +113,7 @@ else {
     $page->assign('next_id',  $next_id);
     $page->assign('task_text',  $task_text);
     $page->assign('deps',     $db->fetchAllArray($check_deps));
+    $page->assign('parent',     $db->fetchAllArray($parent));
     $page->assign('blocks',   $db->fetchAllArray($check_blocks));
     $page->assign('penreqs',  $db->fetchAllArray($get_pending));
     $page->assign('d_open',   $db->fetchOne($open_deps));
@@ -150,7 +158,8 @@ else {
                     LEFT JOIN  {tasks} t ON (r.related_task = t.task_id AND r.this_task = ? OR r.this_task = t.task_id AND r.related_task = ?)
                     LEFT JOIN  {list_status} s ON t.item_status = s.status_id 
                     LEFT JOIN  {list_resolution} res ON t.resolution_reason = res.resolution_id 
-                        WHERE  t.task_id is NOT NULL AND is_duplicate = 0 AND ( t.mark_private = 0 OR ? = 1 )',
+                        WHERE  t.task_id is NOT NULL AND is_duplicate = 0 AND ( t.mark_private = 0 OR ? = 1 )
+                     ORDER BY  t.task_id ASC',
             array($task_id, $task_id, $user->perms['manage_project']));
     $page->assign('related', $db->fetchAllArray($sql));
 
@@ -159,7 +168,8 @@ else {
                     LEFT JOIN  {tasks} t ON r.this_task = t.task_id
                     LEFT JOIN  {list_status} s ON t.item_status = s.status_id 
                     LEFT JOIN  {list_resolution} res ON t.resolution_reason = res.resolution_id 
-                        WHERE  is_duplicate = 1 AND r.related_task = ?',
+                        WHERE  is_duplicate = 1 AND r.related_task = ?
+                     ORDER BY  t.task_id ASC',
                       array($task_id));
     $page->assign('duplicates', $db->fetchAllArray($sql));
 

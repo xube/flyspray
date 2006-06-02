@@ -12,6 +12,10 @@
 
       <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
       <button accesskey="l" type="submit">{L('login')}</button>
+      
+      <?php if ($proj->prefs['anon_open']): ?>
+      <a id="anonopen" href="?do=newtask&amp;project={$proj->id}">{L('opentaskanon')}</a>
+      <?php endif; ?>
 
       <span id="links">
         <?php
@@ -40,6 +44,3 @@
     </div>
   </form>
 </div>
-<?php if ($proj->prefs['anon_open']): ?>
-<div id="anonopen"><a href="?do=newtask&amp;project={$proj->id}">{L('opentaskanon')}</a></div>
-<?php endif; ?>

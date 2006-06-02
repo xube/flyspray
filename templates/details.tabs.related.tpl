@@ -48,8 +48,8 @@
       <input type="hidden" name="action" value="add_related" />
       <input type="hidden" name="this_task" value="{Get::val('id')}" />
       <label>{L('addnewrelated')}
-        <input name="related_task" type="text" class="text" size="10" maxlength="10" /></label>
-      <button type="submit">{L('add')}</button>
+        <input name="related_task" id="related_task_input" type="text" class="text" size="10" maxlength="10" /></label>
+      <button type="submit" onclick="return checkok('{$baseurl}javascript/callbacks/checkrelated.php?related_task=' + $('related_task_input').value + '&amp;project={$proj->id}', '{L('relatedproject')}', 'formaddrelatedtask')">{L('add')}</button>
     </div>
   </form>
   <?php endif; ?>

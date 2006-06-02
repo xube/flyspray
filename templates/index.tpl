@@ -75,7 +75,7 @@
         
         <label class="default multisel" for="cat">{L('category')}</label>
         <select name="cat[]" id="cat" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
-          {!tpl_options(array('' => L('allcategories')) + $proj->listCatsIn(), Get::val('cat', ''))}
+          {!tpl_options(array('' => L('allcategories')) + $proj->listCategories(), Get::val('cat', ''))}
         </select>
 
         <label class="default multisel" for="status">{L('status')}</label>

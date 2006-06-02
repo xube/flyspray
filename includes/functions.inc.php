@@ -41,7 +41,8 @@ class Flyspray
         }
 
         if (headers_sent()) {
-            return false;
+            echo "<script type=\"text/javascript\">document.location.href='$url';</script>";
+            return true;
         }
 
         $url = FlySpray::absoluteURI($url);
@@ -198,8 +199,7 @@ class Flyspray
         }
 
         $get_details = $db->Query('SELECT t.*, p.*,
-                                          c.category_name, c.category_owner, c.parent_id,
-                                          pc.category_name AS parent_category_name,
+                                          c.category_name, c.category_owner, c.lft, c.rgt, c.project_id as cproj,
                                           o.os_name,
                                           r.resolution_name,
                                           tt.tasktype_name,
@@ -212,7 +212,6 @@ class Flyspray
                                     FROM  {tasks}              t
                                LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
                                LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
-                               LEFT JOIN  {list_category}      pc ON c.parent_id = pc.category_id
                                LEFT JOIN  {list_os}            o  ON t.operating_system = o.os_id
                                LEFT JOIN  {list_resolution}    r  ON t.resolution_reason = r.resolution_id
                                LEFT JOIN  {list_tasktype}      tt ON t.task_type = tt.tasktype_id
@@ -563,16 +562,6 @@ class Flyspray
                     case 'percent_complete':
                         $new[$key] .= '%';
                         $value .= '%';
-                        break;
-
-                    case 'category_name':
-                        if($new['parent_category_name']) {
-                            $new['parent_category_name'] . ' ... ' . $new[$key];
-                        }
-
-                        if($old['parent_category_name'])  {
-                            $value = $old['parent_category_name'] . ' ... ' . $value;
-                        }
                         break;
                 }
                 $changes[] = array($key, $value, $new[$key]);

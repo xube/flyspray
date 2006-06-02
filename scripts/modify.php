@@ -148,41 +148,8 @@ elseif (Post::val('action') == 'close' && $user->can_close_task($old_details)) {
         $_SESSION['ERROR'] = L('noclosereason');
         Flyspray::Redirect(CreateURL('details', Post::val('task_id')));
     }
-
-    $db->Query("UPDATE  {tasks}
-                   SET  date_closed = ?, closed_by = ?, closure_comment = ?,
-                        is_closed = '1', resolution_reason = ?
-                 WHERE  task_id = ?",
-            array(time(), $user->id, Post::val('closure_comment', 0),
-                Post::val('resolution_reason'), Post::val('task_id')));
-
-    if (Post::val('mark100')) {
-        $db->Query("UPDATE {tasks} SET percent_complete = '100' WHERE task_id = ?",
-                array(Post::val('task_id')));
-
-        $fs->logEvent(Post::val('task_id'), '0', '100',
-                $old_details['percent_complete'], 'percent_complete');
-    }
-
-    $notify->Create(NOTIFY_TASK_CLOSED, Post::val('task_id'));
-    $fs->logEvent(Post::val('task_id'), 2, Post::val('resolution_reason'),
-            Post::val('closure_comment'));
-
-    if ($fs->AdminRequestCheck(1, Post::val('task_id'))) {
-        // If there's an admin request related to this, close it
-        $db->Query("UPDATE  {admin_requests}
-                       SET  resolved_by = ?, time_resolved = ?
-                     WHERE  task_id = ? AND request_type = ?",
-                array($user->id, time(), Post::val('task_id'), 1));
-    }
     
-    if (Post::val('resolution_reason') == 6) {
-        preg_match("/\b(?:FS#|bug )(\d+)\b/", Post::val('closure_comment'), $dupe_of);
-        if (count($dupe_of)) {
-            $db->Query('INSERT INTO {related} (this_task, related_task, is_duplicate) VALUES(?,?,1)',
-                        array(Post::val('task_id'), $dupe_of[1]));
-        }
-    }
+    $be->close_task($user, Post::val('task_id'), Post::val('resolution_reason'), Post::val('closure_comment', ''), Post::val('mark100', true));
 
     $_SESSION['SUCCESS'] = L('taskclosedmsg');
     Flyspray::Redirect(CreateURL('details', Post::val('task_id')));
@@ -514,7 +481,7 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
 elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']) {
 
     if (Post::val('delete_project')) {
-        $be->delete_project(Post::val('project_id'), Post::val('move_to'));
+        $be->delete_project($user, Post::val('project_id'), Post::val('move_to'));
         $_SESSION['SUCCESS'] = L('projectdeleted');
         if (Post::val('move_to')) {
             Flyspray::Redirect(CreateURL('pm', 'prefs', Post::val('move_to')));
@@ -554,9 +521,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
 // Start of modifying user details/profile {{{
 elseif (Post::val('action') == "edituser" && $user->perms['manage_project'])
 {
-    if (Post::val('delete_user') && $user->perms['is_admin']) {
-        $be->delete_user(Post::val('user_id'));
-                   
+    if (Post::val('delete_user') && $be->delete_user($user, Post::val('user_id'))) {
         $_SESSION['SUCCESS'] = L('userdeleted');
         Flyspray::Redirect(CreateURL('admin', 'groups'));
     }
@@ -821,7 +786,6 @@ elseif (Post::val('action') == "add_to_version_list" && $user->perms['manage_pro
 elseif (Post::val('action') == "update_category" && $user->perms['manage_project']) {
 
     $listname     = Post::val('list_name');
-    $listposition = Post::val('list_position');
     $listshow     = Post::val('show_in_list');
     $listid       = Post::val('id');
     $listowner    = Post::val('category_owner');
@@ -830,13 +794,12 @@ elseif (Post::val('action') == "update_category" && $user->perms['manage_project
     $redirectmessage = L('listupdated');
 
     for ($i = 0; $i < count($listname); $i++) {
-        if (is_numeric($listposition[$i])  && $listname[$i] != '') {
+        if ($listname[$i] != '') {
             $update = $db->Query("UPDATE  {list_category}
-                                     SET  category_name = ?, list_position = ?,
+                                     SET  category_name = ?,
                                           show_in_list = ?, category_owner = ?
                                    WHERE  category_id = ?",
-                              array($listname[$i], $listposition[$i],
-                                  intval($listshow[$i]), intval($listowner[$i]), $listid[$i]));
+                              array($listname[$i], intval($listshow[$i]), intval($listowner[$i]), $listid[$i]));
         } else {
             $redirectmessage = L('listupdated') . ' ' . L('fieldsmissing');
         }
@@ -853,23 +816,22 @@ elseif (Post::val('action') == "update_category" && $user->perms['manage_project
 // adding a category list item {{{
 elseif (Post::val('action') == "add_category" && $user->perms['manage_project']) {
 
-    if (!Post::val('list_name') || !Post::val('list_position')) {
+    if (!Post::val('list_name')) {
         $_SESSION['ERROR'] = L('fillallfields');
         Flyspray::Redirect(Post::val('prev_page'));
     }
-    
-    if (!is_numeric(Post::val('list_position'))){
-        $_SESSION['ERROR'] = L('listPmustN');
-        Flyspray::Redirect(Post::val('prev_page'));
-    }
 
+    // Get right value of last node
+    $right = $db->Query('SELECT rgt FROM {list_category} WHERE category_id = ?', array(Post::val('parent_id', -1)));
+    $right = $db->FetchOne($right);
+    $db->Query('UPDATE {list_category} SET rgt=rgt+2 WHERE rgt >= ? AND project_id = ?', array($right, Post::val('project_id', 0)));
+    $db->Query('UPDATE {list_category} SET lft=lft+2 WHERE lft >= ? AND project_id = ?', array($right, Post::val('project_id', 0)));
+    
     $db->Query("INSERT INTO  {list_category}
-                             ( project_id, category_name, list_position,
-                               show_in_list, category_owner, parent_id )
-                     VALUES  (?, ?, ?, 1, ?, ?)",
+                             ( project_id, category_name, show_in_list, category_owner, lft, rgt )
+                     VALUES  (?, ?, 1, ?, ?, ?)",
             array(Post::val('project_id', 0), Post::val('list_name'),
-                Post::val('list_position'), Post::val('category_owner', 0) ? Post::val('category_owner', 0) : 0,
-                Post::val('parent_id', 0) ? Post::val('parent_id', 0) : 0));
+                  Post::val('category_owner', 0), $right, $right+1));
 
     $_SESSION['SUCCESS'] = L('listitemadded');
     Flyspray::Redirect(Post::val('prev_page'));
@@ -892,35 +854,31 @@ elseif (Post::val('action') == 'add_related' && $user->can_edit_task($old_detail
         Flyspray::Redirect(CreateURL('details', Post::val('this_task').'#related'));
     }
 
-    $relatedproject = $db->fetchOne($sql);
 
-    if ($proj->id == $relatedproject || Post::has('allprojects')) {
-        $sql = $db->Query("SELECT related_id
-                             FROM {related}
-                            WHERE this_task = ? AND related_task = ?
-                                  OR
-                                  related_task = ? AND this_task = ?",
-                          array(Post::val('this_task'), Post::val('related_task'),
-                                Post::val('this_task'), Post::val('related_task')));
-       
-        if ($db->CountRows($sql)) {
-            $_SESSION['ERROR'] = L('relatederror');
-            Flyspray::Redirect(CreateURL('details', Post::val('this_task').'#related'));
-        }
-            
-        $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
-                array(Post::val('this_task'), Post::val('related_task')));
-
-        $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
-        $fs->logEvent(Post::val('related_task'), 15, Post::val('this_task'));
-
-        $notify->Create(NOTIFY_REL_ADDED, Post::val('this_task'), Post::val('related_task'));
-
-        $_SESSION['SUCCESS'] = L('relatedaddedmsg');
+    $sql = $db->Query("SELECT related_id
+                         FROM {related}
+                        WHERE this_task = ? AND related_task = ?
+                              OR
+                              related_task = ? AND this_task = ?",
+                      array(Post::val('this_task'), Post::val('related_task'),
+                            Post::val('this_task'), Post::val('related_task')));
+   
+    if ($db->CountRows($sql)) {
+        $_SESSION['ERROR'] = L('relatederror');
         Flyspray::Redirect(CreateURL('details', Post::val('this_task').'#related'));
-    } else {
-        $page->pushTpl('details.edit.related.tpl');
     }
+        
+    $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
+            array(Post::val('this_task'), Post::val('related_task')));
+
+    $fs->logEvent(Post::val('this_task'), 11, Post::val('related_task'));
+    $fs->logEvent(Post::val('related_task'), 15, Post::val('this_task'));
+
+    $notify->Create(NOTIFY_REL_ADDED, Post::val('this_task'), Post::val('related_task'));
+
+    $_SESSION['SUCCESS'] = L('relatedaddedmsg');
+    Flyspray::Redirect(CreateURL('details', Post::val('this_task').'#related'));
+
 
 } // }}}
 // Removing a related task entry {{{
@@ -1340,11 +1298,7 @@ elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project']) {
 // Adding a vote for a task {{{
 elseif (Get::val('action') == 'addvote') {
     
-    if ($user->can_vote(Get::val('id'))) {
-        $db->Query("INSERT INTO {votes}
-                                (user_id, task_id, date_time)
-                         VALUES (?,?,?)", array($user->id, Get::val('id'), time()));
-                         
+    if ($be->add_vote($user, Get::val('id'))) {                         
         $_SESSION['SUCCESS'] = L('voterecorded');
         Flyspray::Redirect(CreateURL('details', Get::val('id')));
     } else {

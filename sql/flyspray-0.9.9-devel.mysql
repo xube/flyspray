@@ -369,3 +369,7 @@ UPDATE `flyspray_groups` SET `edit_assignments` = '1' WHERE `group_id` =2 LIMIT 
 ALTER TABLE `flyspray_related` ADD `is_duplicate` TINYINT( 1 ) NOT NULL DEFAULT '0';
 ALTER TABLE `flyspray_related` DROP INDEX `this_task`;
 ALTER TABLE `flyspray_related` ADD UNIQUE `this_task` ( `this_task` , `related_task` , `is_duplicate` );
+
+-- Florian Schmitz, 1 June 2006
+ALTER TABLE `flyspray_list_category` ADD `lft` INT UNSIGNED NOT NULL DEFAULT '0',
+ADD `rgt` INT UNSIGNED NOT NULL DEFAULT '0';

@@ -37,9 +37,9 @@
 		<tr class="category">
 		  <th id="category">{L('category')}</th>
 		  <td headers="category">
-			 <?php if ($task_details['parent_category_name']): ?>
-			 {$task_details['parent_category_name']} &#8594;
-			 <?php endif; ?>
+			 <?php foreach ($parent as $cat): ?>
+			 {$cat['category_name']} &#8594;
+			 <?php endforeach; ?>
 			 {$task_details['category_name']}
 		  </td>
 		</tr>
@@ -307,10 +307,10 @@
 	 <?php endif; ?>
          
 	 <?php if ($user->can_vote($task_details['task_id'])): ?>
-            <a id="addvote" class="button"
-                href="{$baseurl}?do=modify&amp;action=addvote&amp;id={Get::val('id')}">
-                {L('addvote')}</a>
-         <?php endif; ?>
+        <a id="addvote" class="button"
+            href="{$baseurl}?do=modify&amp;action=addvote&amp;id={Get::val('id')}">
+            {L('addvote')}</a>
+     <?php endif; ?>
 
 	 <?php endif; ?>
 	 <?php if (count($penreqs)): ?>

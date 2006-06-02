@@ -332,23 +332,15 @@ div#projectselector {
 	float:left;
 }
 
-div#anonopen {
-	position:absolute;
-	top:30px;
-	right:5px;
-	padding:0;
-}
-
-div#anonopen a {
-	color:#fff;
-	background-color:transparent;
-	font-weight:400;
-	padding:0;
-}
-
 /* Links in menus */
-#newtasklink {
+#newtasklink, #anonopen {
 	background:url(menu/newtask.png) no-repeat;
+}
+
+div#loginbox a#anonopen {
+	padding-left:20px;
+	margin-left:0.5em;
+	font-weight:normal;
 }
 
 #reportslink {
@@ -518,12 +510,12 @@ div#taskdetails table th {
 }
 
 table#tasks_related {
-	width:35em;
+	width:30em;
 	margin-bottom:0.5em;
 }
 
 table#duplicate_tasks {
-	width:25em;
+	width:30em;
 	margin-bottom:0.5em;
 	margin-left:0.5em;
 }
