@@ -373,3 +373,9 @@ ALTER TABLE `flyspray_related` ADD UNIQUE `this_task` ( `this_task` , `related_t
 -- Florian Schmitz, 1 June 2006
 ALTER TABLE `flyspray_list_category` ADD `lft` INT UNSIGNED NOT NULL DEFAULT '0',
 ADD `rgt` INT UNSIGNED NOT NULL DEFAULT '0';
+
+-- Florian Schmitz, 3 June 2006
+INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_desc` )
+VALUES (
+25 , 'notify_registration', '0', 'Whether or not admins get an email on a new user registration'
+);

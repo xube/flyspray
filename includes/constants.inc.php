@@ -37,6 +37,7 @@ define('NOTIFY_REV_DEP_REMOVED', 16);
 define('NOTIFY_ADDED_ASSIGNEES', 17);
 define('NOTIFY_ANON_TASK',       18);
 define('NOTIFY_PW_CHANGE',       19);
+define('NOTIFY_NEW_USER',        20);
 
 define('NOTIFY_EMAIL',            1);
 define('NOTIFY_JABBER',           2);

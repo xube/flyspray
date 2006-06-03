@@ -61,6 +61,10 @@
           <td>{!tpl_checkbox('spam_proof', $fs->prefs['spam_proof'], 'spamproof')}</td>
         </tr>
         <tr>
+          <td><label for="notify_registration">{L('notify_registration')}</label></td>
+          <td>{!tpl_checkbox('notify_registration', $fs->prefs['notify_registration'], 'notify_registration')}</td>
+        </tr>
+        <tr>
           <td><label for="defaultglobalgroup">{L('defaultglobalgroup')}</label></td>
           <td>
             <select id="defaultglobalgroup" name="anon_group">

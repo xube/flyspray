@@ -371,7 +371,7 @@ class Backend
     // returns false if user name is taken, else true
     function create_user($user_name, $password, $real_name, $jabber_id, $email, $notify_type, $group_in)
     {
-        global $fs, $db;
+        global $fs, $db, $notify, $baseurl;
         
         // Limit lengths
         $user_name = substr(trim($user_name), 0, 32);
@@ -408,6 +408,14 @@ class Backend
                          VALUES  ( ?, ?)', array($uid, $group_in));
         
         $fs->logEvent(0, 30, serialize($fs->getUserDetails($uid)));
+        
+        if ($fs->prefs['notify_registration']) {
+            $sql = $db->Query('SELECT email_address
+                                 FROM {users} u
+                            LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
+                                WHERE g.group_id = 1');
+            $notify->Create(NOTIFY_NEW_USER, null, array($baseurl, $user_name, $real_name, $email, $jabber_id), $db->FetchAllArray($sql));
+        }
         
         return true;
     }

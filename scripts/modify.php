@@ -399,7 +399,7 @@ elseif (Post::val('action') == "newgroup" && $user->perms['manage_project']) {
 } // }}}
 // Update the global application preferences {{{
 elseif (Post::val('action') == "globaloptions" && $user->perms['is_admin']) {
-    $settings = array('jabber_server', 'jabber_port', 'jabber_username',
+    $settings = array('jabber_server', 'jabber_port', 'jabber_username', 'notify_registration',
             'jabber_password', 'anon_group', 'user_notify', 'admin_email',
             'lang_code', 'spam_proof', 'default_project', 'dateformat', 'jabber_ssl',
             'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server',

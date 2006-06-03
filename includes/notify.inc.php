@@ -27,6 +27,8 @@ class Notifications {
       if (is_null($to)) {
           $to = $this->Address($task_id, $type);
       }
+      
+      settype($to, 'array');
 
       $msg = $this->GenerateMsg($type, $task_id, $info);
       
@@ -357,6 +359,7 @@ class Notifications {
          |17. Added to assignees list  |
          |18. Anon-task opened         |
          |19. Password change          |
+         |20. New user                 |
          -------------------------------
       */
       // {{{ New task opened
@@ -687,6 +690,19 @@ class Notifications {
           $body = L('messagefrom'). $arg1[0] . "\n\n"
                   . L('magicurlmessage')." \n"
                   . "{$arg1[0]}index.php?do=lostpw&magic=$arg1[1]\n";
+
+          return array($subject, $body);
+      } // }}}
+      // {{{ New user
+      if ($type == NOTIFY_NEW_USER)
+      {
+          $body = L('messagefrom'). $arg1[0] . "\n\n"
+                  . L('newuserregistered')." \n\n"
+                  . L('username') . ': ' . $arg1[1] . '   ' .
+                    L('realname') . ': ' . $arg1[2] . '   ' .
+                    L('emailaddress') . ':' . $arg1[3] . '   ' .
+                    L('jabberid') . ':' . $arg1[4] . "\n\n";
+          $body .= L('disclaimer');
 
           return array($subject, $body);
       } // }}}      
