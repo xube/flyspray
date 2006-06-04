@@ -278,11 +278,11 @@ class Flyspray
     function listGroups($proj = 0)
     {
         global $db;
-        return $db->FetchAllArray(
-                    $db->Query('SELECT  *
-                                  FROM  {groups}
-                                 WHERE  belongs_to_project = ?
-                              ORDER BY  group_id ASC', array($proj)));
+        $res = $db->Query('SELECT  *
+                             FROM  {groups}
+                            WHERE  belongs_to_project = ?
+                         ORDER BY  group_id ASC', array($proj));
+        return $db->FetchAllArray($res);
     }
     // }}}
     // List languages {{{
