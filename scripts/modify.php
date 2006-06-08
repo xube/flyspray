@@ -21,7 +21,7 @@ if ($lt = Post::val('list_type')) {
 
 function Post_to0($key) { return Post::val($key, 0); }
 if (Req::has('task_id') || Req::has('id')) {
-    $old_details = $fs->GetTaskDetails(Req::val('task_id', Req::has('id')));
+    $old_details = $fs->GetTaskDetails(intval(Req::val('task_id', Req::has('id'))));
 }
 // Adding a new task  {{{
 if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
@@ -461,9 +461,14 @@ elseif (Post::val('action') == "newproject" && $user->perms['is_admin']) {
                      $args);
 
     $db->Query("INSERT INTO  {list_category}
-                             ( project_id, category_name, list_position,
-                               show_in_list, category_owner )
-                     VALUES  ( ?, ?, 1, 1, 0)", array($pid, 'Backend / Core'));
+                             ( project_id, category_name,
+                               show_in_list, category_owner, lft, rgt)
+                     VALUES  ( ?, ?, 0, 0, 1, 4)", array($pid, 'root'));
+                     
+    $db->Query("INSERT INTO  {list_category}
+                             ( project_id, category_name,
+                               show_in_list, category_owner, lft, rgt )
+                     VALUES  ( ?, ?, 1, 0, 2, 3)", array($pid, 'Backend / Core'));
 
     $db->Query("INSERT INTO  {list_os}
                              ( project_id, os_name, list_position, show_in_list )
@@ -578,7 +583,7 @@ elseif (Post::val('action') == "edituser")
     
     if ($user->perms['is_admin']) {
         $db->Query('UPDATE {users} SET account_enabled = ?  WHERE user_id = ?',
-                array(Post::val('account_enabled'), Post::val('user_id')));
+                array(Post::val('account_enabled', 0), Post::val('user_id')));
 
         $db->Query('UPDATE {users_in_groups} SET group_id = ?
                      WHERE group_id = ? AND user_id = ?',
@@ -649,13 +654,13 @@ elseif (Post::val('action') == "editgroup" && $user->perms['manage_project']) {
     // Allow all groups to update permissions except for global Admin
     if (Post::val('group_id') != '1') {
         $cols = array_merge($cols,
-                            array('manage_project', 'view_tasks', 'edit_own_comments', 'edit_own_comments',
+                            array('manage_project', 'view_tasks', 'edit_own_comments', 
                               'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                               'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
                               'view_attachments', 'create_attachments', 'delete_attachments',
                               'view_history', 'close_own_tasks', 'close_other_tasks', 'edit_assignments',
-                              'assign_to_self', 'assign_others_to_self', 'view_reports', 'add_votes',
-                              'group_open'));
+                              'assign_to_self', 'assign_others_to_self', 'add_to_assignees', 'view_reports',
+                              'add_votes', 'group_open'));
     }
 
     $args = array_map('Post_to0', $cols);
@@ -831,7 +836,7 @@ elseif (Post::val('action') == "add_category" && $user->perms['manage_project'])
                              ( project_id, category_name, show_in_list, category_owner, lft, rgt )
                      VALUES  (?, ?, 1, ?, ?, ?)",
             array(Post::val('project_id', 0), Post::val('list_name'),
-                  Post::val('category_owner', 0), $right, $right+1));
+                  Post::val('category_owner', 0) == '' ? '0' : Post::val('category_owner', 0), $right, $right+1));
 
     $_SESSION['SUCCESS'] = L('listitemadded');
     Flyspray::Redirect(Post::val('prev_page'));
@@ -1011,7 +1016,7 @@ elseif (Post::val('action') == "addreminder" && $user->perms['manage_project']) 
             array(Post::val('task_id'), $id, $user->id,
                 $start_time, $how_often, Post::val('reminder_message')));
 
-    $fs->logEvent(Post::val('task_id'), 17, Post::val('to_user_id'));
+    $fs->logEvent(Post::val('task_id'), 17, $id);
 
     $_SESSION['SUCCESS'] = L('reminderaddedmsg');
     Flyspray::Redirect(CreateURL('details', Req::val('task_id')).'#remind');

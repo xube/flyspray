@@ -166,7 +166,7 @@
       <td class="ttcolumn">{!tpl_checkbox('users['.$usr['user_id'].']')}</td>
       <td><a href="{CreateURL('edituser', $usr['user_id'])}">{$usr['user_name']}</a></td>
       <td>{$usr['real_name']}</td>
-      <?php if ($user->infos['account_enabled']): ?>
+      <?php if ($usr['account_enabled']) : ?>
       <td class="imgcol"><img src="{$this->get_image('button_ok')}" alt="{L('yes')}" /></td>
       <?php else: ?>
       <td class="imgcol"><img src="{$this->get_image('button_cancel')}" alt="{L('no')}" /></td>

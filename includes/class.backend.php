@@ -52,7 +52,7 @@ class Backend
                                         OR g.is_admin = 1)
                                    OR (g2.is_admin = 1 OR g2.manage_project = 1))
                                    OR ? = 1)
-                          GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id, $do));
+                          GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id, intval($do)));
 
         while ($row = $db->FetchRow($sql)) {
             $notif = $db->Query('SELECT notify_id
@@ -189,7 +189,7 @@ class Backend
                          LEFT JOIN {assigned} ass ON t.task_id = ass.task_id AND ass.user_id != ?
                              WHERE ($where) AND u.user_name is NOT NULL
                                             AND (g.add_to_assignees = 1 OR g.is_admin = 1 or g.manage_project = 1 OR 1 = ?)
-                          GROUP BY t.task_id", array($user, $do, $user));
+                          GROUP BY t.task_id", array($user, intval($do), $user));
 
         while ($row = $db->FetchRow($sql)) {
            $db->Query("INSERT INTO {assigned}
@@ -430,9 +430,13 @@ class Backend
         
         $user_data = serialize($fs->getUserDetails($uid));
         
-        $sql = $db->Query('DELETE a, b
-                             FROM {users} a, {users_in_groups} b
-                            WHERE a.user_id = b.user_id AND b.user_id = ?',
+        $sql = $db->Query('DELETE 
+                             FROM {users} 
+                            WHERE user_id = ?',
+                             array($uid));
+        $sql = $db->Query('DELETE 
+                             FROM {users_in_groups}
+                            WHERE user_id = ?',
                             array($uid));
         // Other necessary deletions (merge all into one not possible?)
         $db->Query('DELETE FROM {searches}      WHERE user_id = ?', array($uid));
@@ -476,7 +480,7 @@ class Backend
             $db->Query('UPDATE {list_version} SET project_id = ?       WHERE project_id = ?', array($move_to, $pid));
             
             $db->Query('UPDATE {admin_requests} SET  project_id = ?    WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {cache} SET project = ?                 WHERE project_id = ?', array($move_to, $pid));
+            $db->Query('UPDATE {cache} SET project_id = ?                 WHERE project_id = ?', array($move_to, $pid));
             $db->Query('UPDATE {groups} SET belongs_to_project = ?     WHERE belongs_to_project = ?', array($move_to, $pid));
             $db->Query('UPDATE {tasks} SET attached_to_project = ?     WHERE attached_to_project = ?', array($move_to, $pid));
             $db->Query('DELETE FROM {projects}                         WHERE project_id = ?', array($pid));
@@ -554,7 +558,11 @@ class Backend
         
         $result = $db->Query('SELECT  max(task_id)+1
                                 FROM  {tasks}');
-        $task_id = $db->FetchOne($result) or 1;
+        $task_id = $db->FetchOne($result);
+        if (!$task_id)
+        {
+            $task_id = 1;
+        }        
                             
         $result = $db->Query("INSERT INTO  {tasks}
                                  ( task_id, date_opened, last_edited_time,

@@ -229,7 +229,7 @@ if ($date = Get::val('date')) {
 }
 
 if ($date = Get::val('changedsincedate')) {
-    $where[]      = "(event_date >= ? AND event_date <> '0' AND event_date <> '')";
+    $where[]      = "(event_date >= ? AND event_date <> '0')";
     $sql_params[] = strtotime($date);
 }
 

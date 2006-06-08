@@ -169,14 +169,14 @@ class Database
         return $result->GetArray();
     }
 
-    function GetColumnNames($table, $numericIndex = true)
+    function GetColumnNames($table, $numeric_index = true)
     {
         $table = $this->_add_prefix($table);
-        $test = $this->Query('SELECT column_name FROM information_schema.columns WHERE table_name = ?',
-                             array($table));
-        $test = $this->FetchAllArray($test);
+        $fetched_columns = $this->Query('SELECT column_name FROM information_schema.columns WHERE table_name = ?',
+                                         array(str_replace('"', '', $table)));
+        $fetched_columns = $this->FetchAllArray($fetched_columns);
         
-        foreach ($test as $key => $value)
+        foreach ($fetched_columns as $key => $value)
         {
             $col_names[$key] = $value[0];
         }

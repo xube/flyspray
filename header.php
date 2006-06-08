@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/includes/constants.inc.php';
 
 // If it is empty,take the user to the setup page
 
-if (count($conf) == 0) {
+if (!$conf) {
     Flyspray::Redirect('setup/index.php');
 }
 

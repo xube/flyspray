@@ -137,7 +137,7 @@ class Project
     
     function listCategories($project_id = null, $remove_root = true, $depth = true)
     {
-        global $db;
+        global $db, $conf;
         
         // start with a empty arrays
         $right = array();
@@ -158,13 +158,23 @@ class Project
                                WHERE category_name = 'root' AND lft = 1 AND project_id = ?",
                              array($project_id));
         $row = $db->FetchArray($result);
+        
+        if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
+            $column_names = $db->GetColumnNames('{list_category}');
+            foreach ($column_names as $key => $value){
+                $column_names[$key] = 'c.' . $value;
+            }
+            $groupby = implode(', ' , $column_names);
+        } else { // mysql
+            $groupby = 'c.category_id';
+        }
 
         // now, retrieve all descendants of the root node
         $result = $db->Query('SELECT c.category_id, c.category_name, c.*, count(t.task_id) AS used_in_tasks
                                 FROM {list_category} c
                            LEFT JOIN {tasks} t ON (t.product_category = c.category_id)
                                WHERE project_id = ? AND lft BETWEEN ? AND ?
-                            GROUP BY c.category_id
+                            GROUP BY ' . $groupby . '
                             ORDER BY lft ASC',
                              array($project_id, $row['lft'], $row['rgt']));
 
