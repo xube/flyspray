@@ -519,7 +519,7 @@ elseif (Post::val('action') == 'updateproject' && $user->perms['manage_project']
 
 } // }}}
 // Start of modifying user details/profile {{{
-elseif (Post::val('action') == "edituser" && $user->perms['manage_project'])
+elseif (Post::val('action') == "edituser")
 {
     if (Post::val('delete_user') && $be->delete_user($user, Post::val('user_id'))) {
         $_SESSION['SUCCESS'] = L('userdeleted');
