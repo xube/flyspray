@@ -172,7 +172,15 @@ class Database
     function GetColumnNames($table, $numericIndex = true)
     {
         $table = $this->_add_prefix($table);
-        return $this->dblink->MetaColumnNames($table, $numericIndex);
+        $test = $this->Query('SELECT column_name FROM information_schema.columns WHERE table_name = ?',
+                             array($table));
+        $test = $this->FetchAllArray($test);
+        
+        foreach ($test as $key => $value)
+        {
+            $col_names[$key] = $value[0];
+        }
+        return $col_names;
     }
 
     function Replace($table, $field, $keys, $autoquote = true)

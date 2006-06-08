@@ -44,14 +44,14 @@ class Backend
                          LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
                          LEFT JOIN {users} u2 ON u2.user_id = uig2.user_id AND uig2.user_id = ?
                              WHERE ($where) AND u.user_name is NOT NULL AND u2.user_name is NOT NULL
-                                   AND (? = ?
+                                   AND ((? = ?
                                        AND (t.opened_by = u.user_id
                                         OR (t.mark_private = 0 AND (g.view_tasks = 1 OR p.others_view = 1))
                                         OR a.user_id is NOT NULL
                                         OR g.manage_project = 1
                                         OR g.is_admin = 1)
                                    OR (g2.is_admin = 1 OR g2.manage_project = 1))
-                                   OR ? = 1
+                                   OR ? = 1)
                           GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id, $do));
 
         while ($row = $db->FetchRow($sql)) {
@@ -66,7 +66,7 @@ class Backend
                 $fs->logEvent($row['task_id'], 9, $user_id);
             }
         }
-        
+
         return (bool) $db->CountRows($sql);
     }
 

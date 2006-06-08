@@ -27,7 +27,7 @@ class DHTML_Calendar {
                             $stripped          = true) {
         if ($stripped) {
             $this->calendar_file = 'calendar_stripped.js';
-            $this->calendar_setup_file = 'calendar-setup_stripped.js';
+            $this->calendar_setup_file = false; // Setup included in calendar_stripped.js
         } else {
             $this->calendar_file = 'calendar.js';
             $this->calendar_setup_file = 'calendar-setup.js';
@@ -57,9 +57,11 @@ class DHTML_Calendar {
         $code .= ( '<script type="text/javascript" src="' .
                    $this->calendar_lib_path . $this->calendar_lang_file .
                    '"></script>' . NEWLINE );
-        $code .= ( '<script type="text/javascript" src="' .
-                   $this->calendar_lib_path . $this->calendar_setup_file .
-                   '"></script>' );
+        if ($this->calendar_setup_file) {
+            $code .= ( '<script type="text/javascript" src="' .
+                       $this->calendar_lib_path . $this->calendar_setup_file .
+                       '"></script>' );
+        }
         return $code;
     }
 
