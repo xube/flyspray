@@ -241,7 +241,7 @@ function tpl_userlink($uid)
 
     if (empty($cache[$uid])) {
         $sql = $db->Query('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
-                array($uid));
+                           array(intval($uid)));
         if ($db->countRows($sql)) {
             list($uname, $rname) = $db->fetchRow($sql);
             $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms['is_admin']) ? 'edituser' : 'user', $uid)).'">'

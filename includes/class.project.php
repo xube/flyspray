@@ -49,13 +49,10 @@ class Project
 
     function _pm_list_sql($type, $join)
     {
-        global $db;
+        global $db, $conf;
         //Get the column names of list tables for the group by statement
-        $column_names = $db->GetColumnNames('{list_' . $type . '}');
-        foreach ($column_names as $key => $value){
-            $column_names[$key] = 'l.' . $value;
-        }
-        $groupby = implode(', ' , $column_names);
+        $groupby = $db->GetColumnNames('{list_' . $type . '}',  'l.' . $type . '_id', 'l.');
+
         settype($join, 'array');
         $join = 't.'.join(" = l.{$type}_id OR t.", $join)." = l.{$type}_id";
         return "SELECT  l.*, count(t.task_id) AS used_in_tasks
@@ -159,15 +156,7 @@ class Project
                              array($project_id));
         $row = $db->FetchArray($result);
         
-        if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
-            $column_names = $db->GetColumnNames('{list_category}');
-            foreach ($column_names as $key => $value){
-                $column_names[$key] = 'c.' . $value;
-            }
-            $groupby = implode(', ' , $column_names);
-        } else { // mysql
-            $groupby = 'c.category_id';
-        }
+        $groupby = $db->GetColumnNames('{list_category}', 'c.category_id', 'c.');
 
         // now, retrieve all descendants of the root node
         $result = $db->Query('SELECT c.category_id, c.category_name, c.*, count(t.task_id) AS used_in_tasks

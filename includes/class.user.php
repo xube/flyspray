@@ -58,7 +58,7 @@ class User
         
         // Only logged in users get to use the 'last search' functionality     
         if ($do == 'index') {
-            if(!$this->didSearch() || Get::val('tasks') == 'last') {
+            if(!$this->didSearch() || Get::val('tasks') == 'last' && $this->infos['last_search']) {
                 $arr = unserialize($this->infos['last_search']);
                 if (is_array($arr)) {
                     $_GET = array_merge($_GET, $arr);

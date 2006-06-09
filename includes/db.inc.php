@@ -169,8 +169,13 @@ class Database
         return $result->GetArray();
     }
 
-    function GetColumnNames($table, $numeric_index = true)
+    function GetColumnNames($table, $alt, $prefix)
     {
+        global $conf;
+        if (strcasecmp($conf['database']['dbtype'], 'pgsql')) {
+            return $alt;
+        }
+        
         $table = $this->_add_prefix($table);
         $fetched_columns = $this->Query('SELECT column_name FROM information_schema.columns WHERE table_name = ?',
                                          array(str_replace('"', '', $table)));
@@ -178,9 +183,12 @@ class Database
         
         foreach ($fetched_columns as $key => $value)
         {
-            $col_names[$key] = $value[0];
+            $col_names[$key] = $prefix . $value[0];
         }
-        return $col_names;
+        
+        $groupby = implode(', ', $column_names);
+        
+        return $groupby;
     }
 
     function Replace($table, $field, $keys, $autoquote = true)
