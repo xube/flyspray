@@ -20,6 +20,8 @@
  *  Moved to the setup directory so that it wouldn't be left behind in the 
  *  installation to be used by some one unauthorized
  *  mb_strlen() replaced by strlen(utf_decode()) because mb_* functions are not standard
+ * 2006-06-12 Version 1.3
+ *  Writes correct array name for english
  *
  * Usage: http://.../flyspray/lang/.langedit.php?lang=sv
  *       "sv" represents your language code.
@@ -99,13 +101,24 @@ if(!file_exists("$lang.php") && !file_exists(".$lang.php.work"))
   echo "A new language file will be created: <code>$lang.php</code>\n";
 else
 {
-  if(file_exists(".$lang.php.work"))
+  if($lang != 'en')
+  {
+    if(file_exists(".$lang.php.work"))
+    {
+      $working_copy = true;
+      include_once(".$lang.php.work"); // Read the translation array (work in progress)
+    }
+    else
+      include_once("$lang.php"); // Read the original translation array
+  }
+  else if(file_exists(".en.php.work"))
   {
     $working_copy = true;
-    include_once(".$lang.php.work"); // Read the translation array (work in progress)
+    $tmp = $language;
+    include_once(".en.php.work"); // Read the language array (work in progress)
+    $translation = $language;  // Edit the english language file
+    $language = $tmp;
   }
-  else if($lang != 'en')
-    include_once("$lang.php"); // Read the original translation array
   else
     $translation = $language;  // Edit the english language file
   
@@ -288,7 +301,10 @@ function update_language($lang, &$strings, $edit)
     ."// \n"
     ."// Furthermore, nothing else than the language array is saved\n"
     ."// when using the .langedit.php editor!\n//\n");
-  fprintf($file, "\$translation = array(\n");
+  if($lang == 'en')
+    fprintf($file, "\$language = array(\n");
+  else
+    fprintf($file, "\$translation = array(\n");
   // The following characters will be escaped in multiline strings
   // in the following order:
   // \    => \\

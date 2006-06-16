@@ -79,7 +79,9 @@ $groupby = '';
 $from   = '             {tasks}         t
              LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
              LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
-             LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id ';
+             LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id
+             LEFT JOIN  {groups}        g   ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
+             LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id';
 // Only join tables which are really necessary to speed up the db-query
 if (Get::has('cat') || in_array('category', $visible)) {
     $from   .= ' LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id ';
@@ -131,8 +133,17 @@ if (Get::has('dev') || in_array('assignedto', $visible)) {
 }
 
 
-$where      = array('project_is_active = ?');
-$sql_params = array('1');
+$where      = array('project_is_active = 1');
+$where[]    = '(p.others_view = 1
+                OR (uig.user_id = ?
+                   AND (t.opened_by = ?
+                        OR (t.mark_private = 0 AND (g.view_tasks = 1 OR p.others_view = 1))
+                        OR ass.user_id = ?
+                        OR g.manage_project = 1
+                        OR g.is_admin = 1)
+                        )
+                )';
+$sql_params = array($user->id, $user->id, $user->id);
 
 if ($proj->id == 0) {
     // If the user wants to view tasks from all projects
@@ -252,11 +263,6 @@ if (Get::val('string')) {
     }
       
     $where[] = '(' . implode( (Req::has('search_for_all') ? ' AND ' : ' OR '), $where_temp) . ')';
-}
-
-if (!$user->perms['manage_project']) {
-    $where[]      = "(t.mark_private <> '1' OR t.opened_by = ? OR u.user_id = ?)";
-    array_push($sql_params, $user->id, $user->id);
 }
 
 if (Get::val('tasks') == 'watched') {
