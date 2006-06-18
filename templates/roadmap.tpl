@@ -41,3 +41,5 @@ foreach($milestone['open_tasks'] as $task): ?>
 <?php endif; ?>
 </div>
 <?php endforeach; ?>
+
+<p><a href="?txt=true"><img src="{$this->get_image('mime/text')}" alt="" /> {L('textversion')}</a></p>

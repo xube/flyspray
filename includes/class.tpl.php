@@ -135,8 +135,9 @@ class FSTpl extends Tpl
         $link = 'themes/' . $proj->prefs['theme_style'] . '/';
         if ($pathinfo['dirname'] != '.') {
             $link .= $pathinfo['dirname'] . '/';
+            $name = $pathinfo['basename'];
         }
-        
+
         $extensions = array('.png', '.gif', '.jpg', '.ico');
 
         foreach ($extensions as $ext) {

@@ -715,6 +715,7 @@ Regards,',
 'frequency'               => 'Frequency',
 'newuserregistered'       => 'A new user has registered at your Flyspray installation. The user details are as follows:',
 'notify_registration'     => 'Notify admins on new user registration',
+'textversion'             => 'Text Version',
 ); 
 
 ?>
