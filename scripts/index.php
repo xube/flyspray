@@ -92,7 +92,7 @@ if (in_array('votes', $visible)) {
     $from   .= ' LEFT JOIN  {votes} vot         ON t.task_id = vot.task_id ';
     $select .= ' COUNT(DISTINCT vot.vote_id)    AS num_votes, ';
 }
-if (Get::has('changedsincedate') || in_array('lastedit', $visible)) {
+if (Get::val('changedsincedate') || in_array('lastedit', $visible)) {
     $from   .= ' LEFT JOIN  {history} h         ON t.task_id = h.task_id ';
     $select .= ' max(h.event_date)              AS event_date, ';
 }
@@ -265,7 +265,7 @@ if (Get::val('string')) {
     $where[] = '(' . implode( (Req::has('search_for_all') ? ' AND ' : ' OR '), $where_temp) . ')';
 }
 
-if (Get::val('tasks') == 'watched') {
+if (Get::val('tasks') == 'watched' || Get::val('only_watched')) {
     //join the notification table to get watched tasks
     $from        .= " LEFT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
     $where[]      = 'fsn.user_id = ?';

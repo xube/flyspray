@@ -35,6 +35,7 @@ RewriteRule ^register$ index.php?do=register [L,QSA]
 RewriteRule ^lostpw$ index.php?do=lostpw [L,QSA]
 RewriteRule ^newtask$ index.php?do=newtask [L,QSA]
 RewriteRule ^roadmap$ index.php?do=roadmap [L,QSA]
+RewriteRule ^proj([0-9]+)$ index.php?project=$1 [L,QSA]
 
 RewriteRule ^error$ index.php?do=error [L,QSA]
 </IfModule>

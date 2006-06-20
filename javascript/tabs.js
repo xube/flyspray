@@ -28,8 +28,9 @@ function showTabById(tabid) { // {{{
   var submenu = document.getElementById('submenu');
   var i;
   var el = document.getElementById(tabid + "taba");
+
   if (el) {
-    eval(el.getAttribute('onclick'));
+    eval(el.getAttribute('onmousedown'));
   }
   for (i=0; i<divs.length; i++) {
     if (divs[i].className && (divs[i].className.indexOf('tab') > -1)) {

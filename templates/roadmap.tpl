@@ -1,5 +1,3 @@
-<h2>{$proj->prefs['project_title']}</h2>
-
 <?php foreach($data as $milestone): ?>
 
 <div class="admin roadmap">
@@ -42,4 +40,4 @@ foreach($milestone['open_tasks'] as $task): ?>
 </div>
 <?php endforeach; ?>
 
-<p><a href="?txt=true"><img src="{$this->get_image('mime/text')}" alt="" /> {L('textversion')}</a></p>
+<p><a href="{CreateURL('roadmap', $proj->id, null, array('txt' => 'true'))}"><img src="{$this->get_image('mime/text')}" alt="" /> {L('textversion')}</a></p>

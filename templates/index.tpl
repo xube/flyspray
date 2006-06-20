@@ -46,6 +46,9 @@
         
         {!tpl_checkbox('search_for_all', Get::has('search_for_all'), 'sfa')}
         <label class="left" for="sfa">{L('searchforall')}</label>
+
+        {!tpl_checkbox('only_watched', Get::has('only_watched'), 'only_watched')}
+        <label class="left" for="only_watched">{L('taskswatched')}</label>
         
         {!tpl_datepicker('', L('selectduedate'), L('due'))}
         {!tpl_datepicker('changedsince', L('selectsincedate'), L('changedsince'))}
