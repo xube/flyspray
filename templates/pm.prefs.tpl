@@ -64,8 +64,8 @@
           <td>{!tpl_checkbox('others_view', $proj->prefs['others_view'], 'othersview')}</td>
         </tr>
         <tr>
-          <td><label for="anonopen">{L('allowanonopentask')}</label></td>
-          <td>{!tpl_checkbox('anon_open', $proj->prefs['anon_open'], 'anonopen')}</td>
+          <td><label for="anon_open">{L('allowanonopentask')}</label></td>
+          <td>{!tpl_checkbox('anon_open', $proj->prefs['anon_open'], 'anon_open')}</td>
         </tr>
         <tr>
           <td><label for="comment_closed">{L('allowclosedcomments')}</label></td>
