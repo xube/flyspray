@@ -17,7 +17,7 @@ if ($conf['general']['reminder_daemon'] == '1') {
     $fs->startReminderDaemon();
 }
 
-$do = Req::val('do', 'index');//print_r($_REQUEST);die();
+$do = Req::val('do', 'index');
 if ($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
     $do = 'pm';
 } elseif ($do == 'pm' && Req::has('switch') && Req::val('project') == '0') {

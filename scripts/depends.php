@@ -195,12 +195,12 @@ foreach ($node_list as $n => $r) {
          "$r[pct]% ".L('complete')).#" status $r[stat]".
          "\n".wordwrap(addslashes($r['sum']), 20)."\n";
     $tooltip =
-      ($r['clsd'] ? "L(closed): $r[res]".
+      ($r['clsd'] ? L('closed') . ": $r[res]".
        (!empty($r['clsdby']) ? " ($r[clsdby])" : "").
        ($r['com']!='' ? " - $r[com]" : "")
-       : $severity_list[$r['sev']]." L(severity)/".
-       $priority_list[$r['pri']]." L(priority) - ".
-       "L(status): ".$r['status_name']);
+       : $severity_list[$r['sev']]. L('severity') . "/".
+       $priority_list[$r['pri']]. L('priority') . " - ".
+       L('status') . ": ".$r['status_name']);
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
         "href=\"".CreateURL("details", $n)."\", ".
         "tooltip=\"$tooltip\", fillcolor=\"$col\"];\n";

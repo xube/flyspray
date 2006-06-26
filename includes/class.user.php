@@ -248,7 +248,8 @@ class User
 
     function can_open_task($proj)
     {
-        return $this->perms['open_new_tasks'] || $proj->prefs['anon_open'];
+        return $this->perms['manage_project'] ||
+                 $proj->prefs['project_is_active'] && ($this->perms['open_new_tasks'] || $proj->prefs['anon_open']);
     }
 
     function can_mark_private($task)

@@ -23,7 +23,7 @@
           <td><label for="category">{L('category')}</label></td>
           <td>
             <select class="adminlist" name="product_category" id="category">
-              {!tpl_options($proj->listCategories(), $task_details['product_category'])}
+              {!tpl_options($proj->listCategories())}
             </select>
           </td>
         </tr>

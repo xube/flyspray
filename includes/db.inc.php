@@ -186,7 +186,7 @@ class Database
             $col_names[$key] = $prefix . $value[0];
         }
         
-        $groupby = implode(', ', $column_names);
+        $groupby = implode(', ', $col_names);
         
         return $groupby;
     }

@@ -379,3 +379,6 @@ INSERT INTO `flyspray_prefs` ( `pref_id` , `pref_name` , `pref_value` , `pref_de
 VALUES (
 25 , 'notify_registration', '0', 'Whether or not admins get an email on a new user registration'
 );
+
+-- Florian Schmitz, 26 June 2006
+create index idx_task_id on flyspray_history(task_id);

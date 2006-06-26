@@ -275,7 +275,10 @@ if (Get::val('tasks') == 'watched' || Get::val('only_watched')) {
 $where = join(' AND ', $where);
 
 //Get the column names of table tasks for the group by statement
-$groupby = $db->GetColumnNames('{tasks}', 't.task_id', 't.');
+if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
+    $groupby .= "p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name, ";
+}
+$groupby .= $db->GetColumnNames('{tasks}', 't.task_id', 't.');
 
 // Parts of this SQL courtesy of Lance Conry http://www.rhinosw.com/
 $sql = $db->Query("
