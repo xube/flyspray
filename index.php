@@ -35,7 +35,7 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     $user = new User(0, $proj);
 }
 
-if (Get::has('getfile') && Get::val('getfile')) {
+if (Get::val('getfile')) {
     // If a file was requested, deliver it
     $result = $db->Query("SELECT  t.task_id, t.attached_to_project,
                                   a.orig_name, a.file_name, a.file_type
@@ -56,7 +56,7 @@ if (Get::has('getfile') && Get::val('getfile')) {
         die('File does not exist anymore.');
     }
     
-    if($proj->prefs['others_view'] || $user->perms['view_attachments'])
+    if ($proj->prefs['others_view'] || $user->perms['view_attachments'])
     {
         output_reset_rewrite_vars();
         $path = BASEDIR . "/attachments/$file_name";
@@ -131,7 +131,8 @@ $sql = $db->Query(
       LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project OR g.belongs_to_project=0
       LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
           WHERE  (p.project_is_active='1' AND p.others_view = '1')
-                 OR (uig.user_id IS NOT NULL AND (g.belongs_to_project = p.project_id OR g.is_admin=1))
+                 OR (uig.user_id IS NOT NULL
+                    AND (g.belongs_to_project = p.project_id OR (g.view_tasks = 1 AND g.belongs_to_project = 0) OR g.is_admin=1))
        ORDER BY  sort_names", array($user->id));
 
 $page->assign('project_list', $project_list = $db->FetchAllArray($sql));

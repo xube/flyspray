@@ -46,9 +46,6 @@ class Notifications {
    {
       global $db, $fs;
 
-      $subject = htmlspecialchars($subject);
-      $body = htmlspecialchars($body);
-
       if (empty($fs->prefs['jabber_server'])
           OR empty($fs->prefs['jabber_port'])
           OR empty($fs->prefs['jabber_username'])
@@ -60,7 +57,6 @@ class Notifications {
          return false;
       }
 
-      $body = str_replace('&amp;', '&', $body);
       $date = time();
 
       // store notification in table
@@ -188,7 +184,7 @@ class Notifications {
                   if ($JABBER->SendMessage($jid, 'normal', NULL,
                      array(
                         "subject"   => $subject,
-                        "body"      => htmlspecialchars($body),
+                        "body"      => $body,
                      )
                   )) {
                      // delete entry from notification_recipients
@@ -328,10 +324,31 @@ class Notifications {
          $task_details['closedby_version'] = L('undecided');
       }
 
+      // Get the string of modification
+      $notify_type_msg = array(
+      	0 => L('none'),
+	NOTIFY_TASK_OPENED     => L('taskopened'),
+	NOTIFY_TASK_CHANGED    => L('pm.taskchanged'),
+	NOTIFY_TASK_CLOSED     => L('taskclosed'),
+	NOTIFY_TASK_REOPENED   => L('pm.taskreopened'),
+	NOTIFY_DEP_ADDED       => L('pm.depadded'),
+	NOTIFY_DEP_REMOVED     => L('pm.depremoved'),
+	NOTIFY_COMMENT_ADDED   => L('commentadded'),
+	NOTIFY_ATT_ADDED       => L('attachmentadded'),
+	NOTIFY_REL_ADDED       => L('relatedadded'),
+	NOTIFY_OWNERSHIP       => L('ownershiptaken'),
+	NOTIFY_PM_REQUEST      => L('pmrequest'),
+	NOTIFY_PM_DENY_REQUEST => L('pmrequestdenied'),
+	NOTIFY_NEW_ASSIGNEE    => L('newassignee'),
+	NOTIFY_REV_DEP         => L('revdepadded'),
+	NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
+	NOTIFY_ADDED_ASSIGNEES => L('assigneeadded'),
+      );
+
       // Generate the nofication message
       if ($proj->prefs['notify_subject']) {
-          $subject = str_replace(array('%p','%s','%t'),
-                                    array($proj->prefs['project_title'], $task_details['item_summary'], $task_id),
+          $subject = str_replace(array('%p','%s','%t', '%a'),
+                                    array($proj->prefs['project_title'], $task_details['item_summary'], $task_id, $notify_type_msg[$type]),
                                     $proj->prefs['notify_subject']);
       } else {
           $subject = L('notifyfrom') . $proj->prefs['project_title'];

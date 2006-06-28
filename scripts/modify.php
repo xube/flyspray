@@ -24,7 +24,7 @@ if (Req::has('task_id') || Req::has('id')) {
     $old_details = $fs->GetTaskDetails(intval(Req::val('task_id', Req::has('id'))));
 }
 // Adding a new task  {{{
-if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
+if (Post::val('action') == 'newtask') {
 
     if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
         $_SESSION['ERROR'] = L('summaryanddetails');
@@ -34,12 +34,17 @@ if (Post::val('action') == 'newtask' && $user->can_open_task($proj)) {
     $task_id = $be->CreateTask($_POST);
 
     // Status and redirect
-    $_SESSION['SUCCESS'] = L('newtaskadded');
-    
-    if ($user->isAnon()) {        
-        Flyspray::Redirect(CreateURL('details', $task_id, null, array('task_token' => $token)));
+    if ($task_id) {
+        $_SESSION['SUCCESS'] = L('newtaskadded');
+        
+        if ($user->isAnon()) {        
+            Flyspray::Redirect(CreateURL('details', $task_id, null, array('task_token' => $token)));
+        } else {
+            Flyspray::Redirect(CreateURL('details', $task_id));
+        }
     } else {
-        Flyspray::Redirect(CreateURL('details', $task_id));
+        $_SESSION['ERROR'] = L('databasemodfailed');
+        Flyspray::Redirect($baseurl);
     }
 
 } // }}}

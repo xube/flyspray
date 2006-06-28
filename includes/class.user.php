@@ -177,8 +177,9 @@ class User
 
     function can_view_project($proj)
     {
-        return $proj->prefs['project_is_active']
-            && ($proj->prefs['others_view'] || @$this->infos['project_group'] || $this->perms['is_admin']);
+        return $this->perms['view_tasks']
+          || ($proj->prefs['project_is_active']
+              && ($proj->prefs['others_view'] || @$this->infos['project_group']));
     }
 
     function can_view_task($task)

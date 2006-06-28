@@ -498,9 +498,10 @@ class Backend
         $notify = new Notifications();
         if ($proj->id !=  $args['project_id']) {
             $proj = new Project($args['project_id']);
+            $user->get_perms($proj);
         }
         
-        if (count($args) < 3) {
+        if (!$user->can_open_task($proj) || count($args) < 3) {
             return null;
         }
 

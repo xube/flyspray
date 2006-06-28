@@ -382,3 +382,8 @@ VALUES (
 
 -- Florian Schmitz, 26 June 2006
 create index idx_task_id on flyspray_history(task_id);
+
+-- Florian Schmitz, 28 June 2006
+ALTER TABLE `flyspray_admin_requests` CHANGE `reason_given` `reason_given` TEXT NOT NULL;
+ALTER TABLE `flyspray_projects` CHANGE `intro_message` `intro_message` TEXT NOT NULL;
+ALTER TABLE `flyspray_tasks` CHANGE `detailed_desc` `detailed_desc` TEXT NOT NULL;
