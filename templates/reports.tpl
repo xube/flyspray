@@ -55,7 +55,7 @@
       </tr>
       <tr>
         <td>
-          <input type="radio" id="datefrom" name="repdate" value="from" <?php if (Req::val('date') == 'from') echo 'checked="checked"';?> />
+          <input type="radio" id="datefrom" name="repdate" value="from" <?php if (Req::val('repdate') == 'from') echo 'checked="checked"';?> />
           <label class="inline" for="datefrom">{L('from')}</label>
         </td>
         <td onclick="getElementById('datefrom').checked=true">
@@ -66,7 +66,7 @@
       </tr>
       <tr>
         <td>
-          <input type="radio" id="dateduein" name="repdate" value="duein" <?php if (Req::val('date') == 'duein') echo 'checked="checked"';?> />
+          <input type="radio" id="dateduein" name="repdate" value="duein" <?php if (Req::val('repdate') == 'duein') echo 'checked="checked"';?> />
           <label class="inline" for="dateduein">{L('duein')}</label>
         </td>
         <td colspan="6">

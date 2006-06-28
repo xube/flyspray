@@ -226,7 +226,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     }
     $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, $params));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
-            $url, $title_text, join_attrs($attrs), $text);
+            $url, $title_text, join_attrs($attrs), htmlspecialchars($text));
 
     if ($task['is_closed']) {
         $link = '<del>&#160;' . $link . '&#160;</del>';

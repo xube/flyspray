@@ -1183,6 +1183,7 @@ class Jabber
 
 
 	// _array_htmlspecialchars()
+    // MODIFICATION BY FLO, function wasn't actually working at all
 	// applies htmlspecialchars() to all values in an array
 
 	function _array_htmlspecialchars($array)
@@ -1193,11 +1194,11 @@ class Jabber
 			{
 				if (is_array($v))
 				{
-					$v = $this->_array_htmlspecialchars($v);
+					$array[$k] = $this->_array_htmlspecialchars($v);
 				}
 				else
 				{
-					$v = htmlspecialchars($v);
+					$array[$k] = htmlspecialchars($v);
 				}
 			}
 		}

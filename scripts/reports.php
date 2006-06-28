@@ -177,6 +177,7 @@ $page->uses('histories', 'sort', 'tasks_voted_for');
 *  User reports       *
 \**********************/
 
+$type = array();
 if (Req::has('created')) {array_push($type, 30); }
 if (Req::has('deleted')) {array_push($type, 31); }
 
