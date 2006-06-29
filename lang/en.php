@@ -720,6 +720,7 @@ Regards,',
 'notify_registration'     => 'Notify admins on new user registration',
 'textversion'             => 'Text Version',
 'nopermsaddtask'          => 'You don\'t have sufficient permissions to open a task.',
+'onlyprimary'             => 'Tasks not blocking other tasks',
 ); 
 
 ?>

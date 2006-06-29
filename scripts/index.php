@@ -145,6 +145,11 @@ $where[]    = '(p.others_view = 1
                 )';
 $sql_params = array($user->id, $user->id, $user->id);
 
+if (Get::has('only_primary')) {
+    $from   .= ' LEFT JOIN  {dependencies} dep  ON dep.dep_task_id = t.task_id ';
+    $where[] = 'dep.depend_id IS NULL';
+}
+
 if ($proj->id == 0) {
     // If the user wants to view tasks from all projects
     // XXX take $project_list from index.php

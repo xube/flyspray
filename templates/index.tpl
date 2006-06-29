@@ -50,6 +50,9 @@
         {!tpl_checkbox('only_watched', Get::has('only_watched'), 'only_watched')}
         <label class="left" for="only_watched">{L('taskswatched')}</label>
         
+        {!tpl_checkbox('only_primary', Get::has('only_primary'), 'only_primary')}
+        <label class="left" for="only_primary">{L('onlyprimary')}</label>
+        
         {!tpl_datepicker('', L('selectduedate'), L('due'))}
         {!tpl_datepicker('changedsince', L('selectsincedate'), L('changedsince'))}
 
