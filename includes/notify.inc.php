@@ -232,8 +232,6 @@ class Notifications {
    {
       global $fs, $proj, $user;
 
-      $body = str_replace('&amp;', '&', $body);
-
       if (empty($to) || empty( $to[0] ) || ($to == $user->id && !$user->infos['notify_own'])) {
          return;
       }
@@ -353,6 +351,8 @@ class Notifications {
       } else {
           $subject = L('notifyfrom') . $proj->prefs['project_title'];
       }
+      
+      $subject = strtr($subject, "\r\n", '');
 
 
       /* -------------------------------

@@ -6,7 +6,12 @@
    
 define('IN_FS', true);
 
-require('../header.php');
+require_once '../includes/functions.inc.php';
+require_once '../includes/constants.inc.php';
+require_once BASEDIR . '/includes/db.inc.php';
+
+$db = new Database;
+$db->dbOpenFast($conf['database']);
 
 $check_sql = $db->Query('SELECT task_id, closure_comment, resolution_reason FROM {tasks}');
 

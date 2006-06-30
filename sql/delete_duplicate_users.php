@@ -2,6 +2,13 @@
    /**********************************************************\
    | This script removes duplicate user names                  |
    \**********************************************************/
+   
+require_once '../includes/functions.inc.php';
+require_once '../includes/constants.inc.php';
+require_once BASEDIR . '/includes/db.inc.php';
+
+$db = new Database;
+$db->dbOpenFast($conf['database']);
 
 $users = $db->Query('SELECT * FROM {users} ORDER BY user_id ASC');
 

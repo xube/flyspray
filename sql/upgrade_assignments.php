@@ -9,8 +9,17 @@
    
 define('IN_FS', true);
 
-require('../header.php');
+require_once '../includes/functions.inc.php';
+require_once '../includes/constants.inc.php';
+require_once BASEDIR . '/includes/db.inc.php';
 
+$db = new Database;
+$db->dbOpenFast($conf['database']);
+
+$db->Query("ALTER TABLE `flyspray_assigned` DROP `user_or_group`");
+$db->Query("ALTER TABLE `flyspray_assigned` CHANGE `assignee_id` `user_id` MEDIUMINT( 5 ) DEFAULT '0' NOT NULL");
+$db->Query("ALTER TABLE `flyspray_assigned` ADD INDEX ( `task_id` , `user_id` )");
+                          
 $check_sql = $db->Query("SELECT task_id, assigned_to
                            FROM {tasks}
                           WHERE assigned_to > '0'");

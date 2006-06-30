@@ -208,9 +208,7 @@ ALTER TABLE `flyspray_projects` ADD `notify_subject` VARCHAR( 100 ) NOT NULL;
 
 -- Tony Collins, 22 November 2005 (FS#329)
 
-ALTER TABLE `flyspray_assigned` DROP `user_or_group` ;
-ALTER TABLE `flyspray_assigned` CHANGE `assignee_id` `user_id` MEDIUMINT( 5 ) DEFAULT '0' NOT NULL ;
-ALTER TABLE `flyspray_assigned` ADD INDEX ( `task_id` , `user_id` ) ;
+-- moved to upgrade_assignments.php
 
 -- Tony Collins, 23 November 2005 (FS#329)
 

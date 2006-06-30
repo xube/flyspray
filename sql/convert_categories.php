@@ -6,7 +6,12 @@
    
 define('IN_FS', true);
 
-require('../header.php');
+require_once '../includes/functions.inc.php';
+require_once '../includes/constants.inc.php';
+require_once BASEDIR . '/includes/db.inc.php';
+
+$db = new Database;
+$db->dbOpenFast($conf['database']);
 
 function rebuild_tree($parent, $left, $pr) {
     global $db;
