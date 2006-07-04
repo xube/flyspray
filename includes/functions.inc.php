@@ -12,6 +12,7 @@ class Flyspray
     var $version = '0.9.9 dev';
 
     var $prefs   = array();
+    var $max_file_size = 0;
 
     // Application-wide preferences {{{
     function Flyspray()
@@ -25,6 +26,29 @@ class Flyspray
         while ($row = $db->FetchRow($res)) {
             $this->prefs[$row['pref_name']] = $row['pref_value'];
         }
+        
+        $sizes = array();
+        foreach (array(ini_get('memory_limit'), ini_get('post_max_size'), ini_get('upload_max_filesize')) as $val) {
+            if (!$val) {
+                continue;
+            }
+            
+            $val = trim($val);
+            $last = strtolower($val{strlen($val)-1});
+            switch ($last) {
+                // The 'G' modifier is available since PHP 5.1.0
+                case 'g':
+                    $val *= 1024;
+                case 'm':
+                    $val *= 1024;
+                case 'k':
+                    $val *= 1024;
+            }
+
+            $sizes[] = $val;
+        }
+
+        $this->max_file_size = round((min($sizes)/1024/1024), 1);
     } // }}}
 
     /**{{{ Redirect to $url

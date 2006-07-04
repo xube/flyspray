@@ -2,7 +2,9 @@
 <span id="navigation"> <?php if ($prev_id): ?>
   {!tpl_tasklink($prev_id, L('previoustask'), false, array('id'=>'prev', 'accesskey' => 'p'))}
   <?php endif; ?>
-  <?php if ($prev_id && $next_id): ?> | <?php endif; ?>
+  <?php if ($prev_id): ?> | <?php endif; ?>
+  <a href="{CreateUrl('project', $proj->id, null, array('pagenum' => Get::val('pagenum')))}">{L('tasklist')}</a>
+  <?php if ($next_id): ?> | <?php endif; ?>
   <?php if ($next_id): ?>
   {!tpl_tasklink($next_id, L('nexttask'), false, array('id'=>'next', 'accesskey' => 'n'))}
   <?php endif; ?>
@@ -147,7 +149,7 @@
 		<br class="DoNotPrint" />
 
 		<?php if (count($deps) || count($blocks)): ?>
-		<a class="DoNotPrint" href="{CreateURL('depends', Get::val('id'))}">{L('depgraph')}</a>
+		<a class="DoNotPrint" href="{CreateURL('depends', Get::num('id'))}">{L('depgraph')}</a>
 		<br />
 		<br />
 		<?php endif; ?>
@@ -157,7 +159,7 @@
 		  <div>
 			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="newdep" />
-			 <input type="hidden" name="task_id" value="{Get::val('id')}" />
+			 <input type="hidden" name="task_id" value="{Get::num('id')}" />
 			 <input class="text" type="text" name="dep_task_id" size="5" maxlength="10" />
 			 <button type="submit" name="submit">{L('addnew')}</button>
 		  </div>
@@ -195,7 +197,7 @@
 	 <?php if ($task_details['is_closed']): ?>
 
 	 <?php if ($user->can_close_task($task_details)): ?>
-	 <a href="{$baseurl}?do=modify&amp;action=reopen&amp;task_id={Get::val('id')}">
+	 <a href="{$baseurl}?do=modify&amp;action=reopen&amp;task_id={Get::num('id')}">
 		{L('reopenthistask')}</a>
 	 <?php elseif (!$fs->adminRequestCheck(2, $task_details['task_id']) && !$user->isAnon()): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
@@ -205,7 +207,7 @@
 		  <div>
 			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="requestreopen" />
-			 <input type="hidden" name="task_id" value="{Get::val('id')}" />
+			 <input type="hidden" name="task_id" value="{Get::num('id')}" />
 			 <label for="reason">{L('reasonforreq')}</label>
 			 <textarea id="reason" name="reason_given"></textarea><br />
 			 <button type="submit">{L('submitreq')}</button>
@@ -216,11 +218,11 @@
      <?php if (!$user->isAnon()): ?>
 	 <?php if (!$watched): ?>
 	 <a id="addnotif" class="button" accesskey="w"
-		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
+		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
 		{L('watchtask')}</a>
 	 <?php else: ?>
 	 <a id="removenotif" class="button" accesskey="w"
-		href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
+		href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
 		{L('stopwatching')}</a>
 	 <?php endif; ?>
 	 <?php endif; ?>
@@ -235,7 +237,7 @@
 			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="close" />
 			 <input type="hidden" name="assigned_to" value="{implode(' ',$task_details['assigned_to'])}" />
-			 <input type="hidden" name="task_id" value="{Get::val('id')}" />
+			 <input type="hidden" name="task_id" value="{Get::num('id')}" />
 			 <select class="adminlist" name="resolution_reason">
 				<option value="0">{L('selectareason')}</option>
 				{!tpl_options($proj->listResolutions())}
@@ -258,7 +260,7 @@
 		  <div>
 			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="requestclose" />
-			 <input type="hidden" name="task_id" value="{Get::val('id')}" />
+			 <input type="hidden" name="task_id" value="{Get::num('id')}" />
 			 <label for="reason">{L('reasonforreq')}</label>
 			 <textarea id="reason" name="reason_given"></textarea><br />
 			 <button type="submit">{L('submitreq')}</button>
@@ -269,46 +271,46 @@
 
 	 <?php if ($user->can_take_ownership($task_details)): ?>
 	 <a id="own" class="button"
-		href="{$baseurl}?do=modify&amp;action=takeownership&amp;ids={Get::val('id')}">
+		href="{$baseurl}?do=modify&amp;action=takeownership&amp;ids={Get::num('id')}">
 		{L('assigntome')}</a>
 	 <?php endif; ?>
 
 	 <?php if ($user->can_add_to_assignees($task_details) && !empty($task_details['assigned_to'])): ?>
 	 <a id="own_add" class="button"
-		href="{$baseurl}?do=modify&amp;action=addtoassignees&amp;ids={Get::val('id')}">
+		href="{$baseurl}?do=modify&amp;action=addtoassignees&amp;ids={Get::num('id')}">
 		{L('addmetoassignees')}</a>
 	 <?php endif; ?>
 
 	 <?php if ($user->can_edit_task($task_details)): ?>
-	 <a id="edittask" class="button" href="{CreateURL('edittask', Get::val('id'))}">
+	 <a id="edittask" class="button" href="{CreateURL('edittask', Get::num('id'))}">
 		{L('edittask')}</a>
 	 <?php endif; ?>
 
 	 <?php if ($user->can_mark_public($task_details)): ?>
 	 <a id="public" class="button"
-		href="{$baseurl}?do=modify&amp;action=makepublic&amp;id={Get::val('id')}">
+		href="{$baseurl}?do=modify&amp;action=makepublic&amp;id={Get::num('id')}">
 		{L('makepublic')}</a>
 	 <?php elseif ($user->can_mark_private($task_details)): ?>
 	 <a id="private" class="button"
-		href="{$baseurl}?do=modify&amp;action=makeprivate&amp;id={Get::val('id')}">
+		href="{$baseurl}?do=modify&amp;action=makeprivate&amp;id={Get::num('id')}">
 		{L('makeprivate')}</a>
 	 <?php endif; ?>
 
 	 <?php if (!$user->isAnon()): ?>
 	 <?php if (!$watched): ?>
 	 <a id="addnotif" class="button" accesskey="w"
-		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
+		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
 		{L('watchtask')}</a>
 	 <?php else: ?>
 	 <a id="removenotif" class="button" accesskey="w"
-		href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::val('id')}&amp;user_id={$user->id}">
+		href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
 		{L('stopwatching')}</a>
 	 <?php endif; ?>
 	 <?php endif; ?>
          
 	 <?php if ($user->can_vote($task_details['task_id'])): ?>
         <a id="addvote" class="button"
-            href="{$baseurl}?do=modify&amp;action=addvote&amp;id={Get::val('id')}">
+            href="{$baseurl}?do=modify&amp;action=addvote&amp;id={Get::num('id')}">
             {L('addvote')}</a>
      <?php endif; ?>
 

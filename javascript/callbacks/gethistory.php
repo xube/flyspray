@@ -29,7 +29,7 @@ if (is_numeric($details = Get::val('details'))) {
     $details = null;
 }
 
-$sql = get_events(Get::val('id'), $details);
+$sql = get_events(Get::num('id'), $details);
 $histories = $db->fetchAllArray($sql);
 
 if ($details)

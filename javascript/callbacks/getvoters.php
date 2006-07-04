@@ -27,7 +27,7 @@ $get_users = $db->Query("SELECT u.user_id, v.date_time
                            FROM {votes} v
                       LEFT JOIN {users} u ON v.user_id = u.user_id
                           WHERE v.task_id = ?
-                       ORDER BY v.date_time DESC", array(Get::val('id')));
+                       ORDER BY v.date_time DESC", array(Get::num('id')));
 $html = '<ul class="reports">';
 
 // Build HTML

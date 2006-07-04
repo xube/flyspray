@@ -221,8 +221,8 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     }
     
     $params = array('histring' => Get::val('string'));
-    if ($user->didSearch()) {
-        $params['tasks'] = Get::val('tasks', 'last');
+    if (Get::val('pagenum')) {
+        $params['pagenum'] = Get::val('pagenum');
     }
     $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, $params));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
@@ -616,7 +616,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'edituser':
             case 'user':      $return = $url . $type . '/' . $arg1; break;
             
-            case 'project':   $return = $url . 'proj/' . $arg1; break;
+            case 'project':   $return = $url . 'proj' . $arg1; break;
 
             case 'newgroup':
             case 'roadmap':

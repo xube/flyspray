@@ -9,7 +9,7 @@
 		</h2>
 		<input type="hidden" name="do" value="modify" />
 		<input type="hidden" name="action" value="update" />
-		<input type="hidden" name="task_id" value="{Get::val('id')}" />
+		<input type="hidden" name="task_id" value="{Get::num('id')}" />
 		<input type="hidden" name="edit_start_time" value="{time()}" />
 
 		<div id="fineprint">
@@ -152,10 +152,10 @@
             </span>    
           </div>
           <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields()">
-            {L('uploadafile')}
+            {L('uploadafile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
           </button>
           <button id="uploadfilebox_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
-             {L('attachanotherfile')}
+             {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
           </button>
           <?php endif; ?>
           <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
@@ -176,10 +176,10 @@
                 </span>    
               </div>
               <button id="uploadfilebox_c_attachafile" tabindex="7" type="button" onclick="addUploadFields('uploadfilebox_c')">
-                {L('uploadafile')}
+                {L('uploadafile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
               </button>
               <button id="uploadfilebox_c_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields('uploadfilebox_c')">
-                 {L('attachanotherfile')}
+                 {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
               </button>
               <?php endif; ?>
               

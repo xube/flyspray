@@ -394,7 +394,7 @@ Regards,',
 'now'                     => 'Now',
 'go'                      => 'Go!',
 'opentaskanon'            => 'Open a new Task anonymously',
-'register'                => 'Register as a new user',
+'register'                => 'Register',
 'addnewtask'              => 'Add new task',
 'reports'                 => 'Reports',
 'editmydetails'           => 'Edit my details',
@@ -721,6 +721,8 @@ Regards,',
 'textversion'             => 'Text Version',
 'nopermsaddtask'          => 'You don\'t have sufficient permissions to open a task.',
 'onlyprimary'             => 'Tasks not blocking other tasks',
+'switch'                  => 'Switch',
+'max'                     => 'max.',
 ); 
 
 ?>

@@ -13,13 +13,13 @@
   <span class="DoNotPrint">
     <?php if ($user->perms['edit_comments'] || ($user->perms['edit_own_comments'] && $comment['user_id'] == $user->id)): ?>
     &mdash;
-    <a href="{$baseurl}?do=editcomment&amp;task_id={Get::val('id')}&amp;id={$comment['comment_id']}">
+    <a href="{$baseurl}?do=editcomment&amp;task_id={Get::num('id')}&amp;id={$comment['comment_id']}">
       {L('edit')}</a>
     <?php endif; ?>
 
     <?php if ($user->perms['delete_comments']): ?>
     &mdash;
-    <a href="{$baseurl}?do=modify&amp;action=deletecomment&amp;task_id={Get::val('id')}&amp;comment_id={$comment['comment_id']}"
+    <a href="{$baseurl}?do=modify&amp;action=deletecomment&amp;task_id={Get::num('id')}&amp;comment_id={$comment['comment_id']}"
       onclick="return confirm('{L('confirmdeletecomment')}');">
       {L('delete')}</a>
     <?php endif ?>
@@ -59,10 +59,10 @@
         </span>    
       </div>
       <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields()">
-        {L('uploadafile')}
+        {L('uploadafile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
       </button>
       <button id="uploadfilebox_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
-         {L('attachanotherfile')}
+         {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
       </button>
       <?php endif; ?>
       {!TextFormatter::textarea('comment_text', 10, 72, array('accesskey' => 'r', 'tabindex' => 8, 'id' => 'comment_text'))}

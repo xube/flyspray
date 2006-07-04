@@ -37,7 +37,7 @@
     <?php endforeach; ?>
     <tr><td colspan="4"><input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="deletereminder" />
-      <input type="hidden" name="task_id" value="{Get::val('id')}" />
+      <input type="hidden" name="task_id" value="{Get::num('id')}" />
       <button type="submit">{L('remove')}</button></td></tr>
     </table>
   </form>
@@ -47,7 +47,7 @@
     <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="addreminder" />
-      <input type="hidden" name="task_id" value="{Get::val('id')}" />
+      <input type="hidden" name="task_id" value="{Get::num('id')}" />
 
         <label class="default multisel" for="to_user_id">{L('remindthisuser')}</label>
         <input class="users text" size="30" type="text" name="to_user_id" id="to_user_id" />
@@ -80,7 +80,7 @@
       <textarea class="text" name="reminder_message"
         rows="10" cols="72">{L('defaultreminder')}
 
-{CreateURL('details', Get::val('id'))}</textarea>
+{CreateURL('details', Get::num('id'))}</textarea>
       <br />
       <button type="submit">{L('addreminder')}</button>
     </div>

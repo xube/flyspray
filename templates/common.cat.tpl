@@ -82,7 +82,7 @@
               create_function('$x', 'return array($x["category_id"], $x["category_name"]);'),
               $categories);
               ?>
-              {!tpl_options($cat_opts, Get::val('cat'))}
+              {!tpl_options($cat_opts)}
             </select>
           </td>
           <td class="buttons">

@@ -112,9 +112,14 @@ input.text,input.password,input.file,textarea,select,button {
 	background-color:#eef7ff;
 	color:#03008f;
 	border:1px solid gray;
-	font-size:100%;
+	font-size:0.9em;
 	margin:2px;
 }
+
+textarea {
+	font-size:1em;
+}
+	
 
 input.required {
 	border:solid 2px red;
@@ -183,45 +188,23 @@ table.userlist td.imgcol {
 	padding:0 0.2em;
 }
 
-div#loginbox {
-	border:1px solid #ccc;
-	background-color:#e6eef6;
-	height:22px;
+div#menu {
 	margin:0;
 	padding:0;
 }
-
-div#loginbox input.text,div#loginbox input.password,div#loginbox button {
+ 
+div#menu input.text,div#menu input.password,div#menu button {
 	display:inline;
 	margin:0;
 	padding:0 3px;
 }
 
-div#loginbox a {
-	text-align:center;
-	padding:0 0 0 13px;
+div#menu a {
+	padding:4px 0.4em 3px 25px;
 }
 
-div#loginbox button {
+div#menu button {
 	margin-left:3px;
-	height:19px;
-}
-
-div#loginbox input.text,div#loginbox input.password {
-	height:1.2em;
-	margin:1px 0 0;
-}
-
-div#loginbox span#links {
-	position:absolute;
-	top:5px;
-	right:5px;
-}
-
-div#loginbox span#links a {
-	color:#fff;
-	background-color:transparent;
-	font-weight:400;
 }
 
 div#edit_add_comment {
@@ -230,16 +213,27 @@ div#edit_add_comment {
 
 /* The div containing the main menu */
 div#menu {
-	border:1px solid #ccc;
-	background:url(menu/editmydetails.png) #e6eef6 left no-repeat;
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	background:#e6eef6;
 	height:1.5em;
-	vertical-align:baseline;
+	vertical-align:middle;
 	margin:0;
-	padding:3px 0 0 0;
+	padding:2px 0 1px 0.4em;
 	position:relative;
 }
 
-div#menu a {
+div#pm-menu {
+	border-bottom:1px solid #ccc;
+	background:#e6eef6;
+	height:1.5em;
+	vertical-align:baseline;
+	margin:0;
+	padding:2px 0 1px 0.5em;
+	position:relative;
+}
+
+div#menu a, div#pm-menu a {
 	background-repeat:no-repeat;
 	background-position:6px center;
 	font-weight:400;
@@ -249,19 +243,32 @@ div#menu a.active {
 	background-color:#fff;
 }
 
-div#menu ul a {
+div#projectselector {
+	float:left;
+	margin-top:-0.2em;
+}
+
+div#menu div#projectselector button {
+	margin-bottom:2px;
+}
+
+div#projectselector option[selected] {
+	font-weight:bold;
+}
+
+div#menu ul a, div#pm-menu ul a {
 	line-height:1.4em;
 	padding:4px 0.4em 3px 25px;
 }
 
-ul#menu-list {
+ul#menu-list, ul#pm-menu-list {
 	list-style:none;
 	margin:0;
 	padding:0;
 	display:inline;
 }
 
-ul#menu-list li {
+ul#menu-list li, ul#pm-menu-list li {
 	display:block;
 	float:left;
 	height:1.4em;
@@ -323,13 +330,8 @@ div#mysearches table tr.last {
 	border:0;
 }
 
-ul#menu-list li.last {
+ul#menu-list li.last, ul#pm-menu-list li.last {
 	border:0;
-}
-
-div#projectselector {
-	margin-bottom:0.5em;
-	float:left;
 }
 
 /* Links in menus */
@@ -337,10 +339,16 @@ div#projectselector {
 	background:url(menu/newtask.png) no-repeat;
 }
 
-div#loginbox a#anonopen {
-	padding-left:20px;
-	margin-left:0.5em;
-	font-weight:normal;
+#registerlink {
+	background:url(menu/kdmconfig.png) no-repeat;
+}
+
+#forgotlink {
+	background:url(menu/help.png) no-repeat;
+}
+
+#profilelink {
+	background-image:url(menu/editmydetails.png)
 }
 
 #reportslink {
@@ -357,6 +365,14 @@ div#loginbox a#anonopen {
 
 #logoutlink {
 	background-image:url(menu/logout.png);
+}
+
+#roadmaplink {
+	background-image:url(menu/date.png);
+}
+
+#homelink {
+	background-image:url(menu/kmenuedit.png);
 }
 
 #optionslink {
@@ -378,7 +394,9 @@ td.searches_delete {
 /* div#showtask contains the form to search for a specific task number */
 div#showtask {
 	text-align:right;
-	float:right;
+	position:absolute;
+	right:0.5em;
+	top:0.5em;
 }
 
 /* The paragraph containing the search form */
@@ -716,7 +734,7 @@ table.history td {
 }
 
 div#intromessage {
-	margin:0.5em 1px 1em 1px;
+	margin:0 1px 1em 1px;
 }
 
 div.clear {
@@ -1174,7 +1192,7 @@ a:hover {
 	text-decoration:none;
 }
 
-div#loginbox em,p#tabs small,div#toolboxmenu small {
+p#tabs small,div#toolboxmenu small {
 	display:none;
 }
 
@@ -1194,7 +1212,7 @@ form#formaddrelatedtask {
 	padding:0.2em;
 }
 
-div#loginbox p,div#search p {
+div#menu p,div#search p {
 	margin:0;
 	padding:0;
 }

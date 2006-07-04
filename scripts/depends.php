@@ -9,7 +9,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if ( !($task_details = $fs->GetTaskDetails(Req::val('id')))
+if ( !($task_details = $fs->GetTaskDetails(Req::num('id')))
         || !$user->can_view_task($task_details))
 {
     Flyspray::Redirect( CreateURL('error', null) );
@@ -24,7 +24,7 @@ $path_to_dot = @$conf['general']['dot_path']; // Where's the dot executable?
  */
 $path_for_images = '/attachments'; // What directory do we use for output?
 $fmt = 'png';
-$id = Req::val('id');
+$id = Req::num('id');
 $page->assign('taskid', 0);
 
 // Minor(?) FIXME: we save the graphs into a directory (attachments), 

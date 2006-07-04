@@ -43,10 +43,13 @@ $order_keys = array (
         'votes'      => 'num_votes',
 );
 $sortorder  = sprintf("%s %s, %s %s, t.task_id ASC",
-        $order_keys[Get::val('order',  'sev')],  Get::val('sort', 'desc'),
-        $order_keys[Get::val('order2',  'sev')], Get::val('sort2', 'desc'));
+        $order_keys[Get::enum('order', array_keys($order_keys), 'sev')],  Get::enum('sort', array('asc', 'desc'), 'desc'),
+        $order_keys[Get::enum('order2', array_keys($order_keys), 'sev')], Get::enum('sort2', array('asc', 'desc'), 'desc'));
 
-$pagenum    = intval(Get::val('pagenum', 1));
+$pagenum    = Get::num('pagenum', 1);
+if ($pagenum < 1) {
+  $pagenum = 1;
+}
 $offset     = $perpage * ($pagenum - 1);
 
 // for 'sort by this column' links
@@ -168,15 +171,6 @@ else {
     $sql_params[]  = $proj->id;
 }
 
-/// pre-process selected users {{{
-if (Get::val('tasks') == 'assigned') {
-    $_GET['dev'] = $user->id;
-} elseif (Get::val('tasks') == 'reported') {
-    $where[]      = 'opened_by = ?';
-    $sql_params[] = $user->id;
-}
-/// }}}
-
 /// process search-conditions {{{
 $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version', 'reported' => 'product_version',
                  'cat' => 'product_category', 'status' => 'item_status', 'percent' => 'percent_complete',
@@ -270,7 +264,7 @@ if (Get::val('string')) {
     $where[] = '(' . implode( (Req::has('search_for_all') ? ' AND ' : ' OR '), $where_temp) . ')';
 }
 
-if (Get::val('tasks') == 'watched' || Get::val('only_watched')) {
+if (Get::val('only_watched')) {
     //join the notification table to get watched tasks
     $from        .= " LEFT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
     $where[]      = 'fsn.user_id = ?';
@@ -348,10 +342,10 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
     if ($orderkey = $keys[$colname]) {
         if (Get::val('order') == $orderkey) {
             $class  = ' class="orderby"';
-            $sort1  = Get::val('sort', 'desc') == 'desc' ? 'asc' : 'desc';
-            $sort2  = Get::val('sort2', 'desc');
-            $order2 = Get::val('order2');
-            $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, $page->get_image(Get::val('sort')), Get::val('sort'));
+            $sort1  = Get::safe('sort', 'desc') == 'desc' ? 'asc' : 'desc';
+            $sort2  = Get::safe('sort2', 'desc');
+            $order2 = Get::safe('order2');
+            $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, $page->get_image(Get::val('sort')), Get::safe('sort'));
         }
         else {
             $sort1  = 'desc';
@@ -360,8 +354,8 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
             {
                 $sort1 = 'asc';
             }
-            $sort2  = Get::val('sort', 'desc');
-            $order2 = Get::val('order');
+            $sort2  = Get::safe('sort', 'desc');
+            $order2 = Get::safe('order');
         }
 
         $link = "?order=$orderkey&amp;$get&amp;sort=$sort1&amp;order2=$order2&amp;sort2=$sort2";

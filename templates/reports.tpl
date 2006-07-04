@@ -1,9 +1,7 @@
 <ul id="submenu">
   <li><a href="#events">{L('events')}</a></li>
   <li><a href="#votes">{L('votes')}</a></li>
-  <?php if ($proj->id == 0): ?>
   <li><a href="#users">{L('users')}</a></li>
-  <?php endif; ?>
 </ul>
 <div id="events" class="tab">
   <form action="{$baseurl}index.php" method="get">
@@ -144,7 +142,6 @@
     <?php endif; ?>
 </div>
 
-<?php if ($proj->id == 0): ?>
 <div id="users" class="tab">
     <form action="{$baseurl}index.php#users" method="get">
     <table>
@@ -216,4 +213,3 @@
  </table>
  <?php endif; ?>
 </div>
-<?php endif; ?>

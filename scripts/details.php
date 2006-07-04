@@ -12,7 +12,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$task_id = Get::val('id');
+$task_id = Get::num('id');
 
 if ( !($task_details = $fs->GetTaskDetails($task_id))
         || !$user->can_view_task($task_details))

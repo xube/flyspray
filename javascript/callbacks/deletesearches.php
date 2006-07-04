@@ -13,7 +13,7 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     $user->get_perms($proj);
     $user->check_account_ok();
     
-    $db->Query('DELETE FROM {searches} WHERE id = ? AND user_id = ?', array(Get::val('id'), $user->id));
+    $db->Query('DELETE FROM {searches} WHERE id = ? AND user_id = ?', array(Get::num('id'), $user->id));
 }
 
 ?>

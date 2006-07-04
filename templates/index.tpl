@@ -25,7 +25,7 @@
         <?php if(!$user->isAnon()): ?>
         <span class="save_search"><label for="save_search" id="lblsaveas">{L('saveas')}</label>
         <input class="text" type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
-        <button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{L('saving')}')" type="button">{L('OK')}</button></span>
+        &nbsp;<button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{L('saving')}')" type="button">{L('OK')}</button></span>
         <?php endif; ?>
         
         <button type="submit">{L('searchthisproject')}</button>
@@ -171,7 +171,7 @@
               ($offset + $perpage > $total ? $total : $offset + $perpage), $total)}
           </td>
           <td id="numbers">
-            {!pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::val('order') . '&amp;sort=' . Get::val('sort') . '&amp;tasks=' . Get::val('tasks') . '&amp;order2=' . Get::val('order2') . '&amp;sort2=' . Get::val('sort2'))}
+            {!pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::safe('order') . '&amp;sort=' . Get::safe('sort') . '&amp;order2=' . Get::safe('order2') . '&amp;sort2=' . Get::safe('sort2'))}
           </td>
           <?php else: ?>
           <td id="taskrange"><strong>{L('noresults')}</strong></td>

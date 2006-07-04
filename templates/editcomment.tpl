@@ -17,7 +17,7 @@
         {L('uploadafile')}
       </button>
       <button id="uploadfilebox_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
-         {L('attachanotherfile')}
+         {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
       </button>
     <?php endif; ?>
     

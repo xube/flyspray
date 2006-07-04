@@ -12,6 +12,23 @@ class Req
     {
         return Req::has($key) ? $_REQUEST[$key] : $default;
     }
+
+    //it will always return a number no matter what(null is 0)
+    function num($key, $default = null)
+    {
+        return Filters::num(Req::val($key, $default));
+    }
+    
+    function enum($key, $options, $default = null)
+    {
+        return Filters::enum(Req::val($key, $default), $options);
+    }
+
+    //always a string (null is typed to an empty string)
+    function safe($key)
+    {
+        return Filters::noXSS(Req::val($key));
+    }
 }
 
  // }}}
@@ -31,6 +48,18 @@ class Post
     {
         return Post::has($key) ? $_POST[$key] : $default;
     }
+
+    //it will always return a number no matter what(null is 0)
+    function num($key, $default = null)
+    {
+        return Filters::num(Post::val($key, $default));
+    }
+
+    //always a string (null is typed to an empty string)
+    function safe($key)
+    {
+        return Filters::noXSS(Post::val($key));
+    }
 }
 
 // }}}
@@ -49,9 +78,9 @@ class Get
     }
 
     //it will always return a number no matter what(null is 0)
-    function num($key)
+    function num($key, $default = null)
     {
-        return Filters::num(Get::val($key));
+        return Filters::num(Get::val($key, $default));
     }
 
     //always a string (null is typed to an empty string)
@@ -64,7 +93,11 @@ class Get
     {
         return Filters::noHTML(Get::val($key));
     }
-
+    
+    function enum($key, $options, $default = null)
+    {
+        return Filters::enum(Get::val($key, $default), $options);
+    }
 
 }
 
@@ -127,6 +160,15 @@ class Filters {
     function isAlnum($data)
     {
         return (bool) strlen($data) ? ctype_alnum($data) : false;
+    }
+    
+    function enum($data, $options)
+    {
+        if (!in_array($data, $options) && isset($options[0])) {
+            return $options[0];
+        }
+        
+        return $data;
     }
 }
 

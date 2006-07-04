@@ -118,18 +118,18 @@
       <?php endif; ?>
       {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'))}
       <?php if ($user->perms['create_attachments']): ?>
-        <div id="uploadfilebox">
-          <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
-            <input class="file" type="file" size="55" name="userfile[]" />
-            <a href="javascript://" onclick="removeUploadField(this);">{L('remove')}</a>
-            <br />
-          </span>
-        </div>
-        <button id="attachafile" type="button" onclick="addUploadFields()">{L('uploadafile')}</button>
-        <button id="attachanotherfile" style="display:none" type="button" onclick="addUploadFields()">
-          {L('attachanotherfile')}
-        </button>
-        
+      <div id="uploadfilebox">
+        <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
+          <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
+            <a href="javascript://" tabindex="6" onclick="removeUploadField(this, 'uploadfilebox');">{L('remove')}</a><br />
+        </span>    
+      </div>
+      <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields('uploadfilebox')">
+        {L('uploadafile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
+      </button>
+      <button id="uploadfilebox_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields('uploadfilebox')">
+         {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
+      </button>
       <?php endif; ?>
     </div>
 

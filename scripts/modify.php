@@ -21,7 +21,7 @@ if ($lt = Post::val('list_type')) {
 
 function Post_to0($key) { return Post::val($key, 0); }
 if (Req::has('task_id') || Req::has('id')) {
-    $old_details = $fs->GetTaskDetails(intval(Req::val('task_id', Req::has('id'))));
+    $old_details = $fs->GetTaskDetails(Req::num('task_id', Req::num('id')));
 }
 // Adding a new task  {{{
 if (Post::val('action') == 'newtask') {
@@ -215,9 +215,9 @@ elseif (Post::val('action') == 'addcomment') {
 elseif (Post::val('action') == 'sendcode') {
     
     if (!Post::val('user_name') || !Post::val('real_name')
-        || (!Post::val('email_address') && Post::val('notify_type') == '1')
-        || (!Post::val('jabber_id') && Post::val('notify_type') == '2')
-        || (!Post::val('jabber_id') && !Post::val('email_address') && Post::val('notify_type') == '3')
+        || (!Post::val('email_address') && Post::num('notify_type') == '1')
+        || (!Post::val('jabber_id') && Post::num('notify_type') == '2')
+        || (!Post::val('jabber_id') && !Post::val('email_address') && Post::num('notify_type') == '3')
     ) {
         // If the form wasn't filled out correctly, show an error
         $_SESSION['ERROR'] = L('erroronform');
@@ -286,10 +286,10 @@ elseif (Post::val('action') == 'sendcode') {
                      VALUES  (?,?,?,?,?,?,?,?)",
                 array(time(), $confirm_code, $user_name, $real_name,
                     Post::val('email_address'), Post::val('jabber_id'),
-                    Post::val('notify_type'), $magic_url));
+                    Post::num('notify_type'), $magic_url));
 
     $notify->Create(NOTIFY_CONFIRMATION, null, array($baseurl, $magic_url, $user_name, $confirm_code),
-                    array(Post::val('email_address')), Post::val('notify_type'));
+                    array(Post::val('email_address')), Post::num('notify_type'));
 
     $_SESSION['SUCCESS'] = L('codesent');
     Flyspray::Redirect('./');
@@ -351,7 +351,7 @@ elseif (Post::val('action') == "newuser" &&
 
     if (!$be->create_user(Post::val('user_name'), Post::val('user_pass'),
                           Post::val('real_name'), Post::val('jabber_id'),
-                          Post::val('email_address'), Post::val('notify_type'), $group_in)) {
+                          Post::val('email_address'), Post::num('notify_type'), $group_in)) {
         $_SESSION['ERROR'] = L('usernametaken');
         Flyspray::Redirect(CreateURL('newuser'));
     }
@@ -580,7 +580,7 @@ elseif (Post::val('action') == "edituser")
                         tasks_perpage = ?
                  WHERE  user_id = ?',
             array(Post::val('real_name'), Post::val('email_address'), Post::val('notify_own', 0),
-                Post::val('jabber_id', 0), Post::val('notify_type', 0),
+                Post::val('jabber_id', 0), Post::num('notify_type'),
                 Post::val('dateformat', 0), Post::val('dateformat_extended', 0),
                 Post::val('tasks_perpage'), Post::val('user_id')));
 
@@ -687,7 +687,7 @@ elseif (Post::val('action') == "update_list" && $user->perms['manage_project']) 
     $listposition = Post::val('list_position');
     $listshow     = Post::val('show_in_list');
     $listdelete   = Post::val('delete');
-    $listid       = Post::val('id');
+    $listid       = Post::num('id');
 
     $redirectmessage = L('listupdated');
 
@@ -743,7 +743,7 @@ elseif (Post::val('action') == "update_version_list" && $user->perms['manage_pro
     $listshow     = Post::val('show_in_list');
     $listtense    = Post::val('version_tense');
     $listdelete   = Post::val('delete');
-    $listid       = Post::val('id');
+    $listid       = Post::num('id');
 
     $redirectmessage = L('listupdated');
 
@@ -797,7 +797,7 @@ elseif (Post::val('action') == "update_category" && $user->perms['manage_project
 
     $listname     = Post::val('list_name');
     $listshow     = Post::val('show_in_list');
-    $listid       = Post::val('id');
+    $listid       = Post::num('id');
     $listowner    = Post::val('category_owner');
     $listdelete   = Post::val('delete');
 
@@ -896,13 +896,13 @@ elseif (Post::val('action') == "remove_related" && $user->can_edit_task($old_det
 
     foreach (Post::val('related_id') as $related) {
         $db->Query('DELETE FROM {related} WHERE related_id = ? AND (this_task = ? OR related_task = ?)',
-                   array($related, Post::val('id'), Post::val('id')));
-        $fs->logEvent(Post::val('id'), 12, $related);
-        $fs->logEvent($related, 16, Post::val('id'));
+                   array($related, Post::num('id'), Post::num('id')));
+        $fs->logEvent(Post::num('id'), 12, $related);
+        $fs->logEvent($related, 16, Post::num('id'));
     }
 
     $_SESSION['SUCCESS'] = L('relatedremoved');
-    Flyspray::Redirect(CreateURL('details', Post::val('id')) . '#related');
+    Flyspray::Redirect(CreateURL('details', Post::num('id')) . '#related');
 
 } // }}}
 // adding a user to the notification list {{{
@@ -1287,39 +1287,39 @@ elseif (Post::val('action') == 'chpass') {
 // making a task private {{{
 elseif (Get::val('action') == 'makeprivate' && $user->perms['manage_project']) {
     $db->Query("UPDATE  {tasks} SET mark_private = '1'
-                 WHERE  task_id = ?", array(Get::val('id')));
+                 WHERE  task_id = ?", array(Get::num('id')));
 
-    $fs->logEvent(Get::val('id'), 26);
+    $fs->logEvent(Get::num('id'), 26);
 
     $_SESSION['SUCCESS'] = L('taskmadeprivatemsg');
-    Flyspray::Redirect(CreateURL('details', Req::val('id')));
+    Flyspray::Redirect(CreateURL('details', Req::num('id')));
 } // }}}
 // making a task public {{{
 elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project']) {
     $db->Query("UPDATE  {tasks}
                    SET  mark_private = '0'
-                 WHERE  task_id = ?", array(Get::val('id')));
+                 WHERE  task_id = ?", array(Get::num('id')));
 
-    $fs->logEvent(Get::val('id'), 27);
+    $fs->logEvent(Get::num('id'), 27);
 
     $_SESSION['SUCCESS'] = L('taskmadepublicmsg');
-    Flyspray::Redirect(CreateURL('details', Req::val('id')));
+    Flyspray::Redirect(CreateURL('details', Req::num('id')));
 } // }}}
 // Adding a vote for a task {{{
 elseif (Get::val('action') == 'addvote') {
     
-    if ($be->add_vote($user, Get::val('id'))) {                         
+    if ($be->add_vote($user, Get::num('id'))) {                         
         $_SESSION['SUCCESS'] = L('voterecorded');
-        Flyspray::Redirect(CreateURL('details', Get::val('id')));
+        Flyspray::Redirect(CreateURL('details', Get::num('id')));
     } else {
         $_SESSION['ERROR'] = L('votefailed');
-        Flyspray::Redirect(CreateURL('details', Get::val('id')));
+        Flyspray::Redirect(CreateURL('details', Get::num('id')));
     }
     
 } else {
     $_SESSION['ERROR'] = L('databasemodfailed');
     if (Req::has('task_id') || Req::has('id')) {
-        Flyspray::Redirect(CreateURL('details', Req::val('task_id', Req::val('id'))));
+        Flyspray::Redirect(CreateURL('details', Req::num('task_id', Req::num('id'))));
     } else {
         Flyspray::Redirect($baseurl);
     }

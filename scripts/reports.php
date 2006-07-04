@@ -20,7 +20,7 @@ $page->setTitle('Flyspray:: ' . L('reports'));
 *  Event reports       *
 \**********************/
 
-$sort = strtoupper(Req::val('sort', 'desc'));
+$sort = strtoupper(Req::safe('sort', 'desc'));
 
 switch (Req::val('order')) {
     case 'id':

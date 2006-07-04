@@ -15,7 +15,7 @@ $sql = $db->Query("SELECT  c.*, u.real_name
                      FROM  {comments} c
                INNER JOIN  {users}    u ON c.user_id = u.user_id
                     WHERE  comment_id = ? AND task_id = ?",
-                    array(Get::val('id', 0), Get::val('task_id', 0)));
+                    array(Get::num('id', 0), Get::num('task_id', 0)));
 
 $page->assign('comment', $comment = $db->FetchArray($sql));
 

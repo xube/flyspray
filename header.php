@@ -33,11 +33,9 @@ if (is_readable(BASEDIR . '/sql/index.html') && strpos($fs->version, 'dev') === 
     die('Please empty the folder "' . BASEDIR . DIRECTORY_SEPARATOR . 'sql" before you start using Flyspray.');
 }
 
-require_once BASEDIR . '/includes/regexp.php';
-
 // Any "do" mode that accepts a task_id or id field should be added here.
 if (in_array(Req::val('do'), array('details', 'depends', 'modify'))) {
-    $id = Req::val('task_id', Req::val('id'));
+    $id = Req::num('task_id', Req::num('id'));
 
     if (is_numeric($id)) {
         $result = $db->Query('SELECT  attached_to_project

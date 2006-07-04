@@ -23,7 +23,7 @@
         <td colspan="2">
             <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="remove_related" />
-            <input type="hidden" name="id" value="{Get::val('id')}" />
+            <input type="hidden" name="id" value="{Get::num('id')}" />
             <button type="submit">{L('remove')}</button>
         </td>
         </table>
@@ -46,7 +46,7 @@
     <div>
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="add_related" />
-      <input type="hidden" name="this_task" value="{Get::val('id')}" />
+      <input type="hidden" name="this_task" value="{Get::num('id')}" />
       <label>{L('addnewrelated')}
         <input name="related_task" id="related_task_input" type="text" class="text" size="10" maxlength="10" /></label>
       <button type="submit" onclick="return checkok('{$baseurl}javascript/callbacks/checkrelated.php?related_task=' + $('related_task_input').value + '&amp;project={$proj->id}', '{L('relatedproject')}', 'formaddrelatedtask')">{L('add')}</button>

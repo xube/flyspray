@@ -15,7 +15,7 @@ if ($proj->id) {
     $page->assign('project_groups', $fs->ListGroups($proj->id));
 }
 
-$id = Get::val('id', Get::val('uid'));
+$id = Get::num('id', Get::num('uid'));
 if (!is_numeric($id)) {
     $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($id));
     $id = $db->FetchOne($sql);

@@ -6,8 +6,8 @@ class User
     var $perms = array();
     var $infos = array();
     var $searches = array();
-    var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort', 'percent',
-                             'opened', 'search_in_comments', 'search_for_all', 'reported');
+    var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort', 'percent', 
+                             'opened', 'search_in_comments', 'search_for_all', 'reported', 'only_primary', 'only_watched');
 
     function User($uid = 0, $project = null)
     {
@@ -30,16 +30,13 @@ class User
         }
         //it not only needs to be not null 
         //it should be an object, instance of the Project class 
-        if (is_a($project,'Project')) {
+        if (is_a($project, 'Project')) {
             $this->get_perms($project);
         }
     }
 
     /* misc functions {{{ */
     function didSearch() {
-        if(Get::has('tasks') && Get::val('tasks') != 'last') {
-            return true;
-        }
         foreach ($this->search_keys as $key) {
             if (Get::has($key)) {
                 return true;
@@ -58,18 +55,17 @@ class User
         
         // Only logged in users get to use the 'last search' functionality     
         if ($do == 'index') {
-            if(!$this->didSearch() || Get::val('tasks') == 'last' && $this->infos['last_search']) {
+            if(!$this->didSearch() && $this->infos['last_search']) {
                 $arr = unserialize($this->infos['last_search']);
                 if (is_array($arr)) {
                     $_GET = array_merge($_GET, $arr);
-                    $_GET['tasks'] = 'last';
                 }
             }
             
             $arr = array();
             foreach ($this->search_keys as $key) {
                 $arr[$key] = Get::val($key);
-            }
+            }            
             
             $db->Query('UPDATE  {users}
                            SET  last_search = ?
@@ -249,8 +245,8 @@ class User
 
     function can_open_task($proj)
     {
-        return $this->perms['manage_project'] ||
-                 $proj->prefs['project_is_active'] && ($this->perms['open_new_tasks'] || $proj->prefs['anon_open']);
+        return $proj->id && ($this->perms['manage_project'] ||
+                 $proj->prefs['project_is_active'] && ($this->perms['open_new_tasks'] || $proj->prefs['anon_open']));
     }
 
     function can_mark_private($task)

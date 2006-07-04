@@ -1,5 +1,5 @@
 <fieldset class="admin"> <legend>{L('editgroup')}</legend>
-  <?php $group_details = $fs->getGroupDetails(Get::val('id')); ?>
+  <?php $group_details = $fs->getGroupDetails(Get::num('id')); ?>
   <form action="{$baseurl}?project={$group_details['belongs_to_project']}" method="post">
     <table class="admin">
       <tr>

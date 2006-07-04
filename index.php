@@ -17,7 +17,19 @@ if ($conf['general']['reminder_daemon'] == '1') {
     $fs->startReminderDaemon();
 }
 
-$do = Req::val('do', 'index');
+// Get available do-modes
+$modes = array();
+$dir = dir(BASEDIR . '/scripts');
+while (($entry = $dir->read()) !== false) {
+    if ($entry{0} == '.') {
+        continue;
+    }
+    
+    $modes[] = substr($entry, 0, -4);
+}
+
+$do = Req::enum('do', $modes, 'index');
+
 if ($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
     $do = 'pm';
 } elseif ($do == 'pm' && Req::has('switch') && Req::val('project') == '0') {
