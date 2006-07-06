@@ -57,9 +57,8 @@
           <label class="inline" for="datefrom">{L('from')}</label>
         </td>
         <td onclick="getElementById('datefrom').checked=true">
-            {!tpl_datepicker('from', L('selectfromdate'), L('from'))}
-          &mdash;
-            {!tpl_datepicker('to', L('selecttodate'), L('to'))}
+            {!tpl_datepicker('fromdate')}
+            {!tpl_datepicker('todate', L('to'))}
         </td>
       </tr>
       <tr>
@@ -175,9 +174,8 @@
           <label class="inline" for="datefrom_users">{L('from')}</label>
         </td>
         <td onclick="getElementById('datefrom_users').checked=true">
-            {!tpl_datepicker('from_user', L('selectfromdate'), L('from'))}
-          &mdash;
-            {!tpl_datepicker('to_user', L('selecttodate'), L('to'))}
+            {!tpl_datepicker('from_userdate')}
+            {!tpl_datepicker('to_userdate', L('to'))}
         </td>
       </tr>
     </table>

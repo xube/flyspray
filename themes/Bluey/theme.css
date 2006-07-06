@@ -142,6 +142,12 @@ div#taskdetailsfull label, td label {
 	white-space:nowrap;
 }
 
+div#events td label, div#users td label {
+	display:inline;
+	text-align:left;
+	margin-right:0;
+}
+
 label.notable {
 	display:inline;
 }
@@ -448,6 +454,10 @@ div#search select {
 
 div#search fieldset legend {
 	padding:0 2px;
+}
+
+div.dateselect {
+	margin:5px 0 0;
 }
 
 span.save_search {

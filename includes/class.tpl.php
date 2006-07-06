@@ -275,42 +275,21 @@ function join_attrs($attr = null) {
     return '';
 }
 // {{{ Datepicker
-function tpl_datepicker($name, $novaldesc, $shortdesc, $value = null) {
+function tpl_datepicker($name, $label = '', $value = null) {
     global $fs, $user;
     
     if ($value) {
-        $date = date('Y/m/d', $value);
+        $date = date('Y-m-d', $value);
     } else {
-        $date = Req::val($name . 'date', '0');
+        $date = Req::val($name, '');
     }
-    
-    if ($date) {
-        $show_date = $shortdesc . ' ' . formatDate(strtotime($date . '+23 hours 59 minutes 59 seconds'));
-    } else {
-        $show_date = $novaldesc;
-    }
-    
-    $dateformat = '';
-    if (!$user->isAnon()) {
-        $dateformat = $user->infos['dateformat'];
-    }
-
-    if (!$dateformat) {
-        $dateformat = $fs->prefs['dateformat'];
-    }
-
-    if (!$dateformat) {
-        $dateformat = '%Y-%m-%d';
-    }
-    
-    $page = new Tpl;
-    $page->assign('show_date', $show_date);
+       
+    $page = new FSTpl;
     $page->assign('name', $name);
     $page->assign('date', $date);
     $page->assign('fs', $fs);
-    $page->assign('shortdesc', $shortdesc);
-    $page->assign('novaldesc', $novaldesc);
-    $page->assign('dateformat', $dateformat);
+    $page->assign('label', $label);
+    $page->assign('dateformat', '%Y-%m-%d');
     $page->display('datepicker.tpl');
 }
 // }}}

@@ -101,10 +101,9 @@
         </tr>
         <?php if ($user->perms['modify_all_tasks']): ?>
         <tr>
-          <td><label for="duedate">{L('duedate')}</label></td>
+          <td><label for="due_date">{L('duedate')}</label></td>
           <td id="duedate">
-            <input id="duedatehidden" type="hidden" name="due_date" value="" />
-            {!tpl_datepicker('due_', L('selectduedate'), L('selectduedate'))}
+            {!tpl_datepicker('due_date')}
           </td>
         </tr>
         <?php endif; ?>

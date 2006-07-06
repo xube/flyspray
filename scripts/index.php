@@ -95,7 +95,7 @@ if (in_array('votes', $visible)) {
     $from   .= ' LEFT JOIN  {votes} vot         ON t.task_id = vot.task_id ';
     $select .= ' COUNT(DISTINCT vot.vote_id)    AS num_votes, ';
 }
-if (Get::val('changedsincedate') || in_array('lastedit', $visible)) {
+if (Get::val('changedfrom') || Get::val('changedto') || in_array('lastedit', $visible)) {
     $from   .= ' LEFT JOIN  {history} h         ON t.task_id = h.task_id ';
     $select .= ' max(h.event_date)              AS event_date, ';
 }
@@ -112,6 +112,11 @@ if (Get::has('opened') || in_array('openedby', $visible)) {
     $from   .= ' LEFT JOIN  {users} uo          ON t.opened_by = uo.user_id ';
     $select .= ' uo.real_name                   AS opened_by_name, ';
     $groupby .= 'uo.real_name, ';
+}
+if (Get::has('closed')) {
+    $from   .= ' LEFT JOIN  {users} uc          ON t.closed_by = uc.user_id ';
+    $select .= ' uc.real_name                   AS closed_by_name, ';
+    $groupby .= 'uc.real_name, ';
 }
 if (Get::has('due') || in_array('dueversion', $visible)) {
     $from   .= ' LEFT JOIN  {list_version} lvc  ON t.closedby_version = lvc.version_id ';
@@ -175,7 +180,8 @@ else {
 $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version', 'reported' => 'product_version',
                  'cat' => 'product_category', 'status' => 'item_status', 'percent' => 'percent_complete',
                  'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
-                 'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'));
+                 'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'),
+                 'closed' => array('closed_by', 'uc.user_name', 'uc.real_name'));
 foreach ($submits as $key => $db_key) {
     $type = Get::val($key, ($key == 'status') ? 'open' : '');
     settype($type, 'array');
@@ -233,14 +239,17 @@ foreach ($submits as $key => $db_key) {
 }
 /// }}}
 
-if ($date = Get::val('date')) {
-    $where[]      = "(due_date < ? AND due_date <> '0' AND due_date <> '')";
-    $sql_params[] = strtotime("$date +24 hours");
-}
-
-if ($date = Get::val('changedsincedate')) {
-    $where[]      = "(event_date >= ? AND event_date <> '0')";
-    $sql_params[] = strtotime($date);
+$dates = array('duedate' => 'due_date', 'changed' => 'event_date',
+               'opened' => 'date_opened', 'closed' => 'date_closed');
+foreach ($dates as $post => $db_key) {
+    if ($date = Get::val($post . 'from')) {
+        $where[]      = '(' . $db_key . ' >= ?)';
+        $sql_params[] = strtotime($date);
+    }
+    if ($date = Get::val($post . 'to')) {
+        $where[]      = '(' . $db_key . ' <= ? AND ' . $db_key . ' > 0)';
+        $sql_params[] = strtotime($date);
+    }
 }
 
 if (Get::val('string')) {

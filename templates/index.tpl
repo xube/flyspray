@@ -53,9 +53,6 @@
         {!tpl_checkbox('only_primary', Get::has('only_primary'), 'only_primary')}
         <label class="left" for="only_primary">{L('onlyprimary')}</label>
         
-        {!tpl_datepicker('', L('selectduedate'), L('due'))}
-        {!tpl_datepicker('changedsince', L('selectsincedate'), L('changedsince'))}
-
         </fieldset>
 
         <fieldset><legend>{L('taskproperties')}</legend>
@@ -113,7 +110,36 @@
         <script type="text/javascript">
             new Ajax.Autocompleter('dev', 'dev_complete', 'javascript/callbacks/usersearch.php', {})
         </script>
+        
+        <label class="default multisel" for="closed">{L('closedby')}</label>
+        <input class="users text" size="30" type="text" name="closed" id="closed" value="{Get::val('closed')}" /> 
+        <div class="autocomplete" id="closed_complete"></div>
+        <script type="text/javascript">
+            new Ajax.Autocompleter('closed', 'closed_complete', 'javascript/callbacks/usersearch.php', {})
+        </script>
 
+        </fieldset>
+        
+        <fieldset><legend>{L('dates')}</legend>
+        <div class="dateselect">
+          {!tpl_datepicker('duedatefrom', L('selectduedatefrom'))}
+          {!tpl_datepicker('duedateto', L('selectduedateto'))}
+        </div>
+        
+        <div class="dateselect">
+          {!tpl_datepicker('changedfrom', L('selectsincedatefrom'))}
+          {!tpl_datepicker('changedto', L('selectsincedateto'))}
+        </div>
+        
+        <div class="dateselect">
+          {!tpl_datepicker('openedfrom', L('selectopenedfrom'))}
+          {!tpl_datepicker('openedto', L('selectopenedto'))}
+        </div>
+        
+        <div class="dateselect">
+          {!tpl_datepicker('closedfrom', L('selectclosedfrom'))}
+          {!tpl_datepicker('closedto', L('selectclosedto'))}
+        </div>
         </fieldset>
 
        </div>

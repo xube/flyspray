@@ -124,7 +124,7 @@
 			<tr class="duedate">
 			 <td><label for="duedate">{L('duedate')}</label></td>
 			 <td id="duedate">
-                {!tpl_datepicker('due_', L('undecided'), '', $task_details['due_date'])}
+                {!tpl_datepicker('due_date', '', $task_details['due_date'])}
 			 </td>
 			</tr>
 			<tr class="percent">

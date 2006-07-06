@@ -723,6 +723,16 @@ Regards,',
 'onlyprimary'             => 'Tasks not blocking other tasks',
 'switch'                  => 'Switch',
 'max'                     => 'max.',
+'dates'                   => 'Dates',
+'selectduedatefrom'       => 'Due from',
+'selectduedateto'         => 'to',
+'selectsincedatefrom'     => 'Changed from',
+'selectsincedateto'       => 'to',
+'selectdate'              => 'Select Date',
+'selectopenedfrom'        => 'Opened from',
+'selectopenedto'          => 'to',
+'selectclosedfrom'        => 'Closed from',
+'selectclosedto'          => 'to',
 ); 
 
 ?>
