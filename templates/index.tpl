@@ -53,6 +53,9 @@
         {!tpl_checkbox('only_primary', Get::has('only_primary'), 'only_primary')}
         <label class="left" for="only_primary">{L('onlyprimary')}</label>
         
+        {!tpl_checkbox('has_attachment', Get::has('has_attachment'), 'has_attachment')}
+        <label class="left" for="has_attachment">{L('hasattachment')}</label>
+        
         </fieldset>
 
         <fieldset><legend>{L('taskproperties')}</legend>

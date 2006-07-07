@@ -8,7 +8,7 @@ class User
     var $searches = array();
     var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort', 'percent', 'changedfrom',
                              'opened', 'search_in_comments', 'search_for_all', 'reported', 'only_primary', 'only_watched',
-                             'changedto', 'duedatefrom', 'duedateto', 'openedfrom', 'openedto');
+                             'changedto', 'duedatefrom', 'duedateto', 'openedfrom', 'openedto', 'has_attachment');
 
     function User($uid = 0, $project = null)
     {

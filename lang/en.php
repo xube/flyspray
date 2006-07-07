@@ -733,6 +733,8 @@ Regards,',
 'selectopenedto'          => 'to',
 'selectclosedfrom'        => 'Closed from',
 'selectclosedto'          => 'to',
+'startat'                 => 'Start at',
+'hasattachment'           => 'Has attachment',
 ); 
 
 ?>

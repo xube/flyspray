@@ -1006,7 +1006,7 @@ elseif (Get::val('action') == "deletecomment" && $user->perms['delete_comments']
 elseif (Post::val('action') == "addreminder" && $user->perms['manage_project']) {
 
     $how_often  = Post::val('timeamount1', 1) * Post::val('timetype1');
-    $start_time = Post::val('timeamount2', 0) * Post::val('timetype2') + time();
+    $start_time = strtotime(Post::val('timeamount2', 0));
     
     $id = Post::val('to_user_id');
     if (!is_numeric($id)) {

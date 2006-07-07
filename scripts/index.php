@@ -128,7 +128,7 @@ if (in_array('os', $visible)) {
     $select .= ' los.os_name                    AS os_name, ';
     $groupby .= 'los.os_name, ';
 }
-if (in_array('attachments', $visible)) {
+if (in_array('attachments', $visible) || Get::has('has_attachment')) {
     $from   .= ' LEFT JOIN  {attachments} att   ON t.task_id = att.task_id ';
     $select .= ' COUNT(DISTINCT att.attachment_id) AS num_attachments, ';
 }
@@ -156,6 +156,9 @@ $sql_params = array($user->id, $user->id, $user->id);
 if (Get::has('only_primary')) {
     $from   .= ' LEFT JOIN  {dependencies} dep  ON dep.dep_task_id = t.task_id ';
     $where[] = 'dep.depend_id IS NULL';
+}
+if (Get::has('has_attachment')) {
+    $where[] = 'att.attachment_id IS NOT NULL';
 }
 
 if ($proj->id == 0) {

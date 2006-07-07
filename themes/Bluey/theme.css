@@ -1123,7 +1123,7 @@ span#navigation a#prev {
 div.attachments {
 	display:block;
 	padding:5px 15px 5px 35px;
-	background:#BBE0EB url(attachment.png) no-repeat 0 -10px;
+	background:#BBE0EB url(attachment-big.png) no-repeat 0 -10px;
 	border:dotted 1px gray;
 	width:22em;
 	margin:0 0 0.5em 1em;
@@ -1183,6 +1183,10 @@ div#error {
 
 a.datelink {
 	margin-right:0.2em;
+}
+
+a.datelink img {
+	vertical-align:middle;
 }
 
 html,p#tabs,p.unregistered,#submenu,#submenu * {

@@ -101,9 +101,7 @@ endif; ?>
       <a id="newtasklink" href="{CreateURL('newtask', $proj_id)}"
         accesskey="a">{L('addnewtask')}</a>
       </li>
-    <?php endif; ?>
-    
-    <?php if ($user->isAnon() && $proj->prefs['anon_open']): ?>
+    <?php elseif ($user->isAnon() && $proj->prefs['anon_open']): ?>
       <li>
         <a id="anonopen" href="?do=newtask&amp;project={$proj->id}">{L('opentaskanon')}</a>
       </li>

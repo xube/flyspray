@@ -58,8 +58,8 @@
 
       <br />
 
-      <em>{L('thisoften')}</em>
-      <input class="text" type="text" name="timeamount1" size="3" maxlength="3" />
+      <label for="timeamount1">{L('thisoften')}</label>
+      <input class="text" type="text" id="timeamount1" name="timeamount1" size="3" maxlength="3" />
       <select class="adminlist" name="timetype1">
         <option value="3600">{L('hours')}</option>
         <option value="86400">{L('days')}</option>
@@ -68,13 +68,7 @@
 
       <br />
 
-      <em>{L('startafter')}</em>
-      <input class="text" type="text" name="timeamount2" size="3" maxlength="3" />
-      <select class="adminlist" name="timetype2">
-        <option value="3600">{L('hours')}</option>
-        <option value="86400">{L('days')}</option>
-        <option value="604800">{L('weeks')}</option>
-      </select>
+      {!tpl_datepicker('timeamount2', L('startat'))}
 
       <br />
       <textarea class="text" name="reminder_message"
