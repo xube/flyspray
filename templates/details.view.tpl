@@ -114,8 +114,8 @@
         <tr class="votes">
 		  <th id="votes">{L('votes')}</th>
 		  <td headers="votes">
-          <?php if ($task_details['num_votes']): ?>
-          <a href="javascript:showhidestuff('showvotes')">{$task_details['num_votes']} </a>
+          <?php if (count($votes)): ?>
+          <a href="javascript:showhidestuff('showvotes')">{count($votes)} </a>
           <div id="showvotes" class="hide">
               <ul class="reports">
               <?php foreach ($votes as $vote): ?>
