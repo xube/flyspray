@@ -250,33 +250,40 @@ class User
                  $proj->prefs['project_is_active'] && ($this->perms['open_new_tasks'] || $proj->prefs['anon_open']));
     }
 
-    function can_mark_private($task)
+    function can_change_private($task)
     {
         global $fs;
         
-        return !$task['mark_private']
-            && ($this->perms['manage_project'] || in_array($this->id, $fs->GetAssignees($task['task_id'])));
-    }
-
-    function can_mark_public($task)
-    {
-        global $fs;
-        
-        return $task['mark_private']
-            && ($this->perms['manage_project'] || in_array($this->id, $fs->GetAssignees($task['task_id'])));
+        return !$task['is_closed'] && ($this->perms['manage_project'] || in_array($this->id, $fs->GetAssignees($task['task_id'])));
     }
     
     function can_vote($task_id)
     {
         global $db;
         
-        // Check that the user hasn't already voted today or for this task
+        if (!$this->perms['add_votes']) {
+            return -1;
+        }
+        
+        // Check that the user hasn't already voted this task
         $check = $db->Query('SELECT vote_id
                                FROM {votes}
-                              WHERE user_id = ? AND (task_id = ? OR date_time > ?)',
-                             array($this->id, $task_id, time() - 86400));
+                              WHERE user_id = ? AND task_id = ?',
+                             array($this->id, $task_id));
+        if ($db->CountRows($check)) {
+            return -2;
+        }
+        
+        // Check that the user hasn't voted more than twice this day
+        $check = $db->Query('SELECT vote_id
+                               FROM {votes}
+                              WHERE user_id = ? AND date_time > ?',
+                             array($this->id, time() - 86400));
+        if ($db->CountRows($check) > 2) {
+            return -3;
+        }
 
-        return $this->perms['add_votes'] && !$db->CountRows($check);
+        return 1;
     }
     
     function logout()

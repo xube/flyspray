@@ -59,7 +59,7 @@ function event_description($history) {
     $translate = array('item_summary' => 'summary', 'attached_to_project' => 'attachedtoproject',
                        'task_type' => 'tasktype', 'product_category' => 'category', 'item_status' => 'status',
                        'task_priority' => 'priority', 'operating_system' => 'operatingsystem', 'task_severity' => 'severity',
-                       'product_version' => 'reportedversion');
+                       'product_version' => 'reportedversion', 'mark_private' => 'visibility');
 
     $new_value = $history['new_value'];
     $old_value = $history['old_value'];
@@ -103,6 +103,19 @@ function event_description($history) {
                     $field = L('percentcomplete');
                     $old_value .= '%';
                     $new_value .= '%';
+                    break;
+                case 'mark_private':
+                    $field = L($translate[$field]);
+                    if ($old_value == 1) {
+                        $old_value = L('private');
+                    } else {
+                        $old_value = L('public');
+                    }
+                    if ($new_value == 1) {
+                        $new_value = L('private');
+                    } else {
+                        $new_value = L('public');
+                    }
                     break;
                 case 'detailed_desc':
                     $field = "<a href=\"javascript:getHistory('{$history['task_id']}', '$baseurl', 'history', '{$history['history_id']}');\">" . L('details') . '</a>';
@@ -231,12 +244,7 @@ function event_description($history) {
     case '25': // Dependency removed from other task
             $return .= L('depremovedother') . ' ' . tpl_tasklink($new_value);
             break;
-    case '26': // Task marked private
-            $return .= L('taskmadeprivate');
-            break;
-    case '27': // Task privacy removed - task made public
-            $return .= L('taskmadepublic');
-            break;
+    // 26 and 27 replaced by 0 (mark_private)
     case '28': // PM request denied
             $return .= L('pmreqdenied') . ' - ' . $new_value;
             break;

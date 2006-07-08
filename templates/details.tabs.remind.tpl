@@ -10,6 +10,7 @@
         </a>
       </th>
       <th>{L('user')}</th>
+      <th>{L('startat')}</th>
       <th>{L('frequency')}</th>
       <th>{L('message')}</th>
     </tr>
@@ -19,8 +20,8 @@
       <td class="ttcolumn">
         <input type="checkbox" name="reminder_id[]" {!tpl_disableif(!$user->can_edit_task($task_details))} value="{$row['reminder_id']}" />
       </td>
-      
      <td>{!tpl_userlink($row['user_id'])}</td>
+     <td>{formatDate($row['start_time'])}</td>
      <?php
       // Work out the unit of time to display
       if ($row['how_often'] < 86400) {

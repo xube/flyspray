@@ -232,7 +232,8 @@ class Flyspray
                                           uo.real_name      AS opened_by_name,
                                           ue.real_name      AS last_edited_by_name,
                                           uc.real_name      AS closed_by_name,
-                                          lst.status_name   AS status_name
+                                          lst.status_name   AS status_name,
+                                          COUNT(DISTINCT vot.vote_id)    AS num_votes
                                     FROM  {tasks}              t
                                LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
                                LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
@@ -245,7 +246,9 @@ class Flyspray
                                LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
                                LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
                                LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
-                                   WHERE  t.task_id = ?', array($task_id));
+                               LEFT JOIN  {votes}             vot ON t.task_id = vot.task_id
+                                   WHERE  t.task_id = ?
+                                GROUP BY  t.task_id', array($task_id));
 
         if (!$db->CountRows($get_details)) {
             return false;

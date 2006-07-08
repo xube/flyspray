@@ -27,9 +27,9 @@
 		  <?php endif; ?>
 		</div>
 
-		<div id="taskfields1">
+		<div id="taskfields">
 		  <table class="taskdetails">
-			<tr class="tasktype">
+			<tr>
 			 <td><label for="tasktype">{L('tasktype')}</label></td>
 			 <td>
 				<select id="tasktype" name="task_type">
@@ -37,7 +37,7 @@
 				</select>
 			 </td>
 			</tr>
-			<tr class="category">
+			<tr>
 			 <td><label for="category">{L('category')}</label></td>
 			 <td>
 				<select id="category" name="product_category">
@@ -45,7 +45,7 @@
 				</select>
 			 </td>
 			</tr>
-			<tr class="status">
+			<tr>
 			 <td><label for="status">{L('status')}</label></td>
 			 <td>
 				<select id="status" name="item_status">
@@ -75,7 +75,7 @@
                 <?php endif; ?>
 			 </td>
 			</tr>
-			<tr class="os">
+			<tr>
 			 <td><label for="os">{L('operatingsystem')}</label></td>
 			 <td>
 				<select id="os" name="operating_system">
@@ -83,20 +83,15 @@
 				</select>
 			 </td>
 			</tr>
-		  </table>
-		</div>
-
-		<div id="taskfields2">
-		  <table class="taskdetails">
-			<tr class="severity">
+			<tr>
 			 <td><label for="severity">{L('severity')}</label></td>
-			 <td>
+             <td>
 				<select id="severity" name="task_severity">
 				 {!tpl_options($severity_list, $task_details['task_severity'])}
 				</select>
 			 </td>
 			</tr>
-			<tr class="priority">
+			<tr>
 			 <td><label for="priority">{L('priority')}</label></td>
 			 <td>
 				<select id="priority" name="task_priority">
@@ -104,7 +99,7 @@
 				</select>
 			 </td>
 			</tr>
-			<tr class="reportedver">
+			<tr>
 			 <td><label for="reportedver">{L('reportedversion')}</label></td>
 			 <td>
 				<select id="reportedver" name="reportedver">
@@ -112,7 +107,7 @@
 				</select>
 			 </td>
 			</tr>
-			<tr class="dueversion">
+			<tr>
 			 <td><label for="dueversion">{L('dueinversion')}</label></td>
 			 <td>
 				<select id="dueversion" name="closedby_version">
@@ -121,13 +116,13 @@
 				</select>
 			 </td>
 			</tr>
-			<tr class="duedate">
+			<tr>
 			 <td><label for="duedate">{L('duedate')}</label></td>
 			 <td id="duedate">
                 {!tpl_datepicker('due_date', '', $task_details['due_date'])}
 			 </td>
 			</tr>
-			<tr class="percent">
+			<tr>
 			 <td><label for="percent">{L('percentcomplete')}</label></td>
 			 <td>
 				<select id="percent" name="percent_complete">
@@ -136,13 +131,21 @@
 				</select>
 			 </td>
 			</tr>
+            <?php if ($user->can_change_private($task_details)): ?>
+            <tr>
+              <th id="private">{L('private')}</th>
+              <td headers="private">
+                {!tpl_checkbox('mark_private', $task_details['mark_private'])}
+              </td>
+            </tr>
+            <?php endif; ?>
 		  </table>
 		</div>
 
 		<div id="taskdetailsfull">
+          <h3 class="taskdesc">{L('details')}</h3>
         <?php $attachments = $proj->listTaskAttachments($task_details['task_id']);
           $this->display('common.editattachments.tpl', 'attachments', $attachments); ?>
-		  <label for="details">{L('details')}</label>
           
           <?php if ($user->perms['create_attachments']): ?>
           <div id="uploadfilebox">
@@ -183,7 +186,7 @@
               </button>
               <?php endif; ?>
               
-              <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="72" rows="10"></textarea>
+              <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="50" rows="10"></textarea>
               </div>
           <?php endif; ?>
 		  <p class="buttons">
@@ -195,5 +198,6 @@
           </p>
 		</div>
 	 </div>
+     <div class="clear"></div>
   </form>
 </div>

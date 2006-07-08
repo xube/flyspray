@@ -213,7 +213,7 @@ class Backend
     {
         global $db;
         
-        if ($user->can_vote($task_id)) { 
+        if ($user->can_vote($task_id) > 0) { 
             $db->Query("INSERT INTO {votes}
                                 (user_id, task_id, date_time)
                          VALUES (?,?,?)", array($user->id, $task_id, time()));

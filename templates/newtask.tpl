@@ -7,8 +7,7 @@
       <input id="itemsummary" class="text severity2" type="text"
         name="item_summary" size="80" maxlength="100" />
     </h2>
-    <div id="taskfields1">
-
+    <div id="taskfields">
       <table>
         <tr>
           <td><label for="tasktype">{L('tasktype')}</label></td>
@@ -59,11 +58,6 @@
             </select>
           </td>
         </tr>
-      </table>
-    </div>
-
-    <div id="taskfields2">
-      <table>
         <tr>
           <td><label for="severity">{L('severity')}</label></td>
           <td>
@@ -111,7 +105,7 @@
     </div>
 
     <div id="taskdetailsfull">
-      <label for="details">{L('details')}</label>
+      <h3 class="taskdesc">{L('details')}</h3>
       <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>
       <?php endif; ?>
@@ -130,29 +124,30 @@
          {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
       </button>
       <?php endif; ?>
-    </div>
 
-    <div>
-    <?php if ($user->isAnon()): ?>
-    <label for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30" /><br />
-    <?php endif; ?>
-    <?php if (!$user->perms['modify_all_tasks']): ?>
-    <input type="hidden" name="item_status"   value="1" />
-    <input type="hidden" name="task_priority" value="2" />
-    <?php endif; ?>
-    <input type="hidden" name="do" value="modify" />
-    <input type="hidden" name="action" value="newtask" />
-    <input type="hidden" name="project_id" value="{$proj->id}" />
-    <button accesskey="s" type="submit">{L('addthistask')}</button>
-    <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-    <button tabindex="9" type="button" onclick="showPreview('details', '{$baseurl}', 'preview')">{L('preview')}</button>
-    <?php endif; ?>
+    <p class="buttons">
+        <?php if ($user->isAnon()): ?>
+        <label for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30" /><br />
+        <?php endif; ?>
+        <?php if (!$user->perms['modify_all_tasks']): ?>
+        <input type="hidden" name="item_status"   value="1" />
+        <input type="hidden" name="task_priority" value="2" />
+        <?php endif; ?>
+        <input type="hidden" name="do" value="modify" />
+        <input type="hidden" name="action" value="newtask" />
+        <input type="hidden" name="project_id" value="{$proj->id}" />
+        <button accesskey="s" type="submit">{L('addthistask')}</button>
+        <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
+        <button tabindex="9" type="button" onclick="showPreview('details', '{$baseurl}', 'preview')">{L('preview')}</button>
+        <?php endif; ?>
 
-    <?php if (!$user->isAnon()): ?>
-    &nbsp;&nbsp;<input class="text" type="checkbox" id="notifyme" name="notifyme" value="1" checked="checked" />
-    <label class="left" for="notifyme">{L('notifyme')}</label>
-    <?php endif; ?>
-    </div>
+        <?php if (!$user->isAnon()): ?>
+        &nbsp;&nbsp;<input class="text" type="checkbox" id="notifyme" name="notifyme"
+        value="1" checked="checked" />&nbsp;<label class="inline left" for="notifyme">{L('notifyme')}</label>
+        <?php endif; ?>
+    </p>
   </form>
+  </div>
+  <div class="clear"></div>
 </div>
 

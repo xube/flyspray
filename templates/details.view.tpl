@@ -30,13 +30,13 @@
 	 <?php endif; ?>
   </div>
 
-  <div id="taskfields1">
+  <div id="taskfields">
 	 <table>
-		<tr class="tasktype">
+		<tr>
 		  <th id="tasktype">{L('tasktype')}</th>
 		  <td headers="tasktype">{$task_details['tasktype_name']}</td>
 		</tr>
-		<tr class="category">
+		<tr>
 		  <th id="category">{L('category')}</th>
 		  <td headers="category">
 			 <?php foreach ($parent as $cat): ?>
@@ -45,7 +45,7 @@
 			 {$task_details['category_name']}
 		  </td>
 		</tr>
-		<tr class="status">
+		<tr>
 		  <th id="status">{L('status')}</th>
 		  <td headers="status">
 			 <?php if ($task_details['is_closed']): ?>
@@ -58,7 +58,7 @@
 			 <?php endif; ?>
 		  </td>
 		</tr>
-		<tr class="assignedto">
+		<tr>
 		  <th id="assignedto">{L('assignedto')}</th>
 		  <td headers="assignedto">
 			 <?php if (empty($assigned_users)): ?>
@@ -71,28 +71,23 @@
 			 endif; ?>
 		  </td>
 		</tr>
-		<tr class="os">
+		<tr>
 		  <th id="os">{L('operatingsystem')}</th>
 		  <td headers="os">{$task_details['os_name']}</td>
 		</tr>
-	 </table>
-  </div>
-
-  <div id="taskfields2">
-	 <table>
-		<tr class="severity">
+		<tr>
 		  <th id="severity">{L('severity')}</th>
 		  <td headers="severity">{$task_details['severity_name']}</td>
 		</tr>
-		<tr class="priority">
+		<tr>
 		  <th id="priority">{L('priority')}</th>
 		  <td headers="priority">{$task_details['priority_name']}</td>
 		</tr>
-		<tr class="reportedver">
+		<tr>
 		  <th id="reportedver">{L('reportedversion')}</th>
 		  <td headers="reportedver">{$task_details['reported_version_name']}</td>
 		</tr>
-		<tr class="dueversion">
+		<tr>
 		  <th id="dueversion">{L('dueinversion')}</th>
 		  <td headers="dueversion">
 			 <?php if ($task_details['due_in_version_name']): ?>
@@ -102,13 +97,13 @@
 			 <?php endif; ?>
 		  </td>
 		</tr>
-		<tr class="duedate">
+		<tr>
 		  <th id="duedate">{L('duedate')}</th>
 		  <td headers="duedate">
 			 {formatDate($task_details['due_date'], false, L('undecided'))}
 		  </td>
 		</tr>
-		<tr class="percent">
+		<tr>
 		  <th id="percent">{L('percentcomplete')}</th>
 		  <td headers="percent">
 			 <img src="{$this->get_image('percent-' . $task_details['percent_complete'])}"
@@ -116,6 +111,72 @@
 				alt="{$task_details['percent_complete']}%" />
 		  </td>
 		</tr>
+        <tr class="votes">
+		  <th id="votes">{L('votes')}</th>
+		  <td headers="votes">
+          <?php if ($task_details['num_votes']): ?>
+          <a href="javascript:showhidestuff('showvotes')">{$task_details['num_votes']} </a>
+          <div id="showvotes" class="hide">
+              <ul class="reports">
+              <?php foreach ($votes as $vote): ?>
+                <li>{!tpl_userlink($vote)} ({formatDate($vote['date_time'])})</li>
+              <?php endforeach; ?>
+              </ul>
+          </div>
+          <?php else: ?>
+          0
+          <?php endif; ?>
+          <?php if ($user->can_vote($task_details['task_id']) > 0): ?>
+          <a href="{$baseurl}?do=modify&amp;action=addvote&amp;id={Get::num('id')}">
+            ({L('addvote')})</a>
+          <?php elseif ($user->can_vote($task_details['task_id']) == -2): ?>
+          ({L('alreadyvotedthistask')})
+          <?php elseif ($user->can_vote($task_details['task_id']) == -3): ?>
+          ({L('alreadyvotedthisday')})
+          <?php endif; ?>
+          </td>
+        </tr>
+        <tr>
+		  <th id="private">{L('private')}</th>
+		  <td headers="private">
+            <?php if ($task_details['mark_private']): ?>
+            {L('yes')}
+            <?php else: ?>
+            {L('no')}
+            <?php endif; ?>
+            
+            <?php if ($user->can_change_private($task_details) && $task_details['mark_private']): ?>
+            <a href="{$baseurl}?do=modify&amp;action=makepublic&amp;id={Get::num('id')}">
+            ({L('makepublic')})</a>
+            <?php elseif ($user->can_change_private($task_details) && !$task_details['mark_private']): ?>
+            <a class="button"
+               href="{$baseurl}?do=modify&amp;action=makeprivate&amp;id={Get::num('id')}">
+               ({L('makeprivate')})</a>
+            <?php endif; ?>
+          </td>
+        </tr>
+        <?php if (!$user->isAnon()): ?>
+        <tr>
+		  <th id="votes">{L('watching')}</th>
+		  <td headers="votes">
+              <?php if ($watched): ?>
+              {L('yes')}
+              <?php else: ?>
+              {L('no')}
+              <?php endif; ?>
+            
+              <?php if (!$watched): ?>
+              <a accesskey="w"
+              href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
+              ({L('watchtask')})</a>
+              <?php else: ?>
+              <a accesskey="w"
+              href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
+              ({L('stopwatching')})</a>
+              <?php endif; ?>
+          </td>
+        </tr>
+        <?php endif; ?>
 	 </table>
   </div>
 
@@ -215,17 +276,6 @@
 		</form>
 	 </div>
 	 <?php endif; ?>
-     <?php if (!$user->isAnon()): ?>
-	 <?php if (!$watched): ?>
-	 <a id="addnotif" class="button" accesskey="w"
-		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
-		{L('watchtask')}</a>
-	 <?php else: ?>
-	 <a id="removenotif" class="button" accesskey="w"
-		href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
-		{L('stopwatching')}</a>
-	 <?php endif; ?>
-	 <?php endif; ?>
 
 	 <?php else: ?>
 
@@ -285,34 +335,6 @@
 	 <a id="edittask" class="button" href="{CreateURL('edittask', Get::num('id'))}">
 		{L('edittask')}</a>
 	 <?php endif; ?>
-
-	 <?php if ($user->can_mark_public($task_details)): ?>
-	 <a id="public" class="button"
-		href="{$baseurl}?do=modify&amp;action=makepublic&amp;id={Get::num('id')}">
-		{L('makepublic')}</a>
-	 <?php elseif ($user->can_mark_private($task_details)): ?>
-	 <a id="private" class="button"
-		href="{$baseurl}?do=modify&amp;action=makeprivate&amp;id={Get::num('id')}">
-		{L('makeprivate')}</a>
-	 <?php endif; ?>
-
-	 <?php if (!$user->isAnon()): ?>
-	 <?php if (!$watched): ?>
-	 <a id="addnotif" class="button" accesskey="w"
-		href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
-		{L('watchtask')}</a>
-	 <?php else: ?>
-	 <a id="removenotif" class="button" accesskey="w"
-		href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
-		{L('stopwatching')}</a>
-	 <?php endif; ?>
-	 <?php endif; ?>
-         
-	 <?php if ($user->can_vote($task_details['task_id'])): ?>
-        <a id="addvote" class="button"
-            href="{$baseurl}?do=modify&amp;action=addvote&amp;id={Get::num('id')}">
-            {L('addvote')}</a>
-     <?php endif; ?>
 
 	 <?php endif; ?>
 	 <?php if (count($penreqs)): ?>

@@ -26,14 +26,10 @@ $page->uses('priority_list', 'severity_list', 'task_details');
 
 $userlist = $proj->UserList();
 
-// Find the users assigned to this task
-$assigned_users = $task_details['assigned_to'];
-$old_assigned = implode(' ', $assigned_users);
-
 // Send user variables to the template
 $page->assign('userlist', $userlist);
-$page->assign('assigned_users', $assigned_users);
-$page->assign('old_assigned', $old_assigned);
+$page->assign('assigned_users', $task_details['assigned_to']);
+$page->assign('old_assigned', implode(' ', $task_details['assigned_to']));
 
 $page->setTitle('FS#' . $task_details['task_id'] . ': ' . $task_details['item_summary']);
 
@@ -102,6 +98,14 @@ else {
                            WHERE topic = ? AND type = 'task'",
                            array($task_details['task_id']));
     $cached = $db->FetchArray($cached);
+    
+    // List of votes
+    $get_votes = $db->Query('SELECT u.user_id, u.user_name, u.real_name, v.date_time
+                               FROM {votes} v
+                          LEFT JOIN {users} u ON v.user_id = u.user_id
+                               WHERE v.task_id = ?
+                            ORDER BY v.date_time DESC',
+                            array($task_id));
 
     if ($task_details['last_edited_time'] > $cached['last_updated'] || !defined('FLYSPRAY_USE_CACHE')) {
         $task_text = TextFormatter::render($task_details['detailed_desc'], false, 'task', $task_details['task_id']);
@@ -109,16 +113,17 @@ else {
         $task_text = TextFormatter::render($task_details['detailed_desc'], false, 'task', $task_details['task_id'], $cached['content']);
     }
 
-    $page->assign('prev_id',  $prev_id);
-    $page->assign('next_id',  $next_id);
-    $page->assign('task_text',  $task_text);
-    $page->assign('deps',     $db->fetchAllArray($check_deps));
-    $page->assign('parent',     $db->fetchAllArray($parent));
-    $page->assign('blocks',   $db->fetchAllArray($check_blocks));
-    $page->assign('penreqs',  $db->fetchAllArray($get_pending));
-    $page->assign('d_open',   $db->fetchOne($open_deps));
-    $page->assign('watched',  $db->fetchOne($watching));
-    $page->assign('reopened', $db->fetchOne($reopened));
+    $page->assign('prev_id',   $prev_id);
+    $page->assign('next_id',   $next_id);
+    $page->assign('task_text', $task_text);
+    $page->assign('deps',      $db->fetchAllArray($check_deps));
+    $page->assign('parent',    $db->fetchAllArray($parent));
+    $page->assign('blocks',    $db->fetchAllArray($check_blocks));
+    $page->assign('votes',    $db->fetchAllArray($get_votes));
+    $page->assign('penreqs',   $db->fetchAllArray($get_pending));
+    $page->assign('d_open',    $db->fetchOne($open_deps));
+    $page->assign('watched',   $db->fetchOne($watching));
+    $page->assign('reopened',  $db->fetchOne($reopened));
     $page->pushTpl('details.view.tpl');
 
     ////////////////////////////

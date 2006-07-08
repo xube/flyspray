@@ -65,14 +65,14 @@ elseif (Post::val('action') == 'update' && $user->can_edit_task($old_details)) {
 
     $db->Query('UPDATE  {tasks}
                    SET  attached_to_project = ?, task_type = ?, item_summary = ?,
-                        detailed_desc = ?, item_status = ?,
+                        detailed_desc = ?, item_status = ?, mark_private = ?,
                         product_category = ?, closedby_version = ?, operating_system = ?,
                         task_severity = ?, task_priority = ?, last_edited_by = ?,
                         last_edited_time = ?, due_date = ?, percent_complete = ?, product_version = ?
                  WHERE  task_id = ?',
             array(Post::val('attached_to_project'), Post::val('task_type'),
                 Post::val('item_summary'), Post::val('detailed_desc'),
-                Post::val('item_status'),
+                Post::val('item_status'), ($user->can_change_private($old_details) && Post::val('mark_private')),
                 Post::val('product_category'), Post::val('closedby_version', 0),
                 Post::val('operating_system'), Post::val('task_severity'),
                 Post::val('task_priority'), intval($user->id), $time, $due_date,
@@ -1289,7 +1289,7 @@ elseif (Get::val('action') == 'makeprivate' && $user->perms['manage_project']) {
     $db->Query("UPDATE  {tasks} SET mark_private = '1'
                  WHERE  task_id = ?", array(Get::num('id')));
 
-    $fs->logEvent(Get::num('id'), 26);
+    $fs->logEvent(Get::num('id'), 0, 1, 0, 'mark_private');
 
     $_SESSION['SUCCESS'] = L('taskmadeprivatemsg');
     Flyspray::Redirect(CreateURL('details', Req::num('id')));
@@ -1300,7 +1300,7 @@ elseif (Get::val('action') == 'makepublic' && $user->perms['manage_project']) {
                    SET  mark_private = '0'
                  WHERE  task_id = ?", array(Get::num('id')));
 
-    $fs->logEvent(Get::num('id'), 27);
+    $fs->logEvent(Get::num('id'), 0, 0, 1, 'mark_private');
 
     $_SESSION['SUCCESS'] = L('taskmadepublicmsg');
     Flyspray::Redirect(CreateURL('details', Req::num('id')));

@@ -240,17 +240,22 @@ function tpl_userlink($uid)
 
     static $cache = array();
 
-    if (empty($cache[$uid])) {
+    if (is_array($uid)) {
+        list($uid, $uname, $rname) = $uid;
+    } elseif (empty($cache[$uid])) {
         $sql = $db->Query('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
                            array(intval($uid)));
         if ($db->countRows($sql)) {
             list($uname, $rname) = $db->fetchRow($sql);
-            $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms['is_admin']) ? 'edituser' : 'user', $uid)).'">'
+        }
+    }
+    
+    if (isset($uname)) {
+        $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms['is_admin']) ? 'edituser' : 'user', $uid)).'">'
                            . htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
                            . htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
-        } else {
-            $cache[$uid] = L('anonymous');
-        }
+    } elseif (empty($cache[$uid])) {
+        $cache[$uid] = L('anonymous');
     }
 
     return $cache[$uid];
