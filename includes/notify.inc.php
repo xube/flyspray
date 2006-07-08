@@ -715,11 +715,15 @@ class Notifications {
       {
           $body = L('messagefrom'). $arg1[0] . "\n\n"
                   . L('newuserregistered')." \n\n"
-                  . L('username') . ': ' . $arg1[1] . '   ' .
-                    L('realname') . ': ' . $arg1[2] . '   ' .
-                    L('emailaddress') . ':' . $arg1[3] . '   ' .
+                  . L('username') . ': ' . $arg1[1] . "\n" .
+                    L('realname') . ': ' . $arg1[2] . "\n";
+          if ($arg1[6]) {
+              $body .= L('password') . ': ' . $arg1[5] . "\n";
+          }
+              $body .= L('emailaddress') . ': ' . $arg1[3] . "\n" .
                     L('jabberid') . ':' . $arg1[4] . "\n\n";
           $body .= L('disclaimer');
+          die($body);
 
           return array($subject, $body);
       } // }}}      

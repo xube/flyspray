@@ -13,11 +13,14 @@
     </tr>
     <tr>
       <td><label for="userpass">{L('password')}</label></td>
-      <td><input id="userpass" class="required password" name="user_pass" type="password" size="20" maxlength="100" /></td>
+      <td><input id="userpass" class="password" name="user_pass" type="password" size="20" maxlength="100" /></td>
     </tr>
     <tr>
       <td><label for="userpass2">{L('confirmpass')}</label></td>
-      <td><input id="userpass2" class="required password" name="user_pass2" type="password" size="20" maxlength="100" /></td>
+      <td>
+        <input id="userpass2" class="password" name="user_pass2" type="password" size="20" maxlength="100" /><br />
+        {L('leaveemptyauto')}
+      </td>
     </tr>
     <tr>
       <td><label for="realname">{L('realname')}</label></td>

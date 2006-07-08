@@ -332,7 +332,7 @@ elseif (Post::val('action') == "newuser" &&
         ($user->perms['is_admin'] || $user->can_self_register()))
 {
 
-    if ( !Post::val('user_name') || !Post::val('user_pass') || !Post::val('real_name'))
+    if ( !Post::val('user_name') || !Post::val('real_name'))
     {
         $_SESSION['ERROR'] = L('formnotcomplete');
         Flyspray::Redirect(CreateURL('newuser'));

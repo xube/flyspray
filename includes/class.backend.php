@@ -390,14 +390,21 @@ class Backend
         if ($db->fetchOne($sql)) {
             return false;
         }
-                       
-        $password = $fs->cryptPassword($password);
+        
+        $auto = false;
+        // Autogenerate a password
+        if (!$password) {
+            $auto = true;
+            mt_srand($fs->make_seed());
+            $password = substr(md5(mt_rand() . $user_name), 0, mt_rand(7, 9));
+        }
+        
         $db->Query("INSERT INTO  {users}
                              ( user_name, user_pass, real_name, jabber_id,
                                email_address, notify_type, account_enabled,
                                tasks_perpage, register_date)
                      VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25, ?)",
-            array($user_name, $password, $real_name, $jabber_id, $email, $notify_type, time()));
+            array($user_name, $fs->cryptPassword($password), $real_name, $jabber_id, $email, $notify_type, time()));
 
         // Get this user's id for the record
         $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($user_name));
@@ -414,7 +421,8 @@ class Backend
                                  FROM {users} u
                             LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
                                 WHERE g.group_id = 1');
-            $notify->Create(NOTIFY_NEW_USER, null, array($baseurl, $user_name, $real_name, $email, $jabber_id), $db->FetchAllArray($sql));
+            $notify->Create(NOTIFY_NEW_USER, null,
+                            array($baseurl, $user_name, $real_name, $email, $jabber_id, $password, $auto), $db->FetchAllArray($sql));
         }
         
         return true;

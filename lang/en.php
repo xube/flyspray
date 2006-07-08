@@ -741,6 +741,7 @@ Regards,',
 'alreadyvotedthisday'     => 'already voted today',
 'visibility'              => 'Visibility',
 'public'                  => 'Public',
+'leaveemptyauto'          => 'Leave password fields empty if you want the password to be automatically generated.',
 ); 
 
 ?>
