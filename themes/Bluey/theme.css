@@ -582,6 +582,10 @@ button {
 }
 
 button:hover {
+	background-image:url(button-over.png);
+}
+
+button:hover {
 	cursor:pointer;
 }
 
@@ -608,28 +612,6 @@ form#chgpassword h1,form#newgroup h1 {
 
 form#newgroup strong {
 	color:red;
-}
-
-/* The tabs containing the links to comments, attachments, ... in details.php */
-p#tabs a {
-	background:url("tab-notactive.png") no-repeat top left #cad0d7;
-	border-right:1px solid #93989D;
-	white-space:nowrap;
-	margin:2px 0;
-	padding:0 1em;
-}
-
-p#tabs a.tabactive {
-	background:url("tab-active.png") no-repeat top left #e6eef6;
-	border-right:1px solid #CCC;
-	padding-bottom:2px;
-}
-
-div.tabentries {
-	background-color:#e6eef6;
-	border:1px solid #CCC;
-	min-height:5em;
-	margin:0 0 1em;
 }
 
 div.preview {
@@ -849,6 +831,10 @@ div#actionbuttons a {
 	padding:1px 5px;
 }
 
+div#actionbuttons a:hover {
+	background:url(button-over.png);
+}
+
 div#actionbuttons a#hideclosetask {
 	position:absolute;
 	top:3px;
@@ -979,8 +965,7 @@ div#successbar {
 }
 
 div#toolboxmenu {
-	position:absolute;
-	left:15px;
+	float:left;
 	padding-top:15px;
 }
 
@@ -1040,9 +1025,8 @@ div.tbuttons {
 #submenu a {
 	color:#999;
 	text-decoration:none;
-	display:block;
-	float:left;
-	margin:auto auto -1px 1ex;
+	display:inline;
+	margin:0 0 0 1ex;
 	padding:2px 1ex;
 }
 
@@ -1051,8 +1035,7 @@ html #submenu {
 }
 
 div.tab {
-	clear:left;
-	margin:0 1ex 10px 0;
+	margin:2px 1ex 10px 0;
 	padding:1ex 1ex 0;
 }
 
