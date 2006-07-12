@@ -35,7 +35,7 @@ $page->assign('tasks', $db->fetchOne($sql));
 
 $page->assign('theuser', $theuser);
 
-$page->setTitle('Flyspray:: ' . L('viewprofile'));
+$page->setTitle($fs->prefs['page_title'] . L('viewprofile'));
 $page->pushTpl('profile.tpl');
 
 ?>

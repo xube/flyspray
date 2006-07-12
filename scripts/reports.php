@@ -14,7 +14,7 @@ if (!$user->perms['view_reports']) {
 }
 
 require_once(BASEDIR . '/includes/events.inc.php');
-$page->setTitle('Flyspray:: ' . L('reports'));
+$page->setTitle($fs->prefs['page_title'] . L('reports'));
 
 /**********************\
 *  Event reports       *

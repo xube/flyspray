@@ -29,7 +29,7 @@ RewriteRule ^pm/proj([0-9]+)/([a-zA-Z]+)$ index.php?do=pm&project=$1&area=$2 [L,
 RewriteRule ^newgroup/proj([0-9]+)$ index.php?do=newgroup&project=$1 [L,QSA]
 RewriteRule ^admin/editgroup/([0-9]+)$ index.php?do=admin&area=editgroup&id=$1 [L,QSA]
 RewriteRule ^pm/editgroup/([0-9]+)$ index.php?do=pm&area=editgroup&id=$1 [L,QSA]
-RewriteRule ^edituser/([0-9]+)$ index.php?do=admin&area=users&uid=$1 [L,QSA]
+RewriteRule ^edituser/([0-9]+)$ index.php?do=admin&area=users&user_id=$1 [L,QSA]
 RewriteRule ^newuser$ index.php?do=newuser [L,QSA]
 RewriteRule ^register$ index.php?do=register [L,QSA]
 RewriteRule ^lostpw$ index.php?do=lostpw [L,QSA]

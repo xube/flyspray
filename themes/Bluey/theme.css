@@ -583,9 +583,6 @@ button {
 
 button:hover {
 	background-image:url(button-over.png);
-}
-
-button:hover {
 	cursor:pointer;
 }
 
@@ -646,13 +643,7 @@ strong.reopened {
 }
 
 /* Some generic classes; severity classes are used for colour
-indication of severities
-IE can't do hover on anything but A elements, so there is a
-script in /javascript/ie_hover.js that fixes this with
-javascript. That javascript only checks background-color and
-color and it can't handle short color forms like #000.
-If you want to change other properties during the hover
-you'll have to adjust the javascript*/
+indication of severities*/
 .severity1 {
 	background-color:#fff5dd !important;
 	color:#000;
@@ -868,13 +859,11 @@ div.groupedit {
 }
 
 div#closeform {
-	visibility:hidden;
 	position:absolute;
 	background-color:#e6eef6;
 	color:#000;
 	border:2px ridge #000;
 	margin-top:10px;
-	display:block;
 	width:300px;
 	height:auto;
 	padding:5px 30px 5px 5px;
@@ -1187,7 +1176,7 @@ a.datelink img {
 	vertical-align:middle;
 }
 
-html,p#tabs,p.unregistered,#submenu,#submenu * {
+html,p.unregistered,#submenu,#submenu * {
 	margin:0;
 	padding:0;
 }
@@ -1204,7 +1193,7 @@ a:hover {
 	text-decoration:none;
 }
 
-p#tabs small,div#toolboxmenu small {
+div#toolboxmenu small {
 	display:none;
 }
 

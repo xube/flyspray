@@ -159,7 +159,7 @@ if ($user->isAnon() && !$fs->prefs['user_notify']) {
 }
 
 // default title
-$page->setTitle("Flyspray :: {$proj->prefs['project_title']}");
+$page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title']);
 
 $page->assign('do', $do);
 $page->pushTpl('header.tpl');

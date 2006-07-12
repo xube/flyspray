@@ -71,7 +71,7 @@
           <td title="{L('categoryownertip')}">
             <select id="categoryownernew" name="category_owner">
               <option value="">{L('selectowner')}</option>
-              {!tpl_options($proj->UserList())}
+              {!tpl_options($proj->UserList(), Req::val('category_owner'))}
             </select>
           </td>
           <td title="{L('categoryparenttip')}">
@@ -82,12 +82,13 @@
               create_function('$x', 'return array($x["category_id"], $x["category_name"]);'),
               $categories);
               ?>
-              {!tpl_options($cat_opts)}
+              {!tpl_options($cat_opts, Req::val('parent_id'))}
             </select>
           </td>
           <td class="buttons">
             <input type="hidden" name="do" value="modify" />
-            <input type="hidden" name="action" value="add_category" />
+            <input type="hidden" name="action" value="{Req::val('action', $do . '.add_category')}" />
+            <input type="hidden" name="area" value="{Req::val('area')}" />
             <?php if ($proj->id): ?>
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <?php endif; ?>

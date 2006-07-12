@@ -15,7 +15,7 @@
           <td><label for="projecttitle">{L('projecttitle')}</label></td>
           <td>
             <input id="projecttitle" name="project_title" class="text" type="text" size="40" maxlength="100"
-              value="{$proj->prefs['project_title']}" />
+              value="{Req::val('project_title', $proj->prefs['project_title'])}" />
           </td>
         </tr>
 
@@ -23,8 +23,7 @@
           <td><label for="defaultcatowner">{L('defaultcatowner')}</label></td>
           <td>
             <select id="defaultcatowner" name="default_cat_owner">
-              <option value="0">{L('noone')}</option>
-              {!tpl_options($proj->UserList(), $proj->prefs['default_cat_owner'])}
+              {!tpl_options(array(0 => L('noone')) + $proj->UserList(), Req::val('default_cat_owner', $proj->prefs['default_cat_owner']))}
             </select>
           </td>
         </tr>
@@ -32,7 +31,7 @@
           <td><label for="langcode">{L('language')}</label></td>
           <td>
             <select id="langcode" name="lang_code">
-              {!tpl_options($fs->listLangs(), $proj->prefs['lang_code'], true)}
+              {!tpl_options($fs->listLangs(), Req::val('lang_code', $proj->prefs['lang_code']), true)}
             </select>
           </td>
         </tr>
@@ -42,7 +41,7 @@
             <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
             <div class="hide preview" id="preview"></div>
             <?php endif; ?>
-            {!TextFormatter::textarea('intro_message', 12, 70, array('accesskey' => 'r', 'tabindex' => 8, 'id' => 'intromesg'), $proj->prefs['intro_message'])}
+            {!TextFormatter::textarea('intro_message', 12, 70, array('accesskey' => 'r', 'tabindex' => 8, 'id' => 'intromesg'), Req::val('intro_message', $proj->prefs['intro_message']))}
             <br />
             <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
             <button tabindex="9" type="button" onclick="showPreview('intromesg', '{$baseurl}', 'preview')">{L('preview')}</button>
@@ -51,7 +50,7 @@
         </tr>
         <tr>
           <td><label for="isactive">{L('isactive')}</label></td>
-          <td>{!tpl_checkbox('project_is_active', $proj->prefs['project_is_active'], 'isactive')}</td>
+          <td>{!tpl_checkbox('project_is_active', Req::val('project_is_active', $proj->prefs['project_is_active']), 'isactive')}</td>
         </tr>
         <tr>
           <td><label>{!tpl_checkbox('delete_project', null)} {L('deleteproject')}</label></td>
@@ -61,19 +60,19 @@
         </tr>
         <tr>
           <td><label for="othersview">{L('othersview')}</label></td>
-          <td>{!tpl_checkbox('others_view', $proj->prefs['others_view'], 'othersview')}</td>
+          <td>{!tpl_checkbox('others_view', Req::val('others_view', $proj->prefs['others_view']), 'othersview')}</td>
         </tr>
         <tr>
           <td><label for="anon_open">{L('allowanonopentask')}</label></td>
-          <td>{!tpl_checkbox('anon_open', $proj->prefs['anon_open'], 'anon_open')}</td>
+          <td>{!tpl_checkbox('anon_open', Req::val('anon_open', $proj->prefs['anon_open']), 'anon_open')}</td>
         </tr>
         <tr>
           <td><label for="comment_closed">{L('allowclosedcomments')}</label></td>
-          <td>{!tpl_checkbox('comment_closed', $proj->prefs['comment_closed'], 'comment_closed')}</td>
+          <td>{!tpl_checkbox('comment_closed', Req::val('comment_closed', $proj->prefs['comment_closed']), 'comment_closed')}</td>
         </tr>
         <tr>
           <td><label for="auto_assign">{L('autoassign')}</label></td>
-          <td>{!tpl_checkbox('auto_assign', $proj->prefs['auto_assign'], 'auto_assign')}</td>
+          <td>{!tpl_checkbox('auto_assign', Req::val('auto_assign', $proj->prefs['auto_assign']), 'auto_assign')}</td>
         </tr>
       </table>
     </div>
@@ -84,7 +83,7 @@
           <td><label for="themestyle">{L('themestyle')}</label></td>
           <td>
             <select id="themestyle" name="theme_style">
-              {!tpl_options($fs->listThemes(), $proj->prefs['theme_style'], true)}
+              {!tpl_options($fs->listThemes(), Req::val('theme_style', $proj->prefs['theme_style']), true)}
             </select>
           </td>
         </tr>
@@ -96,7 +95,7 @@
             'priority', 'summary', 'dateopened', 'status', 'openedby',
             'assignedto', 'lastedit', 'reportedin', 'dueversion', 'duedate',
             'comments', 'attachments', 'progress', 'dateclosed', 'os', 'votes');
-            $selectedcolumns = explode(' ', $proj->prefs['visible_columns']);
+            $selectedcolumns = explode(' ', Req::val('visible_columns', $proj->prefs['visible_columns']));
             ?>
             {!tpl_double_select('visible_columns', $columnnames, $selectedcolumns, true)}
           </td>
@@ -109,26 +108,26 @@
         <tr>
           <td><label for="notify_subject">{L('notifysubject')}</label></td>
           <td>
-            <input id="notify_subject" class="text" name="notify_subject" type="text" size="40" value="{$proj->prefs['notify_subject']}" />
+            <input id="notify_subject" class="text" name="notify_subject" type="text" size="40" value="{Req::val('notify_subject', $proj->prefs['notify_subject'])}" />
             {L('notifysubjectinfo')}
           </td>
         </tr>
         <tr>
           <td><label for="emailaddress">{L('emailaddress')}</label></td>
           <td>
-            <input id="emailaddress" name="notify_email" class="text" type="text" value="{$proj->prefs['notify_email']}" />
+            <input id="emailaddress" name="notify_email" class="text" type="text" value="{Req::val('notify_email', $proj->prefs['notify_email'])}" />
           </td>
         </tr>
         <tr>
           <td><label for="jabberid">{L('jabberid')}</label></td>
           <td>
-            <input id="jabberid" class="text" name="notify_jabber" type="text" value="{$proj->prefs['notify_jabber']}" />
+            <input id="jabberid" class="text" name="notify_jabber" type="text" value="{Req::val('notify_jabber', $proj->prefs['notify_jabber'])}" />
           </td>
         </tr>
         <tr>
           <td><label for="notify_reply">{L('replyto')}</label></td>
           <td>
-            <input id="notify_reply" name="notify_reply" class="text" type="text" value="{$proj->prefs['notify_reply']}" />
+            <input id="notify_reply" name="notify_reply" class="text" type="text" value="{Req::val('notify_reply', $proj->prefs['notify_reply'])}" />
           </td>
         </tr>
         <tr>
@@ -152,7 +151,7 @@
                                 NOTIFY_REV_DEP         => L('revdepadded'),
                                 NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
                                 NOTIFY_ADDED_ASSIGNEES => L('assigneeadded')),
-                                Flyspray::int_explode(' ', $proj->prefs['notify_types']))}
+                                Req::val('notify_types', Flyspray::int_explode(' ', $proj->prefs['notify_types'])))}
             </select>
           </td>
         </tr>
@@ -164,13 +163,13 @@
         <tr>
           <td><label for="feed_description">{L('feeddescription')}</label></td>
           <td>
-            <input id="feed_description" class="text" name="feed_description" type="text" value="{$proj->prefs['feed_description']}" />
+            <input id="feed_description" class="text" name="feed_description" type="text" value="{Req::val('feed_description', $proj->prefs['feed_description'])}" />
           </td>
         </tr>
         <tr>
           <td><label for="feed_img_url">{L('feedimgurl')}</label></td>
           <td>
-            <input id="feed_img_url" class="text" name="feed_img_url" type="text" value="{$proj->prefs['feed_img_url']}" />
+            <input id="feed_img_url" class="text" name="feed_img_url" type="text" value="{Req::val('feed_img_url', $proj->prefs['feed_img_url'])}" />
           </td>
         </tr>
       </table>
@@ -178,7 +177,7 @@
 
     <div class="tbuttons">
       <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="updateproject" />
+      <input type="hidden" name="action" value="pm.updateproject" />
       <input type="hidden" name="project_id" value="{$proj->id}" />
       <button type="submit">{L('saveoptions')}</button>
 

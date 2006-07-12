@@ -12,7 +12,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$task_id = Get::num('id');
+$task_id = Req::num('id', Req::num('task_id'));
 
 if ( !($task_details = $fs->GetTaskDetails($task_id))
         || !$user->can_view_task($task_details))
@@ -23,6 +23,8 @@ if ( !($task_details = $fs->GetTaskDetails($task_id))
 require_once(BASEDIR . '/includes/events.inc.php');
 
 $page->uses('priority_list', 'severity_list', 'task_details');
+$page->assign('priority_list', $priority_list);
+$page->assign('severity_list', $severity_list);
 
 $userlist = $proj->UserList();
 
@@ -33,7 +35,7 @@ $page->assign('old_assigned', implode(' ', $task_details['assigned_to']));
 
 $page->setTitle('FS#' . $task_details['task_id'] . ': ' . $task_details['item_summary']);
 
-if (Get::val('edit') && $user->can_edit_task($task_details)) {
+if (Req::val('edit') && $user->can_edit_task($task_details)) {
     $page->pushTpl('details.edit.tpl');
 }
 else {

@@ -5,7 +5,7 @@ class Req
 {
     function has($key)
     {
-        return isset($_REQUEST[$key]) && $_REQUEST[$key] !== '';
+        return isset($_REQUEST[$key]);
     }
 
     function val($key, $default = null)

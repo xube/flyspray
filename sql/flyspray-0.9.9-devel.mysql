@@ -385,3 +385,6 @@ create index idx_task_id on flyspray_history(task_id);
 ALTER TABLE `flyspray_admin_requests` CHANGE `reason_given` `reason_given` TEXT NOT NULL;
 ALTER TABLE `flyspray_projects` CHANGE `intro_message` `intro_message` TEXT NOT NULL;
 ALTER TABLE `flyspray_tasks` CHANGE `detailed_desc` `detailed_desc` TEXT NOT NULL;
+
+-- Florian Schmitz, 11 July 2006
+INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (26, 'page_title', 'Flyspray:: ', 'The title of the whole page');

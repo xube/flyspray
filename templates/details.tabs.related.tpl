@@ -42,11 +42,11 @@
   </table>
 
   <?php if ($user->can_edit_task($task_details) && !$task_details['is_closed']): ?>
-  <form action="{$baseurl}" method="post" id="formaddrelatedtask">
+  <form action="{$baseurl}#related" method="post" id="formaddrelatedtask">
     <div>
       <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="add_related" />
-      <input type="hidden" name="this_task" value="{Get::num('id')}" />
+      <input type="hidden" name="action" value="details.add_related" />
+      <input type="hidden" name="id" value="{Req::num('id')}" />
       <label>{L('addnewrelated')}
         <input name="related_task" id="related_task_input" type="text" class="text" size="10" maxlength="10" /></label>
       <button type="submit" onclick="return checkok('{$baseurl}javascript/callbacks/checkrelated.php?related_task=' + $('related_task_input').value + '&amp;project={$proj->id}', '{L('relatedproject')}', 'formaddrelatedtask')">{L('add')}</button>

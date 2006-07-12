@@ -67,19 +67,20 @@
       <td>
         <input type="hidden" name="do" value="modify" />
         <?php if ($list_type == 'version'): ?>
-        <input type="hidden" name="action" value="add_to_version_list" />
+        <input type="hidden" name="action" value="{Req::val('action', $do . '.add_to_version_list')}" />
         <?php else: ?>
-        <input type="hidden" name="action" value="add_to_list" />
+        <input type="hidden" name="action" value="{Req::val('action', $do . '.add_to_list')}" />
         <?php endif; ?>
         <input type="hidden" name="list_type" value="{$list_type}" />
         <?php if ($proj->id): ?>
         <input type="hidden" name="project_id" value="{$proj->id}" />
+        <input type="hidden" name="area" value="{Req::val('area')}" />
         <?php endif; ?>
         <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
-        <input id="listnamenew" class="text" type="text" size="15" maxlength="40" name="list_name" />
+        <input id="listnamenew" class="text" type="text" size="15" maxlength="40" value="{Req::val('list_name')}" name="list_name" />
       </td>
       <td>
-        <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" name="list_position" />
+        <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" value="{Req::val('list_position')}" name="list_position" />
       </td>
       <td>
         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />

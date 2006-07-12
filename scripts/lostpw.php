@@ -9,17 +9,17 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$page->setTitle('Flyspray:: ' . L('lostpw'));
+$page->setTitle($fs->prefs['page_title'] . L('lostpw'));
 
-if (!Get::has('magic') && $user->isAnon()) {
+if (!Req::has('magic_url') && $user->isAnon()) {
     // Step One: user requests magic url
     $page->pushTpl('lostpw.step1.tpl');
 }
-elseif (Get::has('magic') && $user->isAnon()) {
+elseif (Req::has('magic_url') && $user->isAnon()) {
     // Step Two: user enters new password
 
     $check_magic = $db->Query("SELECT * FROM {users} WHERE magic_url = ?",
-            array(Get::val('magic')));
+            array(Get::val('magic_url')));
 
     if (!$db->CountRows($check_magic)) {
         $_SESSION['ERROR'] = L('badmagic');

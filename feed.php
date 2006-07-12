@@ -84,7 +84,7 @@ $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_op
                  ORDER BY  $orderby DESC", array($closed), $max_items);
 
 $task_details     = $db->fetchAllArray($sql);
-$feed_description = $proj->prefs['feed_description'] ? $proj->prefs['feed_description'] : 'Flyspray:: '.$proj->prefs['project_title'].': '.$title;
+$feed_description = $proj->prefs['feed_description'] ? $proj->prefs['feed_description'] : $fs->prefs['page_title'] . $proj->prefs['project_title'].': '.$title;
 $feed_image       = false;
 if ($proj->prefs['feed_img_url']
         && !strncmp($proj->prefs['feed_img_url'], 'http://', 7))

@@ -8,18 +8,19 @@
   <?php endforeach; ?>
 
   <?php if ($user->perms['manage_project']): ?>
-  <form action="{$baseurl}" method="get">
+  <form action="{$baseurl}#notify" method="get">
     <p>
         <label class="default multisel" for="notif_user_id">{L('addusertolist')}</label>
-        <input class="users text" size="30" type="text" name="user_id" id="notif_user_id" /><button type="submit">{L('addtolist')}</button>
+        <input class="users text" size="30" type="text" value="{Req::val('user_id')}" name="user_id" id="notif_user_id" /><button type="submit">{L('addtolist')}</button>
         <div class="autocomplete" id="notif_complete"></div>
         <script type="text/javascript">
             new Ajax.Autocompleter('notif_user_id', 'notif_complete', '{$baseurl}/javascript/callbacks/usersearch.php', {})
         </script>
         
       <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="ids" value="{Get::num('id')}" />
-      <input type="hidden" name="action" value="add_notification" />
+      <input type="hidden" name="ids" value="{Req::num('id', Req::num('ids'))}" />
+      <input type="hidden" name="id" value="{Req::num('id', Req::num('ids'))}" />
+      <input type="hidden" name="action" value="details.add_notification" />
     </p>
   </form>
   <?php endif; ?>

@@ -12,6 +12,12 @@
    <div id="general" class="tab">
       <table class="admin">
         <tr>
+          <td><label for="pagetitle">{L('pagetitle')}</label></td>
+          <td>
+            <input id="pagetitle" name="page_title" type="text" class="text" size="40" maxlength="100" value="{$fs->prefs['page_title']}" />
+          </td>
+        </tr>
+        <tr>
           <td><label for="defaultproject">{L('defaultproject')}</label></td>
           <td>
             <select id="defaultproject" name="default_project">

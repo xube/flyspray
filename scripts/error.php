@@ -9,6 +9,6 @@
   \*********************************************************/
 
 
-$page->setTitle('Flyspray:: Error');
+$page->setTitle($fs->prefs['page_title'] . ' Error');
 $page->pushTpl('error.tpl');
 ?>

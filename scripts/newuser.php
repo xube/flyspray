@@ -22,6 +22,6 @@ if ($user->perms['is_admin']) {
     $page->assign('group_names', $db->fetchAllArray($sql));
 }
 
-$page->setTitle('Flyspray:: ' . L('registernewuser'));
+$page->setTitle($fs->prefs['page_title'] . L('registernewuser'));
 $page->pushTpl('newuser.tpl');
 ?>

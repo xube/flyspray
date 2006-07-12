@@ -127,7 +127,7 @@
           0
           <?php endif; ?>
           <?php if ($user->can_vote($task_details['task_id']) > 0): ?>
-          <a href="{$baseurl}?do=modify&amp;action=addvote&amp;id={Get::num('id')}">
+          <a href="{$baseurl}?do=modify&amp;action=details.addvote&amp;id={Req::num('id')}">
             ({L('addvote')})</a>
           <?php elseif ($user->can_vote($task_details['task_id']) == -2): ?>
           ({L('alreadyvotedthistask')})
@@ -219,9 +219,9 @@
 		<form action="{$baseurl}" method="post">
 		  <div>
 			 <input type="hidden" name="do" value="modify" />
-			 <input type="hidden" name="action" value="newdep" />
-			 <input type="hidden" name="task_id" value="{Get::num('id')}" />
-			 <input class="text" type="text" name="dep_task_id" size="5" maxlength="10" />
+			 <input type="hidden" name="action" value="details.newdep" />
+			 <input type="hidden" name="id" value="{Req::num('id')}" />
+			 <input class="text" type="text" value="{Req::val('dep_task_id')}" name="dep_task_id" size="5" maxlength="10" />
 			 <button type="submit" name="submit">{L('addnew')}</button>
 		  </div>
 		</form>
@@ -281,22 +281,21 @@
 
 	 <?php if ($user->can_close_task($task_details) && !$d_open): ?>
 	 <a href="#close" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');">
-		{L('closetask')}</a><div id="closeform">
+		{L('closetask')}</a><div id="closeform" <?php if (Req::val('action') != 'details.close'): ?>class="hide"<?php endif; ?>>
 		<form action="{$baseurl}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="do" value="modify" />
-			 <input type="hidden" name="action" value="close" />
-			 <input type="hidden" name="assigned_to" value="{implode(' ',$task_details['assigned_to'])}" />
-			 <input type="hidden" name="task_id" value="{Get::num('id')}" />
+			 <input type="hidden" name="action" value="details.close" />
+			 <input type="hidden" name="task_id" value="{Req::num('id', Req::num('task_id'))}" />
 			 <select class="adminlist" name="resolution_reason">
 				<option value="0">{L('selectareason')}</option>
-				{!tpl_options($proj->listResolutions())}
+				{!tpl_options($proj->listResolutions(), Req::val('resolution_reason'))}
 			 </select>
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>
-			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="30"></textarea>
+			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="30">{Req::val('closure_comment')}</textarea>
 			 <?php if($task_details['percent_complete'] != '100'): ?>
-             <label><input type="checkbox" name="mark100" value="1" checked="checked" />&nbsp;&nbsp;{L('mark100')}</label>
+             <label>{!tpl_checkbox('mark100', Req::val('mark100', !(Req::val('action') == 'details.close')))}&nbsp;&nbsp;{L('mark100')}</label>
              <?php endif; ?>
 		  </div>
 		</form>

@@ -19,7 +19,7 @@ $page->assign('project_groups', $fs->ListGroups($proj->id));
         
 $page->assign('theuser', $user);
 
-$page->setTitle('Flyspray:: ' . L('editmydetails'));
+$page->setTitle($fs->prefs['page_title'] . L('editmydetails'));
 $page->pushTpl('myprofile.tpl');
 
 ?>

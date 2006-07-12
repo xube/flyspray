@@ -185,6 +185,7 @@ class Flyspray
      */
     function requestDuplicated()
     {
+        return false;
         // garbage collection -- clean entries older than 6 hrs
         $now = time();
         if (!empty($_SESSION['requests_hash'])) {
@@ -199,7 +200,7 @@ class Flyspray
       
         $requestarray = array_merge(array_keys($_POST), array_values($_POST));
 
-        if (Post::val('do') == 'modify' and preg_match('/^newtask|addcomment$/',
+        if (Post::val('do') == 'modify' and preg_match('/^newtask.newtask|details.addcomment$/',
                     Post::val('action')))
         {
             $currentrequest = md5(serialize($requestarray));
@@ -643,6 +644,19 @@ class Flyspray
             if (isset($part[$key]) && $part[$key] == $value) {
                 return $num;
             }
+        }
+    }
+    
+    function show_error($error_message)
+    {
+        global $modes, $do;
+        
+        if ($do == 'modify') {
+            $_SESSION['ERROR'] = $error_message;
+
+            $do = Filters::enum(reset(explode('.', Req::val('action'))), $modes);
+        } else {
+            // error handling outsite modify.php
         }
     }
 }

@@ -597,7 +597,7 @@ class Notifications {
          $body = L('donotreply') . "\n\n";
          $body .= L('noticefrom') . " {$proj->prefs['project_title']}\n\n"
                . L('addressused') . "\n\n"
-               . "{$arg1[0]}index.php?do=register&magic={$arg1[1]}\n\n"
+               . "{$arg1[0]}index.php?do=register&magic_url={$arg1[1]}\n\n"
                 // In case that spaces in the username have been removed
                . L('username') . ': '. $arg1[2] . "\n"
                . L('confirmcodeis') . " $arg1[3] \n\n"
@@ -706,7 +706,7 @@ class Notifications {
       {
           $body = L('messagefrom'). $arg1[0] . "\n\n"
                   . L('magicurlmessage')." \n"
-                  . "{$arg1[0]}index.php?do=lostpw&magic=$arg1[1]\n";
+                  . "{$arg1[0]}index.php?do=lostpw&magic_url=$arg1[1]\n";
 
           return array($subject, $body);
       } // }}}
@@ -723,7 +723,6 @@ class Notifications {
               $body .= L('emailaddress') . ': ' . $arg1[3] . "\n" .
                     L('jabberid') . ':' . $arg1[4] . "\n\n";
           $body .= L('disclaimer');
-          die($body);
 
           return array($subject, $body);
       } // }}}      

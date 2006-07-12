@@ -273,7 +273,7 @@ function join_attrs($attr = null) {
     if (is_array($attr)) {
         $arr = array();
         foreach ($attr as $key=>$val) {
-            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, "utf-8").'"';
+            $arr[] = $key.'="'.htmlspecialchars($val, ENT_QUOTES, 'utf-8').'"';
         }
         return ' '.join(' ', $arr);
     }
@@ -282,6 +282,10 @@ function join_attrs($attr = null) {
 // {{{ Datepicker
 function tpl_datepicker($name, $label = '', $value = null) {
     global $fs, $user;
+    
+    if (!ctype_digit($value)) {
+        $value = strtotime($value);
+    }
     
     if ($value) {
         $date = date('Y-m-d', $value);
@@ -314,9 +318,9 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
             $value = $label[0];
             $label = $label[1];
         }
-        $label = htmlspecialchars($label, ENT_QUOTES, "utf-8");
+        $label = htmlspecialchars($label, ENT_QUOTES, 'utf-8');
         $value = $labelIsValue ? $label
-                               : htmlspecialchars($value, ENT_QUOTES, "utf-8");
+                               : htmlspecialchars($value, ENT_QUOTES, 'utf-8');
                                
         if ($value === $remove) {
             continue;
@@ -370,8 +374,8 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
             $selectedones[$value] = $label;
             continue;
         }
-        $label = htmlspecialchars($label, ENT_QUOTES, "utf-8");
-        $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
+        $label = htmlspecialchars($label, ENT_QUOTES, 'utf-8');
+        $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
 
         $opt1 .= sprintf('<option title="%2$s" value="%1$s">%2$s</option>', $value, $label);
     }
@@ -381,8 +385,8 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
         if (!isset($selectedones[$value])) {
             continue;
         }
-        $label = htmlspecialchars($selectedones[$value], ENT_QUOTES, "utf-8");
-        $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
+        $label = htmlspecialchars($selectedones[$value], ENT_QUOTES, 'utf-8');
+        $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
 
         $opt2 .= sprintf('<option title="%2$s" value="%1$s">%2$s</option>', $value, $label);
     }
@@ -392,12 +396,12 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
 // {{{ Checkboxes
 function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null)
 {
-    $name  = htmlspecialchars($name,  ENT_QUOTES, "utf-8");
-    $value = htmlspecialchars($value, ENT_QUOTES, "utf-8");
+    $name  = htmlspecialchars($name,  ENT_QUOTES, 'utf-8');
+    $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
     $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
     if ($id) {
         
-        $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, "utf-8").'" ';
+        $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, 'utf-8').'" ';
     }
     if ($checked == true) {
         $html .= 'checked="checked" ';
@@ -628,7 +632,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'edittask':  $return = $url . '&id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
             case 'user':      $return = $baseurl . '?do=admin&area=users&id=' . $arg1; break;
-            case 'edituser':  $return = $baseurl . '?do=admin&area=users&uid=' . $arg1; break;
+            case 'edituser':  $return = $baseurl . '?do=admin&area=users&user_id=' . $arg1; break;
             case 'logout':    $return = $baseurl . '?do=authenticate&action=logout'; break;
 
             case 'details':

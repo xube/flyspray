@@ -37,9 +37,9 @@
   </head>
   <body onload="perms = new Perms('permissions');<?php
         if (!empty($_SESSION['SUCCESS'])):
-        ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)',2000);<?php
+        ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)', 5000);<?php
         elseif (!empty($_SESSION['ERROR'])):
-        ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)',2000);<?php endif ?>">
+        ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)', 5000);<?php endif ?>">
   
   <div id="container">
     <!-- Remove this to remove the logo -->
@@ -66,8 +66,9 @@
       </div>
       
       <div class="clear"></div>
-
-      <?php if ($proj->prefs['intro_message'] && in_array($do, array('details', 'index', 'newtask', 'reports', 'depends'))): ?>
+      <?php /// FIXME: project message disappearing when do=modify ?>
+      <?php $show_message = array('details', 'index', 'newtask', 'reports', 'depends');
+            if ($proj->prefs['intro_message'] && in_array($do, $show_message) || in_array(reset(explode('.', Req::val('action'))), $show_message)): ?>
       <div id="intromessage">{!TextFormatter::render($proj->prefs['intro_message'], false, 'msg', $proj->id,
                                ($proj->prefs['last_updated'] < $proj->prefs['cache_update']) ? $proj->prefs['pm_instructions'] : '')}</div>
       <?php endif; ?>

@@ -8,7 +8,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$page->setTitle('Flyspray :: ' . L('roadmap'));
+$page->setTitle($fs->prefs['page_title'] . L('roadmap'));
 
 // Get milestones
 $milestones = $db->Query('SELECT   version_id, version_name
@@ -35,7 +35,7 @@ while ($row = $db->FetchArray($milestones)) {
             $percent_complete += $task['percent_complete'];
         }
     }
-    $percent_complete = round($percent_complete/max(count($all_tasks),1));
+    $percent_complete = round($percent_complete/max(count($all_tasks), 1));
                          
     $tasks = $db->Query('SELECT task_id, item_summary, detailed_desc, task_severity, mark_private, opened_by, content, task_token
                            FROM {tasks} t

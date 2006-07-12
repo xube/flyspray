@@ -13,12 +13,12 @@ if (!$user->can_register()) {
     Flyspray::Redirect($baseurl);
 }
 
-$page->setTitle('Flyspray:: ' . L('registernewuser'));
+$page->setTitle($fs->prefs['page_title'] . L('registernewuser'));
 
-if (Get::has('magic')) {
+if (Req::has('magic_url')) {
     // If the user came here from their notification link
     $sql = $db->Query('SELECT * FROM {registrations} WHERE magic_url = ?',
-                      array(Get::val('magic')));
+                      array(Get::val('magic_url')));
 
     if (!$db->CountRows($sql)) {
         Flyspray::Redirect(CreateURL('error'));

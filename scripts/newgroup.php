@@ -14,12 +14,12 @@ if (!$user->can_create_group()) {
     Flyspray::Redirect(CreateURL('error'));
 }
 
-if (Get::val('project')) {
+if (Req::val('project')) {
     $forproject = $proj->prefs['project_title'];
-    $page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . L('createnewgroup'));
+    $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('createnewgroup'));
 } else {
     $forproject = L('globalgroups');
-    $page->setTitle('Flyspray:: ' . L('createnewgroup'));
+    $page->setTitle($fs->prefs['page_title'] . L('createnewgroup'));
 }
 
 $page->assign('forproject', $forproject);

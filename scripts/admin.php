@@ -23,9 +23,9 @@ $proj = new Project(0);
 $page->uses('old_project');
 $page->pushTpl('admin.menu.tpl');
 
-switch ($area = Get::val('area', 'prefs')) {
+switch ($area = Req::val('area', 'prefs')) {
     case 'users':
-        $id = Get::val('uid');
+        $id = Req::val('user_id');
         if (!is_numeric($id)) {
             $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($id));
             $id = $db->FetchOne($sql);
@@ -48,7 +48,7 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'status':
     case 'ver':
 
-        $page->setTitle('Flyspray:: ' . L('admintoolboxlong'));
+        $page->setTitle($fs->prefs['page_title'] . L('admintoolboxlong'));
         $page->pushTpl('admin.'.$area.'.tpl');
         break;
 

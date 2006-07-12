@@ -142,10 +142,10 @@ if (Get::has('dev') || in_array('assignedto', $visible)) {
 
 
 $where      = array('project_is_active = 1');
-$where[]    = '(p.others_view = 1
+$where[]    = '(p.others_view = 1 AND t.mark_private = 0
                 OR (uig.user_id = ?
                    AND (t.opened_by = ?
-                        OR (t.mark_private = 0 AND (g.view_tasks = 1 OR p.others_view = 1))
+                        OR (t.mark_private = 0 AND g.view_tasks = 1)
                         OR ass.user_id = ?
                         OR g.manage_project = 1
                         OR g.is_admin = 1)
@@ -491,7 +491,7 @@ if(Get::has('hideupdatemsg')) {
 // }}}
 
 $page->uses('tasks');
-$page->setTitle("Flyspray :: {$proj->prefs['project_title']}: " . L('tasklist') . ' ');
+$page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('tasklist') . ' ');
 $page->pushTpl('index.tpl');
 
 ?>

@@ -44,14 +44,14 @@
   </form>
 
   <fieldset><legend>{L('addreminder')}</legend>
-  <form action="{$baseurl}" method="post" id="formaddreminder">
+  <form action="{$baseurl}#remind" method="post" id="formaddreminder">
     <div>
       <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="action" value="addreminder" />
-      <input type="hidden" name="task_id" value="{Get::num('id')}" />
+      <input type="hidden" name="action" value="details.addreminder" />
+      <input type="hidden" name="id" value="{Req::num('id')}" />
 
         <label class="default multisel" for="to_user_id">{L('remindthisuser')}</label>
-        <input class="users text" size="30" type="text" name="to_user_id" id="to_user_id" />
+        <input class="users text" size="30" type="text" value="{Req::val('to_user_id')}" name="to_user_id" id="to_user_id" />
         <div class="autocomplete" id="to_user_id_complete"></div>
         <script type="text/javascript">
             new Ajax.Autocompleter('to_user_id', 'to_user_id_complete', '{$baseurl}/javascript/callbacks/usersearch.php', {})
@@ -60,22 +60,18 @@
       <br />
 
       <label for="timeamount1">{L('thisoften')}</label>
-      <input class="text" type="text" id="timeamount1" name="timeamount1" size="3" maxlength="3" />
+      <input class="text" type="text" value="{Req::val('timeamount1')}" id="timeamount1" name="timeamount1" size="3" maxlength="3" />
       <select class="adminlist" name="timetype1">
-        <option value="3600">{L('hours')}</option>
-        <option value="86400">{L('days')}</option>
-        <option value="604800">{L('weeks')}</option>
+        {!tpl_options(array(3600 => L('hours'), 86400 => L('days'), 604800 => L('weeks')), Req::val('timetype1'))}
       </select>
 
       <br />
 
-      {!tpl_datepicker('timeamount2', L('startat'))}
+      {!tpl_datepicker('timeamount2', L('startat'), Req::val('timeamount2'))}
 
       <br />
       <textarea class="text" name="reminder_message"
-        rows="10" cols="72">{L('defaultreminder')}
-
-{CreateURL('details', Get::num('id'))}</textarea>
+        rows="10" cols="72">{Req::val('reminder_message', L('defaultreminder') . "\n\n" . CreateURL('details', Get::num('id')))}</textarea>
       <br />
       <button type="submit">{L('addreminder')}</button>
     </div>

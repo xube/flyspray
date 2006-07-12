@@ -17,11 +17,10 @@ if (!$user->can_open_task($proj)) {
 $userlist = $proj->UserList();
 
 $page->assign('userlist', $userlist);
-$page->assign('assigned_users', array());
 
 $page->uses('severity_list', 'priority_list');
 
-$page->setTitle('Flyspray:: ' . $proj->prefs['project_title'] . ': ' . L('newtask'));
+$page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('newtask'));
 $page->pushTpl('newtask.tpl');
 
 ?>

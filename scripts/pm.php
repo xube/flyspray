@@ -16,7 +16,7 @@ if (!$user->perms['manage_project']) {
     Flyspray::Redirect( CreateURL('error', null) );
 }
 
-switch ($area = Get::val('area', 'prefs')) {
+switch ($area = Req::val('area', 'prefs')) {
     case 'pendingreq':
         $sql = $db->Query("SELECT  *
                              FROM  {admin_requests} ar
@@ -38,7 +38,7 @@ switch ($area = Get::val('area', 'prefs')) {
     case 'cat':
     case 'status':
 
-        $page->setTitle('Flyspray:: ' . L('pmtoolbox'));
+        $page->setTitle($fs->prefs['page_title'] . L('pmtoolbox'));
         $page->pushTpl('pm.menu.tpl');
         $page->pushTpl('pm.'.$area.'.tpl');
         break;
