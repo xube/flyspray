@@ -84,7 +84,7 @@ $from   = '             {tasks}         t
              LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
              LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id
              LEFT JOIN  {groups}        g   ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
-             LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id';
+             LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?';
 // Only join tables which are really necessary to speed up the db-query
 if (Get::has('cat') || in_array('category', $visible)) {
     $from   .= ' LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id ';
@@ -151,7 +151,7 @@ $where[]    = '(p.others_view = 1 AND t.mark_private = 0
                         OR g.is_admin = 1)
                         )
                 )';
-$sql_params = array($user->id, $user->id, $user->id);
+$sql_params = array($user->id, $user->id, $user->id, $user->id);
 
 if (Get::has('only_primary')) {
     $from   .= ' LEFT JOIN  {dependencies} dep  ON dep.dep_task_id = t.task_id ';
@@ -491,7 +491,7 @@ if(Get::has('hideupdatemsg')) {
 // }}}
 
 $page->uses('tasks');
-$page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('tasklist') . ' ');
+$page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('tasklist'));
 $page->pushTpl('index.tpl');
 
 ?>

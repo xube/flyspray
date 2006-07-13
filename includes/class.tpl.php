@@ -280,7 +280,7 @@ function join_attrs($attr = null) {
     return '';
 }
 // {{{ Datepicker
-function tpl_datepicker($name, $label = '', $value = null) {
+function tpl_datepicker($name, $label = '', $value = 0) {
     global $fs, $user;
     
     if (!ctype_digit($value)) {

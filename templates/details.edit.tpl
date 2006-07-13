@@ -61,7 +61,7 @@
 				<a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{L('selectusers')}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
 				<div id="multiuserlist">
-				 {!tpl_double_select('assigned_to', $userlist, explode(' ', Req::val('assigned_to', $assigned_users)), false, false)}
+				 {!tpl_double_select('assigned_to', $userlist, explode(' ', Req::val('assigned_to', $old_assigned)), false, false)}
                  <button type="button" onclick="hidestuff('multiuserlist')">{L('OK')}</button>
 				</div>
                 <?php else: ?>
