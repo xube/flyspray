@@ -252,7 +252,7 @@ class Flyspray
             return false;
         }
 
-        if ($get_details = $db->FetchArray($get_details)) {
+        if ($get_details = $db->FetchRow($get_details)) {
             $status_id    = $get_details['item_status'];
             $severity_id  = $get_details['task_severity'];
             $priority_id  = $get_details['task_priority'];
@@ -407,14 +407,14 @@ class Flyspray
 
         // Get current user details.  We need this to see if their account is enabled or disabled
         $result = $db->Query('SELECT * FROM {users} WHERE user_id = ?', array(intval($user_id)));
-        return $db->FetchArray($result);
+        return $db->FetchRow($result);
     } // }}}
     // Get group details {{{
     function getGroupDetails($group_id)
     {
         global $db;
         $sql = $db->Query('SELECT * FROM {groups} WHERE group_id = ?', array($group_id));
-        return $db->FetchArray($sql);
+        return $db->FetchRow($sql);
     } // }}}
     // Crypt a password with the method set in the configfile {{{
     function cryptPassword($password)
@@ -443,7 +443,7 @@ class Flyspray
                                WHERE  u.user_name = ? AND g.belongs_to_project = ?
                             ORDER BY  g.group_id ASC", array($username, '0'));
 
-        $auth_details = $db->FetchArray($result);
+        $auth_details = $db->FetchRow($result);
 
         //encrypt the password with the method used in the db
         switch (strlen($auth_details['user_pass'])) {
@@ -606,7 +606,7 @@ class Flyspray
                               array($taskid));
 
         $assignees = array();
-        while ($row = $db->FetchArray($sql)) {
+        while ($row = $db->FetchRow($sql)) {
             if ($name) {
                 $assignees[0][] = $row['user_id'];
                 $assignees[1][] = $row['real_name'];

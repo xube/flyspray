@@ -35,7 +35,7 @@ while ($row = $db->FetchRow($get_reminders)) {
    FROM  {users}
    WHERE  user_id = ?", array($row['to_user_id']));
 
-   while ($subrow = $db->FetchArray($get_details)) {
+   while ($subrow = $db->FetchRow($get_details)) {
       if (($fs->prefs['user_notify'] == '1' && $subrow['notify_type'] == '1')
       OR ($fs->prefs['user_notify'] == '2'))
       {

@@ -12,7 +12,7 @@ $db->dbOpenFast($conf['database']);
 
 $users = $db->Query('SELECT * FROM {users} ORDER BY user_id ASC');
 
-while ($row = $db->FetchArray($users))
+while ($row = $db->FetchRow($users))
 {
     if (!isset($deleted[$row['user_name']])) {
         $deleted[$row['user_name']] = $row['user_id'];
@@ -25,7 +25,7 @@ while ($row = $db->FetchArray($users))
 
 $users = $db->Query('SELECT * FROM {registrations} ORDER BY reg_id ASC');
 
-while ($row = $db->FetchArray($users))
+while ($row = $db->FetchRow($users))
 {
     if (!isset($deleted[$row['user_name']])) {
         $deleted[$row['user_name']] = $row['reg_id'];

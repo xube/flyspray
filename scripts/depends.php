@@ -86,7 +86,7 @@ $get_edges = $db->Query($sql, array($proj->id));
 $edge_list = array();
 $rvrs_list = array();
 $node_list = array();
-while ($row = $db->FetchArray($get_edges)) {
+while ($row = $db->FetchRow($get_edges)) {
     
     extract($row, EXTR_REFS|EXTR_SKIP);
     $edge_list[$id1][] = $id2;

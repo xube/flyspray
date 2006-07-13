@@ -342,7 +342,7 @@ function statusArray()
     global $db;
     $status_list = array();
     $sql = $db->Query('SELECT status_id, status_name FROM {list_status}');
-    while ($row = $db->FetchArray($sql)) {
+    while ($row = $db->FetchRow($sql)) {
         $status_list[$row[0]] = $row[1];
     }
 
@@ -691,7 +691,7 @@ function closeTask($args)
                                 array($task_id));
 
     // Cycle through the dependencies, checking if any are still open
-    while ($deps_details = $db->FetchArray($check_deps)) {
+    while ($deps_details = $db->FetchRow($check_deps)) {
       if ($deps_details['is_closed'] != '1') {
         $deps_open = 'yes';
       };

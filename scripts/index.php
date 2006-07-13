@@ -225,7 +225,7 @@ foreach ($submits as $key => $db_key) {
                                     FROM  {list_category}
                                    WHERE  category_id = ?',
                                   array($val));
-            $cat_details = $db->FetchArray($result);
+            $cat_details = $db->FetchRow($result);
         
             $result = $db->Query('SELECT  *
                                     FROM  {list_category}

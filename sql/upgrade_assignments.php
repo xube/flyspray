@@ -24,7 +24,7 @@ $check_sql = $db->Query("SELECT task_id, assigned_to
                            FROM {tasks}
                           WHERE assigned_to > '0'");
 
-while ($row = $db->FetchArray($check_sql))
+while ($row = $db->FetchRow($check_sql))
 {
    $db->Query("INSERT INTO {assigned}
                            (task_id, user_id)

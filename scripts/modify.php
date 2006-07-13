@@ -191,7 +191,7 @@ switch (Req::val('action'))
                                           AND task_id = ? AND old_value != '100'
                                  ORDER BY event_date DESC",
                                   array(Get::val('task_id')));
-        $old_percent = $db->FetchArray($old_percent);
+        $old_percent = $db->FetchRow($old_percent);
         
         $db->Query("UPDATE  {tasks}
                        SET  resolution_reason = '0', closure_comment = '0', date_closed = 0,
@@ -342,7 +342,7 @@ switch (Req::val('action'))
         // Check that the user entered the right confirmation code
         $sql = $db->Query("SELECT * FROM {registrations} WHERE magic_url = ?",
                 array(Post::val('magic_url')));
-        $reg_details = $db->FetchArray($sql);
+        $reg_details = $db->FetchRow($sql);
 
         if ($reg_details['confirm_code'] != trim(Post::val('confirmation_code'))) {
             Flyspray::show_error(L('confirmwrong'));
@@ -1326,7 +1326,7 @@ switch (Req::val('action'))
                                 FROM  {admin_requests}
                                WHERE  request_id = ?",
                               array(Req::val('req_id')));
-        $req_details = $db->FetchArray($result);
+        $req_details = $db->FetchRow($result);
 
         // Mark the PM request as 'resolved'
         $db->Query("UPDATE  {admin_requests}
@@ -1403,7 +1403,7 @@ switch (Req::val('action'))
         $result = $db->Query('SELECT  * FROM {dependencies}
                                WHERE  depend_id = ?',
                             array(Get::val('depend_id')));
-        $dep_info = $db->FetchArray($result);
+        $dep_info = $db->FetchRow($result);
 
         $notify->Create(NOTIFY_DEP_REMOVED, $dep_info['task_id'], $dep_info['dep_task_id']);
         $notify->Create(NOTIFY_REV_DEP_REMOVED, $dep_info['dep_task_id'], $dep_info['task_id']);
@@ -1432,7 +1432,7 @@ switch (Req::val('action'))
             break;
         }
 
-        $user_details = $db->FetchArray($sql);
+        $user_details = $db->FetchRow($sql);
         $magic_url    = md5(microtime());
 
         // Insert the random "magic url" into the user's profile

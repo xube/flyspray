@@ -23,7 +23,7 @@ class User
         }
         
         if ($uid > 0 && $db->countRows($sql)) {
-            $this->infos = $db->FetchArray($sql);
+            $this->infos = $db->FetchRow($sql);
             $this->id = intval($uid);
         } else {
             $this->infos['real_name'] = L('anonuser');
@@ -116,7 +116,7 @@ class User
                                        (g.belongs_to_project = '0' OR g.belongs_to_project = ?)",
                                 array($this->id, $proj->id));
 
-            $this->perms = $db->fetchArray($sql);
+            $this->perms = $db->FetchRow($sql);
             
             $this->infos['project_group'] = $this->perms['project_group'];
             unset($this->perms['project_group']);

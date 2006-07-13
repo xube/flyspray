@@ -15,7 +15,7 @@ class Project
                             LEFT JOIN {cache} c ON c.topic = p.project_id AND c.type = 'msg'
                                 WHERE p.project_id = ?", array($id));
             if ($db->countRows($sql)) {
-                $this->prefs = $db->fetchArray($sql);
+                $this->prefs = $db->FetchRow($sql);
                 $this->id    = $id;
                 return;
             }
@@ -154,7 +154,7 @@ class Project
                                 FROM {list_category}
                                WHERE category_name = 'root' AND lft = 1 AND project_id = ?",
                              array($project_id));
-        $row = $db->FetchArray($result);
+        $row = $db->FetchRow($result);
         
         $groupby = $db->GetColumnNames('{list_category}', 'c.category_id', 'c.');
 
@@ -287,10 +287,11 @@ class Project
                                        array($id)
                                      );
     
-      while ($row = $db->FetchArray($get_project_users))
+      while ($row = $db->FetchRow($get_project_users))
       {
-         if (!in_array($row['user_id'], $users) && !in_array($row['user_id'],$excluded))
-               $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
+          if (!in_array($row['user_id'], $excluded)) {
+              $users[$row['user_id']] = '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')';
+          }
       }
     
       // Get the list of global groups that can be assigned tasks
@@ -307,16 +308,15 @@ class Project
                                        );
     
          // Cycle through the global userlist, adding each user to the array
-         while ($row = $db->FetchArray($get_global_users))
+         while ($row = $db->FetchRow($get_global_users))
          {
-            if (!in_array($row['user_id'], $users) && !in_array($row['user_id'],$excluded))
-               $users = $users + array($row['user_id'] => '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')');
+             if (!in_array($row['user_id'], $excluded)) {
+                 $users[$row['user_id']] = '[' . $row['group_name'] . '] ' . $row['real_name'] . ' (' . $row['user_name'] . ')';
+             }
          }
       }
-    
+
       return $users;
-    
-    // End of UserList() function
     }
     /* }}} */
 }

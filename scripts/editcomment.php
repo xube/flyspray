@@ -17,7 +17,7 @@ $sql = $db->Query("SELECT  c.*, u.real_name
                     WHERE  comment_id = ? AND task_id = ?",
                     array(Get::num('id', 0), Get::num('task_id', 0)));
 
-$page->assign('comment', $comment = $db->FetchArray($sql));
+$page->assign('comment', $comment = $db->FetchRow($sql));
 
 if (!$user->can_edit_comment($comment)) {
     Flyspray::Redirect( CreateURL('error') );

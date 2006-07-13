@@ -7,6 +7,9 @@
       <input id="itemsummary" class="text severity{Req::val('task_severity', 2)}" type="text" value="{Req::val('item_summary')}"
         name="item_summary" size="80" maxlength="100" />
     </h2>
+    
+    <table><tr><td id="taskfieldscell"><?php // small layout table ?>
+    
     <div id="taskfields">
       <table>
         <tr>
@@ -103,6 +106,8 @@
         <?php endif; ?>
       </table>
     </div>
+    
+    </td><td>
 
     <div id="taskdetailsfull">
       <h3 class="taskdesc">{L('details')}</h3>
@@ -148,6 +153,9 @@
     </p>
   </form>
   </div>
+  
+  </td></tr></table>
+  
   <div class="clear"></div>
 </div>
 

@@ -24,7 +24,7 @@ $get_users = $db->Query('  SELECT  count(u.user_name) AS anz_u_user,
                         array($searchterm,$searchterm));
 
 
-while ($row = $db->FetchArray($get_users))
+while ($row = $db->FetchRow($get_users))
 {
     if ($row['anz_u_user'] > '0' || $row['anz_r_user'] > '0') {
          $html = 'false|' . L('usernametaken');

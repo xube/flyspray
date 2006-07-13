@@ -27,6 +27,8 @@
 		  - {formatDate($task_details['last_edited_time'], true)}
 		  <?php endif; ?>
 		</div>
+        
+        <table><tr><td id="taskfieldscell"><?php // small layout table ?>
 
 		<div id="taskfields">
 		  <table class="taskdetails">
@@ -142,7 +144,9 @@
             <?php endif; ?>
 		  </table>
 		</div>
-
+        
+        </td><td>
+        
 		<div id="taskdetailsfull">
           <h3 class="taskdesc">{L('details')}</h3>
         <?php $attachments = $proj->listTaskAttachments($task_details['task_id']);
@@ -198,6 +202,9 @@
               <button type="reset">{L('reset')}</button>
           </p>
 		</div>
+        
+        </td></tr></table>
+        
 	 </div>
      <div class="clear"></div>
   </form>

@@ -25,7 +25,7 @@ $get_users = $db->Query('SELECT u.real_name, u.user_name
 
 $html = '<ul class="autocomplete">';
 
-while ($row = $db->FetchArray($get_users))
+while ($row = $db->FetchRow($get_users))
 {
    $html .= '<li title="' . $row['real_name'] . '">' . $row['user_name'] . '</li>';
 }

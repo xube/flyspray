@@ -54,7 +54,7 @@ if (Get::val('getfile')) {
                             FROM  {attachments} a
                       INNER JOIN  {tasks}       t ON a.task_id = t.task_id
                            WHERE  attachment_id = ?", array(Get::val('getfile')));
-    list($task_id, $proj_id, $orig_name, $file_name, $file_type) = $db->FetchArray($result);
+    list($task_id, $proj_id, $orig_name, $file_name, $file_type) = $db->FetchRow($result);
 
     if ($proj_id != $proj->id) {
         // XXX project_id comes from the cookie

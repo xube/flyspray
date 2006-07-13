@@ -23,19 +23,15 @@ if ( !($task_details = $fs->GetTaskDetails($task_id))
 require_once(BASEDIR . '/includes/events.inc.php');
 
 $page->uses('priority_list', 'severity_list', 'task_details');
-$page->assign('priority_list', $priority_list);
-$page->assign('severity_list', $severity_list);
-
-$userlist = $proj->UserList();
 
 // Send user variables to the template
-$page->assign('userlist', $userlist);
 $page->assign('assigned_users', $task_details['assigned_to']);
 $page->assign('old_assigned', implode(' ', $task_details['assigned_to']));
 
 $page->setTitle('FS#' . $task_details['task_id'] . ': ' . $task_details['item_summary']);
 
 if (Req::val('edit') && $user->can_edit_task($task_details)) {
+    $page->assign('userlist', $proj->UserList());
     $page->pushTpl('details.edit.tpl');
 }
 else {
@@ -99,7 +95,7 @@ else {
                             FROM {cache}
                            WHERE topic = ? AND type = 'task'",
                            array($task_details['task_id']));
-    $cached = $db->FetchArray($cached);
+    $cached = $db->FetchRow($cached);
     
     // List of votes
     $get_votes = $db->Query('SELECT u.user_id, u.user_name, u.real_name, v.date_time

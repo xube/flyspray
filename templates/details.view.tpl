@@ -30,6 +30,8 @@
 	 <?php endif; ?>
   </div>
 
+  <table><tr><td id="taskfieldscell"><?php // small layout table ?>
+  
   <div id="taskfields">
 	 <table>
 		<tr>
@@ -180,6 +182,8 @@
 	 </table>
   </div>
 
+  </td><td>
+  
   <div id="taskdetailsfull">
 	 <h3 class="taskdesc">{L('details')}</h3>
      <div id="taskdetailstext">{!$task_text}</div>
@@ -187,6 +191,8 @@
      <?php $attachments = $proj->listTaskAttachments($task_details['task_id']);
            $this->display('common.attachments.tpl', 'attachments', $attachments); ?>
   </div>
+  
+  </td></tr></table>
 
   <div id="taskinfo">
 	 <div id="taskdeps">

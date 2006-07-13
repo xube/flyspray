@@ -19,7 +19,7 @@ $milestones = $db->Query('SELECT   version_id, version_name
                           
 $data = array();
 
-while ($row = $db->FetchArray($milestones)) {
+while ($row = $db->FetchRow($milestones)) {
     // Get all tasks related to a milestone
     $all_tasks = $db->Query('SELECT  percent_complete, is_closed
                              FROM    {tasks}

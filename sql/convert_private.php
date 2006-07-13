@@ -14,7 +14,7 @@ $db->dbOpenFast($conf['database']);
 
 $check_sql = $db->Query('SELECT * FROM {history} WHERE event_type = 26 OR event_type = 27');
 
-while ($row = $db->FetchArray($check_sql))
+while ($row = $db->FetchRow($check_sql))
 {
     $db->Query('DELETE FROM {history} WHERE history_id = ?', array($row['history_id']));
     if ($row['event_type'] == 26) {

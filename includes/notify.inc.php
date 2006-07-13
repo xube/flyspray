@@ -527,7 +527,7 @@ class Notifications {
                                AND task_id = ?
                                ORDER BY comment_id DESC",
                                array($user->id, $task_id), '1');
-         $comment = $db->FetchArray($result);
+         $comment = $db->FetchRow($result);
 
          $body = L('donotreply') . "\n\n";
          $body .= L('notify.commentadded') . "\n\n";
@@ -784,7 +784,7 @@ class Notifications {
                                WHERE n.task_id = ?",
                                array($task_id));
 
-      while ($row = $db->FetchArray($get_users))
+      while ($row = $db->FetchRow($get_users))
       {
          if ($row['user_id'] == $user->id && !$user->infos['notify_own']) {
             continue;
@@ -811,7 +811,7 @@ class Notifications {
                                WHERE a.task_id = ?",
                                array($task_id));
 
-      while ($row = $db->FetchArray($get_users))
+      while ($row = $db->FetchRow($get_users))
       {
          if ($row['user_id'] == $user->id && !$user->infos['notify_own']) {
             continue;

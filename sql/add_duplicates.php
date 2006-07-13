@@ -15,7 +15,7 @@ $db->dbOpenFast($conf['database']);
 
 $check_sql = $db->Query('SELECT task_id, closure_comment, resolution_reason FROM {tasks}');
 
-while ($row = $db->FetchArray($check_sql))
+while ($row = $db->FetchRow($check_sql))
 {
     if ($row['resolution_reason'] == 6) {
         preg_match("/\b(?:FS#|bug )(\d+)\b/", $row['closure_comment'], $dupe_of);
@@ -35,7 +35,7 @@ while ($row = $db->FetchArray($check_sql))
 $check_sql = $db->Query('SELECT this_task, related_task FROM {related} WHERE is_duplicate = 0');
 $deleted = array();
 
-while ($row = $db->FetchArray($check_sql))
+while ($row = $db->FetchRow($check_sql))
 {
     $existing = $db->Query('SELECT related_id FROM {related} WHERE this_task = ? AND related_task = ? AND is_duplicate = 0',
                             array($row['related_task'], $row['this_task']));

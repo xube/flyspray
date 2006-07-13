@@ -609,7 +609,7 @@ class Backend
                                 FROM  {list_category}
                                WHERE  category_id = ?',
                                array($args['product_category']));
-        $cat_details = $db->FetchArray($result);
+        $cat_details = $db->FetchRow($result);
 
         // We need to figure out who is the category owner for this task
         if (!empty($cat_details['category_owner'])) {
@@ -883,7 +883,7 @@ class Backend
 
       $tasklist = array();
 
-      while ($row = $db->FetchArray($search))
+      while ($row = $db->FetchRow($search))
          $tasklist[] = $row['task_id'];
 
       return $tasklist;

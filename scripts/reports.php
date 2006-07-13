@@ -166,7 +166,7 @@ $sql = $db->Query("SELECT COUNT(vote_id) AS num_votes,
                  ORDER BY num_votes DESC");
 
 $tasks_voted_for = array();
-while ($row = $db->FetchArray($sql)) {
+while ($row = $db->FetchRow($sql)) {
     $tasks_voted_for = $tasks_voted_for + array($row['id'] => $row['num_votes']);
 }
 

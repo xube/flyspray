@@ -31,7 +31,7 @@ $get_users = $db->Query("SELECT u.user_id, v.date_time
 $html = '<ul class="reports">';
 
 // Build HTML
-while ($row = $db->FetchArray($get_users))
+while ($row = $db->FetchRow($get_users))
 {
     $html .= '<li>' . formatDate($row['date_time']) . ': ' . tpl_userlink($row['user_id']) . '</li>';
 }

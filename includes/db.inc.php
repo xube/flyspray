@@ -69,50 +69,6 @@ class Database
         return $arr;
     }
 
-    function dbExec($sql, $inputarr=false, $numrows=-1, $offset=-1)
-    {
-        // auto add $dbprefix where we have {table}
-        $sql = $this->_add_prefix($sql);
-        // replace undef values (treated as NULL in SQL database) with empty
-        // strings
-        $inputarr = $this->dbUndefToEmpty($inputarr);
-        //$inputarr = $this->dbMakeSqlSafe($inputarr);
-
-        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-       if($this->dblink->hasTransactions === true) {
-
-            $this->dblink->StartTrans();
-       }
-
-        if (($numrows >= 0 ) or ($offset >= 0 )) {
-            $result =  $this->dblink->SelectLimit($sql, $numrows, $offset, $inputarr);
-        } else {
-
-           $result =  $this->dblink->Execute($sql, $inputarr);
-        }
-
-       if (!$result) {
-
-            if (function_exists("debug_backtrace")) {
-                echo "<pre style='text-align: left;'>";
-                var_dump(debug_backtrace());
-                echo "</pre>";
-            }
-
-            die (sprintf("Query {%s} with params {%s} Failed! (%s)",
-                        $sql, implode(', ', $inputarr),
-                        $this->dblink->ErrorMsg()));
-        }
-
-        if($this->dblink->hasTransactions === true) {
-
-           $this->dblink->CompleteTrans();
-        }
-
-        return $result;
-    }
-
     function CountRows(&$result)
     {
         return (int) $result->RecordCount();
@@ -137,10 +93,47 @@ class Database
         return $tab;
     }
 
-    /* compatibility functions */
-    function Query($sql, $inputarr=false, $numrows=-1, $offset=-1)
+    function Query($sql, $inputarr = false, $numrows = -1, $offset = -1)
     {
-        return $this->dbExec($sql, $inputarr, $numrows, $offset);
+        // auto add $dbprefix where we have {table}
+        $sql = $this->_add_prefix($sql);
+        // replace undef values (treated as NULL in SQL database) with empty
+        // strings
+        $inputarr = $this->dbUndefToEmpty($inputarr);
+
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+        if($this->dblink->hasTransactions === true) {
+
+            $this->dblink->StartTrans();
+        }
+
+        if (($numrows >= 0 ) or ($offset >= 0 )) {
+            $result =  $this->dblink->SelectLimit($sql, $numrows, $offset, $inputarr);
+        } else {
+
+           $result =  $this->dblink->Execute($sql, $inputarr);
+        }
+
+        if (!$result) {
+
+            if (function_exists("debug_backtrace")) {
+                echo "<pre style='text-align: left;'>";
+                var_dump(debug_backtrace());
+                echo "</pre>";
+            }
+
+            die (sprintf("Query {%s} with params {%s} Failed! (%s)",
+                        $sql, implode(', ', $inputarr),
+                        $this->dblink->ErrorMsg()));
+        }
+
+        if($this->dblink->hasTransactions === true) {
+
+           $this->dblink->CompleteTrans();
+        }
+
+        return $result;
     }
 
     function _cached_query($idx, $sql, $sqlargs = array())
@@ -153,14 +146,9 @@ class Database
         return ($this->cache[$idx] = $this->fetchAllArray($sql));
     }
 
-    function FetchArray(&$result)
-    {
-        return $this->FetchRow($result);
-    }
-
     function FetchOne(&$result)
     {
-        $row = $this->FetchArray($result);
+        $row = $this->FetchRow($result);
         return (count($row) ? $row[0] : '');
     }
 

@@ -740,10 +740,12 @@ a.closedtasklink {
 }
 
 div#taskfields {
-	float:left;
-	width:23em;
-	border-right:1px solid #ccc;
 	margin:10px 0 8px 0;
+}
+
+td#taskfieldscell {
+	border-right:1px solid #ccc;
+	padding:0 0.2em;
 }
 
 div#taskfields table {
@@ -760,10 +762,9 @@ tr.votes td, tr.votes th {
 }
 
 div#taskdetailsfull {
-	margin:25px 0 5px 23em;
+	margin:25px 0 5px 0;
 	text-align:left;
 	padding:7px 9px;
-	border-left:1px solid #ccc;
 }
 
 div#taskdetailsfull label {
