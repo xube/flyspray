@@ -766,7 +766,7 @@ switch (Req::val('action'))
         $listposition = Post::val('list_position');
         $listshow     = Post::val('show_in_list');
         $listdelete   = Post::val('delete');
-        $listid       = Post::num('id');
+        $listid       = Post::val('id');
 
         $redirectmessage = L('listupdated');
 
@@ -834,7 +834,7 @@ switch (Req::val('action'))
         $listshow     = Post::val('show_in_list');
         $listtense    = Post::val('version_tense');
         $listdelete   = Post::val('delete');
-        $listid       = Post::num('id');
+        $listid       = Post::val('id');
 
         $redirectmessage = L('listupdated');
 
@@ -895,7 +895,7 @@ switch (Req::val('action'))
         
         $listname     = Post::val('list_name');
         $listshow     = Post::val('show_in_list');
-        $listid       = Post::num('id');
+        $listid       = Post::val('id');
         $listowner    = Post::val('category_owner');
         $listdelete   = Post::val('delete');
 
