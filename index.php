@@ -65,7 +65,8 @@ if (Get::val('getfile')) {
     // Check if file exists, and user permission to access it!
     if (!is_file(BASEDIR . "/attachments/$file_name")) {
         header('HTTP/1.0 404 Not Found');
-        exit('File does not exist anymore.');
+        echo 'File does not exist anymore.';
+        exit();
     }
     
     if ($proj->prefs['others_view'] || $user->perms['view_attachments'])
