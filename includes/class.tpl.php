@@ -283,11 +283,10 @@ function join_attrs($attr = null) {
 function tpl_datepicker($name, $label = '', $value = 0) {
     global $fs, $user;
     
-    if (!ctype_digit($value)) {
-        $value = strtotime($value);
-    }
-    
     if ($value) {
+        if (!ctype_digit($value)) {
+            $value = strtotime($value);
+        }
         $date = date('Y-m-d', $value);
     } else {
         $date = Req::val($name, '');
@@ -296,7 +295,6 @@ function tpl_datepicker($name, $label = '', $value = 0) {
     $page = new FSTpl;
     $page->assign('name', $name);
     $page->assign('date', $date);
-    $page->assign('fs', $fs);
     $page->assign('label', $label);
     $page->assign('dateformat', '%Y-%m-%d');
     $page->display('datepicker.tpl');
