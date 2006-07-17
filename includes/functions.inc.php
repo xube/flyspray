@@ -659,5 +659,16 @@ class Flyspray
             // error handling outsite modify.php
         }
     }
+    
+    function username_to_id($name)
+    {
+        global $db;
+        
+        if (is_numeric($name)) {
+            return $name;
+        } else {
+            return $db->FetchOne($db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($name)));
+        }
+    }
 }
 ?>

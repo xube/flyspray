@@ -22,10 +22,7 @@ class Backend
 
         settype($tasks, 'array');
         
-        if (!is_numeric($user_id)) {
-            $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($user_id));
-            $user_id = $db->FetchOne($sql);
-        }
+        $user_id = Flyspray::username_to_id($user_id);
         
         foreach ($tasks as $key => $task) {
             $tasks[$key] = 't.task_id = ' . $task;
@@ -127,7 +124,7 @@ class Backend
         }
         $where = implode(' OR ', $tasks);
         
-        $sql = $db->Query(" SELECT t.task_id
+        $sql = $db->Query(" SELECT t.*
                               FROM {tasks} t
                          LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
                          LEFT JOIN {groups} g ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
@@ -150,10 +147,10 @@ class Backend
                         array($row['task_id'], $user_id));
             
             if ($db->affectedRows()) {
-                $fs->logEvent($row['task_id'], 19, $user_id, implode(' ', $task['assigned_to']));
+                $fs->logEvent($row['task_id'], 19, $user_id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
                 $notify->Create(NOTIFY_OWNERSHIP, $row['task_id']);
             }
-            
+
             if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
                 $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
                 $fs->logEvent($task_id, 0, 3, 1, 'item_status');
@@ -407,8 +404,7 @@ class Backend
             array($user_name, $fs->cryptPassword($password), $real_name, $jabber_id, $email, $notify_type, time()));
 
         // Get this user's id for the record
-        $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($user_name));
-        $uid = $db->fetchOne($sql);
+        $uid = Flyspray::username_to_id($user_name);
 
         // Now, create a new record in the users_in_groups table
         $db->Query('INSERT INTO  {users_in_groups} (user_id, group_id)
