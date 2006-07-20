@@ -453,12 +453,9 @@ class Flyspray
             case 32:
                 $password = md5($password);
                 break;
-            case 13:
+            default:
                 $password = crypt($password, $auth_details['user_pass']); //using the salt from db
                 break;
-            default:
-                //unknown encryption!?
-                return false;
         }
 
         // Compare the crypted password to the one in the database
