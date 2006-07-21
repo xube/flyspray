@@ -1365,6 +1365,7 @@ div.level4,div.level5 {
 
 /* inline tables */
 table.inline {
+	display:table !important;
 	border-spacing: 0px;
 	border-collapse: collapse;
 }
@@ -1465,6 +1466,7 @@ div.autocomplete {
 	border:1px solid gray;
 	padding: 0px;
 	margin:-1px 0 0;
+	text-align:left;
 }
 
 div.autocomplete ul {

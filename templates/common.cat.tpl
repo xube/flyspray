@@ -28,10 +28,7 @@
               value="{$row['category_name']}" />
           </td>
           <td title="{L('categoryownertip')}">
-            <select id="categoryowner{$countlines}" name="category_owner[]">
-              <option value="">{L('selectowner')}</option>
-              {!tpl_options($proj->UserList(), $row['category_owner'])}
-            </select>
+            {!tpl_userselect('category_owner' . $countlines, $row['category_owner'], 'categoryowner' . $countlines)}
           </td>
           <td title="{L('listshowtip')}">
             {!tpl_checkbox('show_in_list['.$countlines.']', $row['show_in_list'], 'showinlist'.$countlines)}
@@ -69,10 +66,7 @@
             <input id="listnamenew" class="text" type="text" size="15" maxlength="40" name="list_name" />
           </td>
           <td title="{L('categoryownertip')}">
-            <select id="categoryownernew" name="category_owner">
-              <option value="">{L('selectowner')}</option>
-              {!tpl_options($proj->UserList(), Req::val('category_owner'))}
-            </select>
+            {!tpl_userselect('category_owner', Req::val('category_owner'), 'categoryownernew')}
           </td>
           <td title="{L('categoryparenttip')}">
             <label for="parent_id">Parent</label>

@@ -22,9 +22,7 @@
         <tr>
           <td><label for="defaultcatowner">{L('defaultcatowner')}</label></td>
           <td>
-            <select id="defaultcatowner" name="default_cat_owner">
-              {!tpl_options(array(0 => L('noone')) + $proj->UserList(), Req::val('default_cat_owner', $proj->prefs['default_cat_owner']))}
-            </select>
+            {!tpl_userselect('default_cat_owner', Req::val('default_cat_owner', $proj->prefs['default_cat_owner']), 'defaultcatowner')}
           </td>
         </tr>
         <tr>

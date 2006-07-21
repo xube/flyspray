@@ -281,7 +281,7 @@ function join_attrs($attr = null) {
 }
 // {{{ Datepicker
 function tpl_datepicker($name, $label = '', $value = 0) {
-    global $fs, $user;
+    global $user;
     
     if ($value) {
         if (!ctype_digit($value)) {
@@ -300,6 +300,30 @@ function tpl_datepicker($name, $label = '', $value = 0) {
     $page->display('datepicker.tpl');
 }
 // }}}
+// {{{ user selector
+function tpl_userselect($name, $value = null, $id = '') {
+    global $db, $user;
+    
+    if (!$id) {
+        $id = $name;
+    }
+    
+    if ($value && ctype_digit($value)) {
+        $value = $db->FetchOne($db->Query('SELECT user_name FROM {users} WHERE user_id = ?', array($value)));
+    }
+    
+    if (!$value) {
+        $value = '';
+    }
+    
+    $page = new FSTpl;
+    $page->assign('name', $name);
+    $page->assign('id', $id);
+    $page->assign('value', $value);
+    $page->display('common.userselect.tpl');
+}
+// }}}
+
 // {{{ Options for a <select>
 function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null, $remove = null)
 {

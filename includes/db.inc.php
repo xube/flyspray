@@ -129,7 +129,6 @@ class Database
         }
 
         if($this->dblink->hasTransactions === true) {
-
            $this->dblink->CompleteTrans();
         }
 

@@ -125,11 +125,7 @@
       <tr>
         <td><label for="add_user">{L('addusergroup')}</label></td>
         <td>
-            <input class="users text" size="30" type="text" name="uid" id="add_user" />
-            <div class="autocomplete" id="add_user_complete"></div>
-            <script type="text/javascript">
-                new Ajax.Autocompleter('add_user', 'add_user_complete', '{$baseurl}javascript/callbacks/usersearch.php', {})
-            </script>
+            {!tpl_userselect('uid', '', 'add_user')}   
         </td>
       </tr>
       <tr>

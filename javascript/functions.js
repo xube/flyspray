@@ -104,7 +104,24 @@ function addUploadFields(id) {
     el.appendChild(newBox);
   }
 }
-
+function adduserselect(url, textid, selectid, error)
+{
+    var myAjax = new Ajax.Request(url, {method: 'post', parameters: 'id=' + $(textid).value, onComplete:function(originalRequest)
+	{
+        if(originalRequest.responseText) {
+            var user_info = originalRequest.responseText.split('|');
+            opt = new Option(user_info[0], user_info[1]);
+            try {
+                $('r' + selectid).add(opt, null);
+                updateDualSelectValue(selectid);
+            } catch(ex) {
+                return;
+            }
+        } else {
+            alert(error);
+        }
+	}});
+}
 function checkok(url, message, form) {
 
     var myAjax = new Ajax.Request(url, {method: 'get', onComplete:function(originalRequest)
@@ -164,13 +181,17 @@ function dualSelect(from, to, id) {
                 to.add(opt, null);
             }
             catch (ex) {
-                to.add(opt);
+                if (to) to.add(opt);
+            }
+            if (from.options.length > 1) {
+                from.options[i-1].selected = true;
             }
             from.remove(i);
             continue;
         }
         i++;
     }
+    
     updateDualSelectValue(id);
 }
 

@@ -31,7 +31,20 @@ $page->assign('old_assigned', implode(' ', $task_details['assigned_to']));
 $page->setTitle('FS#' . $task_details['task_id'] . ': ' . $task_details['item_summary']);
 
 if (Req::val('edit') && $user->can_edit_task($task_details)) {
-    $page->assign('userlist', $proj->UserList());
+    $result = $db->Query('SELECT u.user_id, u.user_name, u.real_name, g.group_name
+                            FROM {assigned} a, {users} u
+                       LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
+                       LEFT JOIN {groups} g ON g.group_id = uig.group_id
+                           WHERE a.user_id = u.user_id AND task_id = ?
+                        GROUP BY u.user_id
+                        ORDER BY g.group_id ASC',
+                          array($task_id));
+    $userlist = array();
+    while ($row = $db->FetchRow($result)) {
+        $userlist[] = array(0 => $row['user_id'], 1 => "[{$row['group_name']}] {$row['user_name']} ({$row['real_name']})");
+    }
+
+    $page->assign('userlist', $userlist);
     $page->pushTpl('details.edit.tpl');
 }
 else {

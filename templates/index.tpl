@@ -101,25 +101,13 @@
 
         <fieldset><legend>{L('users')}</legend>
         <label class="default multisel" for="opened">{L('openedby')}</label>
-        <input class="users text" size="30" type="text" name="opened" id="opened" value="{Get::val('opened')}" />
-        <div class="autocomplete" id="opened_complete"></div>
-        <script type="text/javascript">
-            new Ajax.Autocompleter('opened', 'opened_complete', 'javascript/callbacks/usersearch.php', {})
-        </script>
+        {!tpl_userselect('opened', Get::val('opened'), 'opened')}
 
         <label class="default multisel" for="dev">{L('assignedto')}</label>
-        <input class="users text" size="30" type="text" name="dev" id="dev" value="{Get::val('dev')}" /> 
-        <div class="autocomplete" id="dev_complete"></div>
-        <script type="text/javascript">
-            new Ajax.Autocompleter('dev', 'dev_complete', 'javascript/callbacks/usersearch.php', {})
-        </script>
+        {!tpl_userselect('dev', Get::val('dev'), 'dev')}
         
         <label class="default multisel" for="closed">{L('closedby')}</label>
-        <input class="users text" size="30" type="text" name="closed" id="closed" value="{Get::val('closed')}" /> 
-        <div class="autocomplete" id="closed_complete"></div>
-        <script type="text/javascript">
-            new Ajax.Autocompleter('closed', 'closed_complete', 'javascript/callbacks/usersearch.php', {})
-        </script>
+        {!tpl_userselect('closed', Get::val('closed'), 'closed')}
 
         </fieldset>
         

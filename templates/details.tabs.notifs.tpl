@@ -11,11 +11,7 @@
   <form action="{$baseurl}#notify" method="get">
     <p>
         <label class="default multisel" for="notif_user_id">{L('addusertolist')}</label>
-        <input class="users text" size="30" type="text" value="{Req::val('user_id')}" name="user_id" id="notif_user_id" /><button type="submit">{L('addtolist')}</button>
-        <div class="autocomplete" id="notif_complete"></div>
-        <script type="text/javascript">
-            new Ajax.Autocompleter('notif_user_id', 'notif_complete', '{$baseurl}/javascript/callbacks/usersearch.php', {})
-        </script>
+        {!tpl_userselect('user_id', Req::val('user_id'), 'notif_user_id')}
         
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="ids" value="{Req::num('id', Req::num('ids'))}" />

@@ -2,7 +2,7 @@
   <form action="{$baseurl}" id="taskeditform" enctype="multipart/form-data" method="post">
 	 <div>
 		<h2 class="summary severity{Req::val('task_severity', $task_details['task_severity'])}">
-		  FS#{$task_details['task_id']} &mdash;
+		  <a href="{CreateUrl('details', $task_details['task_id'])}">FS#{$task_details['task_id']}</a> &mdash;
 		  <input class="text severity{Req::val('task_severity', $task_details['task_severity'])}" type="text"
 			name="item_summary" size="80" maxlength="100"
 			value="{Req::val('item_summary', $task_details['item_summary'])}" />
@@ -63,7 +63,31 @@
 				<a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{L('selectusers')}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
 				<div id="multiuserlist">
-				 {!tpl_double_select('assigned_to', $userlist, explode(' ', Req::val('assigned_to', $old_assigned)), false, false)}
+                
+                <table class="double_select">
+                  <tr>
+                    <td class="c1">
+                      {!tpl_userselect('assigned_select', null, 'assigned_select')}
+                    </td>
+                    <td class="c2">
+                      <button type="button" onmouseup="adduserselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_select', 'assigned_to', '{L('usernotexist')}')">
+                        add &#8594;
+                      </button>
+                      <br /><br />
+                      <button type="button" onmouseup="dualSelect('r', '', 'assigned_to')">
+                         &#8592; del
+                      </button>
+                    </td>
+                    <td class="c3">
+                      
+                      <select size="10" name="rassigned_to" id="rassigned_to">
+                        {!tpl_options($userlist, explode(' ', Req::val('assigned_to', $old_assigned)))}
+                      </select>
+                      <input type="hidden" value="{$old_assigned}" id="vassigned_to" name="assigned_to" />
+                    </td>
+                  </tr>
+                </table>
+                 
                  <button type="button" onclick="hidestuff('multiuserlist')">{L('OK')}</button>
 				</div>
                 <?php else: ?>

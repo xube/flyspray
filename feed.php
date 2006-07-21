@@ -75,7 +75,7 @@ if ($fs->prefs['cache_feeds']) {
 
 /* build a new feed if cache didn't work */
 $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed,
-                           t.last_edited_time, t.opened_by, u.real_name
+                           t.last_edited_time, t.opened_by, u.real_name, u.email_address
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
                INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1'
@@ -127,5 +127,6 @@ if ($fs->prefs['cache_feeds'])
     }
 }
 
+header('Content-Type: application/xml; charset=utf-8');
 echo $content;
 ?>

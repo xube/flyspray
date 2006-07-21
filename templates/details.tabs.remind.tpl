@@ -51,12 +51,7 @@
       <input type="hidden" name="id" value="{Req::num('id')}" />
 
         <label class="default multisel" for="to_user_id">{L('remindthisuser')}</label>
-        <input class="users text" size="30" type="text" value="{Req::val('to_user_id')}" name="to_user_id" id="to_user_id" />
-        <div class="autocomplete" id="to_user_id_complete"></div>
-        <script type="text/javascript">
-            new Ajax.Autocompleter('to_user_id', 'to_user_id_complete', '{$baseurl}/javascript/callbacks/usersearch.php', {})
-        </script>
-
+        {!tpl_userselect('to_user_id', Req::val('to_user_id'), 'to_user_id')}
       <br />
 
       <label for="timeamount1">{L('thisoften')}</label>

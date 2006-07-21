@@ -23,12 +23,9 @@
     <form action="{$baseurl}" method="get">
         <div>
             <label for="edit_user">{L('edituser')}</label>
-            <input class="users text" size="30" type="text" name="uid" id="edit_user" />
+            {!tpl_userselect('user_id', '', 'edit_user')}       
             <button type="submit">{L('edit')}</button>
-            <div class="autocomplete" id="edituser_complete"></div>
-            <script type="text/javascript">
-                new Ajax.Autocompleter('edit_user', 'edituser_complete', '{$baseurl}javascript/callbacks/usersearch.php', {})
-            </script>
+
             <input type="hidden" name="do" value="admin" />
             <input type="hidden" name="area" value="users" />
             <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />

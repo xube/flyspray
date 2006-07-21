@@ -25,11 +25,8 @@ $page->pushTpl('admin.menu.tpl');
 
 switch ($area = Req::val('area', 'prefs')) {
     case 'users':
-        $id = Req::val('user_id');
-        if (!is_numeric($id)) {
-            $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($id));
-            $id = $db->FetchOne($sql);
-        }
+        $id = Flyspray::username_to_id(Req::val('user_id'));
+        
         $theuser = new User($id, $proj);
         if ($theuser->isAnon()) {
             $_SESSION['ERROR'] = L('usernotexist');

@@ -83,7 +83,7 @@ switch (Req::val('action'))
                      WHERE  task_id = ?',
                 array(Post::val('attached_to_project'), Post::val('task_type'),
                     Post::val('item_summary'), Post::val('detailed_desc'),
-                    Post::val('item_status'), ($user->can_change_private($old_details) && Post::val('mark_private')),
+                    Post::val('item_status'), intval($user->can_change_private($old_details) && Post::val('mark_private')),
                     Post::val('product_category'), Post::val('closedby_version', 0),
                     Post::val('operating_system'), Post::val('task_severity'),
                     Post::val('task_priority'), intval($user->id), $time, $due_date,
@@ -569,7 +569,7 @@ switch (Req::val('action'))
             break;
         }
 
-        $cols = array( 'project_title', 'theme_style', 'default_cat_owner', 'lang_code',
+        $cols = array( 'project_title', 'theme_style', 'lang_code',
                 'intro_message', 'project_is_active', 'others_view', 'anon_open',
                 'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
                 'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign');
@@ -578,6 +578,8 @@ switch (Req::val('action'))
         $args[] = implode(' ', Post::val('notify_types'));
         $cols[] = 'last_updated';
         $args[] = time();
+        $cols[] = 'default_cat_owner';
+        $args[] =  Flyspray::username_to_id(Post::val('default_cat_owner'));
         $args[] = Post::val('project_id', 0);
 
         $update = $db->Query("UPDATE  {projects}
@@ -698,10 +700,7 @@ switch (Req::val('action'))
         if ($uid = Post::val('uid')) {
             $uids = preg_split('/[\s,;]+/', $uid, -1, PREG_SPLIT_NO_EMPTY);
             foreach ($uids as $uid) {
-                if (!is_numeric($uid)) {
-                    $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($uid));
-                    $uid = $db->FetchOne($sql);
-                }
+                $uid = Flyspray::username_to_id($uid);
                 
                 // If user is already a member of one of the project's groups, **move** (not add) him to the new group
                 $sql = $db->Query('SELECT g.group_id
@@ -896,18 +895,17 @@ switch (Req::val('action'))
         $listname     = Post::val('list_name');
         $listshow     = Post::val('show_in_list');
         $listid       = Post::val('id');
-        $listowner    = Post::val('category_owner');
         $listdelete   = Post::val('delete');
 
         $redirectmessage = L('listupdated');
 
         for ($i = 0; $i < count($listname); $i++) {
             if ($listname[$i] != '') {
-                $update = $db->Query("UPDATE  {list_category}
+                $update = $db->Query('UPDATE  {list_category}
                                          SET  category_name = ?,
                                               show_in_list = ?, category_owner = ?
-                                       WHERE  category_id = ?",
-                                  array($listname[$i], intval($listshow[$i]), intval($listowner[$i]), $listid[$i]));
+                                       WHERE  category_id = ?',
+                                  array($listname[$i], intval($listshow[$i]), Flyspray::username_to_id(Post::val('category_owner' . $i)), $listid[$i]));
             } else {
                 $redirectmessage = L('listupdated') . ' ' . L('fieldsmissing');
             }
@@ -946,7 +944,7 @@ switch (Req::val('action'))
                                  ( project_id, category_name, show_in_list, category_owner, lft, rgt )
                          VALUES  (?, ?, 1, ?, ?, ?)",
                 array(Post::val('project_id', 0), Post::val('list_name'),
-                      Post::val('category_owner', 0) == '' ? '0' : Post::val('category_owner', 0), $right, $right+1));
+                      Post::val('category_owner', 0) == '' ? '0' : Flyspray::username_to_id(Post::val('category_owner', 0)), $right, $right+1));
 
         $_SESSION['SUCCESS'] = L('listitemadded');
         Flyspray::Redirect(Post::val('prev_page'));
@@ -1037,7 +1035,7 @@ switch (Req::val('action'))
         }
         
         $_SESSION['SUCCESS'] = L('notifyadded');
-        Flyspray::Redirect(CreateURL('details', Req::val('id')) . '#notify');
+        Flyspray::Redirect(CreateURL('details', Req::val('ids')) . '#notify');
         break;
 
     // ##################
@@ -1143,11 +1141,7 @@ switch (Req::val('action'))
         $how_often  = Post::val('timeamount1', 1) * Post::val('timetype1');
         $start_time = strtotime(Post::val('timeamount2', 0));
         
-        $id = Post::val('to_user_id');
-        if (!is_numeric($id)) {
-            $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($id));
-            $id = $db->FetchOne($sql);
-        }
+        $id = Flyspray::username_to_id(Post::val('to_user_id'));
         
         if (!$id) {
             Flyspray::show_error(L('usernotexist'));

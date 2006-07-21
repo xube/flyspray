@@ -169,7 +169,7 @@
             
               <?php if (!$watched): ?>
               <a accesskey="w"
-              href="{$baseurl}?do=modify&amp;action=add_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
+              href="{$baseurl}?do=modify&amp;action=details.add_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
               ({L('watchtask')})</a>
               <?php else: ?>
               <a accesskey="w"
