@@ -114,7 +114,7 @@
       <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>
       <?php endif; ?>
-      {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'), Req::val('detailed_desc'))}
+      {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'), Req::val('detailed_desc', $proj->prefs['default_task']))}
       <?php if ($user->perms['create_attachments']): ?>
       <div id="uploadfilebox">
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>

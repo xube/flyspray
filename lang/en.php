@@ -748,6 +748,7 @@ Regards,',
 'missingrequired'         => 'You did not fill in all required fields.',
 'entervalidusername'      => 'Please enter a valid user and real name.',
 'couldnotaddusernotif'    => 'Could not add this user to the notification list.',
+'defaulttask'             => 'Default task description',
 ); 
 
 ?>

@@ -388,3 +388,6 @@ ALTER TABLE `flyspray_tasks` CHANGE `detailed_desc` `detailed_desc` TEXT NOT NUL
 
 -- Florian Schmitz, 11 July 2006
 INSERT INTO flyspray_prefs (pref_id, pref_name, pref_value, pref_desc) VALUES (26, 'page_title', 'Flyspray:: ', 'The title of the whole page');
+
+-- Florian Schmitz, 22 July 2006
+ALTER TABLE `flyspray_projects` ADD `default_task` TEXT NOT NULL;
