@@ -731,38 +731,38 @@ class Notifications {
    // {{{ Create an address list for specific users
    function SpecificAddresses($users, $ignoretype = false)
    {
-      global $db, $fs;
+        global $db, $fs, $user;
 
-      $jabber_users = array();
-      $email_users = array();
-      settype($users, 'array');
+        $jabber_users = array();
+        $email_users = array();
+        settype($users, 'array');
+        
+        $sql = $db->Query('SELECT *
+                           FROM {users}
+                          WHERE' . substr(str_repeat(' user_id = ? OR ', count($users)), 0, -3),
+                          $users);
+                         
+        while ($user_details = $db->FetchRow($sql))
+        {
+            if ($user_details['user_id'] == $user->id && !$user->infos['notify_own']) {
+                continue;
+            }
+            
+            if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == NOTIFY_EMAIL || $user_details['notify_type'] == NOTIFY_BOTH) )
+                || $fs->prefs['user_notify'] == '2' || $ignoretype)
+            {
+                array_push($email_users, $user_details['email_address']);
 
-      foreach ($users AS $key => $val)
-      {
-        // Get each user's notify prefs
-        if (is_array($val)) {
-            $user_details = $val;
-        } else {
-            $user_details = $fs->getUserDetails($val);
+            }
+
+            if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == NOTIFY_JABBER || $user_details['notify_type'] == NOTIFY_BOTH) )
+                || $fs->prefs['user_notify'] == '3' || $ignoretype)
+            {
+                array_push($jabber_users, $user_details['jabber_id']);
+            }
         }
 
-         if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == NOTIFY_EMAIL || $user_details['notify_type'] == NOTIFY_BOTH) )
-             || $fs->prefs['user_notify'] == '2' || $ignoretype)
-         {
-               array_push($email_users, $user_details['email_address']);
-
-         }
-         
-         if ( ($fs->prefs['user_notify'] == '1' && ($user_details['notify_type'] == NOTIFY_JABBER || $user_details['notify_type'] == NOTIFY_BOTH) )
-             || $fs->prefs['user_notify'] == '3' || $ignoretype)
-         {
-               array_push($jabber_users, $user_details['jabber_id']);
-         }
-
-
-      }
-
-      return array($email_users, $jabber_users);
+        return array($email_users, $jabber_users);
 
    } // }}}
    // {{{ Create a standard address list of users (assignees, notif tab and proj addresses)

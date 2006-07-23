@@ -1435,7 +1435,7 @@ switch (Req::val('action'))
                      WHERE user_id = ?',
                 array($magic_url, $user_details['user_id']));
 
-        $notify->Create(NOTIFY_PW_CHANGE, null, array($baseurl, $magic_url), $notify->SpecificAddresses(array($user_details), true));
+        $notify->Create(NOTIFY_PW_CHANGE, null, array($baseurl, $magic_url), $notify->SpecificAddresses(array($user_details['user_id']), true));
 
         $_SESSION['SUCCESS'] = L('magicurlsent');
         Flyspray::Redirect('./');

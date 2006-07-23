@@ -220,7 +220,9 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $text = 'FS#'.$task['task_id'].' - '.$summary;
     }
     
-    $params = array('histring' => Get::val('string'));
+    if (Get::val('string')) {
+        $params = array('histring' => Get::val('string'));
+    }
     if (Get::val('pagenum')) {
         $params['pagenum'] = Get::val('pagenum');
     }
