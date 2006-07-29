@@ -14,16 +14,15 @@ if (Req::val('action') == 'logout') {
     Flyspray::Redirect($baseurl);
 }
 
-if (Req::has('user_name') && Req::has('password')) {
+if (Req::val('user_name') && Req::val('password')) {
     // Otherwise, they requested login.  See if they provided the correct credentials...
     $username = Req::val('user_name');
     $password = Req::val('password');
 
     // Run the username and password through the login checker
     if (!($user_id = $fs->checkLogin($username, $password))) {
-        $_SESSION['ERROR'] = L('loginfailed');
         $_SESSION['failed_login'] = Req::val('user_name');
-        Flyspray::Redirect(Req::val('prev_page'));
+        Flyspray::show_error(7);
     }
     else {
         // Determine if the user should be remembered on this machine
@@ -48,7 +47,7 @@ if (Req::has('user_name') && Req::has('password')) {
 }
 else {
     // If the user didn't provide both a username and a password, show this error:
-    $_SESSION['ERROR'] = L('loginfailed') . ' - ' . L('userandpass');
+    Flyspray::show_error(8);
 }
 Flyspray::Redirect(Req::val('prev_page'));
 ?>

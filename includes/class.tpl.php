@@ -641,7 +641,6 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 
             case 'editgroup': $return = $url . $arg2 . '/' . $type . '/' . $arg1; break;
 
-            case 'error':
             case 'logout':
             case 'lostpw':
             case 'myprofile':
@@ -676,7 +675,6 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 
             case 'editgroup': $return = $baseurl . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1; break;
 
-            case 'error':
             case 'lostpw':
             case 'myprofile':
             case 'newuser':

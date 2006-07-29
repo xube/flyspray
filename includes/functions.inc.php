@@ -650,14 +650,16 @@ class Flyspray
     
     function show_error($error_message)
     {
-        global $modes, $do;
+        global $modes, $do, $baseurl;
         
         if ($do == 'modify') {
             $_SESSION['ERROR'] = $error_message;
 
             $do = Filters::enum(reset(explode('.', Req::val('action'))), $modes);
         } else {
-            // error handling outsite modify.php
+            // $error_message is an error code (integer)!
+            $_SESSION['ERROR'] = L('error#') . $error_message . ': ' . L('error' . $error_message);
+            Flyspray::Redirect($baseurl);
         }
     }
     

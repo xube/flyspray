@@ -17,7 +17,7 @@ $task_id = Req::num('id', Req::num('task_id'));
 if ( !($task_details = $fs->GetTaskDetails($task_id))
         || !$user->can_view_task($task_details))
 {
-    Flyspray::Redirect( CreateURL('error', null) );
+    Flyspray::show_error(10);
 }
 
 require_once(BASEDIR . '/includes/events.inc.php');

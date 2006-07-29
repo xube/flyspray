@@ -10,8 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->can_open_task($proj)) {
-    $_SESSION['ERROR'] = L('nopermsaddtask');
-    Flyspray::Redirect( CreateURL('project', $proj->id) );
+    Flyspray::show_error(15);
 }
 
 $page->uses('severity_list', 'priority_list');

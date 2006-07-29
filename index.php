@@ -84,7 +84,7 @@ if (Get::val('getfile')) {
         exit();
     }
     else {
-        Flyspray::Redirect( CreateURL('error', null) );
+        Flyspray::show_error(1);
     }
     exit;
 }
@@ -123,8 +123,7 @@ if ($show_task = Get::val('show_task')) {
 
 if ($fs->requestDuplicated()) {
     // Check that this page isn't being submitted twice
-    $_SESSION['ERROR'] = L('duplicated');
-    Flyspray::Redirect( '?id='.$proj->id );
+    Flyspray::show_error(3);
 }
 
 if ($user->perms['manage_project']) {

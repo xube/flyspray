@@ -59,7 +59,7 @@ if (Post::val('action') == 'movetogroup') {
     $old_pr = $db->FetchOne($sql);
     $new_pr = $db->FetchOne($sql);
     if ($new_pr !== $old_pr && $new_pr) {
-        Flyspray::Redirect(CreateURL('error'));
+        Flyspray::show_error(2);
     }
     $project_id = $new_pr;
 }

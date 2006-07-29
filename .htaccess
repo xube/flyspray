@@ -40,5 +40,4 @@ RewriteRule ^toplevel$ index.php?do=toplevel [L,QSA]
 RewriteRule ^toplevel/proj([0-9]+)$ index.php?do=toplevel&project=$1 [L,QSA]
 RewriteRule ^proj([0-9]+)$ index.php?project=$1 [L,QSA]
 
-RewriteRule ^error$ index.php?do=error [L,QSA]
 </IfModule>

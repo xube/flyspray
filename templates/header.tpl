@@ -37,9 +37,9 @@
   </head>
   <body onload="perms = new Perms('permissions');<?php
         if (!empty($_SESSION['SUCCESS'])):
-        ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)', 5000);<?php
+        ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)', 6000);<?php
         elseif (!empty($_SESSION['ERROR'])):
-        ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)', 5000);<?php endif ?>">
+        ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)', 6000);<?php endif ?>">
   
   <div id="container">
     <!-- Remove this to remove the logo -->

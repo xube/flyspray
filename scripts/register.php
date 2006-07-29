@@ -21,7 +21,7 @@ if (Req::has('magic_url')) {
                       array(Get::val('magic_url')));
 
     if (!$db->CountRows($sql)) {
-        Flyspray::Redirect(CreateURL('error'));
+        Flyspray::show_error(18);
     }
 
     $page->pushTpl('register.magic.tpl');

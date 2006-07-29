@@ -14,7 +14,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->perms['is_admin']) {
-    Flyspray::Redirect( CreateURL('error', null) );
+    Flyspray::show_error(4);
 }
 
 $old_project = $proj->id;
@@ -29,8 +29,7 @@ switch ($area = Req::val('area', 'prefs')) {
         
         $theuser = new User($id, $proj);
         if ($theuser->isAnon()) {
-            $_SESSION['ERROR'] = L('usernotexist');
-            Flyspray::Redirect(Req::val('prev_page', $baseurl));
+            Flyspray::show_error(5);
         }
         $page->assign('theuser', $theuser);
     case 'cat':
@@ -50,7 +49,7 @@ switch ($area = Req::val('area', 'prefs')) {
         break;
 
     default:
-        Flyspray::Redirect( CreateURL('error', null) );
+        Flyspray::show_error(6);
 }
 
 ?>

@@ -19,7 +19,7 @@ $id = Flyspray::username_to_id(Get::val('id', Get::val('uid')));
 
 $theuser = new User($id, $proj);
 if ($theuser->isAnon()) {
-    Flyspray::Redirect(CreateURL('error'));
+    Flyspray::show_error(19);
 }
 
 // Some possibly interesting information about the user

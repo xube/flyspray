@@ -12,7 +12,7 @@ if(!defined('IN_FS')) {
 if ( !($task_details = $fs->GetTaskDetails(Req::num('id')))
         || !$user->can_view_task($task_details))
 {
-    Flyspray::Redirect( CreateURL('error', null) );
+    Flyspray::show_error(9);
 }
 
 // Configuration information:

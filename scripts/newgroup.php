@@ -11,7 +11,7 @@ if(!defined('IN_FS')) {
 }
 
 if (!$user->can_create_group()) {
-    Flyspray::Redirect(CreateURL('error'));
+    Flyspray::show_error(14);
 }
 
 if (Req::val('project')) {

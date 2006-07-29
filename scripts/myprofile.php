@@ -10,7 +10,7 @@ if(!defined('IN_FS')) {
 }
 
 if ($user->isAnon()) {
-    Flyspray::Redirect(CreateURL('error'));
+    Flyspray::show_error(13);
 }
 
 $page->assign('groups', $fs->ListGroups());
