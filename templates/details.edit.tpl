@@ -60,7 +60,7 @@
 			 <td><label>{L('assignedto')}</label></td>
 			 <td>
                 <?php if ($user->perms['edit_assignments']): ?>
-				<a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
+				<a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');fill_userselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
 				<div id="multiuserlist" class="popup">
                 
@@ -70,7 +70,7 @@
                       {!tpl_userselect('assigned_select', null, 'assigned_select')}
                     </td>
                     <td class="c2">
-                      <button type="button" onmouseup="adduserselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_select', 'assigned_to', '{L('usernotexist')}')">
+                      <button type="button" onmouseup="adduserselect('{$baseurl}javascript/callbacks/useradd.php', $('assigned_select').value, 'assigned_to', '{L('usernotexist')}')">
                         add &#8594;
                       </button>
                       <br /><br />

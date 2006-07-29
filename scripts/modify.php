@@ -70,6 +70,7 @@ switch (Req::val('action'))
 
         if ($due_date = Post::val('due_date', 0)) {
             $due_date = strtotime(Post::val('due_date') . '+23 hours 59 minutes 59 seconds');
+            $be->add_reminder(Post::val('task_id'), L('defaultreminder') . "\n\n" . CreateURL('details', Post::val('task_id')), 2*24*60*60, time());
         }
 
         $time = time();
@@ -101,10 +102,7 @@ switch (Req::val('action'))
             // Convert assigned_to and store them in the 'assigned' table
             foreach (Flyspray::int_explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
             {
-                $db->Query('INSERT INTO {assigned}
-                                      (task_id, user_id)
-                               VALUES (?,?)',
-                           array(Post::val('task_id'), $val));
+                $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> Post::val('task_id')), array('user_id','task_id'));
             }
          }
 
@@ -142,7 +140,7 @@ switch (Req::val('action'))
             if (Post::val('assigned_to') != '') {
                 $new_assignees = array_diff(Flyspray::int_explode(' ', Post::val('assigned_to')), Flyspray::int_explode(' ', Post::val('old_assigned')));
                 // Remove current user from notification list
-                if (!$user->prefs['notify_own']) {
+                if (!$user->infos['notify_own']) {
                     $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
                 }
                 $notify->Create(NOTIFY_NEW_ASSIGNEE, Post::val('task_id'), null, $notify->SpecificAddresses($new_assignees));
@@ -1133,30 +1131,15 @@ switch (Req::val('action'))
     // ##################
     // adding a reminder
     // ##################
-    case 'details.addreminder':
-        if (!$user->perms['manage_project']) {
-            break;
-        }
-        
+    case 'details.addreminder':        
         $how_often  = Post::val('timeamount1', 1) * Post::val('timetype1');
         $start_time = strtotime(Post::val('timeamount2', 0));
         
-        $id = Flyspray::username_to_id(Post::val('to_user_id'));
-        
-        if (!$id) {
+        if (!$be->add_reminder(Post::val('id'), Post::val('reminder_message'), $how_often, $start_time, Post::val('to_user_id'))) {
             Flyspray::show_error(L('usernotexist'));
             break;
         }
         
-        $db->Query("INSERT INTO  {reminders}
-                                 ( task_id, to_user_id, from_user_id,
-                                   start_time, how_often, reminder_message )
-                         VALUES  (?,?,?,?,?,?)",
-                array(Post::val('id'), $id, $user->id,
-                    $start_time, $how_often, Post::val('reminder_message')));
-
-        $fs->logEvent(Post::val('id'), 17, $id);
-
         $_SESSION['SUCCESS'] = L('reminderaddedmsg');
         Flyspray::Redirect(CreateURL('details', Req::val('id')).'#remind');
         break;

@@ -737,10 +737,14 @@ class Notifications {
         $email_users = array();
         settype($users, 'array');
         
+        if (!count($users)) {
+            return;
+        }
+
         $sql = $db->Query('SELECT *
-                           FROM {users}
-                          WHERE' . substr(str_repeat(' user_id = ? OR ', count($users)), 0, -3),
-                          $users);
+                             FROM {users}
+                            WHERE' . substr(str_repeat(' user_id = ? OR ', count($users)), 0, -3),
+                           array_values($users));
                          
         while ($user_details = $db->FetchRow($sql))
         {

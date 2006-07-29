@@ -44,7 +44,7 @@
           </td>
           <td>
             <?php if ($user->perms['modify_all_tasks']): ?>
-            <a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
+            <a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');fill_userselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
             <div id="multiuserlist" class="popup">
             
             <table class="double_select">
@@ -53,7 +53,7 @@
                   {!tpl_userselect('assigned_select', null, 'assigned_select')}
                 </td>
                 <td class="c2">
-                  <button type="button" onmouseup="adduserselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_select', 'assigned_to', '{L('usernotexist')}')">
+                  <button type="button" onmouseup="adduserselect('{$baseurl}javascript/callbacks/useradd.php', $('assigned_select').value, 'assigned_to', '{L('usernotexist')}')">
                     add &#8594;
                   </button>
                   <br /><br />

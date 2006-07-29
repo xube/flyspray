@@ -189,13 +189,10 @@ class Backend
                           GROUP BY t.task_id", array($user, intval($do), $user));
 
         while ($row = $db->FetchRow($sql)) {
-           $db->Query("INSERT INTO {assigned}
-                                   (task_id, user_id)
-                            VALUES (?,?)",
-                                   array($row['task_id'], $user));
+            $db->Replace('{assigned}', array('user_id'=> $user, 'task_id'=> $row['task_id']), array('user_id','task_id'));
 
             if ($db->affectedRows()) {
-                $fs->logEvent($row['task_id'], 29, $user, implode(' ', $task['assigned_to']));
+                $fs->logEvent($row['task_id'], 29, $user, implode(' ', $fs->GetAssignees($row['task_id'])));
                 $notify->Create(NOTIFY_ADDED_ASSIGNEES, $row['task_id']);
             }
             
@@ -491,6 +488,35 @@ class Backend
         }
         
     }
+    
+    function add_reminder($task_id, $message, $how_often, $start_time, $user_id = null)
+    {
+        global $user, $db, $fs;
+        if (!$user->perms['manage_project']) {
+            break;
+        }
+        
+        if (is_null($user_id)) {
+            // Get all users assigned to a task
+            $user_id = $fs->GetAssignees($task_id);
+        } else {
+            $user_id = array(Flyspray::username_to_id($user_id));
+            if (!reset($user_id)) {
+                return false;
+            }
+        }
+
+        foreach ($user_id as $id) {
+            $db->Replace('{reminders}',
+                         array('task_id'=> $task_id, 'to_user_id'=> $id,
+                               'from_user_id' => $user->id, 'start_time' => $start_time,
+                               'how_often' => $how_often, 'reminder_message' => $message),
+                        array('task_id', 'to_user_id', 'how_often', 'reminder_message'));
+        }
+
+        $fs->logEvent(Post::val('id'), 17, $task_id);
+        return true;
+    }
 
    /* This function creates a new task.  Due to the nature of lists
       being specified in the database, we can't really accept default
@@ -564,10 +590,9 @@ class Backend
         $result = $db->Query('SELECT  max(task_id)+1
                                 FROM  {tasks}');
         $task_id = $db->FetchOne($result);
-        if (!$task_id)
-        {
+        if (!$task_id) {
             $task_id = 1;
-        }        
+        }
                             
         $result = $db->Query("INSERT INTO  {tasks}
                                  ( task_id, date_opened, last_edited_time,
@@ -582,10 +607,7 @@ class Backend
             // Convert assigned_to and store them in the 'assigned' table
             foreach (Flyspray::int_explode(' ', trim($args['assigned_to'])) as $key => $val)
             {
-                $db->Query('INSERT INTO {assigned}
-                                        (task_id, user_id)
-                                 VALUES (?,?)',
-                            array($task_id, $val));
+                $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task_id), array('user_id','task_id'));
             }
             // Log to task history
             $fs->logEvent($task_id, 14, trim($args['assigned_to']));
@@ -638,6 +660,11 @@ class Backend
             $this->AddToNotifyList($owner, array($task_id), true);
         }
 
+        // Reminder for due_date field
+        if ($due_date) {
+            $this->add_reminder($task_id, L('defaultreminder') . "\n\n" . CreateURL('details', $task_id), 2*24*60*60, time());
+        }
+        
         // Create the Notification
         $notify->Create(NOTIFY_TASK_OPENED, $task_id);
 
@@ -649,7 +676,7 @@ class Backend
         if ($user->isAnon()) {
             $notify->Create(NOTIFY_ANON_TASK, $task_id, null, $args['anon_email']);
         }
-        
+
         return $task_id;
    }
    
