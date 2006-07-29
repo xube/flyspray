@@ -4,6 +4,7 @@
 // So, include the headerfile to set up database access etc
 
 define('IN_FS', true);
+define('IN_FEED', true);
 
 require_once(dirname(__FILE__).'/header.php');
 require_once(dirname(__FILE__).'/includes/class.tpl.php');

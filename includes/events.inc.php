@@ -65,7 +65,12 @@ function event_description($history) {
     $old_value = $history['old_value'];
 
     switch($history['event_type']) {
-    case '0':  //Field changed
+    case '3':  //Field changed
+            if (!$new_value && !$old_value) {
+                $return .= L('taskedited');
+                break;
+            }
+        
             $field = $history['field_changed'];
             switch ($field) {
                 case 'item_summary':
@@ -143,9 +148,6 @@ function event_description($history) {
             }
             $return .= ')';
             break;
-    case '3':      //Task edited
-            $return .= L('taskedited');
-            break;
     case '4':      //Comment added
             $return .= '<a href="#comments">' . L('commentadded') . '</a>';
             break;
@@ -190,7 +192,7 @@ function event_description($history) {
     case '11':  //Related task added
             $return .= L('relatedadded') . ': ' . tpl_tasklink($new_value);
             break;
-    case '12':          //Related task deleted
+    case '12':  //Related task deleted
             $return .= L('relateddeleted') . ': ' . tpl_tasklink($new_value);
             break;
     case '13':  //Task reopened
@@ -210,12 +212,6 @@ function event_description($history) {
                  $return .= L('taskreassigned').' ';
                  $return .= implode(', ', $users);
             }
-            break;
-    case '15': //Task added to related list of another task
-            $return .= L('addedasrelated') . ' ' . tpl_tasklink($new_value);
-            break;
-    case '16': //Task deleted from related list of another task
-            $return .= L('deletedasrelated') . ' ' . tpl_tasklink($new_value);
             break;
     case '17': //Reminder added
             $return .= L('reminderadded') . ': ' . tpl_userlink($new_value);

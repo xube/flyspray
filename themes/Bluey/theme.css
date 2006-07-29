@@ -82,6 +82,10 @@ h2 {
 	font-size:150%;
 }
 
+div.admin h2 {
+	margin-left:0.5em;
+}
+
 /* the main title; h1 alone is also used in the popup windows. */
 h1#title a {
 	display:block;
@@ -154,7 +158,7 @@ div#taskdetailsfull label, td label {
 	white-space:nowrap;
 }
 
-div#events td label, div#users td label {
+fieldset#events td label, div#users td label {
 	display:inline;
 	text-align:left;
 	margin-right:0;
@@ -393,6 +397,10 @@ ul#menu-list li.last, ul#pm-menu-list li.last {
 	background-image:url(menu/kmenuedit.png);
 }
 
+#toplevellink {
+	background-image:url(menu/folder_home.png);
+}
+
 #optionslink {
 	background-image:url(menu/options.png);
 }
@@ -558,8 +566,9 @@ table#duplicate_tasks {
 /* div#content is a generic container for anything but the title and
 the footer paragraph */
 div#content {
-	margin:5px;
-	padding:5px;
+	margin:0 5px;
+	padding:0 5px;
+	border:solid 1px transparent;
 }
 
 /* Powered by Flyspray */
@@ -782,10 +791,7 @@ div#taskinfo {
 }
 
 div#taskstatus {
-
 	border-bottom:1px solid #ccc;
-
-
 	padding:4px;
 	margin-bottom:5px;
 }
@@ -860,26 +866,24 @@ div.groupedit {
 }
 
 div#closeform {
-	position:absolute;
-	background-color:#e6eef6;
-	color:#000;
-	border:2px ridge #000;
 	margin-top:10px;
 	width:300px;
 	height:auto;
-	padding:5px 30px 5px 5px;
 }
 
 div#multiuserlist {
+	width:42em;
+	text-align:right;
+}
+
+div.popup {
 	position:absolute;
 	background-color:#e6eef6;
 	color:#000;
 	border:2px ridge #000;
 	margin-top:5px;
 	display:none;
-	width:42em;
 	padding:5px 30px 5px 5px;
-	text-align:right;
 }
 
 div#multiuserlist .double_select td.c2 {
@@ -1303,16 +1307,8 @@ div.comment {
 	padding:0.5em;
 }
 
-div#events {
-	padding:0.7em;
-}
-
-div#events div#tasklist {
+fieldset#events div#tasklist {
 	margin-top:1em;
-}
-
-div#events #event1 {
-	float:left;
 }
 
 div#updatemsg {

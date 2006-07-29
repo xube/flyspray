@@ -86,7 +86,7 @@ switch (Req::val('action'))
                     Post::val('item_status'), intval($user->can_change_private($old_details) && Post::val('mark_private')),
                     Post::val('product_category'), Post::val('closedby_version', 0),
                     Post::val('operating_system'), Post::val('task_severity'),
-                    Post::val('task_priority'), intval($user->id), $time, $due_date,
+                    Post::val('task_priority'), intval($user->id), $time, intval($due_date),
                     Post::val('percent_complete'), Post::val('reportedver'),
                     Post::val('task_id')));
 
@@ -125,7 +125,7 @@ switch (Req::val('action'))
             
             if ($val != $old_details[$key]) {
                 // Log the changed fields in the task history
-                $fs->logEvent(Post::val('task_id'), 0, $val, $old_details[$key], $key, $time);
+                $fs->logEvent(Post::val('task_id'), 3, $val, $old_details[$key], $key, $time);
             }
         }
         
@@ -199,7 +199,7 @@ switch (Req::val('action'))
                      WHERE  task_id = ?",
                     array(time(), $user->id, $old_percent['old_value'], Get::val('task_id')));
         
-        $fs->logEvent(Get::val('task_id'), '0', $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
+        $fs->logEvent(Get::val('task_id'), 3, $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
 
         $notify->Create(NOTIFY_TASK_REOPENED, Get::val('task_id'));
 
@@ -569,7 +569,7 @@ switch (Req::val('action'))
             break;
         }
 
-        $cols = array( 'project_title', 'theme_style', 'lang_code', 'default_task',
+        $cols = array( 'project_title', 'theme_style', 'lang_code', 'default_task', 'default_entry',
                 'intro_message', 'project_is_active', 'others_view', 'anon_open',
                 'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
                 'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign');
@@ -984,7 +984,7 @@ switch (Req::val('action'))
                 array(Post::val('id'), Post::val('related_task')));
 
         $fs->logEvent(Post::val('id'), 11, Post::val('related_task'));
-        $fs->logEvent(Post::val('related_task'), 15, Post::val('id'));
+        $fs->logEvent(Post::val('related_task'), 11, Post::val('id'));
 
         $notify->Create(NOTIFY_REL_ADDED, Post::val('id'), Post::val('related_task'));
 
@@ -1005,7 +1005,7 @@ switch (Req::val('action'))
                        array($related, Post::num('id'), Post::num('id')));
             if ($db->AffectedRows()) {
                 $fs->logEvent(Post::num('id'), 12, $related);
-                $fs->logEvent($related, 16, Post::num('id'));
+                $fs->logEvent($related, 12, Post::num('id'));
                 $_SESSION['SUCCESS'] = L('relatedremoved');
             }
         }
@@ -1476,7 +1476,7 @@ switch (Req::val('action'))
         $db->Query("UPDATE  {tasks} SET mark_private = '1'
                  WHERE  task_id = ?", array(Req::num('id')));
 
-        $fs->logEvent(Get::num('id'), 0, 1, 0, 'mark_private');
+        $fs->logEvent(Get::num('id'), 3, 1, 0, 'mark_private');
 
         $_SESSION['SUCCESS'] = L('taskmadeprivatemsg');
         Flyspray::Redirect(CreateURL('details', Req::num('id')));
@@ -1494,7 +1494,7 @@ switch (Req::val('action'))
                        SET  mark_private = '0'
                      WHERE  task_id = ?", array(Req::num('id')));
 
-        $fs->logEvent(Get::num('id'), 0, 0, 1, 'mark_private');
+        $fs->logEvent(Get::num('id'), 3, 0, 1, 'mark_private');
 
         $_SESSION['SUCCESS'] = L('taskmadepublicmsg');
         Flyspray::Redirect(CreateURL('details', Req::num('id')));

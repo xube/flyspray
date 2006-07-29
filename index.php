@@ -28,7 +28,7 @@ while (($entry = $dir->read()) !== false) {
     $modes[] = substr($entry, 0, -4);
 }
 
-$do = Req::enum('do', $modes, 'index');
+$do = Req::enum('do', $modes, $proj->prefs['default_entry']);
 
 if ($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
     $do = 'pm';

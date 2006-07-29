@@ -153,7 +153,7 @@ class Backend
 
             if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
                 $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
-                $fs->logEvent($task_id, 0, 3, 1, 'item_status');
+                $fs->logEvent($task_id, 3, 3, 1, 'item_status');
             }
         }
     }
@@ -201,7 +201,7 @@ class Backend
             
             if ($task['item_status'] == STATUS_UNCONFIRMED || $task['item_status'] == STATUS_NEW) {
                 $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
-                $fs->logEvent($row['task_id'], 0, 3, 1, 'item_status');
+                $fs->logEvent($row['task_id'], 3, 3, 1, 'item_status');
             }
         }
     }
@@ -672,7 +672,7 @@ class Backend
         $db->Query("UPDATE {tasks} SET percent_complete = '100' WHERE task_id = ?",
                 array($task_id));
 
-        $fs->logEvent($task_id, '0', '100', $old_details['percent_complete'], 'percent_complete');
+        $fs->logEvent($task_id, 3, '100', $old_details['percent_complete'], 'percent_complete');
         }
 
         $notify->Create(NOTIFY_TASK_CLOSED, $task_id);

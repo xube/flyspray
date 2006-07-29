@@ -37,4 +37,5 @@ while ($row = $db->FetchRow($check_sql))
                       array($row['task_id']));
 }
 
+$db->Query("ALTER TABLE `flyspray_tasks` DROP `assigned_to`");
 ?>

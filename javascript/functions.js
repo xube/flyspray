@@ -162,6 +162,15 @@ function updateDualSelectValue(id)
         val.value += (i > 0 ? ' ' : '') + rt.options[i].value;
     }
 }
+function remove_0val(id) {
+    el = $(id);
+    var i = 0;
+    while (i < el.options.length) {
+        if (el.options[i].value = '0') {
+            el.remove(i);
+        }
+    }
+}
 
 function dualSelect(from, to, id) {
     if (typeof(from) == 'string') {
@@ -184,7 +193,14 @@ function dualSelect(from, to, id) {
                 if (to) to.add(opt);
             }
             if (from.options.length > 1) {
-                from.options[i-1].selected = true;
+                try {
+                    from.options[i-1].selected = true;
+                } catch(ex) {
+                    from.options[i+1].selected = true;
+                    from.remove(i);
+                    ++i;
+                    continue;
+                }                
             }
             from.remove(i);
             continue;

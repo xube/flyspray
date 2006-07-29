@@ -30,6 +30,7 @@ class Project
         $this->prefs['anon_open'] = 0;
         $this->prefs['feed_description']  = L('feedforall');
         $this->prefs['feed_img_url'] = '';
+        $this->prefs['default_entry'] = 'index';
     }
 
     function checkExists()

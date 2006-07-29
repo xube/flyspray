@@ -44,10 +44,34 @@
           </td>
           <td>
             <?php if ($user->perms['modify_all_tasks']): ?>
-            <a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{L('selectusers')}</a>
-            <div id="multiuserlist">
-                {!tpl_double_select('assigned_to', $userlist, explode(' ', Req::val('assigned_to')), false, false)}
-                <button type="button" onclick="hidestuff('multiuserlist')">{L('OK')}</button>
+            <a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
+            <div id="multiuserlist" class="popup">
+            
+            <table class="double_select">
+              <tr>
+                <td class="c1">
+                  {!tpl_userselect('assigned_select', null, 'assigned_select')}
+                </td>
+                <td class="c2">
+                  <button type="button" onmouseup="adduserselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_select', 'assigned_to', '{L('usernotexist')}')">
+                    add &#8594;
+                  </button>
+                  <br /><br />
+                  <button type="button" onmouseup="dualSelect('r', '', 'assigned_to')">
+                     &#8592; del
+                  </button>
+                </td>
+                <td class="c3">
+                  
+                  <select size="10" name="rassigned_to" id="rassigned_to">
+                    {!tpl_options(array(), explode(' ', Req::val('assigned_to', '')))}
+                  </select>
+                  <input type="hidden" value="{Req::val('assigned_to')}" id="vassigned_to" name="assigned_to" />
+                </td>
+              </tr>
+            </table>
+             
+             <button type="button" onclick="hidestuff('multiuserlist')">{L('OK')}</button>
             </div>
             <?php endif; ?>
           </td>

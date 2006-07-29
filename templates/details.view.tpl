@@ -287,7 +287,7 @@
 
 	 <?php if ($user->can_close_task($task_details) && !$d_open): ?>
 	 <a href="#close" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');">
-		{L('closetask')}</a><div id="closeform" <?php if (Req::val('action') != 'details.close'): ?>class="hide"<?php endif; ?>>
+		{L('closetask')}</a><div id="closeform" class="<?php if (Req::val('action') != 'details.close'): ?>hide <?php endif; ?>popup">
 		<form action="{$baseurl}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="do" value="modify" />

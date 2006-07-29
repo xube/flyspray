@@ -218,7 +218,11 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
 
     if (is_null($text)) {
         $text = 'FS#'.$task['task_id'].' - '.$summary;
+    } else {
+        $text = htmlspecialchars(utf8_substr($text, 0, 64), ENT_QUOTES, 'utf-8');
     }
+    
+    $params = array();
     
     if (Get::val('string')) {
         $params = array('histring' => Get::val('string'));
@@ -228,7 +232,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     }
     $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, $params));
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
-            $url, $title_text, join_attrs($attrs), htmlspecialchars($text));
+            $url, $title_text, join_attrs($attrs), $text);
 
     if ($task['is_closed']) {
         $link = '<del>&#160;' . $link . '&#160;</del>';
@@ -631,6 +635,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'project':   $return = $url . 'proj' . $arg1; break;
 
             case 'newgroup':
+            case 'toplevel':
             case 'roadmap':
             case 'newtask':   $return = $url . $type .  '/proj' . $arg1; break;
 
@@ -666,6 +671,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 
             case 'newgroup':
             case 'roadmap':
+            case 'toplevel':
             case 'newtask':   $return = $url . '&project=' . $arg1; break;
 
             case 'editgroup': $return = $baseurl . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1; break;

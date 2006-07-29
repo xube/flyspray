@@ -60,9 +60,9 @@
 			 <td><label>{L('assignedto')}</label></td>
 			 <td>
                 <?php if ($user->perms['edit_assignments']): ?>
-				<a href="#users" id="selectusers" class="button" onclick="showhidestuff('multiuserlist');">{L('selectusers')}</a>
+				<a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
-				<div id="multiuserlist">
+				<div id="multiuserlist" class="popup">
                 
                 <table class="double_select">
                   <tr>
@@ -83,7 +83,7 @@
                       <select size="10" name="rassigned_to" id="rassigned_to">
                         {!tpl_options($userlist, explode(' ', Req::val('assigned_to', $old_assigned)))}
                       </select>
-                      <input type="hidden" value="{$old_assigned}" id="vassigned_to" name="assigned_to" />
+                      <input type="hidden" value="{Req::val('assigned_to', $old_assigned)}" id="vassigned_to" name="assigned_to" />
                     </td>
                   </tr>
                 </table>

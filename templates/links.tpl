@@ -37,13 +37,9 @@
 	  {!tpl_draw_perms($user->perms)}
 	</div>
   </li>
-<?php
-if ($user->perms['view_reports']): ?>
   <li>
-  <a id="reportslink" href="{CreateURL('reports', null, null, array('project' => $proj->id))}">{L('reports')}</a>
+    <a id="toplevellink" href="{CreateURL('toplevel', 0)}">{L('browseprojects')}</a>
   </li>
-<?php
-endif; ?>
   <li>
   <a id="lastsearchlink" onclick="activelink('lastsearchlink')" href="javascript:showhidestuff('mysearches')" accesskey="m">{L('mysearch')}</a>
   <div id="mysearches">
@@ -106,12 +102,18 @@ endif; ?>
         <a id="anonopen" href="?do=newtask&amp;project={$proj->id}">{L('opentaskanon')}</a>
       </li>
     <?php endif; ?>
+
+    <?php if ($user->perms['view_reports']): ?>
+      <li>
+      <a id="reportslink" href="{CreateURL('reports', null, null, array('project' => $proj->id))}">{L('reports')}</a>
+      </li>
+    <?php endif; ?>
     
     <li <?php if (!$user->perms['manage_project']): ?>class="last"<?php endif; ?>>
     <a id="roadmaplink"
         href="{CreateURL('roadmap', $proj_id)}">{L('roadmap')}</a>
     </li>
-    
+
     <?php if ($user->perms['manage_project']): ?>
       <?php if (!isset($pm_pendingreq_num) || !$pm_pendingreq_num): ?>
       <li class="last">

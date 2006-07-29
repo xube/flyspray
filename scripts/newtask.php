@@ -14,8 +14,6 @@ if (!$user->can_open_task($proj)) {
     Flyspray::Redirect( CreateURL('project', $proj->id) );
 }
 
-$page->assign('userlist', $proj->UserList());
-
 $page->uses('severity_list', 'priority_list');
 
 $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('newtask'));

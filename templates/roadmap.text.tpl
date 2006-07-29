@@ -5,7 +5,7 @@
 
 {$milestone['percent_complete']}% of {count($milestone['all_tasks'])} {L('tasks')} {L('completed')} <?php
    if(count($milestone['open_tasks'])):
-   ?>{count($milestone['open_tasks'])} {L('opentasks')}<?php
+   ?>{count($milestone['open_tasks'])} {L('opentasks')}:<?php
    endif; ?>
 
 <?php if(count($milestone['open_tasks'])): ?>

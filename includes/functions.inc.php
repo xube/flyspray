@@ -513,6 +513,10 @@ class Flyspray
     // Start the session {{{
     function startSession()
     {
+        if (defined('IN_FEED')) {
+            return;
+        }
+        
         $names = array( 'GetFirefox',
                         'UseLinux',
                         'NoMicrosoft',

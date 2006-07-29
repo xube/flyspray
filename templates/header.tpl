@@ -66,7 +66,6 @@
       </div>
       
       <div class="clear"></div>
-      <?php /// FIXME: project message disappearing when do=modify ?>
       <?php $show_message = array('details', 'index', 'newtask', 'reports', 'depends');
             if ($proj->prefs['intro_message'] && in_array($do, $show_message) || in_array(reset(explode('.', Req::val('action'))), $show_message)): ?>
       <div id="intromessage">{!TextFormatter::render($proj->prefs['intro_message'], false, 'msg', $proj->id,
