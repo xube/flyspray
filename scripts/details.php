@@ -37,7 +37,7 @@ if (Req::val('edit') && $user->can_edit_task($task_details)) {
                        LEFT JOIN {groups} g ON g.group_id = uig.group_id
                            WHERE a.user_id = u.user_id AND task_id = ?
                         GROUP BY u.user_id
-                        ORDER BY g.group_id ASC',
+                        ORDER BY g.belongs_to_project DESC',
                           array($task_id));
     $userlist = array();
     while ($row = $db->FetchRow($result)) {

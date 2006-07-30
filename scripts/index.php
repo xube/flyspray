@@ -477,7 +477,7 @@ if(Get::has('hideupdatemsg')) {
 
 			fwrite($fs_server, $out);
 			while (!feof($fs_server)) {
-				$latest = fgets($fs_server, 10);
+				$latest = fgets($fs_server, 20);
 			}
 			fclose($fs_server);
 		}

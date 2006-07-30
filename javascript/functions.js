@@ -110,6 +110,13 @@ function adduserselect(url, user, selectid, error)
 	{
         if(originalRequest.responseText) {
             var user_info = originalRequest.responseText.split('|');
+            // Check if user does not yet exist
+            for (i = 0; i < $('r' + selectid).options.length; i++) {
+                if ($('r' + selectid).options[i].value == user_info[1]) {
+                    return;
+                }
+            }
+            
             opt = new Option(user_info[0], user_info[1]);
             try {
                 $('r' + selectid).add(opt, null);
@@ -164,9 +171,8 @@ function updateDualSelectValue(id)
 }
 function remove_0val(id) {
     el = $(id);
-    var i = 0;
-    while (i < el.options.length) {
-        if (el.options[i].value = '0') {
+    for (i = 0; i < el.options.length; i++) {
+        if (el.options[i].value == '0') {
             el.remove(i);
         }
     }

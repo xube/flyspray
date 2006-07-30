@@ -64,7 +64,7 @@
                 <td class="c3">
                   
                   <select size="10" name="rassigned_to" id="rassigned_to">
-                    {!tpl_options(array(), explode(' ', Req::val('assigned_to', '')))}
+                    {!tpl_options(array())}
                   </select>
                   <input type="hidden" value="{Req::val('assigned_to')}" id="vassigned_to" name="assigned_to" />
                 </td>

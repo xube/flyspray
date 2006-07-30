@@ -406,20 +406,6 @@ function dueInVersionArray()
 }
 
 /**
-** returns a list of the users that the task could be assigned to
-** @BUG currently it doesn't handle groups (how?)
-** @FIXME
-**/
-function assignedUserListArray()
-{
-   global $proj;
-
-   return $proj->UserList();
-   
-}
-
-
-/**
 ** returns a list of projects
  ** @BUG currently it doesn't handle groups (how?)
  ** @FIXME
@@ -444,7 +430,6 @@ function taskDataArray()
    $result['operatingSystem'] = operatingSystemArray();
    $result['reportedVersion'] = reportedVersionArray();
    $result['dueInVersion'] = dueInVersionArray();
-   $result['assignedUserList'] = assignedUserListArray();
    $result['projectList'] = projectListArray();
 
    return $result;
@@ -524,8 +509,6 @@ function getArrayData($arrayName)
          return reportedVersionArray();
       case "dueInVersion":
          return dueInVersionArray();
-      case "assignedUserList":
-         return assignedUserListArray();
       case "projectList":
          return projectListArray();
       default:

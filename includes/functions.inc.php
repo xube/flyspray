@@ -326,12 +326,6 @@ class Flyspray
         sort($lang_array);
         return $lang_array;
     } // }}}
-    // User list {{{
-    function UserList($excluded = array())
-    {
-        global $proj;
-        return $proj->UserList($excluded, true);
-    } // }}}
     // Log events to the history table {{{
     function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '', $time = null)
     {

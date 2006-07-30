@@ -81,7 +81,7 @@
                     <td class="c3">
                       
                       <select size="10" name="rassigned_to" id="rassigned_to">
-                        {!tpl_options($userlist, explode(' ', Req::val('assigned_to', $old_assigned)))}
+                        {!tpl_options($userlist)}
                       </select>
                       <input type="hidden" value="{Req::val('assigned_to', $old_assigned)}" id="vassigned_to" name="assigned_to" />
                     </td>

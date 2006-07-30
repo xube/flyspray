@@ -20,7 +20,7 @@ foreach ($projects as $project) {
                          FROM {votes} v
                     LEFT JOIN {tasks} t ON v.task_id = t.task_id AND t.attached_to_project = ?
                         WHERE t.is_closed = 0
-                     GROUP BY task_id
+                     GROUP BY v.task_id
                      ORDER BY num_votes DESC 
                         LIMIT 5', array($project['project_id']));
     if ($db->CountRows($sql)) {
