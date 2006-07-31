@@ -9,7 +9,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if (!$user->perms['view_reports']) {
+if (!$user->perms('view_reports')) {
     Flyspray::Redirect($baseurl);
 }
 

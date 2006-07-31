@@ -23,35 +23,33 @@ class Backend
         settype($tasks, 'array');
         
         $user_id = Flyspray::username_to_id($user_id);
+
+        if (!$user_id) {
+            return false;
+        }
         
         foreach ($tasks as $key => $task) {
-            $tasks[$key] = 't.task_id = ' . $task;
+            $tasks[$key] = 'task_id = ' . $task;
         }
         $where = implode(' OR ', $tasks);
-
-        // XXX keep permission checks in sync with class.user.php!
-        $sql = $db->Query(" SELECT t.task_id
-                              FROM {tasks} t
-                         LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
-                         LEFT JOIN {assigned} a ON t.task_id = a.task_id AND a.user_id = ?
-                         LEFT JOIN {groups} g ON g.belongs_to_project=p.project_id OR g.belongs_to_project = 0
-                         LEFT JOIN {groups} g2 ON g2.belongs_to_project=p.project_id OR g2.belongs_to_project = 0
-                         LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
-                         LEFT JOIN {users_in_groups} uig2 ON uig2.group_id = g2.group_id
-                         LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
-                         LEFT JOIN {users} u2 ON u2.user_id = uig2.user_id AND uig2.user_id = ?
-                             WHERE ($where) AND u.user_name is NOT NULL AND u2.user_name is NOT NULL
-                                   AND ((? = ?
-                                       AND (t.opened_by = u.user_id
-                                        OR (t.mark_private = 0 AND (g.view_tasks = 1 OR p.others_view = 1))
-                                        OR a.user_id is NOT NULL
-                                        OR g.manage_project = 1
-                                        OR g.is_admin = 1)
-                                   OR (g2.is_admin = 1 OR g2.manage_project = 1))
-                                   OR ? = 1)
-                          GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id, intval($do)));
+        
+        $sql = $db->Query(" SELECT *
+                              FROM {tasks}
+                             WHERE ($where)");
 
         while ($row = $db->FetchRow($sql)) {
+            // -> user adds himself
+            if ($user->id == $user_id) {
+                if (!$user->can_view_task($row)) {
+                    continue;
+                }
+            // -> user is added by someone else
+            } else  {
+                if (!$user->perms('manage_project', $row['attached_to_project'])) {
+                    continue;
+                }
+            }
+            
             $notif = $db->Query('SELECT notify_id
                                    FROM {notifications}
                                   WHERE task_id = ? and user_id = ?',
@@ -84,21 +82,23 @@ class Backend
         $where = implode(' OR ', $tasks);
 
         // XXX keep permission checks in sync with class.user.php!
-        $sql = $db->Query(" SELECT t.task_id
+        $sql = $db->Query(" SELECT *
                               FROM {tasks} t
-                         LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
-                         LEFT JOIN {assigned} a ON t.task_id = a.task_id AND a.user_id = ?
-                         LEFT JOIN {groups} g ON g.belongs_to_project=p.project_id OR g.belongs_to_project = 0
-                         LEFT JOIN {groups} g2 ON g2.belongs_to_project=p.project_id OR g2.belongs_to_project = 0
-                         LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
-                         LEFT JOIN {users_in_groups} uig2 ON uig2.group_id = g2.group_id
-                         LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
-                         LEFT JOIN {users} u2 ON u2.user_id = uig2.user_id AND uig2.user_id = ?
-                             WHERE ($where) AND u.user_name is NOT NULL AND u2.user_name is NOT NULL
-                                   AND (? = ? OR g2.is_admin = 1 OR g2.manage_project = 1)
-                          GROUP BY t.task_id", array($user_id, $user_id, $user->id, $user_id, $user->id));
-
+                             WHERE ($where)");
+                             
         while ($row = $db->FetchRow($sql)) {
+            // -> user removes himself
+            if ($user->id == $user_id) {
+                if (!$user->can_view_task($row)) {
+                    continue;
+                }
+            // -> user is removed by someone else
+            } else  {
+                if (!$user->perms('manage_project', $row['attached_to_project'])) {
+                    continue;
+                }
+            }
+            
             $db->Query('DELETE FROM  {notifications}
                               WHERE  task_id = ? AND user_id = ?',
                         array($row['task_id'], $user_id));
@@ -114,29 +114,29 @@ class Backend
     */
     function AssignToMe($user_id, $tasks)
     {
-        global $db, $fs, $notify;
+        global $db, $fs, $notify, $user;
+        
+        if ($user_id != $user->id) {
+            $user = new User($user_id);
+        }
 
         settype($tasks, 'array');
 
         // XXX keep permission checks in sync with class.user.php!
         foreach ($tasks as $key => $task) {
-            $tasks[$key] = 't.task_id = ' . $task;
+            $tasks[$key] = 'task_id = ' . $task;
         }
         $where = implode(' OR ', $tasks);
         
-        $sql = $db->Query(" SELECT t.*
-                              FROM {tasks} t
-                         LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
-                         LEFT JOIN {groups} g ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
-                         LEFT JOIN {users_in_groups} uig ON g.group_id = uig.group_id
-                         LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
-                         LEFT JOIN {assigned} ass ON t.task_id = ass.task_id
-                             WHERE ($where) AND u.user_name is NOT NULL
-                                            AND ((g.assign_to_self = 1 AND ass.user_id is NULL OR g.assign_others_to_self = 1 AND ass.user_id != ?)
-                                                OR g.is_admin = 1 OR g.manage_project = 1)
-                          GROUP BY t.task_id", array($user_id, $user_id));
-        
+        $sql = $db->Query(" SELECT *
+                              FROM {tasks}
+                             WHERE ($where)");
+
         while ($row = $db->FetchRow($sql)) {
+            if (!$user->can_take_ownership($row)) {
+                continue;
+            }
+            
             $db->Query('DELETE FROM {assigned}
                               WHERE task_id = ?',
                         array($row['task_id']));
@@ -144,10 +144,10 @@ class Backend
             $db->Query('INSERT INTO {assigned}
                                     (task_id, user_id)
                              VALUES (?,?)',
-                        array($row['task_id'], $user_id));
+                        array($row['task_id'], $user->id));
             
             if ($db->affectedRows()) {
-                $fs->logEvent($row['task_id'], 19, $user_id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
+                $fs->logEvent($row['task_id'], 19, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
                 $notify->Create(NOTIFY_OWNERSHIP, $row['task_id']);
             }
 
@@ -161,12 +161,12 @@ class Backend
     /* This function is for a user to assign multiple tasks to themselves.
        Expected args are user_id and an array of tasks.
     */
-    function AddToAssignees($user, $tasks, $do = false)
+    function AddToAssignees($user_id, $tasks, $do = false)
     {
-        global $db, $fs, $notify;
+        global $db, $fs, $notify, $user;
 
-        if (is_object($user)) {
-            $user = $user->id;
+        if ($user_id != $user->id) {
+            $user = new User($user_id);
         }
 
         settype($tasks, 'array');
@@ -177,22 +177,19 @@ class Backend
         }
         $where = implode(' OR ', $tasks);
         
-        $sql = $db->Query(" SELECT t.task_id
+        $sql = $db->Query(" SELECT *
                               FROM {tasks} t
-                         LEFT JOIN {projects} p ON p.project_id = t.attached_to_project
-                         LEFT JOIN {groups} g ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
-                         LEFT JOIN {users_in_groups} uig ON g.group_id = uig.group_id
-                         LEFT JOIN {users} u ON u.user_id = uig.user_id AND u.user_id = ?
-                         LEFT JOIN {assigned} ass ON t.task_id = ass.task_id AND ass.user_id != ?
-                             WHERE ($where) AND u.user_name is NOT NULL
-                                            AND (g.add_to_assignees = 1 OR g.is_admin = 1 or g.manage_project = 1 OR 1 = ?)
-                          GROUP BY t.task_id", array($user, intval($do), $user));
+                             WHERE ($where)");
 
         while ($row = $db->FetchRow($sql)) {
-            $db->Replace('{assigned}', array('user_id'=> $user, 'task_id'=> $row['task_id']), array('user_id','task_id'));
+            if (!$user->can_add_to_assignees($row)) {
+                continue;
+            }
+            
+            $db->Replace('{assigned}', array('user_id'=> $user->id, 'task_id'=> $row['task_id']), array('user_id','task_id'));
 
             if ($db->affectedRows()) {
-                $fs->logEvent($row['task_id'], 29, $user, implode(' ', $fs->GetAssignees($row['task_id'])));
+                $fs->logEvent($row['task_id'], 29, $user->id, implode(' ', $fs->GetAssignees($row['task_id'])));
                 $notify->Create(NOTIFY_ADDED_ASSIGNEES, $row['task_id']);
             }
             
@@ -203,11 +200,17 @@ class Backend
         }
     }
     
-    function add_vote(&$user, $task_id)
+    function add_vote($user_id, $task_id)
     {
-        global $db;
+        global $db, $user;
         
-        if ($user->can_vote($task_id) > 0) { 
+        if ($user_id != $user->id) {
+            $user = new User($user_id);
+        }
+        
+        $task = Flyspray::GetTaskDetails($task_id);
+        
+        if ($user->can_vote($task) > 0) { 
             $db->Query("INSERT INTO {votes}
                                 (user_id, task_id, date_time)
                          VALUES (?,?,?)", array($user->id, $task_id, time()));
@@ -218,9 +221,9 @@ class Backend
     
     function add_comment($task, $comment_text, $time = null)
     {
-        global $db, $user, $fs, $notify, $proj;
+        global $db, $user, $fs, $notify;
         
-        if (!($user->perms['add_comments'] && (!$task['is_closed'] || $proj->prefs['comment_closed']))) {
+        if (!($user->perms('add_comments', $task['attached_to_project']) && (!$task['is_closed'] || $user->perms('comment_closed', $task['attached_to_project'])))) {
             return false;
         }
         
@@ -267,10 +270,8 @@ class Backend
 
         // Retrieve some important information
         $task = $fs->GetTaskDetails($taskid);
-        $project = new Project($task['attached_to_project']);
-        $user->get_perms($project);
 
-        if (!$user->perms['create_attachments']) {
+        if (!$user->perms('create_attachments', $task['attached_to_project'])) {
             return false;
         }
 
@@ -340,7 +341,9 @@ class Backend
     {
         global $db, $fs;
         
-        if(!$user->perms['delete_attachments'] || !count(Post::val('delete_att'))) {
+        $task = $fs->GetTaskDetails($taskid);
+        
+        if (!$user->perms('delete_attachments', $task['attached_to_project']) || !count(Post::val('delete_att'))) {
             return false;
         }
         
@@ -425,7 +428,7 @@ class Backend
     {
         global $fs, $db;
         
-        if (!$user->perms['is_admin']) {
+        if (!$user->perms('is_admin')) {
             return false;
         }
         
@@ -453,7 +456,7 @@ class Backend
     {
         global $fs, $db;
         
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project', $pid)) {
             return false;
         }
         
@@ -492,8 +495,10 @@ class Backend
     function add_reminder($task_id, $message, $how_often, $start_time, $user_id = null)
     {
         global $user, $db, $fs;
-        if (!$user->perms['manage_project']) {
-            break;
+        $task = $fs->GetTaskDetails($task_id);
+        
+        if (!$user->perms('manage_project', $task['attached_to_project'])) {
+            return;
         }
         
         if (is_null($user_id)) {
@@ -511,7 +516,7 @@ class Backend
                          array('task_id'=> $task_id, 'to_user_id'=> $id,
                                'from_user_id' => $user->id, 'start_time' => $start_time,
                                'how_often' => $how_often, 'reminder_message' => $message),
-                        array('task_id', 'to_user_id', 'how_often', 'reminder_message'));
+                         array('task_id', 'to_user_id', 'how_often', 'reminder_message'));
         }
 
         $fs->logEvent(Post::val('id'), 17, $task_id);
@@ -528,7 +533,6 @@ class Backend
         $notify = new Notifications();
         if ($proj->id !=  $args['project_id']) {
             $proj = new Project($args['project_id']);
-            $user->get_perms($proj);
         }
         
         if (!$user->can_open_task($proj) || count($args) < 3) {
@@ -540,7 +544,7 @@ class Backend
         }
         
         // Some fields can have default values set
-        if ($user->perms['modify_all_tasks'] != '1')
+        if ($user->perms('modify_all_tasks') != '1')
         {
             $args['closedby_version'] = 0;
             $args['task_priority'] = 2;
@@ -724,7 +728,7 @@ class Backend
                                 array($task_id, $dupe_of[1]));
                 }
             }
-            $this->add_vote(new User($old_details['opened_by']), $dupe_of[1]);
+            $this->add_vote($old_details['opened_by'], $dupe_of[1]);
         }
         
         return true;
@@ -805,10 +809,9 @@ class Backend
 
       $project = new Project($projectid);
       $user = new User($userid);
-      $user->get_perms($project);
 
       // Check if the user can view tasks from this project
-      if ($user->perms['view_tasks'] == '0' && $project->prefs['others_view'] == '0') {
+      if ($user->perms('view_tasks') == '0' && $project->prefs['others_view'] == '0') {
         return 'You don\'t have permission to view tasks from that project.';
       }
 
@@ -839,7 +842,7 @@ class Backend
       }
 
       // Restrict query results based upon (lack of) PM permissions
-      if (!$user->isAnon() && $user->perms['manage_project'] != '1')
+      if (!$user->isAnon() && $user->perms('manage_project') != '1')
       {
          $where[] = "(t.mark_private = '0')";
          $params[] = $userid;

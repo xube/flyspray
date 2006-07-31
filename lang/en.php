@@ -761,7 +761,6 @@ Regards,',
 'browseprojects'          => 'Browse Projects',
 'error#'                  => 'Error #',
 'error1'                  => 'You don\'t have sufficient permissions to view this attachment.',
-'error2'                  => 'User move not within the same project.',
 'error3'                  => 'Repeated action, redirecting to main page.',
 'error4'                  => 'You don\'t have administrative rights.',
 'error5'                  => 'That user does not exist on this Flyspray installation.',
@@ -779,6 +778,9 @@ Regards,',
 'error17'                 => 'Invalid PM area.',
 'error18'                 => 'Invalid magic URL.',
 'error19'                 => 'That user does not exist on this Flyspray installation.',
+'done'                    => 'done',
+'rss'                     => 'RSS',
+'atom'                    => 'Atom',
 ); 
 
 ?>

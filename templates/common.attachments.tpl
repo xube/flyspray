@@ -1,5 +1,5 @@
   <?php
-  if ($attachments && ($user->perms['view_attachments'] || $proj->prefs['others_view'])): ?>
+  if ($attachments && ($user->perms('view_attachments') || $proj->prefs['others_view'])): ?>
   <div class="attachments">
   <?php foreach ($attachments as $attachment): ?>
     <a href="{$baseurl}?getfile={$attachment['attachment_id']}" title="{$attachment['file_type']}">

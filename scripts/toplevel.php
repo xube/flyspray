@@ -36,6 +36,9 @@ foreach ($projects as $project) {
     $sql = $db->Query('SELECT count(*) FROM {tasks} WHERE attached_to_project = ? AND is_closed = 0',
                       array($project['project_id']));
     $stats[$project['project_id']]['open'] = $db->fetchOne($sql);
+    $sql = $db->Query('SELECT avg(percent_complete) FROM {tasks} WHERE attached_to_project = ? AND is_closed =0',
+                      array($project['project_id']));
+    $stats[$project['project_id']]['average_done'] = round($db->fetchOne($sql), 0);
 }
 
 $page->uses('most_wanted', 'stats', 'projects');

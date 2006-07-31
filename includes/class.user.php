@@ -29,11 +29,8 @@ class User
             $this->infos['real_name'] = L('anonuser');
             $this->infos['user_name'] = '';
         }
-        //it not only needs to be not null 
-        //it should be an object, instance of the Project class 
-        if (is_a($project, 'Project')) {
-            $this->get_perms($project);
-        }
+        
+        $this->get_perms();
     }
 
     /* misc functions {{{ */
@@ -86,8 +83,23 @@ class User
         $sql = $db->Query('SELECT * FROM {searches} WHERE user_id = ? ORDER BY time DESC', array($this->id));
         $this->searches = $db->FetchAllArray($sql);
     }
+    
+    function perms($name, $project = null) {      
+        if (is_null($project)) {
+            global $proj;
+            $project = $proj->id;
+        }
+        
+        if (isset($this->perms[$project][$name])) {
+            return $this->perms[$project][$name];
+        } else if (isset($this->perms[0][$name])) {
+            return $this->perms[0][$name];
+        } else {
+            return 0;
+        }
+    }
 
-    function get_perms($proj)
+    function get_perms()
     {
         global $db;
 
@@ -99,30 +111,39 @@ class User
                 'close_other_tasks', 'assign_to_self', 'assign_others_to_self',
                 'add_to_assignees', 'view_reports', 'add_votes', 'group_open');
 
-        $this->perms = array();
-        foreach ($fields as $key) {
-            $this->perms[$key] = 0;
+        $this->perms = array(0 => array());
+        // Get project settings which are important for permissions
+        $sql = $db->Query('SELECT project_id, others_view, project_is_active, anon_open, comment_closed
+                             FROM {projects}');
+        while ($row = $db->FetchRow($sql)) {
+            $this->perms[$row['project_id']] = $row;
         }
+        $this->perms[0] = array_map(create_function('$x', 'return 1;'), end($this->perms));
             
         if (!$this->isAnon()) {
-            $max = array_map(create_function('$x', 'return "MAX($x) AS $x";'),
-                    $fields);
-
             // Get the global group permissions for the current user
-            $sql = $db->Query("SELECT  ".join(', ', $max).", MAX(CASE WHEN g.belongs_to_project = '0' THEN 0 ELSE g.group_id END) as project_group
+            $sql = $db->Query("SELECT  ".join(', ', $fields).", g.belongs_to_project, g.group_id AS project_group
                                  FROM  {groups} g
                             LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
-                                WHERE  uig.user_id = ?  AND
-                                       (g.belongs_to_project = '0' OR g.belongs_to_project = ?)",
-                                array($this->id, $proj->id));
+                            LEFT JOIN  {projects} p ON g.belongs_to_project = p.project_id
+                                WHERE  uig.user_id = ?
+                             ORDER BY  g.belongs_to_project ASC",
+                                array($this->id));
 
-            $this->perms = $db->FetchRow($sql);
+            while ($row = $db->FetchRow($sql)) {
+                $this->perms[$row['belongs_to_project']] = array_merge($this->perms[$row['belongs_to_project']], $row);
+                if ($row['belongs_to_project']) {
+                    foreach ($fields as $key) {
+                        $this->perms[$row['belongs_to_project']][$key] = max($this->perms[$row['belongs_to_project']][$key], $this->perms['0'][$key]);
+                    }
+                }
+            }
             
-            $this->infos['project_group'] = $this->perms['project_group'];
-            unset($this->perms['project_group']);
-
-            if ($this->perms['is_admin']) {
-                $this->perms = array_map(create_function('$x', 'return 1;'), $this->perms);
+            // Admin permissions
+            foreach ($this->perms as $key => $value) {
+                foreach ($fields as $perm) {
+                    $this->perms[$key][$perm] = max($this->perms[0]['is_admin'], @$this->perms[$key][$perm]);
+                }
             }
         }
     }
@@ -134,7 +155,7 @@ class User
         if (Cookie::val('flyspray_passhash') !=
                 crypt($this->infos['user_pass'], $conf['general']['cookiesalt'])
                 || !$this->infos['account_enabled']
-                || !$this->perms['group_open'])
+                || !$this->perms('group_open'))
         {
             $fs->setcookie('flyspray_userid',   '', time()-60);
             $fs->setcookie('flyspray_passhash', '', time()-60);
@@ -154,46 +175,45 @@ class User
     {
         global $fs;
 
-        return $this->perms['is_admin']
+        return $this->perms('is_admin')
             || ( $this->isAnon() && !$fs->prefs['spam_proof']
                     && $fs->prefs['anon_reg']);
     }
 
     function can_create_group()
     {
-        global $proj;
-        return $this->perms['is_admin']
-            || $this->perms['manage_project'];
+        return $this->perms('is_admin')
+            || $this->perms('manage_project');
     }
 
     function can_edit_comment($comment)
     {
-        return $this->perms['edit_comments']
-               || ($comment['user_id'] == $this->id && $this->perms['edit_own_comments']);
+        return $this->perms('edit_comments')
+               || ($comment['user_id'] == $this->id && $this->perms('edit_own_comments'));
     }
 
     function can_view_project($proj)
     {
-        return $this->perms['view_tasks']
-          || ($proj->prefs['project_is_active']
-              && ($proj->prefs['others_view'] || @$this->infos['project_group']));
+        return $this->perms('view_tasks')
+          || ($this->perms('project_is_active', $proj)
+              && ($this->perms('others_view', $proj) || @$this->perms('project_group', $proj)));
     }
 
     function can_view_task($task)
     {
-        global $fs, $proj;
-        
-        if($this->isAnon() && $task['task_token'] && Get::val('task_token') == $task['task_token']) {
+        global $fs;
+
+        if ($this->isAnon() && $task['task_token'] && Get::val('task_token') == $task['task_token']) {
             return true;
         }
         
-        if ($this->isAnon() && !$proj->prefs['others_view']) {
+        if ($this->isAnon() && !$this->perms('others_view', $task['attached_to_project'])) {
             return false;
         }
 
         if ($task['opened_by'] == $this->id && !$this->isAnon()
-            || (!$task['mark_private'] && ($this->perms['view_tasks'] || $proj->prefs['others_view'] || $task['others_view']))
-            || $this->perms['manage_project']) {
+            || (!$task['mark_private'] && ($this->perms('view_tasks') || $this->perms('others_view', $task['attached_to_project']) || $task['others_view']))
+            || $this->perms('manage_project')) {
             return true;
         }
                
@@ -205,8 +225,8 @@ class User
         global $fs;
         
         return !$task['is_closed']
-            && ($this->perms['modify_all_tasks'] ||
-                    ($this->perms['modify_own_tasks']
+            && ($this->perms('modify_all_tasks') ||
+                    ($this->perms('modify_own_tasks')
                      && in_array($this->id, $fs->GetAssignees($task['task_id']))));
     }
 
@@ -214,22 +234,22 @@ class User
     {
         global $fs;
         $assignees = $fs->GetAssignees($task['task_id']);
-            
-        return ($this->perms['assign_to_self'] && empty($assignees))
-               || ($this->perms['assign_others_to_self'] && !in_array($this->id, $assignees));
+
+        return ($this->perms('assign_to_self', $task['attached_to_project']) && empty($assignees))
+               || ($this->perms('assign_others_to_self', $task['attached_to_project']) && !in_array($this->id, $assignees));
     }
     
     function can_add_to_assignees($task)
 	 { 
         global $fs;
          
-        return ($this->perms['add_to_assignees'] && !in_array($this->id, $fs->GetAssignees($task['task_id'])));
+        return ($this->perms('add_to_assignees', $task['attached_to_project']) && !in_array($this->id, $fs->GetAssignees($task['task_id'])));
     }
 	 
     function can_close_task($task)
     {
-        return ($this->perms['close_own_tasks'] && $task['assigned_to'] == $this->id)
-            || $this->perms['close_other_tasks'];
+        return ($this->perms('close_own_tasks', $task['attached_to_project']) && in_array($this->id, $task['assigned_to']))
+                || $this->perms('close_other_tasks', $task['attached_to_project']);
     }
 
     function can_self_register()
@@ -246,22 +266,22 @@ class User
 
     function can_open_task($proj)
     {
-        return $proj->id && ($this->perms['manage_project'] ||
-                 $proj->prefs['project_is_active'] && ($this->perms['open_new_tasks'] || $proj->prefs['anon_open']));
+        return $proj->id && ($this->perms('manage_project') ||
+                 $this->perms('project_is_active', $proj->id) && ($this->perms('open_new_tasks') || $this->perms('anon_open', $proj->id)));
     }
 
     function can_change_private($task)
     {
         global $fs;
         
-        return !$task['is_closed'] && ($this->perms['manage_project'] || in_array($this->id, $fs->GetAssignees($task['task_id'])));
+        return !$task['is_closed'] && ($this->perms('manage_project') || in_array($this->id, $fs->GetAssignees($task['task_id'])));
     }
     
-    function can_vote($task_id)
+    function can_vote($task)
     {
         global $db;
         
-        if (!$this->perms['add_votes']) {
+        if (!$this->perms('add_votes', $task['attached_to_project'])) {
             return -1;
         }
         
@@ -269,7 +289,7 @@ class User
         $check = $db->Query('SELECT vote_id
                                FROM {votes}
                               WHERE user_id = ? AND task_id = ?',
-                             array($this->id, $task_id));
+                             array($this->id, $task['task_id']));
         if ($db->CountRows($check)) {
             return -2;
         }

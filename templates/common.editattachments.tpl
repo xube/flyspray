@@ -26,7 +26,7 @@
       <?php endif; ?>
     </td>
     <td>
-    <?php if ($user->perms['delete_attachments']): ?>
+    <?php if ($user->perms('delete_attachments')): ?>
     <input type="checkbox" name="delete_att[]" value="{$attachment['attachment_id']}" />
     <?php endif; ?>
      </td>

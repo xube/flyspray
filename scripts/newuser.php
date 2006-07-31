@@ -14,7 +14,7 @@ if (!$user->can_create_user()) {
     Flyspray::Redirect(CreateURL('register'));
 }
 
-if ($user->perms['is_admin']) {
+if ($user->perms('is_admin')) {
     $sql = $db->Query("SELECT  group_id, group_name
                          FROM  {groups}
                         WHERE  belongs_to_project = '0'

@@ -176,7 +176,7 @@ else {
                     LEFT JOIN  {list_resolution} res ON t.resolution_reason = res.resolution_id 
                         WHERE  t.task_id is NOT NULL AND is_duplicate = 0 AND ( t.mark_private = 0 OR ? = 1 )
                      ORDER BY  t.task_id ASC',
-            array($task_id, $task_id, $user->perms['manage_project']));
+            array($task_id, $task_id, $user->perms('manage_project')));
     $page->assign('related', $db->fetchAllArray($sql));
 
     $sql = $db->Query('SELECT  t.*, r.*, s.status_name, res.resolution_name
@@ -205,13 +205,13 @@ else {
 
     $page->pushTpl('details.tabs.tpl');
 
-    if ($user->perms['view_comments'] || $proj->prefs['others_view'] || ($user->isAnon() && $task_details['task_token'] && Get::val('task_token') == $task_details['task_token'])) {
+    if ($user->perms('view_comments') || $proj->prefs['others_view'] || ($user->isAnon() && $task_details['task_token'] && Get::val('task_token') == $task_details['task_token'])) {
         $page->pushTpl('details.tabs.comment.tpl');
     }
 
     $page->pushTpl('details.tabs.related.tpl');
 
-    if ($user->perms['manage_project']) {
+    if ($user->perms('manage_project')) {
         $page->pushTpl('details.tabs.notifs.tpl');
         $page->pushTpl('details.tabs.remind.tpl');
     }

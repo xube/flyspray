@@ -541,6 +541,18 @@ table.list th,table.list td {
 	padding-right:2em;
 }
 
+table.toplevel th {
+	text-align:left;
+	padding:0 1em 0 0.5em;
+	width:9em;
+}
+
+table.toplevel ul {
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+
 /* Area containing all details to a given task */
 div#taskdetails {
 	background-color:#e6eef6;
@@ -567,8 +579,7 @@ table#duplicate_tasks {
 the footer paragraph */
 div#content {
 	margin:0 5px;
-	padding:0 5px;
-	border:solid 1px transparent;
+	padding:0.5em 5px 0 5px;
 }
 
 /* Powered by Flyspray */
@@ -733,7 +744,7 @@ table.history td {
 }
 
 div#intromessage {
-	margin:0 1px 1em 1px;
+	padding:0 1px 0.5em 1px;
 }
 
 div.clear {
@@ -1454,7 +1465,7 @@ blockquote blockquote {
 /* }}} */
 /* Stuff for the autocomplete lists {{{ */
 
-div.autocomplete {
+span.autocomplete {
 	position: absolute;
 	width: 350px;
 	background-color:#eef7ff;
@@ -1463,15 +1474,16 @@ div.autocomplete {
 	padding: 0px;
 	margin:-1px 0 0;
 	text-align:left;
+	display:block;
 }
 
-div.autocomplete ul {
+span.autocomplete ul {
 	list-style-type: none;
 	margin: 0px;
 	padding: 0px;
 }
 
-div.autocomplete ul li {
+span.autocomplete ul li {
 	list-style-type: none;
 	display: block;
 	margin: 0;
@@ -1480,7 +1492,7 @@ div.autocomplete ul li {
 }
 
 
-div.autocomplete ul li.selected {
+span.autocomplete ul li.selected {
 	background-color:highlight;
 	cursor:pointer;
 	color:HighlightText;

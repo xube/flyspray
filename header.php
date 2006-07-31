@@ -53,19 +53,7 @@ if (empty($project_id) || (Req::val('project') && Req::val('switch'))) {
     }
 }
 
-if (Post::val('action') == 'movetogroup') {
-    $sql = $db->Query('SELECT belongs_to_project FROM {groups} WHERE group_id = ? OR group_id = ?',
-                      array(Post::val('switch_to_group'), Post::val('old_group')));
-    $old_pr = $db->FetchOne($sql);
-    $new_pr = $db->FetchOne($sql);
-    if ($new_pr !== $old_pr && $new_pr) {
-        Flyspray::show_error(2);
-    }
-    $project_id = $new_pr;
-}
-
 $proj = new Project($project_id);
-$proj->checkExists();
 $proj->setCookie();
 
 // Load translations

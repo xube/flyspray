@@ -31,13 +31,13 @@
   <tr>
     <th>{L('projectgroup')}</th>
     <td>
-    <?php if ($user->perms['manage_project']): ?>
+    <?php if ($user->perms('manage_project')): ?>
     <form method="post" action="{$baseurl}"><div>
       <select id="projectgroupin" class="adminlist" name="project_group_in">
-        <?php $sel = $theuser->infos['project_group'] == '' ? 0 : $theuser->infos['project_group']; ?>
+        <?php $sel = $theuser->perms('project_group') == '' ? 0 : $theuser->perms('project_group'); ?>
         {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), $sel)}
       </select>
-      <input type="hidden" name="old_project_id" value="{$theuser->infos['project_group']}" />
+      <input type="hidden" name="old_project_id" value="{$theuser->perms('project_group')}" />
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="edituser" />
       <input type="hidden" name="user_id" value="{$theuser->id}" />
@@ -47,7 +47,7 @@
       <button type="submit">{L('update')}</button>
     </div></form>
     <?php else: ?>
-      <?php if ($theuser->infos['project_group']): ?>
+      <?php if ($theuser->perms('project_group')): ?>
       {$project_groups[Flyspray::array_find('group_id', $theuser->infos['project_group'], $project_groups)]['group_name']}
       <?php else: ?>
       {L('none')}

@@ -13,7 +13,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if (!$user->perms['is_admin']) {
+if (!$user->perms('is_admin')) {
     Flyspray::show_error(4);
 }
 

@@ -1,5 +1,5 @@
 <ul id="submenu">
-  <?php if ($user->perms['view_comments'] || $proj->prefs['others_view'] || ($user->isAnon() && $task_details['task_token'] && Get::val('task_token') == $task_details['task_token'])): ?>
+  <?php if ($user->perms('view_comments') || $proj->prefs['others_view'] || ($user->isAnon() && $task_details['task_token'] && Get::val('task_token') == $task_details['task_token'])): ?>
   <li id="commentstab">
   <a href="#comments">{L('comments')} ({!count($comments)})</a>
   </li>
@@ -9,7 +9,7 @@
   <a href="#related">{L('relatedtasks')} ({!count($related)}/{!count($duplicates)})</a>
   </li>
 
-  <?php if ($user->perms['manage_project']): ?>
+  <?php if ($user->perms('manage_project')): ?>
   <li id="notifytab">
   <a href="#notify">{L('notifications')} ({!count($notifications)})</a>
   </li>
@@ -20,7 +20,7 @@
   <?php endif; ?>
   <?php endif; ?>
 
-  <?php if ($user->perms['view_history']): ?>
+  <?php if ($user->perms('view_history')): ?>
   <li id="historytab">
     <a id="historytaba" onmousedown="getHistory('{Get::num('id')}', '{$baseurl}', 'history', '{Get::val('details')}');"
        href="{CreateURL('details', $task_details['task_id'], null)}#history">{L('history')}</a>

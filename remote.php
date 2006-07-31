@@ -188,7 +188,6 @@ function getTask($args)
    // Get the user's permissions for the project this task belongs to
    
    $user = new user($user_id);
-   $permissions = $user->get_perms($task_details['attached_to_project']);
 
    // If the task doesn't exist, stop.
    if (!is_numeric($task_details['task_id']))
@@ -588,7 +587,6 @@ function openTask($args)
 
    // Get the user's permissions for the project this task belongs to
    $user = new user($user_id);
-   $user->get_perms($proj);
 
    $permissions = $user->perms;
 
@@ -659,8 +657,7 @@ function closeTask($args)
 
    // Get the user's permissions for the project this task belongs to
    $user = new user($user_id);
-   $permissions = $user->get_perms($task_details['attached_to_project']);
-
+   
    // If the task doesn't exist, stop.
    if (!is_numeric($task_details['task_id']))
    {
@@ -748,7 +745,6 @@ function getUser($args)
 
    // Get the user's permissions
    $user = new user($user_id);
-   $permissions = $user->get_perms($task_details['attached_to_project']);
 
    if ($permissions['is_admin'] == '1' or $user_id == $req_user)
    {
@@ -810,7 +806,7 @@ function filterTasks($args)
    }
    
    // Compare permissions to view this task
-   if ($user->perms['view_tasks'] == '0' && $proj->prefs['others_view'] == '0') {
+   if ($user->perms('view_tasks') == '0' && $proj->prefs['others_view'] == '0') {
       return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to perform this function.');
    }  
    
@@ -891,12 +887,9 @@ function addComment($args)
    
    setProject($task['project_id']);
    
-   $user = new user($user_id);
-   $user->get_perms($proj);
+   $user = new user($user_id);   
    
-   
-   
-   if(!$user->perms['add_comments']) {
+   if(!$user->perms('add_comments')) {
       
       return xmlrpcError(PERMISSION_DENIED,'No permissions to add comment for user');
    }

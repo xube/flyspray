@@ -261,7 +261,7 @@ class Flyspray
         }
         
         $get_details['assigned_to'] = $get_details['assigned_to_name'] = array();
-        if ($assignees = $this->GetAssignees($task_id, true)) {
+        if ($assignees = Flyspray::GetAssignees($task_id, true)) {
             $get_details['assigned_to'] = $assignees[0];
             $get_details['assigned_to_name'] = $assignees[1];
         }

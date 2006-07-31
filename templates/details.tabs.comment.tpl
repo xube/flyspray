@@ -11,13 +11,13 @@
   </em>
 
   <span class="DoNotPrint">
-    <?php if ($user->perms['edit_comments'] || ($user->perms['edit_own_comments'] && $comment['user_id'] == $user->id)): ?>
+    <?php if ($user->perms('edit_comments') || ($user->perms('edit_own_comments') && $comment['user_id'] == $user->id)): ?>
     &mdash;
     <a href="{$baseurl}?do=editcomment&amp;task_id={Get::num('id')}&amp;id={$comment['comment_id']}">
       {L('edit')}</a>
     <?php endif; ?>
 
-    <?php if ($user->perms['delete_comments']): ?>
+    <?php if ($user->perms('delete_comments')): ?>
     &mdash;
     <a href="{$baseurl}?do=modify&amp;action=details.deletecomment&amp;comment_id={$comment['comment_id']}"
       onclick="return confirm('{L('confirmdeletecomment')}');">
@@ -41,7 +41,7 @@
 
   <?php endforeach; ?>
 
-  <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
+  <?php if ($user->perms('add_comments') && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
   <fieldset><legend>{L('addcomment')}</legend>
   <form enctype="multipart/form-data" action="{$baseurl}" method="post">
     <div>
@@ -51,7 +51,7 @@
       <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="details.addcomment" />
       <input type="hidden" name="task_id" value="{Req::val('task_id', $task_details['task_id'])}" />
-      <?php if ($user->perms['create_attachments']): ?>
+      <?php if ($user->perms('create_attachments')): ?>
       <div id="uploadfilebox">
         <span style="display: none;"><?php // this span is shown/copied in javascript when adding files ?>
           <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />

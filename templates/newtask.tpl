@@ -32,18 +32,18 @@
         <tr>
           <td><label for="status">{L('status')}</label></td>
           <td>
-            <select id="status" name="item_status" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
+            <select id="status" name="item_status" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
               {!tpl_options($proj->listTaskStatuses(), Req::val('item_status', 2))}
             </select>
           </td>
         </tr>
-        <?php if ($user->perms['modify_all_tasks']): ?>
+        <?php if ($user->perms('modify_all_tasks')): ?>
         <tr>
           <td>
             <label>{L('assignedto')}</label>
           </td>
           <td>
-            <?php if ($user->perms['modify_all_tasks']): ?>
+            <?php if ($user->perms('modify_all_tasks')): ?>
             <a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');fill_userselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
             <div id="multiuserlist" class="popup">
             
@@ -98,7 +98,7 @@
         <tr>
           <td><label for="priority">{L('priority')}</label></td>
           <td>
-            <select id="priority" name="task_priority" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
+            <select id="priority" name="task_priority" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
               {!tpl_options($priority_list, Req::val('task_priority', 2))}
             </select>
           </td>
@@ -114,13 +114,13 @@
         <tr>
           <td><label for="dueversion">{L('dueinversion')}</label></td>
           <td>
-            <select id="dueversion" name="closedby_version" <?php if (!$user->perms['modify_all_tasks']) echo ' disabled="disabled"';?>>
+            <select id="dueversion" name="closedby_version" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
               <option value="0">{L('undecided')}</option>
               {!tpl_options($proj->listVersions(false, 3), Req::val('closedby_version'))}
             </select>
           </td>
         </tr>
-        <?php if ($user->perms['modify_all_tasks']): ?>
+        <?php if ($user->perms('modify_all_tasks')): ?>
         <tr>
           <td><label for="due_date">{L('duedate')}</label></td>
           <td id="duedate">
@@ -139,7 +139,7 @@
       <div class="hide preview" id="preview"></div>
       <?php endif; ?>
       {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'), Req::val('detailed_desc', $proj->prefs['default_task']))}
-      <?php if ($user->perms['create_attachments']): ?>
+      <?php if ($user->perms('create_attachments')): ?>
       <div id="uploadfilebox">
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
           <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
@@ -158,7 +158,7 @@
         <?php if ($user->isAnon()): ?>
         <label class="inline" for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30" /><br />
         <?php endif; ?>
-        <?php if (!$user->perms['modify_all_tasks']): ?>
+        <?php if (!$user->perms('modify_all_tasks')): ?>
         <input type="hidden" name="item_status"   value="1" />
         <input type="hidden" name="task_priority" value="2" />
         <?php endif; ?>

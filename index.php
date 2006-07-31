@@ -56,12 +56,6 @@ if (Get::val('getfile')) {
                            WHERE  attachment_id = ?", array(Get::val('getfile')));
     list($task_id, $proj_id, $orig_name, $file_name, $file_type) = $db->FetchRow($result);
 
-    if ($proj_id != $proj->id) {
-        // XXX project_id comes from the cookie
-        $proj = new Project($proj_id);
-        $user->get_perms($proj);
-    }
-
     // Check if file exists, and user permission to access it!
     if (!is_file(BASEDIR . "/attachments/$file_name")) {
         header('HTTP/1.0 404 Not Found');
@@ -69,7 +63,7 @@ if (Get::val('getfile')) {
         exit();
     }
     
-    if ($proj->prefs['others_view'] || $user->perms['view_attachments'])
+    if ($user->perms('others_view', $proj_id) || $user->perms('view_attachments', $proj_id))
     {
         output_reset_rewrite_vars();
         $path = BASEDIR . "/attachments/$file_name";
@@ -126,7 +120,7 @@ if ($fs->requestDuplicated()) {
     Flyspray::show_error(3);
 }
 
-if ($user->perms['manage_project']) {
+if ($user->perms('manage_project')) {
     // Find out if there are any PM requests wanting attention
     $sql = $db->Query(
             "SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",

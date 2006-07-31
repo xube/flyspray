@@ -12,7 +12,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if (!$user->perms['manage_project']) {
+if (!$user->perms('manage_project')) {
     Flyspray::show_error(16);
 }
 

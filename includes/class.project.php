@@ -16,7 +16,7 @@ class Project
                                 WHERE p.project_id = ?", array($id));
             if ($db->countRows($sql)) {
                 $this->prefs = $db->FetchRow($sql);
-                $this->id    = $id;
+                $this->id    = $this->prefs['project_id'];
                 return;
             }
         }
@@ -31,11 +31,6 @@ class Project
         $this->prefs['feed_description']  = L('feedforall');
         $this->prefs['feed_img_url'] = '';
         $this->prefs['default_entry'] = 'index';
-    }
-
-    function checkExists()
-    {
-        return !is_null($this->id);
     }
 
     function setCookie()

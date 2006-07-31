@@ -43,7 +43,7 @@
         </select>
       </td>
     </tr>
-    <?php if ($user->perms['is_admin']): ?>
+    <?php if ($user->perms('is_admin')): ?>
     <tr>
       <td><label for="groupin">{L('globalgroup')}</label></td>
       <td>

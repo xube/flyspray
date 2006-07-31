@@ -46,7 +46,7 @@
     <?php $this->display('links.searches.tpl'); ?>
   </div>
   </li>
-<?php if ($user->perms['is_admin']): ?>
+<?php if ($user->perms('is_admin')): ?>
   <li>
   <a id="optionslink" href="{CreateURL('admin', 'prefs')}">{L('admintoolbox')}</a>
   </li>
@@ -92,7 +92,7 @@
         href="{CreateURL('project', $proj->id)}">{L('tasklist')}</a>
     </li>
     
-    <?php if ($user->perms['open_new_tasks']): ?>
+    <?php if ($user->perms('open_new_tasks')): ?>
       <li>
       <a id="newtasklink" href="{CreateURL('newtask', $proj_id)}"
         accesskey="a">{L('addnewtask')}</a>
@@ -103,18 +103,18 @@
       </li>
     <?php endif; ?>
 
-    <?php if ($user->perms['view_reports']): ?>
+    <?php if ($user->perms('view_reports')): ?>
       <li>
       <a id="reportslink" href="{CreateURL('reports', null, null, array('project' => $proj->id))}">{L('reports')}</a>
       </li>
     <?php endif; ?>
     
-    <li <?php if (!$user->perms['manage_project']): ?>class="last"<?php endif; ?>>
+    <li <?php if (!$user->perms('manage_project')): ?>class="last"<?php endif; ?>>
     <a id="roadmaplink"
         href="{CreateURL('roadmap', $proj_id)}">{L('roadmap')}</a>
     </li>
 
-    <?php if ($user->perms['manage_project']): ?>
+    <?php if ($user->perms('manage_project')): ?>
       <?php if (!isset($pm_pendingreq_num) || !$pm_pendingreq_num): ?>
       <li class="last">
       <?php else: ?>

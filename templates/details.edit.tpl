@@ -59,7 +59,7 @@
 			<tr>
 			 <td><label>{L('assignedto')}</label></td>
 			 <td>
-                <?php if ($user->perms['edit_assignments']): ?>
+                <?php if ($user->perms('edit_assignments')): ?>
 				<a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');fill_userselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
 				<div id="multiuserlist" class="popup">
@@ -176,7 +176,7 @@
         <?php $attachments = $proj->listTaskAttachments($task_details['task_id']);
           $this->display('common.editattachments.tpl', 'attachments', $attachments); ?>
           
-          <?php if ($user->perms['create_attachments']): ?>
+          <?php if ($user->perms('create_attachments')): ?>
           <div id="uploadfilebox">
             <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
               <input tabindex="5" class="file" type="file" size="55" name="usertaskfile[]" />
@@ -195,12 +195,12 @@
           <?php endif; ?>
           {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'), Req::val('detailed_desc', $task_details['detailed_desc']))}
           <br />
-          <?php if ($user->perms['add_comments'] && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
+          <?php if ($user->perms('add_comments') && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
               <button type="button" onclick="showstuff('edit_add_comment');this.style.display='none';">{L('addcomment')}</button>
               <div id="edit_add_comment" class="hide">
               <label for="comment_text">{L('comment')}</label>
               
-              <?php if ($user->perms['create_attachments']): ?>
+              <?php if ($user->perms('create_attachments')): ?>
               <div id="uploadfilebox_c">
                 <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
                   <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />

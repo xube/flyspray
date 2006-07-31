@@ -92,7 +92,7 @@ switch (Req::val('action'))
                     Post::val('task_id')));
 
         // Update the list of users assigned this task
-        if ($user->perms['edit_assignments'] && Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
+        if ($user->perms('edit_assignments') && Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
             
             // Delete the current assignees for this task
             $db->Query('DELETE FROM {assigned}
@@ -361,7 +361,7 @@ switch (Req::val('action'))
     // new user self-registration with a confirmation code
     // ##################
     case 'newuser.newuser':
-        if (!($user->perms['is_admin'] || $user->can_self_register())) {
+        if (!($user->perms('is_admin') || $user->can_self_register())) {
             break;
         }
 
@@ -380,7 +380,7 @@ switch (Req::val('action'))
             break;
         }
         
-        if ($user->perms['is_admin']) {
+        if ($user->perms('is_admin')) {
             $group_in = Post::val('group_in');
         } else {
             $group_in = $fs->prefs['anon_group'];
@@ -393,7 +393,7 @@ switch (Req::val('action'))
             break;
         }
 
-        if ($user->perms['is_admin']) {
+        if ($user->perms('is_admin')) {
             $_SESSION['SUCCESS'] = L('newusercreated');
             Flyspray::Redirect(CreateURL('admin', 'groups'));
         } else {
@@ -406,7 +406,7 @@ switch (Req::val('action'))
     //  adding a new group
     // ##################
     case 'newgroup.newgroup':
-        if (!$user->perms['manage_project'] || Post::val('project') != Post::val('belongs_to_project') ) {
+        if (!$user->perms('manage_project') || Post::val('project') != Post::val('belongs_to_project') ) {
             break;
         }
         
@@ -450,7 +450,7 @@ switch (Req::val('action'))
     //  Update the global application preferences
     // ##################
     case 'globaloptions':
-        if (!$user->perms['is_admin']) {
+        if (!$user->perms('is_admin')) {
             break;
         }
         
@@ -482,7 +482,7 @@ switch (Req::val('action'))
     // adding a new project
     // ##################
     case 'admin.newproject':
-        if (!$user->perms['is_admin']) {
+        if (!$user->perms('is_admin')) {
             break;
         }
         
@@ -548,7 +548,7 @@ switch (Req::val('action'))
     // updating project preferences 
     // ##################
     case 'pm.updateproject':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -603,14 +603,14 @@ switch (Req::val('action'))
         }
         
         if (!Post::val('onlypmgroup')):
-        if ($user->perms['is_admin'] || $user->id == Post::val('user_id')): // only admin or user himself can change
+        if ($user->perms('is_admin') || $user->id == Post::val('user_id')): // only admin or user himself can change
         
         if (!Post::val('real_name') || (!Post::val('email_address') && !Post::val('jabber_id'))) {
             Flyspray::show_error(L('realandnotify'));
             break;
         }
         
-        if ( (!$user->perms['is_admin'] || $user->id == Post::val('user_id')) && !Post::val('oldpass')
+        if ( (!$user->perms('is_admin') || $user->id == Post::val('user_id')) && !Post::val('oldpass')
              && (Post::val('changepass') || Post::val('confirmpass')) ) {
             Flyspray::show_error(L('nooldpass'));
             break;
@@ -653,7 +653,7 @@ switch (Req::val('action'))
 
         endif; // end only admin or user himself can change
         
-        if ($user->perms['is_admin']) {
+        if ($user->perms('is_admin')) {
             $db->Query('UPDATE {users} SET account_enabled = ?  WHERE user_id = ?',
                     array(Post::val('account_enabled', 0), Post::val('user_id')));
 
@@ -664,7 +664,7 @@ switch (Req::val('action'))
         
         endif; // end non project group changes
 
-        if ($user->perms['manage_project'] && !is_null(Post::val('project_group_in')) && Post::val('project_group_in') != Post::val('old_project_id')) {
+        if ($user->perms('manage_project') && !is_null(Post::val('project_group_in')) && Post::val('project_group_in') != Post::val('old_project_id')) {
             $sql = $db->Query('UPDATE {users_in_groups} SET group_id = ?
                                 WHERE group_id = ? AND user_id = ?',
                               array(Post::val('project_group_in'), Post::val('old_project_id'), Post::val('user_id')));
@@ -683,7 +683,7 @@ switch (Req::val('action'))
     // ##################
     case 'pm.editgroup':
     case 'admin.editgroup':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -755,7 +755,7 @@ switch (Req::val('action'))
     // updating a list
     // ##################
     case 'update_list':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -792,7 +792,7 @@ switch (Req::val('action'))
     // ##################
     case 'pm.add_to_list':
     case 'admin.add_to_list':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -822,7 +822,7 @@ switch (Req::val('action'))
     // updating the version list
     // ##################
     case 'update_version_list':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -863,7 +863,7 @@ switch (Req::val('action'))
     // ##################
     case 'pm.add_to_version_list':
     case 'admin.add_to_version_list':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -886,7 +886,7 @@ switch (Req::val('action'))
     // updating the category list
     // ##################
     case 'update_category':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -923,7 +923,7 @@ switch (Req::val('action'))
     // ##################
     case 'pm.add_category':
     case 'admin.add_category':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -1061,12 +1061,12 @@ switch (Req::val('action'))
     // editing a comment
     // ##################
     case 'editcomment':
-        if (!($user->perms['edit_comments'] || $user->perms['edit_own_comments'])) {
+        if (!($user->perms('edit_comments') || $user->perms('edit_own_comments'))) {
             break;
         }
         
         $where = '';
-        if ($user->perms['edit_own_comments'] && !$user->perms['edit_comments']) {
+        if ($user->perms('edit_own_comments') && !$user->perms('edit_comments')) {
             $where = ' AND user_id = ' . $user->id;
         }
         $db->Query("UPDATE  {comments}
@@ -1088,7 +1088,7 @@ switch (Req::val('action'))
     // deleting a comment
     // ##################
     case 'details.deletecomment':
-        if (!$user->perms['delete_comments']) {
+        if (!$user->perms('delete_comments')) {
             break;
         }
         
@@ -1104,7 +1104,7 @@ switch (Req::val('action'))
                                           WHERE  comment_id = ?",
                                         array(Req::val('comment_id')));
 
-        if ($db->CountRows($check_attachments) && !$user->perms['delete_attachments']) {
+        if ($db->CountRows($check_attachments) && !$user->perms('delete_attachments')) {
             Flyspray::show_error(L('commentattachperms'));
             break;
         }
@@ -1148,7 +1148,7 @@ switch (Req::val('action'))
     // removing a reminder
     // ##################
     case 'deletereminder':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -1170,7 +1170,16 @@ switch (Req::val('action'))
     // change a bunch of users' groups
     // ##################
     case 'movetogroup':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
+            break;
+        }
+        
+        // Check that both groups belong to the same project
+        $sql = $db->Query('SELECT belongs_to_project FROM {groups} WHERE group_id = ? OR group_id = ?',
+                          array(Post::val('switch_to_group'), Post::val('old_group')));
+        $old_pr = $db->FetchOne($sql);
+        $new_pr = $db->FetchOne($sql);
+        if ($proj->id != $old_pr || ($new_pr && $new_pr != $proj->id)) {
             break;
         }
         
@@ -1195,7 +1204,7 @@ switch (Req::val('action'))
     // taking ownership
     // ##################
     case 'takeownership':
-        if (!$user->perms['edit_assignments']) {
+        if (!$user->perms('edit_assignments')) {
             break;
         }
         
@@ -1220,7 +1229,7 @@ switch (Req::val('action'))
     // add to assignees list
     // ##################
     case 'addtoassignees':
-        if (!$user->perms['edit_assignments']) {
+        if (!$user->perms('edit_assignments')) {
             break;
         }
         
@@ -1230,10 +1239,10 @@ switch (Req::val('action'))
             $redirect_url = Req::val('prev_page');
 
             if (!empty($ids)) {
-                $be->AddToAssignees($user, array_keys($ids));
+                $be->AddToAssignees($user->id, array_keys($ids));
             }
         } else {
-            $be->AddToAssignees($user, Req::val('ids'));
+            $be->AddToAssignees($user->id, Req::val('ids'));
             $redirect_url = CreateURL('details', Req::val('ids'));
         }
 
@@ -1295,7 +1304,7 @@ switch (Req::val('action'))
     // denying a PM request
     // ##################
     case 'denypmreq':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -1452,7 +1461,7 @@ switch (Req::val('action'))
     // making a task private
     // ##################
     case 'makeprivate':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -1469,7 +1478,7 @@ switch (Req::val('action'))
     // making a task public
     // ##################
     case 'makepublic':
-        if (!$user->perms['manage_project']) {
+        if (!$user->perms('manage_project')) {
             break;
         }
         
@@ -1487,7 +1496,7 @@ switch (Req::val('action'))
     // Adding a vote for a task
     // ##################
     case 'details.addvote':
-        if ($be->add_vote($user, Req::num('id'))) {                         
+        if ($be->add_vote($user->id, Req::num('id'))) {                         
             $_SESSION['SUCCESS'] = L('voterecorded');
             Flyspray::Redirect(CreateURL('details', Req::num('id')));
         } else {

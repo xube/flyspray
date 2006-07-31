@@ -64,7 +64,7 @@
       <tr>
         <td colspan="2"><hr /></td>
       </tr>
-      <?php if ($user->perms['is_admin']): ?>
+      <?php if ($user->perms('is_admin')): ?>
       <tr>
         <td><label for="accountenabled">{L('accountenabled')}</label></td>
         <td>{!tpl_checkbox('account_enabled', Req::val('account_enabled', !Post::val('action') && $theuser->infos['account_enabled']), 'accountenabled')}</td>
@@ -77,7 +77,7 @@
       <tr>
         <td><label for="groupin">{L('globalgroup')}</label></td>
         <td>
-          <select id="groupin" class="adminlist" name="group_in" {tpl_disableif(!$user->perms['is_admin'])}>
+          <select id="groupin" class="adminlist" name="group_in" {tpl_disableif(!$user->perms('is_admin'))}>
             {!tpl_options($groups, Req::val('group_in', $theuser->infos['global_group']))}
           </select>
           <input type="hidden" name="old_global_id" value="{$theuser->infos['global_group']}" />
@@ -87,17 +87,17 @@
       <tr>
         <td><label for="projectgroupin">{L('projectgroup')}</label></td>
         <td>
-          <select id="projectgroupin" class="adminlist" name="project_group_in" {tpl_disableif(!$user->perms['manage_project'])}>
+          <select id="projectgroupin" class="adminlist" name="project_group_in" {tpl_disableif(!$user->perms('manage_project'))}>
             {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), Req::val('project_group_in', $theuser->infos['project_group']))}
           </select>
-          <input type="hidden" name="old_project_id" value="{$theuser->infos['project_group']}" />
+          <input type="hidden" name="old_project_id" value="{$theuser->perms('project_group')}" />
         </td>
       </tr>
       <?php endif; ?>
       <tr>
         <td colspan="2"><hr /></td>
       </tr>
-      <?php if (!$user->perms['is_admin'] || $user->id == $theuser->id): ?>
+      <?php if (!$user->perms('is_admin') || $user->id == $theuser->id): ?>
       <tr>
         <td><label for="oldpass">{L('oldpass')}</label></td>
         <td><input id="oldpass" class="password" type="password" name="oldpass" value="{Req::val('oldpass')}" size="40" maxlength="100" /></td>

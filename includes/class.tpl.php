@@ -257,7 +257,7 @@ function tpl_userlink($uid)
     }
     
     if (isset($uname)) {
-        $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms['is_admin']) ? 'edituser' : 'user', $uid)).'">'
+        $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms('is_admin')) ? 'edituser' : 'user', $uid)).'">'
                            . htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
                            . htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
     } elseif (empty($cache[$uid])) {
@@ -568,10 +568,10 @@ function tpl_draw_perms($perms)
     $html = '<table border="1" onmouseover="perms.hide()" onmouseout="perms.hide()">';
     $html .= '<thead><tr><th colspan="2">'.L('permissionsforproject').$proj->prefs['project_title'].'</th></tr></thead><tbody>';
 
-    foreach ($perms as $key => $val) {
+    foreach ($perms[$proj->id] as $key => $val) {
         if (!is_numeric($key) && in_array($key, $perm_fields)) {
             $html .= '<tr><th>' . str_replace('_', ' ', $key) . '</th>';
-            $html .= $yesno[(bool)$val].'</tr>';
+            $html .= $yesno[ ($val || isset($perms[0]['is_admin'])) ].'</tr>';
         }
     }
     return $html . '</tbody></table>';

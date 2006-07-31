@@ -10,9 +10,8 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if (!$user->can_view_project($proj)) {
+if (!$user->can_view_project($proj->id)) {
     $proj = new Project(0);
-    $user->get_perms($proj);
 }
 
 $page->uses('severity_list', 'priority_list');
@@ -465,7 +464,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 if(Get::has('hideupdatemsg')) {
     $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_id = 23', array(time()));
     unset($_SESSION['latest_version']);
-} else if ($conf['general']['update_check'] && $user->perms['is_admin']
+} else if ($conf['general']['update_check'] && $user->perms('is_admin')
            && $fs->prefs['last_update_check'] < time()-60*60*24*3) {
     if (!isset($_SESSION['latest_version'])) {
 		$fs_server  = @fsockopen('flyspray.rocks.cc', 80, $errno, $errstr, 8);

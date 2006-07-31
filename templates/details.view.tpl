@@ -19,7 +19,7 @@
 	 <a href="{$baseurl}?project={$task_details['attached_to_project']}">{$task_details['project_title']}</a>
 	 <br />
 	 {L('openedby')} {!tpl_userlink($task_details['opened_by'])}
-     <?php if ($task_details['anon_email'] && $user->perms['view_tasks']): ?>
+     <?php if ($task_details['anon_email'] && $user->perms('view_tasks')): ?>
      ({$task_details['anon_email']})
      <?php endif; ?>
 	 - {formatDate($task_details['date_opened'], true)}
@@ -128,12 +128,12 @@
           <?php else: ?>
           0
           <?php endif; ?>
-          <?php if ($user->can_vote($task_details['task_id']) > 0): ?>
+          <?php if ($user->can_vote($task_details) > 0): ?>
           <a href="{$baseurl}?do=modify&amp;action=details.addvote&amp;id={Req::num('id')}">
             ({L('addvote')})</a>
-          <?php elseif ($user->can_vote($task_details['task_id']) == -2): ?>
+          <?php elseif ($user->can_vote($task_details) == -2): ?>
           ({L('alreadyvotedthistask')})
-          <?php elseif ($user->can_vote($task_details['task_id']) == -3): ?>
+          <?php elseif ($user->can_vote($task_details) == -3): ?>
           ({L('alreadyvotedthisday')})
           <?php endif; ?>
           </td>

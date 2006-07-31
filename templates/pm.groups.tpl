@@ -2,7 +2,7 @@
   <h3>{L('pmtoolbox')} :: {$proj->prefs['project_title']} : {L('groupmanage')}</h3>
   <fieldset class="admin">
     <legend>{L('usersandgroups')}</legend>
-    <?php if ($user->perms['is_admin']): ?>
+    <?php if ($user->perms('is_admin')): ?>
     <p>
       <img src="{$this->get_image('personal')}" alt="" class="middle" /> <a href="{CreateURL('newuser', $proj->id)}">{L('newuser')}</a>
     </p>
