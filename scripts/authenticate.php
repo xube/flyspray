@@ -20,7 +20,7 @@ if (Req::val('user_name') && Req::val('password')) {
     $password = Req::val('password');
 
     // Run the username and password through the login checker
-    if (!($user_id = $fs->checkLogin($username, $password))) {
+    if (!($user_id = Flyspray::checkLogin($username, $password))) {
         $_SESSION['failed_login'] = Req::val('user_name');
         Flyspray::show_error(7);
     }
@@ -35,8 +35,8 @@ if (Req::val('user_name') && Req::val('password')) {
         $user = new User($user_id);
 
         // Set a couple of cookies
-        $fs->setcookie('flyspray_userid',   $user->id, $cookie_time);
-        $fs->setcookie('flyspray_passhash', crypt($user->infos['user_pass'], $conf['general']['cookiesalt']), $cookie_time);
+        Flyspray::setcookie('flyspray_userid',   $user->id, $cookie_time);
+        Flyspray::setcookie('flyspray_passhash', crypt($user->infos['user_pass'], $conf['general']['cookiesalt']), $cookie_time);
 
         // If the user had previously requested a password change, remove the magic url
         $remove_magic = $db->Query("UPDATE {users} SET magic_url = '' WHERE user_id = ?",

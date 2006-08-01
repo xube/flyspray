@@ -13,9 +13,9 @@ if ($user->isAnon()) {
     Flyspray::show_error(13);
 }
 
-$page->assign('groups', $fs->ListGroups());
+$page->assign('groups', Flyspray::ListGroups());
 
-$page->assign('project_groups', $fs->ListGroups($proj->id));
+$page->assign('project_groups', Flyspray::ListGroups($proj->id));
         
 $page->assign('theuser', $user);
 

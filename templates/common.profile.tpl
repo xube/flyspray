@@ -88,7 +88,7 @@
         <td><label for="projectgroupin">{L('projectgroup')}</label></td>
         <td>
           <select id="projectgroupin" class="adminlist" name="project_group_in" {tpl_disableif(!$user->perms('manage_project'))}>
-            {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), Req::val('project_group_in', $theuser->infos['project_group']))}
+            {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), Req::val('project_group_in', $theuser->perms('project_group')))}
           </select>
           <input type="hidden" name="old_project_id" value="{$theuser->perms('project_group')}" />
         </td>

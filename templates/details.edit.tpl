@@ -62,7 +62,7 @@
                 <?php if ($user->perms('edit_assignments')): ?>
 				<a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');fill_userselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
-				<div id="multiuserlist" class="popup">
+				<div id="multiuserlist" class="hide popup">
                 
                 <table class="double_select">
                   <tr>
@@ -181,7 +181,13 @@
             <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
               <input tabindex="5" class="file" type="file" size="55" name="usertaskfile[]" />
                 <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
-            </span>    
+            </span>
+            <noscript>
+                <span>
+                  <input tabindex="5" class="file" type="file" size="55" name="usertaskfile[]" />
+                    <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
+                </span>    
+            </noscript>
           </div>
           <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields()">
             {L('uploadafile')} ({L('max')} {$fs->max_file_size} {L('MiB')})

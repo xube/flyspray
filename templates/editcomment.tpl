@@ -11,7 +11,13 @@
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
           <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
             <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
-        </span>    
+        </span>
+        <noscript>
+          <span>
+            <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
+              <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
+          </span>   
+        </noscript> 
       </div>
       <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields()">
         {L('uploadafile')}

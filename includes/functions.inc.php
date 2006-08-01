@@ -189,7 +189,6 @@ class Flyspray
      */
     function requestDuplicated()
     {
-        return false;
         // garbage collection -- clean entries older than 6 hrs
         $now = time();
         if (!empty($_SESSION['requests_hash'])) {
@@ -467,10 +466,13 @@ class Flyspray
         return false;
     } // }}}
     // Set cookie {{{
-    function setCookie($name, $val, $time)
+    function setCookie($name, $val, $time = null)
     {
         global $baseurl;
         $url = parse_url($baseurl);
+        if (is_null($time)) {
+            $time = time()+60*60*24*30;
+        }
         setcookie($name, $val, $time, $url['path']);
     } // }}}
     // Reminder daemon {{{
@@ -650,12 +652,12 @@ class Flyspray
     {
         global $modes, $do, $baseurl;
         
-        if ($do == 'modify') {
+        if (!is_int($error_message)) {
+            // in modify.php
             $_SESSION['ERROR'] = $error_message;
 
             $do = Filters::enum(reset(explode('.', Req::val('action'))), $modes);
         } else {
-            // $error_message is an error code (integer)!
             $_SESSION['ERROR'] = L('error#') . $error_message . ': ' . L('error' . $error_message);
             Flyspray::Redirect($baseurl);
         }

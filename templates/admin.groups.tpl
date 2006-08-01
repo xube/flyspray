@@ -13,7 +13,7 @@
     <form action="{$baseurl}" method="get">
         <div>
             <label for="selectgroup">{L('editgroup')}</label>
-            <select name="id" id="selectgroup">{!tpl_options($fs->ListGroups())}</select>
+            <select name="id" id="selectgroup">{!tpl_options(Flyspray::ListGroups())}</select>
             <button type="submit">{L('edit')}</button>
             <input type="hidden" name="do" value="admin" />
             <input type="hidden" name="area" value="editgroup" />

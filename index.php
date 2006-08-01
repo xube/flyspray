@@ -14,7 +14,7 @@ setlocale(LC_ALL, str_replace('-', '_', L('locale')));
 
 // Background daemon that does scheduled reminders
 if ($conf['general']['reminder_daemon'] == '1') {
-    $fs->startReminderDaemon();
+    Flyspray::startReminderDaemon();
 }
 
 // Get available do-modes
@@ -115,7 +115,7 @@ if ($show_task = Get::val('show_task')) {
     }
 }
 
-if ($fs->requestDuplicated()) {
+if (Flyspray::requestDuplicated()) {
     // Check that this page isn't being submitted twice
     Flyspray::show_error(3);
 }

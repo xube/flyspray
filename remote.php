@@ -62,7 +62,7 @@ function checkRPCLogin($args)
    $username   = php_xmlrpc_decode($args->getParam(0));
    $password   = php_xmlrpc_decode($args->getParam(1));
 
-   return $fs->checkLogin($username, $password);
+   return Flyspray::checkLogin($username, $password);
 }
 
 /**
@@ -183,7 +183,7 @@ function getTask($args)
 
 
    // Get the task details
-   $task_details = $fs->getTaskDetails($task_id);
+   $task_details = Flyspray::getTaskDetails($task_id);
 
    // Get the user's permissions for the project this task belongs to
    
@@ -363,7 +363,7 @@ function severityArray()
 function priorityArray()
 {
    global $fs;
-   return $fs->priotities;
+   return Flyspray::priotities;
 }
 
 /**
@@ -411,7 +411,7 @@ function projectListArray($activeOnly=true)
 {
    
    global $fs;
-   return rotateArray($fs->listProjects($activeOnly),'project_id','project_title');
+   return rotateArray(Flyspray::listProjects($activeOnly),'project_id','project_title');
 }
 
 /**
@@ -581,7 +581,7 @@ function openTask($args)
    setProject($taskData['project_id']);
 
    // Get the task details
-   $task_details = @$fs->getTaskDetails($task_id);
+   $task_details = @Flyspray::getTaskDetails($task_id);
 
    // Get the user's permissions for the project this task belongs to
    $user = new user($user_id);
@@ -651,7 +651,7 @@ function closeTask($args)
    }
 
    // Get the task details
-   $task_details = @$fs->getTaskDetails($task_id);
+   $task_details = @Flyspray::getTaskDetails($task_id);
 
    // Get the user's permissions for the project this task belongs to
    $user = new user($user_id);
@@ -714,7 +714,7 @@ function closeTask($args)
              );
 
    // Log this to the task's history
-   $fs->logEvent($task_id, 2, $reason, $comment);
+   Flyspray::logEvent($task_id, 2, $reason, $comment);
 
    // Generate notifications
    $notify->Create(NOTIFY_TASK_CLOSED, $task_id);
@@ -746,7 +746,7 @@ function getUser($args)
 
    if ($permissions['is_admin'] == '1' or $user_id == $req_user)
    {
-      $user_details = $fs->getUserDetails($req_user);
+      $user_details = Flyspray::getUserDetails($req_user);
 
       // If the task doesn't exist, stop.
       if (!is_numeric($user_details['user_id']))
@@ -881,7 +881,7 @@ function addComment($args)
    
    
    
-   $task = $fs->getTaskDetails($task_id);
+   $task = Flyspray::getTaskDetails($task_id);
    
    setProject($task['project_id']);
    

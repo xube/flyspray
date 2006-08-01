@@ -79,9 +79,7 @@ $groupby = '';
 $from   = '             {tasks}         t
              LEFT JOIN  {projects}      p   ON t.attached_to_project = p.project_id
              LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
-             LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id
-             LEFT JOIN  {groups}        g   ON g.belongs_to_project = p.project_id OR g.belongs_to_project = 0
-             LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?';
+             LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id ';
 // Only join tables which are really necessary to speed up the db-query
 if (Get::has('cat') || in_array('category', $visible)) {
     $from   .= ' LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id ';
@@ -137,19 +135,6 @@ if (Get::has('dev') || in_array('assignedto', $visible)) {
     $select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
 }
 
-
-$where      = array('project_is_active = 1');
-$where[]    = '(p.others_view = 1 AND t.mark_private = 0
-                OR (uig.user_id = ?
-                   AND (t.opened_by = ?
-                        OR (t.mark_private = 0 AND g.view_tasks = 1)
-                        OR ass.user_id = ?
-                        OR g.manage_project = 1
-                        OR g.is_admin = 1)
-                        )
-                )';
-$sql_params = array($user->id, $user->id, $user->id, $user->id);
-
 if (Get::has('only_primary')) {
     $from   .= ' LEFT JOIN  {dependencies} dep  ON dep.dep_task_id = t.task_id ';
     $where[] = 'dep.depend_id IS NULL';
@@ -158,19 +143,7 @@ if (Get::has('has_attachment')) {
     $where[] = 'att.attachment_id IS NOT NULL';
 }
 
-if ($proj->id == 0) {
-    // If the user wants to view tasks from all projects
-
-    $temp_where   = 'attached_to_project = ?';
-    $sql_params[] = '0';
-    foreach ($fs->projects as $this_project) {
-        $temp_where  .= ' OR attached_to_project = ?';
-        $sql_params[] = $this_project['project_id'];
-    }
-    $where[] = "($temp_where)";
-}
-else {
-    // If we're not selecting all projects
+if ($proj->id) {
     $where[]       = "attached_to_project = ?";
     $sql_params[]  = $proj->id;
 }
@@ -302,7 +275,7 @@ $tasks = $db->fetchAllArray($sql);
 $id_list = array();
 foreach ($tasks as $key => $task) {
     $id_list[] = $task['task_id'];
-    if ($key < $offset || ($key > $offset - 1 + $perpage)) {
+    if ($key < $offset || ($key > $offset - 1 + $perpage) || !$user->can_view_task($task)) {
         unset($tasks[$key]);
     }
 }
@@ -457,9 +430,15 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
 // }}}
 
+// Javascript replacement
+if (Get::val('toggleadvanced')) {
+    $advanced_search = intval(!Req::val('advancedsearch'));
+    Flyspray::setCookie('advancedsearch', $advanced_search, time()+60*60*24*30);
+    $_COOKIE['advancedsearch'] = $advanced_search;
+}
+
 // Update check {{{
 if(Get::has('hideupdatemsg')) {
-    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_id = 23', array(time()));
     unset($_SESSION['latest_version']);
 } else if ($conf['general']['update_check'] && $user->perms('is_admin')
            && $fs->prefs['last_update_check'] < time()-60*60*24*3) {
@@ -479,10 +458,11 @@ if(Get::has('hideupdatemsg')) {
 		}
 		//if for some silly reason we get and empty response, we use the actual version
  		$_SESSION['latest_version'] = empty($latest) ? $fs->version : $latest ; 
+        $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_id = 23', array(time()));
 	}
-    if (version_compare($fs->version, $_SESSION['latest_version'] , '<') ) {
-        $page->assign('updatemsg', true);
-    }
+}
+if (isset($_SESSION['latest_version']) && version_compare($fs->version, $_SESSION['latest_version'] , '<') ) {
+    $page->assign('updatemsg', true);
 }
 // }}}
 

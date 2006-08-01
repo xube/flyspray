@@ -9,10 +9,10 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$page->assign('groups', $fs->ListGroups());
+$page->assign('groups', Flyspray::ListGroups());
 
 if ($proj->id) {
-    $page->assign('project_groups', $fs->ListGroups($proj->id));
+    $page->assign('project_groups', Flyspray::ListGroups($proj->id));
 }
 
 $id = Flyspray::username_to_id(Get::val('id', Get::val('uid')));

@@ -21,7 +21,7 @@
           <td><label for="defaultproject">{L('defaultproject')}</label></td>
           <td>
             <select id="defaultproject" name="default_project">
-              {!tpl_options(array_merge(array(0 => L('allprojects')), $fs->listProjects()), $fs->prefs['default_project'])}
+              {!tpl_options(array_merge(array(0 => L('allprojects')), Flyspray::listProjects()), $fs->prefs['default_project'])}
             </select>
           </td>
         </tr>
@@ -29,7 +29,7 @@
           <td><label for="langcode">{L('language')}</label></td>
           <td>
             <select id="langcode" name="lang_code">
-              {!tpl_options($fs->listLangs(), $fs->prefs['lang_code'], true)}
+              {!tpl_options(Flyspray::listLangs(), $fs->prefs['lang_code'], true)}
             </select>
           </td>
         </tr>
@@ -74,14 +74,14 @@
           <td><label for="defaultglobalgroup">{L('defaultglobalgroup')}</label></td>
           <td>
             <select id="defaultglobalgroup" name="anon_group">
-              {!tpl_options($fs->listGroups(), $fs->prefs['anon_group'])}
+              {!tpl_options(Flyspray::listGroups(), $fs->prefs['anon_group'])}
             </select>
           </td>
         </tr>
         <tr>
           <td><label id="groupsassignedlabel">{L('groupassigned')}</label></td>
           <td class="text">
-            <?php foreach($fs->listGroups() as $group): ?>
+            <?php foreach(Flyspray::listGroups() as $group): ?>
             {!tpl_checkbox('assigned_groups['.$group['group_id'].']',
             strstr($fs->prefs['assigned_groups'], $group['group_id']) !== false)}
             {$group['group_name']}<br />
@@ -171,7 +171,7 @@
           <td><label for="globaltheme">{L('globaltheme')}</label></td>
           <td>
             <select id="globaltheme" name="global_theme">
-              {!tpl_options($fs->listThemes(), $fs->prefs['global_theme'], true)}
+              {!tpl_options(Flyspray::listThemes(), $fs->prefs['global_theme'], true)}
             </select>
           </td>
         </tr>

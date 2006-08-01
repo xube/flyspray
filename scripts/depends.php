@@ -9,7 +9,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if ( !($task_details = $fs->GetTaskDetails(Req::num('id')))
+if ( !($task_details = Flyspray::GetTaskDetails(Req::num('id')))
         || !$user->can_view_task($task_details))
 {
     Flyspray::show_error(9);

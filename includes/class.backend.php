@@ -58,7 +58,7 @@ class Backend
             if (!$db->CountRows($notif)) {
                 $db->Query('INSERT INTO {notifications} (task_id, user_id)
                                  VALUES  (?,?)', array($row['task_id'], $user_id));
-                $fs->logEvent($row['task_id'], 9, $user_id);
+                Flyspray::logEvent($row['task_id'], 9, $user_id);
             }
         }
 
@@ -103,7 +103,7 @@ class Backend
                               WHERE  task_id = ? AND user_id = ?',
                         array($row['task_id'], $user_id));
             if ($db->affectedRows()) {
-                $fs->logEvent($row['task_id'], 10, $user_id);
+                Flyspray::logEvent($row['task_id'], 10, $user_id);
             }
         }
     }
@@ -147,13 +147,13 @@ class Backend
                         array($row['task_id'], $user->id));
             
             if ($db->affectedRows()) {
-                $fs->logEvent($row['task_id'], 19, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
+                Flyspray::logEvent($row['task_id'], 19, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
                 $notify->Create(NOTIFY_OWNERSHIP, $row['task_id']);
             }
 
             if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
                 $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
-                $fs->logEvent($task_id, 3, 3, 1, 'item_status');
+                Flyspray::logEvent($task_id, 3, 3, 1, 'item_status');
             }
         }
     }
@@ -189,13 +189,13 @@ class Backend
             $db->Replace('{assigned}', array('user_id'=> $user->id, 'task_id'=> $row['task_id']), array('user_id','task_id'));
 
             if ($db->affectedRows()) {
-                $fs->logEvent($row['task_id'], 29, $user->id, implode(' ', $fs->GetAssignees($row['task_id'])));
+                Flyspray::logEvent($row['task_id'], 29, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
                 $notify->Create(NOTIFY_ADDED_ASSIGNEES, $row['task_id']);
             }
             
             if ($task['item_status'] == STATUS_UNCONFIRMED || $task['item_status'] == STATUS_NEW) {
                 $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
-                $fs->logEvent($row['task_id'], 3, 3, 1, 'item_status');
+                Flyspray::logEvent($row['task_id'], 3, 3, 1, 'item_status');
             }
         }
     }
@@ -245,7 +245,7 @@ class Backend
                             array($task['task_id']), 1);
         $cid = $db->FetchOne($result);
 
-        $fs->logEvent($task['task_id'], 4, $cid);
+        Flyspray::logEvent($task['task_id'], 4, $cid);
 
         if ($this->UploadFiles($user, $task['task_id'], $cid)) {
             $notify->Create(NOTIFY_COMMENT_ADDED, $task['task_id'], 'files');
@@ -266,10 +266,10 @@ class Backend
     {
         global $db, $fs, $notify, $conf;
 
-        mt_srand($fs->make_seed());
+        mt_srand(Flyspray::make_seed());
 
         // Retrieve some important information
-        $task = $fs->GetTaskDetails($taskid);
+        $task = Flyspray::GetTaskDetails($taskid);
 
         if (!$user->perms('create_attachments', $task['attached_to_project'])) {
             return false;
@@ -328,7 +328,7 @@ class Backend
                                    WHERE  task_id = ?
                                 ORDER BY  attachment_id DESC',
                     array($taskid), 1);
-            $fs->logEvent($taskid, 7, $db->fetchOne($result));
+            Flyspray::logEvent($taskid, 7, $db->fetchOne($result));
         }
 
         return $res;
@@ -341,7 +341,7 @@ class Backend
     {
         global $db, $fs;
         
-        $task = $fs->GetTaskDetails($taskid);
+        $task = Flyspray::GetTaskDetails($taskid);
         
         if (!$user->perms('delete_attachments', $task['attached_to_project']) || !count(Post::val('delete_att'))) {
             return false;
@@ -361,7 +361,7 @@ class Backend
         
         while($row = $db->FetchRow($result)) {
             @unlink(BASEDIR . '/attachments/' . $row['file_name']);
-            $fs->logEvent($row['task_id'], 8, $row['orig_name']);
+            Flyspray::logEvent($row['task_id'], 8, $row['orig_name']);
         }
     }
     
@@ -392,7 +392,7 @@ class Backend
         // Autogenerate a password
         if (!$password) {
             $auto = true;
-            mt_srand($fs->make_seed());
+            mt_srand(Flyspray::make_seed());
             $password = substr(md5(mt_rand() . $user_name), 0, mt_rand(7, 9));
         }
         
@@ -401,7 +401,7 @@ class Backend
                                email_address, notify_type, account_enabled,
                                tasks_perpage, register_date)
                      VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25, ?)",
-            array($user_name, $fs->cryptPassword($password), $real_name, $jabber_id, $email, $notify_type, time()));
+            array($user_name, Flyspray::cryptPassword($password), $real_name, $jabber_id, $email, $notify_type, time()));
 
         // Get this user's id for the record
         $uid = Flyspray::username_to_id($user_name);
@@ -410,7 +410,7 @@ class Backend
         $db->Query('INSERT INTO  {users_in_groups} (user_id, group_id)
                          VALUES  ( ?, ?)', array($uid, $group_in));
         
-        $fs->logEvent(0, 30, serialize($fs->getUserDetails($uid)));
+        Flyspray::logEvent(0, 30, serialize(Flyspray::getUserDetails($uid)));
         
         if ($fs->prefs['notify_registration']) {
             $sql = $db->Query('SELECT email_address
@@ -432,7 +432,7 @@ class Backend
             return false;
         }
         
-        $user_data = serialize($fs->getUserDetails($uid));
+        $user_data = serialize(Flyspray::getUserDetails($uid));
         
         $sql = $db->Query('DELETE 
                              FROM {users} 
@@ -447,7 +447,7 @@ class Backend
         $db->Query('DELETE FROM {notifications} WHERE user_id = ?', array($uid));
         $db->Query('DELETE FROM {assigned}      WHERE user_id = ?', array($uid));
         
-        $fs->logEvent(0, 31, $user_data);
+        Flyspray::logEvent(0, 31, $user_data);
         
         return (bool) $db->affectedRows($sql);
     }
@@ -495,7 +495,7 @@ class Backend
     function add_reminder($task_id, $message, $how_often, $start_time, $user_id = null)
     {
         global $user, $db, $fs;
-        $task = $fs->GetTaskDetails($task_id);
+        $task = Flyspray::GetTaskDetails($task_id);
         
         if (!$user->perms('manage_project', $task['attached_to_project'])) {
             return;
@@ -503,7 +503,7 @@ class Backend
         
         if (is_null($user_id)) {
             // Get all users assigned to a task
-            $user_id = $fs->GetAssignees($task_id);
+            $user_id = Flyspray::GetAssignees($task_id);
         } else {
             $user_id = array(Flyspray::username_to_id($user_id));
             if (!reset($user_id)) {
@@ -519,7 +519,7 @@ class Backend
                          array('task_id', 'to_user_id', 'how_often', 'reminder_message'));
         }
 
-        $fs->logEvent(Post::val('id'), 17, $task_id);
+        Flyspray::logEvent(Post::val('id'), 17, $task_id);
         return true;
     }
 
@@ -614,7 +614,7 @@ class Backend
                 $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task_id), array('user_id','task_id'));
             }
             // Log to task history
-            $fs->logEvent($task_id, 14, trim($args['assigned_to']));
+            Flyspray::logEvent($task_id, 14, trim($args['assigned_to']));
         }
 
 
@@ -623,7 +623,7 @@ class Backend
                         $notify->SpecificAddresses(Flyspray::int_explode(' ', $args['assigned_to'])));
                     
         // Log that the task was opened
-        $fs->logEvent($task_id, 1);
+        Flyspray::logEvent($task_id, 1);
 
         $this->UploadFiles($user, $task_id);
 
@@ -687,7 +687,7 @@ class Backend
    function close_task(&$user, $task_id, $reason, $comment, $mark100 = true)
    {
         global $db, $fs, $notify;
-        $old_details = $fs->GetTaskDetails($task_id);
+        $old_details = Flyspray::GetTaskDetails($task_id);
         
         if (!$user->can_close_task($old_details)) {
             return false;
@@ -703,13 +703,13 @@ class Backend
         $db->Query("UPDATE {tasks} SET percent_complete = '100' WHERE task_id = ?",
                 array($task_id));
 
-        $fs->logEvent($task_id, 3, '100', $old_details['percent_complete'], 'percent_complete');
+        Flyspray::logEvent($task_id, 3, '100', $old_details['percent_complete'], 'percent_complete');
         }
 
         $notify->Create(NOTIFY_TASK_CLOSED, $task_id);
-        $fs->logEvent($task_id, 2, $reason, $comment);
+        Flyspray::logEvent($task_id, 2, $reason, $comment);
 
-        if ($fs->AdminRequestCheck(1, $task_id)) {
+        if (Flyspray::AdminRequestCheck(1, $task_id)) {
         // If there's an admin request related to this, close it
         $db->Query("UPDATE  {admin_requests}
                        SET  resolved_by = ?, time_resolved = ?

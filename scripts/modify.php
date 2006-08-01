@@ -21,7 +21,7 @@ if ($lt = Post::val('list_type')) {
 
 function Post_to0($key) { return Post::val($key, 0); }
 if (Req::has('task_id') || Req::has('id')) {
-    $old_details = $fs->GetTaskDetails(Req::num('task_id', Req::num('id')));
+    $old_details = Flyspray::GetTaskDetails(Req::num('task_id', Req::num('id')));
 }
 
 unset($_SESSION['SUCCESS'], $_SESSION['ERROR']);
@@ -108,7 +108,7 @@ switch (Req::val('action'))
 
         // Get the details of the task we just updated
         // To generate the changed-task message
-        $new_details_full = $fs->GetTaskDetails(Post::val('task_id'));
+        $new_details_full = Flyspray::GetTaskDetails(Post::val('task_id'));
         // Not very nice...maybe combine compare_tasks() and logEvent() ?
         $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?",
                              array(Post::val('task_id')));
@@ -123,18 +123,18 @@ switch (Req::val('action'))
             
             if ($val != $old_details[$key]) {
                 // Log the changed fields in the task history
-                $fs->logEvent(Post::val('task_id'), 3, $val, $old_details[$key], $key, $time);
+                Flyspray::logEvent(Post::val('task_id'), 3, $val, $old_details[$key], $key, $time);
             }
         }
         
-        $changes = $fs->compare_tasks($old_details, $new_details_full);
+        $changes = Flyspray::compare_tasks($old_details, $new_details_full);
         if(count($changes) > 0) {
             $notify->Create(NOTIFY_TASK_CHANGED, Post::val('task_id'), $changes);
         }
 
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
             // Log to task history
-            $fs->logEvent(Post::val('task_id'), 14, trim(Post::val('assigned_to')), Post::val('old_assigned'), null, $time);
+            Flyspray::logEvent(Post::val('task_id'), 14, trim(Post::val('assigned_to')), Post::val('old_assigned'), null, $time);
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
             if (Post::val('assigned_to') != '') {
@@ -197,11 +197,11 @@ switch (Req::val('action'))
                      WHERE  task_id = ?",
                     array(time(), $user->id, $old_percent['old_value'], Get::val('task_id')));
         
-        $fs->logEvent(Get::val('task_id'), 3, $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
+        Flyspray::logEvent(Get::val('task_id'), 3, $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
 
         $notify->Create(NOTIFY_TASK_REOPENED, Get::val('task_id'));
 
-        if ($fs->AdminRequestCheck(2, Get::val('task_id')) == '1') {
+        if (Flyspray::AdminRequestCheck(2, Get::val('task_id')) == '1') {
             // If there's an admin request related to this, close it
             $db->Query("UPDATE  {admin_requests}
                            SET  resolved_by = ?, time_resolved = ?
@@ -209,7 +209,7 @@ switch (Req::val('action'))
                       array($user->id, time(), Get::val('task_id'), 2));
         }
 
-        $fs->logEvent(Get::val('task_id'), 13);
+        Flyspray::logEvent(Get::val('task_id'), 13);
 
         $_SESSION['SUCCESS'] = L('taskreopenedmsg');
         Flyspray::Redirect(CreateURL('details', Get::val('task_id')));
@@ -293,7 +293,7 @@ switch (Req::val('action'))
         }
         
         // Generate a random bunch of numbers for the confirmation code
-        mt_srand($fs->make_seed());
+        mt_srand(Flyspray::make_seed());
         $randval = mt_rand();
 
         // Convert those numbers to a seemingly random string using crypt
@@ -624,18 +624,18 @@ switch (Req::val('action'))
               $sql = $db->Query('SELECT user_pass FROM {users} WHERE user_id = ?', array(Post::val('user_id')));
               $oldpass =  $db->FetchRow($sql);
 
-              if ($fs->cryptPassword(Post::val('oldpass')) != $oldpass['user_pass']){
+              if (Flyspray::cryptPassword(Post::val('oldpass')) != $oldpass['user_pass']){
                 Flyspray::show_error(L('oldpasswrong'));
                 break;
               }  
             }
-            $new_hash = $fs->cryptPassword(Post::val('changepass'));
+            $new_hash = Flyspray::cryptPassword(Post::val('changepass'));
             $db->Query('UPDATE {users} SET user_pass = ? WHERE user_id = ?',
                     array($new_hash, Post::val('user_id')));
 
             // If the user is changing their password, better update their cookie hash
             if ($user->id == Post::val('user_id')) {
-                $fs->setcookie('flyspray_passhash',
+                Flyspray::setcookie('flyspray_passhash',
                         crypt($new_hash, $conf['general']['cookiesalt']), time()+3600*24*30);
             }
         }
@@ -981,8 +981,8 @@ switch (Req::val('action'))
         $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
                 array(Post::val('id'), Post::val('related_task')));
 
-        $fs->logEvent(Post::val('id'), 11, Post::val('related_task'));
-        $fs->logEvent(Post::val('related_task'), 11, Post::val('id'));
+        Flyspray::logEvent(Post::val('id'), 11, Post::val('related_task'));
+        Flyspray::logEvent(Post::val('related_task'), 11, Post::val('id'));
 
         $notify->Create(NOTIFY_REL_ADDED, Post::val('id'), Post::val('related_task'));
 
@@ -1002,8 +1002,8 @@ switch (Req::val('action'))
             $db->Query('DELETE FROM {related} WHERE related_id = ? AND (this_task = ? OR related_task = ?)',
                        array($related, Post::num('id'), Post::num('id')));
             if ($db->AffectedRows()) {
-                $fs->logEvent(Post::num('id'), 12, $related);
-                $fs->logEvent($related, 12, Post::num('id'));
+                Flyspray::logEvent(Post::num('id'), 12, $related);
+                Flyspray::logEvent($related, 12, Post::num('id'));
                 $_SESSION['SUCCESS'] = L('relatedremoved');
             }
         }
@@ -1074,7 +1074,7 @@ switch (Req::val('action'))
                      WHERE  comment_id = ? $where",
                 array(Post::val('comment_text'), time(), Post::val('comment_id')));
 
-        $fs->logEvent(Post::val('task_id'), 5, Post::val('comment_text'),
+        Flyspray::logEvent(Post::val('task_id'), 5, Post::val('comment_text'),
                 Post::val('previous_text'), Post::val('comment_id'));
                 
         $be->UploadFiles($user, Post::val('task_id'), Post::val('comment_id'));
@@ -1112,7 +1112,7 @@ switch (Req::val('action'))
         $db->Query("DELETE FROM {comments} WHERE comment_id = ?",
                 array(Req::val('comment_id')));
 
-        $fs->logEvent(Req::val('task_id'), 6, $comment['user_id'],
+        Flyspray::logEvent(Req::val('task_id'), 6, $comment['user_id'],
                 $comment['comment_text'], $comment['date_added']);
 
         while ($attachment = $db->FetchRow($check_attachments)) {
@@ -1121,7 +1121,7 @@ switch (Req::val('action'))
 
             @unlink('attachments/' . $attachment['file_name']);
 
-            $fs->logEvent($attachment['task_id'], 8, $attachment['orig_name']);
+            Flyspray::logEvent($attachment['task_id'], 8, $attachment['orig_name']);
         }
 
         $_SESSION['SUCCESS'] = L('commentdeletedmsg');
@@ -1159,7 +1159,7 @@ switch (Req::val('action'))
             $db->Query('DELETE FROM {reminders} WHERE reminder_id = ?',
                        array($reminder_id));
 
-            $fs->logEvent(Post::val('task_id'), 18, $reminder);
+            Flyspray::logEvent(Post::val('task_id'), 18, $reminder);
         }
 
         $_SESSION['SUCCESS'] = L('reminderdeletedmsg');
@@ -1254,9 +1254,9 @@ switch (Req::val('action'))
     // requesting task closure
     // ##################
     case 'requestclose':
-        $fs->AdminRequest(1, $old_details['attached_to_project'],
+        Flyspray::AdminRequest(1, $old_details['attached_to_project'],
                 Post::val('task_id'), $user->id, Post::val('reason_given'));
-        $fs->logEvent(Post::val('task_id'), 20, Post::val('reason_given'));
+        Flyspray::logEvent(Post::val('task_id'), 20, Post::val('reason_given'));
 
         // Now, get the project managers' details for this project
         $sql = $db->Query("SELECT  u.user_id
@@ -1279,8 +1279,8 @@ switch (Req::val('action'))
     // requesting task re-opening
     // ##################
     case 'requestreopen':
-        $fs->AdminRequest(2, $proj->id, Post::val('task_id'), $user->id, Post::val('reason_given'));
-        $fs->logEvent(Post::val('task_id'), 21, Post::val('reason_given'));
+        Flyspray::AdminRequest(2, $proj->id, Post::val('task_id'), $user->id, Post::val('reason_given'));
+        Flyspray::logEvent(Post::val('task_id'), 21, Post::val('reason_given'));
         $be->AddToNotifyList($user->id, Post::val('task_id'));
 
         // Now, get the project managers' details for this project
@@ -1320,7 +1320,7 @@ switch (Req::val('action'))
                      WHERE  request_id = ?",
                     array($user->id, time(), Req::val('deny_reason'), Req::val('req_id')));
 
-        $fs->logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
+        Flyspray::logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
         $notify->Create(NOTIFY_PM_DENY_REQUEST, $req_details['task_id'], Req::val('deny_reason'));
 
         $_SESSION['SUCCESS'] = L('pmreqdeniedmsg');
@@ -1366,8 +1366,8 @@ switch (Req::val('action'))
         $notify->Create(NOTIFY_REV_DEP, Post::val('dep_task_id'), Post::val('id'));
 
         // Log this event to the task history, both ways
-        $fs->logEvent(Post::val('id'), 22, Post::val('dep_task_id'));
-        $fs->logEvent(Post::val('dep_task_id'), 23, Post::val('id'));
+        Flyspray::logEvent(Post::val('id'), 22, Post::val('dep_task_id'));
+        Flyspray::logEvent(Post::val('dep_task_id'), 23, Post::val('id'));
 
         $db->Query('INSERT INTO  {dependencies} (task_id, dep_task_id)
                          VALUES  (?,?)',
@@ -1394,8 +1394,8 @@ switch (Req::val('action'))
         $notify->Create(NOTIFY_DEP_REMOVED, $dep_info['task_id'], $dep_info['dep_task_id']);
         $notify->Create(NOTIFY_REV_DEP_REMOVED, $dep_info['dep_task_id'], $dep_info['task_id']);
 
-        $fs->logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
-        $fs->logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
+        Flyspray::logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
+        Flyspray::logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
 
         $db->Query('DELETE FROM {dependencies} WHERE depend_id = ?',
                    array(Get::val('depend_id')));
@@ -1448,7 +1448,7 @@ switch (Req::val('action'))
             break;
         }
 
-        $new_pass_hash = $fs->cryptPassword(Post::val('pass1'));
+        $new_pass_hash = Flyspray::cryptPassword(Post::val('pass1'));
         $db->Query("UPDATE  {users} SET user_pass = ?, magic_url = ''
                      WHERE  magic_url = ?",
                 array($new_pass_hash, Post::val('magic_url')));
@@ -1468,7 +1468,7 @@ switch (Req::val('action'))
         $db->Query("UPDATE  {tasks} SET mark_private = '1'
                  WHERE  task_id = ?", array(Req::num('id')));
 
-        $fs->logEvent(Get::num('id'), 3, 1, 0, 'mark_private');
+        Flyspray::logEvent(Get::num('id'), 3, 1, 0, 'mark_private');
 
         $_SESSION['SUCCESS'] = L('taskmadeprivatemsg');
         Flyspray::Redirect(CreateURL('details', Req::num('id')));
@@ -1486,7 +1486,7 @@ switch (Req::val('action'))
                        SET  mark_private = '0'
                      WHERE  task_id = ?", array(Req::num('id')));
 
-        $fs->logEvent(Get::num('id'), 3, 0, 1, 'mark_private');
+        Flyspray::logEvent(Get::num('id'), 3, 0, 1, 'mark_private');
 
         $_SESSION['SUCCESS'] = L('taskmadepublicmsg');
         Flyspray::Redirect(CreateURL('details', Req::num('id')));

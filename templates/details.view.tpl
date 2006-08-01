@@ -266,7 +266,7 @@
 	 <?php if ($user->can_close_task($task_details)): ?>
 	 <a href="{$baseurl}?do=modify&amp;action=reopen&amp;task_id={Get::num('id')}">
 		{L('reopenthistask')}</a>
-	 <?php elseif (!$fs->adminRequestCheck(2, $task_details['task_id']) && !$user->isAnon()): ?>
+	 <?php elseif (!Flyspray::adminRequestCheck(2, $task_details['task_id']) && !$user->isAnon()): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('reopenrequest')}</a>
 	 <div id="closeform">
@@ -286,8 +286,9 @@
 	 <?php else: ?>
 
 	 <?php if ($user->can_close_task($task_details) && !$d_open): ?>
-	 <a href="#close" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');">
-		{L('closetask')}</a><div id="closeform" class="<?php if (Req::val('action') != 'details.close'): ?>hide <?php endif; ?>popup">
+	 <a href="{CreateUrl('details', $task_details['task_id'], null, array('showclose' => !Req::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
+		{L('closetask')}</a>
+     <div id="closeform" class="<?php if (Req::val('action') != 'details.close' && !Req::val('showclose')): ?>hide <?php endif; ?>popup">
 		<form action="{$baseurl}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="do" value="modify" />
@@ -307,7 +308,7 @@
 		</form>
 	 </div>
 	 <?php elseif (!$d_open && $task_details['assigned_to'] == $user->id
-	 && !$fs->AdminRequestCheck(1, $task_details['task_id'])): ?>
+	 && !Flyspray::AdminRequestCheck(1, $task_details['task_id'])): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('requestclose')}</a>
 	 <div id="closeform">

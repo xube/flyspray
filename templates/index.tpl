@@ -32,11 +32,11 @@
         <input class="text" id="searchtext" name="string" type="text" size="20"
         maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
-        <span id="searchstate" onclick="toggleSearchBox('{$this->themeUrl()}');" style="cursor:pointer">
-        <span id="advancedsearchstate" class="showstate">
+        <span id="searchstate" style="cursor:pointer">
+        <a onclick="toggleSearchBox('{$this->themeUrl()}');return false;" href="{CreateUrl('project', $proj->id, null, array_merge($_GET, array('toggleadvanced' => 1)))}"><span id="advancedsearchstate" class="showstate">
         <img id="advancedsearchstateimg" src="<?php echo (Cookie::val('advancedsearch')) ? $this->get_image('edit_remove') : $this->get_image('edit_add'); ?>"
              alt="<?php echo (Cookie::val('advancedsearch')) ? '-' : '+'; ?>" width="16" height="16" />
-        </span>{L('advanced')}
+        </span>{L('advanced')}</a>
         </span>
         
         <div id="sc2" class="switchcontent" <?php if (!Cookie::val('advancedsearch')):?>style="display:none;"<?php endif; ?> >

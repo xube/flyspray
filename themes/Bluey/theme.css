@@ -300,6 +300,7 @@ ul#menu-list li, ul#pm-menu-list li {
 
 .hide {
 	display:none;
+	visibility:hidden;
 }
 
 ul.comment_changes {
@@ -466,6 +467,10 @@ div#search img {
 
 span#searchstate {
 	font-weight:bold;
+}
+
+span#searchstate a {
+	color:#000;
 }
 
 div#search select {
@@ -893,7 +898,6 @@ div.popup {
 	color:#000;
 	border:2px ridge #000;
 	margin-top:5px;
-	display:none;
 	padding:5px 30px 5px 5px;
 }
 
@@ -1326,7 +1330,7 @@ div#updatemsg {
 	background-color:#feffc2;
 	color:#000;
 	border:2px solid red;
-	margin:10px;
+	margin:0 0 10px;
 	padding:5px;
 	font-weight:bold;
 }

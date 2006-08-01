@@ -305,7 +305,7 @@ class Notifications {
       global $db, $fs, $user, $proj;
 
       // Get the task details
-      $task_details = $fs->getTaskDetails($task_id);
+      $task_details = Flyspray::getTaskDetails($task_id);
       if ($task_id) {
           $proj = new Project($task_details['attached_to_project']);
       }
@@ -485,7 +485,7 @@ class Notifications {
       // {{{ Dependency added
       if ($type == NOTIFY_DEP_ADDED)
       {
-         $depend_task = $fs->getTaskDetails($arg1);
+         $depend_task = Flyspray::getTaskDetails($arg1);
 
          $body = L('donotreply') . "\n\n";
          $body .=  L('newdep') . "\n\n";
@@ -503,7 +503,7 @@ class Notifications {
       // {{{ Dependency removed
       if ($type == NOTIFY_DEP_REMOVED)
       {
-         $depend_task = $fs->getTaskDetails($arg1);
+         $depend_task = Flyspray::getTaskDetails($arg1);
          
          $body = L('donotreply') . "\n\n";
          $body .= L('notify.depremoved') . "\n\n";
@@ -564,7 +564,7 @@ class Notifications {
       // {{{ Related task added
       if ($type == NOTIFY_REL_ADDED)
       {
-         $related_task = $fs->getTaskDetails($arg1);
+         $related_task = Flyspray::getTaskDetails($arg1);
 
          $body = L('donotreply') . "\n\n";
          $body .= L('notify.relatedadded') . "\n\n";
@@ -649,7 +649,7 @@ class Notifications {
       // {{{ Reversed dep
       if ($type == NOTIFY_REV_DEP)
       {
-         $depend_task = $fs->getTaskDetails($arg1);
+         $depend_task = Flyspray::getTaskDetails($arg1);
 
          $body = L('donotreply') . "\n\n";
          $body .= L('taskwatching') . "\n\n";
@@ -666,7 +666,7 @@ class Notifications {
       // {{{ Reversed dep - removed
       if ($type == NOTIFY_REV_DEP_REMOVED)
       {
-         $depend_task = $fs->getTaskDetails($arg1);
+         $depend_task = Flyspray::getTaskDetails($arg1);
 
          $body = L('donotreply') . "\n\n";
          $body .= L('taskwatching') . "\n\n";
@@ -779,7 +779,7 @@ class Notifications {
       $jabber_users = array();
       $email_users = array();
 
-      $task_details = $fs->GetTaskDetails($task_id);
+      $task_details = Flyspray::GetTaskDetails($task_id);
 
       // Get list of users from the notification tab
       $get_users = $db->Query("SELECT *
@@ -837,7 +837,7 @@ class Notifications {
 
       // Now, we add the project contact addresses...
       // ...but only if the task is public
-      $task_details = $fs->getTaskDetails($task_id);
+      $task_details = Flyspray::getTaskDetails($task_id);
       if ($task_details['mark_private'] != '1' && in_array($type, Flyspray::int_explode(' ', $proj->prefs['notify_types'])))
       {
          $proj_emails = preg_split('/[\s,;]+/', $proj->prefs['notify_email'], -1, PREG_SPLIT_NO_EMPTY);

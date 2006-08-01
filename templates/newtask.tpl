@@ -45,7 +45,7 @@
           <td>
             <?php if ($user->perms('modify_all_tasks')): ?>
             <a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');fill_userselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
-            <div id="multiuserlist" class="popup">
+            <div id="multiuserlist" class="hide popup">
             
             <table class="double_select">
               <tr>
@@ -144,7 +144,13 @@
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>
           <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
             <a href="javascript://" tabindex="6" onclick="removeUploadField(this, 'uploadfilebox');">{L('remove')}</a><br />
-        </span>    
+        </span>
+        <noscript>
+          <span>
+            <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
+              <a href="javascript://" tabindex="6" onclick="removeUploadField(this, 'uploadfilebox');">{L('remove')}</a><br />
+          </span>  
+        </noscript>    
       </div>
       <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields('uploadfilebox')">
         {L('uploadafile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
@@ -175,11 +181,11 @@
         value="1" checked="checked" />&nbsp;<label class="inline left" for="notifyme">{L('notifyme')}</label>
         <?php endif; ?>
     </p>
+    </div>
+    
+    </td></tr></table>
+
   </form>
-  </div>
-  
-  </td></tr></table>
   
   <div class="clear"></div>
 </div>
-

@@ -155,7 +155,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     global $fs, $user, $db, $proj;
 
     if (!is_array($task) || !isset($task['status_name'])) {
-        $task = $fs->GetTaskDetails( ((is_array($task)) ? $task['task_id'] : $task), true);
+        $task = Flyspray::GetTaskDetails( ((is_array($task)) ? $task['task_id'] : $task), true);
     }
 
     if ($strict && !$user->can_view_task($task)) {
@@ -204,7 +204,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
             case 'category':
                 if ($task['product_category']) {
                     if (!isset($task['category_name'])) {
-                        $task = $fs->GetTaskDetails($task['task_id'], true);
+                        $task = Flyspray::GetTaskDetails($task['task_id'], true);
                     }
                     $title_text[] = $task['category_name'];
                 }

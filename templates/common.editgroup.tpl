@@ -1,5 +1,5 @@
 <fieldset class="admin"> <legend>{L('editgroup')}</legend>
-  <?php $group_details = $fs->getGroupDetails(Req::num('id')); ?>
+  <?php $group_details = Flyspray::getGroupDetails(Req::num('id')); ?>
   <form action="{$baseurl}?project={$group_details['belongs_to_project']}" method="post">
     <table class="admin">
       <tr>
@@ -117,7 +117,7 @@
       <tr>
         <td><label><input type="checkbox" name="delete_group" /> Delete this group and move users to</label></td>
         <td><select name="move_to">
-              {!tpl_options( array_merge( ($proj->id) ? array(L('nogroup')) : array(), $fs->listGroups($proj->id)), null, false, null, $group_details['group_id'])}
+              {!tpl_options( array_merge( ($proj->id) ? array(L('nogroup')) : array(), Flyspray::listGroups($proj->id)), null, false, null, $group_details['group_id'])}
             </select>
         </td>
       </tr>
@@ -182,7 +182,7 @@
           <?php if ($proj->id): ?>
           <option value="0">{L('nogroup')}</option>
           <?php endif; ?>
-          {!tpl_options($fs->listGroups($proj->id), null, false, null, $group_details['group_id'])}
+          {!tpl_options(Flyspray::listGroups($proj->id), null, false, null, $group_details['group_id'])}
         </select>
       </td>
     </tr>

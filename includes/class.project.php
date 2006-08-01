@@ -36,7 +36,7 @@ class Project
     function setCookie()
     {
         global $fs;
-        $fs->setCookie('flyspray_project', $this->id, time()+60*60*24*30);
+        Flyspray::setCookie('flyspray_project', $this->id);
     }
 
     /* cached list functions {{{ */

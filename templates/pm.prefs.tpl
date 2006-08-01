@@ -29,7 +29,7 @@
           <td><label for="langcode">{L('language')}</label></td>
           <td>
             <select id="langcode" name="lang_code">
-              {!tpl_options($fs->listLangs(), Req::val('lang_code', $proj->prefs['lang_code']), true)}
+              {!tpl_options(Flyspray::listLangs(), Req::val('lang_code', $proj->prefs['lang_code']), true)}
             </select>
           </td>
         </tr>
@@ -66,7 +66,7 @@
         <tr>
           <td><label>{!tpl_checkbox('delete_project', null)} {L('deleteproject')}</label></td>
           <td>
-              <select name="move_to">{!tpl_options(array_merge(array(0 => L('none')), $fs->listProjects()), null, false, null, (string) $proj->id)}</select>
+              <select name="move_to">{!tpl_options(array_merge(array(0 => L('none')), Flyspray::listProjects()), null, false, null, (string) $proj->id)}</select>
           </td>
         </tr>
         <tr>
@@ -94,7 +94,7 @@
           <td><label for="themestyle">{L('themestyle')}</label></td>
           <td>
             <select id="themestyle" name="theme_style">
-              {!tpl_options($fs->listThemes(), Req::val('theme_style', $proj->prefs['theme_style']), true)}
+              {!tpl_options(Flyspray::listThemes(), Req::val('theme_style', $proj->prefs['theme_style']), true)}
             </select>
           </td>
         </tr>

@@ -17,7 +17,7 @@
           <td><label for="themestyle">{L('themestyle')}</label></td>
           <td>
             <select id="themestyle" name="theme_style">
-              {!tpl_options($fs->listThemes(), Req::val('theme_style', $proj->prefs['theme_style']), true)}
+              {!tpl_options(Flyspray::listThemes(), Req::val('theme_style', $proj->prefs['theme_style']), true)}
             </select>
           </td>
         </tr>
@@ -25,7 +25,7 @@
           <td><label for="langcode">{L('language')}</label></td>
           <td>
             <select id="langcode" name="lang_code">
-              {!tpl_options($fs->listLangs(), Req::val('lang_code', $fs->prefs['lang_code']), true)}
+              {!tpl_options(Flyspray::listLangs(), Req::val('lang_code', $fs->prefs['lang_code']), true)}
             </select>
           </td>
         </tr>
