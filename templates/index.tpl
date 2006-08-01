@@ -66,7 +66,7 @@
         
         <label class="default multisel" for="sev">{L('severity')}</label>
         <select name="sev[]" id="sev" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('allseverities')) + $severity_list, Get::val('sev', ''))}
+          {!tpl_options(array('' => L('allseverities')) + $fs->severities, Get::val('sev', ''))}
         </select>
         
         <label class="default multisel" for="due">{L('dueversion')}</label>

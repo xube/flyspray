@@ -54,7 +54,7 @@ function get_events($task_id, $where = '')
 
 function event_description($history) {
     $return = '';
-    global $fs, $baseurl, $priority_list, $severity_list, $details;
+    global $fs, $baseurl, $details;
     
     $translate = array('item_summary' => 'summary', 'attached_to_project' => 'attachedtoproject',
                        'task_type' => 'tasktype', 'product_category' => 'category', 'item_status' => 'status',
@@ -83,11 +83,11 @@ function event_description($history) {
                 case 'task_severity':
                 case 'product_version':
                     if($field == 'task_priority') {
-                        $old_value = $priority_list[$old_value];
-                        $new_value = $priority_list[$new_value];
+                        $old_value = $fs->priorities[$old_value];
+                        $new_value = $fs->priorities[$new_value];
                     } elseif($field == 'task_severity') {
-                        $old_value = $severity_list[$old_value];
-                        $new_value = $severity_list[$new_value];
+                        $old_value = $fs->severities[$old_value];
+                        $new_value = $fs->severities[$new_value];
                     } elseif($field != 'item_summary') {                        
                         $old_value = $history[$field . '1'];
                         $new_value = $history[$field . '2'];

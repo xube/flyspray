@@ -6,7 +6,7 @@
     <form id="projectselectorform" action="{$baseurl}index.php" method="get">
        <div>
         <select name="project">
-          {!tpl_options(array_merge(array(0 => L('allprojects')), $project_list), $proj->id)}
+          {!tpl_options(array_merge(array(0 => L('allprojects')), $fs->projects), $proj->id)}
         </select>
         <button type="submit" value="1" name="switch">{L('switch')}</button>
         <input type="hidden" name="do" value="{$do}" />
@@ -30,7 +30,7 @@
       else: ?>
 <ul id="menu-list">
   <li onmouseover="perms.do_later('show')" onmouseout="perms.hide()">
-	<a id="profilelink" href="{CreateURL('myprofile', null)}" title="{L('editmydetails')}">
+	<a id="profilelink" href="{CreateURL('myprofile')}" title="{L('editmydetails')}">
 	  <em>{$user->infos['real_name']} ({$user->infos['user_name']})</em>
 	</a>
 	<div id="permissions">
@@ -68,7 +68,7 @@
     <form id="projectselectorform" action="{$baseurl}index.php" method="get">
        <div>
         <select name="project">
-          {!tpl_options(array_merge(array(0 => L('allprojects')), $project_list), $proj->id)}
+          {!tpl_options(array_merge(array(0 => L('allprojects')), $fs->projects), $proj->id)}
         </select>
         <button type="submit" value="1" name="switch">{L('switch')}</button>
         <input type="hidden" name="do" value="{$do}" />
@@ -89,7 +89,7 @@
 <ul id="pm-menu-list">
     <li>
     <a id="homelink"
-        href="{CreateURL('project', $proj->id)}">{L('tasklist')}</a>
+        href="{CreateURL('project', $proj->id, null, array('do' => 'index'))}">{L('tasklist')}</a>
     </li>
     
     <?php if ($user->perms('open_new_tasks')): ?>

@@ -194,9 +194,13 @@ class User
 
     function can_view_project($proj)
     {
+        if (is_array($proj)) {
+            $proj = $proj['project_id'];
+        }
+        
         return $this->perms('view_tasks')
           || ($this->perms('project_is_active', $proj)
-              && ($this->perms('others_view', $proj) || @$this->perms('project_group', $proj)));
+              && ($this->perms('others_view', $proj) || $this->perms('project_group', $proj)));
     }
 
     function can_view_task($task)

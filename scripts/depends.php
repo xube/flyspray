@@ -198,8 +198,8 @@ foreach ($node_list as $n => $r) {
       ($r['clsd'] ? L('closed') . ": $r[res]".
        (!empty($r['clsdby']) ? " ($r[clsdby])" : "").
        ($r['com']!='' ? " - $r[com]" : "")
-       : $severity_list[$r['sev']]. L('severity') . "/".
-       $priority_list[$r['pri']]. L('priority') . " - ".
+       : $fs->severities[$r['sev']]. L('severity') . "/".
+       $fs->priorities[$r['pri']]. L('priority') . " - ".
        L('status') . ": ".$r['status_name']);
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
         "href=\"".CreateURL("details", $n)."\", ".

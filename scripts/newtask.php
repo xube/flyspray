@@ -13,8 +13,6 @@ if (!$user->can_open_task($proj)) {
     Flyspray::show_error(15);
 }
 
-$page->uses('severity_list', 'priority_list');
-
 $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('newtask'));
 $page->pushTpl('newtask.tpl');
 

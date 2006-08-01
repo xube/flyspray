@@ -9,7 +9,7 @@ if(!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$projects = ($proj->id) ? array(0 => array('project_id' => $proj->id, 'project_title' => $proj->prefs['project_title'])) : $project_list;
+$projects = ($proj->id) ? array(0 => array('project_id' => $proj->id, 'project_title' => $proj->prefs['project_title'])) : $fs->projects;
 
 $most_wanted = array();
 $stats = array();

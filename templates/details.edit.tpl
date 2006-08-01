@@ -16,7 +16,7 @@
 		<div id="fineprint">
 		  {L('attachedtoproject')} &mdash;
 		  <select name="attached_to_project">
-			{!tpl_options($project_list, Req::val('attached_to_project', $proj->id))}
+			{!tpl_options($fs->projects, Req::val('attached_to_project', $proj->id))}
 		  </select>
 		  <br />
 		  {L('openedby')} {!tpl_userlink($task_details['opened_by'])}
@@ -114,7 +114,7 @@
 			 <td><label for="severity">{L('severity')}</label></td>
              <td>
 				<select id="severity" name="task_severity">
-				 {!tpl_options($severity_list, Req::val('task_severity', $task_details['task_severity']))}
+				 {!tpl_options($fs->severities, Req::val('task_severity', $task_details['task_severity']))}
 				</select>
 			 </td>
 			</tr>
@@ -122,7 +122,7 @@
 			 <td><label for="priority">{L('priority')}</label></td>
 			 <td>
 				<select id="priority" name="task_priority">
-				 {!tpl_options($priority_list, Req::val('task_priority', $task_details['task_priority']))}
+				 {!tpl_options($fs->priorities, Req::val('task_priority', $task_details['task_priority']))}
 				</select>
 			 </td>
 			</tr>

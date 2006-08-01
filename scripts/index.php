@@ -14,8 +14,6 @@ if (!$user->can_view_project($proj->id)) {
     $proj = new Project(0);
 }
 
-$page->uses('severity_list', 'priority_list');
-
 $perpage = '20';
 if (@$user->infos['tasks_perpage'] > 0) {
     $perpage = $user->infos['tasks_perpage'];
@@ -162,11 +160,10 @@ if (Get::has('has_attachment')) {
 
 if ($proj->id == 0) {
     // If the user wants to view tasks from all projects
-    // XXX take $project_list from index.php
 
     $temp_where   = 'attached_to_project = ?';
     $sql_params[] = '0';
-    foreach ($project_list as $this_project) {
+    foreach ($fs->projects as $this_project) {
         $temp_where  .= ' OR attached_to_project = ?';
         $sql_params[] = $this_project['project_id'];
     }
@@ -381,7 +378,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 // tpl function that draws a cell {{{
 
 function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
-    global $fs, $proj, $priority_list, $page, $severity_list;
+    global $fs, $proj, $page;
 
     $indexes = array (
             'id'         => 'task_id',
@@ -416,11 +413,11 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             break;
 
         case 'severity':
-            $value = $severity_list[$task['task_severity']];
+            $value = $fs->severities[$task['task_severity']];
             break;
 
         case 'priority':
-            $value = $priority_list[$task['task_priority']];
+            $value = $fs->priorities[$task['task_priority']];
             break;
 
         case 'duedate':

@@ -91,7 +91,7 @@
             <select onchange="getElementById('edit_summary').className = 'summary severity' + this.value;
                               getElementById('itemsummary').className = 'text severity' + this.value;"
                               id="severity" class="adminlist" name="task_severity">
-              {!tpl_options($severity_list, Req::val('task_severity', 2))}
+              {!tpl_options($fs->severities, Req::val('task_severity', 2))}
             </select>
           </td>
         </tr>
@@ -99,7 +99,7 @@
           <td><label for="priority">{L('priority')}</label></td>
           <td>
             <select id="priority" name="task_priority" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
-              {!tpl_options($priority_list, Req::val('task_priority', 2))}
+              {!tpl_options($fs->severities, Req::val('task_priority', 2))}
             </select>
           </td>
         </tr>

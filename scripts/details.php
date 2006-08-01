@@ -22,7 +22,7 @@ if ( !($task_details = $fs->GetTaskDetails($task_id))
 
 require_once(BASEDIR . '/includes/events.inc.php');
 
-$page->uses('priority_list', 'severity_list', 'task_details');
+$page->uses('task_details');
 
 // Send user variables to the template
 $page->assign('assigned_users', $task_details['assigned_to']);

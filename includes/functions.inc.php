@@ -13,6 +13,10 @@ class Flyspray
 
     var $prefs   = array();
     var $max_file_size = 0;
+    // projects viewable by the user
+    var $projects = array();
+    var $severities = array();
+    var $priorities = array();
 
     // Application-wide preferences {{{
     function Flyspray()
@@ -215,7 +219,7 @@ class Flyspray
     // Retrieve task details {{{
     function GetTaskDetails($task_id, $cacheenabled = false)
     {
-        global $db, $severity_list, $priority_list;
+        global $db, $fs;
 
         static $cache = array();
 
@@ -256,8 +260,8 @@ class Flyspray
             $status_id    = $get_details['item_status'];
             $severity_id  = $get_details['task_severity'];
             $priority_id  = $get_details['task_priority'];
-            $get_details += array('severity_name' => $severity_list[$severity_id]);
-            $get_details += array('priority_name' => $priority_list[$priority_id]);
+            $get_details += array('severity_name' => $fs->severities[$severity_id]);
+            $get_details += array('priority_name' => $fs->priorities[$priority_id]);
         }
         
         $get_details['assigned_to'] = $get_details['assigned_to_name'] = array();

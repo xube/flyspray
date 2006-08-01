@@ -131,17 +131,12 @@ if ($user->perms('manage_project')) {
 }
 
 $sql = $db->Query(
-        "SELECT  DISTINCT p.project_id, p.project_title,
-                 upper(p.project_title) as sort_names
-           FROM  {projects} p
-      LEFT JOIN  {groups} g ON p.project_id=g.belongs_to_project OR g.belongs_to_project=0
-      LEFT JOIN  {users_in_groups} uig ON uig.group_id = g.group_id AND uig.user_id = ?
-          WHERE  (p.project_is_active='1' AND p.others_view = '1')
-                 OR (uig.user_id IS NOT NULL
-                    AND (g.belongs_to_project = p.project_id OR (g.view_tasks = 1 AND g.belongs_to_project = 0) OR g.is_admin=1))
-       ORDER BY  sort_names", array($user->id));
+        'SELECT  project_id, project_title, project_is_active, others_view,
+                 upper(project_title) AS sort_names
+           FROM  {projects}
+       ORDER BY  sort_names');
 
-$page->assign('project_list', $project_list = $db->FetchAllArray($sql));
+$fs->projects = array_filter($db->FetchAllArray($sql), array($user, 'can_view_project'));
 
 // Get e-mail addresses of the admins
 if ($user->isAnon() && !$fs->prefs['user_notify']) {

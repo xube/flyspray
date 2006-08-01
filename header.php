@@ -60,10 +60,10 @@ $proj->setCookie();
 load_translations();
 
 for ($i = 6; $i >= 1; $i--) {
-    $priority_list[$i] = L('priority' . $i);
+    $fs->priorities[$i] = L('priority' . $i);
 }
 for ($i = 5; $i >= 1; $i--) {
-    $severity_list[$i] = L('severity' . $i);
+    $fs->severities[$i] = L('severity' . $i);
 }
 
 ?>

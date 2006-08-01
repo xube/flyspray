@@ -353,9 +353,8 @@ function statusArray()
 **/
 function severityArray()
 {
-   global $lang;
-   require("lang/$lang/severity.php");
-   return $severity_list;
+   global $fs;
+   return $fs->severities;
 
 }
 /**
@@ -363,9 +362,8 @@ function severityArray()
 **/
 function priorityArray()
 {
-   global $lang;
-   require("lang/$lang/priority.php");
-   return $priority_list;
+   global $fs;
+   return $fs->priotities;
 }
 
 /**
