@@ -150,7 +150,7 @@ class User
 
     function check_account_ok()
     {
-        global $fs, $conf;
+        global $conf;
 
         if (Cookie::val('flyspray_passhash') !=
                 crypt($this->infos['user_pass'], $conf['general']['cookiesalt'])
@@ -205,8 +205,6 @@ class User
 
     function can_view_task($task)
     {
-        global $fs;
-
         if ($this->isAnon() && $task['task_token'] && Get::val('task_token') == $task['task_token']) {
             return true;
         }
@@ -225,9 +223,7 @@ class User
     }
 
     function can_edit_task($task)
-    {
-        global $fs;
-        
+    {      
         return !$task['is_closed']
             && ($this->perms('modify_all_tasks') ||
                     ($this->perms('modify_own_tasks')
@@ -236,7 +232,6 @@ class User
 
     function can_take_ownership($task)
     {
-        global $fs;
         $assignees = Flyspray::GetAssignees($task['task_id']);
 
         return ($this->perms('assign_to_self', $task['attached_to_project']) && empty($assignees))
@@ -244,9 +239,7 @@ class User
     }
     
     function can_add_to_assignees($task)
-	 { 
-        global $fs;
-         
+	 {          
         return ($this->perms('add_to_assignees', $task['attached_to_project']) && !in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
     }
 	 
@@ -276,8 +269,6 @@ class User
 
     function can_change_private($task)
     {
-        global $fs;
-        
         return !$task['is_closed'] && ($this->perms('manage_project') || in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
     }
     
@@ -312,7 +303,6 @@ class User
     
     function logout()
     {
-        global $fs;
         // Set cookie expiry time to the past, thus removing them
         Flyspray::setcookie('flyspray_userid',   '', time()-60);
         Flyspray::setcookie('flyspray_passhash', '', time()-60);

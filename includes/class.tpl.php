@@ -152,7 +152,7 @@ class FSTpl extends Tpl
 
 function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','percent_complete'))
 {
-    global $fs, $user, $db, $proj;
+    global $user, $db, $proj;
 
     if (!is_array($task) || !isset($task['status_name'])) {
         $task = Flyspray::GetTaskDetails( ((is_array($task)) ? $task['task_id'] : $task), true);
@@ -242,7 +242,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
 
 function tpl_userlink($uid)
 {
-    global $db, $fs, $user;
+    global $db, $user;
 
     static $cache = array();
 
@@ -693,7 +693,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
 function pagenums($pagenum, $perpage, $totalcount, $extraurl)
 {
-    global $db, $fs;
+    global $db;
 
     $extraurl = '&amp;' . $extraurl;
 
@@ -707,8 +707,11 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
     if (!($totalcount / $perpage <= 1)) {
         $output .= '<span class="DoNotPrint"> &nbsp;&nbsp;--&nbsp;&nbsp; ';
 
-        $start  = max(1, $pagenum - 3);
-        $finish = min($pages, $pagenum + 3);
+        $start  = max(1, $pagenum - 2);
+        $finish = min($start + 4, $pages);
+        if ($finish - $start < 4) {
+            $start = $start - (5 - ($finish - $start));
+        }
 
         if ($start > 1)
             $output .= '<a href="?pagenum=1' . $extraurl . '">&lt;&lt;' . L('first') . ' </a>';

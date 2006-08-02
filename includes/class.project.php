@@ -35,7 +35,6 @@ class Project
 
     function setCookie()
     {
-        global $fs;
         Flyspray::setCookie('flyspray_project', $this->id);
     }
 

@@ -57,8 +57,6 @@ require_once BASEDIR . '/includes/xmlrpcs.inc';
 **/
 function checkRPCLogin($args)
 {
-   global $fs;
-
    $username   = php_xmlrpc_decode($args->getParam(0));
    $password   = php_xmlrpc_decode($args->getParam(1));
 
@@ -110,8 +108,7 @@ function valueOrZero($value)
 
 function setProject($project_id) 
 {
-	global $fs;
-	global $proj;
+	global $fs, $proj;
 	
    // get a list of valid projects
    
@@ -165,9 +162,6 @@ function getProjects($args)
 //////////////////////////////////////////////////
 function getTask($args)
 {
-   global $fs;
-   
-
    $task_id    = php_xmlrpc_decode($args->getParam(2));
 
    // First, check the user has a valid, active login.  If not, then stop.
@@ -246,8 +240,7 @@ function getTask($args)
  **/
 function getVersion($args)
 {
-   global $fs;
-   global $db;
+   global $fs, $db;
 
 
    // First, check the user has a valid, active login.  If not, then stop.
@@ -409,8 +402,6 @@ function dueInVersionArray()
  **/
 function projectListArray($activeOnly=true)
 {
-   
-   global $fs;
    return rotateArray(Flyspray::listProjects($activeOnly),'project_id','project_title');
 }
 
@@ -442,7 +433,6 @@ function taskDataArray()
 **/
 function resultFromQueryAsArray($args,$arrayName)
 {
-   global $fs;
    global $db;
 
    // First, check the user has a valid, active login.  If not, then stop.
@@ -553,11 +543,7 @@ function getNewTaskData($args)
 **/
 function openTask($args)
 {
-   global $fs;
-   global $db;
-   global $be;
-   global $proj;
-   global $user;
+   global $db, $be, $proj, $user;
    
    include_once('includes/notify.inc.php');
    $notify = new Notifications();
@@ -629,7 +615,6 @@ function openTask($args)
 ///////////////////////////////////////
 function closeTask($args)
 {
-   global $fs;
    global $db;
    include_once('includes/notify.inc.php');
    $notify = new Notifications;
@@ -726,7 +711,6 @@ function closeTask($args)
 
 function getUser($args)
 {
-   global $fs;
    global $db;
 
    $req_user   = php_xmlrpc_decode($args->getParam(2));
@@ -781,7 +765,7 @@ function getUser($args)
 function filterTasks($args)
 {
    
-   global $fs, $db, $be, $proj;
+   global $db, $be, $proj;
    
    
    $user_id = checkRPCLogin($args);
@@ -853,7 +837,7 @@ function filterTasks($args)
 function addComment($args)
 {
 	
-   global $fs, $db, $be, $proj,$user,$notify,$_FILES;
+   global $db, $be, $proj, $user, $notify, $_FILES;
    include_once('includes/notify.inc.php');
    $notify = new Notifications();
 	

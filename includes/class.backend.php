@@ -18,7 +18,7 @@ class Backend
     */
     function AddToNotifyList($user_id, $tasks, $do = false)
     {
-        global $db, $fs, $user;
+        global $db, $user;
 
         settype($tasks, 'array');
         
@@ -72,7 +72,7 @@ class Backend
     */
     function RemoveFromNotifyList($user_id, $tasks)
     {
-        global $db, $fs, $user;
+        global $db, $user;
 
         settype($tasks, 'array');
                 
@@ -114,7 +114,7 @@ class Backend
     */
     function AssignToMe($user_id, $tasks)
     {
-        global $db, $fs, $notify, $user;
+        global $db, $notify, $user;
         
         if ($user_id != $user->id) {
             $user = new User($user_id);
@@ -163,7 +163,7 @@ class Backend
     */
     function AddToAssignees($user_id, $tasks, $do = false)
     {
-        global $db, $fs, $notify, $user;
+        global $db, $notify, $user;
 
         if ($user_id != $user->id) {
             $user = new User($user_id);
@@ -221,7 +221,7 @@ class Backend
     
     function add_comment($task, $comment_text, $time = null)
     {
-        global $db, $user, $fs, $notify;
+        global $db, $user, $notify;
         
         if (!($user->perms('add_comments', $task['attached_to_project']) && (!$task['is_closed'] || $user->perms('comment_closed', $task['attached_to_project'])))) {
             return false;
@@ -264,7 +264,7 @@ class Backend
      */
     function UploadFiles(&$user, $taskid, $commentid = 0, $source = 'userfile')
     {
-        global $db, $fs, $notify, $conf;
+        global $db, $notify, $conf;
 
         mt_srand(Flyspray::make_seed());
 
@@ -339,7 +339,7 @@ class Backend
      */
     function DeleteFiles(&$user, $task_id)
     {
-        global $db, $fs;
+        global $db;
         
         $task = Flyspray::GetTaskDetails($taskid);
         
@@ -426,7 +426,7 @@ class Backend
     
     function delete_user(&$user, $uid)
     {
-        global $fs, $db;
+        global $db;
         
         if (!$user->perms('is_admin')) {
             return false;
@@ -454,7 +454,7 @@ class Backend
     
     function delete_project(&$user, $pid, $move_to = 0)
     {
-        global $fs, $db;
+        global $db;
         
         if (!$user->perms('manage_project', $pid)) {
             return false;
@@ -494,7 +494,7 @@ class Backend
     
     function add_reminder($task_id, $message, $how_often, $start_time, $user_id = null)
     {
-        global $user, $db, $fs;
+        global $user, $db;
         $task = Flyspray::GetTaskDetails($task_id);
         
         if (!$user->perms('manage_project', $task['attached_to_project'])) {
@@ -529,7 +529,7 @@ class Backend
    */
    function CreateTask($args)
    {
-        global $db, $fs, $user, $proj;
+        global $db, $user, $proj;
         $notify = new Notifications();
         if ($proj->id !=  $args['project_id']) {
             $proj = new Project($args['project_id']);
@@ -686,7 +686,7 @@ class Backend
    
    function close_task(&$user, $task_id, $reason, $comment, $mark100 = true)
    {
-        global $db, $fs, $notify;
+        global $db, $notify;
         $old_details = Flyspray::GetTaskDetails($task_id);
         
         if (!$user->can_close_task($old_details)) {
@@ -752,7 +752,7 @@ class Backend
          return 'We were not given an array of arguments to process.';
       }
 
-      global $db, $fs;
+      global $db;
 
       /*
       Since all variables will be passed to this function by Ander's
