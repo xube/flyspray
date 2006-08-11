@@ -865,7 +865,7 @@ class Flyspray
         global $modes, $do, $baseurl;
         
         if (!is_int($error_message)) {
-            // in modify.php
+            // in modify.inc.php
             $_SESSION['ERROR'] = $error_message;
 
             $do = Filters::enum(reset(explode('.', Req::val('action'))), $modes);

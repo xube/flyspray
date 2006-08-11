@@ -12,6 +12,11 @@ img {
 	border:none;
 }
 
+img.depimage {
+	border:solid 2px black;
+	margin:0 0.5em;
+}
+
 a {
 	text-decoration:none;
 }
@@ -613,7 +618,7 @@ button:hover {
 	cursor:pointer;
 }
 
-/* div.redirectmessage is used in modify.php when you change things and are redirected
+/* div.redirectmessage is used in modify.inc.php when you change things and are redirected
 to the index or details page */
 div.redirectmessage {
 	border:1px solid #CCC;

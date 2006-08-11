@@ -930,10 +930,12 @@ class Backend
                 'os'         => 'los.os_name',
                 'votes'      => 'num_votes',
         );
-
-        $sortorder  = sprintf("%s %s, %s %s, t.task_id ASC",
-                $order_keys[Filters::enum(array_get($args, 'order', 'sev'), array_keys($order_keys))],  Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')),
-                $order_keys[Filters::enum(array_get($args, 'order2', 'sev'), array_keys($order_keys))], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));
+        
+        $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'sev'), array_keys($order_keys))];
+        $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'sev'), array_keys($order_keys))];
+        $sortorder  = sprintf('%s %s, %s %s, t.task_id ASC',
+                $order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')),
+                $order_column[1], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));
 
         /// process search-conditions {{{
         $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version', 'reported' => 'product_version',
@@ -1041,9 +1043,9 @@ class Backend
 
         $where = (count($where)) ? 'WHERE '. join(' AND ', $where) : ''; 
 
-        //Get the column names of table tasks for the group by statement
+        // Get the column names of table tasks for the group by statement
         if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
-            $groupby .= "p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name, ";
+            $groupby .= "p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name,{$order_column[0]},{$order_column[1]}, ";
         }
         $groupby .= $db->GetColumnNames('{tasks}', 't.task_id', 't.');
 

@@ -458,6 +458,11 @@ function replaceText(text, textarea)
 		}
 		textarea.scrollTop = scrollPos;
 	}
+    else if (document.selection) {
+        textarea.focus();
+        sel=document.selection.createRange();
+        sel.text=text;
+    }
 	// Just put it on the end.
 	else
 	{
@@ -500,6 +505,31 @@ function surroundText(text1, text2, textarea)
 		}
 		textarea.scrollTop = scrollPos;
 	}
+    else if(document.selection) {
+        textarea.focus();
+        var sampleText = 'TEXT';
+        var currentRange = document.selection.createRange();
+        var selection = currentRange.text;
+        var replaced = true;
+        if(!selection) {
+               replaced=false;
+               selection = sampleText;
+        }
+        if(selection.charAt(selection.length-1)==" "){
+               selection=selection.substring(0,selection.length-1);
+               currentRange.text = text1 + selection + text2 + " ";
+        }
+        else
+        {
+               currentRange.text = text1 + selection + text2;
+        }
+        if(!replaced){
+               // If putting in sample text (i.e. insert) adjust range start and end
+               currentRange.moveStart('character',-text.length-text2.length);
+               currentRange.moveEnd('character',-text2.length);
+        }
+        currentRange.select();
+    }
 	// Just put them on the end, then.
 	else
 	{

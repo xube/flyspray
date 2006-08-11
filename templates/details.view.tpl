@@ -214,7 +214,7 @@
 
 		<br class="DoNotPrint" />
 
-		<?php if ( (count($deps) || count($blocks)) && !Flyspray::function_disabled('shell_exec')): ?>
+		<?php if ( (count($deps) || count($blocks)) && (Flyspray::function_disabled('shell_exec') || array_get($conf['general'], 'dot_path'))): ?>
 		<a class="DoNotPrint" href="{CreateURL('depends', $task_details['task_id'])}">{L('depgraph')}</a>
 		<br />
 		<br />
@@ -303,7 +303,7 @@
 		  </div>
 		</form>
 	 </div>
-	 <?php elseif (!$d_open && !Flyspray::AdminRequestCheck(1, $task_details['task_id'])): ?>
+	 <?php elseif (!$d_open && !$user->isAnon() && !Flyspray::AdminRequestCheck(1, $task_details['task_id'])): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('requestclose')}</a>
 	 <div id="closeform" class="popup hide">

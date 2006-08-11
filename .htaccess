@@ -9,10 +9,10 @@ RewriteEngine on
 RewriteRule ^.*\?do=admin&area=prefs$ index.php?do=admin&area=prefs [L,QSA]
 
 RewriteRule ^([0-9]+)$ index.php?do=details&task_id=$1 [L,QSA]
-RewriteRule ^task/([0-9]+)$ index.php?do=details&id=$1 [L,QSA]
-RewriteRule ^task/([0-9]+)comment([0-9]+)$ index.php?do=details&id=$1comment$2 [L,QSA]
-RewriteRule ^task/([0-9]+)/depends$ index.php?do=depends&id=$1 [L,QSA]
-RewriteRule ^task/([0-9]+)/depends&prune=([0-9]+)$ index.php?do=depends&id=$1&prune=$2 [L,QSA]
+RewriteRule ^task/([0-9]+)$ index.php?do=details&task_id=$1 [L,QSA]
+RewriteRule ^task/([0-9]+)comment([0-9]+)$ index.php?do=details&task_id=$1comment$2 [L,QSA]
+RewriteRule ^task/([0-9]+)/depends$ index.php?do=depends&task_id=$1 [L,QSA]
+RewriteRule ^task/([0-9]+)/depends&prune=([0-9]+)$ index.php?do=depends&task_id=$1&prune=$2 [L,QSA]
 RewriteRule ^task/([0-9]+)/edit$ index.php?do=details&task_id=$1&edit=yep [L,QSA]
 
 RewriteRule ^newtask$ index.php?do=newtask [L,QSA]

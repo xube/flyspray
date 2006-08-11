@@ -154,7 +154,7 @@ $page->assign('do', $do);
 $page->pushTpl('header.tpl');
 
 if (Req::has('action')) {
-    require_once(BASEDIR . '/includes/modify.php');
+    require_once(BASEDIR . '/includes/modify.inc.php');
 } else {
     // Show the page the user wanted
     require_once(BASEDIR . "/scripts/$do.php");

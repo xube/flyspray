@@ -15,24 +15,20 @@ if ( !($task_details = Flyspray::GetTaskDetails(Req::num('task_id')))
     Flyspray::show_error(9);
 }
 
-if (Flyspray::function_disabled('shell_exec')) {
-    Flyspray::show_error(24, true, null, $_SESSION['prev_page']);
-}
-
 // Configuration information:
-$path_to_dot = @$conf['general']['dot_path']; // Where's the dot executable?
+$path_to_dot = array_get($conf['general'], 'dot_path', ''); // Where's the dot executable?
+$fmt         = array_get($conf['general'], 'dot_format', 'png');
 /* March 10 2006 Jason Porter: Removed the $basedir as $path_for_images
  * should be relative, we use this path also in the HTML output.  Saving
  * the file from dot happens later, and that should be the absolute path.
  */
-$path_for_images = '/attachments'; // What directory do we use for output?
-$fmt = 'png';
+ 
+if (Flyspray::function_disabled('shell_exec') && !$path_to_dot) {
+    Flyspray::show_error(24, true, null, $_SESSION['prev_page']);
+}
+
 $id = Req::num('task_id');
 $page->assign('task_id', $id);
-
-// Minor(?) FIXME: we save the graphs into a directory (attachments), 
-// but they never get deleted. Once there, they'll be overwritten but
-// never removed, except for manually.
 
 // ASAP Todo items:
 // - Hook in WebDot method, so if you don't have system() or dot, 
@@ -45,7 +41,7 @@ $page->assign('task_id', $id);
 
 $prunemode = Req::num('prune', 0);
 $selfurl   = CreateURL('depends', $id);
-$pmodes    = array('None', 'Prune Closed Links', 'Prune Closed Tasks');
+$pmodes    = array(L('none'), L('pruneclosedlinks'), L('pruneclosedtasks'));
 
 foreach ($pmodes as $mode => $desc) {
     if ($mode == $prunemode) {
@@ -179,23 +175,22 @@ foreach (array("edge_list", "rvrs_list", "node_list") as $l) {
 // Now we've got everything we need... let's draw the pretty pictures
 
 //Open the graph, and print global options
-$lj = "l"; // label justification - l, r, or n (for center)
+$lj = "n"; // label justification - l, r, or n (for center)
 $graphname = "task_${id}_dependencies";
 $dotgraph = "digraph $graphname {\n".
-    "node [width=1.5, shape=rectangle, style=\"filled\", ".
-    "fontsize=7.0, pencolor=black, margin=\"0.1, 0.0\"];\n";
+    "node [width=1.1, shape=ellipse, border=10, color=\"#00E11E\", style=\"filled\", ".
+    "fontsize=10.0, pencolor=black, margin=\"0.1, 0.0\"];\n";
 // define the nodes
 foreach ($node_list as $n => $r) {
     $col = "";
     if ($r['clsd'] && $n!=$id) { $r['pct'] = 120; }
     // color code: shades of gray for % done, shades of yellow for this task
-    $x = dechex(255-($r['pct']*1.5)-($n==$id ? 105 : 0));
-    if ($n==$id) { $col = "#ffff$x"; } else {  $col = "#$x$x$x"; }
+    $x = dechex(255-($r['pct']+10));
+    $col = "#$x$x$x";
     // Make sure label terminates in \n!
-    $label = "FS#$n - ".
+    $label = "FS#$n \n".
         ($r['clsd'] ? L('closed') :
-         "$r[pct]% ".L('complete')).#" status $r[stat]".
-         "\n".wordwrap(addslashes($r['sum']), 20)."\n";
+         "$r[pct]% ".L('complete'));#" status $r[stat]".
     $tooltip =
       ($r['clsd'] ? L('closed') . ": $r[res]".
        (!empty($r['clsdby']) ? " ($r[clsdby])" : "").
@@ -204,8 +199,11 @@ foreach ($node_list as $n => $r) {
        $fs->priorities[$r['pri']]. L('priority') . " - ".
        L('status') . ": ".$r['status_name']);
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
+        ($r['clsd'] ? 'color=black,' : '') .
+        ($r['clsd'] ? 'fillcolor=white,' : "fillcolor=\"$col\",") .
+        ($n == $id ? 'shape=box,' : '') .
         "href=\"".CreateURL("details", $n)."\", ".
-        "tooltip=\"$tooltip\", fillcolor=\"$col\"];\n";
+        "tooltip=\"$tooltip\"];\n";
 }
 // Add edges
 foreach ($edge_list as $src => $dstlist) {
@@ -217,27 +215,32 @@ foreach ($edge_list as $src => $dstlist) {
 $dotgraph .= "}\n";
 
 
-// All done with the graph. Save it to a temp file.
-$tname = tempnam('', 'fs_depends_dot_');
+// All done with the graph. Save it to a temp file (new name if the data has changed)
+$file_name = 'cache/fs_depends_dot_' . $id . '_' . md5($dotgraph) . '.dot';
+$tname = BASEDIR . '/' . $file_name;
 $tmp   = fopen($tname, 'wb');
 fwrite($tmp, $dotgraph);
 fclose($tmp);
 
 // Now run dot on it:
-$out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
-$cmd = "$path_to_dot -T $fmt -o \"" . BASEDIR . $out . "\" $tname";
-shell_exec($cmd);
+if (Flyspray::function_disabled('shell_exec') || !$path_to_dot) {
+    $page->assign('image', array_get($conf['general'], 'dot_public') . '/' . $baseurl . $file_name . '.' . $fmt);
+    $page->assign('map', '');
+} else {
+    $out = "/cache/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
+    $cmd = "$path_to_dot -T $fmt -o \"" . BASEDIR . $out . "\" $tname";
+    shell_exec($cmd);
 
-$cmd = "$path_to_dot -T cmapx $tname";
-$map = shell_exec($cmd);
-
-unlink($tname);
+    $cmd = "$path_to_dot -T cmapx $tname";
+    $map = shell_exec($cmd);
+    
+    $page->assign('image', $baseurl . $out);
+    $page->assign('map', $map);
+}
 
 /*
 [TC] We cannot have this stuff outputting here, so I put it in a quick template
 */
-$page->assign('image', $out);
-$page->assign('map', $map);
 $page->assign('taskid', $id);
 $page->assign('graphname', $graphname);
 

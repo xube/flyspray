@@ -782,7 +782,7 @@ Regards,',
 'error21'                 => 'One or more emails could not be sent. Check your config.',
 'error22'                 => 'No new user registration allowed.',
 'error23'                 => 'User or group not enabled for login.',
-'error24'                 => 'Dependency graph cannot be displayed because of the server\'s security settings.',
+'error24'                 => 'Neither the dot executable nor a public dot server has been set.',
 'error25'                 => 'Roadmap only available for a specific project.',
 'done'                    => 'done',
 'rss'                     => 'RSS',
@@ -792,6 +792,9 @@ Regards,',
 'timezone'                => 'Time zone',
 'accept'                  => 'Accept',
 'reasonfordeinal'         => 'Reason for denial',
+'pruneclosedlinks'        => 'Prune Closed Links',
+'pruneclosedtasks'        => 'Prune Closed Tasks',
+'pagegenerated'           => 'Page and image generated in %d seconds.',
 ); 
 
 ?>
