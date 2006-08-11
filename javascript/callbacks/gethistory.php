@@ -28,7 +28,7 @@ if (is_numeric($details = Get::val('details'))) {
     $details = null;
 }
 
-$sql = get_events(Get::num('id'), $details);
+$sql = get_events(Get::num('task_id'), $details);
 $histories = $db->fetchAllArray($sql);
 
 if ($details)

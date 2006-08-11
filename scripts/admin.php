@@ -9,7 +9,7 @@
   | much everything global.                       |
   \***********************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
@@ -35,6 +35,7 @@ switch ($area = Req::val('area', 'prefs')) {
     case 'cat':
     case 'editgroup':
     case 'groups':
+    case 'newuser':
         $page->assign('groups', Flyspray::ListGroups());
     case 'newproject':
     case 'os':
@@ -43,6 +44,7 @@ switch ($area = Req::val('area', 'prefs')) {
     case 'tt':
     case 'status':
     case 'ver':
+    case 'newgroup':
 
         $page->setTitle($fs->prefs['page_title'] . L('admintoolboxlong'));
         $page->pushTpl('admin.'.$area.'.tpl');

@@ -35,12 +35,12 @@ if (!$page) {
 
   if ($upgraded != 'yes' && $prev_ver == 'yes') {
     
-    echo '<table class="admin"><tr><td class="text">This script will upgrade your Flyspray database structure for use with Flyspray 0.9.7.';
+    echo '<table class="box"><tr><td class="text">This script will upgrade your Flyspray database structure for use with Flyspray 0.9.7.';
     echo '<br><br><a href="' . $_SERVER['PHP_SELF'] . '?page=2">Perform upgrade now!</a></td></tr></table>';
     
   } else {
   
-    echo '<table class="admin"><tr><td class="text">Your Flyspray database has already been upgraded for use with version 0.9.7.  You can delete this script.<br><br>';
+    echo '<table class="box"><tr><td class="text">Your Flyspray database has already been upgraded for use with version 0.9.7.  You can delete this script.<br><br>';
     echo '<a href="../">Take me to Flyspray 0.9.7 now!</a></td></tr><table>';
 
   };
@@ -128,7 +128,7 @@ if (!$page) {
       // End of cycling through projects to create PM groups
       };
    
-   echo '<table class="admin"><tr><td class="text">Your Flyspray database is now upgraded for use with version 0.9.7.  You should delete the entire <i>sql/</i> directory.<br><br>';
+   echo '<table class="box"><tr><td class="text">Your Flyspray database is now upgraded for use with version 0.9.7.  You should delete the entire <i>sql/</i> directory.<br><br>';
    echo '<br /><br />';
    echo 'Flyspray 0.9.7 has support for seperate user groups per project.  Consider <a href="http://flyspray.rocks.cc/?p=Documentation">';
    echo 'reading the documentation</a> to fully understand how global and project-level groups work.';
@@ -138,7 +138,7 @@ if (!$page) {
 
   } else {
 
-    echo '<table class="admin"><tr><td class="text">Your MYSQL Flyspray database has already been upgraded for use with version 0.9.7.  You should delete the entire <i>sql/</i> directory.<br><br>';
+    echo '<table class="box"><tr><td class="text">Your MYSQL Flyspray database has already been upgraded for use with version 0.9.7.  You should delete the entire <i>sql/</i> directory.<br><br>';
     echo '<a href="../">Take me to Flyspray 0.9.7 now!</a></td></tr><table>';
 
 

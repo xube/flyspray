@@ -9,18 +9,18 @@
 
 define('IN_FS', true);
 
-$path = dirname(dirname(__FILE__));
-require_once("$path/header.php");
-require_once("$path/includes/notify.inc.php");
+require_once 'header.php';
+require_once BASEDIR . '/includes/class.notify.php';
 
 $notify = new Notifications;
+$user = new User(0);
 $now = time();
 
 $get_reminders = $db->Query("SELECT  r.*, t.*, p.*
                                FROM  {reminders} r
                          INNER JOIN  {users}     u ON u.user_id = r.to_user_id
                          INNER JOIN  {tasks}     t ON r.task_id = t.task_id
-                         INNER JOIN  {projects}  p ON t.attached_to_project = p.project_id
+                         INNER JOIN  {projects}  p ON t.project_id = p.project_id
                               WHERE  t.is_closed = '0' AND r.start_time < ?
                                                        AND r.last_sent + r.how_often < ?
                            ORDER BY  r.reminder_id", array(time(), time())

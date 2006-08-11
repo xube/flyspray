@@ -49,8 +49,8 @@ if (substr(PHP_OS, 0, 3) == 'WIN') {
   define('IS_MSWIN', false);
 }
 
-require_once(OBJECTS_PATH . '/template.php');
-require_once(OBJECTS_PATH . '/functions.inc.php');
+require_once(OBJECTS_PATH . '/external/template.php');
+require_once(OBJECTS_PATH . '/class.flyspray.php');
 require_once(OBJECTS_PATH . '/version.php');
 
 class Setup extends Flyspray
@@ -1376,7 +1376,7 @@ class Setup extends Flyspray
    function ProcessDatabaseSetup($data)
    {
       // Look for ADOdb
-      $this->mAdodbPath = $this->ScanIncludePath('adodb.inc.php', realpath('../adodb'));
+      $this->mAdodbPath = $this->ScanIncludePath('adoclass.database.php', realpath('../adodb'));
       require_once($this->mAdodbPath);
 
       // Perform a number of fatality checks, then die gracefully
@@ -2009,7 +2009,7 @@ class Setup extends Flyspray
    function UncompressFile($from_location, $filename, $to_location)
    {
       // Require the Pear Archive_Tar Class
-      require_once(OBJECTS_PATH . "/archive_tar.php");
+      require_once(OBJECTS_PATH . "/external/archive_tar.php");
 
       // use tar file
       $tar = new Archive_Tar("$from_location/$filename");

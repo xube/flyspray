@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is meant to add every hack that is needed to fix default PHP
  * behaviours, and to ensure that our PHP env will be able to run flyspray
@@ -6,7 +7,11 @@
  *
  */
 
-// as the very first step, we live is register_globals Off world forever..
+ini_set('display_errors', 1);
+
+error_reporting(E_ALL);
+
+// we live is register_globals Off world forever..
 //This code was written By Stefan Esser from the hardened PHP project (sesser@php.net)
 // it's now part of the PHP manual
 
@@ -41,8 +46,41 @@ function unregister_GLOBALS()
 
 unregister_GLOBALS();
 
-//then we procede with our checks and stuff
 
+/*unless we want to use this in the future, get rid of the
+* the PHP >= 5.2 , input filter extension, if not, it
+* will mess with user input if sysadmin or webmaster use a filter different
+* than the default.
+* This is based on work by Tobias Schlitt <toby@php.net> available under
+* the BSD license, but has been slightly  modified for Flyspray.
+*/
+
+if (extension_loaded('filter') && input_name_to_filter(ini_get('filter.default')) !== FILTER_UNSAFE_RAW) {
+
+    if(count($_GET)) {
+        foreach ($_GET as $key => $value) {
+            $_GET[$key] = input_get(INPUT_GET, $key, FILTER_UNSAFE_RAW);
+        }
+    }
+    if(count($_POST)) {
+        foreach ($_POST as $key => $value) {
+            $_POST[$key] = input_get(INPUT_POST, $key, FILTER_UNSAFE_RAW);
+        }
+    }
+    if(count($_COOKIE)) {
+        foreach ($_COOKIE as $key => $value) {
+            $_COOKIE[$key] = input_get(INPUT_COOKIE, $key, FILTER_UNSAFE_RAW);
+        }
+    }
+    if(isset($_SESSION) && is_array($_SESSION) && count($_SESSION)) {
+        foreach ($_SESSION as $key => $value) {
+            $_SESSION[$key] = input_get(INPUT_SESSION, $key, FILTER_UNSAFE_RAW);
+        }
+    }
+
+}
+
+//then we procede with our checks and stuff
 
 // Check PHP Version (Must Be at least 4.3)
 // For 0.9.9, this should redirect to the error page
@@ -57,11 +95,21 @@ ini_set('arg_separator.output','&amp;');
 // MySQLi driver is _useless_ if zend.ze1_compatibility_mode is enabled
 // in fact you should never use this setting,the damn thing does not work.
 
-if(PHP_VERSION >= '5.0') {
-	ini_set('zend.ze1_compatibility_mode',0);
-}
+ini_set('zend.ze1_compatibility_mode',0);
+
+
+//we don't want magic_quotes_runtime ..
+
+ini_set('magic_quotes_runtime',0);
+
+//see http://php.net/manual/en/ref.session.php#ini.session.use-only-cookies
+ini_set('session.use_only_cookies',1);
+
+//no session auto start
+ini_set('session.auto_start',0);
 
 // This is for retarded Windows servers not having REQUEST_URI
+
 if (!isset($_SERVER['REQUEST_URI']))
 {
     if (isset($_SERVER['SCRIPT_NAME'])) {
@@ -75,19 +123,46 @@ if (!isset($_SERVER['REQUEST_URI']))
         $_SERVER['REQUEST_URI'] .=  '?'.$_SERVER['QUERY_STRING'];
     }
 }
-// always live in a world without magic quotes
-function fix_gpc_magic(&$item, $key) {
-    if (is_array($item)) {
-        array_walk($item, 'fix_gpc_magic');
+
+/* we also don't want magic_quotes_gpc at all
+ * this code was written by Ilia Alshanetsky <iilia@php.net>
+ * is licensed under the BSD.
+ */
+
+function undo_magic_quotes(&$var)
+{
+    if (is_array($var)) {
+        foreach ($var as $k => $v) {
+            if (is_array($v)) {
+                array_walk($var[$k], 'undo_magic_quotes');
+            } else {
+                $var[$k] = stripslashes($v);
+            }
+        }
     } else {
-        $item = stripslashes($item);
+        $var = stripslashes($var);
     }
 }
 
-if (ini_get("magic_quotes_gpc")) {
-    array_walk($_GET, 'fix_gpc_magic');
-    array_walk($_POST, 'fix_gpc_magic');
-    array_walk($_COOKIE, 'fix_gpc_magic');
-    array_walk($_REQUEST, 'fix_gpc_magic');
+if (ini_get('magic_quotes_gpc')) {
+    if (count($_REQUEST)) {
+        array_walk($_REQUEST, 'undo_magic_quotes');
+    }
+
+    if (count($_GET)) {
+        array_walk($_GET,     'undo_magic_quotes');
+    }
+
+    if (count($_POST)) {
+        array_walk($_POST,    'undo_magic_quotes');
+    }
+
+    if (count($_COOKIE)) {
+        array_walk($_COOKIE, 'undo_magic_quotes');
+    }
+
+    if (count($_FILES) && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        array_walk($_FILES,   'undo_magic_quotes');
+    }
 }
 ?>

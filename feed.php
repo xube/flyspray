@@ -7,7 +7,6 @@ define('IN_FS', true);
 define('IN_FEED', true);
 
 require_once(dirname(__FILE__).'/header.php');
-require_once(dirname(__FILE__).'/includes/class.tpl.php');
 $page = new FSTpl();
 
 // Set up the basic XML head
@@ -46,9 +45,9 @@ $filename = $feed_type.'-'.$orderby.'-'.$proj->id.'-'.$max_items;
 
 $sql = $db->Query("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
                      FROM  {tasks}    t
-               INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1'
-                    WHERE  t.is_closed <> '$closed' $sql_project AND t.mark_private <> '1'
-                           AND p.others_view = '1' ");
+               INNER JOIN  {projects} p ON t.project_id = p.project_id AND p.project_is_active = '1'
+                    WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
+                           AND p.others_view = '1' ", array($closed));
 $most_recent = intval(max($db->fetchRow($sql)));
 
 // }}}
@@ -79,7 +78,7 @@ $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_op
                            t.last_edited_time, t.opened_by, u.real_name, u.email_address
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
-               INNER JOIN  {projects} p ON t.attached_to_project = p.project_id AND p.project_is_active = '1'
+               INNER JOIN  {projects} p ON t.project_id = p.project_id AND p.project_is_active = '1'
                     WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
                            AND p.others_view = '1'
                  ORDER BY  $orderby DESC", array($closed), $max_items);
@@ -118,13 +117,12 @@ if ($fs->prefs['cache_feeds'])
         *   an insert statement is generated and executed "
         */
 
-        $fields = array(  'content'=> $content , 'type'=> $feed_type , 'topic'=> $orderby ,
-                          'project_id'=> $proj->id ,'max_items'=> $max_items , 'last_updated'=> time() );
+        $fields = array('content'=> $content , 'type'=> $feed_type , 'topic'=> $orderby ,
+                        'project_id'=> $proj->id ,'max_items'=> $max_items , 'last_updated'=> time() );
 
         $keys = array('type','topic','project_id','max_items');
 
-        $db->Replace('{cache}', $fields, $keys, $autoquote = true );
-
+        $db->Replace('{cache}', $fields, $keys);
     }
 }
 

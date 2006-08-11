@@ -1,24 +1,69 @@
 <?php
-/*
-   ----------------------------------------------------------
-   | This script contains all the functions we use often in |
-   |Flyspray to do miscellaneous things.                    |
-   ----------------------------------------------------------
-*/
+/**
+ * Flyspray
+ *
+ * Flyspray class
+ *
+ * This script contains all the functions we use often in
+ * Flyspray to do miscellaneous things.   
+ *
+ * @license http://opensource.org/licenses/lgpl-license.php Lesser GNU Public License
+ * @package flyspray
+ * @author Tony Collins, Florian Schmitz
+ */
 
 class Flyspray
 {
-    // Change this for each release.  Don't forget!
+
+    /**
+     * Current Flyspray version. Change this for each release.  Don't forget!
+     * @access public
+     * @var string
+     */
     var $version = '0.9.9 dev';
 
+    /**
+     * Flyspray preferences
+     * @access public
+     * @var array
+     */
     var $prefs   = array();
+
+    /**
+     * Max. file size for file uploads. 0 = no uploads allowed
+     * @access public
+     * @var integer
+     */
     var $max_file_size = 0;
-    // projects viewable by the user
+
+    /**
+     * List of projects the user is allowed to view
+     * @access public
+     * @var array
+     */
     var $projects = array();
+
+    /**
+     * List of severities. Loaded in i18n.inc.php
+     * @access public
+     * @var array
+     */
     var $severities = array();
+
+    /**
+     * List of priorities. Loaded in i18n.inc.php
+     * @access public
+     * @var array
+     */
     var $priorities = array();
 
     // Application-wide preferences {{{
+    /**
+     * Constructor, starts session, loads settings
+     * @access private
+     * @return void
+     * @version 1.0
+     */
     function Flyspray()
     {
         global $db;
@@ -52,13 +97,20 @@ class Flyspray
             $sizes[] = $val;
         }
 
-        $this->max_file_size = round((min($sizes)/1024/1024), 1);
+        $this->max_file_size = ((bool) ini_get('file_uploads')) ? round((min($sizes)/1024/1024), 1) : 0;
     } // }}}
 
-    /**{{{ Redirect to $url
+    // {{{ Redirect to $url
+    /**
      * Redirects the browser to the page in $url
-     * This function is based on PEAR HTTP class , released under
-     * the BSD license
+     * This function is based on PEAR HTTP class
+     * @param string $url
+     * @param bool $exit
+     * @param bool $rfc2616
+     * @license BSD
+     * @access public static
+     * @return bool
+     * @version 1.0
      */
     function Redirect($url, $exit = true, $rfc2616 = true)
     {
@@ -69,8 +121,8 @@ class Flyspray
         }
 
         if (headers_sent()) {
-            echo "<script type=\"text/javascript\">document.location.href='$url';</script>";
-            return true;
+            //if this happends we need to trace the root cause anyway, so return false
+            return false;
         }
 
         $url = FlySpray::absoluteURI($url);
@@ -182,10 +234,12 @@ class Flyspray
     } // }}}
 
     // Duplicate submission check {{{
-    /** Test to see if user resubmitted a form.
-      Checks only newtask and addcomment actions.
-      @return   true if user has submitted the same action within less than
-      6 hours, false otherwise
+    /**
+     * Test to see if user resubmitted a form.
+     * Checks only newtask and addcomment actions.
+     * @return bool true if user has submitted the same action within less than 6 hours, false otherwise
+     * @access public static
+     * @version 1.0
      */
     function requestDuplicated()
     {
@@ -199,12 +253,11 @@ class Flyspray
             }
         }
       
-      if(count($_POST)) {
+      if (count($_POST)) {
       
         $requestarray = array_merge(array_keys($_POST), array_values($_POST));
 
-        if (Post::val('do') == 'modify' and preg_match('/^newtask.newtask|details.addcomment$/',
-                    Post::val('action')))
+        if (preg_match('/^newtask.newtask|details.addcomment$/', Post::val('action', '')))
         {
             $currentrequest = md5(serialize($requestarray));
             if (!empty($_SESSION['requests_hash'][$currentrequest])) {
@@ -216,13 +269,21 @@ class Flyspray
         return false;
     } // }}}
     // Retrieve task details {{{
-    function GetTaskDetails($task_id, $cacheenabled = false)
+    /**
+     * Gets all information about a task (and caches information if wanted)
+     * @param integer $task_id
+     * @param bool $cache_enabled
+     * @access public static
+     * @return mixed an array with all taskdetails or false on failure
+     * @version 1.0
+     */
+    function GetTaskDetails($task_id, $cache_enabled = false)
     {
         global $db, $fs;
 
         static $cache = array();
 
-        if(isset($cache[$task_id]) && $cacheenabled) {
+        if (isset($cache[$task_id]) && $cache_enabled) {
             return $cache[$task_id];
         }
 
@@ -238,7 +299,7 @@ class Flyspray
                                           uc.real_name      AS closed_by_name,
                                           lst.status_name   AS status_name
                                     FROM  {tasks}              t
-                               LEFT JOIN  {projects}           p  ON t.attached_to_project = p.project_id
+                               LEFT JOIN  {projects}           p  ON t.project_id = p.project_id
                                LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
                                LEFT JOIN  {list_os}            o  ON t.operating_system = o.os_id
                                LEFT JOIN  {list_resolution}    r  ON t.resolution_reason = r.resolution_id
@@ -256,11 +317,8 @@ class Flyspray
         }
 
         if ($get_details = $db->FetchRow($get_details)) {
-            $status_id    = $get_details['item_status'];
-            $severity_id  = $get_details['task_severity'];
-            $priority_id  = $get_details['task_priority'];
-            $get_details += array('severity_name' => $fs->severities[$severity_id]);
-            $get_details += array('priority_name' => $fs->priorities[$priority_id]);
+            $get_details += array('severity_name' => $fs->severities[$get_details['task_severity']]);
+            $get_details += array('priority_name' => $fs->priorities[$get_details['task_priority']]);
         }
         
         $get_details['assigned_to'] = $get_details['assigned_to_name'] = array();
@@ -273,13 +331,20 @@ class Flyspray
         return $get_details;
     } // }}}
     // List projects {{{
-    function listProjects($activeOnly=true)
+    /**
+     * Returns a list of all projects
+     * @param bool $active_only show only active projects
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
+    function listProjects($active_only = true)
     {
         global $db;
 
         $query = 'SELECT  project_id, project_title FROM {projects}';
 
-        if ($activeOnly)  {
+        if ($active_only)  {
             $query .= ' WHERE  project_is_active = 1';
         }
 
@@ -287,12 +352,18 @@ class Flyspray
         return $db->fetchAllArray($sql);
     } // }}}
     // List themes {{{
+    /**
+     * Returns a list of all themes
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
     function listThemes()
     {
-        if ($handle = opendir(dirname(dirname(__FILE__)).'/themes/')) {
+        if ($handle = opendir(dirname(dirname(__FILE__)) . '/themes/')) {
             $theme_array = array();
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != ".." && is_file("themes/$file/theme.css")) {
+                if ($file != '.' && $file != '..' && is_file("themes/$file/theme.css")) {
                     $theme_array[] = $file;
                 }
             }
@@ -303,17 +374,30 @@ class Flyspray
         return $theme_array;
     } // }}}
     // List a project's group {{{
-    function listGroups($proj = 0)
+    /**
+     * Returns a list of a project's groups
+     * @param integer $proj_id
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
+    function listGroups($proj_id = 0)
     {
         global $db;
         $res = $db->Query('SELECT  *
                              FROM  {groups}
-                            WHERE  belongs_to_project = ?
-                         ORDER BY  group_id ASC', array($proj));
+                            WHERE  project_id = ?
+                         ORDER BY  group_id ASC', array($proj_id));
         return $db->FetchAllArray($res);
     }
     // }}}
     // List languages {{{
+    /**
+     * Returns a list of installed languages
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
     function listLangs()
     {
         $lang_array = array();
@@ -330,7 +414,19 @@ class Flyspray
         return $lang_array;
     } // }}}
     // Log events to the history table {{{
-    function logEvent($task, $type, $newvalue = '', $oldvalue = '', $field = '', $time = null)
+    /**
+     * Saves an event to the database
+     * @param integer $task_id
+     * @param integer $type
+     * @param string $newvalue
+     * @param string $oldvalue
+     * @param string $field
+     * @param integer $time for synchronisation with other functions
+     * @access public static
+     * @return void
+     * @version 1.0
+     */
+    function logEvent($task_id, $type, $newvalue = '', $oldvalue = '', $field = '', $time = null)
     {
         global $db, $user;
 
@@ -371,33 +467,54 @@ class Flyspray
 
         $db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                          VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    array($task, intval($user->id), ( (is_null($time)) ? time() : $time ), $type, $field, $oldvalue, $newvalue));
+                    array($task_id, intval($user->id), ( (is_null($time)) ? time() : $time ), $type, $field, $oldvalue, $newvalue));
     } // }}}
     // Log a request for an admin/project manager to do something {{{
-    function AdminRequest($type, $project, $task, $submitter, $reason)
+    /**
+     * Adds an admin request to the database
+     * @param integer $type 1: Task close, 2: Task re-open
+     * @param integer $project_id
+     * @param integer $task_id
+     * @param integer $submitter
+     * @param string $reason
+     * @access public static
+     * @return void
+     * @version 1.0
+     */
+    function AdminRequest($type, $project_id, $task_id, $submitter, $reason)
     {
         global $db;
-        // Types are:
-        //  1: Task close
-        //  2: Task re-open
-        //  3: Application for project membership (not implemented yet)
-
         $db->Query('INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
                          VALUES (?, ?, ?, ?, ?, ?)',
-                array($project, $task, $submitter, $type, $reason, date(U)));
+                    array($project_id, $task_id, $submitter, $type, $reason, time()));
     } // }}}
     // Check for an existing admin request for a task and event type {{{
-    function AdminRequestCheck($type, $task)
+    /**
+     * Checks whether or not there is an admin request for a task
+     * @param integer $type 1: Task close, 2: Task re-open
+     * @param integer $task_id
+     * @access public static
+     * @return bool
+     * @version 1.0
+     */
+    function AdminRequestCheck($type, $task_id)
     {
         global $db;
 
         $check = $db->Query("SELECT *
                                FROM {admin_requests}
                               WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
-                            array($type, $task));
+                            array($type, $task_id));
         return (bool)($db->CountRows($check));
     } // }}}
     // Get the current user's details {{{
+    /**
+     * Gets all user details of a user
+     * @param integer $user_id
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
     function getUserDetails($user_id)
     {
         global $db;
@@ -407,13 +524,27 @@ class Flyspray
         return $db->FetchRow($result);
     } // }}}
     // Get group details {{{
+    /**
+     * Gets all information about a group
+     * @param integer $group_id
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
     function getGroupDetails($group_id)
     {
         global $db;
         $sql = $db->Query('SELECT * FROM {groups} WHERE group_id = ?', array($group_id));
         return $db->FetchRow($sql);
     } // }}}
-    // Crypt a password with the method set in the configfile {{{
+    //  {{{
+    /**
+     * Crypt a password with the method set in the configfile
+     * @param string $password
+     * @access public static
+     * @return string
+     * @version 1.0
+     */
     function cryptPassword($password)
     {
         global $conf;
@@ -423,12 +554,19 @@ class Flyspray
             return sha1($password);
         } elseif (strtolower($pwcrypt) == 'md5') {
             return md5($password);
+        } else {
+            return crypt($password);
         }
-        // use random salted crypt by default
-        $letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        return crypt($password, substr($letters, rand(0, 52), 1).substr($letters, rand(0, 52), 1) );
     } // }}}
-    // Check if a user provided the right credentials {{{
+    // {{{
+    /**
+     * Check if a user provided the right credentials
+     * @param string $username
+     * @param string $password
+     * @access public static
+     * @return integer user_id on success, 0 if account or user is disabled, -1 if password is wrong
+     * @version 1.0
+     */
     function checkLogin($username, $password)
     {
         global $db;
@@ -437,7 +575,7 @@ class Flyspray
                                 FROM  {users_in_groups} uig
                            LEFT JOIN  {groups} g ON uig.group_id = g.group_id
                            LEFT JOIN  {users} u ON uig.user_id = u.user_id
-                               WHERE  u.user_name = ? AND g.belongs_to_project = ?
+                               WHERE  u.user_name = ? AND g.project_id = ?
                             ORDER BY  g.group_id ASC", array($username, '0'));
 
         $auth_details = $db->FetchRow($result);
@@ -463,9 +601,18 @@ class Flyspray
             return $auth_details['user_id'];
         }
 
-        return false;
+        return ($auth_details['account_enabled'] && $auth_details['group_open']) ? 0 : -1;
     } // }}}
     // Set cookie {{{
+    /**
+     * Sets a cookie, automatically setting the URL
+     * @param string $name
+     * @param string $val
+     * @param integer $time
+     * @access public static
+     * @return bool
+     * @version 1.0
+     */
     function setCookie($name, $val, $time = null)
     {
         global $baseurl;
@@ -473,17 +620,22 @@ class Flyspray
         if (is_null($time)) {
             $time = time()+60*60*24*30;
         }
-        setcookie($name, $val, $time, $url['path']);
+        return setcookie($name, $val, $time, $url['path']);
     } // }}}
     // Reminder daemon {{{
+    /**
+     * Starts the reminder daemon
+     * @access public static
+     * @return void
+     * @version 1.0
+     */
     function startReminderDaemon()
     {
-
     /**
      * XXX:  I will rewrite this stuff from the scratch later
-    */
+     */
 
-        $script  = 'scripts/daemon.php';
+        $script  = 'daemon.php';
         $include = 'schedule.php';
         $runfile = 'running';
         $timeout = 600;
@@ -511,6 +663,12 @@ class Flyspray
         }
     } // }}}
     // Start the session {{{
+    /**
+     * Starts the session
+     * @access public static
+     * @return void
+     * @version 1.0
+     */
     function startSession()
     {
         if (defined('IN_FEED')) {
@@ -551,24 +709,35 @@ class Flyspray
             session_start();
             $_SESSION['SESSNAME'] = $sessname;
         }
-
-
     }  // }}}
 
-    // Generate a long random number {{{
+    // {{{
+    /**
+     * Generate a long random number
+     * @access public static
+     * @return void
+     * @version 1.0
+     */
     function make_seed()
     {
         list($usec, $sec) = explode(' ', microtime());
         return (float) $sec + ((float) $usec * 100000);
     } // }}}
-
     // Compare tasks {{{
+    /**
+     * Compares two tasks and returns an array of differences
+     * @param array $old
+     * @param array $new
+     * @access public static
+     * @return array array('field', 'old', 'new')
+     * @version 1.0
+     */
     function compare_tasks($old, $new)
     {
-        $comp = array('priority_name','severity_name','status_name','assigned_to_name','due_in_version_name',
-                     'reported_version_name','tasktype_name','os_name', 'category_name',
-                     'due_date','percent_complete','item_summary', 'due_in_version_name',
-                     'detailed_desc','project_title');
+        $comp = array('priority_name', 'severity_name', 'status_name', 'assigned_to_name', 'due_in_version_name',
+                     'reported_version_name', 'tasktype_name', 'os_name', 'category_name',
+                     'due_date', 'percent_complete', 'item_summary', 'due_in_version_name',
+                     'detailed_desc', 'project_title', 'mark_private');
 
         $changes = array();
         foreach ($old as $key => $value)
@@ -596,15 +765,23 @@ class Flyspray
 
         return $changes;
     } // }}}
-    // Get a list of assignees for a task {{{
-    function GetAssignees($taskid, $name = false)
+    // {{{
+    /**
+     * Get a list of assignees for a task
+     * @param integer $task_id
+     * @param bool $name whether or not names of the assignees should be returned as well
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
+    function GetAssignees($task_id, $name = false)
     {
         global $db;
 
         $sql = $db->Query('SELECT u.real_name, u.user_id
                              FROM {users} u, {assigned} a
                             WHERE task_id = ? AND u.user_id = a.user_id',
-                              array($taskid));
+                              array($task_id));
 
         $assignees = array();
         while ($row = $db->FetchRow($sql)) {
@@ -619,7 +796,15 @@ class Flyspray
         return $assignees;
     } /// }}}
 
-    // Explode string to the array of integers {{{
+    // {{{
+    /**
+     * Explode string to the array of integers
+     * @param string $separator
+     * @param string $string
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
     function int_explode($separator, $string)
     {
     	$ret = array();
@@ -632,13 +817,29 @@ class Flyspray
     	return $ret;
     } /// }}}
     
-    // Checks if a function is disabled
+    /**
+     * Checks if a function is disabled
+     * @param string $func_name
+     * @access public static
+     * @return bool
+     * @version 1.0
+     */
     function function_disabled($func_name)
     {
         $disabled_functions = explode(',', ini_get('disable_functions'));
         return in_array($func_name, $disabled_functions);
     }
-    
+
+    /**
+     * Returns the key number of an array which contains an array like array($key => $value)
+     * For use with SQL result arrays
+     * @param string $key
+     * @param string $value
+     * @param array $array
+     * @access public static
+     * @return integer
+     * @version 1.0
+     */
     function array_find($key, $value, $array)
     {
         foreach ($array as $num => $part) {
@@ -647,8 +848,19 @@ class Flyspray
             }
         }
     }
-    
-    function show_error($error_message)
+
+    /**
+     * Shows an error message
+     * @param string $error_message if it is an integer, an error message from the language file will be loaded
+     * @param bool $die enable/disable redirection (if outside the database modification script)
+     * @param string $advanced_info append a string to the error message
+     * @param string $url alternate redirection
+     * @access public static
+     * @return void
+     * @version 1.0
+     * @notes if a success and error happens on the same page, a mixed error message will be shown
+     */
+    function show_error($error_message, $die = true, $advanced_info = null, $url = null)
     {
         global $modes, $do, $baseurl;
         
@@ -659,16 +871,28 @@ class Flyspray
             $do = Filters::enum(reset(explode('.', Req::val('action'))), $modes);
         } else {
             $_SESSION['ERROR'] = L('error#') . $error_message . ': ' . L('error' . $error_message);
-            Flyspray::Redirect($baseurl);
+            if (!is_null($advanced_info)) {
+                $_SESSION['ERROR'] .= ' ' . $advanced_info;
+            }
+            if ($die) {
+                Flyspray::Redirect( (is_null($url) ? $baseurl : $url) );
+            }
         }
     }
-    
+
+    /**
+     * Returns the ID of a user with $name
+     * @param string $name
+     * @access public static
+     * @return integer 0 if the user does not exist
+     * @version 1.0
+     */
     function username_to_id($name)
     {
         global $db;
         
         if (is_numeric($name)) {
-            return intval($name);
+            return intval($db->FetchOne($db->Query('SELECT user_id FROM {users} WHERE user_id = ?', array($name))));
         } else {
             return intval($db->FetchOne($db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($name))));
         }

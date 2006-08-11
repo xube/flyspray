@@ -106,7 +106,7 @@ class Notifications {
 
       debug_print("We are configured to use Jabber...");
 
-      require_once(BASEDIR . '/includes/class.jabber.php');
+      require_once(BASEDIR . '/includes/external/class.jabber.php');
       $JABBER = new Jabber;
 
       $JABBER->server      = $fs->prefs['jabber_server'];
@@ -237,7 +237,7 @@ class Notifications {
       }
 
       // Get the new email class
-      require_once('class.phpmailer.php');
+      require_once('external/class.phpmailer.php');
 
       // Define the class
       $mail = new PHPMailer();
@@ -288,14 +288,9 @@ class Notifications {
       $mail->Body = $body;
       //$mail->AltBody = $body;
 
-      /*if(!$mail->Send())
-      {
-         echo "Message could not be sent. <p>";
-         //echo "Mailer Error: " . $mail->ErrorInfo;
-         exit;
-      }*/
-      // The above is commented out to stop Flyspray throwing an error.
-      // We should fix this by using templating.  Until then, the below line gives no error on failure.
+      if (!$mail->Send()) {
+          Flyspray::show_error(21, false, $mail->ErrorInfo);
+      }
       $mail->Send();
 
    } // }}}
@@ -307,7 +302,7 @@ class Notifications {
       // Get the task details
       $task_details = Flyspray::getTaskDetails($task_id);
       if ($task_id) {
-          $proj = new Project($task_details['attached_to_project']);
+          $proj = new Project($task_details['project_id']);
       }
 
       // Set the due date correctly
@@ -379,10 +374,11 @@ class Notifications {
          |20. New user                 |
          -------------------------------
       */
+      
+      $body = L('donotreply') . "\n\n";
       // {{{ New task opened
       if ($type == NOTIFY_TASK_OPENED)
       {
-         $body = L('donotreply') . "\n\n";
          $body .=  L('newtaskopened') . "\n\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= L('attachedtoproject') . ' - ' .  $task_details['project_title'] . "\n";
@@ -400,9 +396,6 @@ class Notifications {
          $body .= L('details') . ' - ' . $task_details['detailed_desc'] . "\n\n";
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ Task details changed
       if ($type == NOTIFY_TASK_CHANGED)
@@ -423,7 +416,6 @@ class Notifications {
                               'detailed_desc' => L('taskedited'),
                               'project_title' => L('attachedtoproject'));
                               
-         $body = L('donotreply') . "\n\n";
          $body .= L('taskchanged') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ': ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
@@ -443,15 +435,10 @@ class Notifications {
          }
          $body .= "\n" . L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
-
       } // }}}
       // {{{ Task closed
       if ($type == NOTIFY_TASK_CLOSED)
       {
-         $body = L('donotreply') . "\n\n";
          $body .=  L('notify.taskclosed') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
@@ -464,30 +451,21 @@ class Notifications {
 
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
-
       } // }}}
       // {{{ Task re-opened
       if ($type == NOTIFY_TASK_REOPENED)
       {
-         $body = L('donotreply') . "\n\n";
          $body .=  L('notify.taskreopened') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] .  ")\n\n";
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ Dependency added
       if ($type == NOTIFY_DEP_ADDED)
       {
          $depend_task = Flyspray::getTaskDetails($arg1);
 
-         $body = L('donotreply') . "\n\n";
          $body .=  L('newdep') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
@@ -495,27 +473,19 @@ class Notifications {
          $body .= L('newdepis') . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
          $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
-
       } // }}}
       // {{{ Dependency removed
       if ($type == NOTIFY_DEP_REMOVED)
       {
          $depend_task = Flyspray::getTaskDetails($arg1);
          
-         $body = L('donotreply') . "\n\n";
          $body .= L('notify.depremoved') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
          $body .= L('removeddepis') . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
-         $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
+         $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";         
       } // }}}
       // {{{ Comment added
       if ($type == NOTIFY_COMMENT_ADDED)
@@ -528,8 +498,7 @@ class Notifications {
                                ORDER BY comment_id DESC",
                                array($user->id, $task_id), '1');
          $comment = $db->FetchRow($result);
-
-         $body = L('donotreply') . "\n\n";
+         
          $body .= L('notify.commentadded') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
@@ -543,30 +512,21 @@ class Notifications {
 
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . '#comment' . $comment['comment_id'] . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
-
       } // }}}
       // {{{ Attachment added
       if ($type == NOTIFY_ATT_ADDED)
       {
-         $body = L('donotreply') . "\n\n";
          $body .= L('newattachment') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ Related task added
       if ($type == NOTIFY_REL_ADDED)
       {
          $related_task = Flyspray::getTaskDetails($arg1);
 
-         $body = L('donotreply') . "\n\n";
          $body .= L('notify.relatedadded') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
@@ -574,27 +534,18 @@ class Notifications {
          $body .= L('relatedis') . ':' . "\n\n";
          $body .= 'FS#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\n";
          $body .= CreateURL('details', $related_task['task_id']) . "\n\n";
-
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ Ownership taken
       if ($type == NOTIFY_OWNERSHIP)
       {
-         $body = L('donotreply') . "\n\n";
          $body .= implode(', ', $task_details['assigned_to_name']) . ' ' . L('takenownership') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n\n";
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ Confirmation code
       if ($type == NOTIFY_CONFIRMATION)
       {
-         $body = L('donotreply') . "\n\n";
          $body .= L('noticefrom') . " {$proj->prefs['project_title']}\n\n"
                . L('addressused') . "\n\n"
                . "{$arg1[0]}index.php?do=register&magic_url={$arg1[1]}\n\n"
@@ -602,26 +553,19 @@ class Notifications {
                . L('username') . ': '. $arg1[2] . "\n"
                . L('confirmcodeis') . " $arg1[3] \n\n"
                . L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ Pending PM request
       if ($type == NOTIFY_PM_REQUEST)
       {
-         $body = L('donotreply') . "\n\n";
          $body .= L('requiresaction') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ PM request denied
       if ($type == NOTIFY_PM_DENY_REQUEST)
       {
-         $body = L('donotreply') . "\n\n";
          $body .= L('pmdeny') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
@@ -629,29 +573,21 @@ class Notifications {
          $body .= $arg1 . "\n\n";
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ New assignee
       if ($type == NOTIFY_NEW_ASSIGNEE)
       {
-         $body = L('donotreply') . "\n\n";
          $body .= L('assignedtoyou') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
          $body .= L('moreinfo') . "\n";
          $body .= CreateURL('details', $task_id) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ Reversed dep
       if ($type == NOTIFY_REV_DEP)
       {
          $depend_task = Flyspray::getTaskDetails($arg1);
 
-         $body = L('donotreply') . "\n\n";
          $body .= L('taskwatching') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
@@ -659,16 +595,12 @@ class Notifications {
          $body .= L('isdepfor') . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
          $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ Reversed dep - removed
       if ($type == NOTIFY_REV_DEP_REMOVED)
       {
          $depend_task = Flyspray::getTaskDetails($arg1);
-
-         $body = L('donotreply') . "\n\n";
+         
          $body .= L('taskwatching') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
@@ -676,30 +608,20 @@ class Notifications {
          $body .= L('isnodepfor') . ':' . "\n\n";
          $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
          $body .= CreateURL('details', $depend_task['task_id']) . "\n\n";
-         $body .= L('disclaimer');
-
-         return array($subject, $body);
       } // }}}
       // {{{ User added to assignees list
       if ($type == NOTIFY_ADDED_ASSIGNEES)
       {
-         $body = L('donotreply') . "\n\n";
          $body .= L('useraddedtoassignees') . "\n\n";
          $body .= 'FS#' . $task_id . ' - ' . $task_details['item_summary'] . "\n";
          $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
          $body .= CreateURL('details', $task_id) . "\n\n\n";
-         $body .= L('disclaimer');
-         
-         return array($subject, $body);
       } // }}}
       // {{{ Anon-task has been opened
       if ($type == NOTIFY_ANON_TASK)
       {
-         $body = L('donotreply') . "\n\n";
          $body .= L('thankyouforbug') . "\n\n";
          $body .= CreateURL('details', $task_id, null, array('task_token' => $arg1));
-         
-         return array($subject, $body);
       } // }}}
       // {{{ Password change
       if ($type == NOTIFY_PW_CHANGE)
@@ -707,8 +629,6 @@ class Notifications {
           $body = L('messagefrom'). $arg1[0] . "\n\n"
                   . L('magicurlmessage')." \n"
                   . "{$arg1[0]}index.php?do=lostpw&magic_url=$arg1[1]\n";
-
-          return array($subject, $body);
       } // }}}
       // {{{ New user
       if ($type == NOTIFY_NEW_USER)
@@ -722,10 +642,10 @@ class Notifications {
           }
               $body .= L('emailaddress') . ': ' . $arg1[3] . "\n" .
                     L('jabberid') . ':' . $arg1[4] . "\n\n";
-          $body .= L('disclaimer');
-
-          return array($subject, $body);
-      } // }}}      
+      } // }}}
+      
+      $body .= L('disclaimer');
+      return array($subject, $body);
    
    } // }}}
    // {{{ Create an address list for specific users
@@ -737,8 +657,8 @@ class Notifications {
         $email_users = array();
         settype($users, 'array');
         
-        if (!count($users)) {
-            return;
+        if (count($users) < 1) {
+            return array();
         }
 
         $sql = $db->Query('SELECT *

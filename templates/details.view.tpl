@@ -16,7 +16,7 @@
 
   <div id="fineprint">
 	 {L('attachedtoproject')} &mdash;
-	 <a href="{$baseurl}?project={$task_details['attached_to_project']}">{$task_details['project_title']}</a>
+	 <a href="{$baseurl}?project={$task_details['project_id']}">{$task_details['project_title']}</a>
 	 <br />
 	 {L('openedby')} {!tpl_userlink($task_details['opened_by'])}
      <?php if ($task_details['anon_email'] && $user->perms('view_tasks')): ?>
@@ -129,7 +129,7 @@
           0
           <?php endif; ?>
           <?php if ($user->can_vote($task_details) > 0): ?>
-          <a href="{$baseurl}?do=modify&amp;action=details.addvote&amp;id={Req::num('id')}">
+          <a href="{$baseurl}?action=details.addvote&amp;task_id={$task_details['task_id']}">
             ({L('addvote')})</a>
           <?php elseif ($user->can_vote($task_details) == -2): ?>
           ({L('alreadyvotedthistask')})
@@ -148,11 +148,10 @@
             <?php endif; ?>
             
             <?php if ($user->can_change_private($task_details) && $task_details['mark_private']): ?>
-            <a href="{$baseurl}?do=modify&amp;action=makepublic&amp;id={Get::num('id')}">
+            <a href="{$baseurl}?action=makepublic&amp;task_id={$task_details['task_id']}">
             ({L('makepublic')})</a>
             <?php elseif ($user->can_change_private($task_details) && !$task_details['mark_private']): ?>
-            <a class="button"
-               href="{$baseurl}?do=modify&amp;action=makeprivate&amp;id={Get::num('id')}">
+            <a href="{$baseurl}?action=makeprivate&amp;task_id={$task_details['task_id']}">
                ({L('makeprivate')})</a>
             <?php endif; ?>
           </td>
@@ -169,11 +168,11 @@
             
               <?php if (!$watched): ?>
               <a accesskey="w"
-              href="{$baseurl}?do=modify&amp;action=details.add_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
+              href="{$baseurl}?action=details.add_notification&amp;ids={$task_details['task_id']}&amp;user_id={$user->id}">
               ({L('watchtask')})</a>
               <?php else: ?>
               <a accesskey="w"
-              href="{$baseurl}?do=modify&amp;action=remove_notification&amp;ids={Get::num('id')}&amp;user_id={$user->id}">
+              href="{$baseurl}?action=remove_notification&amp;ids={$task_details['task_id']}&amp;user_id={$user->id}">
               ({L('stopwatching')})</a>
               <?php endif; ?>
           </td>
@@ -206,7 +205,7 @@
 		<?php if ($user->can_edit_task($task_details)): ?>
 		<span class="DoNotPrint"> &mdash;
 		  <a class="removedeplink"
-			 href="{$baseurl}?do=modify&amp;action=removedep&amp;depend_id={$dependency['depend_id']}">
+			 href="{$baseurl}?action=removedep&amp;depend_id={$dependency['depend_id']}">
 			 {L('remove')}</a>
 		</span>
 		<?php endif; ?>
@@ -215,8 +214,8 @@
 
 		<br class="DoNotPrint" />
 
-		<?php if (count($deps) || count($blocks)): ?>
-		<a class="DoNotPrint" href="{CreateURL('depends', Get::num('id'))}">{L('depgraph')}</a>
+		<?php if ( (count($deps) || count($blocks)) && !Flyspray::function_disabled('shell_exec')): ?>
+		<a class="DoNotPrint" href="{CreateURL('depends', $task_details['task_id'])}">{L('depgraph')}</a>
 		<br />
 		<br />
 		<?php endif; ?>
@@ -224,9 +223,8 @@
 		<?php if ($user->can_edit_task($task_details)): ?>
 		<form action="{$baseurl}" method="post">
 		  <div>
-			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="details.newdep" />
-			 <input type="hidden" name="id" value="{Req::num('id')}" />
+			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 			 <input class="text" type="text" value="{Req::val('dep_task_id')}" name="dep_task_id" size="5" maxlength="10" />
 			 <button type="submit" name="submit">{L('addnew')}</button>
 		  </div>
@@ -264,17 +262,16 @@
 	 <?php if ($task_details['is_closed']): ?>
 
 	 <?php if ($user->can_close_task($task_details)): ?>
-	 <a href="{$baseurl}?do=modify&amp;action=reopen&amp;task_id={Get::num('id')}">
+	 <a class="button" href="{$baseurl}?action=reopen&amp;task_id={$task_details['task_id']}">
 		{L('reopenthistask')}</a>
-	 <?php elseif (!Flyspray::adminRequestCheck(2, $task_details['task_id']) && !$user->isAnon()): ?>
+	 <?php elseif (!$user->isAnon() && !Flyspray::adminRequestCheck(2, $task_details['task_id'])): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('reopenrequest')}</a>
-	 <div id="closeform">
+	 <div id="closeform" class="popup hide">
 		<form name="form3" action="{$baseurl}" method="post" id="formclosetask">
 		  <div>
-			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="requestreopen" />
-			 <input type="hidden" name="task_id" value="{Get::num('id')}" />
+			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 			 <label for="reason">{L('reasonforreq')}</label>
 			 <textarea id="reason" name="reason_given"></textarea><br />
 			 <button type="submit">{L('submitreq')}</button>
@@ -291,32 +288,29 @@
      <div id="closeform" class="<?php if (Req::val('action') != 'details.close' && !Req::val('showclose')): ?>hide <?php endif; ?>popup">
 		<form action="{$baseurl}" method="post" id="formclosetask">
 		  <div>
-			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="details.close" />
-			 <input type="hidden" name="task_id" value="{Req::num('id', Req::num('task_id'))}" />
+			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 			 <select class="adminlist" name="resolution_reason">
 				<option value="0">{L('selectareason')}</option>
 				{!tpl_options($proj->listResolutions(), Req::val('resolution_reason'))}
 			 </select>
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>
-			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="30">{Req::val('closure_comment')}</textarea>
+			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="25">{Req::val('closure_comment')}</textarea>
 			 <?php if($task_details['percent_complete'] != '100'): ?>
              <label>{!tpl_checkbox('mark100', Req::val('mark100', !(Req::val('action') == 'details.close')))}&nbsp;&nbsp;{L('mark100')}</label>
              <?php endif; ?>
 		  </div>
 		</form>
 	 </div>
-	 <?php elseif (!$d_open && $task_details['assigned_to'] == $user->id
-	 && !Flyspray::AdminRequestCheck(1, $task_details['task_id'])): ?>
+	 <?php elseif (!$d_open && !Flyspray::AdminRequestCheck(1, $task_details['task_id'])): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('requestclose')}</a>
-	 <div id="closeform">
+	 <div id="closeform" class="popup hide">
 		<form name="form3" action="{$baseurl}" method="post" id="formclosetask">
 		  <div>
-			 <input type="hidden" name="do" value="modify" />
 			 <input type="hidden" name="action" value="requestclose" />
-			 <input type="hidden" name="task_id" value="{Get::num('id')}" />
+			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 			 <label for="reason">{L('reasonforreq')}</label>
 			 <textarea id="reason" name="reason_given"></textarea><br />
 			 <button type="submit">{L('submitreq')}</button>
@@ -327,18 +321,18 @@
 
 	 <?php if ($user->can_take_ownership($task_details)): ?>
 	 <a id="own" class="button"
-		href="{$baseurl}?do=modify&amp;action=takeownership&amp;ids={Get::num('id')}">
+		href="{$baseurl}?action=takeownership&amp;ids={$task_details['task_id']}">
 		{L('assigntome')}</a>
 	 <?php endif; ?>
 
 	 <?php if ($user->can_add_to_assignees($task_details) && !empty($task_details['assigned_to'])): ?>
 	 <a id="own_add" class="button"
-		href="{$baseurl}?do=modify&amp;action=addtoassignees&amp;ids={Get::num('id')}">
+		href="{$baseurl}?action=addtoassignees&amp;ids={$task_details['task_id']}">
 		{L('addmetoassignees')}</a>
 	 <?php endif; ?>
 
 	 <?php if ($user->can_edit_task($task_details)): ?>
-	 <a id="edittask" class="button" href="{CreateURL('edittask', Get::num('id'))}">
+	 <a id="edittask" class="button" href="{CreateURL('edittask', $task_details['task_id'])}">
 		{L('edittask')}</a>
 	 <?php endif; ?>
 

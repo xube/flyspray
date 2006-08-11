@@ -49,7 +49,7 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
 
 if (Get::val('getfile')) {
     // If a file was requested, deliver it
-    $result = $db->Query("SELECT  t.task_id, t.attached_to_project,
+    $result = $db->Query("SELECT  t.task_id, t.project_id,
                                   a.orig_name, a.file_name, a.file_type
                             FROM  {attachments} a
                       INNER JOIN  {tasks}       t ON a.task_id = t.task_id
@@ -120,7 +120,7 @@ if (Flyspray::requestDuplicated()) {
     Flyspray::show_error(3);
 }
 
-if ($user->perms('manage_project')) {
+if ($proj->id && $user->perms('manage_project')) {
     // Find out if there are any PM requests wanting attention
     $sql = $db->Query(
             "SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
@@ -153,14 +153,21 @@ $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title']);
 $page->assign('do', $do);
 $page->pushTpl('header.tpl');
 
-// Show the page the user wanted
-require_once BASEDIR . "/scripts/$do.php" ;
+if (Req::has('action')) {
+    require_once(BASEDIR . '/includes/modify.php');
+} else {
+    // Show the page the user wanted
+    require_once(BASEDIR . "/scripts/$do.php");
+}
 
 $page->pushTpl('footer.tpl');
 $page->setTheme($proj->prefs['theme_style']);
 $page->render();
 
 unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
+if (Flyspray::absoluteURI($_SERVER['REQUEST_URI']) != $baseurl || !isset($_SESSION['prev_page'])) {
+    $_SESSION['prev_page'] = $_SERVER['REQUEST_URI'];
+}
 
 if (!empty($conf['debug'])) {
     include_once BASEDIR . '/includes/debug.inc.php';

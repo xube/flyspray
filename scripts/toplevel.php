@@ -5,7 +5,7 @@
   | ~~~~~~~~~~~~~                                          |
   \********************************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
@@ -18,7 +18,7 @@ $stats = array();
 foreach ($projects as $project) {
     $sql = $db->Query('SELECT v.task_id, count(*) AS num_votes
                          FROM {votes} v
-                    LEFT JOIN {tasks} t ON v.task_id = t.task_id AND t.attached_to_project = ?
+                    LEFT JOIN {tasks} t ON v.task_id = t.task_id AND t.project_id = ?
                         WHERE t.is_closed = 0
                      GROUP BY v.task_id
                      ORDER BY num_votes DESC 
@@ -30,13 +30,13 @@ foreach ($projects as $project) {
 
 // Project stats
 foreach ($projects as $project) {
-    $sql = $db->Query('SELECT count(*) FROM {tasks} WHERE attached_to_project = ?',
+    $sql = $db->Query('SELECT count(*) FROM {tasks} WHERE project_id = ?',
                       array($project['project_id']));
     $stats[$project['project_id']]['all'] = $db->fetchOne($sql);
-    $sql = $db->Query('SELECT count(*) FROM {tasks} WHERE attached_to_project = ? AND is_closed = 0',
+    $sql = $db->Query('SELECT count(*) FROM {tasks} WHERE project_id = ? AND is_closed = 0',
                       array($project['project_id']));
     $stats[$project['project_id']]['open'] = $db->fetchOne($sql);
-    $sql = $db->Query('SELECT avg(percent_complete) FROM {tasks} WHERE attached_to_project = ? AND is_closed =0',
+    $sql = $db->Query('SELECT avg(percent_complete) FROM {tasks} WHERE project_id = ? AND is_closed =0',
                       array($project['project_id']));
     $stats[$project['project_id']]['average_done'] = round($db->fetchOne($sql), 0);
 }

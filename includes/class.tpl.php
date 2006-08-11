@@ -73,13 +73,13 @@ class Tpl
     function display($_tpl, $_arg0 = null, $_arg1 = null)
     {
         // if only plain text
-        if (is_array($_tpl)) {
+        if (is_array($_tpl) && count($tpl)) {
             echo $_tpl[0];
             return;
         }
         
         // theming part
-        if (file_exists(BASEDIR . '/themes/' . $this->_theme.$_tpl)) {
+        if (is_readable(BASEDIR . '/themes/' . $this->_theme.$_tpl)) {
             $_tpl_data = file_get_contents(BASEDIR . '/themes/' . $this->_theme.$_tpl);
         } else {
             $_tpl_data = file_get_contents(BASEDIR . '/' . 'templates/'.$_tpl);
@@ -91,8 +91,9 @@ class Tpl
         array_walk($_tpl_data, array($this, 'compile'));
         $_tpl_data = join('', $_tpl_data);
 
-        $_tpl_data = str_replace('&lbrace;', '{', $_tpl_data);
-        $_tpl_data = str_replace('&rbrace;', '}', $_tpl_data);
+        $from = array('&lbrace;','&rbrace;');
+        $to = array('{','}');
+        $_tpl_data = str_replace($from, $to, $_tpl_data);
 
         // variables part
         if (!is_null($_arg0)) {
@@ -104,6 +105,9 @@ class Tpl
         }
         
         extract($this->_vars, EXTR_REFS|EXTR_SKIP);
+        
+        // XXX: if you find a clever way to remove the evil here,
+        // send us a patch, thanks.. we don't want this..really ;)
         eval( '?>'. $_tpl_data );
 
     } // }}}
@@ -153,6 +157,8 @@ class FSTpl extends Tpl
 function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','percent_complete'))
 {
     global $user, $db, $proj;
+    
+    $params = array();
 
     if (!is_array($task) || !isset($task['status_name'])) {
         $task = Flyspray::GetTaskDetails( ((is_array($task)) ? $task['task_id'] : $task), true);
@@ -230,7 +236,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     if (Get::val('pagenum')) {
         $params['pagenum'] = Get::val('pagenum');
     }
-    $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, $params));
+    $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, $params), ENT_QUOTES, 'utf-8');
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
             $url, $title_text, join_attrs($attrs), $text);
 
@@ -257,7 +263,7 @@ function tpl_userlink($uid)
     }
     
     if (isset($uname)) {
-        $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms('is_admin')) ? 'edituser' : 'user', $uid)).'">'
+        $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms('is_admin')) ? 'edituser' : 'user', $uid), ENT_QUOTES, 'utf-8').'">'
                            . htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
                            . htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
     } elseif (empty($cache[$uid])) {
@@ -303,7 +309,7 @@ function tpl_datepicker($name, $label = '', $value = 0) {
     $page->assign('date', $date);
     $page->assign('label', $label);
     $page->assign('dateformat', '%Y-%m-%d');
-    $page->display('datepicker.tpl');
+    $page->display('common.datepicker.tpl');
 }
 // }}}
 // {{{ user selector
@@ -427,15 +433,14 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
     $name  = htmlspecialchars($name,  ENT_QUOTES, 'utf-8');
     $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
     $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
-    if ($id) {
-        
+    if (is_string($id)) {
         $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, 'utf-8').'" ';
     }
     if ($checked == true) {
         $html .= 'checked="checked" ';
     }
     // do not call join_attrs if $attr is null or nothing..
-    return $attr ? $html.join_attrs($attr).' />' : $html . '/>';
+    return ($attr ? $html. join_attrs($attr) : $html) . '/>';
 } // }}}
 // {{{ Image display
 function tpl_img($src, $alt)
@@ -451,7 +456,7 @@ function tpl_img($src, $alt)
 $path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_formattext.inc.php';
         
 if (is_readable($path_to_plugin)) {
-    require($path_to_plugin);
+    include($path_to_plugin);
 }
 
 class TextFormatter
@@ -485,7 +490,7 @@ class TextFormatter
             return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'render'), 
                                   $text, $onyfs, $type, $id, $instructions);
         } else {
-            $text = nl2br(htmlspecialchars($text));
+            $text = nl2br(htmlspecialchars($text, ENT_QUOTES, 'utf-8'));
             
             // Change URLs into hyperlinks
             if (!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
@@ -509,11 +514,11 @@ class TextFormatter
         $cols = intval($cols);
         
         $return = "<textarea name=\"{$name}\" cols=\"$cols\" rows=\"$rows\" ";
-        if (is_array($attrs)) {
+        if (is_array($attrs) && count($attrs)) {
             $return .= join_attrs($attrs);
         }
         $return .= '>';
-        if (!is_null($content)) {
+        if (is_string($content) && strlen($content)) {
             $return .= htmlspecialchars($content, ENT_QUOTES, 'utf-8');
         }
         $return .= '</textarea>';
@@ -532,9 +537,12 @@ function formatDate($timestamp, $extended = false, $default = '')
 
     $dateformat = '';
     $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
+    $st = date('Z')/3600-1; // server GMT timezone
 
     if (!$user->isAnon()) {
         $dateformat = $user->infos[$format_id];
+        $timestamp += ($user->infos['time_zone'] - $st) * 60 * 60;
+        $st = $user->infos['time_zone'];
     }
 
     if (!$dateformat) {
@@ -542,8 +550,11 @@ function formatDate($timestamp, $extended = false, $default = '')
     }
 
     if (!$dateformat) {
-        $dateformat = $extended ? '%A, %d %B %Y, %I:%M%p' : '%Y-%m-%d';
+        $dateformat = $extended ? '%A, %d %B %Y, %H:%M %GMT' : '%Y-%m-%d';
     }
+    
+    $zone = L('GMT') . (($st == 0) ? ' ' : (($st > 0) ? '+' . $st : $st));
+    $dateformat = str_replace('%GMT', $zone, $dateformat);
 
     return utf8_encode(strftime($dateformat, $timestamp));
 } /// }}}
@@ -566,12 +577,14 @@ function tpl_draw_perms($perms)
 
     // FIXME: html belongs in a template, not in the template class
     $html = '<table border="1" onmouseover="perms.hide()" onmouseout="perms.hide()">';
-    $html .= '<thead><tr><th colspan="2">'.L('permissionsforproject').$proj->prefs['project_title'].'</th></tr></thead><tbody>';
+    $html .= '<thead><tr><th colspan="2">';
+    $html .= htmlspecialchars(L('permissionsforproject').$proj->prefs['project_title'], ENT_QUOTES, 'utf-8'); 
+    $html .= '</th></tr></thead><tbody>';
 
     foreach ($perms[$proj->id] as $key => $val) {
         if (!is_numeric($key) && in_array($key, $perm_fields)) {
-            $html .= '<tr><th>' . str_replace('_', ' ', $key) . '</th>';
-            $html .= $yesno[ ($val || isset($perms[0]['is_admin'])) ].'</tr>';
+            $html .= '<tr><th>' . htmlspecialchars(str_replace('_', ' ', $key), ENT_QUOTES, 'utf-8') . '</th>';
+            $html .= $yesno[ ($val || $perms[0]['is_admin']) ].'</tr>';
         }
     }
     return $html . '</tbody></table>';
@@ -634,9 +647,9 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             
             case 'project':   $return = $url . 'proj' . $arg1; break;
 
-            case 'newgroup':
             case 'toplevel':
             case 'roadmap':
+            case 'index':
             case 'newtask':   $return = $url . $type .  '/proj' . $arg1; break;
 
             case 'editgroup': $return = $url . $arg2 . '/' . $type . '/' . $arg1; break;
@@ -644,7 +657,6 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'logout':
             case 'lostpw':
             case 'myprofile':
-            case 'newuser':
             case 'register':
             case 'reports':  $return = $url . $type; break;
         }
@@ -656,28 +668,27 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
         }
         
         switch ($type) {
-            case 'admin':     $return = $url . '&area=' . $arg1 . '&project=0'; break;
-            case 'edittask':  $return = $url . '&id=' . $arg1 . '&edit=yep'; break;
+            case 'admin':     $return = $url . '&area=' . $arg1; break;
+            case 'edittask':  $return = $url . '&task_id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
             case 'user':      $return = $baseurl . '?do=admin&area=users&id=' . $arg1; break;
             case 'edituser':  $return = $baseurl . '?do=admin&area=users&user_id=' . $arg1; break;
-            case 'logout':    $return = $baseurl . '?do=authenticate&action=logout'; break;
+            case 'logout':    $return = $baseurl . '?do=authenticate&logout=1'; break;
 
             case 'details':
-            case 'depends':   $return = $url . '&id=' . $arg1; break;
+            case 'depends':   $return = $url . '&task_id=' . $arg1; break;
             
             case 'project':   $return = $baseurl . '?project=' . $arg1; break;
 
-            case 'newgroup':
             case 'roadmap':
             case 'toplevel':
+            case 'index':
             case 'newtask':   $return = $url . '&project=' . $arg1; break;
 
             case 'editgroup': $return = $baseurl . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1; break;
 
             case 'lostpw':
             case 'myprofile':
-            case 'newuser':
             case 'register':
             case 'reports':   $return = $url; break;
         }
@@ -691,11 +702,12 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-function pagenums($pagenum, $perpage, $totalcount, $extraurl)
+function pagenums($pagenum, $perpage, $totalcount)
 {
-    global $db;
-
-    $extraurl = '&amp;' . $extraurl;
+    global $proj;
+    $pagenum = intval($pagenum);
+    $perpage = intval($perpage);
+    $totalcount = intval($totalcount);
 
     // Just in case $perpage is something weird, like 0, fix it here:
     if ($perpage < 1) {
@@ -707,17 +719,14 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
     if (!($totalcount / $perpage <= 1)) {
         $output .= '<span class="DoNotPrint"> &nbsp;&nbsp;--&nbsp;&nbsp; ';
 
-        $start  = max(1, $pagenum - 2);
+        $start  = max(1, $pagenum - 4 + min(2, $pages - $pagenum));
         $finish = min($start + 4, $pages);
-        if ($finish - $start < 4) {
-            $start = $start - (5 - ($finish - $start));
-        }
 
         if ($start > 1)
-            $output .= '<a href="?pagenum=1' . $extraurl . '">&lt;&lt;' . L('first') . ' </a>';
+            $output .= '<a href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => 1))) . '">&lt;&lt;' . L('first') . ' </a>';
 
         if ($pagenum > 1)
-            $output .= '<a id="previous" accesskey="p" href="?pagenum=' . ($pagenum - 1) . $extraurl . '">&lt; ' . L('previous') . '</a> - ';
+            $output .= '<a id="previous" accesskey="p" href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum - 1))) . '">&lt; ' . L('previous') . '</a> - ';
 
         for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
             if ($pagelink != $start)
@@ -726,14 +735,14 @@ function pagenums($pagenum, $perpage, $totalcount, $extraurl)
             if ($pagelink == $pagenum) {
                 $output .= '<strong>' . $pagelink . '</strong>';
             } else {
-                $output .= '<a href="?pagenum=' . $pagelink . $extraurl . '">' . $pagelink . '</a>';
+                $output .= '<a href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagelink))) . '">' . $pagelink . '</a>';
             }
         }
 
         if ($pagenum < $pages)
-            $output .= ' - <a id="next" accesskey="n" href="?pagenum=' . ($pagenum + 1). $extraurl . '">' . L('next') . ' &gt;</a>';
+            $output .= ' - <a id="next" accesskey="n" href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum + 1))) . '">' . L('next') . ' &gt;</a>';
         if ($finish < $pages)
-            $output .= '<a href="?pagenum=' . $pages . $extraurl . '"> ' . L('last') . ' &gt;&gt;</a>';
+            $output .= '<a href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pages))) . '"> ' . L('last') . ' &gt;&gt;</a>';
         $output .= '</span>';
     }
 

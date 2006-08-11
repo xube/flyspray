@@ -5,18 +5,21 @@
   | ~~~~~~~~~~~~~~~~~~~~~                                  |
   \********************************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if ( !($task_details = Flyspray::GetTaskDetails(Req::num('id')))
+if ( !($task_details = Flyspray::GetTaskDetails(Req::num('task_id')))
         || !$user->can_view_task($task_details))
 {
     Flyspray::show_error(9);
 }
 
+if (Flyspray::function_disabled('shell_exec')) {
+    Flyspray::show_error(24, true, null, $_SESSION['prev_page']);
+}
+
 // Configuration information:
-// [FIXME: in the future, this will come from the initial configuration.]
 $path_to_dot = @$conf['general']['dot_path']; // Where's the dot executable?
 /* March 10 2006 Jason Porter: Removed the $basedir as $path_for_images
  * should be relative, we use this path also in the HTML output.  Saving
@@ -24,8 +27,8 @@ $path_to_dot = @$conf['general']['dot_path']; // Where's the dot executable?
  */
 $path_for_images = '/attachments'; // What directory do we use for output?
 $fmt = 'png';
-$id = Req::num('id');
-$page->assign('taskid', 0);
+$id = Req::num('task_id');
+$page->assign('task_id', $id);
 
 // Minor(?) FIXME: we save the graphs into a directory (attachments), 
 // but they never get deleted. Once there, they'll be overwritten but
@@ -38,9 +41,9 @@ $page->assign('taskid', 0);
 //   (someone who knows them well should probably do it)
 
 // Other Todo items:
-// - Put the pruning strings into the details language pack, once they're set
+// - Put the pruning strings into the language pack, once they're set
 
-$prunemode = Req::val('prune', 0);
+$prunemode = Req::num('prune', 0);
 $selfurl   = CreateURL('depends', $id);
 $pmodes    = array('None', 'Prune Closed Links', 'Prune Closed Tasks');
 
@@ -78,7 +81,7 @@ $sql= "SELECT t1.task_id AS id1, t1.item_summary AS sum1,
   LEFT JOIN  {list_status} AS lst2 ON t2.item_status = lst2.status_id
   LEFT JOIN  {users} AS u2c ON t2.closed_by=u2c.user_id
   LEFT JOIN  {list_resolution} AS r2 ON t2.resolution_reason=r2.resolution_id
-      WHERE  t1.attached_to_project= ?
+      WHERE  t1.project_id= ?
    ORDER BY  d.task_id, d.dep_task_id";
 
 $get_edges = $db->Query($sql, array($proj->id));
@@ -87,8 +90,7 @@ $edge_list = array();
 $rvrs_list = array();
 $node_list = array();
 while ($row = $db->FetchRow($get_edges)) {
-    
-    extract($row, EXTR_REFS|EXTR_SKIP);
+    extract($row, EXTR_REFS);
     $edge_list[$id1][] = $id2;
     $rvrs_list[$id2][] = $id1;
     if (!isset($node_list[$id1])) {
@@ -214,39 +216,36 @@ foreach ($edge_list as $src => $dstlist) {
 // all done
 $dotgraph .= "}\n";
 
-if (!Flyspray::function_disabled('system')) {
-    // All done with the graph. Save it to a temp file.
-    $tname = tempnam('', 'fs_depends_dot_');
-    $tmp   = fopen($tname, 'wb');
-    fwrite($tmp, $dotgraph);
-    fclose($tmp);
 
-    // Now run dot on it:
-    $out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
-    $cmd = "$path_to_dot -T $fmt -o \"" . BASEDIR . $out . "\" $tname";
-    $stat = 0;
-    $rv  = system($cmd, $stat);
-    if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
+// All done with the graph. Save it to a temp file.
+$tname = tempnam('', 'fs_depends_dot_');
+$tmp   = fopen($tname, 'wb');
+fwrite($tmp, $dotgraph);
+fclose($tmp);
 
-    $cmd = "$path_to_dot -T cmapx $tname";
-    $rv = system($cmd, $stat);
-    if ($rv===false) { echo "<pre>error running $cmd:\n'$stat'\n$rv\n</pre>\n"; }
+// Now run dot on it:
+$out = "$path_for_images/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
+$cmd = "$path_to_dot -T $fmt -o \"" . BASEDIR . $out . "\" $tname";
+shell_exec($cmd);
 
-    unlink($tname);
+$cmd = "$path_to_dot -T cmapx $tname";
+$map = shell_exec($cmd);
+
+unlink($tname);
 
 /*
-    [TC] We cannot have this stuff outputting here, so I put it in a quick template
+[TC] We cannot have this stuff outputting here, so I put it in a quick template
 */
-    $page->assign('image', $out);
-    $page->assign('taskid', $id);
-    $page->assign('graphname', $graphname);
-    
-    $endtime = microtime();
-    list($startusec, $startsec) = explode(' ', $starttime);
-    list($endusec, $endsec) = explode(' ', $endtime);
-    $diff = ($endsec - $startsec) + ($endusec - $startusec);
-    $page->assign('time', round($diff, 2));
-}
+$page->assign('image', $out);
+$page->assign('map', $map);
+$page->assign('taskid', $id);
+$page->assign('graphname', $graphname);
+
+$endtime = microtime();
+list($startusec, $startsec) = explode(' ', $starttime);
+list($endusec, $endsec) = explode(' ', $endtime);
+$diff = ($endsec - $startsec) + ($endusec - $startusec);
+$page->assign('time', round($diff, 2));
 
 #echo "<pre>$dotgraph</pre>\n";
 

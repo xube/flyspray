@@ -36,9 +36,11 @@
     <?php endforeach; ?>
   </head>
   <body onload="perms = new Perms('permissions');<?php
-        if (!empty($_SESSION['SUCCESS'])):
+        if (isset($_SESSION['SUCCESS']) && isset($_SESSION['ERROR'])):
+        ?>window.setTimeout('Effect.Fade(\'mixedbar\', &lbrace;duration:.3&rbrace;)', 10000);<?php
+        elseif (isset($_SESSION['SUCCESS'])):
         ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)', 6000);<?php
-        elseif (!empty($_SESSION['ERROR'])):
+        elseif (isset($_SESSION['ERROR'])):
         ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)', 6000);<?php endif ?>">
   
   <div id="container">
@@ -47,12 +49,12 @@
     
     <?php $this->display('links.tpl'); ?>
 
-    <?php if (!empty($_SESSION['ERROR'])): ?>
-    <div id="errorbar" onclick="this.style.display='none'">{$_SESSION['ERROR']}</div>
-    <?php endif; ?>
-
-    <?php if (!empty($_SESSION['SUCCESS'])): ?>
-    <div id="successbar" onclick="this.style.display='none'">{$_SESSION['SUCCESS']}</div>
+    <?php if (isset($_SESSION['SUCCESS']) && isset($_SESSION['ERROR'])): ?>
+    <div id="mixedbar" class="mixed bar" onclick="this.style.display='none'"><div class="errpadding">{$_SESSION['SUCCESS']}<br />{$_SESSION['ERROR']}</div></div>
+    <?php elseif (isset($_SESSION['ERROR'])): ?>
+    <div id="errorbar" class="error bar" onclick="this.style.display='none'"><div class="errpadding">{$_SESSION['ERROR']}</div></div>
+    <?php elseif (isset($_SESSION['SUCCESS'])): ?>
+    <div id="successbar" class="success bar" onclick="this.style.display='none'"><div class="errpadding">{$_SESSION['SUCCESS']}</div></div>
     <?php endif; ?>
 
     <div id="content">

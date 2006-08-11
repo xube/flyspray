@@ -1,4 +1,9 @@
 <?php
+
+// XXX  be aware: make sure you quote correctly using qstr()
+// the variables used in the $where parameter, since statement is
+// executed AS IS.
+
 function get_events($task_id, $where = '')
 {
     global $db;
@@ -9,8 +14,8 @@ function get_events($task_id, $where = '')
                       los2.os_name AS operating_system2,
                       lc1.category_name AS product_category1,
                       lc2.category_name AS product_category2,
-                      p1.project_title AS attached_to_project1,
-                      p2.project_title AS attached_to_project2,
+                      p1.project_title AS project_id1,
+                      p2.project_title AS project_id2,
                       lv1.version_name AS product_version1,
                       lv2.version_name AS product_version2,
                       ls1.status_name AS item_status1,
@@ -36,8 +41,8 @@ function get_events($task_id, $where = '')
             
             LEFT JOIN {list_resolution} lr ON lr.resolution_id = h.new_value AND h.event_type = 2
 
-            LEFT JOIN {projects} p1 ON p1.project_id = h.old_value AND h.field_changed='attached_to_project'
-            LEFT JOIN {projects} p2 ON p2.project_id = h.new_value AND h.field_changed='attached_to_project'
+            LEFT JOIN {projects} p1 ON p1.project_id = h.old_value AND h.field_changed='project_id'
+            LEFT JOIN {projects} p2 ON p2.project_id = h.new_value AND h.field_changed='project_id'
             
             LEFT JOIN {comments} c ON c.comment_id = h.field_changed AND h.event_type = 5
             
@@ -56,7 +61,7 @@ function event_description($history) {
     $return = '';
     global $fs, $baseurl, $details;
     
-    $translate = array('item_summary' => 'summary', 'attached_to_project' => 'attachedtoproject',
+    $translate = array('item_summary' => 'summary', 'project_id' => 'attachedtoproject',
                        'task_type' => 'tasktype', 'product_category' => 'category', 'item_status' => 'status',
                        'task_priority' => 'priority', 'operating_system' => 'operatingsystem', 'task_severity' => 'severity',
                        'product_version' => 'reportedversion', 'mark_private' => 'visibility');
@@ -74,7 +79,7 @@ function event_description($history) {
             $field = $history['field_changed'];
             switch ($field) {
                 case 'item_summary':
-                case 'attached_to_project':
+                case 'project_id':
                 case 'task_type':
                 case 'product_category':
                 case 'item_status':

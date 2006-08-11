@@ -120,13 +120,13 @@ class dokuwiki_TextFormatter
 			<img src="'.$baseurl.'plugins/dokuwiki/img/divider.gif" align="bottom" alt="|" style="margin: 0 3px 0 3px;" />
 			
 			<a href="javascript:void(0);" onclick="surroundText(\'======\', \'======\', \''.$textareaId.'\'); return false;">
-			<img title="Level 1 Headline" src="'.$baseurl.'plugins/dokuwiki/img/h1.gif" align="bottom" width="23" height="22" alt="Heading1" title="Heading1" border="0" /></a>
+			<img title="Level 1 Headline" src="'.$baseurl.'plugins/dokuwiki/img/h1.gif" align="bottom" width="23" height="22" alt="Heading1" border="0" /></a>
 
 			<a href="javascript:void(0);" onclick="surroundText(\'=====\', \'=====\', \''.$textareaId.'\'); return false;">
-			<img title="Level 2 Headline" src="'.$baseurl.'plugins/dokuwiki/img/h2.gif" align="bottom" width="23" height="22" alt="Heading2" title="Heading2" border="0" /></a>
+			<img title="Level 2 Headline" src="'.$baseurl.'plugins/dokuwiki/img/h2.gif" align="bottom" width="23" height="22" alt="Heading2" border="0" /></a>
 
 			<a href="javascript:void(0);" onclick="surroundText(\'====\', \'====\', \''.$textareaId.'\'); return false;">
-			<img title="Level 3 Headline" src="'.$baseurl.'plugins/dokuwiki/img/h3.gif" align="bottom" width="23" height="22" alt="Heading3" title="Heading3" border="0" /></a>
+			<img title="Level 3 Headline" src="'.$baseurl.'plugins/dokuwiki/img/h3.gif" align="bottom" width="23" height="22" alt="Heading3" border="0" /></a>
 			
 			<img title="Divider" src="'.$baseurl.'plugins/dokuwiki/img/divider.gif" alt="|" style="margin: 0 3px 0 3px;" />
 			

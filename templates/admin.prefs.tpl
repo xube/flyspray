@@ -10,7 +10,7 @@
   </ul>
   
    <div id="general" class="tab">
-      <table class="admin">
+      <table class="box">
         <tr>
           <td><label for="pagetitle">{L('pagetitle')}</label></td>
           <td>
@@ -57,7 +57,7 @@
     </div>
 
     <div id="userregistration" class="tab">
-      <table class="admin">
+      <table class="box">
         <tr>
           <td><label for="allowusersignups">{L('anonreg')}</label></td>
           <td>{!tpl_checkbox('anon_reg', $fs->prefs['anon_reg'], 'allowusersignups')}</td>
@@ -78,21 +78,11 @@
             </select>
           </td>
         </tr>
-        <tr>
-          <td><label id="groupsassignedlabel">{L('groupassigned')}</label></td>
-          <td class="text">
-            <?php foreach(Flyspray::listGroups() as $group): ?>
-            {!tpl_checkbox('assigned_groups['.$group['group_id'].']',
-            strstr($fs->prefs['assigned_groups'], $group['group_id']) !== false)}
-            {$group['group_name']}<br />
-            <?php endforeach; ?>
-          </td>
-        </tr>
       </table>
     </div>
 
     <div id="notifications" class="tab">
-      <table class="admin">
+      <table class="box">
         <tr>
           <td><label for="usernotify">{L('forcenotify')}</label></td>
           <td>
@@ -166,7 +156,7 @@
     </div>
 
     <div id="lookandfeel" class="tab">
-      <table class="admin">
+      <table class="box">
         <tr>
           <td><label for="globaltheme">{L('globaltheme')}</label></td>
           <td>
@@ -192,9 +182,7 @@
     </div>
 
     <div class="tbuttons">
-      <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="globaloptions" />
-      <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
       <button type="submit">{L('saveoptions')}</button>
 
       <button type="reset">{L('resetoptions')}</button>

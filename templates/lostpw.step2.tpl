@@ -1,4 +1,4 @@
-<fieldset class="admin">
+<fieldset class="box">
 <legend>{L('changepass')}</legend>
 
     <form action="index.php" method="post">
@@ -14,7 +14,6 @@
       </table>
       
       <div>
-        <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="lostpw.chpass" />
         <input type="hidden" name="magic_url" value="{Req::val('magic_url')}" />
         <button type="submit">{L('savenewpass')}</button>

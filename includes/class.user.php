@@ -10,14 +10,14 @@ class User
                              'opened', 'search_in_comments', 'search_for_all', 'reported', 'only_primary', 'only_watched',
                              'changedto', 'duedatefrom', 'duedateto', 'openedfrom', 'openedto', 'has_attachment');
 
-    function User($uid = 0, $project = null)
+    function User($uid = 0)
     {
         global $db;
 
         if ($uid > 0) {
             $sql = $db->Query('SELECT *, g.group_id AS global_group, uig.record_id AS global_record_id
                                  FROM {users} u, {users_in_groups} uig, {groups} g
-                                WHERE u.user_id = ? AND uig.user_id = ? AND g.belongs_to_project = 0
+                                WHERE u.user_id = ? AND uig.user_id = ? AND g.project_id = 0
                                       AND uig.group_id = g.group_id',
                                 array($uid, $uid));
         }
@@ -45,7 +45,7 @@ class User
     
     function save_search($do = 'index')
     {
-        global $db, $baseurl;
+        global $db;
         
         if($this->isAnon()) {
             return;
@@ -101,7 +101,7 @@ class User
 
     function get_perms()
     {
-        global $db;
+        global $db, $fs;
 
         $fields = array('is_admin', 'manage_project', 'view_tasks', 'edit_own_comments',
                 'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
@@ -119,30 +119,40 @@ class User
             $this->perms[$row['project_id']] = $row;
         }
         $this->perms[0] = array_map(create_function('$x', 'return 1;'), end($this->perms));
-            
+
         if (!$this->isAnon()) {
             // Get the global group permissions for the current user
-            $sql = $db->Query("SELECT  ".join(', ', $fields).", g.belongs_to_project, g.group_id AS project_group
+            $sql = $db->Query("SELECT  ".join(', ', $fields).", g.project_id, uig.record_id,
+                                       g.group_open, g.group_id AS project_group
                                  FROM  {groups} g
                             LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
-                            LEFT JOIN  {projects} p ON g.belongs_to_project = p.project_id
+                            LEFT JOIN  {projects} p ON g.project_id = p.project_id
                                 WHERE  uig.user_id = ?
-                             ORDER BY  g.belongs_to_project ASC",
+                             ORDER BY  g.project_id ASC",
                                 array($this->id));
 
             while ($row = $db->FetchRow($sql)) {
-                $this->perms[$row['belongs_to_project']] = array_merge($this->perms[$row['belongs_to_project']], $row);
-                if ($row['belongs_to_project']) {
+                if (!isset($this->perms[$row['project_id']])) {
+                    // should not happen, so clean up the DB
+                    $db->Query('DELETE FROM {users_in_groups} WHERE record_id = ?', array($row['record_id']));
+                    continue;
+                }
+                $this->perms[$row['project_id']] = array_merge($this->perms[$row['project_id']], $row);
+                if ($row['project_id']) {
                     foreach ($fields as $key) {
-                        $this->perms[$row['belongs_to_project']][$key] = max($this->perms[$row['belongs_to_project']][$key], $this->perms['0'][$key]);
+                        $this->perms[$row['project_id']][$key] = max($this->perms[$row['project_id']][$key], $this->perms['0'][$key]);
                     }
                 }
             }
             
-            // Admin permissions
+            // Admin permissions and attachments
             foreach ($this->perms as $key => $value) {
                 foreach ($fields as $perm) {
                     $this->perms[$key][$perm] = max($this->perms[0]['is_admin'], @$this->perms[$key][$perm]);
+                }
+                //nobody can upload files in uploads are disabled at the system level.. 
+                if (!$fs->max_file_size) {
+                    $this->perms[$key]['create_attachments'] = 0;
                 }
             }
         }
@@ -155,7 +165,7 @@ class User
         if (Cookie::val('flyspray_passhash') !=
                 crypt($this->infos['user_pass'], $conf['general']['cookiesalt'])
                 || !$this->infos['account_enabled']
-                || !$this->perms('group_open'))
+                || !$this->perms('group_open', 0))
         {
             Flyspray::setcookie('flyspray_userid',   '', time()-60);
             Flyspray::setcookie('flyspray_passhash', '', time()-60);
@@ -170,21 +180,6 @@ class User
 
     /* }}} */
     /* permission related {{{ */
-
-    function can_create_user()
-    {
-        global $fs;
-
-        return $this->perms('is_admin')
-            || ( $this->isAnon() && !$fs->prefs['spam_proof']
-                    && $fs->prefs['anon_reg']);
-    }
-
-    function can_create_group()
-    {
-        return $this->perms('is_admin')
-            || $this->perms('manage_project');
-    }
 
     function can_edit_comment($comment)
     {
@@ -209,12 +204,12 @@ class User
             return true;
         }
         
-        if ($this->isAnon() && !$this->perms('others_view', $task['attached_to_project'])) {
+        if ($this->isAnon() && !$this->perms('others_view', $task['project_id'])) {
             return false;
         }
 
         if ($task['opened_by'] == $this->id && !$this->isAnon()
-            || (!$task['mark_private'] && ($this->perms('view_tasks') || $this->perms('others_view', $task['attached_to_project']) || $task['others_view']))
+            || (!$task['mark_private'] && ($this->perms('view_tasks') || $this->perms('others_view', $task['project_id']) || $task['others_view']))
             || $this->perms('manage_project')) {
             return true;
         }
@@ -234,19 +229,19 @@ class User
     {
         $assignees = Flyspray::GetAssignees($task['task_id']);
 
-        return ($this->perms('assign_to_self', $task['attached_to_project']) && empty($assignees))
-               || ($this->perms('assign_others_to_self', $task['attached_to_project']) && !in_array($this->id, $assignees));
+        return ($this->perms('assign_to_self', $task['project_id']) && empty($assignees))
+               || ($this->perms('assign_others_to_self', $task['project_id']) && !in_array($this->id, $assignees));
     }
     
     function can_add_to_assignees($task)
 	 {          
-        return ($this->perms('add_to_assignees', $task['attached_to_project']) && !in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
+        return ($this->perms('add_to_assignees', $task['project_id']) && !in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
     }
 	 
     function can_close_task($task)
     {
-        return ($this->perms('close_own_tasks', $task['attached_to_project']) && in_array($this->id, $task['assigned_to']))
-                || $this->perms('close_other_tasks', $task['attached_to_project']);
+        return ($this->perms('close_own_tasks', $task['project_id']) && in_array($this->id, $task['assigned_to']))
+                || $this->perms('close_other_tasks', $task['project_id']);
     }
 
     function can_self_register()
@@ -276,7 +271,7 @@ class User
     {
         global $db;
         
-        if (!$this->perms('add_votes', $task['attached_to_project'])) {
+        if (!$this->perms('add_votes', $task['project_id'])) {
             return -1;
         }
         

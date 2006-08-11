@@ -1,5 +1,5 @@
   <form action="{$baseurl}" method="post">
-    <table class="admin">
+    <table class="box">
       <tr>
         <td><label for="realname">{L('realname')}</label></td>
         <td>
@@ -62,6 +62,20 @@
         </td>
       </tr>
       <tr>
+        <td><label for="time_zone">{L('timezone')}</label></td>
+        <td>
+          <select id="time_zone" name="time_zone">
+            <?php
+              $times = array();
+              for ($i = -12; $i <= 13; $i++) {
+                $times[$i] = L('GMT') . (($i == 0) ? ' ' : (($i > 0) ? '+' . $i : $i));
+              }
+            ?>
+            {!tpl_options($times, Req::val('time_zone', $theuser->infos['time_zone']))}
+          </select>
+        </td> 
+      </tr>
+      <tr>
         <td colspan="2"><hr /></td>
       </tr>
       <?php if ($user->perms('is_admin')): ?>
@@ -113,11 +127,9 @@
       </tr>
       <tr>
         <td colspan="2" class="buttons">
-          <input type="hidden" name="do" value="modify" />
           <input type="hidden" name="action" value="{Req::val('action', $do . '.edituser')}" />
           <?php if (Req::val('area') || $do == 'admin'): ?><input type="hidden" name="area" value="users" /><?php endif; ?>
           <input type="hidden" name="user_id" value="{$theuser->id}" />
-          <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
           <button type="submit">{L('updatedetails')}</button>
         </td>
       </tr>

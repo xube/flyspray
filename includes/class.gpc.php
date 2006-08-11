@@ -1,6 +1,19 @@
 <?php
-// {{{ class  Req
-
+//  {{{ class  Req
+/**
+ * Flyspray
+ *
+ * GPC classes
+ *
+ * This script contains classes for $_GET, $_REQUEST, $_POST and $_COOKIE
+ * to safely retrieve values. Example: Get::val('foo', 'bar') to get $_GET['foo'] or 'bar' if 
+ * the key does not exist. 
+ *
+ * @license http://opensource.org/licenses/lgpl-license.php Lesser GNU Public License
+ * @package flyspray
+ * @author Pierre Habouzit
+ */
+ 
 class Req
 {
     function has($key)
@@ -28,6 +41,11 @@ class Req
     function safe($key)
     {
         return Filters::noXSS(Req::val($key));
+    }
+
+    function isAlnum($key)
+    {
+        return Filters::isAlnum(Req::val($key));
     }
 }
 
@@ -60,6 +78,11 @@ class Post
     {
         return Filters::noXSS(Post::val($key));
     }
+
+    function isAlnum($key)
+    {
+        return Filters::isAlnum(Post::val($key));
+    }
 }
 
 // }}}
@@ -89,11 +112,6 @@ class Get
         return Filters::noXSS(Get::val($key));
     }
 
-    function clean($key)
-    {
-        return Filters::noHTML(Get::val($key));
-    }
-    
     function enum($key, $options, $default = null)
     {
         return Filters::enum(Get::val($key, $default), $options);
@@ -117,51 +135,61 @@ class Cookie
     }
 }
 //}}}
- /*{{{  Class Filters
+/** 
+ * Class Filters
  *
  * This is a simple class for safe input validation
  * no mixed stuff here, functions returns always the same type.
  * @author Cristian Rodriguez R <soporte@onfocus.cl>
  * @license BSD
+ * @notes this intented to be used by Flyspray internals functions/methods
+ * please DO NOT use this in templates , if the code processing the input there 
+ * is not safe, please fix the underlying problem.
  */
-
 class Filters {
     /**
-     *  give me a  number only please?
-     *  @return int
-     *  @access public static
+     * give me a number only please?
+     * @param mixed $data
+     * @return int
+     * @access public static
      */
-
     function num($data)
     {
          return (int) $data;
     }
+    
     /**
-    * Give user input free from potentially mailicious html
-    * @return string
-    * @access public static
-    */
-
-    function noXSS($data)
-    {
-        return (string) htmlspecialchars($data, ENT_QUOTES , 'utf-8');
-    }
-    /**
-     * in the case we don't want html..
-     * @return string
+     * Give user input free from potentially mailicious html
+     * @param mixed $data
+     * @return string htmlspecialchar'ed
      * @access public static
      */
-
-    function noHTML($data)
+    function noXSS($data)
     {
-        return (string) strip_tags($data);
-    }
-
-    function isAlnum($data)
-    {
-        return (bool) strlen($data) ? ctype_alnum($data) : false;
+        return (is_string($data) && strlen($data)) 
+                ? htmlspecialchars($data, ENT_QUOTES , 'utf-8')
+                : '';
     }
     
+    /**
+     * is $data alphanumeric eh ?
+     * @param string $data string value to check
+     * @return bool
+     * @access public static
+     */
+    function isAlnum($data)
+    {
+        return ctype_alnum($data);
+    }
+
+    /**
+     * Checks if $data is a value of $options and returns the first element of
+     * $options if it is not (for input validation if all possible values are known)
+     * @param mixed $data
+     * @param array $options
+     * @return mixed
+     * @access public static
+     */
     function enum($data, $options)
     {
         if (!in_array($data, $options) && isset($options[0])) {
@@ -172,4 +200,18 @@ class Filters {
     }
 }
 
+/**
+ * A basic function which works like the GPC classes above for any array
+ * @param array $array
+ * @param mixed $key
+ * @param mixed $default
+ * @return mixed
+ * @version 1.0
+ * @since 0.9.9
+ * @see Backend::get_task_list()
+ */
+function array_get(&$array, $key, $default = null)
+{
+    return (isset($array[$key])) ? $array[$key] : $default;
+}
 ?>

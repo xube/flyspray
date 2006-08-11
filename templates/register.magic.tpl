@@ -3,7 +3,7 @@
 
 <form action="{$baseurl}" name="registernewuser" method="post" id="registernewuser">
   <p>{L('entercode')}</p>
-  <table class="admin">
+  <table class="box">
     <tr>
       <td><label for="confirmation_code">{L('confirmationcode')}</label></td>
       <td><input id="confirmation_code" class="text" name="confirmation_code" value="{Req::val('confirmation_code')}" type="text" size="20" maxlength="20" /></td>
@@ -19,7 +19,6 @@
   </table>
 
     <div>
-        <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="register.registeruser" />
         <input type="hidden" name="magic_url" value="{Req::val('magic_url')}" />
         <button type="submit" name="buSubmit">{L('registeraccount')}</button>

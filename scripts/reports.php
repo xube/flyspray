@@ -5,7 +5,7 @@
   | ~~~~~~~~~~~~~~~~~~~~~~~~                               |
   \********************************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
@@ -59,12 +59,12 @@ switch (Req::val('order')) {
 
 $where = array();
 foreach (Req::val('events', array()) as $eventtype) {
-    $where[] = 'h.event_type = ' . $eventtype;
+    $where[] = 'h.event_type = ' . intval($eventtype);
 }
 $where = '(' . implode(' OR ', $where) . ')';
 
 if ($proj->id) {
-    $where = ' (t.attached_to_project = ' . $proj->id . ' OR h.event_type > 29) AND ' . $where;
+    $where = ' (t.project_id = ' . $proj->id . ' OR h.event_type > 29) AND ' . $where;
 }
 
 if ( ($fromdate = Req::val('fromdate')) || Req::val('todate')) {

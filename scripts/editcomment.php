@@ -7,7 +7,7 @@
   | to edit comments attached to tasks |
   \************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 

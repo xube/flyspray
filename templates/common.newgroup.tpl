@@ -1,8 +1,8 @@
-<fieldset><legend>{L('createnewgroup')} - {$forproject}</legend>
+<fieldset><legend>{L('createnewgroup')}</legend>
 <p><em>{L('requiredfields')}</em> <strong>*</strong></p>
 
 <form action="{$baseurl}" method="post" id="newgroup">
-  <table class="admin">
+  <table class="box">
     <tr>
       <td><label for="groupname">{L('groupname')}</label></td>
       <td><input id="groupname" class="text" type="text" value="{Req::val('group_name')}" name="group_name" size="20" maxlength="20" /> <strong>*</strong></td>
@@ -101,10 +101,8 @@
     </tr>
     <tr>
       <td colspan="2" class="buttons">
-        <input type="hidden" name="do" value="modify" />
-        <input type="hidden" name="action" value="newgroup.newgroup" />
-        <input type="hidden" name="belongs_to_project" value="{Req::val('project')}" />
-        <input type="hidden" name="project" value="{Req::val('project')}" />
+        <input type="hidden" name="action" value="<?php if ($proj->id): ?>pm<?php else: ?>admin<?php endif; ?>.newgroup" />
+        <input type="hidden" name="project_id" value="{Req::val('project')}" />
         <button type="submit">{L('addthisgroup')}</button>
       </td>
     </tr>

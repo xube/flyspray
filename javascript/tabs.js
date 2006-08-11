@@ -109,9 +109,10 @@ function initTabs() {/*{{{*/
   if (target.match(/comment/)) {
     target = "comments";
   }
+  
   makeTabLinks();
 
-  if (target && document.getElementById(target)) {
+  if (target && document.getElementById(target) && document.getElementById(target).className == 'tab') {
     showTabById(target);
   } else {
     showTabByNumber(0);

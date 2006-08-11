@@ -384,9 +384,9 @@ function allow(booler){
         $('errormessage').innerHTML = '';
     }  
 }
-function getHistory(id, baseurl, field, details)
+function getHistory(task_id, baseurl, field, details)
 {
-    var url = baseurl + 'javascript/callbacks/gethistory.php?id=' + id;
+    var url = baseurl + 'javascript/callbacks/gethistory.php?task_id=' + task_id;
     if (details) {
         url += '&details=' + details;
     }

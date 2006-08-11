@@ -1,7 +1,7 @@
 <div id="toolbox">
   <h3>{L('admintoolboxlong')} :: {L('resolutionlist')}</h3>
 
-  <fieldset class="admin">
+  <fieldset class="box">
     <legend>{L('resolutions')}</legend>
     <?php
     $this->assign('list_type', 'resolution');

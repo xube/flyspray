@@ -8,11 +8,11 @@
   | members, group permissions, and dropdown list items.   |
   \********************************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if (!$user->perms('manage_project')) {
+if (!$user->perms('manage_project') || !$proj->id) {
     Flyspray::show_error(16);
 }
 
@@ -22,7 +22,7 @@ switch ($area = Req::val('area', 'prefs')) {
                              FROM  {admin_requests} ar
                         LEFT JOIN  {tasks} t ON ar.task_id = t.task_id
                         LEFT JOIN  {users} u ON ar.submitted_by = u.user_id
-                            WHERE  project_id = ? AND resolved_by = '0'
+                            WHERE  ar.project_id = ? AND resolved_by = '0'
                          ORDER BY  ar.time_submitted ASC", array($proj->id));
 
         $page->assign('pendings', $db->fetchAllArray($sql));
@@ -37,6 +37,7 @@ switch ($area = Req::val('area', 'prefs')) {
     case 'ver':
     case 'cat':
     case 'status':
+    case 'newgroup':
 
         $page->setTitle($fs->prefs['page_title'] . L('pmtoolbox'));
         $page->pushTpl('pm.menu.tpl');

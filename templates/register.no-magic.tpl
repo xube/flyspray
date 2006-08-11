@@ -1,8 +1,8 @@
-<fieldset class="admin">
+<fieldset class="box">
 <legend>{L('registernewuser')}</legend>
 
 <form action="{$baseurl}" method="post" id="registernewuser">
-  <table class="admin">
+  <table class="box">
     <tr>
       <td><label for="username">{L('username')}</label></td>
       <td><input class="required text" value="{Req::val('user_name')}" id="username" name="user_name" type="text" size="20" maxlength="32" onblur="checkname(this.value);" /> {L('validusername')}<br><strong><span id="errormessage"></span></strong></td>
@@ -27,9 +27,22 @@
         </select>
       </td> 
     </tr>
+    <tr>
+      <td><label for="time_zone">{L('timezone')}</label></td>
+      <td>
+        <select id="time_zone" name="time_zone">
+          <?php
+            $times = array();
+            for ($i = -12; $i <= 13; $i++) {
+              $times[$i] = L('GMT') . (($i == 0) ? ' ' : (($i > 0) ? '+' . $i : $i));
+            }
+          ?>
+          {!tpl_options($times, Req::val('time_zone', 0))}
+        </select>
+      </td> 
+    </tr>
   </table>
  <div>
-    <input type="hidden" name="do" value="modify" />
     <input type="hidden" name="action" value="register.sendcode" />
     <button type="submit" name="buSubmit" id="buSubmit">{L('sendcode')}</button>
   </div>

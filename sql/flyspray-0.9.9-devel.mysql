@@ -403,3 +403,17 @@ ALTER TABLE `flyspray_projects` ADD `default_entry` ENUM( 'index', 'roadmap', 't
 `task_id` ,
 `user_id`
 );
+
+-- Florian Schmitz, 3-10 August 2006
+ALTER TABLE `flyspray_tasks` CHANGE `attached_to_project` `project_id` MEDIUMINT( 3 ) DEFAULT '0' NOT NULL;
+UPDATE flyspray_history SET field_changed = 'project_id' WHERE field_changed = 'attached_to_project';
+ALTER TABLE `flyspray_groups` CHANGE `belongs_to_project` `project_id` MEDIUMINT( 3 ) DEFAULT '0' NOT NULL;
+ALTER TABLE `flyspray_groups` ADD UNIQUE (
+`group_name` ,
+`project_id`
+);
+DELETE FROM flyspray_prefs WHERE pref_id = 10;
+ALTER TABLE `flyspray_users` ADD `time_zone` SMALLINT DEFAULT '0' NOT NULL ;
+ALTER TABLE `flyspray_registrations` ADD `time_zone` SMALLINT DEFAULT '0' NOT NULL ;
+UPDATE flyspray_prefs SET pref_value = '%Y-%m-%d' WHERE pref_id = 14;
+UPDATE flyspray_prefs SET pref_value = '%A, %d %B %Y, %H:%M %GMT' WHERE pref_id = 15;

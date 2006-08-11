@@ -13,13 +13,13 @@
   <span class="DoNotPrint">
     <?php if ($user->perms('edit_comments') || ($user->perms('edit_own_comments') && $comment['user_id'] == $user->id)): ?>
     &mdash;
-    <a href="{$baseurl}?do=editcomment&amp;task_id={Get::num('id')}&amp;id={$comment['comment_id']}">
+    <a href="{$baseurl}?do=editcomment&amp;task_id={$task_details['task_id']}&amp;id={$comment['comment_id']}">
       {L('edit')}</a>
     <?php endif; ?>
 
     <?php if ($user->perms('delete_comments')): ?>
     &mdash;
-    <a href="{$baseurl}?do=modify&amp;action=details.deletecomment&amp;comment_id={$comment['comment_id']}"
+    <a href="{$baseurl}?action=details.deletecomment&amp;task_id={$task_details['task_id']}&amp;comment_id={$comment['comment_id']}"
       onclick="return confirm('{L('confirmdeletecomment')}');">
       {L('delete')}</a>
     <?php endif ?>
@@ -48,7 +48,6 @@
       <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>
       <?php endif; ?>
-      <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="details.addcomment" />
       <input type="hidden" name="task_id" value="{Req::val('task_id', $task_details['task_id'])}" />
       <?php if ($user->perms('create_attachments')): ?>

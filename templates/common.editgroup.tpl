@@ -1,7 +1,7 @@
-<fieldset class="admin"> <legend>{L('editgroup')}</legend>
+<fieldset class="box"> <legend>{L('editgroup')}</legend>
   <?php $group_details = Flyspray::getGroupDetails(Req::num('id')); ?>
-  <form action="{$baseurl}?project={$group_details['belongs_to_project']}" method="post">
-    <table class="admin">
+  <form action="{$baseurl}" method="post">
+    <table class="box">
       <tr>
         <td>
           <label for="groupname">{L('groupname')}</label>
@@ -130,12 +130,10 @@
       </tr>
       <tr>
         <td colspan="2" class="buttons">
-          <input type="hidden" name="do" value="modify" />
           <input type="hidden" name="action" value="{Req::val('action', $do . '.editgroup')}" />
           <input type="hidden" name="area" value="editgroup" />
           <input type="hidden" name="id" value="{Req::val('id')}" />
           <input type="hidden" name="group_id" value="{$group_details['group_id']}" />
-          <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
           <button type="submit">{L('updatedetails')}</button>
         </td>
       </tr>
@@ -187,9 +185,7 @@
       </td>
     </tr>
   </table>
-  <input type="hidden" name="do" value="modify" />
   <input type="hidden" name="project_id" value="{$proj->id}" />
-  <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
   <input type="hidden" name="action" value="movetogroup" />
   <input type="hidden" name="old_group" value="{$group_details['group_id']}" />
   </div> 

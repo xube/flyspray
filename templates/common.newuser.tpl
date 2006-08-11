@@ -1,11 +1,10 @@
-<fieldset class="admin">
+<fieldset class="box">
 <legend>{L('registernewuser')}</legend>
 
 <form action="{$baseurl}index.php" method="post" id="registernewuser">
-  <table class="admin">
+  <table class="box">
     <tr>
       <td>
-        <input type="hidden" name="do" value="modify" />
         <input type="hidden" name="action" value="newuser.newuser" />
         <label for="username">{L('username')}</label>
       </td>
@@ -43,21 +42,31 @@
         </select>
       </td>
     </tr>
-    <?php if ($user->perms('is_admin')): ?>
+    <tr>
+      <td><label for="time_zone">{L('timezone')}</label></td>
+      <td>
+        <select id="time_zone" name="time_zone">
+          <?php
+            $times = array();
+            for ($i = -12; $i <= 13; $i++) {
+              $times[$i] = L('GMT') . (($i == 0) ? ' ' : (($i > 0) ? '+' . $i : $i));
+            }
+          ?>
+          {!tpl_options($times, Req::val('time_zone', 0))}
+        </select>
+      </td> 
+    </tr>
+    <?php if (isset($groups)): ?>
     <tr>
       <td><label for="groupin">{L('globalgroup')}</label></td>
       <td>
         <select id="groupin" class="adminlist" name="group_in">
-          {!tpl_options($group_names, Req::val('group_in'))}
+          {!tpl_options($groups, Req::val('group_in'))}
         </select>
       </td>
     </tr>
     <?php endif; ?>
-    <tr>
-      <td colspan="2" class="buttons">
-        <button type="submit" id="buSubmit">{L('registeraccount')}</button>
-      </td>
-    </tr>
   </table>
+  <p><button type="submit" id="buSubmit">{L('registeraccount')}</button></p>
 </form>
 </fieldset>

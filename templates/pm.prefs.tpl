@@ -10,7 +10,7 @@
   </ul>
   
   <div id="general" class="tab">
-      <table class="admin">
+      <table class="box">
         <tr>
           <td><label for="projecttitle">{L('projecttitle')}</label></td>
           <td>
@@ -89,7 +89,7 @@
     </div>
     
     <div id="lookandfeel" class="tab">
-      <table class="admin">
+      <table class="box">
         <tr>
           <td><label for="themestyle">{L('themestyle')}</label></td>
           <td>
@@ -123,7 +123,7 @@
     </div>
 
     <div id="notifications" class="tab">
-      <table class="admin">
+      <table class="box">
         <tr>
           <td><label for="notify_subject">{L('notifysubject')}</label></td>
           <td>
@@ -178,7 +178,7 @@
     </div>
 
     <div id="feeds" class="tab">
-      <table class="admin">
+      <table class="box">
         <tr>
           <td><label for="feed_description">{L('feeddescription')}</label></td>
           <td>
@@ -195,7 +195,6 @@
     </div>
 
     <div class="tbuttons">
-      <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="pm.updateproject" />
       <input type="hidden" name="project_id" value="{$proj->id}" />
       <button type="submit">{L('saveoptions')}</button>

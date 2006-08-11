@@ -8,11 +8,11 @@
   | It also shows comments, attachments, notifications etc.     |
   \*************************************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$task_id = Req::num('id', Req::num('task_id'));
+$task_id = Req::num('task_id');
 
 if ( !($task_details = Flyspray::GetTaskDetails($task_id))
         || !$user->can_view_task($task_details))
@@ -37,7 +37,7 @@ if (Req::val('edit') && $user->can_edit_task($task_details)) {
                        LEFT JOIN {groups} g ON g.group_id = uig.group_id
                            WHERE a.user_id = u.user_id AND task_id = ?
                         GROUP BY u.user_id
-                        ORDER BY g.belongs_to_project DESC',
+                        ORDER BY g.project_id DESC',
                           array($task_id));
     $userlist = array();
     while ($row = $db->FetchRow($result)) {
@@ -150,7 +150,7 @@ else {
     $page->assign('comments', $db->fetchAllArray($sql));
 
     // Comment events
-    $sql = get_events($task_id, ' AND (event_type = 0 OR event_type = 14)');
+    $sql = get_events($task_id, ' AND (event_type = 3 OR event_type = 14)');
     $comment_changes = array();
     while ($row = $db->FetchRow($sql)) {
         $comment_changes[$row['event_date']][] = $row;

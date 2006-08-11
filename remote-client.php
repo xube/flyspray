@@ -146,7 +146,7 @@ else
    // Include a copy of the xml-rpc library. This can reside anywhere.
    // We're just calling the same copy as the server for convenience.
    // (switched to xmlrpc)
-   require_once dirname(__FILE__) .'/includes/xmlrpc.inc';
+   require_once dirname(__FILE__) .'/includes/external/xmlrpc.inc';
 
    //extract parts of the submitted url
    $urlParts = parse_url($_REQUEST['url']);
@@ -391,8 +391,8 @@ Project: <?php echo $response->value['projectList'][$_REQUEST['projectid']];?></
       showResponse($response);
 
       if ($response->success) {
-         $taskId = $response->value['task_id'];
-         echo "<a href=\"index.php?do=details&id=$taskId\">View New Task</a>";
+         $task_id = $response->value['task_id'];
+         echo "<a href=\"index.php?do=details&id=$task_id\">View New Task</a>";
       }
 
    }

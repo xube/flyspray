@@ -7,16 +7,15 @@
 			name="item_summary" size="80" maxlength="100"
 			value="{Req::val('item_summary', $task_details['item_summary'])}" />
 		</h2>
-		<input type="hidden" name="do" value="modify" />
 		<input type="hidden" name="action" value="details.update" />
         <input type="hidden" name="edit" value="1" />
-		<input type="hidden" name="task_id" value="{Req::num('id', Req::num('task_id'))}" />
+		<input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 		<input type="hidden" name="edit_start_time" value="{Req::val('edit_start_time', time())}" />
 
 		<div id="fineprint">
 		  {L('attachedtoproject')} &mdash;
-		  <select name="attached_to_project">
-			{!tpl_options($fs->projects, Req::val('attached_to_project', $proj->id))}
+		  <select name="project_id">
+			{!tpl_options($fs->projects, Req::val('project_id', $proj->id))}
 		  </select>
 		  <br />
 		  {L('openedby')} {!tpl_userlink($task_details['opened_by'])}
@@ -62,34 +61,7 @@
                 <?php if ($user->perms('edit_assignments')): ?>
 				<a href="#users" id="selectusers" class="button" onclick="remove_0val('rassigned_to');fill_userselect('{$baseurl}javascript/callbacks/useradd.php', 'assigned_to');showhidestuff('multiuserlist');">{L('selectusers')}</a>
 				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
-				<div id="multiuserlist" class="hide popup">
-                
-                <table class="double_select">
-                  <tr>
-                    <td class="c1">
-                      {!tpl_userselect('assigned_select', null, 'assigned_select')}
-                    </td>
-                    <td class="c2">
-                      <button type="button" onmouseup="adduserselect('{$baseurl}javascript/callbacks/useradd.php', $('assigned_select').value, 'assigned_to', '{L('usernotexist')}')">
-                        add &#8594;
-                      </button>
-                      <br /><br />
-                      <button type="button" onmouseup="dualSelect('r', '', 'assigned_to')">
-                         &#8592; del
-                      </button>
-                    </td>
-                    <td class="c3">
-                      
-                      <select size="10" name="rassigned_to" id="rassigned_to">
-                        {!tpl_options($userlist)}
-                      </select>
-                      <input type="hidden" value="{Req::val('assigned_to', $old_assigned)}" id="vassigned_to" name="assigned_to" />
-                    </td>
-                  </tr>
-                </table>
-                 
-                 <button type="button" onclick="hidestuff('multiuserlist')">{L('OK')}</button>
-				</div>
+                <?php $this->display('common.multiuserselect.tpl'); ?>
                 <?php else: ?>
                     <?php if (empty($assigned_users)): ?>
                      {L('noone')}

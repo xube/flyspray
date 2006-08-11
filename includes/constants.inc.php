@@ -13,9 +13,11 @@ if (!isset($webdir)) {
 
 $baseurl = rtrim(Flyspray::absoluteURI($webdir),'/\\') . '/' ;
 
-$path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_constants.inc.php';
+$path_to_plugin = BASEDIR . '/plugins/' . trim($conf['general']['syntax_plugin']) . '/' 
+                  . trim($conf['general']['syntax_plugin']) . '_constants.inc.php';
+
 if (is_readable($path_to_plugin)) {
-    require($path_to_plugin);
+    include($path_to_plugin);
 }
 
 define('NOTIFY_TASK_OPENED',      1);

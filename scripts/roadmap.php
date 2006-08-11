@@ -4,8 +4,12 @@
   | ~~~~~~~~~~~~~~~~~~~                                     |
   \*********************************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
+}
+
+if (!$proj->id) {
+    Flyspray::show_error(25);
 }
 
 $page->setTitle($fs->prefs['page_title'] . L('roadmap'));
@@ -23,7 +27,7 @@ while ($row = $db->FetchRow($milestones)) {
     // Get all tasks related to a milestone
     $all_tasks = $db->Query('SELECT  percent_complete, is_closed
                              FROM    {tasks}
-                             WHERE   closedby_version = ? AND attached_to_project = ?',
+                             WHERE   closedby_version = ? AND project_id = ?',
                              array($row['version_id'], $proj->id));
     $all_tasks = $db->fetchAllArray($all_tasks);
     
@@ -37,10 +41,10 @@ while ($row = $db->FetchRow($milestones)) {
     }
     $percent_complete = round($percent_complete/max(count($all_tasks), 1));
                          
-    $tasks = $db->Query('SELECT task_id, item_summary, detailed_desc, task_severity, mark_private, opened_by, content, task_token, attached_to_project
+    $tasks = $db->Query('SELECT task_id, item_summary, detailed_desc, task_severity, mark_private, opened_by, content, task_token, project_id
                            FROM {tasks} t
                       LEFT JOIN {cache} ca ON (t.task_id = ca.topic AND ca.type = \'task\' AND t.last_edited_time <= ca.last_updated)
-                          WHERE closedby_version = ? AND attached_to_project = ? AND is_closed = 0',
+                          WHERE closedby_version = ? AND project_id = ? AND is_closed = 0',
                          array($row['version_id'], $proj->id));
     $tasks = $db->fetchAllArray($tasks);
     

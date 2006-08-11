@@ -1,6 +1,6 @@
 <div id="toolbox">
   <h3>{L('admintoolboxlong')} :: {L('versionlist')}</h3>
-  <fieldset class="admin">
+  <fieldset class="box">
     <legend>{L('versions')}</legend>
     <?php
     $this->assign('list_type', 'version');

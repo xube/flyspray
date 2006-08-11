@@ -70,17 +70,17 @@
         </select>
         
         <label class="default multisel" for="due">{L('dueversion')}</label>
-        <select name="due[]" id="due" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
+        <select name="due[]" id="due" multiple="multiple" size="5">
           {!tpl_options(array('' => L('dueanyversion'), 0 => L('unassigned')) + $proj->listVersions(false), Get::val('due', ''))}
         </select>
         
         <label class="default multisel" for="reported">{L('reportedversion')}</label>
-        <select name="reported[]" id="reported" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
+        <select name="reported[]" id="reported" multiple="multiple" size="5">
           {!tpl_options(array('' => L('anyversion')) + $proj->listVersions(false), Get::val('reported', ''))}
         </select>
         
         <label class="default multisel" for="cat">{L('category')}</label>
-        <select name="cat[]" id="cat" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
+        <select name="cat[]" id="cat" multiple="multiple" size="5">
           {!tpl_options(array('' => L('allcategories')) + $proj->listCategories(), Get::val('cat', ''))}
         </select>
 
@@ -93,7 +93,7 @@
         </select>
         
         <label class="default multisel" for="cat">{L('percentcomplete')}</label>
-        <select name="percent[]" id="percent" {!tpl_disableif(Get::val('project') === '0')} multiple="multiple" size="5">
+        <select name="percent[]" id="percent" multiple="multiple" size="5">
           <?php $percentages = array(); for ($i = 0; $i <= 100; $i += 10) $percentages[$i] = $i; ?>
           {!tpl_options(array('' => L('anyprogress')) + $percentages, Get::val('percent', ''))}
         </select>
@@ -142,8 +142,6 @@
 <div id="tasklist">
   <form action="index.php" id="massops" method="post">
     <div>
-      <input type="hidden" name="do" value="modify" />
-      <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
       <table id="tasklist_table">
         <thead>
           <tr>
@@ -188,7 +186,7 @@
               ($offset + $perpage > $total ? $total : $offset + $perpage), $total)}
           </td>
           <td id="numbers">
-            {!pagenums($pagenum, $perpage, $total, $get . '&amp;order=' . Get::safe('order') . '&amp;sort=' . Get::safe('sort') . '&amp;order2=' . Get::safe('order2') . '&amp;sort2=' . Get::safe('sort2'))}
+            {!pagenums($pagenum, $perpage, $total)}
           </td>
           <?php else: ?>
           <td id="taskrange"><strong>{L('noresults')}</strong></td>

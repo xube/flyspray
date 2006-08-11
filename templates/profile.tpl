@@ -1,4 +1,4 @@
-<fieldset class="admin"><legend>{L('profile')} {$theuser->infos['real_name']} ({$theuser->infos['user_name']})</legend>
+<fieldset class="box"><legend>{L('profile')} {$theuser->infos['real_name']} ({$theuser->infos['user_name']})</legend>
 
 <table id="profile">
   <tr>
@@ -38,11 +38,9 @@
         {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), $sel)}
       </select>
       <input type="hidden" name="old_project_id" value="{$theuser->perms('project_group')}" />
-      <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="edituser" />
       <input type="hidden" name="user_id" value="{$theuser->id}" />
       <input type="hidden" name="onlypmgroup" value="1" />
-      <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
 
       <button type="submit">{L('update')}</button>
     </div></form>

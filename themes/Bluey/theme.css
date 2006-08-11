@@ -82,7 +82,7 @@ h2 {
 	font-size:150%;
 }
 
-div.admin h2 {
+div.box h2 {
 	margin-left:0.5em;
 }
 
@@ -183,12 +183,12 @@ label.text {
 }
 
 
-/* div.admin and p.admin is used for areas that only administrators can use
-p.admin for instance for adding comments
-table.admin serves the same purpose
+/* div.box and p.box is used for areas that only administrators can use
+p.box for instance for adding comments
+table.box serves the same purpose
  table.login is the framework for the login form at the bottom of a page
  table.userlist is found in the user&groups section */
-div.admin,p.admin,table.userlist {
+div.box,p.box,table.userlist {
 	border:1px solid #ccc;
 	background-color:#e6eef6;
 	color:#000;
@@ -294,7 +294,7 @@ ul#menu-list li, ul#pm-menu-list li {
 	display:block;
 	float:left;
 	height:1.4em;
-	border-right:solid 1px black;
+	border-left:solid 1px black;
 	position:relative;
 }
 
@@ -353,7 +353,7 @@ div#mysearches table tr.last {
 	border:0;
 }
 
-ul#menu-list li.last, ul#pm-menu-list li.last {
+ul#menu-list li.first, ul#pm-menu-list li.first {
 	border:0;
 }
 
@@ -563,6 +563,8 @@ div#taskdetails {
 	background-color:#e6eef6;
 	border:1px solid #000;
 	margin:2em 0 0 0;
+	width:99.7%;
+	position:relative;
 }
 
 div#taskdetails table th {
@@ -837,15 +839,15 @@ div#actionbuttons {
 	padding:0 5px 5px;
 }
 
-div#actionbuttons a {
+a.button {
 	background:url(button.png) repeat-x transparent;
-	color:#fff;
+	color:#fff !important;
 	border:1px solid #000;
 	margin:0 3px;
 	padding:1px 5px;
 }
 
-div#actionbuttons a:hover {
+a.button:hover {
 	background:url(button-over.png);
 }
 
@@ -888,8 +890,12 @@ div#closeform {
 }
 
 div#multiuserlist {
-	width:42em;
-	text-align:right;
+	width:28em;
+	text-align:left;
+}
+
+div#multiuserlist select {
+	width:26em;
 }
 
 div.popup {
@@ -898,18 +904,7 @@ div.popup {
 	color:#000;
 	border:2px ridge #000;
 	margin-top:5px;
-	padding:5px 30px 5px 5px;
-}
-
-div#multiuserlist .double_select td.c2 {
-	 vertical-align:middle;
-	 text-align:center;
-	 width:auto;
-}
-
-div#multiuserlist .double_select select {
-	height:14em;
-	width:18em;
+	padding:5px;
 }
 
 div.denyform {
@@ -947,30 +942,31 @@ fieldset legend {
 	padding:2px;
 }
 
-div#errorbar {
-	width:100%;
-	height:20px;
-	color:#FF0;
-	font-weight:700;
-	position:fixed !important;
-	position:absolute;
-	bottom:0;
-	left:0;
-	background:red url(frown.png) no-repeat 5px 0;
-	text-indent:30px;
+div.errpadding {
+	padding:0.2em 0 0.2em 30px;
 }
 
-div#successbar {
+div.bar {
 	width:100%;
-	height:20px;
-	color:#fff;
+	color:#FFF;
 	font-weight:700;
 	position:fixed !important;
 	position:absolute;
 	bottom:0;
 	left:0;
-	background:green url(smile.png) no-repeat 5px 0;
-	text-indent:30px;
+	z-index:5;
+}
+
+div.error {
+	background:red url(frown.png) no-repeat 5px 1px;
+}
+
+div.mixed {
+	background:#FC0 url(frown.png) no-repeat 5px 1px;
+}
+
+div.success {
+	background:green url(smile.png) no-repeat 5px 1px;
 }
 
 div#toolboxmenu {
@@ -1113,7 +1109,7 @@ a.pendingreq {
 /* container for the next/previous links in the task details */
 span#navigation {
 	position:absolute;
-	right:1em;
+	right:0.5em;
 	padding-top:0.1em;
 }
 
@@ -1225,7 +1221,7 @@ img.middle {
 	vertical-align:middle;
 }
 
-.inline,table.list label,p.admin label,form#formaddrelatedtask label {
+.inline,table.list label,p.box label,form#formaddrelatedtask label {
 	display:inline !important;
 }
 
@@ -1249,20 +1245,23 @@ p#footer a:link,p#footer a:visited,p#footer a:hover {
 }
 
 div#closeform textarea,div#denyform textarea {
-	width:100%;
 	height:100px;
 }
 
 table.requests {
 	border-spacing:0;
 	border-collapse:collapse;
-	border:solid 1px black;
+	border:solid 1px gray;
 	width:95%;
 	margin:0.5em;
 }
 
+table.requests th {
+	border-left:1px solid gray;
+}
+
 table.requests td {
-	border:solid 1px black;
+	border:solid 1px gray;
 	padding:0.2em 0.5em;
 }
 

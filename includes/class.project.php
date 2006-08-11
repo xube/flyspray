@@ -9,7 +9,7 @@ class Project
     {
         global $db, $fs;
 
-        if ($id != 0) {
+        if ($id) {
             $sql = $db->Query("SELECT p.*, c.content AS pm_instructions, c.last_updated AS cache_update
                                  FROM {projects} p
                             LEFT JOIN {cache} c ON c.topic = p.project_id AND c.type = 'msg'
@@ -21,6 +21,7 @@ class Project
             }
         }
         
+        $this->id = 0;
         $this->prefs['project_title'] = L('allprojects');
         $this->prefs['theme_style']   = $fs->prefs['global_theme'];
         $this->prefs['lang_code']   = $fs->prefs['lang_code'];
@@ -31,6 +32,7 @@ class Project
         $this->prefs['feed_description']  = L('feedforall');
         $this->prefs['feed_img_url'] = '';
         $this->prefs['default_entry'] = 'index';
+        $this->prefs['notify_reply'] = '';
     }
 
     function setCookie()
@@ -53,8 +55,8 @@ class Project
         return "SELECT  l.*, count(t.task_id) AS used_in_tasks
                   FROM  {list_{$type}} l
              LEFT JOIN  {tasks}        t  ON ($join)
-                            AND t.attached_to_project = l.project_id
-                 WHERE  project_id = ?
+                            AND t.project_id = l.project_id
+                 WHERE  l.project_id = ?
               GROUP BY  $groupby
               ORDER BY  list_position";
     }
@@ -63,7 +65,7 @@ class Project
     {
         return "SELECT  {$type}_id, {$type}_name
                   FROM  {list_{$type}}
-                 WHERE  show_in_list = '1' AND ( project_id = ? OR project_id = '0' )
+                 WHERE  show_in_list = 1 AND ( project_id = ? OR project_id = 0 )
                         $where
               ORDER BY  list_position";
     }
@@ -75,12 +77,12 @@ class Project
     {
         global $db;
         if ($pm) {
-            return $db->_cached_query(
+            return $db->cached_query(
                     'pm_task_types',
                     $this->_pm_list_sql('tasktype', 'task_type'),
                     array($this->id));
         } else {
-            return $db->_cached_query(
+            return $db->cached_query(
                     'task_types', $this->_list_sql('tasktype'), array($this->id));
         }
     }
@@ -89,12 +91,12 @@ class Project
     {
         global $db;
         if ($pm) {
-            return $db->_cached_query(
+            return $db->cached_query(
                     'pm_os',
                     $this->_pm_list_sql('os', 'operating_system'),
                     array($this->id));
         } else {
-            return $db->_cached_query('os', $this->_list_sql('os'),
+            return $db->cached_query('os', $this->_list_sql('os'),
                     array($this->id));
         }
     }
@@ -105,23 +107,23 @@ class Project
         if (is_null($tense)) {
             $where = '';
         } else {
-            $where = "AND version_tense = '$tense'";
+            $where = 'AND version_tense = ' . $db->qstr($tense);
         }
         
         if ($pm) {
-            return $db->_cached_query(
+            return $db->cached_query(
                     'pm_version',
                     $this->_pm_list_sql('version', array('product_version', 'closedby_version')),
                     array($this->id));
-        } elseif(is_null($reported_version)) {
-            return $db->_cached_query(
+        } elseif (is_null($reported_version)) {
+            return $db->cached_query(
                     'version_'.$tense,
                     $this->_list_sql('version', $where),
                     array($this->id));
         } else {
-            return $db->_cached_query(
+            return $db->cached_query(
                     'version_'.$tense,
-                    $this->_list_sql('version', $where . " OR version_id = '$reported_version' "),
+                    $this->_list_sql('version', $where . ' OR version_id = '. $db->qstr($reported_version) ),
                     array($this->id));
         }
     }
@@ -157,7 +159,7 @@ class Project
         $result = $db->Query('SELECT c.category_id, c.category_name, c.*, count(t.task_id) AS used_in_tasks
                                 FROM {list_category} c
                            LEFT JOIN {tasks} t ON (t.product_category = c.category_id)
-                               WHERE project_id = ? AND lft BETWEEN ? AND ?
+                               WHERE c.project_id = ? AND lft BETWEEN ? AND ?
                             GROUP BY ' . $groupby . '
                             ORDER BY lft ASC',
                              array($project_id, intval($row['lft']), intval($row['rgt'])));
@@ -197,12 +199,12 @@ class Project
     {
         global $db;
         if ($pm) {
-            return $db->_cached_query(
+            return $db->cached_query(
                     'pm_resolutions',
                     $this->_pm_list_sql('resolution', 'resolution_reason'),
                     array($this->id));
         } else {
-            return $db->_cached_query('resolution',
+            return $db->cached_query('resolution',
                     $this->_list_sql('resolution'), array($this->id));
         }
     }
@@ -211,12 +213,12 @@ class Project
     {
         global $db;
         if ($pm) {
-            return $db->_cached_query(
+            return $db->cached_query(
                     'pm_statuses',
                     $this->_pm_list_sql('status', 'item_status'),
                     array($this->id));
         } else {
-            return $db->_cached_query('status',
+            return $db->cached_query('status',
                     $this->_list_sql('status'), array($this->id));
         }
     }
@@ -226,7 +228,7 @@ class Project
     function listUsersIn($group_id = null)
     {
         global $db;
-        return $db->_cached_query(
+        return $db->cached_query(
                 'users_in'.$group_id,
                 "SELECT  u.*
                    FROM  {users}           u
@@ -240,7 +242,7 @@ class Project
     function listAttachments($cid)
     {
         global $db;
-        return $db->_cached_query(
+        return $db->cached_query(
                 'attach_'.$cid,
                 "SELECT  *
                    FROM  {attachments}
@@ -252,7 +254,7 @@ class Project
     function listTaskAttachments($tid)
     {
         global $db;
-        return $db->_cached_query(
+        return $db->cached_query(
                 'attach_'.$tid,
                 "SELECT  *
                    FROM  {attachments}

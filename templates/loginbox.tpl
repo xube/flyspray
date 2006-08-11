@@ -10,19 +10,12 @@
   <label for="lbl_remember">{L('rememberme')}</label>
   <input type="checkbox" id="lbl_remember" name="remember_login" />
 
-  <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
   <button accesskey="l" type="submit">{L('login')}</button>
 
   <span id="links">
-    <?php
-    if ($user->isAnon() && $fs->prefs['anon_reg']):
-        if ($fs->prefs['spam_proof']):
-    ?>
+    <?php if ($user->isAnon() && $fs->prefs['anon_reg']): ?>
     <a id="registerlink" href="{CreateURL('register','')}">{L('register')}</a>
-    <?php else: ?>
-    <a id="registerlink" href="{CreateURL('newuser','')}">{L('register')}</a>
-    <?php endif;
-    endif; ?>
+    <?php endif; ?>
     <?php if ($user->isAnon() && $fs->prefs['user_notify']): ?>
     <a id="forgotlink" href="{CreateURL('lostpw','')}">{L('lostpassword')}</a>
     <?php else: ?>

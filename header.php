@@ -6,7 +6,7 @@
 // (RECOMMENDED).
 
 require_once dirname(__FILE__) . '/includes/fix.inc.php';
-require_once dirname(__FILE__) . '/includes/functions.inc.php';
+require_once dirname(__FILE__) . '/includes/class.flyspray.php';
 require_once dirname(__FILE__) . '/includes/constants.inc.php';
 
 // If it is empty,take the user to the setup page
@@ -17,7 +17,7 @@ if (!$conf) {
 
 require_once BASEDIR . '/includes/class.gpc.php';
 require_once BASEDIR . '/includes/utf8.inc.php';
-require_once BASEDIR . '/includes/db.inc.php';
+require_once BASEDIR . '/includes/class.database.php';
 require_once BASEDIR . '/includes/class.backend.php';
 require_once BASEDIR . '/includes/class.project.php';
 require_once BASEDIR . '/includes/class.user.php';
@@ -27,28 +27,25 @@ require_once BASEDIR . '/includes/i18n.inc.php';
 $db = new Database;
 $db->dbOpenFast($conf['database']);
 $fs = new Flyspray;
-$be = new Backend;
 
 if (is_readable(BASEDIR . '/sql/index.html') && strpos($fs->version, 'dev') === false) {
     die('Please empty the folder "' . BASEDIR . DIRECTORY_SEPARATOR . 'sql" before you start using Flyspray.');
 }
 
 // Any "do" mode that accepts a task_id or id field should be added here.
-if (in_array(Req::val('do'), array('details', 'depends', 'modify'))) {
-    $id = Req::num('task_id', Req::num('id'));
-
-    if (is_numeric($id)) {
-        $result = $db->Query('SELECT  attached_to_project
-                                FROM  {tasks} WHERE task_id = ?', array($id));
+if (in_array(Req::val('do'), array('details', 'depends'))) {
+    if (Req::num('task_id')) {
+        $result = $db->Query('SELECT  project_id
+                                FROM  {tasks} WHERE task_id = ?', array(Req::num('task_id')));
         $project_id = $db->FetchOne($result);
     }
 }
 
-if (empty($project_id) || (Req::val('project') && Req::val('switch'))) {
+if (!isset($project_id)) {
+    $project_id = (Req::val('do') == 'admin') ? '0' : Req::val('project', Req::val('project_id', ''));
+    
     // Determine which project we want to see
-    if (Req::val('project') != '') {
-        $project_id = Req::val('project');
-    } elseif (!($project_id = Cookie::val('flyspray_project'))) {
+    if ($project_id == '' && ($project_id = Cookie::val('flyspray_project')) == '') {
         $project_id = $fs->prefs['default_project'];
     }
 }

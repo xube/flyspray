@@ -1,5 +1,5 @@
 <?php foreach ($projects as $project): ?>
-<div class="admin">
+<div class="box">
 <h2><a href="{CreateUrl('project', $project['project_id'])}">{$project['project_title']}</a></h2>
 <table class="toplevel">
   <tr>

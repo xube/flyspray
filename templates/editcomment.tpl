@@ -32,7 +32,6 @@
     <?php endif; ?>
     {!TextFormatter::textarea('comment_text', 10, 72, array('id' => 'comment_text'), $comment['comment_text'])}
 
-    <input type="hidden" name="do" value="modify" />
     <input type="hidden" name="action" value="editcomment" />
     <input type="hidden" name="task_id" value="{$comment['task_id']}" />
     <input type="hidden" name="comment_id" value="{$comment['comment_id']}" />

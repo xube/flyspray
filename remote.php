@@ -22,6 +22,7 @@ define('CREATE_COMMENT_FAILED',-4);    //Error creating task
    4th August 2005: Angus Hardie Angus@malcolmhardie.com for xmlrpc library instead of ixr
    10th August 2005: Angus Hardie Angus@malcolmhardie.com refactored code and
                      added new information and task creation functions
+   4th August 2006:  overhauled some functions to make sure that this file is not a security risk
 
    Requires the xmlrpc library
    http://phpxmlrpc.sourceforge.net
@@ -31,9 +32,7 @@ define('CREATE_COMMENT_FAILED',-4);    //Error creating task
 // Get the main headerfile.  It calls other important files
 require_once 'header.php';
 
-//require('includes/class.tpl.php');
-
-$lang = "en";
+$lang = 'en';
 
 
 // define a version for this interface so that clients can figure out
@@ -43,8 +42,8 @@ define('FS_XMLRPC_VERSION','1.3');
 
 
 // use xmlrpc library (library + server library)
-require_once BASEDIR . '/includes/xmlrpc.inc';
-require_once BASEDIR . '/includes/xmlrpcs.inc';
+require_once BASEDIR . '/includes/external/xmlrpc.inc';
+require_once BASEDIR . '/includes/external/xmlrpcs.inc';
 
 //////////////////////////////////////////////////
 // Login/Authentication functions               //
@@ -77,7 +76,6 @@ function loginErrorResponse()
 function xmlrpcError($code,$message)
 {
    return new xmlrpcresp(0,$code,$message);
-
 }
 
 /**
@@ -87,24 +85,8 @@ function xmlrpcError($code,$message)
 **/
 function xmlrpcEncodedArrayResponse($data)
 {
-
       return new xmlrpcresp(php_xmlrpc_encode($data));
 }
-
-
-/**
-    sets a default value of zero
-**/
-function valueOrZero($value)
-{
-    
-    if ($value)
-        return $value;
-    else
-        return 0;
-}
-
-
 
 function setProject($project_id) 
 {
@@ -117,7 +99,6 @@ function setProject($project_id)
    // use project if valid id, otherwise use the default
    
    if (array_key_exists($project_id,$projectList)) {
-      
       $proj = new Project($project_id);
    } else {
       
@@ -193,7 +174,7 @@ function getTask($args)
 
    $result = array (
                      'task_id'              =>    $task_details['task_id'],
-                     'attached_to_project'  =>    $task_details['project_title'],
+                     'project_id'           =>    $task_details['project_title'],
                      'task_type'            =>    $task_details['tasktype_name'],
                      'date_opened'          =>    $task_details['date_opened'],
                      'opened_by'            =>    $task_details['opened_by_name'],
@@ -356,7 +337,7 @@ function severityArray()
 function priorityArray()
 {
    global $fs;
-   return Flyspray::priotities;
+   return $fs->priorities;
 }
 
 /**
@@ -507,20 +488,6 @@ function getArrayData($arrayName)
 }
 
 
-// wrapper functions for some commonly used arrays
-
-/*function getTaskTypeList($args)
-{
-   return resultFromQueryAsArray($args,"taskType");
-
-}
-
-function getCategoryList($args)
-{
-   return resultFromQueryAsArray($args,"category");
-
-}*/
-
 function getStatusList($args)
 {
    return resultFromQueryAsArray($args,"status");
@@ -543,9 +510,9 @@ function getNewTaskData($args)
 **/
 function openTask($args)
 {
-   global $db, $be, $proj, $user;
+   global $db, $proj, $user;
    
-   include_once('includes/notify.inc.php');
+   include_once('includes/class.notify.php');
    $notify = new Notifications();
 
    
@@ -572,37 +539,24 @@ function openTask($args)
    // Get the user's permissions for the project this task belongs to
    $user = new user($user_id);
 
-   $permissions = $user->perms;
-
 
    // compulsory args
    $taskData['user_id'] = $user_id;
-   $taskData['attached_to_project'] = $taskData['project_id'];
+   $taskData['project_id'] = $taskData['project_id'];
    
    // task data is now used directly
 
    // get permissions for the project
    $project_prefs = $proj->prefs;
    
-   
-
-   // check permissions here rather than waiting until we get to
-   // the backend module. Saves time and effort
-   if ($permissions['open_new_tasks'] != '1' && $project_prefs['anon_open'] != '1') {
-      return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to open a new task.');
-   }
-
-
    // creeate the new task
    // we may or may not get a result back depending on the
    //version of the be module
-   $result = $be->createTask($taskData);
-
-
+   $result = Backend::create_task($taskData);
 
    // if the result isn't valid return a failure message
 
-   if (is_null($result))
+   if (!$result)
    {
       return new xmlrpcresp (0,CREATE_TASK_FAILED, $result);
    }
@@ -616,7 +570,7 @@ function openTask($args)
 function closeTask($args)
 {
    global $db;
-   include_once('includes/notify.inc.php');
+   include_once('includes/class.notify.php');
    $notify = new Notifications;
 
 
@@ -647,64 +601,11 @@ function closeTask($args)
       return new xmlrpcresp (0,NO_SUCH_TASK, 'The requested task does not exist.');
    }
 
-    // Get info on the dependencies
-    $check_deps = $db->Query("SELECT * FROM {dependencies} d
-                                LEFT JOIN {tasks} t on d.dep_task_id = t.task_id
-                                WHERE d.task_id = ?",
-                                array($task_id));
-
-    // Cycle through the dependencies, checking if any are still open
-    while ($deps_details = $db->FetchRow($check_deps)) {
-      if ($deps_details['is_closed'] != '1') {
-        $deps_open = 'yes';
-      };
-    };
-
-   // Compare permissions to view this task
-   if ($task_details['project_is_active'] == '1'
-         && ($task_details['others_view'] == '1' OR $permissions['view_tasks'] == '1')
-         && (($task_details['mark_private'] == '1' && $task_details['assigned_to'] == $user_id)
-         OR ($permissions['manage_project'] == '1' OR $task_details['mark_private'] != '1'))
-         && (($permissions['close_own_tasks'] == '1' && $task_details['assigned_to'] == $user->id)
-         OR $permissions['close_other_tasks'] == '1')
-       )
-   {
-      $can_close = 'yes';
-   }
-
-   if ($can_close != 'yes')
-   {
+    if (!$user->can_close_task($task_details)) {
       return new xmlrpcresp (0,PERMISSION_DENIED, 'You do not have permission to perform this function.');
    }
 
-   // Check if we should mark the task 100% complete
-   if(!empty($mark100))
-   {
-      $db->Query("UPDATE {tasks}
-                  SET percent_complete = '100'
-                  WHERE task_id = ?",
-                  array($task_id)
-                 );
-   }
-
-   //Do it.  Do it.  Close the task, now!
-   $db->Query("UPDATE {tasks}
-               SET is_closed = '1',
-               resolution_reason = ?,
-               closure_comment = ?,
-               date_closed = ?,
-               closed_by = ?
-               WHERE task_id = ?",
-               array($reason, $comment, date(U), $user_id, $task_id)
-             );
-
-   // Log this to the task's history
-   Flyspray::logEvent($task_id, 2, $reason, $comment);
-
-   // Generate notifications
-   $notify->Create(NOTIFY_TASK_CLOSED, $task_id);
-
-   return true;
+   return Backend:close_task($task_id, $reason, $comment, $mark100);
 
 // End of close task function
 }
@@ -765,7 +666,7 @@ function getUser($args)
 function filterTasks($args)
 {
    
-   global $db, $be, $proj;
+   global $db, $proj;
    
    
    $user_id = checkRPCLogin($args);
@@ -801,32 +702,13 @@ function filterTasks($args)
         $requestArgs['limit'] = -1;
    }
    
-   // build the task array
-   
-   $taskArgs[0] = $user_id;
-   $taskArgs[1] = valueOrZero($requestArgs['project_id']);
-   $taskArgs[2] = $requestArgs['tasks_req'];
-   $taskArgs[3] = $requestArgs['search'];
-   $taskArgs[4] = valueOrZero($requestArgs['type_id']);
-   $taskArgs[5] = valueOrZero($requestArgs['severity_id']);
-   $taskArgs[6] = valueOrZero($requestArgs['user_id']);
-   $taskArgs[7] = valueOrZero($requestArgs['category_id']);
-   $taskArgs[8] = $requestArgs['status_id'];
-   $taskArgs[9] = valueOrZero($requestArgs['due_in_version_id']);
-   $taskArgs[10] = $requestArgs['due_date'];
-   $taskArgs[11] = $requestArgs['limit'];
- 
-   
-   
    // can't yet do os_id or priority_id
    // need to add this to backend.class.php
-   
-   // get the task list (use the id only function)
-   $taskList = $be->getTaskIdList($taskArgs);
+   list($tasks, $id_list) = Backend::getTaskIdList($requestArgs);
    
    
    // return to client
-   return xmlrpcEncodedArrayResponse($taskList);
+   return xmlrpcEncodedArrayResponse($id_list);
    // end of filter tasks function   
 }
 
@@ -837,8 +719,8 @@ function filterTasks($args)
 function addComment($args)
 {
 	
-   global $db, $be, $proj, $user, $notify, $_FILES;
-   include_once('includes/notify.inc.php');
+   global $db, $proj, $user, $notify, $_FILES;
+   include_once('includes/class.notify.php');
    $notify = new Notifications();
 	
    
@@ -852,18 +734,11 @@ function addComment($args)
    }
    
    
-   
-   
-   
    $requestArgs = php_xmlrpc_decode($args->getParam(2));
    
    
    $task_id = $requestArgs['taskid'];
    $comment_text = $requestArgs['commenttext'];
-   
-   
-   
-   
    
    $task = Flyspray::getTaskDetails($task_id);
    
@@ -871,21 +746,9 @@ function addComment($args)
    
    $user = new user($user_id);   
    
-   if(!$user->perms('add_comments')) {
-      
-      return xmlrpcError(PERMISSION_DENIED,'No permissions to add comment for user');
-   }
+   $result = Backend::add_comment($task, $comment_text, $time = null);
    
-   if ($task['is_closed'] || $proj->prefs['comment_closed']) {
-      return xmlrpcError(PERMISSION_DENIED,'Comment closed');
-   }
-   
-   
-   
-   
-   $result = $be->add_comment($task, $comment_text, $time = null);
-   
-   if ($result == false) {
+   if (!$result) {
       return xmlrpcError(CREATE_COMMENT_FAILED,'Failed to create comment');
    }
    

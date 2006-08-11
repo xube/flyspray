@@ -36,9 +36,9 @@
      <td>{!TextFormatter::render($row['reminder_message'], true)}</td>
   </tr>
     <?php endforeach; ?>
-    <tr><td colspan="4"><input type="hidden" name="do" value="modify" />
+    <tr><td colspan="4">
       <input type="hidden" name="action" value="deletereminder" />
-      <input type="hidden" name="task_id" value="{Get::num('id')}" />
+      <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
       <button type="submit">{L('remove')}</button></td></tr>
     </table>
   </form>
@@ -46,9 +46,8 @@
   <fieldset><legend>{L('addreminder')}</legend>
   <form action="{$baseurl}#remind" method="post" id="formaddreminder">
     <div>
-      <input type="hidden" name="do" value="modify" />
       <input type="hidden" name="action" value="details.addreminder" />
-      <input type="hidden" name="id" value="{Req::num('id')}" />
+      <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 
         <label class="default multisel" for="to_user_id">{L('remindthisuser')}</label>
         {!tpl_userselect('to_user_id', Req::val('to_user_id'), 'to_user_id')}
@@ -66,7 +65,7 @@
 
       <br />
       <textarea class="text" name="reminder_message"
-        rows="10" cols="72">{Req::val('reminder_message', L('defaultreminder') . "\n\n" . CreateURL('details', Get::num('id')))}</textarea>
+        rows="10" cols="72">{Req::val('reminder_message', L('defaultreminder') . "\n\n" . CreateURL('details', $task_details['task_id']))}</textarea>
       <br />
       <button type="submit">{L('addreminder')}</button>
     </div>

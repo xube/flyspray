@@ -1,22 +1,33 @@
 <?php
-/*
-   ------------------------------------------------------------
-   | This script contains reusable functions we use to modify |
-   | various things in the Flyspray database tables.          |
-   ------------------------------------------------------------
-*/
+/**
+ * Flyspray
+ *
+ * Backend class
+ *
+ * This script contains reusable functions we use to modify
+ * various things in the Flyspray database tables.  
+ *
+ * @license http://opensource.org/licenses/lgpl-license.php Lesser GNU Public License
+ * @package flyspray
+ * @author Tony Collins, Florian Schmitz
+ */
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
 class Backend
 {
-    /* This function is used to ADD a user to the
-       Notification list of multiple tasks (if desired).
-       Expected args are user_id and an array of tasks
-    */
-    function AddToNotifyList($user_id, $tasks, $do = false)
+    /**
+     * Adds the user $user_id to the notifications list of $tasks
+     * @param integer $user_id
+     * @param array $tasks
+     * @param bool $do Force execution independent of user permissions
+     * @access public
+     * @return bool
+     * @version 1.0
+     */
+    function add_notification($user_id, $tasks, $do = false)
     {
         global $db, $user;
 
@@ -24,28 +35,24 @@ class Backend
         
         $user_id = Flyspray::username_to_id($user_id);
 
-        if (!$user_id) {
+        if (!$user_id || !count($tasks)) {
             return false;
         }
         
-        foreach ($tasks as $key => $task) {
-            $tasks[$key] = 'task_id = ' . $task;
-        }
-        $where = implode(' OR ', $tasks);
-        
-        $sql = $db->Query(" SELECT *
+        $sql = $db->Query(' SELECT *
                               FROM {tasks}
-                             WHERE ($where)");
+                             WHERE ' . substr(str_repeat(' task_id = ? OR ', count($tasks)), 0, -3),
+                          array($tasks));
 
         while ($row = $db->FetchRow($sql)) {
             // -> user adds himself
             if ($user->id == $user_id) {
-                if (!$user->can_view_task($row)) {
+                if (!$user->can_view_task($row) && !$do) {
                     continue;
                 }
             // -> user is added by someone else
             } else  {
-                if (!$user->perms('manage_project', $row['attached_to_project'])) {
+                if (!$user->perms('manage_project', $row['project_id']) && !$do) {
                     continue;
                 }
             }
@@ -66,25 +73,29 @@ class Backend
     }
 
 
-    /* This function is used to REMOVE a user from the
-       Notification list of multiple tasks (if desired).
-       Expected args are user_id and an array of tasks.
-    */
-    function RemoveFromNotifyList($user_id, $tasks)
+    /**
+     * Removes a user $user_id from the notifications list of $tasks
+     * @param integer $user_id
+     * @param array $tasks
+     * @access public
+     * @return void
+     * @version 1.0
+     */
+
+    function remove_notification($user_id, $tasks)
     {
         global $db, $user;
 
         settype($tasks, 'array');
-                
-        foreach ($tasks as $key => $task) {
-            $tasks[$key] = 't.task_id = ' . $task;
+        
+        if (!count($tasks)) {
+            return;
         }
-        $where = implode(' OR ', $tasks);
-
-        // XXX keep permission checks in sync with class.user.php!
-        $sql = $db->Query(" SELECT *
-                              FROM {tasks} t
-                             WHERE ($where)");
+                
+        $sql = $db->Query(' SELECT *
+                              FROM {tasks}
+                             WHERE ' . substr(str_repeat(' task_id = ? OR ', count($tasks)), 0, -3),
+                          array($tasks));
                              
         while ($row = $db->FetchRow($sql)) {
             // -> user removes himself
@@ -94,7 +105,7 @@ class Backend
                 }
             // -> user is removed by someone else
             } else  {
-                if (!$user->perms('manage_project', $row['attached_to_project'])) {
+                if (!$user->perms('manage_project', $row['project_id'])) {
                     continue;
                 }
             }
@@ -109,10 +120,15 @@ class Backend
     }
 
 
-    /* This function is for a user to assign multiple tasks to themselves.
-       Expected args are user_id and an array of tasks.
-    */
-    function AssignToMe($user_id, $tasks)
+    /**
+     * Assigns one or more $tasks only to a user $user_id
+     * @param integer $user_id
+     * @param array $tasks
+     * @access public
+     * @return void
+     * @version 1.0
+     */
+    function assign_to_me($user_id, $tasks)
     {
         global $db, $notify, $user;
         
@@ -121,16 +137,14 @@ class Backend
         }
 
         settype($tasks, 'array');
-
-        // XXX keep permission checks in sync with class.user.php!
-        foreach ($tasks as $key => $task) {
-            $tasks[$key] = 'task_id = ' . $task;
+        if (!count($tasks)) {
+            return;
         }
-        $where = implode(' OR ', $tasks);
-        
-        $sql = $db->Query(" SELECT *
+
+        $sql = $db->Query(' SELECT *
                               FROM {tasks}
-                             WHERE ($where)");
+                             WHERE ' . substr(str_repeat(' task_id = ? OR ', count($tasks)), 0, -3),
+                          array($tasks));
 
         while ($row = $db->FetchRow($sql)) {
             if (!$user->can_take_ownership($row)) {
@@ -158,10 +172,16 @@ class Backend
         }
     }
     
-    /* This function is for a user to assign multiple tasks to themselves.
-       Expected args are user_id and an array of tasks.
-    */
-    function AddToAssignees($user_id, $tasks, $do = false)
+    /**
+     * Adds a user $user_id to the assignees of one or more $tasks
+     * @param integer $user_id
+     * @param array $tasks
+     * @param bool $do Force execution independent of user permissions
+     * @access public
+     * @return void
+     * @version 1.0
+     */
+    function add_to_assignees($user_id, $tasks, $do = false)
     {
         global $db, $notify, $user;
 
@@ -170,19 +190,17 @@ class Backend
         }
 
         settype($tasks, 'array');
-        
-        // XXX keep permission checks in sync with class.user.php!
-        foreach ($tasks as $key => $task) {
-            $tasks[$key] = 't.task_id = ' . $task;
+        if (!count($tasks)) {
+            return;
         }
-        $where = implode(' OR ', $tasks);
         
-        $sql = $db->Query(" SELECT *
-                              FROM {tasks} t
-                             WHERE ($where)");
+        $sql = $db->Query(' SELECT *
+                              FROM {tasks}
+                             WHERE ' . substr(str_repeat(' task_id = ? OR ', count($tasks)), 0, -3),
+                          array($tasks));
 
         while ($row = $db->FetchRow($sql)) {
-            if (!$user->can_add_to_assignees($row)) {
+            if (!$user->can_add_to_assignees($row) || $do) {
                 continue;
             }
             
@@ -200,6 +218,14 @@ class Backend
         }
     }
     
+    /**
+     * Adds a vote from $user_id to the task $task_id
+     * @param integer $user_id
+     * @param integer $task_id
+     * @access public
+     * @return bool
+     * @version 1.0
+     */
     function add_vote($user_id, $task_id)
     {
         global $db, $user;
@@ -219,19 +245,28 @@ class Backend
         return false;
     }
     
+    /**
+     * Adds a comment to $task
+     * @param array $task
+     * @param string $comment_text
+     * @param integer $time for synchronisation with other functions
+     * @access public
+     * @return bool
+     * @version 1.0
+     */
     function add_comment($task, $comment_text, $time = null)
     {
         global $db, $user, $notify;
         
-        if (!($user->perms('add_comments', $task['attached_to_project']) && (!$task['is_closed'] || $user->perms('comment_closed', $task['attached_to_project'])))) {
+        if (!($user->perms('add_comments', $task['project_id']) && (!$task['is_closed'] || $user->perms('comment_closed', $task['project_id'])))) {
             return false;
         }
         
-        if (!$comment_text) {
+        if (!is_string($comment_text) || !strlen($comment_text)) {
             return false;
         }
         
-        $time = ( (is_null($time)) ? time() : $time );
+        $time =  is_null($time) ? time() : $time ;
 
         $db->Query('INSERT INTO  {comments}
                                  (task_id, date_added, last_edited_time, user_id, comment_text)
@@ -247,7 +282,7 @@ class Backend
 
         Flyspray::logEvent($task['task_id'], 4, $cid);
 
-        if ($this->UploadFiles($user, $task['task_id'], $cid)) {
+        if (Backend::upload_files($task['task_id'], $cid)) {
             $notify->Create(NOTIFY_COMMENT_ADDED, $task['task_id'], 'files');
         } else {
             $notify->Create(NOTIFY_COMMENT_ADDED, $task['task_id']);
@@ -256,22 +291,24 @@ class Backend
         return true;
     }
 
-    /*
-       This function handles file uploads.  Flyspray doesn't allow
-       anonymous uploads of files, so the $user is necessary.
-       $taskid is the task that the files will be attached to
-       $commentid is only valid if the files are to be attached to a comment
+    /**
+     * Upload files for a comment or a task
+     * @param integer $task_id
+     * @param integer $comment_id if it is 0, the files will be attached to the task itself
+     * @param string $source name of the file input
+     * @access public
+     * @return bool
+     * @version 1.0
      */
-    function UploadFiles(&$user, $taskid, $commentid = 0, $source = 'userfile')
+    function upload_files($task_id, $comment_id = 0, $source = 'userfile')
     {
-        global $db, $notify, $conf;
+        global $db, $notify, $conf, $user;
 
         mt_srand(Flyspray::make_seed());
 
-        // Retrieve some important information
-        $task = Flyspray::GetTaskDetails($taskid);
+        $task = Flyspray::GetTaskDetails($task_id);
 
-        if (!$user->perms('create_attachments', $task['attached_to_project'])) {
+        if (!$user->perms('create_attachments', $task['project_id'])) {
             return false;
         }
 
@@ -286,9 +323,9 @@ class Backend
                 continue;
             }
 
-            $fname = $taskid.'_'.mt_rand();
-            while (file_exists($path = 'attachments/'.$fname)) {
-                $fname = $taskid.'_'.mt_rand();
+            $fname = $task_id.'_'.mt_rand();
+            while (is_file($path = 'attachments/'.$fname)) {
+                $fname = $task_id.'_'.mt_rand();
             }
 
             $tmp_name = $_FILES[$source]['tmp_name'][$key];
@@ -297,7 +334,7 @@ class Backend
             @move_uploaded_file($tmp_name, $path);
             @chmod($path, 0644);
 
-            if (!file_exists($path)) {
+            if (!is_file($path)) {
                 // there was an error ...
                 // file was not uploaded correctly
                 continue;
@@ -316,7 +353,7 @@ class Backend
                                        file_type, file_size, orig_name,
                                        added_by, date_added )
                              VALUES  (?, ?, ?, ?, ?, ?, ?, ?)",
-                    array($taskid, $commentid, $fname,
+                    array($task_id, $comment_id, $fname,
                         $_FILES[$source]['type'][$key],
                         $_FILES[$source]['size'][$key],
                         $_FILES[$source]['name'][$key],
@@ -327,46 +364,63 @@ class Backend
                                     FROM  {attachments}
                                    WHERE  task_id = ?
                                 ORDER BY  attachment_id DESC',
-                    array($taskid), 1);
-            Flyspray::logEvent($taskid, 7, $db->fetchOne($result));
+                    array($task_id), 1);
+            Flyspray::logEvent($task_id, 7, $db->fetchOne($result));
         }
 
         return $res;
     }
 
-    /*
-       This function handles file deletions.
+    /**
+     * Delete one or more attachments of a task or comment
+     * @param array $attachments
+     * @access public
+     * @return void
+     * @version 1.0
      */
-    function DeleteFiles(&$user, $task_id)
+    function delete_files($attachments)
     {
-        global $db;
-        
-        $task = Flyspray::GetTaskDetails($taskid);
-        
-        if (!$user->perms('delete_attachments', $task['attached_to_project']) || !count(Post::val('delete_att'))) {
-            return false;
+        global $db, $user;
+
+        settype($attachments, 'array');
+        if (!count($attachments)) {
+            return;
         }
-        
-        $attachments = array_map('intval', Post::val('delete_att'));
-        $where = array();
-        
-        foreach ($attachments as $attachment) {
-            $where[] = 'attachment_id = ' . $attachment;
-        }
-        
-        $where = '(' . implode(' OR ', $where) . ') AND task_id = ' . intval($task_id);
-        
-        $db->Query("DELETE FROM {attachments} WHERE $where");
-        $result = $db->Query("SELECT * FROM {attachments} WHERE $where");
-        
-        while($row = $db->FetchRow($result)) {
-            @unlink(BASEDIR . '/attachments/' . $row['file_name']);
-            Flyspray::logEvent($row['task_id'], 8, $row['orig_name']);
+
+        $sql = $db->Query(' SELECT t.*, a.*
+                              FROM {attachments} a
+                         LEFT JOIN {tasks} t ON t.task_id = a.task_id
+                             WHERE ' . substr(str_repeat(' attachment_id = ? OR ', count($attachments)), 0, -3),
+                          $attachments);
+                             
+        while ($task = $db->FetchRow($sql)) {
+            if (!$user->perms('delete_attachments', $task['project_id'])) {
+                continue;
+            }
+            
+            $db->Query('DELETE FROM {attachments} WHERE attachment_id = ?',
+                       array($task['attachment_id']));
+            @unlink(BASEDIR . '/attachments/' . $task['file_name']);
+            Flyspray::logEvent($task['task_id'], 8, $task['orig_name']);
         }
     }
     
-    // returns false if user name is taken, else true
-    function create_user($user_name, $password, $real_name, $jabber_id, $email, $notify_type, $group_in)
+    /**
+     * Creates a new user
+     * @param string $user_name
+     * @param string $password
+     * @param string $real_name
+     * @param string $jabber_id
+     * @param string $email
+     * @param integer $notify_type
+     * @param integer $time_zone
+     * @param integer $group_in
+     * @access public
+     * @return bool false if username is already taken
+     * @version 1.0
+     * @notes This function does not have any permission checks (checked elsewhere)
+     */
+    function create_user($user_name, $password, $real_name, $jabber_id, $email, $notify_type, $time_zone, $group_in)
     {
         global $fs, $db, $notify, $baseurl;
         
@@ -399,9 +453,9 @@ class Backend
         $db->Query("INSERT INTO  {users}
                              ( user_name, user_pass, real_name, jabber_id,
                                email_address, notify_type, account_enabled,
-                               tasks_perpage, register_date)
-                     VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25, ?)",
-            array($user_name, Flyspray::cryptPassword($password), $real_name, $jabber_id, $email, $notify_type, time()));
+                               tasks_perpage, register_date, time_zone)
+                     VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25, ?, ?)",
+            array($user_name, Flyspray::cryptPassword($password), $real_name, $jabber_id, $email, $notify_type, time(), $time_zone));
 
         // Get this user's id for the record
         $uid = Flyspray::username_to_id($user_name);
@@ -423,82 +477,99 @@ class Backend
         
         return true;
     }
-    
-    function delete_user(&$user, $uid)
+
+    /**
+     * Deletes a user
+     * @param integer $uid
+     * @access public
+     * @return bool
+     * @version 1.0
+     */
+    function delete_user($uid)
     {
-        global $db;
+        global $db, $user;
         
         if (!$user->perms('is_admin')) {
             return false;
         }
         
         $user_data = serialize(Flyspray::getUserDetails($uid));
+        $tables = array('users', 'users_in_groups', 'searches',
+                        'notifications', 'assigned');
         
-        $sql = $db->Query('DELETE 
-                             FROM {users} 
-                            WHERE user_id = ?',
-                             array($uid));
-        $sql = $db->Query('DELETE 
-                             FROM {users_in_groups}
-                            WHERE user_id = ?',
-                            array($uid));
-        // Other necessary deletions (merge all into one not possible?)
-        $db->Query('DELETE FROM {searches}      WHERE user_id = ?', array($uid));
-        $db->Query('DELETE FROM {notifications} WHERE user_id = ?', array($uid));
-        $db->Query('DELETE FROM {assigned}      WHERE user_id = ?', array($uid));
+        foreach ($tables as $table) {
+            if (!$db->Query('DELETE FROM ' .'{' . $table .'}' . ' WHERE user_id = ?', array($uid))) {
+                return false;
+            }
+        }
         
         Flyspray::logEvent(0, 31, $user_data);
         
         return (bool) $db->affectedRows($sql);
     }
-    
-    function delete_project(&$user, $pid, $move_to = 0)
+
+    /**
+     * Deletes a project
+     * @param integer $pid
+     * @param integer $move_to to which project contents of the project are moved
+     * @access public
+     * @return bool
+     * @version 1.0
+     */
+    function delete_project($pid, $move_to = 0)
     {
-        global $db;
+        global $db, $user;
         
         if (!$user->perms('manage_project', $pid)) {
             return false;
         }
         
-        if (!$move_to) {
-            $db->Query('DELETE FROM {list_category}     WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {list_os}           WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {list_resolution}   WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {list_status}       WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {list_tasktype}     WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {list_version}      WHERE project_id = ?', array($pid));
+        $tables = array('list_category', 'list_os', 'list_resolution', 'list_tasktype',
+                        'list_status', 'list_version', 'admin_requests', 
+                        'cache', 'groups', 'projects', 'tasks');
+        
+        foreach ($tables as $table) {
+            if ($move_to && $table !== 'projects') {
+                $action = 'UPDATE ';
+                $sql_params = array($move_to, $pid);
+            } else {
+                $action = 'DELETE FROM ';
+                $sql_params = array($pid);
+                //tp will be true or false ;)
+                $tp = ($table === 'projects');
+            }
             
-            $db->Query('DELETE FROM {admin_requests}    WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {cache}             WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {groups}            WHERE belongs_to_project = ?', array($pid));
-            $db->Query('DELETE FROM {projects}          WHERE project_id = ?', array($pid));
-            $db->Query('DELETE FROM {tasks}             WHERE attached_to_project = ?', array($pid));
-            // if we want to increase complexity of this process, we can remove all entries which
-            // belong to tasks or groups of this project too
-        } else { // else move them to the new project
-            $db->Query('UPDATE {list_category} SET project_id = ?      WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {list_os} SET project_id = ?            WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {list_resolution} SET project_id = ?    WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {list_status} SET project_id = ?        WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {list_tasktype} SET project_id = ?      WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {list_version} SET project_id = ?       WHERE project_id = ?', array($move_to, $pid));
-            
-            $db->Query('UPDATE {admin_requests} SET  project_id = ?    WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {cache} SET project_id = ?                 WHERE project_id = ?', array($move_to, $pid));
-            $db->Query('UPDATE {groups} SET belongs_to_project = ?     WHERE belongs_to_project = ?', array($move_to, $pid));
-            $db->Query('UPDATE {tasks} SET attached_to_project = ?     WHERE attached_to_project = ?', array($move_to, $pid));
-            $db->Query('DELETE FROM {projects}                         WHERE project_id = ?', array($pid));
+            $base_sql = $action . '{'. $table .'}'. (($move_to && empty($tp))  ? ' SET project_id = ? ': '');
+ 
+            if (!$db->Query($base_sql . ' WHERE project_id = ?', $sql_params)) {
+                return false;
+            }
+             //we need this for the next loop.
+            unset($tp); 
         }
         
+        //we have enough reasons ..  the process is OK. 
+        return true;        
     }
-    
+
+    /**
+     * Adds a reminder to a task
+     * @param integer $task_id
+     * @param string $message
+     * @param integer $how_often send a reminder every ~ seconds
+     * @param integer $start_time time when the reminder starts
+     * @param $user_id the user who is reminded. by default (null) all users assigned to the task are reminded.
+     * @access public
+     * @return bool
+     * @version 1.0
+     */
     function add_reminder($task_id, $message, $how_often, $start_time, $user_id = null)
     {
         global $user, $db;
         $task = Flyspray::GetTaskDetails($task_id);
         
-        if (!$user->perms('manage_project', $task['attached_to_project'])) {
-            return;
+        if (!$user->perms('manage_project', $task['project_id'])) {
+            return false;
         }
         
         if (is_null($user_id)) {
@@ -512,23 +583,28 @@ class Backend
         }
 
         foreach ($user_id as $id) {
-            $db->Replace('{reminders}',
-                         array('task_id'=> $task_id, 'to_user_id'=> $id,
-                               'from_user_id' => $user->id, 'start_time' => $start_time,
-                               'how_often' => $how_often, 'reminder_message' => $message),
-                         array('task_id', 'to_user_id', 'how_often', 'reminder_message'));
+            $sql = $db->Replace('{reminders}',
+                                array('task_id'=> $task_id, 'to_user_id'=> $id,
+                                     'from_user_id' => $user->id, 'start_time' => $start_time,
+                                     'how_often' => $how_often, 'reminder_message' => $message),
+                                array('task_id', 'to_user_id', 'how_often', 'reminder_message'));
         }
 
-        Flyspray::logEvent(Post::val('id'), 17, $task_id);
+        if (isset($sql) && $sql == 2) {
+            Flyspray::logEvent($task_id, 17, $task_id);
+        }
         return true;
     }
 
-   /* This function creates a new task.  Due to the nature of lists
-      being specified in the database, we can't really accept default
-      values, right?
-   */
-   function CreateTask($args)
-   {
+    /**
+     * Adds a new task
+     * @param array $args array containing all task properties. unknown properties will be ignored
+     * @access public
+     * @return integer the task ID on success
+     * @version 1.0
+     */
+    function create_task($args)
+    {
         global $db, $user, $proj;
         $notify = new Notifications();
         if ($proj->id !=  $args['project_id']) {
@@ -536,16 +612,15 @@ class Backend
         }
         
         if (!$user->can_open_task($proj) || count($args) < 3) {
-            return null;
+            return 0;
         }
 
         if (!(($item_summary = $args['item_summary']) && ($detailed_desc = $args['detailed_desc']))) {
-            return null;
+            return 0;
         }
         
         // Some fields can have default values set
-        if ($user->perms('modify_all_tasks') != '1')
-        {
+        if (!$user->perms('modify_all_tasks')) {
             $args['closedby_version'] = 0;
             $args['task_priority'] = 2;
             $args['due_date'] = 0;
@@ -593,17 +668,17 @@ class Backend
         
         $result = $db->Query('SELECT  max(task_id)+1
                                 FROM  {tasks}');
-        $task_id = $db->FetchOne($result);
-        if (!$task_id) {
-            $task_id = 1;
-        }
+        $task_id = $db->FetchOne($result); 
+        $task_id = $task_id ? $task_id : 1;
+        //now, $task_id is always the first element of $sql_values 
+        array_unshift($sql_values, $task_id);
                             
         $result = $db->Query("INSERT INTO  {tasks}
                                  ( task_id, date_opened, last_edited_time,
-                                   attached_to_project, item_summary,
+                                   project_id, item_summary,
                                    detailed_desc, opened_by,
                                    percent_complete, $sql_params )
-                         VALUES  ($task_id, $sql_placeholder)", $sql_values);
+                         VALUES  (?, $sql_placeholder)", $sql_values);
 
         // Log the assignments and send notifications to the assignees
         if (trim($args['assigned_to']))
@@ -625,7 +700,7 @@ class Backend
         // Log that the task was opened
         Flyspray::logEvent($task_id, 1);
 
-        $this->UploadFiles($user, $task_id);
+        Backend::upload_files($task_id);
 
         $result = $db->Query('SELECT  *
                                 FROM  {list_category}
@@ -659,14 +734,14 @@ class Backend
 
         if ($owner) {
             if ($proj->prefs['auto_assign'] && ($args['item_status'] == STATUS_UNCONFIRMED || $args['item_status'] == STATUS_NEW)) {
-                $this->AddToAssignees($owner, $task_id, true);
+                Backend::add_to_assignees($owner, $task_id, true);
             }
-            $this->AddToNotifyList($owner, array($task_id), true);
+            Backend::add_notification($owner, $task_id, true);
         }
 
         // Reminder for due_date field
         if ($due_date) {
-            $this->add_reminder($task_id, L('defaultreminder') . "\n\n" . CreateURL('details', $task_id), 2*24*60*60, time());
+            Backend::add_reminder($task_id, L('defaultreminder') . "\n\n" . CreateURL('details', $task_id), 2*24*60*60, time());
         }
         
         // Create the Notification
@@ -674,7 +749,7 @@ class Backend
 
         // If the reporter wanted to be added to the notification list
         if ($args['notifyme'] == '1' && $user->id != $owner) {
-            $this->AddToNotifyList($user->id, $task_id, true);
+            Backend::add_notification($user->id, $task_id, true);
         }
         
         if ($user->isAnon()) {
@@ -682,41 +757,50 @@ class Backend
         }
 
         return $task_id;
-   }
-   
-   function close_task(&$user, $task_id, $reason, $comment, $mark100 = true)
-   {
-        global $db, $notify;
-        $old_details = Flyspray::GetTaskDetails($task_id);
+    }
+
+    /**
+     * Closes a task
+     * @param integer $task_id
+     * @param integer $reason
+     * @param string $comment
+     * @param bool $mark100
+     * @access public
+     * @return bool
+     * @version 1.0
+     */
+    function close_task($task_id, $reason, $comment, $mark100 = true)
+    {
+        global $db, $notify, $user;
+        $task = Flyspray::GetTaskDetails($task_id);
         
-        if (!$user->can_close_task($old_details)) {
+        if (!$user->can_close_task($task)) {
             return false;
         }
 
-        $db->Query("UPDATE  {tasks}
+        $db->Query('UPDATE  {tasks}
                        SET  date_closed = ?, closed_by = ?, closure_comment = ?,
-                            is_closed = '1', resolution_reason = ?
-                     WHERE  task_id = ?",
+                            is_closed = 1, resolution_reason = ?
+                     WHERE  task_id = ?',
                     array(time(), $user->id, $comment, $reason, $task_id));
 
         if ($mark100) {
-        $db->Query("UPDATE {tasks} SET percent_complete = '100' WHERE task_id = ?",
-                array($task_id));
+            $db->Query('UPDATE {tasks} SET percent_complete = 100 WHERE task_id = ?',
+                       array($task_id));
 
-        Flyspray::logEvent($task_id, 3, '100', $old_details['percent_complete'], 'percent_complete');
+            Flyspray::logEvent($task_id, 3, 100, $task['percent_complete'], 'percent_complete');
         }
 
         $notify->Create(NOTIFY_TASK_CLOSED, $task_id);
         Flyspray::logEvent($task_id, 2, $reason, $comment);
 
-        if (Flyspray::AdminRequestCheck(1, $task_id)) {
         // If there's an admin request related to this, close it
-        $db->Query("UPDATE  {admin_requests}
+        $db->Query('UPDATE  {admin_requests}
                        SET  resolved_by = ?, time_resolved = ?
-                     WHERE  task_id = ? AND request_type = ?",
-                array($user->id, time(), $task_id, 1));
-        }
-
+                     WHERE  task_id = ? AND request_type = ?',
+                    array($user->id, time(), $task_id, 1));
+        
+        // duplicate
         if ($reason == 6) {
             preg_match("/\b(?:FS#|bug )(\d+)\b/", $comment, $dupe_of);
             if (count($dupe_of)) {
@@ -724,198 +808,270 @@ class Backend
                                             array($task_id, $dupe_of[1]));
                                        
                 if ($db->CountRows($existing) == 0) {  
-                    $db->Query('INSERT INTO {related} (this_task, related_task, is_duplicate) VALUES(?,?,1)',
+                    $db->Query('INSERT INTO {related} (this_task, related_task, is_duplicate) VALUES(?, ?, 1)',
                                 array($task_id, $dupe_of[1]));
                 }
             }
-            $this->add_vote($old_details['opened_by'], $dupe_of[1]);
+            Backend::add_vote($task['opened_by'], $dupe_of[1]);
         }
         
         return true;
-   }
+    }
 
-    /************************************************************************************************
-     * below this line, functions are old wrt new flyspray internals.  they will
-     * need to be refactored
+    /**
+     * Returns an array of tasks (respecting pagination) and an ID list (all tasks)
+     * @param array $args
+     * @param array $visible
+     * @param integer $offset
+     * @param integer $comment
+     * @param bool $perpage
+     * @access public
+     * @return array
+     * @version 1.0
      */
-    
-   /*
-      This function takes an array of arguments and returns a list of 
-      task ids that match.
-    
-    Originally all of this was in generateTaskList but it got refactored
-    to support the xmlrpc interface
-    */
-   function getTaskIdList($args) 
-   {
-      if (!is_array($args)) {
-         return 'We were not given an array of arguments to process.';
-      }
+    function get_task_list($args, $visible, $offset = 0, $perpage = 20)
+    {
+        global $proj, $db, $user, $conf;
+        /* build SQL statement {{{ */
+        // Original SQL courtesy of Lance Conry http://www.rhinosw.com/
+        $where  = $sql_params = array();
+        $select = '';
+        $groupby = '';
+        $from   = '             {tasks}         t
+                     LEFT JOIN  {projects}      p   ON t.project_id = p.project_id
+                     LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
+                     LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id
+                     LEFT JOIN  {list_resolution} lr ON t.resolution_reason = lr.resolution_id ';
+        // Only join tables which are really necessary to speed up the db-query
+        if (array_get($args, 'cat') || in_array('category', $visible)) {
+            $from   .= ' LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id ';
+            $select .= ' lc.category_name               AS category_name, ';
+            $groupby .= 'lc.category_name, ';
+        }
+        if (in_array('votes', $visible)) {
+            $from   .= ' LEFT JOIN  {votes} vot         ON t.task_id = vot.task_id ';
+            $select .= ' COUNT(DISTINCT vot.vote_id)    AS num_votes, ';
+        }
+        if (array_get($args, 'changedfrom') || array_get($args, 'changedto') || in_array('lastedit', $visible)) {
+            $from   .= ' LEFT JOIN  {history} h         ON t.task_id = h.task_id ';
+            $select .= ' max(h.event_date)              AS event_date, ';
+        }
+        if (array_get($args, 'search_in_comments') || in_array('comments', $visible)) {
+            $from   .= ' LEFT JOIN  {comments} c        ON t.task_id = c.task_id ';
+            $select .= ' COUNT(DISTINCT c.comment_id)   AS num_comments, ';
+        }
+        if (in_array('reportedin', $visible)) {
+            $from   .= ' LEFT JOIN  {list_version} lv   ON t.product_version = lv.version_id ';
+            $select .= ' lv.version_name                AS product_version, ';
+            $groupby .= 'lv.version_name, ';
+        }
+        if (array_get($args, 'opened') || in_array('openedby', $visible)) {
+            $from   .= ' LEFT JOIN  {users} uo          ON t.opened_by = uo.user_id ';
+            $select .= ' uo.real_name                   AS opened_by_name, ';
+            $groupby .= 'uo.real_name, ';
+        }
+        if (array_get($args, 'closed')) {
+            $from   .= ' LEFT JOIN  {users} uc          ON t.closed_by = uc.user_id ';
+            $select .= ' uc.real_name                   AS closed_by_name, ';
+            $groupby .= 'uc.real_name, ';
+        }
+        if (array_get($args, 'due') || in_array('dueversion', $visible)) {
+            $from   .= ' LEFT JOIN  {list_version} lvc  ON t.closedby_version = lvc.version_id ';
+            $select .= ' lvc.version_name               AS closedby_version, ';
+            $groupby .= 'lvc.version_name, ';
+        }
+        if (in_array('os', $visible)) {
+            $from   .= ' LEFT JOIN  {list_os} los       ON t.operating_system = los.os_id ';
+            $select .= ' los.os_name                    AS os_name, ';
+            $groupby .= 'los.os_name, ';
+        }
+        if (in_array('attachments', $visible) || array_get($args, 'has_attachment')) {
+            $from   .= ' LEFT JOIN  {attachments} att   ON t.task_id = att.task_id ';
+            $select .= ' COUNT(DISTINCT att.attachment_id) AS num_attachments, ';
+        }
 
-      global $db;
+        $from   .= ' LEFT JOIN  {assigned} ass      ON t.task_id = ass.task_id ';
+        $from   .= ' LEFT JOIN  {users} u           ON ass.user_id = u.user_id ';
+        if (array_get($args, 'dev') || in_array('assignedto', $visible)) {
+            $select .= ' min(u.real_name)               AS assigned_to_name, ';
+            $select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
+        }
 
-      /*
-      Since all variables will be passed to this function by Ander's
-      XHMLHttpRequest implementation, we know that they will all be set,
-      and all be valid.  Therefore we don't need to check that the variables
-      are correct and safe, right?
-      */
+        if (array_get($args, 'only_primary')) {
+            $from   .= ' LEFT JOIN  {dependencies} dep  ON dep.dep_task_id = t.task_id ';
+            $where[] = 'dep.depend_id IS NULL';
+        }
+        if (array_get($args, 'has_attachment')) {
+            $where[] = 'att.attachment_id IS NOT NULL';
+        }
 
-      $userid     = $args[0];    // The user id of the person requesting the tasklist
-      $projectid  = $args[1];    // The project the user wants tasks from. '0' equals all projects
-      $tasks_req  = $args[2];    // 'all', 'assigned', 'reported' or 'watched'
-      $string     = $args[3];    // The search string
-      $type       = $args[4];    // Task Type, from the editable list
-      $sev        = $args[5];    // Severity, from the editable list
-      $dev        = $args[6];    // User id of the person assigned the tasks
-      $cat        = $args[7];    // Category, from the editable list
-      $status     = $args[8];    // Status, from the translatable list
-      $due        = $args[9];    // Version the tasks are due in
-      $date       = $args[10];   // Date the tasks are due by
-      $limit      = $args[11];   // The amount of tasks requested.  '0' = all
+        if ($proj->id) {
+            $where[]       = 't.project_id = ?';
+            $sql_params[]  = $proj->id;
+        }
 
-      // We only accept numeric values for the following args
-      if (  !is_numeric($userid)
-            OR !is_numeric($projectid)
-            OR !is_numeric($type)
-            OR !is_numeric($sev)
-            OR !is_numeric($dev)
-            OR !is_numeric($cat)
-            OR !is_numeric($due)
-            OR !is_numeric($limit)
-         )
-         return 'At least one required argument was not numerical.';
+        $order_keys = array (
+                'id'         => 'task_id',
+                'proj'       => 'project_title',
+                'type'       => 'tasktype_name',
+                'date'       => 'date_opened',
+                'sev'        => 'task_severity',
+                'cat'        => 'lc.category_name',
+                'status'     => 'item_status',
+                'due'        => 'lvc.list_position',
+                'duedate'    => 'due_date',
+                'prog'       => 'percent_complete',
+                'event_date' => 'event_date',
+                'pri'        => 'task_priority',
+                'openedby'   => 'uo.real_name',
+                'reportedin' => 't.product_version',
+                'assignedto' => 'u.real_name',
+                'dateclosed' => 't.date_closed',
+                'os'         => 'los.os_name',
+                'votes'      => 'num_votes',
+        );
 
-      /*
-      I trust that Ander's funky javascript can handle sorting and paginating
-      the tasks returned by this function, therefore we don't really need
-      any of the following variables that we used to use on the previous
-      task list page, right?
+        $sortorder  = sprintf("%s %s, %s %s, t.task_id ASC",
+                $order_keys[Filters::enum(array_get($args, 'order', 'sev'), array_keys($order_keys))],  Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')),
+                $order_keys[Filters::enum(array_get($args, 'order2', 'sev'), array_keys($order_keys))], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));
 
-      $args[12] = $perpage;      // How many results to display
-      $args[13] = $pagenum;      // Which page of the search results we're on
-      $args[14] = $order;        // Which column to order by
-      $args[15] = $sort;         // [asc|desc]ending order for the above column ordering
-      $args[16] = $order2;        // Secondary column to order by
-      $args[17] = $sort2;         // [asc|desc]ending order for the above column ordering
-      */
+        /// process search-conditions {{{
+        $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version', 'reported' => 'product_version',
+                         'cat' => 'product_category', 'status' => 'item_status', 'percent' => 'percent_complete',
+                         'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
+                         'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'),
+                         'closed' => array('closed_by', 'uc.user_name', 'uc.real_name'));
+        foreach ($submits as $key => $db_key) {
+            $type = array_get($args, $key, ($key == 'status') ? 'open' : '');
+            settype($type, 'array');
+         
+            if (in_array('', $type)) continue;
+            
+            if ($key == 'dev') {
+                $from .= 'LEFT JOIN {assigned} a  ON t.task_id = a.task_id ';
+                $from .= 'LEFT JOIN {users} us  ON a.user_id = us.user_id ';
+            }
+            
+            $temp = '';
+            foreach ($type as $val) {
+                // add conditions for the status selection
+                if ($key == 'status' && $val == 'closed') {
+                    $temp  .= " is_closed = '1' AND";
+                } elseif ($key == 'status') {
+                    $temp .= " is_closed <> '1' AND";
+                }
+                if (is_numeric($val) && !is_array($db_key) && !($key == 'status' && $val == '8')) {
+                    $temp .= ' ' . $db_key . ' = ?  OR';
+                    $sql_params[] = $val;
+                } elseif (is_array($db_key)) {
+                    if ($key == 'dev' && ($val == 'notassigned' || $val == '0' || $val == '-1')) {
+                        $temp .= ' a.user_id is NULL  OR';
+                    } else {
+                        if (!is_numeric($val)) $val = '%' . $val . '%';
+                        foreach ($db_key as $value) {
+                            $temp .= ' ' . $value . ' LIKE ?  OR';
+                            $sql_params[] = $val;
+                        }
+                    }
+                }
+                
+                // Add the subcategories to the query
+                if ($key == 'cat') {
+                    $result = $db->Query('SELECT  *
+                                            FROM  {list_category}
+                                           WHERE  category_id = ?',
+                                          array($val));
+                    $cat_details = $db->FetchRow($result);
+                
+                    $result = $db->Query('SELECT  *
+                                            FROM  {list_category}
+                                           WHERE  lft > ? AND rgt < ? AND project_id  = ?',
+                                           array($cat_details['lft'], $cat_details['rgt'], $cat_details['project_id']));
+                    while ($row = $db->FetchRow($result)) {
+                        $temp  .= ' product_category = ?  OR';
+                        $sql_params[] = $row['category_id'];
+                    }
+                }
+            }
 
-      $criteria = array('task_type'          => $type,
-                        'task_severity'      => $sev,
-                        'assigned_to'        => $dev,
-                        'product_category'   => $cat,
-                        'closedby_version'   => $due,
-                       );
+            if ($temp) $where[] = '(' . substr($temp, 0, -3) . ')';
+        }
+        /// }}}
 
-      $project = new Project($projectid);
-      $user = new User($userid);
+        $dates = array('duedate' => 'due_date', 'changed' => 'event_date',
+                       'opened' => 'date_opened', 'closed' => 'date_closed');
+        foreach ($dates as $post => $db_key) {
+            if ($date = array_get($args, $post . 'from')) {
+                $where[]      = '(' . $db_key . ' >= ?)';
+                $sql_params[] = strtotime($date);
+            }
+            if ($date = array_get($args, $post . 'to')) {
+                $where[]      = '(' . $db_key . ' <= ? AND ' . $db_key . ' > 0)';
+                $sql_params[] = strtotime($date);
+            }
+        }
 
-      // Check if the user can view tasks from this project
-      if ($user->perms('view_tasks') == '0' && $project->prefs['others_view'] == '0') {
-        return 'You don\'t have permission to view tasks from that project.';
-      }
+        if (array_get($args, 'string')) {
+            $words = explode(' ', strtr(array_get($args, 'string'), '()', '  '));
+            $comments = '';
+            $where_temp = array();
+            
+            if (array_get($args, 'search_in_comments')) {
+                $comments = 'OR c.comment_text LIKE ?';
+            }
+            
+            foreach ($words as $word) {
+                $word = '%' . str_replace('+', ' ', trim($word)) . '%';
+                $where_temp[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ? $comments)";
+                array_push($sql_params, $word, $word, $word);
+                if (array_get($args, 'search_in_comments')) {
+                    array_push($sql_params, $word);
+                }
+            }
+              
+            $where[] = '(' . implode( (array_get($args, 'search_for_all') ? ' AND ' : ' OR '), $where_temp) . ')';
+        }
 
-      $where = array();
-      $params = array('0');
+        if (array_get($args, 'only_watched')) {
+            //join the notification table to get watched tasks
+            $from        .= " LEFT JOIN {notifications} fsn ON t.task_id = fsn.task_id";
+            $where[]      = 'fsn.user_id = ?';
+            $sql_params[] = $user->id;
+        }
 
-      // Check the requested status
-      if (empty($status))
-      {
-         $where[] = "t.is_closed <> '1'";
+        $where = (count($where)) ? 'WHERE '. join(' AND ', $where) : ''; 
 
-      } elseif ($status == 'closed')
-      {
-         $where[] = "t.is_closed = '1'";
+        //Get the column names of table tasks for the group by statement
+        if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
+            $groupby .= "p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name, ";
+        }
+        $groupby .= $db->GetColumnNames('{tasks}', 't.task_id', 't.');
 
-      } else
-      {
-         $where[] = "t.item_status = ? AND t.is_closed <> '1'";
-         $params[] = $status;
-      }
-
-
-      // Select which project we want. If $projectid is zero, we want everything
-      if (!empty($projectid))
-      {
-         $where[] = "t.attached_to_project = ?";
-         $params[] = $projectid;
-      }
-
-      // Restrict query results based upon (lack of) PM permissions
-      if (!$user->isAnon() && $user->perms('manage_project') != '1')
-      {
-         $where[] = "(t.mark_private = '0')";
-         $params[] = $userid;
-
-      } elseif (empty($userid))
-      {
-         $where[] = "t.mark_private = '0'";
-      }
-
-      // Change query results based upon type of tasks requested
-      if ($tasks_req == 'reported')
-      {
-         $where[] = "t.opened_by = ?";
-         $params[] = $userid;
-
-      } elseif ($tasks_req == 'watched')
-      {
-         $where[] = "fsn.user_id = ?";
-         $params[] = $userid;
-      }
-
-      // Calculate due-by-date
-      if (!empty($date))
-      {
-         $where[] = "(t.due_date < ? AND t.due_date <> '0' AND t.due_date <> '')";
-         $params[] = strtotime("$date +24 hours");
-      }
-
-      // The search string
-      if (!empty($string))
-      {
-         $string = ereg_replace('\(', ' ', $string);
-         $string = ereg_replace('\)', ' ', $string);
-         $string = trim($string);
-
-         $where[] = "(t.item_summary LIKE ? OR t.detailed_desc LIKE ? OR t.task_id LIKE ?)";
-         $params[] = "%$string%";
-         $params[] = "%$string%";
-         $params[] = "%$string%";
-      }
-
-      // Add the other search narrowing criteria
-      foreach ($criteria AS $key => $val)
-      {
-         if (!empty($val))
-         {
-            $where[] = "t.$key = ?";
-            $params[] = $val;
-         }
-      }
-
-      // Expand the $params
-      $sql_where = implode(' AND ', $where);
-
-      // Alrighty.  We should be ok to build the query now!
-      $search = $db->Query("SELECT DISTINCT t.task_id
-                            FROM {tasks} t
-                            LEFT JOIN {notifications} fsn ON t.task_id = fsn.task_id
-                            WHERE t.task_id > ?
-                            AND $sql_where
-                            ORDER BY t.task_severity DESC, t.task_id ASC
-                            ", $params, $limit
-                          );
-
-      $tasklist = array();
-
-      while ($row = $db->FetchRow($search))
-         $tasklist[] = $row['task_id'];
-
-      return $tasklist;
-
-   // End of GenerateTaskList() function
-   }
+        $sql = $db->Query("
+                          SELECT   t.*, $select
+                                   p.project_title, p.project_is_active,
+                                   lst.status_name AS status_name,
+                                   lt.tasktype_name AS task_type,
+                                   lr.resolution_name
+                          FROM     $from
+                          $where 
+                          GROUP BY $groupby
+                          ORDER BY $sortorder", $sql_params);
+        
+        $tasks = $db->fetchAllArray($sql);
+        $id_list = array();
+        $limit = array_get($args, 'limit', -1);
+        foreach ($tasks as $key => $task) {
+            $id_list[] = $task['task_id'];
+            if ($key < $offset || ($key > $offset - 1 + $perpage) || ($limit > 0 && $key >= $limit)) {
+                unset($tasks[$key]);
+            } else if (!$user->can_view_task($task)) {
+                unset($tasks[$key]);
+                array_pop($id_list);
+            }
+        }
+        return array($tasks, $id_list);
+    }
 
 }
 ?>

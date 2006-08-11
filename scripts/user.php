@@ -5,7 +5,7 @@
   | ~~~~~~~~~~~~~~~~~~~~                                    |
   \*********************************************************/
 
-if(!defined('IN_FS')) {
+if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
@@ -17,7 +17,7 @@ if ($proj->id) {
 
 $id = Flyspray::username_to_id(Get::val('id', Get::val('uid')));
 
-$theuser = new User($id, $proj);
+$theuser = new User($id);
 if ($theuser->isAnon()) {
     Flyspray::show_error(19);
 }

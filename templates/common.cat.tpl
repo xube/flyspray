@@ -1,4 +1,4 @@
-<fieldset class="admin">
+<fieldset class="box">
   <legend>{L('categories')}</legend>
   <p>{L('listnote')}</p>
     <form action="{$baseurl}" method="post">
@@ -44,11 +44,9 @@
         <tr>
           <td colspan="4"></td>
           <td class="buttons">
-            <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="update_category" />
             <input type="hidden" name="list_type" value="category" />
             <input type="hidden" name="project_id" value="{$proj->id}" />
-            <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
             <button type="submit">{L('update')}</button>
           </td>
         </tr>
@@ -80,13 +78,11 @@
             </select>
           </td>
           <td class="buttons">
-            <input type="hidden" name="do" value="modify" />
             <input type="hidden" name="action" value="{Req::val('action', $do . '.add_category')}" />
             <input type="hidden" name="area" value="{Req::val('area')}" />
             <?php if ($proj->id): ?>
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <?php endif; ?>
-            <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
             <button type="submit">{L('addnew')}</button>
           </td>
         </tr>

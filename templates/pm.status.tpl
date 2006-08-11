@@ -1,7 +1,7 @@
 <div id="toolbox">
   <h3>{L('pmtoolbox')} :: {$proj->prefs['project_title']} : {L('taskstatuses')}</h3>
 
-  <fieldset class="admin">
+  <fieldset class="box">
     <legend>{L('taskstatuses')}</legend>
     <?php
     $this->assign('list_type', 'status');

@@ -46,14 +46,13 @@
     <tr>
       <td colspan="3"></td>
       <td class="buttons">
-        <input type="hidden" name="do" value="modify" />
         <?php if ($list_type == 'version'): ?>
         <input type="hidden" name="action" value="update_version_list" />
         <?php else: ?>
         <input type="hidden" name="action" value="update_list" />
         <?php endif; ?>
         <input type="hidden" name="list_type" value="{$list_type}" />
-        <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
+        <input type="hidden" name="project" value="{$proj->id}" />
         <button type="submit">{L('update')}</button>
       </td>
     </tr>
@@ -65,7 +64,6 @@
   <table class="list">
     <tr>
       <td>
-        <input type="hidden" name="do" value="modify" />
         <?php if ($list_type == 'version'): ?>
         <input type="hidden" name="action" value="{Req::val('action', $do . '.add_to_version_list')}" />
         <?php else: ?>
@@ -76,7 +74,6 @@
         <input type="hidden" name="project_id" value="{$proj->id}" />
         <input type="hidden" name="area" value="{Req::val('area')}" />
         <?php endif; ?>
-        <input type="hidden" name="prev_page" value="{$_SERVER['REQUEST_URI']}" />
         <input id="listnamenew" class="text" type="text" size="15" maxlength="40" value="{Req::val('list_name')}" name="list_name" />
       </td>
       <td>
