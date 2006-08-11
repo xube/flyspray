@@ -1,22 +1,10 @@
-<?php
-// +----------------------------------------------------------------------
-// | PHP Source
-// +----------------------------------------------------------------------
-// | Copyright (C) 2005 by Jeffery Fernandez <developer@jefferyfernandez.id.au>
-// +----------------------------------------------------------------------
-// |
-// | Copyright: See COPYING file that comes with this distribution
-// +----------------------------------------------------------------------
-//
-if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly');
-?>
       <div id="right">
-         <?php echo $message; ?>
+         {$message}
          <h1>GNU/LGPL License:</h1>
          <div class="installBlock">
          <p>
-         <?php echo $product_name; ?> is Free Software released under the GNU/LGPL License.
-         To continue installing <?php echo $product_name; ?> you must read, understand and
+         {$product_name} is Free Software released under the GNU/LGPL License.
+         To continue installing {$product_name} you must read, understand and
          accept the license by checking the "I accept the licence" checkbox.
          </p>
          </div>

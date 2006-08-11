@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 $language = array(
 'edituser'                => 'Edit user',
@@ -795,6 +795,7 @@ Regards,',
 'pruneclosedlinks'        => 'Prune Closed Links',
 'pruneclosedtasks'        => 'Prune Closed Tasks',
 'pagegenerated'           => 'Page and image generated in %d seconds.',
+'pruninglevel'            => 'Pruning Level',
 ); 
 
 ?>

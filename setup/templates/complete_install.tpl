@@ -1,20 +1,8 @@
-<?php
-// +----------------------------------------------------------------------
-// | PHP Source                                                           
-// +----------------------------------------------------------------------
-// | Copyright (C) 2005 by Jeffery Fernandez <developer@jefferyfernandez.id.au>
-// +----------------------------------------------------------------------
-// |
-// | Copyright: See COPYING file that comes with this distribution
-// +----------------------------------------------------------------------
-//
-if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly');
-?>
 			<div id="right">
-			<form action="<?php echo $site_index; ?>?<?php echo $complete_action; ?>" method="post" name="database_form">
-				<?php echo $message; ?>
+			<form action="{$site_index}?{$complete_action}" method="post" name="database_form">
+				{!$message}
 				<h1>Install status</h1>
-				<h2>Congratulations! <?php echo $product_name; ?> is installed</h2>
+				<h2>Congratulations! {$product_name} is installed</h2>
 				<div class="installBlock">
 				<p class="error">
 					PLEASE REMEMBER TO COMPLETELY REMOVE THE SETUP DIRECTORY
@@ -34,7 +22,7 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 							The configuration file is not writeable. You will have to upload the following
 							code manually. Click in the textarea to highlight all of the code. Copy and
 							paste the contents into the flyspray.conf.php file available in the base of
-							<?php echo $product_name; ?> installation.
+							{$product_name} installation.
 						</td>
 					</tr>
 					<tr>
@@ -53,7 +41,7 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 				<h3>flyspray.conf.php NOT writeable</h3>
 				<p>
 					To complete setup, copy and paste the contents of the textarea box into flyspray.conf.php
-					This file resides in the base of your <?php echo $product_name; ?> installation.
+					This file resides in the base of your {$product_name} installation.
 				</p>
 				<?php
 				}
@@ -64,7 +52,7 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 				<p>
 				 Starting with the 0.9.8 release, Flyspray has a background daemon to regularly trigger the 
 				 scheduled reminders script. The background reminder requires that you have the Command line 
-				 version of PHP installed. <?php echo $product_name; ?> has found that your system does not 
+				 version of PHP installed. {$product_name} has found that your system does not 
 				 have the command line version of PHP running.
 				</p>
 				<p>
@@ -77,38 +65,28 @@ if (!defined('VALID_FLYSPRAY')) die('Sorry you cannot access this file directly'
 				<?php
 				}
 				?>
-				<?php
-				if ($admin_username && $admin_password)
-				{
-				?>
+				<?php if ($admin_username && $admin_password): ?>
 				<h3>Administration Login Details</h3>
 				<p>
-					<strong>Username : <?php echo $admin_username; ?></strong><br />
-					<strong>Password : <?php echo $admin_password; ?></strong>
+					<strong>Username : {$admin_username}</strong><br />
+					<strong>Password : {$admin_password}</strong>
 				</p>
-				<?php 
-				} 
-				?>
+				<?php endif; ?>
 				</div>
 				<div class="clr"></div>
 				<h2>View Site</h2>
 				<div class="installBlock">
 				<div class="formBlock farRight" style="display:inline;">
-				<?php
-				if ($admin_username && $admin_password)
-				{
-				?>
+				<?php if ($admin_username && $admin_password): ?>
 					<input type="hidden" name="prev_page" value="index.php?do=myprofile" />
-					<input type="hidden" name="user_name" value="<?php echo $admin_username; ?>" />
-					<input type="hidden" name="password" value="<?php echo $admin_password; ?>" />
-				<?php
-				}
-				?>
+					<input type="hidden" name="user_name" value="{$admin_username}" />
+					<input type="hidden" name="password" value="{$admin_password}" />
+				<?php endif; ?>
 					<input type="hidden" name="remember_login" value="1" />
 					<input class="button" type="submit" name="next" value="Next >>" />
 				</div>
 				<p>
-				Proceed to <?php echo $product_name; ?> index
+				Proceed to {$product_name} index
 				</p>
 				</div>
 			</form>

@@ -15,15 +15,14 @@ if ( !($task_details = Flyspray::GetTaskDetails(Req::num('task_id')))
     Flyspray::show_error(9);
 }
 
-// Configuration information:
-$path_to_dot = array_get($conf['general'], 'dot_path', ''); // Where's the dot executable?
+$path_to_dot = array_get($conf['general'], 'dot_path', '');
 $fmt         = array_get($conf['general'], 'dot_format', 'png');
 /* March 10 2006 Jason Porter: Removed the $basedir as $path_for_images
  * should be relative, we use this path also in the HTML output.  Saving
  * the file from dot happens later, and that should be the absolute path.
  */
  
-if (Flyspray::function_disabled('shell_exec') && !$path_to_dot) {
+if (Flyspray::function_disabled('shell_exec') && !array_get($conf['general'], 'dot_public')) {
     Flyspray::show_error(24, true, null, $_SESSION['prev_page']);
 }
 
@@ -31,13 +30,8 @@ $id = Req::num('task_id');
 $page->assign('task_id', $id);
 
 // ASAP Todo items:
-// - Hook in WebDot method, so if you don't have system() or dot, 
-//   you can still see the pretty pictures
 // - Need to get the configuration options put into the installer/configurator
 //   (someone who knows them well should probably do it)
-
-// Other Todo items:
-// - Put the pruning strings into the language pack, once they're set
 
 $prunemode = Req::num('prune', 0);
 $selfurl   = CreateURL('depends', $id);
@@ -56,7 +50,7 @@ $page->uses('strlist');
 
 $starttime = microtime();
 
-$sql= "SELECT t1.task_id AS id1, t1.item_summary AS sum1, 
+$sql= 'SELECT t1.task_id AS id1, t1.item_summary AS sum1, 
              t1.percent_complete AS pct1, t1.is_closed AS clsd1, 
              lst1.status_name AS stat1, t1.task_severity AS sev1,
              t1.task_priority AS pri1,
@@ -78,7 +72,7 @@ $sql= "SELECT t1.task_id AS id1, t1.item_summary AS sum1,
   LEFT JOIN  {users} AS u2c ON t2.closed_by=u2c.user_id
   LEFT JOIN  {list_resolution} AS r2 ON t2.resolution_reason=r2.resolution_id
       WHERE  t1.project_id= ?
-   ORDER BY  d.task_id, d.dep_task_id";
+   ORDER BY  d.task_id, d.dep_task_id';
 
 $get_edges = $db->Query($sql, array($proj->id));
 
@@ -146,8 +140,6 @@ ConnectsTo($id, 0, 0);
 $connected_nodes = array_keys($connected);
 sort($connected_nodes);
 
-//echo "<pre>".implode(", ", $connected_nodes)."</pre>\n";
-
 // Now lets get rid of the extra junk in our arrays.
 // In prunemode 0, we know we're only going to have to get rid of
 // whole lists, and not elements in the lists, because if they were
@@ -158,24 +150,18 @@ foreach (array("edge_list", "rvrs_list", "node_list") as $l) {
     foreach (${$l} as $n => $list) {
         if (!isset($connected[$n])) {
             unset(${$l}[$n]);
-            //echo "rm list $n in $l<br>\n";
         }
         if ($prunemode!=0 && $l!="node_list" && isset(${$l}[$n])) {
             // Only keep entries that appear in the $connected_nodes list
-#echo "${l}[$n] = ".print_r(${$l}[$n], 1)."<br>\n";
             ${$l}[$n] = array_intersect(${$l}[$n], $connected_nodes);
         }
     }
 }
-#echo "<pre>".print_r($edge_list, 1)."</pre>\n";
-#echo "<pre>".implode(", ", array_keys($edge_list))."</pre>\n";
-#echo "<pre>".print_r($rvrs_list, 1)."</pre>\n";
-#echo "<pre>".print_r($node_list, 1)."</pre>\n";
 
 // Now we've got everything we need... let's draw the pretty pictures
 
 //Open the graph, and print global options
-$lj = "n"; // label justification - l, r, or n (for center)
+$lj = 'n'; // label justification - l, r, or n (for center)
 $graphname = "task_${id}_dependencies";
 $dotgraph = "digraph $graphname {\n".
     "node [width=1.1, shape=ellipse, border=10, color=\"#00E11E\", style=\"filled\", ".
@@ -184,13 +170,13 @@ $dotgraph = "digraph $graphname {\n".
 foreach ($node_list as $n => $r) {
     $col = "";
     if ($r['clsd'] && $n!=$id) { $r['pct'] = 120; }
-    // color code: shades of gray for % done, shades of yellow for this task
+    // color code: shades of gray for % done
     $x = dechex(255-($r['pct']+10));
     $col = "#$x$x$x";
     // Make sure label terminates in \n!
     $label = "FS#$n \n".
         ($r['clsd'] ? L('closed') :
-         "$r[pct]% ".L('complete'));#" status $r[stat]".
+         "$r[pct]% ".L('complete'));
     $tooltip =
       ($r['clsd'] ? L('closed') . ": $r[res]".
        (!empty($r['clsdby']) ? " ($r[clsdby])" : "").
@@ -249,8 +235,6 @@ list($startusec, $startsec) = explode(' ', $starttime);
 list($endusec, $endsec) = explode(' ', $endtime);
 $diff = ($endsec - $startsec) + ($endusec - $startusec);
 $page->assign('time', round($diff, 2));
-
-#echo "<pre>$dotgraph</pre>\n";
 
 $page->setTitle('FS#' . $id . ': ' . L('dependencygraph'));
 $page->pushTpl('depends.tpl');

@@ -247,7 +247,6 @@ div#menu {
 	vertical-align:middle;
 	margin:0;
 	padding:2px 0 1px 0.4em;
-	position:relative;
 }
 
 div#pm-menu {
@@ -257,7 +256,6 @@ div#pm-menu {
 	vertical-align:baseline;
 	margin:0;
 	padding:2px 0 1px 0.5em;
-	position:relative;
 }
 
 div#menu a, div#pm-menu a {
@@ -300,6 +298,9 @@ ul#menu-list li, ul#pm-menu-list li {
 	float:left;
 	height:1.4em;
 	border-left:solid 1px black;
+}
+
+ul#menu-list li {
 	position:relative;
 }
 
@@ -569,7 +570,6 @@ div#taskdetails {
 	border:1px solid #000;
 	margin:2em 0 0 0;
 	width:99.7%;
-	position:relative;
 }
 
 div#taskdetails table th {
@@ -1114,7 +1114,7 @@ a.pendingreq {
 /* container for the next/previous links in the task details */
 span#navigation {
 	position:absolute;
-	right:0.5em;
+	right:1.5em;
 	padding-top:0.1em;
 }
 

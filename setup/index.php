@@ -23,6 +23,7 @@ if ( is_readable ('../flyspray.conf.php') && (count($config = parse_ini_file('..
 // Application information
 // ---------------------------------------------------------------------
 define('VALID_FLYSPRAY', 1 );
+define('IN_FS', 1 );
 define('APPLICATION_NAME', 'Flyspray');
 
 // ---------------------------------------------------------------------
@@ -39,6 +40,8 @@ define('APPLICATION_WEB_ROOT', str_replace('setup',"",APPLICATION_SETUP_INDEX));
 define('APPLICATION_PATH', realpath('../') );
 define('OBJECTS_PATH', realpath('../includes') );
 define('TEMPLATE_FOLDER', realpath('templates/'));
+define('BASEDIR', dirname(__FILE__));
+$conf['general']['syntax_plugin'] = '';
 
 if (substr(PHP_OS, 0, 3) == 'WIN') {
 
@@ -49,8 +52,8 @@ if (substr(PHP_OS, 0, 3) == 'WIN') {
   define('IS_MSWIN', false);
 }
 
-require_once(OBJECTS_PATH . '/external/template.php');
 require_once(OBJECTS_PATH . '/class.flyspray.php');
+require_once(OBJECTS_PATH . '/class.tpl.php');
 require_once(OBJECTS_PATH . '/version.php');
 
 class Setup extends Flyspray
@@ -61,7 +64,6 @@ class Setup extends Flyspray
 
    var $mProceed;
    var $mPhpVersionStatus;
-   var $mAdodbStatus;
    var $mDatabaseStatus;
    var $mConfigFileStatus;
    var $mConfigText;
@@ -102,14 +104,16 @@ class Setup extends Flyspray
 
       // Initialise Application values
       $mApplication				= & new Version();
-      $this->mProductName			= $mApplication->mProductName;
-      $this->mVersion				= $mApplication->mVersion;
+      $this->mProductName	    = $mApplication->mProductName;
+      $this->mVersion			= $mApplication->mVersion;
       $this->mCopyright			= $mApplication->mCopyright;
       $this->mUnixName			= $mApplication->mUnixName;
-      $this->mAuthor				= $mApplication->mAuthor;
+      $this->mAuthor			= $mApplication->mAuthor;
+      // Look for ADOdb
+      $this->mAdodbPath         = BASEDIR . '/../adodb/adodb.inc.php';
 
       $this->mPreferencesTable	= 'flyspray_prefs';
-      $this->mUsersTable			= 'flyspray_users';
+      $this->mUsersTable		= 'flyspray_users';
       $this->mMinPasswordLength	= 8;
 
       // Initialise flag for proceeding to next step.
@@ -194,24 +198,6 @@ class Setup extends Flyspray
    }
 
    /**
-   * Function to check the availability of ADOdb libraries. It calls another
-   * function to scan the inlcude paths and you can include the application path
-   * to be scanned as well.
-   * @return string HTML formatted status
-   */
-   function CheckAdodbLibrary()
-   {
-      // Get the ADOdb library path. If not found it will be FALSE
-      $this->mAdodbPath = $this->ScanIncludePath('adodb.inc.php', realpath('../adodb'));
-
-      // Update the status of the library
-      $this->mAdodbStatus = ($this->mAdodbPath) ? TRUE : FALSE;
-
-      // Return an html formated availabe/missing string
-      return $this->ReturnStatus($this->mAdodbStatus, $type = 'available');
-   }
-
-   /**
    * Function to check the permission of the config file
    * @param void
    * @return string An html formatted boolean answer
@@ -284,7 +270,7 @@ class Setup extends Flyspray
    function CheckPreStatus()
    {
       $this->mProceed =
-      ($this->mAdodbStatus && $this->mDatabaseStatus && $this->mPhpVersionStatus)
+      ($this->mDatabaseStatus && $this->mPhpVersionStatus)
       ?  TRUE
       :  FALSE;
 
@@ -403,11 +389,10 @@ class Setup extends Flyspray
       array(
             'admin_body' => array(
                         'path' => TEMPLATE_FOLDER,
-                        'template' => 'administration.tpl.php',
+                        'template' => 'administration.tpl',
                         'vars' => array(
                                     'product_name' => $this->mProductName,
                                     'message' => $this->GetPageMessage(),
-                                    'site_url' => APPLICATION_WEB_ROOT,
                                     'absolute_path' => realpath(APPLICATION_PATH),
                                     'admin_email' => $this->GetAdminInput('admin_email', $this->GetParamValue($data, 'admin_email', ''), 'Admin Email'),
                                     'pass_phrase' => $this->GetParamValue($data, 'pass_phrase', ''),
@@ -426,7 +411,7 @@ class Setup extends Flyspray
 
             'structure' =>  array(
                            'path' => TEMPLATE_FOLDER,
-                           'template' => 'structure.tpl.php',
+                           'template' => 'structure.tpl',
                            'vars' => array(
                                        'title' => 'Administration setup for',
                                        'headers' => '',
@@ -455,7 +440,7 @@ class Setup extends Flyspray
       array(
             'complete_body' => array(
                         'path' => TEMPLATE_FOLDER,
-                        'template' => 'complete_install.tpl.php',
+                        'template' => 'complete_install.tpl',
                         'vars' => array(
                                     'product_name' => $this->mProductName,
                                     'message' => $this->GetPageMessage(),
@@ -463,7 +448,7 @@ class Setup extends Flyspray
                                     'config_text' => $this->mConfigText,
                                     'admin_username' => $this->mAdminUsername,
                                     'admin_password' => $this->mAdminPassword,
-                                    'site_index' => $data['site_url'],
+                                    'site_index' => dirname($_SERVER['REQUEST_URI']) . '/../',
                                     'complete_action' => $this->mCompleteAction,
                                     'daemonise' => $this->CheckPhpCli(),
                                  ),
@@ -471,7 +456,7 @@ class Setup extends Flyspray
 
             'structure' =>  array(
                            'path' => TEMPLATE_FOLDER,
-                           'template' => 'structure.tpl.php',
+                           'template' => 'structure.tpl',
                            'vars' => array(
                                        'title' => 'Setup confirmation for',
                                        'headers' => '',
@@ -499,7 +484,7 @@ class Setup extends Flyspray
       array(
             'database_body' => array(
                               'path' => TEMPLATE_FOLDER,
-                              'template' => 'database.tpl.php',
+                              'template' => 'database.tpl',
                               'vars' => array(
                                           'product_name' => $this->mProductName,
                                           'message' => $this->GetPageMessage(),
@@ -517,7 +502,7 @@ class Setup extends Flyspray
                            ),
             'structure' =>  array(
                            'path' => TEMPLATE_FOLDER,
-                           'template' => 'structure.tpl.php',
+                           'template' => 'structure.tpl',
                            'vars' => array(
                                        'title' => 'Database setup for',
                                        'headers' => '',
@@ -547,14 +532,12 @@ class Setup extends Flyspray
       array(
             'index_body' => array(
                         'path' => TEMPLATE_FOLDER,
-                        'template' => 'pre_install.tpl.php',
+                        'template' => 'pre_install.tpl',
                         'vars' => array(
                                     'product_name' => $this->mProductName,
                                     'required_php' => $this->mPhpRequired,
                                     'php_output' => $this->CheckPhpCompatibility(),
                                     'database_output' => $this->GetDatabaseOutput(),
-                                    'adodb_output' => $this->CheckAdodbLibrary(),
-                                    'adodb_status' => $this->mAdodbStatus,
                                     'config_output' => $this->CheckConfigFile(),
                                     'config_status' => $this->mConfigFileStatus,
                                     //'cache_output' => $this->CheckCacheFolder(),
@@ -567,7 +550,7 @@ class Setup extends Flyspray
 
             'structure' =>  array(
                            'path' => TEMPLATE_FOLDER,
-                           'template' => 'structure.tpl.php',
+                           'template' => 'structure.tpl',
                            'vars' => array(
                                        'title' => 'Pre-Installation Check for',
                                        'headers' => '',
@@ -589,7 +572,7 @@ class Setup extends Flyspray
       array(
             'license_body' => array(
                         'path' => TEMPLATE_FOLDER,
-                        'template' => 'license.tpl.php',
+                        'template' => 'license.tpl',
                         'vars' => array(
                                     'product_name' => $this->mProductName,
                                     'message' => $this->GetPageMessage(),
@@ -598,7 +581,7 @@ class Setup extends Flyspray
 
             'structure' =>  array(
                            'path' => TEMPLATE_FOLDER,
-                           'template' => 'structure.tpl.php',
+                           'template' => 'structure.tpl',
                            'vars' => array(
                                        'title' => 'Licence Agreement for',
                                        'headers' => '',
@@ -726,79 +709,6 @@ class Setup extends Flyspray
          //$data	= htmlentities($data, ENT_QUOTES);
       }
       return $data;
-   }
-
-   /**
-   * Function to download a file from a remote server and store it to flyspray server
-   * @param string $url The URL of the file to download
-   * @param string $downloadTo The destination folder to where the file will be saved on the server.
-   *                            The destination folder needs to be world writeable.
-   * @return boolean TRUE if success else error message
-   */
-   function DownloadFileToServer($url, $downloadTo, $alternate_url = '')
-   {
-      // If the download to folder is writeable
-      if ($this->IsWriteable($downloadTo))
-      {
-
-		// Get the file name of the download
-		$filename = basename($url);
-
-		// Set time-out for 15 minutes
-		set_time_limit(900);
-
-		// Grab the file contents ( this will fail if allow_url_fopen=Off )
-		$contents = file_get_contents($url);
-
-		// If successful in getting file contents
-		if ($contents)
-		{
-			// If was able to open a handle to write to the file stream
-			if ($handle = fopen("$downloadTo/$filename", 'wb'))
-			{
-				// If the contents was not written to file
-				if (fwrite($handle, $contents) === FALSE)
-				{
-					$_SESSION['page_message'][] = 'Could not write data to file';
-					return FALSE;
-				}
-				else
-				{
-					// Closes the open file pointer and return success
-					fclose($handle);
-					return TRUE;
-				}
-			}
-			else
-			{
-				$_SESSION['page_message'][] = "Cannot open file ($filename) for writing. Please make $filename writeable before continuing.";
-				return FALSE;
-			}
-		}
-        //this will fail if the curl extension is not available
-		elseif ($this->FetchThroughCurl($url, $downloadTo))
-		{
-			return TRUE;
-		}
-		else
-		{
-			// Taking care of broken links or PHP URL restrictions
-			$_SESSION['page_message'][] = "The file <strong>$url</strong> could not be downloaded for installation. " .
-			(
-				$alternate = (!empty($alternate_url))
-				? "Please download the libraries from <a href=\"$alternate_url\" title=\"$alternate_url\">$alternate_url</a> and extract to <strong>$downloadTo</strong>"
-				: ''
-			);
-			return FALSE;
-		}
-      }
-      else
-      {
-		$_SESSION['page_message'][] = "Please make folder <strong>$downloadTo</strong> writeable by the web-server user or world writeable.";
-		$_SESSION['page_message'][] = "On a Unix/Linux platform, its as easy as executing <strong><i>chmod 777 $downloadTo</i></strong> to make it world writeable.";
-		$_SESSION['page_message'][] = 'It is advised to revert these permissions once you have finished the application setup.';
-		return FALSE;
-      }
    }
 
 
@@ -989,51 +899,6 @@ class Setup extends Flyspray
       return $setup_procedure;
    }
 
-   /**
-   * Function to install ADOdb library
-   *
-   *
-   */
-   function InstallAdodb()
-   {
-      $_SESSION['page_heading'] = 'ADOdb Installation';
-
-		// where to download the libraries
-		$download_to = realpath('../adodb');
-
-		if (is_dir($download_to))
-		{
-			// Setup the Download URL's
-            //prior adodb versions have a broken mysqli driver.
-			$url ='http://dl.sourceforge.net/sourceforge/adodb/adodb470.tgz';
-			$alternate_url = 'http://sourceforge.net/project/showfiles.php?group_id=42718';
-
-			// If the libraries were downloaded successfully
-			if ( ($adodb_message = $this->DownloadFileToServer($url, $download_to, $alternate_url)) === TRUE)
-			{
-				// Specify locations to fetch file and un-compress archive to
-				$from_location = $download_to;
-				$uncompress_to = "$download_to/../";
-
-				// If able to uncompress the archive. It will un-compress to the download location
-				if ( ($adodb_message = $this->UncompressFile($from_location, basename($url), $uncompress_to)) === TRUE )
-				{
-					$_SESSION['page_message'][] =  "Successfully installed ADOdb library into <strong>$download_to</strong>";
-					return TRUE;
-				}
-			}
-		}
-		else
-		{
-			$_SESSION['page_message'][] = "Please create the adodb folder in the root of your $this->mProductName installation.";
-			$_SESSION['page_message'][] = "After creating the folder, make it writeable by the webserver user or world writeable.";
-			$_SESSION['page_message'][] = "On a Unix/Linux platform, its as easy as executing <strong><i>chmod 777 adodb</i></strong> to make it world writeable.";
-			$_SESSION['page_message'][] = 'It is advised to revert these permissions once you have finished the application setup.';
-			return FALSE;
-		}
-   }
-
-
    function InstallPointNineEight($data)
    {
       return TRUE;
@@ -1110,18 +975,6 @@ class Setup extends Flyspray
 
       switch($action)
       {
-         case 'index':
-            if ($what == 'adodb')
-            {
-               // Install the ADOdb library
-               $this->InstallAdodb();
-               // To prevent the user from getting a "Resend post request" warning if they refresh the page
-               header('Location: ' . APPLICATION_SETUP_INDEX);
-               exit;
-            }
-            $this->DisplayPreInstall();
-         break;
-
          case 'licence':
             $this->DisplayLicense();
          break;
@@ -1194,7 +1047,6 @@ class Setup extends Flyspray
                'db_name' => array('Database name', 'string', TRUE),
                'db_prefix' => array('Table prefix', 'string', TRUE),
                'db_setup_options' =>  array('Database type', 'number', TRUE),
-               'site_url' => array($this->mProductName . ' URL location', 'string', TRUE),
                'absolute_path' => array($this->mProductName . ' Absolute path must exist and', 'folder', TRUE),
                'admin_username' => array('Administrator\'s username', 'string', ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')),
                'admin_password' => array("Administrator's Password must be minimum {$this->mMinPasswordLength} characters long and", 'password', ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')),
@@ -1236,14 +1088,6 @@ class Setup extends Flyspray
       // Extract the varibales to local namespace
       extract($data);
 
-      $this->CheckAdodbLibrary();
-      if (!$this->mAdodbPath)
-      {
-         $_SESSION['page_heading'][]	= 'ADOdb Libraries not found';
-         return FALSE;
-      }
-
-
       $config_intro	=
       "; <?php die( 'Do not access this page directly.' ); ?>
 
@@ -1274,7 +1118,6 @@ class Setup extends Flyspray
 					: 0;
 
 	  // Double check the urls and paths slashes.
-	  $site_url			.= (substr($site_url, -1, 1) != '/') ? '/' : '';
 
       $config	= array();
       $config[] = "[database]";
@@ -1375,8 +1218,6 @@ class Setup extends Flyspray
 
    function ProcessDatabaseSetup($data)
    {
-      // Look for ADOdb
-      $this->mAdodbPath = $this->ScanIncludePath('adoclass.database.php', realpath('../adodb'));
       require_once($this->mAdodbPath);
 
       // Perform a number of fatality checks, then die gracefully
@@ -1387,9 +1228,6 @@ class Setup extends Flyspray
 
       // Setting the database type for the ADODB connection
       $this->mDbConnection =& NewADOConnection(strtolower($data['db_type']));
-
-      // Setting debugging for ADODB
-      $this->mDbConnection->debug = TRUE;
 
       /* check hostname/username/password */
 
@@ -1428,75 +1266,42 @@ class Setup extends Flyspray
       }
       else
       {
-         // Test to see if the database exists
-         //$this->mDbConnection->Execute("SHOW TABLES FROM DATABASE {$data['db_name']}");
+           // Setting the Fetch mode of the database connection.
+           $this->mDbConnection->SetFetchMode(ADODB_FETCH_BOTH);
 
-         //select * from pg_database where datname = 'jeffery_flyspray'
-
-         //switch ($error_number = $this->mDbConnection->MetaError())
-         //{
-            //case '-5':
-            // Can't create database. It already exists. Means now we have to do a check if we want to backup/drop database
-            // Now we connect to the database and do the processing since we know it exists.
-            //if ($this->mDbConnection->PConnect($data['db_hostname'], $data['db_username'], $data['db_password'], $data['db_name']))
-            //{
-               // Setting the Fetch mode of the database connection.
-               $this->mDbConnection->SetFetchMode(ADODB_FETCH_BOTH);
-
-               // Backup and delete tables if requested
-               if ($this->BackupDeleteTables($data))
-               {
-                  if ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')
-                  {
-                     // Populate the database with the new tables and return the result (boolean)
-                     if (!$this->PopulateDb($data))
-                     {
-                        return FALSE;
-                     }
-                  }
-                  else
-                  {
-                     // Call the dependency function
-                     if (method_exists($this, $this->mDatabaseSetup[$_POST['db_setup_options']]['function']))
-                     {
-                        // Call the Upgrade function.
-                        if (!$this->{$this->mDatabaseSetup[$_POST['db_setup_options']]['function']}($data))
-                        {
-                           return FALSE;
-                        }
-                     }
-                     else
-                     {
-                        $_SESSION['page_message'][]	= "Function {$this->mDatabaseSetup[$_POST['db_setup_options']]['function']}() not defined!";
-                        return FALSE;
-                     }
-                  }
-               }
-               else
-               {
-                  return FALSE;
-               }
-            //}
-            //else
-            //{
-               // Don't know why it woudn't work... just in case
-            //	$_SESSION['page_message'][] = $this->mDbConnection->ErrorMsg();
-            //	return FALSE;
-            //}
-            //break;
-      /*
-            case '-1':
-            // We are using the unknown error code(-1) because ADOdb library may not have the error defined.
-            $_SESSION['page_message'][] = $this->mDbConnection->ErrorMsg();
-            return FALSE;
-            break;
-
-            default:
-            $_SESSION['page_message'][] = $this->mDbConnection->ErrorMsg() . ': ' . $this->mDbConnection->ErrorNo();
-            $_SESSION['page_message'][] = 'Unknown error, please notify Developer quoting the error number';
-            return FALSE;
-            break;*/
-         //}
+           // Backup and delete tables if requested
+           if ($this->BackupDeleteTables($data))
+           {
+              if ($this->mDatabaseSetup[$_POST['db_setup_options']]['dependency'] == '')
+              {
+                 // Populate the database with the new tables and return the result (boolean)
+                 if (!$this->PopulateDb($data))
+                 {
+                    return FALSE;
+                 }
+              }
+              else
+              {
+                 // Call the dependency function
+                 if (method_exists($this, $this->mDatabaseSetup[$_POST['db_setup_options']]['function']))
+                 {
+                    // Call the Upgrade function.
+                    if (!$this->{$this->mDatabaseSetup[$_POST['db_setup_options']]['function']}($data))
+                    {
+                       return FALSE;
+                    }
+                 }
+                 else
+                 {
+                    $_SESSION['page_message'][]	= "Function {$this->mDatabaseSetup[$_POST['db_setup_options']]['function']}() not defined!";
+                    return FALSE;
+                 }
+              }
+           }
+           else
+           {
+              return FALSE;
+           }
       }
       return TRUE;
    }
@@ -1530,7 +1335,7 @@ class Setup extends Flyspray
          }
 
          $this->mDbConnection->Execute($sql);
-
+         
          // If any errors, record the error message in the array
          if ($error_number = $this->mDbConnection->MetaError())
          {
@@ -1567,6 +1372,7 @@ class Setup extends Flyspray
 	     break;
 	 }
          $this->mDbConnection->Execute($sql);
+
          // If any errors, record the error message in the array
          if ($error_number = $this->mDbConnection->MetaError())
          {
@@ -1640,6 +1446,7 @@ class Setup extends Flyspray
          }
 
          $result = $this->mDbConnection->Execute($sql);
+
          $table_list = array();
          if ($result)
          {
@@ -1786,6 +1593,7 @@ class Setup extends Flyspray
                $sql_blocks[$i] = str_replace($this->mUnixName . "_", $db_prefix, $sql_blocks[$i]);
 
                $this->mDbConnection->Execute($sql_blocks[$i]);
+               
                if (($error_no = $this->mDbConnection->MetaError()))
                {
                   switch ($error_no)
@@ -2198,82 +2006,25 @@ class Setup extends Flyspray
          trigger_error("Templates not configured properly", E_USER_NOTICE);
       }
 
-      // Define a template array. This will be used to store the dynamically created objects
-      $template = array();
-
-      // Get the keyname of the last array. This always will be the final template which gets outputted
-      end($templates);
-      $last = key($templates);
-
       // Define a set of common variables which plugin to the structure template.
-      $common_vars = array('product_name' => $this->mProductName);
+      $page = new Tpl;
+      $body = '';
 
       // Loop through the templates array to dynamically create objects and assign variables to them.
+      /// XXX: this is not a common way to use our template class, but I didn't want to rewrite
+      ///      the whole setup only to change the templating engine
       foreach($templates as $name => $module)
       {
-
-         // Create a new object for the template
-         $template[$name] = & new Template($module['path']);
-
-         // Check if any vars need to be defined for the template and set them.
-         if (isset($templates[$name]['vars']))
-         {
-            $template[$name]->SetVars($module['vars']);
-         }
-
-         // Check if any blocks have been defined.
-         if (isset($templates[$name]['block']))
-         {
-            // If, then loop through the blocks and associate the blocks to their sections
-            foreach($templates[$name]['block'] as $section => $plugin)
-            {
-               // Check if the template exists before fetching. Else trigger an error.
-               if (is_file ($templates[$plugin]['path'] . '/' . $templates[$plugin]['template']))
-               {
-                  // Fetch the contents of the block and plug it into the appropriate section
-                  $template[$name]->Set($section, $template[$plugin]->fetch($templates[$plugin]['template']));
-               }
-               else
-               {
-                  trigger_error("Template misconfiguration: ({$templates[$plugin]['path']}{$templates[$plugin]['template']}) not found!", E_USER_NOTICE);
-               }
-            }
-         }
-
-         // Check if there are any variables which need appending new values
-         if (isset($templates[$name]['append']))
-         {
-            // If, loop through the array of append variables
-            foreach($templates[$name]['append'] as $vars => $value)
-            {
-               // Check if the appending variable has already been given a value
-               if (isset($template[$name]->vars[$vars]))
-               {
-                  // Append the value to the variable $vars of the current template object
-                  $template[$name]->Append($vars, $value);
-               }
-            }
-         }
-
-         // If it has reached the last template block
-         if($name == $last)
-         {
-            // This will and HAS to be the last template
-            // Associate the common variables to the template
-            $template[$name]->SetVars($common_vars);
-
-            // Check if the template exists before fetching and echoing. Else trigger an error.
-            if ( is_file ($module['path'] . '/'. $module['template']))
-            {
-               // Echo the final template and exit the script
-               echo $template[$name]->Fetch($module['template']);
-               exit;
-            }
-            else
-            {
-               trigger_error("Template misconfiguration: ({$templates[$plugin]['path']}{$templates[$plugin]['template']}) not found!", E_USER_NOTICE);
-            }
-         }
+        foreach ($module['vars'] as $var_name => $value) {
+            $page->assign($var_name, $value);
+        }
+        
+        if ($name == 'structure') {
+            $page->assign('body', $body);
+            $page->display('structure.tpl');
+        } else {
+            $body .= $page->fetch($module['template']);
+        }
       }
    }
 }

@@ -153,20 +153,18 @@ class Database
         $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
         if($this->dblink->hasTransactions === true) {
-
             $this->dblink->StartTrans();
         }
 
         if (($numrows >= 0 ) or ($offset >= 0 )) {
             $result =  $this->dblink->SelectLimit($sql, $numrows, $offset, $inputarr);
         } else {
-
            $result =  $this->dblink->Execute($sql, $inputarr);
         }
 
         if (!$result) {
 
-            if (function_exists("debug_backtrace")) {
+            if (function_exists("debug_backtrace") && defined('DEBUG_SQL')) {
                 echo "<pre style='text-align: left;'>";
                 var_dump(debug_backtrace());
                 echo "</pre>";
