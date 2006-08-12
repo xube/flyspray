@@ -1,5 +1,9 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /
 <title>Lang diff</title>
-<pre>
+</head>
+<body>
 <?php
   /*
   Usage: Open this file like .../.langdiff?lang=de in your browser.
@@ -16,14 +20,31 @@
     if ($lang != 'en' && file_exists($translation)) {
         include_once($translation);
         
-        echo 'The following translations (keys) are missing in the translation:' . "\n\n";
+        echo '<h1>The following translations (keys) are missing in the translation:</h1>';
+	echo '<table>';
+	$i = 0;
         foreach ($language as $key => $val) {
             if (!isset($translation[$key])) {
-                echo $key . "\n";
+                echo '<tr><th>',$key,'</th><td>',$val,'</td></tr>',"\n";
+		$i++;
             }
+	    
         }
+	echo '</table>';
+	if ( $i > 0 )
+		echo '<p>',$i,' out of ',sizeof($language),' keys to translate.</p>';
+	echo '<h1>The following translations (keys) should be deleted in the translation:</h1>';
+	echo '<table>';
+	foreach ($translation as $key => $val) {
+		if ( !isset($language[$key])) {
+			echo '<tr><th>',$key,'</th><td>',$val,'</td></tr>',"\n";
+		}
+	}
+	echo '</table>';
     } else {
         die('Translation does not exist.');
     }
 ?>
 </pre>
+</body>
+</html>

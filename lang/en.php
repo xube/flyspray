@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 $language = array(
 'edituser'                => 'Edit user',

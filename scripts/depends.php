@@ -210,24 +210,46 @@ fclose($tmp);
 
 // Now run dot on it:
 if (Flyspray::function_disabled('shell_exec') || !$path_to_dot) {
-    $page->assign('image', array_get($conf['general'], 'dot_public') . '/' . $baseurl . $file_name . '.' . $fmt);
-    $page->assign('map', '');
+    if (!is_file(BASEDIR . '/' . $file_name . '.' . $fmt)) {
+        $data = file_get_contents(array_get($conf['general'], 'dot_public') . '/' . $baseurl . $file_name . '.' . $fmt);
+        $f = fopen(BASEDIR . '/' . $file_name . '.' . $fmt, 'wb');
+        fwrite($f, $data);
+        fclose($f);
+    } else {
+        $data = file_get_contents(BASEDIR . '/' . $file_name . '.' . $fmt);
+    }
+    
+    $page->assign('remote', $remote = true);
+    $page->assign('map',    array_get($conf['general'], 'dot_public') . '/' . $baseurl . $file_name . '.map');
 } else {
-    $out = "/cache/depends_$id". ($prunemode!=0 ? "_p$prunemode" : "").".$fmt";
-    $cmd = "$path_to_dot -T $fmt -o \"" . BASEDIR . $out . "\" $tname";
+    $cmd = "$path_to_dot -T $fmt -o \"" . BASEDIR . '/' . $file_name . '.' . $fmt . "\" $tname";
     shell_exec($cmd);
 
     $cmd = "$path_to_dot -T cmapx $tname";
-    $map = shell_exec($cmd);
+    $data['map'] = shell_exec($cmd);
     
-    $page->assign('image', $baseurl . $out);
-    $page->assign('map', $map);
+    $page->assign('remote', $remote = false);
+    $page->assign('map',    $data['map']);
+}
+
+$page->assign('image', $baseurl . $file_name . '.' . $fmt);
+
+
+// we have to find out the image size if it is SVG
+if ($fmt == 'svg') {
+    if (!$remote) {
+        $data = file_get_contents(BASEDIR . '/' . $file_name);
+    }
+    preg_match('/<svg width="(\d+)pt" height="(\d+)pt"/', $data, $matches);
+    $page->assign('width', round($matches[1]*1.4, 0));
+    $page->assign('height', round($matches[2]*1.4, 0));
 }
 
 /*
 [TC] We cannot have this stuff outputting here, so I put it in a quick template
 */
 $page->assign('taskid', $id);
+$page->assign('fmt', $fmt);
 $page->assign('graphname', $graphname);
 
 $endtime = microtime();

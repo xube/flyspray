@@ -12,9 +12,10 @@ img {
 	border:none;
 }
 
-img.depimage {
+img.depimage, object.depimage {
 	border:solid 2px black;
 	margin:0 0.5em;
+	background:white;
 }
 
 a {
