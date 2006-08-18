@@ -42,7 +42,7 @@ class Backend
         $sql = $db->Query(' SELECT *
                               FROM {tasks}
                              WHERE ' . substr(str_repeat(' task_id = ? OR ', count($tasks)), 0, -3),
-                          array($tasks));
+                          $tasks);
 
         while ($row = $db->FetchRow($sql)) {
             // -> user adds himself
@@ -95,7 +95,7 @@ class Backend
         $sql = $db->Query(' SELECT *
                               FROM {tasks}
                              WHERE ' . substr(str_repeat(' task_id = ? OR ', count($tasks)), 0, -3),
-                          array($tasks));
+                          $tasks);
                              
         while ($row = $db->FetchRow($sql)) {
             // -> user removes himself
@@ -144,7 +144,7 @@ class Backend
         $sql = $db->Query(' SELECT *
                               FROM {tasks}
                              WHERE ' . substr(str_repeat(' task_id = ? OR ', count($tasks)), 0, -3),
-                          array($tasks));
+                          $tasks);
 
         while ($row = $db->FetchRow($sql)) {
             if (!$user->can_take_ownership($row)) {
@@ -1065,13 +1065,14 @@ class Backend
         $limit = array_get($args, 'limit', -1);
         foreach ($tasks as $key => $task) {
             $id_list[] = $task['task_id'];
-            if ($key < $offset || ($key > $offset - 1 + $perpage) || ($limit > 0 && $key >= $limit)) {
-                unset($tasks[$key]);
-            } else if (!$user->can_view_task($task)) {
+            if (!$user->can_view_task($task)) {
                 unset($tasks[$key]);
                 array_pop($id_list);
+            } elseif ($key < $offset || ($key > $offset - 1 + $perpage) || ($limit > 0 && $key >= $limit)) {
+                unset($tasks[$key]);
             }
         }
+
         return array($tasks, $id_list);
     }
 

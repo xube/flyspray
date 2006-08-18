@@ -1,6 +1,6 @@
 <?php foreach($data as $milestone): ?>
 
-<div class="admin roadmap">
+<div class="box roadmap">
 <h3 style="cursor:pointer;" onclick="<?php
 foreach($milestone['open_tasks'] as $task): ?>
      showhidestuff('dd{$task['task_id']}');

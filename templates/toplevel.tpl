@@ -1,3 +1,9 @@
+<?php if (!count($projects)): ?>
+<div class="box">
+<h2>{L('allprivate')}</h2>
+</div>
+<?php endif; ?>
+
 <?php foreach ($projects as $project): ?>
 <div class="box">
 <h2><a href="{CreateUrl('project', $project['project_id'])}">{$project['project_title']}</a></h2>

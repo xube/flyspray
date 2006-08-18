@@ -200,28 +200,24 @@ class User
 
     function can_view_task($task)
     {
-        if ($this->isAnon() && $task['task_token'] && Get::val('task_token') == $task['task_token']) {
+        if ($task['task_token'] && Get::val('task_token') == $task['task_token']) {
             return true;
-        }
-        
-        if ($this->isAnon() && !$this->perms('others_view', $task['project_id'])) {
-            return false;
         }
 
         if ($task['opened_by'] == $this->id && !$this->isAnon()
-            || (!$task['mark_private'] && ($this->perms('view_tasks') || $this->perms('others_view', $task['project_id']) || $task['others_view']))
-            || $this->perms('manage_project')) {
+            || (!$task['mark_private'] && ($this->perms('view_tasks', $task['project_id']) || $this->perms('others_view', $task['project_id'])))
+            || $this->perms('manage_project', $task['project_id'])) {
             return true;
         }
                
-        return in_array($this->id, Flyspray::GetAssignees($task['task_id']));
+        return !$this->isAnon() && in_array($this->id, Flyspray::GetAssignees($task['task_id']));
     }
 
     function can_edit_task($task)
     {      
         return !$task['is_closed']
-            && ($this->perms('modify_all_tasks') ||
-                    ($this->perms('modify_own_tasks')
+            && ($this->perms('modify_all_tasks', $task['project_id']) ||
+                    ($this->perms('modify_own_tasks', $task['project_id'])
                      && in_array($this->id, Flyspray::GetAssignees($task['task_id']))));
     }
 
@@ -264,7 +260,7 @@ class User
 
     function can_change_private($task)
     {
-        return !$task['is_closed'] && ($this->perms('manage_project') || in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
+        return !$task['is_closed'] && ($this->perms('manage_project', $task['project_id']) || in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
     }
     
     function can_vote($task)

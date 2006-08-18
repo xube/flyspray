@@ -598,9 +598,17 @@ switch ($action = Req::val('action'))
     // ##################
     case 'admin.edituser':
     case 'myprofile.edituser':
-        if (Post::val('delete_user') && Backend::delete_user(Post::val('user_id'))) {
-            $_SESSION['SUCCESS'] = L('userdeleted');
-            Flyspray::Redirect(CreateURL('admin', 'groups'));
+        if (Post::val('delete_user')) {
+            // check that he is not the last user
+            $admins = $db->FetchOne($db->Query('SELECT count(*) FROM {users}'));
+            if ($admins > 1) {
+                Backend::delete_user(Post::val('user_id'));
+                $_SESSION['SUCCESS'] = L('userdeleted');
+                Flyspray::Redirect(CreateURL('admin', 'groups'));
+            } else {
+                Flyspray::show_error(L('lastuser'));
+                break;
+            }
         }
         
         if (!Post::val('onlypmgroup')):

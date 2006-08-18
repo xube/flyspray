@@ -796,6 +796,8 @@ Regards,',
 'pruneclosedtasks'        => 'Prune Closed Tasks',
 'pagegenerated'           => 'Page and image generated in %d seconds.',
 'pruninglevel'            => 'Pruning Level',
+'lastuser'                => 'The last user cannot be deleted.',
+'allprivate'              => 'All projects are private.',
 ); 
 
 ?>

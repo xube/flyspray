@@ -158,7 +158,7 @@ ALTER TABLE `flyspray_registrations` CHANGE `user_name` `user_name` VARCHAR( 32 
 -- Tony Collins, 19 November 2005
 -- Changed field for FS#329
 
-ALTER TABLE `flyspray_tasks` CHANGE `assigned_to` `assigned_to` VARCHAR( 255 ) DEFAULT '0' NOT NULL ;
+-- removed
 
 
 -- =============================================================================

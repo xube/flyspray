@@ -13,16 +13,13 @@
 </div>
 <?php endif; ?>
 
+<?php if (!($user->isAnon() && count($fs->projects) == 0)): ?>
 <div id="search">
   <map id="projectsearchform" name="projectsearchform">
     <form action="index.php" method="get">
       <div>
-        <?php if(Get::val('project') == '0'): ?>
-        <input type="hidden" name="project" value="0" />
-        <?php else: ?>
-        <input type="hidden" name="project" value="{$proj->id}" />
-        <?php endif; ?>
-        <?php if(!$user->isAnon()): ?>
+        <input type="hidden" name="project" value="{Get::num('project', 0)}" />
+        <?php if (!$user->isAnon()): ?>
         <span class="save_search"><label for="save_search" id="lblsaveas">{L('saveas')}</label>
         <input class="text" type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
         &nbsp;<button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{$baseurl}', '{L('saving')}')" type="button">{L('OK')}</button></span>
@@ -138,6 +135,7 @@
     </form>
   </map>
 </div>
+<?php endif; ?>
 
 <div id="tasklist">
   <form action="index.php" id="massops" method="post">
@@ -168,7 +166,7 @@
           </td>
           <?php if (!$user->isAnon()): ?>
           <td class="ttcolumn">
-            <input class="ticktask" type="checkbox" name="ids[{!$task_details['task_id']}]" value="1" />
+            <input class="ticktask" type="checkbox" name="ids[]" value="{$task_details['task_id']}" />
           </td>
           <?php endif; ?>
           <?php foreach ($visible as $col): ?>
@@ -196,10 +194,11 @@
       <?php if (!$user->isAnon() && $total): ?>
       <div id="massopsactions">
         <select name="action">
-          <option value="add_notification">{L('watchtasks')}</option>
+          <option value="details.add_notification">{L('watchtasks')}</option>
           <option value="remove_notification">{L('stopwatchingtasks')}</option>
           <option value="takeownership">{L('assigntaskstome')}</option>
         </select>
+        <input type="hidden" name="user_id" value="{$user->id}" />
         <button type="submit">{L('takeaction')}</button>
       </div>
       <?php endif ?>

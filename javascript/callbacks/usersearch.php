@@ -7,7 +7,6 @@
 define('IN_FS', true);
 
 require_once('../../header.php');
-$baseurl = dirname(dirname($baseurl)) .'/' ;
 
 $searchterm = '%' . reset($_POST) . '%';
 

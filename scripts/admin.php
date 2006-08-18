@@ -29,7 +29,7 @@ switch ($area = Req::val('area', 'prefs')) {
         
         $theuser = new User($id, $proj);
         if ($theuser->isAnon()) {
-            Flyspray::show_error(5);
+            Flyspray::show_error(5, true, null, $_SESSION['prev_page']);
         }
         $page->assign('theuser', $theuser);
     case 'cat':

@@ -41,10 +41,10 @@ while ($row = $db->FetchRow($milestones)) {
     }
     $percent_complete = round($percent_complete/max(count($all_tasks), 1));
                          
-    $tasks = $db->Query('SELECT task_id, item_summary, detailed_desc, task_severity, mark_private, opened_by, content, task_token, project_id
+    $tasks = $db->Query('SELECT task_id, item_summary, detailed_desc, task_severity, mark_private, opened_by, content, task_token, t.project_id
                            FROM {tasks} t
                       LEFT JOIN {cache} ca ON (t.task_id = ca.topic AND ca.type = \'task\' AND t.last_edited_time <= ca.last_updated)
-                          WHERE closedby_version = ? AND project_id = ? AND is_closed = 0',
+                          WHERE closedby_version = ? AND t.project_id = ? AND is_closed = 0',
                          array($row['version_id'], $proj->id));
     $tasks = $db->fetchAllArray($tasks);
     
