@@ -398,10 +398,7 @@ UPDATE flyspray_history SET event_type = 12 WHERE event_type = 16;
 ALTER TABLE `flyspray_projects` ADD `default_entry` ENUM( 'index', 'roadmap', 'toplevel' ) DEFAULT 'index' NOT NULL ;
 
 -- Florian Schmitz, 29 July 2006
- ALTER TABLE `flyspray_assigned` ADD UNIQUE (
-`task_id` ,
-`user_id`
-);
+ALTER TABLE `flyspray_assigned` ADD UNIQUE `task_user` ( `task_id` , `user_id` );
 
 -- Florian Schmitz, 3-10 August 2006
 ALTER TABLE `flyspray_tasks` CHANGE `attached_to_project` `project_id` MEDIUMINT( 3 ) DEFAULT '0' NOT NULL;
