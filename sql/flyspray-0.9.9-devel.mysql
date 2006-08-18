@@ -196,7 +196,6 @@ alter table flyspray_tasks           add index (task_type);
 alter table flyspray_tasks           add index (product_category);
 alter table flyspray_tasks           add index (item_status);
 alter table flyspray_tasks           add index (is_closed);
-alter table flyspray_tasks           add index (assigned_to);
 alter table flyspray_tasks           add index (closedby_version);
 alter table flyspray_tasks           add index (due_date);
 
