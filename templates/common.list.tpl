@@ -20,10 +20,10 @@
         <input id="listname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]"
           value="{$row[$list_type.'_name']}" />
       </td>
-      <td title="The order these items will appear in the list">
+      <td title="{L('ordertip')}">
         <input id="listposition{$countlines}" class="text" type="text" size="3" maxlength="3" name="list_position[]" value="{$row['list_position']}" />
       </td>
-      <td title="Show this item in the list">
+      <td title="{L('showtip')}">
         {!tpl_checkbox('show_in_list['.$countlines.']', $row['show_in_list'], 'showinlist'.$countlines)}
       </td>
       <?php if ($list_type == 'version'): ?>
@@ -33,7 +33,7 @@
         </select>
       </td>
       <?php endif; ?>
-      <td title="Delete this item from the list">
+      <td title="{L('deletetip')}">
         <input id="delete{$row[$list_type.'_id']}" type="checkbox"
         <?php if ($row['used_in_tasks'] || ($list_type == 'status' && $row[$list_type.'_id'] < 7) || ($list_type == 'resolution' && $row[$list_type.'_id'] == 6)): ?>
         disabled="disabled"

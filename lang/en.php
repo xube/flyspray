@@ -798,6 +798,11 @@ Regards,',
 'pruninglevel'            => 'Pruning Level',
 'lastuser'                => 'The last user cannot be deleted.',
 'allprivate'              => 'All projects are private.',
+'deletegroup'             => 'Delete this group and move users to',
+'parent'                  => 'Parent',
+'ordertip'                => 'The order these items will appear in the list',
+'showtip'                 => 'Show this item in the list',
+'deletetip'               => 'Delete this item from the list',
 ); 
 
 ?>

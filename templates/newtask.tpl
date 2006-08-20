@@ -72,7 +72,7 @@
           <td><label for="priority">{L('priority')}</label></td>
           <td>
             <select id="priority" name="task_priority" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
-              {!tpl_options($fs->severities, Req::val('task_priority', 2))}
+              {!tpl_options($fs->priorities, Req::val('task_priority', 2))}
             </select>
           </td>
         </tr>

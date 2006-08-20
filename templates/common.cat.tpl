@@ -67,7 +67,7 @@
             {!tpl_userselect('category_owner', Req::val('category_owner'), 'categoryownernew')}
           </td>
           <td title="{L('categoryparenttip')}">
-            <label for="parent_id">Parent</label>
+            <label for="parent_id">{L('parent')}</label>
             <select id="parent_id" name="parent_id">
               <option value="{$root['category_id']}">{L('notsubcategory')}</option>
               <?php $cat_opts = array_map(

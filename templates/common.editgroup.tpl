@@ -115,7 +115,7 @@
       <?php endif; ?>
       <?php if ($group_details['group_id'] != '1'): ?>
       <tr>
-        <td><label><input type="checkbox" name="delete_group" /> Delete this group and move users to</label></td>
+        <td><label><input type="checkbox" name="delete_group" /> {L('deletegroup')}</label></td>
         <td><select name="move_to">
               {!tpl_options( array_merge( ($proj->id) ? array(L('nogroup')) : array(), Flyspray::listGroups($proj->id)), null, false, null, $group_details['group_id'])}
             </select>
