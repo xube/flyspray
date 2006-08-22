@@ -26,7 +26,7 @@ if ($pagenum < 1) {
 $offset = $perpage * ($pagenum - 1);
 
 // Get the visibility state of all columns
-$visible = explode(' ', $proj->id ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']);
+$visible = explode(' ', trim($proj->id ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']));
 
 list($tasks, $id_list) = Backend::get_task_list($_GET, $visible, $offset, $perpage);
 

@@ -42,12 +42,11 @@ if (in_array(Req::val('do'), array('details', 'depends'))) {
 }
 
 if (!isset($project_id)) {
-    $project_id = (Req::val('do') == 'admin') ? '0' : Req::val('project', Req::val('project_id', ''));
-    
     // Determine which project we want to see
-    if ($project_id == '' && ($project_id = Cookie::val('flyspray_project')) == '') {
+    if (($project_id = Cookie::val('flyspray_project')) == '') {
         $project_id = $fs->prefs['default_project'];
     }
+    $project_id = Req::val('project', Req::val('project_id', $project_id));
 }
 
 $proj = new Project($project_id);

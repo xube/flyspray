@@ -911,7 +911,7 @@ class Backend
         }
 
         $order_keys = array (
-                'id'         => 'task_id',
+                'id'         => 't.task_id',
                 'proj'       => 'project_title',
                 'type'       => 'tasktype_name',
                 'date'       => 'date_opened',
@@ -1045,7 +1045,7 @@ class Backend
 
         // Get the column names of table tasks for the group by statement
         if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
-            $groupby .= "p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name,{$order_column[0]},{$order_column[1]}, ";
+             $groupby .= "p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name,{$order_column[0]},{$order_column[1]}, lr.resolution_name, ";
         }
         $groupby .= $db->GetColumnNames('{tasks}', 't.task_id', 't.');
 
