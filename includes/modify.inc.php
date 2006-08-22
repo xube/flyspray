@@ -1194,11 +1194,7 @@ switch ($action = Req::val('action'))
     // ##################
     // taking ownership
     // ##################
-    case 'takeownership':
-        if (!$user->perms('edit_assignments')) {
-            break;
-        }
-        
+    case 'takeownership':      
         Backend::assign_to_me($user->id, Req::val('ids'));
 
         $_SESSION['SUCCESS'] = L('takenownershipmsg');
@@ -1208,11 +1204,7 @@ switch ($action = Req::val('action'))
     // ##################
     // add to assignees list
     // ##################
-    case 'addtoassignees':
-        if (!$user->perms('edit_assignments')) {
-            break;
-        }
-        
+    case 'addtoassignees':       
         Backend::add_to_assignees($user->id, Req::val('ids'));
     
         $_SESSION['SUCCESS'] = L('addedtoassignees');

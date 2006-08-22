@@ -467,7 +467,7 @@ class Flyspray
 
         $db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, old_value, new_value)
                          VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    array($task_id, intval($user->id), ( (is_null($time)) ? time() : $time ), $type, $field, $oldvalue, $newvalue));
+                    array(intval($task_id), intval($user->id), ( (is_null($time)) ? time() : $time ), $type, $field, $oldvalue, $newvalue));
     } // }}}
     // Log a request for an admin/project manager to do something {{{
     /**
