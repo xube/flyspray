@@ -6,6 +6,8 @@
 
 define('IN_FS', true);
 
+header('Content-type: text/html; charset=utf-8');
+
 require_once('../../header.php');
 $baseurl = dirname(dirname($baseurl)) .'/' ;
 
