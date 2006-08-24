@@ -489,7 +489,7 @@ $translation = array(
 'notifyerror'             => 'De gebruiker staat reeds op de berichtenlijst van deze taak.',
 'notifyremoved'           => 'Gebruiker verwijdert van de berichtenlijst.',
 'editcommentsaved'        => 'Bijgewerkte commentaar opgeslagen.',
-'commentdeletedmsg'       => 'Komentaar is verwijderd.',
+'commentdeletedmsg'       => 'Commentaar is verwijderd.',
 'gotonewtask'             => 'Ga direct naar de taak die u net aangemaakt hebt',
 'projectcreated'          => 'Uw nieuwe project is toegevoegd.  Volg onderstaande link om de categorie, besturingssystemen en versielijsten in te stellen',
 'customiseproject'        => 'Pas dit project aan',
@@ -793,6 +793,11 @@ $translation = array(
 'pruninglevel'            => 'Opschoonniveau',
 'lastuser'                => 'De laatste gebruiker kan niet verwijderd worden.',
 'allprivate'              => 'Alle projecten zijn privé.',
+'deletegroup'             => 'Verwijder deze groep en verplaats de gebruikers naar',
+'parent'                  => 'Ouder',
+'ordertip'                => 'Op welke manier items geordend worden',
+'showtip'                 => 'Toon dit item in de lijst',
+'deletetip'               => 'Verwijder dit item van de lijst',
 );
 
 ?>

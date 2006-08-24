@@ -12,13 +12,16 @@
 
 session_start();
 
-error_reporting(E_ALL);
+set_time_limit(0);
 
+ini_set('memory_limit', '32M');
+
+/*
 if ( is_readable ('../flyspray.conf.php') && (count($config = parse_ini_file('../flyspray.conf.php', true)) > 0) )
 {
    die('Flyspray Already Installed. Delete the contents of flyspray.conf.php to run setup.');
 }
-
+ */
 // ---------------------------------------------------------------------
 // Application information
 // ---------------------------------------------------------------------
@@ -37,10 +40,10 @@ define('APPLICATION_WEB_ROOT', str_replace('setup',"",APPLICATION_SETUP_INDEX));
 // ---------------------------------------------------------------------
 // Application file system locations
 // ---------------------------------------------------------------------
-define('APPLICATION_PATH', realpath('../') );
-define('OBJECTS_PATH', realpath('../includes') );
-define('TEMPLATE_FOLDER', realpath('templates/'));
+define('APPLICATION_PATH', dirname(dirname(__FILE__)));
+define('OBJECTS_PATH', APPLICATION_PATH . '/includes' );
 define('BASEDIR', dirname(__FILE__));
+define('TEMPLATE_FOLDER', BASEDIR . '/templates/');
 $conf['general']['syntax_plugin'] = '';
 
 if (substr(PHP_OS, 0, 3) == 'WIN') {
@@ -51,7 +54,7 @@ if (substr(PHP_OS, 0, 3) == 'WIN') {
 
   define('IS_MSWIN', false);
 }
-
+require_once OBJECTS_PATH . '/fix.inc.php';
 require_once(OBJECTS_PATH . '/class.flyspray.php');
 require_once(OBJECTS_PATH . '/class.tpl.php');
 require_once(OBJECTS_PATH . '/version.php');
@@ -110,7 +113,7 @@ class Setup extends Flyspray
       $this->mUnixName			= $mApplication->mUnixName;
       $this->mAuthor			= $mApplication->mAuthor;
       // Look for ADOdb
-      $this->mAdodbPath         = BASEDIR . '/../adodb/adodb.inc.php';
+      $this->mAdodbPath         = APPLICATION_PATH . '/adodb/adodb.inc.php';
 
       $this->mPreferencesTable	= 'flyspray_prefs';
       $this->mUsersTable		= 'flyspray_users';
@@ -205,7 +208,7 @@ class Setup extends Flyspray
    function CheckConfigFile()
    {
       // Get the full path to the file
-      $file = realpath('../flyspray.conf.php');
+      $file = APPLICATION_PATH .'/flyspray.conf.php';
 
       // Update the status of the Config file
       $this->mConfigFileStatus = $this->IsWriteable($file);
@@ -222,7 +225,7 @@ class Setup extends Flyspray
    function CheckCacheFolder()
    {
       // Get the full path to the file
-      $file = realpath('../cache');
+      $file = APPLICATION_PATH . '/cache';
 
       // Update the status of the Cache folder
       $this->mCacheFolderStatus = $this->IsWriteable($file);
@@ -338,8 +341,6 @@ class Setup extends Flyspray
    */
    function CheckPostedData($expectedFields = array(), $pageHeading)
    {
-      // Add slashes to the post array
-      $this->FilterGpc('add', 'post');
 
       // Grab the posted data and trim it.
       $data = array_filter($_POST, array($this, "TrimArgs"));
@@ -379,9 +380,6 @@ class Setup extends Flyspray
 
    function DisplayAdministration()
    {
-      // Strip any slashes in GPC if magic_quotes is turned ON
-      $this->FilterGpc('strip', 'post');
-
       // Trim the empty values in the $_POST array
       $data = array_filter($_POST, array($this, "TrimArgs"));
 
@@ -430,9 +428,6 @@ class Setup extends Flyspray
 
    function DisplayCompletion()
    {
-      // Strip any slashes in GPC if magic_quotes is turned ON
-      $this->FilterGpc('strip', 'post');
-
       // Trim the empty values in the $_POST array
       $data = array_filter($_POST, array($this, "TrimArgs"));
 
@@ -474,8 +469,6 @@ class Setup extends Flyspray
 
    function DisplayDatabaseSetup()
    {
-      // Strip any slashes in GPC if magic_quotes is turned ON
-      $this->FilterGpc('strip', 'post');
 
       // Trim the empty values in the $_POST array
       $data = array_filter($_POST, array($this, "TrimArgs"));
@@ -598,119 +591,6 @@ class Setup extends Flyspray
    }
 
 
-   function FetchThroughCurl($url, $downloadTo)
-   {
-      if (function_exists('curl_init'))
-      {
-         // Initialize a CURL session
-         $ch = curl_init($url);
-
-         // Get the file name of the download
-         $filename = basename($url);
-
-         // Open the file for writing
-         $fp = fopen("$downloadTo/$filename", 'wb');
-
-         // Set an option for a CURL transfer
-         curl_setopt($ch, CURLOPT_FILE, $fp);
-         // Supress the cURL response headers
-         curl_setopt($ch, CURLOPT_HEADER, 0);
-
-         // Ge the status of the execution
-         $result = curl_exec($ch);
-
-         // close cURL resource and file handle
-         curl_close($ch);
-         fclose($fp);
-
-         return ($result) ? TRUE : FALSE;
-      }
-      else
-      {
-         return FALSE;
-      }
-   }
-
-   /**
-   * To add/strip slashes depending on the status of magic_quotes_gpc
-   * @param string $filter The type of filter to execute addslashes()
-   * 						or stripcslashes()
-   * @param string $what The Super global type to filter. It could be
-   * 						of type gpc, get, post or cookie
-   * @return void
-   *
-   * @todo Need to incorporate ordinary array filters
-   */
-   function FilterGpc($filter = 'strip', $what = 'gpc')
-   {
-      // Setup the allowed filter types.
-      $filter_types		= array('strip', 'add');
-      // Check for filter types.
-      if (!in_array($filter, $filter_types)) die("Filter '$filter' not allowed");
-      $this->mDataFilter	= $filter;
-
-      // Check magic quotes status and filter
-      if ( ((!get_magic_quotes_gpc()) && ($this->mDataFilter == 'add')) ||
-            ((get_magic_quotes_gpc())  && ($this->mDataFilter == 'strip'))
-         )
-      {
-         switch ($what)
-         {
-            case 'get':
-               // Process the $_GET super global
-               $_GET		= array_map(array(& $this, 'DataSlasher'), $_GET);
-            break;
-
-            case 'post':
-               // Process the $_POST super global
-               $_POST		= array_map(array(& $this, 'DataSlasher'), $_POST);
-            break;
-
-            case 'cookie':
-               // Process the $_COOKIE super global
-               $_COOKIE	= array_map(array(& $this, 'DataSlasher'), $_COOKIE);
-            break;
-
-            default:
-               // Process the GPC super globals with the call-back function
-               $_GET		= array_map(array(& $this, 'DataSlasher'), $_GET);
-               $_POST		= array_map(array(& $this, 'DataSlasher'), $_POST);
-               $_COOKIE	= array_map(array(& $this, 'DataSlasher'), $_COOKIE);
-            break;
-         }
-
-      }
-   }
-
-   /**
-   * To filter the data ie. to slash/unslash
-   *
-   * This is a function which may be called recursively depending on the
-   * variable type. If it is an array it recurses back to this same function.
-   *
-   * @param string $gpcData the string which needs to be filtered
-   * @return string $data the string after being filtered
-   */
-   function DataSlasher($rawData)
-   {
-      // If it is an array, map it back to this same function using array_map
-      if (is_array($rawData))
-      {
-         array_map(array($this,'DataSlasher'), $rawData);
-      }
-      else
-      {
-         // Filter the data depending on the filter criteria.
-         $data	= ($this->mDataFilter == 'add')
-               ? addslashes($rawData)
-               : stripslashes($rawData);
-
-         // Convert to html entities ... Do we need to ???
-         //$data	= htmlentities($data, ENT_QUOTES);
-      }
-      return $data;
-   }
-
 
    function GetAdminInput($field, $value, $label)
    {
@@ -822,13 +702,10 @@ class Setup extends Flyspray
       $test_settings =
       array(
             array ('Safe Mode','safe_mode','OFF'),
-            array ('Display Errors','display_errors','ON'),
             array ('File Uploads','file_uploads','ON'),
-            array ('Magic Quotes GPC','magic_quotes_gpc','OFF'),
-            array ('Magic Quotes Runtime','magic_quotes_runtime','OFF'),
+            //array ('Magic Quotes GPC','magic_quotes_gpc','OFF'),
             array ('Register Globals','register_globals','OFF'),
-            array ('Output Buffering','output_buffering','OFF'),
-            array ('Session auto start','session.auto_start','OFF'),
+            //array ('Output Buffering','output_buffering','OFF'),
             );
 
       $output = '';
@@ -1187,12 +1064,16 @@ class Setup extends Flyspray
          UPDATE
             $users_table
          SET
-            user_name = '$admin_username',
-            user_pass = '$md5_password',
-            email_address = '$admin_email'
+            user_name = ?,
+            user_pass = ?,
+            email_address = ?
          WHERE
-            user_id = '1'";
-         $result = $this->mDbConnection->Execute($update_user);
+         user_id = '1'";
+
+         $update_params = array($admin_username, $md5_password, $admin_email);
+
+         $result = $this->mDbConnection->Execute($update_user, $update_params);
+
          if (!$result)
          {
             $_SESSION['page_heading'][]	= 'Failed to update Admin users details.';
@@ -1335,7 +1216,7 @@ class Setup extends Flyspray
          }
 
          $this->mDbConnection->Execute($sql);
-         
+
          // If any errors, record the error message in the array
          if ($error_number = $this->mDbConnection->MetaError())
          {
@@ -1437,15 +1318,17 @@ class Setup extends Flyspray
          switch ($db_type)
          {
             case 'mysql':
-               $sql	= "SHOW TABLES FROM $db_name";
+                $sql	= "SHOW TABLES FROM $db_name";
+                $params = false;
             break;
 
             case 'postgres':
-               $sql	= "SELECT tablename from pg_tables where tableowner = '$db_username'";
+                $sql	= 'SELECT tablename from pg_tables where tableowner = ?';
+                $params = array($db_username);
             break;
          }
 
-         $result = $this->mDbConnection->Execute($sql);
+         $result = $this->mDbConnection->Execute($sql, $params);
 
          $table_list = array();
          if ($result)
@@ -1569,17 +1452,11 @@ class Setup extends Flyspray
          // Extract the variables to local namespace
          extract($data);
 
-         // Get the current magic quotes runtime settings
-         $mqr = @get_magic_quotes_runtime();
-
          // Disable magic quotes runtime. Some bytes in binary files may be interpreted as
          // \ (backslash), " (double quotes), ' (simple quote) or any "special" character
          // that has a meaning for string processing.
-         @set_magic_quotes_runtime(0);
          $query = fread(fopen($sql_file, "rb"), filesize($sql_file));
 
-         // Re-set the magic quotes runtime settings
-         @set_magic_quotes_runtime($mqr);
 
          // Get the sql queries
          $sql_blocks  = $this->SplitSql($query, $db_type);
@@ -1593,7 +1470,7 @@ class Setup extends Flyspray
                $sql_blocks[$i] = str_replace($this->mUnixName . "_", $db_prefix, $sql_blocks[$i]);
 
                $this->mDbConnection->Execute($sql_blocks[$i]);
-               
+
                if (($error_no = $this->mDbConnection->MetaError()))
                {
                   switch ($error_no)
@@ -1807,34 +1684,6 @@ class Setup extends Flyspray
       return strlen(trim($arg));
    }
 
-   /**
-   * Function to un-compress file archives
-   * @param $from_location Location where archive resides
-   * @param $filename The name of the file to un-compress
-   * @param $to_location The location where to un-compress the archive
-   * @return boolean TRUE else error message
-   */
-   function UncompressFile($from_location, $filename, $to_location)
-   {
-      // Require the Pear Archive_Tar Class
-      require_once(OBJECTS_PATH . "/external/archive_tar.php");
-
-      // use tar file
-      $tar = new Archive_Tar("$from_location/$filename");
-
-      // Extract the archive and return result
-      if ($tar->extract($to_location) || !$tar->_error_message)
-      {
-         return TRUE;
-      }
-      else
-      {
-         $_SESSION['page_message'][] = $tar->_error_message;
-      return FALSE;
-      }
-   }
-
-
    function UpgradePointNineSeven($data)
    {
       // Extract the data to local namespace
@@ -2003,7 +1852,7 @@ class Setup extends Flyspray
    {
       if (sizeof($templates) == 0)
       {
-         trigger_error("Templates not configured properly", E_USER_NOTICE);
+         trigger_error("Templates not configured properly", E_USER_ERROR);
       }
 
       // Define a set of common variables which plugin to the structure template.
@@ -2018,7 +1867,7 @@ class Setup extends Flyspray
         foreach ($module['vars'] as $var_name => $value) {
             $page->assign($var_name, $value);
         }
-        
+
         if ($name == 'structure') {
             $page->assign('body', $body);
             $page->display('structure.tpl');
