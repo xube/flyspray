@@ -138,21 +138,17 @@ class User
                     continue;
                 }
                 $this->perms[$row['project_id']] = array_merge($this->perms[$row['project_id']], $row);
-                if ($row['project_id']) {
-                    foreach ($fields as $key) {
-                        $this->perms[$row['project_id']][$key] = max($this->perms[$row['project_id']][$key], $this->perms['0'][$key]);
-                    }
-                }
             }
             
-            // Admin permissions and attachments
-            foreach ($this->perms as $key => $value) {
-                foreach ($fields as $perm) {
-                    $this->perms[$key][$perm] = max($this->perms[0]['is_admin'], @$this->perms[$key][$perm]);
+            // Set missing permissions and attachments
+            foreach ($this->perms as $proj_id => $value) {
+                foreach ($fields as $key) {
+                    $this->perms[$proj_id][$key] = max($this->perms[0]['is_admin'], @$this->perms[$proj_id][$key], $this->perms[0][$key]);
                 }
+
                 //nobody can upload files in uploads are disabled at the system level.. 
                 if (!$fs->max_file_size) {
-                    $this->perms[$key]['create_attachments'] = 0;
+                    $this->perms[$proj_id]['create_attachments'] = 0;
                 }
             }
         }
