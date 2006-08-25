@@ -16,7 +16,13 @@ $db = new Database;
 $db->dbOpenFast($conf['database']);
 
 $db->Query("ALTER TABLE {assigned} DROP user_or_group");
-$db->Query("ALTER TABLE {assigned} CHANGE assignee_id user_id MEDIUMINT( 5 ) DEFAULT '0' NOT NULL");
+if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
+    $db->Query('ALTER TABLE {assigned} ALTER assignee_id TYPE INT DEFAULT 0 NOT NULL');
+    $db->Query('ALTER TABLE {assigned} RENAME assignee_id TO user_id');
+} else {
+    $db->Query("ALTER TABLE {assigned} CHANGE assignee_id user_id MEDIUMINT( 5 ) DEFAULT '0' NOT NULL");
+}
+
 $db->Query("ALTER TABLE {assigned} ADD INDEX ( task_id , user_id )");
                           
 $check_sql = $db->Query("SELECT task_id, assigned_to
