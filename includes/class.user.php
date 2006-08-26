@@ -92,8 +92,6 @@ class User
         
         if (isset($this->perms[$project][$name])) {
             return $this->perms[$project][$name];
-        } else if (isset($this->perms[0][$name])) {
-            return $this->perms[0][$name];
         } else {
             return 0;
         }
@@ -143,10 +141,14 @@ class User
             // Set missing permissions and attachments
             foreach ($this->perms as $proj_id => $value) {
                 foreach ($fields as $key) {
+                    if ($key == 'project_group') {
+                        continue;
+                    }
+                    
                     $this->perms[$proj_id][$key] = max($this->perms[0]['is_admin'], @$this->perms[$proj_id][$key], $this->perms[0][$key]);
                 }
 
-                //nobody can upload files in uploads are disabled at the system level.. 
+                // nobody can upload files if uploads are disabled at the system level.. 
                 if (!$fs->max_file_size) {
                     $this->perms[$proj_id]['create_attachments'] = 0;
                 }

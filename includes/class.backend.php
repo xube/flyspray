@@ -780,9 +780,10 @@ class Backend
 
         $db->Query('UPDATE  {tasks}
                        SET  date_closed = ?, closed_by = ?, closure_comment = ?,
-                            is_closed = 1, resolution_reason = ?
+                            is_closed = 1, resolution_reason = ?, last_edited_time = ?,
+                            last_edited_by = ?
                      WHERE  task_id = ?',
-                    array(time(), $user->id, $comment, $reason, $task_id));
+                    array(time(), $user->id, $comment, $reason, time(), $user->id, $task_id));
 
         if ($mark100) {
             $db->Query('UPDATE {tasks} SET percent_complete = 100 WHERE task_id = ?',
