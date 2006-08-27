@@ -23,7 +23,10 @@
     <script type="text/javascript" src="{$baseurl}javascript/script.aculo.us/scriptaculous.js"></script>
     <?php if ('index' == $do || 'details' == $do): ?>
         <script type="text/javascript" src="{$baseurl}javascript/{$do}.js"></script>
-    <?php endif; ?>    
+    <?php endif; ?>
+    <?php if ( $do == 'pm' || $do == 'admin'): ?>
+        <script type="text/javascript" src="{$baseurl}javascript/tablecontrol.js"></script>
+    <?php endif; ?>
     <script type="text/javascript" src="{$baseurl}javascript/tabs.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar_stripped.js"></script>

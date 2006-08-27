@@ -1,8 +1,17 @@
 <fieldset class="box">
   <legend>{L('categories')}</legend>
   <p>{L('listnote')}</p>
+  <div id="controlBox">
+    <div class="grip"></div>
+    <div class="inner">
+        <a href="#" onclick="TableControl.up('catTable'); return false;"><img src="{$this->themeUrl()}/up.png" alt="Up" /></a>
+        <a href="#" onclick="TableControl.down('catTable'); return false;"><img src="{$this->themeUrl()}/down.png" alt="Down" /></a>
+        <a href="#" onclick="TableControl.shallower('catTable'); return false;"><img src="{$this->themeUrl()}/left.png" alt="Left" /></a>
+        <a href="#" onclick="TableControl.deeper('catTable'); return false;"><img src="{$this->themeUrl()}/right.png" alt="Right" /></a>
+    </div>
+  </div>
     <form action="{$baseurl}" method="post">
-      <table class="list">
+      <table class="list" id="catTable">
          <thead>
          <tr>
            <th>{L('name')}</th>
@@ -11,6 +20,7 @@
            <th>{L('delete')}</th>
          </tr>
        </thead>
+       <tbody>
         <?php
         $countlines = -1;
         $categories = $proj->listCategories($proj->id, false, false);
@@ -20,10 +30,12 @@
         foreach ($categories as $row):
             $countlines++;
         ?>
-        <tr>
-          <td>
+        <tr class="depth{$row['depth']}">
+          <td class="first">
+            <input type="hidden" name="lft[]" value="{$row['lft']}" />
+            <input type="hidden" name="rgt[]" value="{$row['rgt']}" />
             <input type="hidden" name="id[]" value="{$row['category_id']}" />
-            {!str_repeat('&rarr;', $row['depth'])}
+            <span class="depthmark">{!str_repeat('&rarr;', $row['depth'])}</span>
             <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" 
               value="{$row['category_name']}" />
           </td>
@@ -40,9 +52,10 @@
           </td>
         </tr>
         <?php endforeach; ?>
+        </tbody>
         <?php if($countlines > -1): ?>
         <tr>
-          <td colspan="4"></td>
+          <td colspan="3"></td>
           <td class="buttons">
             <input type="hidden" name="action" value="update_category" />
             <input type="hidden" name="list_type" value="category" />
@@ -52,6 +65,18 @@
         </tr>
         <?php endif; ?>
       </table>
+      <script type="text/javascript">
+        <?php
+            echo 'TableControl.create("catTable",{
+                controlBox: "controlBox",
+                tree: true,
+                spreadActiveClass: true
+            });';
+            echo 'new Draggable("controlBox",{
+                handle: "grip"
+            });';
+        ?>
+      </script>
     </form>
 
     <hr />

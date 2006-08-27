@@ -1509,3 +1509,38 @@ span.autocomplete ul li.selected {
 
 
 /* }}} */
+
+#controlBox {
+	border : 1px solid gray;
+	padding : 1px;
+	background : #fff;
+	width : auto !important;
+	width : 90px;
+	display : table;
+	position:absolute;
+}
+#controlBox div.grip {
+	background : #ccc;
+	cursor : move;
+	height : 12px;
+}
+#controlBox div.inner {
+	padding : 5px 5px 4px 5px;
+	white-space : nowrap;
+	opacity : .2;
+}
+#controlBox.active div.inner {
+	opacity : 1;
+}
+
+table.list {
+	border-collapse:collapse;
+}
+
+table.list tr.active {
+	background:url(active_border.png) repeat-y left white;
+}
+
+table.list tr.active td.first {
+	padding-left:0.5em;
+}

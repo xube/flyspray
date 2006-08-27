@@ -906,14 +906,17 @@ switch ($action = Req::val('action'))
         $listshow     = Post::val('show_in_list');
         $listid       = Post::val('id');
         $listdelete   = Post::val('delete');
+        $listlft      = Post::val('lft');
+        $listrgt      = Post::val('rgt');
 
         for ($i = 0; $i < count($listname); $i++) {
             if ($listname[$i] != '') {
                 $update = $db->Query('UPDATE  {list_category}
                                          SET  category_name = ?,
-                                              show_in_list = ?, category_owner = ?
+                                              show_in_list = ?, category_owner = ?,
+                                              lft = ?, rgt = ?
                                        WHERE  category_id = ? AND project_id = ?',
-                                  array($listname[$i], intval($listshow[$i]), Flyspray::username_to_id(Post::val('category_owner' . $i)), $listid[$i], $proj->id));
+                                  array($listname[$i], intval($listshow[$i]), Flyspray::username_to_id(Post::val('category_owner' . $i)), $listlft[$i], $listrgt[$i], $listid[$i], $proj->id));
             } else {
                 Flyspray::show_error(L('fieldsmissing'));
             }

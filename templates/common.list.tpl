@@ -1,6 +1,13 @@
 <p>{L('listnote')}</p>
+<div id="controlBox">
+    <div class="grip"></div>
+    <div class="inner">
+        <a href="#" onclick="TableControl.up('listTable'); return false;"><img src="{$this->themeUrl()}/up.png" alt="Up" /></a>
+        <a href="#" onclick="TableControl.down('listTable'); return false;"><img src="{$this->themeUrl()}/down.png" alt="Down" /></a>
+    </div>
+</div>
 <form action="{$baseurl}" method="post">
-  <table class="list">
+  <table class="list" id="listTable">
    <thead>
      <tr>
        <th>{L('name')}</th>
@@ -10,12 +17,13 @@
        <th>{L('delete')}</th>
      </tr>
    </thead>
+   <tbody>
     <?php
     $countlines = -1;
     foreach ($rows as $row):
     $countlines++; ?>
     <tr>
-      <td>
+      <td class="first">
         <input type="hidden" name="id[]" value="{$row[$list_type.'_id']}" />
         <input id="listname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]"
           value="{$row[$list_type.'_name']}" />
@@ -42,6 +50,7 @@
       </td>
     </tr>
     <?php endforeach; ?>
+    </tbody>
     <?php if(count($rows)): ?>
     <tr>
       <td colspan="3"></td>
@@ -58,6 +67,17 @@
     </tr>
     <?php endif; ?>
   </table>
+  <script type="text/javascript">
+        <?php
+            echo 'TableControl.create("listTable",{
+                controlBox: "controlBox",
+                tree: false
+            });';
+            echo 'new Draggable("controlBox",{
+                handle: "grip"
+            });';
+        ?>
+      </script>
 </form>
 <hr />
 <form action="{$baseurl}" method="post">
