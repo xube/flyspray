@@ -936,7 +936,7 @@ class Backend
         );
         
         // make sure that only columns can be sorted that are visible
-        $order_keys = php_compat_array_intersect_key($order_keys, array_combine($visible, array_fill(0, count($visible), 1)));
+        $order_keys = array_intersect_key($order_keys, array_combine($visible, array_fill(0, count($visible), 1)));
 
         $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'sev'), array_keys($order_keys))];
         $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'sev'), array_keys($order_keys))];
