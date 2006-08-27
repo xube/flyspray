@@ -54,10 +54,10 @@ while ($row = $db->FetchRow($milestones)) {
 
 if (Get::val('txt')) {
     $page = new FSTpl;
-    header('Content-Type: text/plain');
+    header('Content-Type: text/plain; charset=UTF-8');
     $page->uses('data', 'page');
     $page->display('roadmap.text.tpl');
-    exit();    
+    exit();
 } else {
     $page->uses('data', 'page');
     $page->pushTpl('roadmap.tpl');

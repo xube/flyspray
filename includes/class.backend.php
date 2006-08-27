@@ -912,26 +912,32 @@ class Backend
         }
 
         $order_keys = array (
-                'id'         => 't.task_id',
-                'proj'       => 'project_title',
-                'type'       => 'tasktype_name',
-                'date'       => 'date_opened',
-                'sev'        => 'task_severity',
-                'cat'        => 'lc.category_name',
-                'status'     => 'item_status',
-                'due'        => 'lvc.list_position',
-                'duedate'    => 'due_date',
-                'prog'       => 'percent_complete',
-                'event_date' => 'event_date',
-                'pri'        => 'task_priority',
-                'openedby'   => 'uo.real_name',
-                'reportedin' => 't.product_version',
-                'assignedto' => 'u.real_name',
-                'dateclosed' => 't.date_closed',
-                'os'         => 'los.os_name',
-                'votes'      => 'num_votes',
+                'id'           => 't.task_id',
+                'project'      => 'project_title',
+                'tasktype'     => 'tasktype_name',
+                'dateopened'   => 'date_opened',
+                'summary'      => 'item_summary',
+                'severity'     => 'task_severity',
+                'category'     => 'lc.category_name',
+                'status'       => 'item_status',
+                'dueversion'   => 'lvc.list_position',
+                'duedate'      => 'due_date',
+                'progress'     => 'percent_complete',
+                'lastedit'     => 'event_date',
+                'priority'     => 'task_priority',
+                'openedby'     => 'uo.real_name',
+                'reportedin'   => 't.product_version',
+                'assignedto'   => 'u.real_name',
+                'dateclosed'   => 't.date_closed',
+                'os'           => 'los.os_name',
+                'votes'        => 'num_votes',
+                'attachments'  => 'num_attachments',
+                'comments'     => 'num_comments',
         );
         
+        // make sure that only columns can be sorted that are visible
+        $order_keys = php_compat_array_intersect_key($order_keys, array_combine($visible, array_fill(0, count($visible), 1)));
+
         $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'sev'), array_keys($order_keys))];
         $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'sev'), array_keys($order_keys))];
         $sortorder  = sprintf('%s %s, %s %s, t.task_id ASC',

@@ -42,30 +42,6 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 {
     global $proj, $page;
 
-    $keys = array (
-            'id'         => 'id',
-            'project'    => 'proj',
-            'tasktype'   => 'type',
-            'category'   => 'cat',
-            'severity'   => 'sev',
-            'priority'   => 'pri',
-            'summary'    => '',
-            'dateopened' => 'date',
-            'status'     => 'status',
-            'openedby'   => 'openedby',
-            'assignedto' => 'assignedto',
-            'lastedit'   => 'event_date',
-            'reportedin' => 'reportedin',
-            'dueversion' => 'due',
-            'duedate'    => 'duedate',
-            'comments'   => '',
-            'attachments'=> '',
-            'progress'   => 'prog',
-            'dateclosed' => 'dateclosed',
-            'os'         => 'os',
-            'votes'      => 'votes',
-    );
-
     $imgbase = '<img src="%s" alt="%s" />';
     $class   = '';
     $html    = L($colname);
@@ -73,30 +49,28 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
         $html = sprintf($imgbase, $page->get_image(substr($colname, 0, -1)), $html);
     }
 
-    if ($orderkey = $keys[$colname]) {
-        if (Get::val('order') == $orderkey) {
-            $class  = ' class="orderby"';
-            $sort1  = Get::safe('sort', 'desc') == 'desc' ? 'asc' : 'desc';
-            $sort2  = Get::safe('sort2', 'desc');
-            $order2 = Get::safe('order2');
-            $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, $page->get_image(Get::val('sort')), Get::safe('sort'));
-        }
-        else {
-            $sort1  = 'desc';
-            if (in_array($orderkey,
-                        array('proj', 'type', 'cat', 'openedby', 'assignedto')))
-            {
-                $sort1 = 'asc';
-            }
-            $sort2  = Get::safe('sort', 'desc');
-            $order2 = Get::safe('order');
-        }
-
-        
-        $new_order = array('order' => $orderkey, 'sort' => $sort1, 'order2' => $order2, 'sort2' => $sort2);
-        $html = sprintf('<a title="%s" href="%s">%s</a>',
-                L('sortthiscolumn'), CreateUrl('index', $proj->id, null, array_merge($_GET, $new_order)), $html);
+    if (Get::val('order') == $colname) {
+        $class  = ' class="orderby"';
+        $sort1  = Get::safe('sort', 'desc') == 'desc' ? 'asc' : 'desc';
+        $sort2  = Get::safe('sort2', 'desc');
+        $order2 = Get::safe('order2');
+        $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, $page->get_image(Get::val('sort')), Get::safe('sort'));
     }
+    else {
+        $sort1  = 'desc';
+        if (in_array($colname,
+                    array('project', 'tasktype', 'category', 'openedby', 'assignedto')))
+        {
+            $sort1 = 'asc';
+        }
+        $sort2  = Get::safe('sort', 'desc');
+        $order2 = Get::safe('order');
+    }
+
+    
+    $new_order = array('order' => $colname, 'sort' => $sort1, 'order2' => $order2, 'sort2' => $sort2);
+    $html = sprintf('<a title="%s" href="%s">%s</a>',
+            L('sortthiscolumn'), CreateUrl('index', $proj->id, null, array_merge($_GET, $new_order)), $html);
 
     return sprintf($format, $class, $html);
 }

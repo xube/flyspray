@@ -12,7 +12,7 @@ foreach($milestone['open_tasks'] as $task): ?>
 				alt="" width="200" height="20" />
 </p>
 
-<p>{$milestone['percent_complete']}% of
+<p>{$milestone['percent_complete']} {L('of')}
    <a href="{$baseurl}index.php?tasks=&amp;project={$proj->id}&amp;due={$milestone['id']}&amp;status[]=">
      {count($milestone['all_tasks'])} {L('tasks')}
    </a> {L('completed')}
