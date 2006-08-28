@@ -138,7 +138,7 @@ class Project
         $cats = array();
         $g_cats = array();
         
-        // null = categories of current project + global project, int = categories of spcific project
+        // null = categories of current project + global project, int = categories of specific project
         if (is_null($project_id)) {
             $project_id = $this->id;
             if ($this->id != 0) {

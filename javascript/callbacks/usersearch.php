@@ -22,7 +22,7 @@ $html = '<ul class="autocomplete">';
 
 while ($row = $db->FetchRow($get_users))
 {
-   $html .= '<li title="' . $row['real_name'] . '">' . $row['user_name'] . '</li>';
+   $html .= '<li title="' . $row['real_name'] . '">' . $row['user_name'] . '<span class="informal"> (' . $row['real_name'] . ')</span></li>';
 }
 
 $html .= '</ul>';

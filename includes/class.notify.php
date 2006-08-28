@@ -47,9 +47,9 @@ class Notifications {
       global $db, $fs;
 
       if (empty($fs->prefs['jabber_server'])
-          OR empty($fs->prefs['jabber_port'])
-          OR empty($fs->prefs['jabber_username'])
-          OR empty($fs->prefs['jabber_password'])) {
+          || empty($fs->prefs['jabber_port'])
+          || empty($fs->prefs['jabber_username'])
+          || empty($fs->prefs['jabber_password'])) {
             return false;
       }
 
@@ -76,6 +76,8 @@ class Notifications {
 
       $row = $db->FetchRow($result);
       $message_id = $row['message_id'];
+      // make sure every email address is only added once
+      $to = array_unique($to);
 
       foreach ($to as $jid)
       {
@@ -98,9 +100,9 @@ class Notifications {
       debug_print("Checking Flyspray Jabber configuration...");
 
       if (empty($fs->prefs['jabber_server'])
-          OR empty($fs->prefs['jabber_port'])
-          OR empty($fs->prefs['jabber_username'])
-          OR empty($fs->prefs['jabber_password'])) {
+          || empty($fs->prefs['jabber_port'])
+          || empty($fs->prefs['jabber_username'])
+          || empty($fs->prefs['jabber_password'])) {
             return false;
       }
 
@@ -270,28 +272,27 @@ class Notifications {
 
       if (is_array($to))
       {
-         $mail->AddAddress($fs->prefs['admin_email']); // do not disclose user's address
-         foreach ($to as $key => $val)
+         // do not disclose user's address
+         $mail->AddAddress($fs->prefs['admin_email']);
+         // make sure every email address is only added once
+         $to = array_unique($to);
+         foreach ($to as $val)
          {
             // Unlike the docs say, it *does (appear to)* work with mail()
             $mail->AddBcc($val);
          }
 
       } else {
-         $mail->AddAddress($to);                            // Add a single address
+         $mail->AddAddress($to);
       }
 
-      $mail->WordWrap = 70;                                 // set word wrap to 70 characters
-      //$mail->IsHTML(true);                                  // set email format to HTML
-
+      $mail->WordWrap = 70; // 70 characters
       $mail->Subject = $subject;
       $mail->Body = $body;
-      //$mail->AltBody = $body;
 
       if (!$mail->Send()) {
           Flyspray::show_error(21, false, $mail->ErrorInfo);
       }
-      $mail->Send();
 
    } // }}}
    // {{{ Create a message for any occasion
@@ -320,22 +321,22 @@ class Notifications {
       // Get the string of modification
       $notify_type_msg = array(
       	0 => L('none'),
-	NOTIFY_TASK_OPENED     => L('taskopened'),
-	NOTIFY_TASK_CHANGED    => L('pm.taskchanged'),
-	NOTIFY_TASK_CLOSED     => L('taskclosed'),
-	NOTIFY_TASK_REOPENED   => L('pm.taskreopened'),
-	NOTIFY_DEP_ADDED       => L('pm.depadded'),
-	NOTIFY_DEP_REMOVED     => L('pm.depremoved'),
-	NOTIFY_COMMENT_ADDED   => L('commentadded'),
-	NOTIFY_ATT_ADDED       => L('attachmentadded'),
-	NOTIFY_REL_ADDED       => L('relatedadded'),
-	NOTIFY_OWNERSHIP       => L('ownershiptaken'),
-	NOTIFY_PM_REQUEST      => L('pmrequest'),
-	NOTIFY_PM_DENY_REQUEST => L('pmrequestdenied'),
-	NOTIFY_NEW_ASSIGNEE    => L('newassignee'),
-	NOTIFY_REV_DEP         => L('revdepadded'),
-	NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
-	NOTIFY_ADDED_ASSIGNEES => L('assigneeadded'),
+        NOTIFY_TASK_OPENED     => L('taskopened'),
+        NOTIFY_TASK_CHANGED    => L('pm.taskchanged'),
+        NOTIFY_TASK_CLOSED     => L('taskclosed'),
+        NOTIFY_TASK_REOPENED   => L('pm.taskreopened'),
+        NOTIFY_DEP_ADDED       => L('pm.depadded'),
+        NOTIFY_DEP_REMOVED     => L('pm.depremoved'),
+        NOTIFY_COMMENT_ADDED   => L('commentadded'),
+        NOTIFY_ATT_ADDED       => L('attachmentadded'),
+        NOTIFY_REL_ADDED       => L('relatedadded'),
+        NOTIFY_OWNERSHIP       => L('ownershiptaken'),
+        NOTIFY_PM_REQUEST      => L('pmrequest'),
+        NOTIFY_PM_DENY_REQUEST => L('pmrequestdenied'),
+        NOTIFY_NEW_ASSIGNEE    => L('newassignee'),
+        NOTIFY_REV_DEP         => L('revdepadded'),
+        NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
+        NOTIFY_ADDED_ASSIGNEES => L('assigneeadded'),
       );
 
       // Generate the nofication message
@@ -763,13 +764,13 @@ class Notifications {
          $proj_emails = preg_split('/[\s,;]+/', $proj->prefs['notify_email'], -1, PREG_SPLIT_NO_EMPTY);
          $proj_jids = explode(',', $proj->prefs['notify_jabber']);
 
-         foreach ($proj_emails AS $key => $val)
+         foreach ($proj_emails as $key => $val)
          {
             if (!empty($val) && !in_array($val, $email_users))
                array_push($email_users, $val);
          }
 
-         foreach ($proj_jids AS $key => $val)
+         foreach ($proj_jids as $key => $val)
          {
             if (!empty($val) && !in_array($val, $jabber_users))
                array_push($jabber_users, $val);

@@ -95,19 +95,13 @@
             <label for="parent_id">{L('parent')}</label>
             <select id="parent_id" name="parent_id">
               <option value="{$root['category_id']}">{L('notsubcategory')}</option>
-              <?php $cat_opts = array_map(
-              create_function('$x', 'return array($x["category_id"], $x["category_name"]);'),
-              $categories);
-              ?>
-              {!tpl_options($cat_opts, Req::val('parent_id'))}
+              {!tpl_options($proj->listCategories($proj->id), Req::val('parent_id'))}
             </select>
           </td>
           <td class="buttons">
             <input type="hidden" name="action" value="{Req::val('action', $do . '.add_category')}" />
             <input type="hidden" name="area" value="{Req::val('area')}" />
-            <?php if ($proj->id): ?>
             <input type="hidden" name="project_id" value="{$proj->id}" />
-            <?php endif; ?>
             <button type="submit">{L('addnew')}</button>
           </td>
         </tr>

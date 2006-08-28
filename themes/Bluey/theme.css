@@ -1500,6 +1500,10 @@ span.autocomplete ul li {
 	height: 1.1em;
 }
 
+span.autocomplete ul li span.informal {
+	color:gray;
+	font-size:0.9em;
+}
 
 span.autocomplete ul li.selected {
 	background-color:highlight;
