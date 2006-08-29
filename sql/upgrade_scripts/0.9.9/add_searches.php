@@ -1,13 +1,13 @@
 <?php
    /**********************************************************\
-   | This script enters the relations of duplicate tasks into  |
-   | the databse.                                              |
+   | This script addes some default saved searches for every   |
+   | user.                                                     |
    \***********************************************************/
    
 define('IN_FS', true);
 
-require_once '../includes/class.flyspray.php';
-require_once '../includes/constants.inc.php';
+require_once '../../../includes/class.flyspray.php';
+require_once '../../../includes/constants.inc.php';
 require_once BASEDIR . '/includes/class.database.php';
 
 $db = new Database;

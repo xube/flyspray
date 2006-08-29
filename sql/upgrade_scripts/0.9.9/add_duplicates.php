@@ -6,8 +6,8 @@
    
 define('IN_FS', true);
 
-require_once '../includes/class.flyspray.php';
-require_once '../includes/constants.inc.php';
+require_once '../../../includes/class.flyspray.php';
+require_once '../../../includes/constants.inc.php';
 require_once BASEDIR . '/includes/class.database.php';
 
 $db = new Database;

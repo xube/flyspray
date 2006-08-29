@@ -1,4 +1,5 @@
 <p>{L('listnote')}</p>
+<?php if (count($rows)): ?>
 <div id="controlBox">
     <div class="grip"></div>
     <div class="inner">
@@ -6,6 +7,7 @@
         <a href="#" onclick="TableControl.down('listTable'); return false;"><img src="{$this->themeUrl()}/down.png" alt="Down" /></a>
     </div>
 </div>
+<?php endif; ?>
 <form action="{$baseurl}" method="post">
   <table class="list" id="listTable">
    <thead>

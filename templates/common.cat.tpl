@@ -1,6 +1,13 @@
 <fieldset class="box">
   <legend>{L('categories')}</legend>
   <p>{L('listnote')}</p>
+  <?php
+  $countlines = -1;
+  $categories = $proj->listCategories($proj->id, false, false);
+  $root = $categories[0];
+  unset($categories[0]);
+  
+  if (count($categories)) : ?>
   <div id="controlBox">
     <div class="grip"></div>
     <div class="inner">
@@ -10,6 +17,7 @@
         <a href="#" onclick="TableControl.deeper('catTable'); return false;"><img src="{$this->themeUrl()}/right.png" alt="Right" /></a>
     </div>
   </div>
+  <?php endif; ?>
     <form action="{$baseurl}" method="post">
       <table class="list" id="catTable">
          <thead>
@@ -22,11 +30,6 @@
        </thead>
        <tbody>
         <?php
-        $countlines = -1;
-        $categories = $proj->listCategories($proj->id, false, false);
-        $root = $categories[0];
-        unset($categories[0]);
-        
         foreach ($categories as $row):
             $countlines++;
         ?>

@@ -321,7 +321,8 @@ function tpl_userselect($name, $value = null, $id = '') {
     }
     
     if ($value && ctype_digit($value)) {
-        $value = $db->FetchOne($db->Query('SELECT user_name FROM {users} WHERE user_id = ?', array($value)));
+        $sql = $db->Query('SELECT user_name FROM {users} WHERE user_id = ?', array($value));
+        $value = $db->FetchOne($sql);
     }
     
     if (!$value) {

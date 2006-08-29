@@ -892,9 +892,11 @@ class Flyspray
         global $db;
         
         if (is_numeric($name)) {
-            return intval($db->FetchOne($db->Query('SELECT user_id FROM {users} WHERE user_id = ?', array($name))));
+            $sql = $db->Query('SELECT user_id FROM {users} WHERE user_id = ?', array($name));
+            return intval($db->FetchOne($sql));
         } else {
-            return intval($db->FetchOne($db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($name))));
+            $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($name));
+            return intval($db->FetchOne($sql));
         }
     }
 }

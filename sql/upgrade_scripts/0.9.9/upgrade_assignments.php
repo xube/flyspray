@@ -8,8 +8,8 @@
    
 define('IN_FS', true);
 
-require_once '../includes/class.flyspray.php';
-require_once '../includes/constants.inc.php';
+require_once '../../../includes/class.flyspray.php';
+require_once '../../../includes/constants.inc.php';
 require_once BASEDIR . '/includes/class.database.php';
 
 $db = new Database;
@@ -17,7 +17,9 @@ $db->dbOpenFast($conf['database']);
 
 $db->Query("ALTER TABLE {assigned} DROP user_or_group");
 if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
-    $db->Query('ALTER TABLE {assigned} ALTER assignee_id TYPE INT SET DEFAULT 0 NOT NULL');
+    $db->Query('ALTER TABLE {assigned} ALTER assignee_id TYPE integer');
+    $db->Query('ALTER TABLE {assigned} ALTER assignee_id SET DEFAULT 0');
+    $db->Query('ALTER TABLE {assigned} ALTER assignee_id SET NOT NULL');
     $db->Query('ALTER TABLE {assigned} RENAME assignee_id TO user_id');
 } else {
     $db->Query("ALTER TABLE {assigned} CHANGE assignee_id user_id MEDIUMINT( 5 ) DEFAULT '0' NOT NULL");
