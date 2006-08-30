@@ -15,10 +15,10 @@ $searchterm = reset($_POST);
 // Get the list of users from the global groups above
 $get_users = $db->Query('SELECT u.real_name, u.user_name, u.user_id, g.group_name
                            FROM {users} u
-                      LEFT JOIN {users_in_groups} uig on uig.user_id = u.user_id
+                      LEFT JOIN {users_in_groups} uig on uig.user_id = u.user_id 
                       LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                          WHERE u.user_name LIKE ? OR u.user_id LIKE ?
-                       ORDER BY g.group_id ASC',
+                          WHERE (u.user_name LIKE ? OR u.user_id LIKE ?) AND g.group_id is NOT NULL
+                       ORDER BY g.group_name ASC',
                          array($searchterm, $searchterm), 1);
 
 if ($row = $db->FetchRow($get_users)) {
