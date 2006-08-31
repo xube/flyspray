@@ -205,7 +205,7 @@
 		<?php if ($user->can_edit_task($task_details)): ?>
 		<span class="DoNotPrint"> &mdash;
 		  <a class="removedeplink"
-			 href="{$baseurl}?action=removedep&amp;depend_id={$dependency['depend_id']}">
+			 href="{$baseurl}?action=removedep&amp;depend_id={$dependency['depend_id']}&amp;task_id={$task_details['task_id']}">
 			 {L('remove')}</a>
 		</span>
 		<?php endif; ?>
