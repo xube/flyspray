@@ -190,18 +190,25 @@
           <td id="taskrange"><strong>{L('noresults')}</strong></td>
           <?php endif; ?>
         </tr>
+        <?php if (!$user->isAnon() && $total): ?>
+        <tr id="massopsactions">
+          <td>
+            <select name="action">
+              <option value="details.add_notification">{L('watchtasks')}</option>
+              <option value="remove_notification">{L('stopwatchingtasks')}</option>
+              <option value="takeownership">{L('assigntaskstome')}</option>
+            </select>
+            <input type="hidden" name="user_id" value="{$user->id}" />
+            <button type="submit">{L('takeaction')}</button>
+          </td>
+          <td id="export">
+            <a href="{$baseurl}?{Url::query_from_array(array_merge($_GET, array('do' => 'export')))}">
+              <img alt="{L('csvexport')}" title="{L('csvexport')}" src="{$this->get_image('csvexport')}" width="16" height="16" /> {L('csvexport')}
+            </a>
+          </td>
+        </tr>
+        <?php endif ?>
       </table>
-      <?php if (!$user->isAnon() && $total): ?>
-      <div id="massopsactions">
-        <select name="action">
-          <option value="details.add_notification">{L('watchtasks')}</option>
-          <option value="remove_notification">{L('stopwatchingtasks')}</option>
-          <option value="takeownership">{L('assigntaskstome')}</option>
-        </select>
-        <input type="hidden" name="user_id" value="{$user->id}" />
-        <button type="submit">{L('takeaction')}</button>
-      </div>
-      <?php endif ?>
     </div>
   </form>
 </div>

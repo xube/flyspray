@@ -830,7 +830,7 @@ class Backend
      * @return array
      * @version 1.0
      */
-    function get_task_list($args, $visible, $offset = 0, $perpage = 20)
+    function get_task_list($args, $visible, $offset = 0, $perpage = null)
     {
         global $proj, $db, $user, $conf;
         /* build SQL statement {{{ */
@@ -1075,7 +1075,7 @@ class Backend
             if (!$user->can_view_task($task)) {
                 unset($tasks[$key]);
                 array_pop($id_list);
-            } elseif ($key < $offset || ($key > $offset - 1 + $perpage) || ($limit > 0 && $key >= $limit)) {
+            } elseif (!is_null($perpage) && ($key < $offset || ($key > $offset - 1 + $perpage) || ($limit > 0 && $key >= $limit))) {
                 unset($tasks[$key]);
             }
         }

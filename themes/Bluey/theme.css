@@ -879,8 +879,17 @@ div#actionbuttons a#hideclosetask:hover {
 	border:none;
 }
 
-div#massopsactions {
-	padding:0 0 0 3px;
+table#pagenumbers tr#massopsactions td {
+	padding:0;
+}
+
+table#pagenumbers tr#massopsactions td#export {
+	text-align:right;
+	padding-right:3px;
+}
+
+td#export img {
+	vertical-align:middle;
 }
 
 div.groupedit {
