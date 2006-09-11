@@ -6,18 +6,6 @@
    ---------------------------------------------------
 */
 
-// flag to indicate if we should be noisy or not
-$debug = true;
-
-function debug_print($message){
-   global $debug;
-   if ( $debug )
-   {
-      echo "$message<br/>\n";
-      flush();
-   }
-}
-
 // Start of the Notifications class
 class Notifications {
 
@@ -33,15 +21,20 @@ class Notifications {
       $msg = $this->GenerateMsg($type, $task_id, $info);
       
       if ($ntype == NOTIFY_EMAIL || $ntype == NOTIFY_BOTH) {
-          $this->SendEmail($to[0], $msg[0], $msg[1]);
+          if(!$this->SendEmail($to[0], $msg[0], $msg[1])) {
+              return false;
+          }
       }
       if ($ntype == NOTIFY_JABBER || $ntype == NOTIFY_BOTH) {
-          $this->StoreJabber($to[1], $msg[0], $msg[1]);
-      }
+          if(!$this->StoreJabber($to[1], $msg[0], $msg[1])) {
+              return false;
+          }
+      } 
+            return true;
 
    // End of Create() function
    } // }}}
-   // {{{ Store Jabber messages for sending later
+   // {{{ Store Jabber messages for sending later 
    function StoreJabber( $to, $subject, $body )
    {
       global $db, $fs;
@@ -91,13 +84,14 @@ class Notifications {
       }
 
       return TRUE;
-   } // }}}
+   } // }}} 
    // {{{ Send Jabber messages that were stored earlier
    function SendJabber()
    {
       global $db, $fs;
 
-      debug_print("Checking Flyspray Jabber configuration...");
+      include_once BASEDIR . '/includes/class.fsjabber.php';
+      
 
       if (empty($fs->prefs['jabber_server'])
           || empty($fs->prefs['jabber_port'])
@@ -106,41 +100,50 @@ class Notifications {
             return false;
       }
 
-      debug_print("We are configured to use Jabber...");
-
-      require_once(BASEDIR . '/includes/external/class.jabber.php');
-      $JABBER = new Jabber;
+      $JABBER = new fsJabber;
 
       $JABBER->server      = $fs->prefs['jabber_server'];
       $JABBER->port        = $fs->prefs['jabber_port'];
       $JABBER->username    = $fs->prefs['jabber_username'];
       $JABBER->password    = $fs->prefs['jabber_password'];
       $JABBER->resource    = 'Flyspray';
-
+      $JABBER->ssl         = $fs->prefs['jabber_ssl'];
+      $JABBER->enable_logging = defined('JABBER_DEBUG');
+      //debug file, only used when JABBER_DEBUG constant is defined
+      $JABBER->log_filename = defined('JABBER_DEBUG_FILE') ? JABBER_DEBUG_FILE
+                                 : Flyspray::get_tmp_dir() . '/jabberdebug.txt';
       // get listing of all pending jabber notifications
       $result = $db->Query("SELECT DISTINCT message_id
                             FROM {notification_recipients}
                             WHERE notify_method='j'");
 
-      if ( !$db->CountRows($result) )
+      if (!$db->CountRows($result))
       {
-         debug_print("No notifications to send");
+         $JABBER->AddToLog("No notifications to send");
          return false;
       }
 
       // we have notifications to process - connect
-      debug_print("We have notifications to process...");
-      debug_print("Starting Jabber session:");
+      $JABBER->AddToLog("We have notifications to process...");
+      $JABBER->AddToLog("Starting Jabber session:");
 
-      $JABBER->Connect() or die("AAAHHHH can't connect!!!!");
-      debug_print("- Connected");
+      if(!$JABBER->Connect()) {
 
-      $JABBER->SendAuth() or die("GAHHHH bad auth!!!!");
-      debug_print("- Auth'd");
+          $JABBER->AddToLog("Cannot connect to the jabber server");
+          return false;
+      }
+      $JABBER->AddToLog("- Connected");
+
+      if(!$JABBER->SendAuth()) {
+          $JABBER->AddToLog("bad authentication,check your username and password");  
+          return false;
+      }
+
+      $JABBER->AddToLog("- Authenticated correctly");
       sleep(3);
 
       $JABBER->SendPresence("online", null, null,null,5);
-      debug_print("- Presence");
+      $JABBER->AddToLog("- Presence");
       sleep(3);
 
       while ( $row = $db->FetchRow($result) )
@@ -149,7 +152,7 @@ class Notifications {
       }
 
       $desired = join(",", $ids);
-      debug_print("message ids to send = {" . $desired . "}");
+      $JABBER->AddToLog("message ids to send = {" . $desired . "}");
 
       // removed array usage as it's messing up the select
       // I suspect this is due to the variable being comma separated
@@ -159,7 +162,7 @@ class Notifications {
                                    ORDER BY time_created ASC"
                                  );
 
-      debug_print("number of notifications {" . $db->CountRows($notifications) . "}");
+      $JABBER->AddToLog("number of notifications {" . $db->CountRows($notifications) . "}");
 
       // loop through notifications
       while ( $notification = $db->FetchRow($notifications) )
@@ -167,7 +170,7 @@ class Notifications {
          $subject = $notification['message_subject'];
          $body    = $notification['message_body'];
 
-         debug_print("Processing notification {" . $notification['message_id'] . "}");
+         $JABBER->AddToLog("Processing notification {" . $notification['message_id'] . "}");
 
             $recipients = $db->Query("SELECT * FROM {notification_recipients}
                                       WHERE message_id = ?
@@ -176,13 +179,13 @@ class Notifications {
                                     );
 
             // loop through recipients
-            while ( $recipient = $db->FetchRow($recipients) )
+            while ($recipient = $db->FetchRow($recipients) )
             {
                $jid = $recipient['notify_address'];
-               debug_print("- attempting send to {" . $jid . "}");
+               $JABBER->AddToLog("- attempting send to {" . $jid . "}");
 
                // send notification
-               if ( $JABBER->connected ) {
+               if ($JABBER->connected) {
                   if ($JABBER->SendMessage($jid, 'normal', NULL,
                      array(
                         "subject"   => $subject,
@@ -196,13 +199,13 @@ class Notifications {
                                            AND notify_address = ?",
                                            array($notification['message_id'], $jid)
                                          );
-                     debug_print("- notification sent");
+                     $JABBER->AddToLog("- notification sent");
                   }
                   else {
-                     debug_print("- notification not sent");
+                     $JABBER->AddToLog("- notification not sent");
                   }
                } else {
-                  debug_print("- not connected");
+                  $JABBER->AddToLog("- not connected");
                }
             }
             // check to see if there are still recipients for this notification
@@ -213,23 +216,23 @@ class Notifications {
 
             if ( $db->CountRows($result) == 0 )
             {
-               debug_print("No further recipients for message id {" . $notification['message_id'] . "}");
+               $JABBER->AddToLog("No further recipients for message id {" . $notification['message_id'] . "}");
                // remove notification no more recipients
                $result = $db->Query("DELETE FROM {notification_messages}
                                      WHERE message_id = ?",
                                      array($notification['message_id'])
                                    );
-               debug_print("- Notification deleted");
+               $JABBER->AddToLog("- Notification deleted");
             }
          }
 
          // disconnect from server
          $JABBER->Disconnect();
-         debug_print("Disconnected from Jabber server");
+         $JABBER->AddToLog("Disconnected from Jabber server");
 
-      return TRUE;
-   } // }}}
-   // {{{ Send email
+      return true;
+   } // }}} 
+   // {{{ Send email 
    function SendEmail($to, $subject, $body)
    {
       global $fs, $proj, $user;
@@ -239,15 +242,15 @@ class Notifications {
       }
 
       // Get the new email class
-      require_once('external/class.phpmailer.php');
+      require_once 'external/swift-mailer/class.phpmailer.php';
 
       // Define the class
       $mail = new PHPMailer();
 
-      $mail->From = $fs->prefs['admin_email'];
-      $mail->Sender = $fs->prefs['admin_email'];
+      $mail->From = trim($fs->prefs['admin_email']);
+      $mail->Sender = trim($fs->prefs['admin_email']);
       if ($proj->prefs['notify_reply']) {
-          $mail->AddReplyTo($proj->prefs['notify_reply']);
+          $mail->AddReplyTo(trim($proj->prefs['notify_reply']));
       }
       $mail->FromName = 'Flyspray';
       $mail->CharSet = 'UTF-8';
@@ -279,22 +282,25 @@ class Notifications {
          foreach ($to as $val)
          {
             // Unlike the docs say, it *does (appear to)* work with mail()
-            $mail->AddBcc($val);
+            $mail->AddBcc(trim($val));
          }
 
       } else {
-         $mail->AddAddress($to);
+         $mail->AddAddress(trim($to));
       }
 
       $mail->WordWrap = 70; // 70 characters
-      $mail->Subject = $subject;
+      $mail->Subject = trim($subject);
       $mail->Body = $body;
 
       if (!$mail->Send()) {
-          Flyspray::show_error(21, false, $mail->ErrorInfo);
+         // Flyspray::show_error(21, false, $mail->ErrorInfo);
+          return false;
       }
 
-   } // }}}
+        return true;
+
+   } // }}} 
    // {{{ Create a message for any occasion
    function GenerateMsg($type, $task_id, $arg1='0')
    {
@@ -629,7 +635,7 @@ class Notifications {
           $body = L('messagefrom'). $arg1[0] . "\n\n"
                   . L('magicurlmessage')." \n"
                   . "{$arg1[0]}index.php?do=lostpw&magic_url=$arg1[1]\n";
-      } // }}}
+      } // } }}
       // {{{ New user
       if ($type == NOTIFY_NEW_USER)
       {
@@ -647,7 +653,7 @@ class Notifications {
       $body .= L('disclaimer');
       return array($subject, $body);
    
-   } // }}}
+   } // }}} 
    // {{{ Create an address list for specific users
    function SpecificAddresses($users, $ignoretype = false)
    {

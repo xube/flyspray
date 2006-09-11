@@ -488,7 +488,7 @@ class Flyspray
                          VALUES (?, ?, ?, ?, ?, ?)',
                     array($project_id, $task_id, $submitter, $type, $reason, time()));
     } // }}}
-    // Check for an existing admin request for a task and event type {{{
+    // Check for an existing admin request for a task and event type {{{;
     /**
      * Checks whether or not there is an admin request for a task
      * @param integer $type 1: Task close, 2: Task re-open
@@ -580,6 +580,10 @@ class Flyspray
 
         $auth_details = $db->FetchRow($result);
 
+        if(!$result || !count($auth_details)) {
+            return 0;
+        }
+
         //encrypt the password with the method used in the db
         switch (strlen($auth_details['user_pass'])) {
             case 40:
@@ -631,38 +635,31 @@ class Flyspray
      */
     function startReminderDaemon()
     {
-    /**
-     * XXX:  I will rewrite this stuff from the scratch later
-     */
-
-        $script  = 'daemon.php';
-        $include = 'schedule.php';
-        $runfile = 'running';
+        global $baseurl;
+        $runfile = Flyspray::get_tmp_dir() . '/flysprayreminders.run';
         $timeout = 600;
-
+        
         if (!is_file($runfile) or filemtime($runfile) < time() - ($timeout * 2)) {
-            // Starting runner...
-            $php = '';
-         /**
-          * Fixme : move the function CheckPhpCli( ) here and let it to do this work.
-          */
-
-            foreach (array('/usr/local/bin/php', '/usr/bin/php') as $path) {
-                if (is_file($path) || is_executable($path)) {
-                    $php = $path;
-                    break;
-                }
+           
+            $include = 'schedule.php';
+            $host = parse_url($baseurl);
+            $key = sha1_file(BASEDIR . '/flyspray.conf.php');
+        
+        /* "localhost" is on **purpose** not a mistake ¡¡ 
+         * almost any server accepts requests to itself in localhost ;)
+         * firewalls will not block it.
+         * the "Host" http header will tell the webserver where flyspray is running.
+         */
+          $daemon = @fsockopen('localhost', $_SERVER['SERVER_PORT'], $errno, $errstr, 5);
+        
+            if ($daemon) {
+                fwrite($daemon, "GET {$host['path']}{$include}?key={$key} HTTP/1.0\r\n");
+                fwrite($daemon, "Host: {$_SERVER['HTTP_HOST']}\r\n\r\n");
+                fclose($daemon);
             }
-
-            if (!$php || Flyspray::function_disabled('exec')) {
-                // No PHP executable found... sorry!";
-                return;
-            }
-
-            exec("$php $script $include $timeout ../$runfile >/dev/null &");
         }
-    } // }}}
-    // Start the session {{{
+    }
+            // Start the session {{{
     /**
      * Starts the session
      * @access public static
@@ -899,11 +896,43 @@ class Flyspray
             return intval($db->FetchOne($sql));
         }
     }
+    /**
+     * check_email 
+     *  checks if an email is valid 
+     * @param string $email 
+     * @access public
+     * @return bool
+     */
     function check_email($email)
     {
         include_once dirname(__FILE__) . '/external/Validate.php';
 
         return is_string($email) && Validate::email($email, array('use_rfc822'=>true));
     }
+
+    function get_tmp_dir()
+    {
+        if(function_exists('sys_get_temp_dir')) {
+            return sys_get_temp_dir();
+            
+        } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            if ($var = isset($_ENV['TEMP']) ? $_ENV['TEMP'] : getenv('TEMP')) {
+                return $var;
+            }
+            if ($var = isset($_ENV['TMP']) ? $_ENV['TMP'] : getenv('TMP')) {
+                return $var;
+            }
+            if ($var = isset($_ENV['windir']) ? $_ENV['windir'] : getenv('windir')) {
+                return $var;
+            }
+            return getenv('SystemRoot') . '\temp';
+
+        } elseif ($var = isset($_ENV['TMPDIR']) ? $_ENV['TMPDIR'] : getenv('TMPDIR')) {
+             return $var;
+        }
+            return '/tmp';
+    }
+    
+
 }
 ?>
