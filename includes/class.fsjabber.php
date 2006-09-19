@@ -13,15 +13,24 @@
 
 require_once dirname(__FILE__) . '/external/class.jabber.php';
 
+require_once dirname(__FILE__) . '/class.fsjabberinfo.php';
+
 class fsJabber extends Jabber {
 
     var $ssl = false;
-
+    var $jinfo;
+    /**
+     * fsJabber 
+     *  constructor 
+     * @access public
+     * @return void
+     */
     function fsJabber()
     {
         parent::Jabber();
         //replace the base connector class.
         $this->connection_class = 'fsJabberConnector';
+        $this->jinfo = new fsJabberInfo;
     }
 
    /**
@@ -91,12 +100,22 @@ class fsJabber extends Jabber {
     {
         if ($this->enable_logging) {
 
-            if ($this->log_filehandler) {
+            if (is_resource($this->log_filehandler)) {
                 @fwrite($this->log_filehandler, $string . "\n\n");
             }           
         } else {
                 $this->log_array[] = htmlspecialchars($string, ENT_QUOTES, 'utf-8');
         }
+    }
+    
+    function _starttls()
+    {
+        if (!$this->jinfo->has_tls) {
+
+            $this->AddToLog("WARNING: TLS is not available: no SSL support in PHP");
+            return true;
+        }
+        return parent::_starttls();
     }
  
     /**
@@ -108,7 +127,7 @@ class fsJabber extends Jabber {
      */
     function _useSSL()
     {
-        return ($this->ssl && extension_loaded('openssl'));
+        return ($this->ssl && $this->jinfo->has_ssl);
     }
 }
 

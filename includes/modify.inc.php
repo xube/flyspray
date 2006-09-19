@@ -452,13 +452,13 @@ switch ($action = Req::val('action'))
                         'edit_comments', 'delete_comments', 'create_attachments',
                         'delete_attachments', 'view_history', 'close_own_tasks',
                         'close_other_tasks', 'assign_to_self', 'view_attachments',
-                        'assign_others_to_self', 'view_reports', 'group_open');
+                        'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
 
                 $params = array_map('Post_to0',$cols);
                 array_unshift($params, $proj->id);
                 
                 $db->Query("INSERT INTO  {groups} (project_id, ". join(',', $cols).")
-                                 VALUES  (?, ".join(',', array_fill(0, count($cols), '?')).")", $params);
+                                 VALUES  (". $db->fill_placeholders($cols, 1) . ')', $params);
 
                 $_SESSION['SUCCESS'] = L('newgroupadded');
             }
@@ -535,8 +535,7 @@ switch ($action = Req::val('action'))
         $db->Query("INSERT INTO  {groups}
                                  ( group_name, group_desc, project_id,
                                    ".join(',', $cols).")
-                         VALUES  ( ?, ?, ?, ".join(',', array_fill(0, count($cols), '?')).")",
-                         $args);
+                         VALUES  ( ". $db->fill_placeholders($cols, 3) .")", $args);
 
         $db->Query("INSERT INTO  {list_category}
                                  ( project_id, category_name,

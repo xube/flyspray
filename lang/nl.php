@@ -10,6 +10,10 @@
 // Furthermore, nothing else than the language array is saved
 // when using the .langedit.php editor!
 //
+// @version SVN $Id$
+//
+// this translation was last updated by Ceesjan Luiten on 09/15/2006
+//
 $translation = array(
 'edituser'                => 'Bewerk gebruiker',
 'username'                => 'Gebruikersnaam',
@@ -523,6 +527,7 @@ $translation = array(
 'addressused'             => 'Op dit adres is zojuist een Flyspray account geregisteerd.  Als u dit bericht niet verwachtte, gelieve het dan te negeren.  Uw bevestigingscode is:',
 'confirmcodeis'           => 'Uw bevestingings code is:',
 'codesent'                => 'Uw bevestingingscode is verzonden.  Volg de instructies in het bericht op.',
+'codenotsent'             => 'De code kon niet verstuurd worden, gaarne probeer het later opnieuw.',
 'taskmadeprivatemsg'      => 'Deze taak is privé gemaakt',
 'taskmadepublicmsg'       => 'Deze taak is weer publiekelijk gemaakt',
 'realandnotify'           => 'Het is verplicht uw volledige naam in te vullen, en uw E-mailadres of uw Jabber-ID veld.',
@@ -798,6 +803,8 @@ $translation = array(
 'ordertip'                => 'Op welke manier items geordend worden',
 'showtip'                 => 'Toon dit item in de lijst',
 'deletetip'               => 'Verwijder dit item van de lijst',
+'csvexport'               => 'CSV-uitvoer',
+'del'                     => 'Verwijder',
 );
 
 ?>

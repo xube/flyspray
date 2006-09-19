@@ -325,7 +325,7 @@ class Backend
             }
 
             $fname = $task_id.'_'.mt_rand();
-            while (is_file($path = 'attachments/'.$fname)) {
+            while (is_file($path = BASEDIR .'/attachments/'.$fname)) {
                 $fname = $task_id.'_'.mt_rand();
             }
 
@@ -464,13 +464,15 @@ class Backend
         
         Flyspray::logEvent(0, 30, serialize(Flyspray::getUserDetails($uid)));
         
+        // Send a user his details (his username might be altered, password auto-generated)
         if ($fs->prefs['notify_registration']) {
             $sql = $db->Query('SELECT email_address
                                  FROM {users} u
                             LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
                                 WHERE g.group_id = 1');
             $notify->Create(NOTIFY_NEW_USER, null,
-                            array($baseurl, $user_name, $real_name, $email, $jabber_id, $password, $auto), $db->FetchAllArray($sql));
+                            array($baseurl, $user_name, $real_name, $email, $jabber_id, $password, $auto),
+                            $db->FetchAllArray($sql), NOTIFY_EMAIL);
         }
         
         return true;
@@ -524,7 +526,7 @@ class Backend
         
         $tables = array('list_category', 'list_os', 'list_resolution', 'list_tasktype',
                         'list_status', 'list_version', 'admin_requests', 
-                        'cache', 'groups', 'projects', 'tasks');
+                        'cache', 'projects', 'tasks');
         
         foreach ($tables as $table) {
             if ($move_to && $table !== 'projects') {
@@ -545,6 +547,15 @@ class Backend
              //we need this for the next loop.
             unset($tp); 
         }
+        
+        // groups are only deleted, not moved (it is likely
+        // that the destination project already has all kinds
+        // of groups which are also used by the old project)
+        $sql = $db->Query('SELECT group_id FROM {groups} WHERE project_id = ?', array($pid));
+        while ($row = $db->FetchRow($sql)) {
+            $db->Query('DELETE FROM {users_in_groups} WHERE group_id = ?', array($row['project_id']));
+        }
+        $sql = $db->Query('DELETE FROM {groups} WHERE project_id = ?', array($pid));        
         
         //we have enough reasons ..  the process is OK. 
         return true;        
@@ -1072,14 +1083,18 @@ class Backend
         $tasks = $db->fetchAllArray($sql);
         $id_list = array();
         $limit = array_get($args, 'limit', -1);
+        $task_count = 0;
         foreach ($tasks as $key => $task) {
             $id_list[] = $task['task_id'];
             if (!$user->can_view_task($task)) {
                 unset($tasks[$key]);
                 array_pop($id_list);
-            } elseif (!is_null($perpage) && ($key < $offset || ($key > $offset - 1 + $perpage) || ($limit > 0 && $key >= $limit))) {
+                --$task_count;
+            } elseif (!is_null($perpage) && ($task_count < $offset || ($task_count > $offset - 1 + $perpage) || ($limit > 0 && $task_count >= $limit))) {
                 unset($tasks[$key]);
             }
+            
+            ++$task_count;
         }
 
         return array($tasks, $id_list);

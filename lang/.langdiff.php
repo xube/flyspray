@@ -19,6 +19,7 @@ tr:hover td, tr:hover th { background : #e0e0e0; }
 </head>
 <body>
 <?php
+require_once dirname(dirname(__FILE__)) . '/includes/fix.inc.php';
   /*
   Usage: Open this file like .../.langdiff?lang=de in your browser.
          "de" represents your language code.
