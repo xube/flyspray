@@ -6,8 +6,8 @@ class User
     var $perms = array();
     var $infos = array();
     var $searches = array();
-    var $search_keys = array('string','type','sev','due','dev','cat','status','order','sort', 'percent', 'changedfrom',
-                             'opened', 'search_in_comments', 'search_for_all', 'reported', 'only_primary', 'only_watched',
+    var $search_keys = array('string', 'type', 'sev', 'pri', 'due', 'dev', 'cat', 'status', 'order', 'sort', 'percent', 'changedfrom', 'closedfrom',
+                             'opened', 'search_in_comments', 'search_for_all', 'reported', 'only_primary', 'only_watched', 'closedto',
                              'changedto', 'duedatefrom', 'duedateto', 'openedfrom', 'openedto', 'has_attachment');
 
     function User($uid = 0)
@@ -81,7 +81,7 @@ class User
             }
         }
         
-        $sql = $db->Query('SELECT * FROM {searches} WHERE user_id = ? ORDER BY time DESC', array($this->id));
+        $sql = $db->Query('SELECT * FROM {searches} WHERE user_id = ? ORDER BY name ASC', array($this->id));
         $this->searches = $db->FetchAllArray($sql);
     }
     
@@ -105,7 +105,7 @@ class User
         $fields = array('is_admin', 'manage_project', 'view_tasks', 'edit_own_comments',
                 'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                 'view_comments', 'add_comments', 'edit_comments', 'edit_assignments',
-                'delete_comments', 'view_attachments', 'create_attachments',
+                'delete_comments', 'create_attachments',
                 'delete_attachments', 'view_history', 'close_own_tasks',
                 'close_other_tasks', 'assign_to_self', 'assign_others_to_self',
                 'add_to_assignees', 'view_reports', 'add_votes', 'group_open');

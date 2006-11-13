@@ -9,7 +9,9 @@
  *
  * @license http://opensource.org/licenses/lgpl-license.php Lesser GNU Public License
  * @package flyspray
- * @author Tony Collins, Florian Schmitz
+ * @author Tony Collins
+ * @author Florian Schmitz
+ * @author Cristian Rodriguez
  */
 
 class Flyspray
@@ -117,7 +119,7 @@ class Flyspray
 
         @ob_clean();
 
-        if (count($_SESSION)) {
+        if (isset($_SESSION) && count($_SESSION)) {
             session_write_close();
         }
 
@@ -225,11 +227,17 @@ class Flyspray
 
         $server = $protocol .'://'. $host . (isset($port) ? ':'. $port : '');
 
-        if (!strlen($url)) {
-            $url = isset($_SERVER['REQUEST_URI']) ?
-                $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF'];
-        }
 
+        if (!strlen($url) || $url{0} == '?' || $url{0} == '#') {
+            $uri = isset($_SERVER['REQUEST_URI']) ? 
+                $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF'];
+            if ($url && $url{0} == '?' && false !== ($q = strpos($uri, '?'))) {
+                $url = substr($uri, 0, $q) . $url;
+            } else {
+                $url = $uri . $url;
+            }
+        }
+ 
         if ($url{0} == '/') {
             return $server . $url;
         }
@@ -260,7 +268,7 @@ class Flyspray
     function requestDuplicated()
     {
         // garbage collection -- clean entries older than 6 hrs
-        $now = time();
+        $now = isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time();
         if (!empty($_SESSION['requests_hash'])) {
             foreach ($_SESSION['requests_hash'] as $key => $val) {
                 if ($val < $now-6*60*60) {
@@ -301,6 +309,12 @@ class Flyspray
 
         if (isset($cache[$task_id]) && $cache_enabled) {
             return $cache[$task_id];
+        }
+
+        //for some reason, task_id is not here
+        // run away inmediately..
+        if(!is_numeric($task_id)) {
+            return false;
         }
 
         $get_details = $db->Query('SELECT t.*, p.*,
@@ -481,7 +495,7 @@ class Flyspray
         // 31: User deletion
 
         $query_params = array(intval($task_id), intval($user->id),
-                             ((is_null($time)) ? time() : $time), 
+                             ((!is_numeric($time)) ? time() : $time), 
                               $type, $field, $oldvalue, $newvalue); 
 
         if($db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, 
@@ -526,7 +540,7 @@ class Flyspray
 
         $check = $db->Query("SELECT *
                                FROM {admin_requests}
-                              WHERE request_type = ? AND task_id = ? AND resolved_by = '0'",
+                              WHERE request_type = ? AND task_id = ? AND resolved_by = 0",
                             array($type, $task_id));
         return (bool)($db->CountRows($check));
     } // }}}
@@ -666,7 +680,6 @@ class Flyspray
            
             $include = 'schedule.php';
             $host = parse_url($baseurl);
-            $key = sha1_file(BASEDIR . '/flyspray.conf.php');
         
         /* "localhost" is on **purpose** not a mistake ¡¡ 
          * almost any server accepts requests to itself in localhost ;)
@@ -676,7 +689,7 @@ class Flyspray
           $daemon = @fsockopen('localhost', $_SERVER['SERVER_PORT'], $errno, $errstr, 5);
         
             if ($daemon) {
-                fwrite($daemon, "GET {$host['path']}{$include}?key={$key} HTTP/1.0\r\n");
+                fwrite($daemon, "GET {$host['path']}{$include} HTTP/1.0\r\n");
                 fwrite($daemon, "Host: {$_SERVER['HTTP_HOST']}\r\n\r\n");
                 fclose($daemon);
             }
@@ -717,6 +730,8 @@ class Flyspray
                 $sessname = $_SESSION['SESSNAME'];
                 break;
             }
+
+            $_SESSION = array();
             session_destroy();
             setcookie(session_name(), '', time()-60, '/');
         }
@@ -735,7 +750,7 @@ class Flyspray
     /**
      * Generate a long random number
      * @access public static
-     * @return void
+     * @return float
      * @version 1.0
      */
     function make_seed()
@@ -762,7 +777,7 @@ class Flyspray
         $changes = array();
         foreach ($old as $key => $value)
         {
-            if (!in_array($key, $comp) || ($key == 'due_date' && intval($old[$key]) == intval($new[$key]))) {
+            if (!in_array($key, $comp) || ($key === 'due_date' && intval($old[$key]) === intval($new[$key]))) {
                 continue;
             }
 
@@ -814,7 +829,7 @@ class Flyspray
         }
 
         return $assignees;
-    } /// }}}
+    } /// }}} 
 
     // {{{
     /**
@@ -835,7 +850,7 @@ class Flyspray
             }
     	}
     	return $ret;
-    } /// }}}
+    } /// }} }
     
     /**
      * Checks if a function is disabled
@@ -910,14 +925,11 @@ class Flyspray
     function username_to_id($name)
     {
         global $db;
+
+        $sql = $db->Query('SELECT user_id FROM {users} WHERE ' .
+                          (is_numeric($name) ? 'user_id' : 'user_name') . ' = ?', array($name));
         
-        if (is_numeric($name)) {
-            $sql = $db->Query('SELECT user_id FROM {users} WHERE user_id = ?', array($name));
-            return intval($db->FetchOne($sql));
-        } else {
-            $sql = $db->Query('SELECT user_id FROM {users} WHERE user_name = ?', array($name));
-            return intval($db->FetchOne($sql));
-        }
+        return intval($db->FetchOne($sql));
     }
     /**
      * check_email 
@@ -933,6 +945,12 @@ class Flyspray
         return is_string($email) && Validate::email($email, array('use_rfc822'=>true));
     }
 
+    /**
+     * get_tmp_dir 
+     * Based on PEAR System::tmpdir() by Tomas V.V.Cox.
+     * @access public
+     * @return void
+     */
     function get_tmp_dir()
     {
         if(function_exists('sys_get_temp_dir')) {
@@ -954,6 +972,49 @@ class Flyspray
              return $var;
         }
             return '/tmp';
+    }
+
+    /**
+     * check_mime_type 
+     * 
+     * @param string $fname path to filename
+     * @access public
+     * @return string the mime type of the offended file.
+     * @notes DO NOT use this function for any security related
+     * task (i.e limiting file uploads by type)
+     * it wasn't designed for that purpose but to UI related tasks.
+     */
+    function check_mime_type($fname) {
+
+        $type = '';
+
+        if (extension_loaded('fileinfo') && class_exists('finfo')) {
+
+            $info = $info = new finfo(FILEINFO_MIME);                 
+            $type = $info->file($fname);
+        
+        } elseif(function_exists('mime_content_type')) {
+            
+            $type = mime_content_type($fname);
+        // I hope we don't have to...
+        } elseif(!FlySpray::function_disabled('exec') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+
+               $type = @explode('; ', @exec(trim('file -bi ' . escapeshellarg($fname))));
+                    
+        }
+                // if wasn't possible to determine , return empty string so
+                // we can use the browser reported mime-type (probably fake) 
+                return $type;
+    }
+
+    function getSvnRev()
+    {
+        if(is_file(BASEDIR. '/REVISION') && is_dir(BASEDIR . '/.svn')) {
+
+            return 'r' . intval(file_get_contents(BASEDIR .'/REVISION'));
+        }
+        
+        return '';
     }
     
 

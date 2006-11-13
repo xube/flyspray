@@ -41,8 +41,7 @@ class Tpl
 
     function themeUrl()
     {
-        global $baseurl;
-        return $baseurl.'themes/'.$this->_theme;
+        return $GLOBALS['baseurl'] . 'themes/'.$this->_theme;
     }
 
     function compile(&$item)
@@ -50,7 +49,7 @@ class Tpl
         if (strncmp($item, '<?', 2)) {
             $item = preg_replace( '/{!([^\s&][^{}]*)}(\n?)/', '<?php echo \1; ?>\2\2', $item);
             $item = preg_replace( '/{([^\s&][^{}]*)}(\n?)/',
-                    '<?php echo htmlspecialchars(\1, ENT_QUOTES, "utf-8"); ?>\2\2', $item);
+                    '<?php echo Filters::noXSS(\1); ?>\2\2', $item);
         }
     }
     // {{{ Display page
@@ -88,7 +87,7 @@ class Tpl
         // compilation part
         $_tpl_data = preg_split('!(<\?php.*\?>)!sU', $_tpl_data, -1,
                 PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-        array_walk($_tpl_data, array($this, 'compile'));
+        array_walk($_tpl_data, array(&$this, 'compile'));
         $_tpl_data = join('', $_tpl_data);
 
         $from = array('&lbrace;','&rbrace;');
@@ -145,26 +144,29 @@ class FSTpl extends Tpl
         $extensions = array('.png', '.gif', '.jpg', '.ico');
 
         foreach ($extensions as $ext) {
-            if (file_exists(BASEDIR . '/' . $link . $name . $ext)) {
+            if (is_file(BASEDIR . '/' . $link . $name . $ext)) {
                 return ($base) ? ($baseurl . $link . $name . $ext) : ($link . $name . $ext);
             }
         }
-	}
+        return '';
+    }
+
 }
 
 // {{{ costful templating functions, TODO: optimize them
 
 function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','percent_complete'))
 {
-    global $user, $db, $proj;
+    global $user;
     
     $params = array();
 
     if (!is_array($task) || !isset($task['status_name'])) {
-        $task = Flyspray::GetTaskDetails( ((is_array($task)) ? $task['task_id'] : $task), true);
+        $td_id = (is_array($task) && isset($task['task_id'])) ? $task['task_id'] : $task;
+        $task = Flyspray::GetTaskDetails($td_id, true);
     }
 
-    if ($strict && !$user->can_view_task($task)) {
+    if ($strict === true && !$user->can_view_task($task)) {
         return '';
     }
 
@@ -176,8 +178,11 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     
     if (is_null($text)) {
         $text = 'FS#'. (int) $task['task_id'] . ' - '. htmlspecialchars($summary, ENT_QUOTES, 'utf-8');
-    } else {
+    } elseif(is_string($text)) {
         $text = htmlspecialchars(utf8_substr($text, 0, 64), ENT_QUOTES, 'utf-8');
+    }else {
+        //we can't handle non-string stuff here.
+        return '';
     }
     
     if (!$task['task_id']) {
@@ -240,9 +245,10 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     if (Get::val('pagenum')) {
         $params['pagenum'] = Get::val('pagenum');
     }
+
     $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, $params), ENT_QUOTES, 'utf-8');
-    $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',
-            $url, htmlspecialchars($title_text, ENT_QUOTES, 'utf-8'), join_attrs($attrs), $text);
+    $title_text = htmlspecialchars($title_text, ENT_QUOTES, 'utf-8'); 
+    $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',$url, $title_text, join_attrs($attrs), $text);
 
     if ($task['is_closed']) {
         $link = '<del>&#160;' . $link . '&#160;</del>';
@@ -261,7 +267,7 @@ function tpl_userlink($uid)
     } elseif (empty($cache[$uid])) {
         $sql = $db->Query('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
                            array(intval($uid)));
-        if ($db->countRows($sql)) {
+        if ($sql && $db->countRows($sql)) {
             list($uname, $rname) = $db->fetchRow($sql);
         }
     }
@@ -286,7 +292,7 @@ function tpl_fast_tasklink($arr)
 // {{{ some useful plugins
 
 function join_attrs($attr = null) {
-    if (is_array($attr)) {
+    if (is_array($attr) && count($attr)) {
         $arr = array();
         foreach ($attr as $key=>$val) {
             $arr[] = htmlspecialchars($key, ENT_QUOTES, 'utf-8') . '="'. 
@@ -298,16 +304,41 @@ function join_attrs($attr = null) {
 }
 // {{{ Datepicker
 function tpl_datepicker($name, $label = '', $value = 0) {
-    global $user;
-    
+    //global $user;
+
+    $date = '';
+
     if ($value) {
-        if (!ctype_digit($value)) {
+        if (!is_numeric($value)) {
             $value = strtotime($value);
         }
-        $date = date('Y-m-d', $value);
-    } else {
-        $date = Req::val($name, '');
+        $date = date('Y-m-d', intval($value));
+
+     /* It must "look" as a date..
+      * XXX : do not blindly copy this code to validate other dates
+      * this is mostly a tongue-in-cheek validation
+      * 1. it will fail on 32 bit systems on dates < 1970
+      * 2. it will produce different results bewteen 32 and 64 bit systems for years < 1970
+      * 3. it will not work when year > 2038 on 32 bit systems (see http://en.wikipedia.org/wiki/Year_2038_problem)
+      *
+      * Fortunately tasks are never opened to be dated on 1970 and maybe our sons or the future flyspray
+      * coders may be willing to fix the 2038 issue ( in the strange case 32 bit systems are still used by that year) :-)
+      */
+
+    } elseif(Req::has($name) && strlen(Req::val($name))) {
+
+        //strtotime sadly returns -1 on faliure in php < 5.1 instead of false
+        $ts = strtotime(Req::val($name));
+
+        foreach(array('m','d','Y') as $period) {
+            //checkdate only accepts arguments of type integer
+            $$period = intval(date($period, $ts));
+        }
+        // $ts has to be > 0 to get around php behavior change
+        // false is casted to 0 by the ZE
+        $date = ($ts > 0 && checkdate($m, $d, $Y)) ? Req::val($name) : '';
     }
+
        
     $page = new FSTpl;
     $page->assign('name', $name);
@@ -351,8 +382,10 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
 
     // force $selected to be an array.
     // this allows multi-selects to have multiple selected options.
-    settype($selected, 'array');
-    settype($options, 'array');
+
+    // operate by value ..
+    $selected = is_array($selected) ? $selected : (array) $selected;
+    $options = is_array($options) ? $options : (array) $options;
 
     foreach ($options as $value=>$label)
     {
@@ -405,7 +438,7 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
 
     $opt1 = '';
     foreach ($options as $value => $label) {
-        if (is_array($label)) {
+        if (is_array($label) && count($label) >= 2) {
             $value = $label[0];
             $label = $label[1];
         }
@@ -454,11 +487,12 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
 function tpl_img($src, $alt)
 {
     global $baseurl;
-    if (file_exists(dirname(dirname(__FILE__)).'/'.$src)) {
+    if (is_file(BASEDIR .'/'.$src)) {
         return '<img src="'.$baseurl
             .htmlspecialchars($src, ENT_QUOTES,'utf-8').'" alt="'
             .htmlspecialchars($alt, ENT_QUOTES,'utf-8').'" />';
     }
+    return '';
 } // }}}
 // {{{ Text formatting
 $path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_formattext.inc.php';
@@ -574,7 +608,7 @@ function tpl_draw_perms($perms)
     $perm_fields = array('is_admin', 'manage_project', 'view_tasks',
             'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks', 'edit_assignments',
             'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
-            'view_attachments', 'create_attachments', 'delete_attachments',
+            'create_attachments', 'delete_attachments',
             'view_history', 'close_own_tasks', 'close_other_tasks',
             'assign_to_self', 'assign_others_to_self', 'view_reports',
             'add_votes', 'edit_own_comments');
@@ -591,7 +625,8 @@ function tpl_draw_perms($perms)
 
     foreach ($perms[$proj->id] as $key => $val) {
         if (!is_numeric($key) && in_array($key, $perm_fields)) {
-            $html .= '<tr><th>' . htmlspecialchars(str_replace('_', ' ', $key), ENT_QUOTES, 'utf-8') . '</th>';
+            $display_key = htmlspecialchars(str_replace( '_', ' ', $key), ENT_QUOTES, 'utf-8');
+            $html .= '<tr><th>' . $display_key . '</th>';
             $html .= $yesno[ ($val || $perms[0]['is_admin']) ].'</tr>';
         }
     }
@@ -679,7 +714,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'admin':     $return = $url . '&area=' . $arg1; break;
             case 'edittask':  $return = $url . '&task_id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
-            case 'user':      $return = $baseurl . '?do=admin&area=users&id=' . $arg1; break;
+            case 'user':      $return = $baseurl . '?do=user&area=users&id=' . $arg1; break;
             case 'edituser':  $return = $baseurl . '?do=admin&area=users&user_id=' . $arg1; break;
             case 'logout':    $return = $baseurl . '?do=authenticate&logout=1'; break;
 
@@ -731,10 +766,10 @@ function pagenums($pagenum, $perpage, $totalcount)
         $finish = min($start + 4, $pages);
 
         if ($start > 1)
-            $output .= '<a href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => 1))) . '">&lt;&lt;' . L('first') . ' </a>';
+            $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => 1)))) . '">&lt;&lt;' . L('first') . ' </a>';
 
         if ($pagenum > 1)
-            $output .= '<a id="previous" accesskey="p" href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum - 1))) . '">&lt; ' . L('previous') . '</a> - ';
+            $output .= '<a id="previous" accesskey="p" href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum - 1)))) . '">&lt; ' . L('previous') . '</a> - ';
 
         for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
             if ($pagelink != $start)
@@ -743,14 +778,14 @@ function pagenums($pagenum, $perpage, $totalcount)
             if ($pagelink == $pagenum) {
                 $output .= '<strong>' . $pagelink . '</strong>';
             } else {
-                $output .= '<a href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagelink))) . '">' . $pagelink . '</a>';
+                $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagelink)))) . '">' . $pagelink . '</a>';
             }
         }
 
         if ($pagenum < $pages)
-            $output .= ' - <a id="next" accesskey="n" href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum + 1))) . '">' . L('next') . ' &gt;</a>';
+            $output .= ' - <a id="next" accesskey="n" href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum + 1)))) . '">' . L('next') . ' &gt;</a>';
         if ($finish < $pages)
-            $output .= '<a href="' . CreateUrl('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pages))) . '"> ' . L('last') . ' &gt;&gt;</a>';
+            $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pages)))) . '"> ' . L('last') . ' &gt;&gt;</a>';
         $output .= '</span>';
     }
 
@@ -803,7 +838,7 @@ class Url {
 		foreach ($vars as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $valuei) {
-                    if ($valuei) $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
+                    $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
                 }
             } else {
                 $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';

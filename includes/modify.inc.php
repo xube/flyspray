@@ -14,6 +14,10 @@ require_once BASEDIR . '/includes/class.notify.php';
 $notify = new Notifications;
 
 $lt = Post::isAlnum('list_type') ? Post::val('list_type') : '';
+$list_table_name = null;
+$list_column_name = null;
+$list_id = null;
+
 if (strlen($lt)) {
     $list_table_name  = '{list_'.$lt .'}';
     $list_column_name = $lt . '_name';
@@ -21,6 +25,7 @@ if (strlen($lt)) {
 }
 
 function Post_to0($key) { return Post::val($key, 0); }
+
 if (Req::num('task_id')) {
     $task = Flyspray::GetTaskDetails(Req::num('task_id'));
 }
@@ -135,7 +140,7 @@ switch ($action = Req::val('action'))
 
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
             // Log to task history
-            Flyspray::logEvent($task['task_id'], 14, trim(Post::val('assigned_to')), Post::val('old_assigned'), null, $time);
+            Flyspray::logEvent($task['task_id'], 14, trim(Post::val('assigned_to')), Post::val('old_assigned'), '', $time);
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
             if (Post::val('assigned_to') != '') {
@@ -169,7 +174,7 @@ switch ($action = Req::val('action'))
             break;
         }
         
-        Backend::close_task($task['task_id'], Post::val('resolution_reason'), Post::val('closure_comment', ''), Post::val('mark100', true));
+        Backend::close_task($task['task_id'], Post::val('resolution_reason'), Post::val('closure_comment', ''), Post::val('mark100', false));
 
         $_SESSION['SUCCESS'] = L('taskclosedmsg');
         Flyspray::Redirect(CreateURL('details', $task['task_id']));
@@ -451,7 +456,7 @@ switch ($action = Req::val('action'))
                         'modify_all_tasks', 'view_comments', 'add_comments', 'edit_assignments',
                         'edit_comments', 'delete_comments', 'create_attachments',
                         'delete_attachments', 'view_history', 'close_own_tasks',
-                        'close_other_tasks', 'assign_to_self', 'view_attachments',
+                        'close_other_tasks', 'assign_to_self',
                         'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
 
                 $params = array_map('Post_to0',$cols);
@@ -523,7 +528,7 @@ switch ($action = Req::val('action'))
 
         $cols = array( 'manage_project', 'view_tasks', 'open_new_tasks',
                 'modify_own_tasks', 'modify_all_tasks', 'view_comments',
-                'add_comments', 'edit_comments', 'delete_comments', 'view_attachments',
+                'add_comments', 'edit_comments', 'delete_comments',
                 'create_attachments', 'delete_attachments', 'view_history', 'add_votes',
                 'close_own_tasks', 'close_other_tasks', 'assign_to_self', 'edit_own_comments',
                 'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
@@ -540,7 +545,7 @@ switch ($action = Req::val('action'))
         $db->Query("INSERT INTO  {list_category}
                                  ( project_id, category_name,
                                    show_in_list, category_owner, lft, rgt)
-                         VALUES  ( ?, ?, 0, 0, 1, 4)", array($pid, 'root'));
+                         VALUES  ( ?, ?, 1, 0, 1, 4)", array($pid, 'root'));
                          
         $db->Query("INSERT INTO  {list_category}
                                  ( project_id, category_name,
@@ -760,7 +765,7 @@ switch ($action = Req::val('action'))
                                 array('manage_project', 'view_tasks', 'edit_own_comments', 
                                   'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                                   'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
-                                  'view_attachments', 'create_attachments', 'delete_attachments',
+                                  'create_attachments', 'delete_attachments',
                                   'view_history', 'close_own_tasks', 'close_other_tasks', 'edit_assignments',
                                   'assign_to_self', 'assign_others_to_self', 'add_to_assignees', 'view_reports',
                                   'add_votes', 'group_open'));
@@ -828,10 +833,10 @@ switch ($action = Req::val('action'))
         
         $position = Post::num('list_position');
         if (!$position) {
-            $position = $db->FetchOne($db->Query("SELECT max(list_position)+1
+            $position = intval($db->FetchOne($db->Query("SELECT max(list_position)+1
                                                     FROM $list_table_name
                                                    WHERE project_id = ?",
-                                                 array($proj->id)));
+                                                 array($proj->id))));
         }
         
         $db->Query("INSERT INTO  $list_table_name
@@ -936,6 +941,14 @@ switch ($action = Req::val('action'))
                                               lft = ?, rgt = ?
                                        WHERE  category_id = ? AND project_id = ?',
                                   array($listname[$i], intval($listshow[$i]), Flyspray::username_to_id(Post::val('category_owner' . $i)), $listlft[$i], $listrgt[$i], $listid[$i], $proj->id));
+                // Correct visibility for sub categories
+                if ($listshow[$id] == 0) {
+                    foreach ($listnames as $key => $value) {
+                        if ($listlft[$key] > $listlft[$id] && $listrgt[$key] < $listrgt[$id]) {
+                            $listshow[$key] = 0;
+                        }
+                    }
+                }
             } else {
                 Flyspray::show_error(L('fieldsmissing'));
             }
@@ -1026,7 +1039,7 @@ switch ($action = Req::val('action'))
     // Removing a related task entry
     // ##################
     case 'remove_related':
-        if (!$user->can_edit_task($task)) {
+        if (!$user->can_edit_task($task)  || !is_array(Post::val('related_id'))) {
             break;
         }
 
@@ -1136,7 +1149,7 @@ switch ($action = Req::val('action'))
             $db->Query("DELETE from {attachments} WHERE attachment_id = ?",
                     array($attachment['attachment_id']));
 
-            @unlink('attachments/' . $attachment['file_name']);
+            @unlink(BASEDIR .'/attachments/' . $attachment['file_name']);
 
             Flyspray::logEvent($attachment['task_id'], 8, $attachment['orig_name']);
         }
@@ -1165,7 +1178,7 @@ switch ($action = Req::val('action'))
     // removing a reminder
     // ##################
     case 'deletereminder':
-        if (!$user->perms('manage_project')) {
+        if (!$user->perms('manage_project') || !is_array(Post::val('reminder_id'))) {
             break;
         }
         
@@ -1175,7 +1188,7 @@ switch ($action = Req::val('action'))
             $reminder = $db->fetchOne($sql);
             $db->Query('DELETE FROM {reminders} WHERE reminder_id = ? AND task_id = ?',
                        array($reminder_id, $task['task_id']));
-            if ($db->affectedRows()) {
+            if ($db && $db->affectedRows()) {
                 Flyspray::logEvent($task['task_id'], 18, $reminder);
             }
         }
@@ -1197,7 +1210,7 @@ switch ($action = Req::val('action'))
             break;
         }
         
-        if (!$user->perms('manage_project', $old_pr)) {
+        if (!$user->perms('manage_project', $old_pr) || !is_array(Post::val('users'))) {
             break;
         }
         

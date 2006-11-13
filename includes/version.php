@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // +----------------------------------------------------------------------
 // | PHP Source                                                           
 // +----------------------------------------------------------------------
@@ -55,11 +55,11 @@ class Version
     $this->mRelease = '0.9';
     $this->mDevStatus = 'devel';
     $this->mDevLevel = '9';
-    $this->mCodename = 'Karate Kid';
+    $this->mCodename = 'Fly Flapper';
     $this->mRelDate = '26/08/2005';
     $this->mRelTime = '10:00';
     $this->mRelTimeZone = 'GMT +10';
-    $this->mCopyright = 'Copyright 2005 &copy; Tony Collins.  All rights reserved.';
+    $this->mCopyright = 'Copyright 2005 © Tony Collins.  All rights reserved.';
     $this->mAuthor = 'Tony Collins';
     $this->mUrl = '<a href="http://flyspray.rocks.cc" title="Flyspray home page">Flyspray</a> is Free Software released under the GNU/GPL License.';
     $this->mVersion = $this->mProductName . ' ' . $this->mRelease . ".". $this->mDevLevel . " " . $this->mDevStatus . " [".$this->mCodename ."] " . $this->mRelDate . " " . $this->mRelTime . " " . $this->mRelTimeZone;

@@ -130,8 +130,9 @@ class Backend
      */
     function assign_to_me($user_id, $tasks)
     {
-        global $db, $notify, $user;
+        global $db, $notify;
         
+        $user = $GLOBALS['user'];
         if ($user_id != $user->id) {
             $user = new User($user_id);
         }
@@ -183,8 +184,9 @@ class Backend
      */
     function add_to_assignees($user_id, $tasks, $do = false)
     {
-        global $db, $notify, $user;
-
+        global $db, $notify;
+        
+        $user = $GLOBALS['user'];
         if ($user_id != $user->id) {
             $user = new User($user_id);
         }
@@ -200,7 +202,7 @@ class Backend
                           array($tasks));
 
         while ($row = $db->FetchRow($sql)) {
-            if (!$user->can_add_to_assignees($row) || $do) {
+            if (!$user->can_add_to_assignees($row) && !$do) {
                 continue;
             }
             
@@ -211,7 +213,7 @@ class Backend
                 $notify->Create(NOTIFY_ADDED_ASSIGNEES, $row['task_id']);
             }
             
-            if ($task['item_status'] == STATUS_UNCONFIRMED || $task['item_status'] == STATUS_NEW) {
+            if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
                 $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
                 Flyspray::logEvent($row['task_id'], 3, 3, 1, 'item_status');
             }
@@ -228,8 +230,9 @@ class Backend
      */
     function add_vote($user_id, $task_id)
     {
-        global $db, $user;
+        global $db;
         
+        $user = $GLOBALS['user'];
         if ($user_id != $user->id) {
             $user = new User($user_id);
         }
@@ -267,7 +270,7 @@ class Backend
             return false;
         }
         
-        $time =  is_null($time) ? time() : $time ;
+        $time =  !is_numeric($time) ? time() : $time ;
 
         $db->Query('INSERT INTO  {comments}
                                  (task_id, date_added, last_edited_time, user_id, comment_text)
@@ -344,7 +347,10 @@ class Backend
             $extension = end(explode('.', $_FILES[$source]['name'][$key]));
             if (isset($conf['attachments'][$extension])) {
                 $_FILES[$source]['type'][$key] = $conf['attachments'][$extension];
-            }
+            //actually, try really hard to get the real filetype, not what the browser reports.    
+            } elseif($type = Flyspray::check_mime_type($path)) {
+             $_FILES[$source]['type'][$key] = $type; 
+            }// we can try even more, however, far too much code is needed.
 
             $db->Query("INSERT INTO  {attachments}
                                      ( task_id, comment_id, file_name,
@@ -464,6 +470,17 @@ class Backend
         
         Flyspray::logEvent(0, 30, serialize(Flyspray::getUserDetails($uid)));
         
+        // Now give him his default searches
+        $db->Query('INSERT INTO {searches} (user_id, name, search_string, time)
+                         VALUES (?, \'Tasks I watch\', \'a:16:{s:6:"string";N;s:4:"type";a:1:{i:0;s:0:"";}s:3:"sev";a:1:{i:0;s:0:"";}s:3:"due";a:1:{i:0;s:0:"";}s:3:"dev";N;s:3:"cat";a:1:{i:0;s:0:"";}s:6:"status";a:1:{i:0;s:4:"open";}s:5:"order";N;s:4:"sort";N;s:7:"percent";a:1:{i:0;s:0:"";}s:6:"opened";N;s:18:"search_in_comments";N;s:14:"search_for_all";N;s:8:"reported";a:1:{i:0;s:0:"";}s:12:"only_primary";N;s:12:"only_watched";s:1:"1";}\', ' . time() . ')',
+                    array($uid));
+        $db->Query('INSERT INTO {searches} (user_id, name, search_string, time)
+                         VALUES (?, \'Tasks assigned to me\', \'a:16:{s:6:"string";N;s:4:"type";a:1:{i:0;s:0:"";}s:3:"sev";a:1:{i:0;s:0:"";}s:3:"due";a:1:{i:0;s:0:"";}s:3:"dev";s:' . strlen($uid) . ':"' . $uid .'";s:3:"cat";a:1:{i:0;s:0:"";}s:6:"status";a:1:{i:0;s:4:"open";}s:5:"order";N;s:4:"sort";N;s:7:"percent";a:1:{i:0;s:0:"";}s:6:"opened";N;s:18:"search_in_comments";N;s:14:"search_for_all";N;s:8:"reported";a:1:{i:0;s:0:"";}s:12:"only_primary";N;s:12:"only_watched";N;}\', ' . time() . ')',
+                    array($uid));
+        $db->Query('INSERT INTO {searches} (user_id, name, search_string, time)
+                         VALUES (?, \'Tasks I opened\', \'a:16:{s:6:"string";N;s:4:"type";a:1:{i:0;s:0:"";}s:3:"sev";a:1:{i:0;s:0:"";}s:3:"due";a:1:{i:0;s:0:"";}s:3:"dev";N;s:3:"cat";a:1:{i:0;s:0:"";}s:6:"status";a:1:{i:0;s:4:"open";}s:5:"order";N;s:4:"sort";N;s:7:"percent";a:1:{i:0;s:0:"";}s:6:"opened";s:' . strlen($uid) . ':"' . $uid .'";s:18:"search_in_comments";N;s:14:"search_for_all";N;s:8:"reported";a:1:{i:0;s:0:"";}s:12:"only_primary";N;s:12:"only_watched";N;}\', ' . time() . ')',
+                    array($uid));
+        
         // Send a user his details (his username might be altered, password auto-generated)
         if ($fs->prefs['notify_registration']) {
             $sql = $db->Query('SELECT email_address
@@ -529,7 +546,7 @@ class Backend
                         'cache', 'projects', 'tasks');
         
         foreach ($tables as $table) {
-            if ($move_to && $table !== 'projects') {
+            if ($move_to && $table !== 'projects' && $table !== 'list_category') {
                 $action = 'UPDATE ';
                 $sql_params = array($move_to, $pid);
             } else {
@@ -668,7 +685,7 @@ class Backend
         
         // Token for anonymous users
         if ($user->isAnon()) {
-            $token = md5(time() . $_SERVER['REQUEST_URI'] . mt_rand() . microtime());
+            $token = md5(uniqid(rand(), true));
             $sql_params[] = 'task_token';
             $sql_values[] = $token;
             
@@ -694,7 +711,7 @@ class Backend
                          VALUES  (?, $sql_placeholder)", $sql_values);
 
         // Log the assignments and send notifications to the assignees
-        if (trim($args['assigned_to']))
+        if (isset($args['assigned_to']) && trim($args['assigned_to']))
         {
             // Convert assigned_to and store them in the 'assigned' table
             foreach (Flyspray::int_explode(' ', trim($args['assigned_to'])) as $key => $val)
@@ -703,12 +720,11 @@ class Backend
             }
             // Log to task history
             Flyspray::logEvent($task_id, 14, trim($args['assigned_to']));
-        }
-
-
-        // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-        $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null,
-                        $notify->SpecificAddresses(Flyspray::int_explode(' ', $args['assigned_to'])));
+            
+            // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
+            $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null,
+                            $notify->SpecificAddresses(Flyspray::int_explode(' ', $args['assigned_to'])));
+        }        
                     
         // Log that the task was opened
         Flyspray::logEvent($task_id, 1);
@@ -959,7 +975,7 @@ class Backend
 
         /// process search-conditions {{{
         $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version', 'reported' => 'product_version',
-                         'cat' => 'product_category', 'status' => 'item_status', 'percent' => 'percent_complete',
+                         'cat' => 'product_category', 'status' => 'item_status', 'percent' => 'percent_complete', 'pri' => 'task_priority',
                          'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
                          'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'),
                          'closed' => array('closed_by', 'uc.user_name', 'uc.real_name'));
@@ -982,7 +998,7 @@ class Backend
                 } elseif ($key == 'status') {
                     $temp .= " is_closed <> '1' AND";
                 }
-                if (is_numeric($val) && !is_array($db_key) && !($key == 'status' && $val == '8')) {
+                if (is_numeric($val) && !is_array($db_key) && !($key == 'status' && $val == 'closed')) {
                     $temp .= ' ' . $db_key . ' = ?  OR';
                     $sql_params[] = $val;
                 } elseif (is_array($db_key)) {

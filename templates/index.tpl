@@ -16,8 +16,12 @@
 <?php if (!($user->isAnon() && count($fs->projects) == 0)): ?>
 <div id="search">
   <map id="projectsearchform" name="projectsearchform">
-    <form action="{$baseurl}" method="get">
+    <form action="{$_SERVER['PHP_SELF']}" method="get">
       <div>
+        <button type="submit">{L('searchthisproject')}</button>
+        <input class="text" id="searchtext" name="string" type="text" size="20"
+               maxlength="100" value="{Get::val('string')}" accesskey="q" />
+        
         <input type="hidden" name="project" value="{Get::num('project', 0)}" />
         <?php if (!$user->isAnon()): ?>
         <span class="save_search"><label for="save_search" id="lblsaveas">{L('saveas')}</label>
@@ -28,10 +32,6 @@
         <?php endif; ?>
         </span>
         <?php endif; ?>
-        
-        <button type="submit">{L('searchthisproject')}</button>
-        <input class="text" id="searchtext" name="string" type="text" size="20"
-        maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
         <span id="searchstate" style="cursor:pointer">
         <a onclick="toggleSearchBox('{$this->themeUrl()}');return false;" href="{CreateUrl('project', $proj->id, null, array_merge($_GET, array('toggleadvanced' => 1)))}"><span id="advancedsearchstate" class="showstate">
@@ -60,31 +60,50 @@
         </fieldset>
 
         <fieldset><legend>{L('taskproperties')}</legend>
+        
+        <div class="search_select">
         <label class="default multisel" for="type">{L('tasktype')}</label>
         <select name="type[]" id="type" multiple="multiple" size="5">
           {!tpl_options(array('' => L('alltasktypes')) + $proj->listTaskTypes(), Get::val('type', ''))}
         </select>
+        </div>
         
+        <div class="search_select">
         <label class="default multisel" for="sev">{L('severity')}</label>
         <select name="sev[]" id="sev" multiple="multiple" size="5">
           {!tpl_options(array('' => L('allseverities')) + $fs->severities, Get::val('sev', ''))}
         </select>
+        </div>
         
+        <div class="search_select">
+        <label class="default multisel" for="pri">{L('priority')}</label>
+        <select name="pri[]" id="pri" multiple="multiple" size="5">
+          {!tpl_options(array('' => L('allpriorities')) + $fs->priorities, Get::val('pri', ''))}
+        </select>
+        </div>
+        
+        <div class="search_select">
         <label class="default multisel" for="due">{L('dueversion')}</label>
         <select name="due[]" id="due" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('dueanyversion'), 0 => L('unassigned')) + $proj->listVersions(false), Get::val('due', ''))}
+          {!tpl_options(array_merge(array('' => L('dueanyversion'), 0 => L('unassigned')), $proj->listVersions(false)), Get::val('due', ''))}
         </select>
+        </div>
         
+        <div class="search_select">
         <label class="default multisel" for="reported">{L('reportedversion')}</label>
         <select name="reported[]" id="reported" multiple="multiple" size="5">
           {!tpl_options(array('' => L('anyversion')) + $proj->listVersions(false), Get::val('reported', ''))}
         </select>
+        </div>
         
+        <div class="search_select">
         <label class="default multisel" for="cat">{L('category')}</label>
         <select name="cat[]" id="cat" multiple="multiple" size="5">
           {!tpl_options(array('' => L('allcategories')) + $proj->listCategories(), Get::val('cat', ''))}
         </select>
+        </div>
 
+        <div class="search_select">
         <label class="default multisel" for="status">{L('status')}</label>
         <select name="status[]" id="status" multiple="multiple" size="5">
           {!tpl_options(array('' => L('allstatuses')) +
@@ -92,12 +111,16 @@
                         array('closed' => L('allclosedtasks')) +
                         $proj->listTaskStatuses(), Get::val('status', 'open'))}
         </select>
+        </div>
         
-        <label class="default multisel" for="cat">{L('percentcomplete')}</label>
+        <div class="search_select">
+        <label class="default multisel" for="percent">{L('percentcomplete')}</label>
         <select name="percent[]" id="percent" multiple="multiple" size="5">
           <?php $percentages = array(); for ($i = 0; $i <= 100; $i += 10) $percentages[$i] = $i; ?>
           {!tpl_options(array('' => L('anyprogress')) + $percentages, Get::val('percent', ''))}
         </select>
+        </div>
+        <div class="clear"></div>
         </fieldset>
 
         <fieldset><legend>{L('users')}</legend>
@@ -135,6 +158,7 @@
         </fieldset>
 
        </div>
+       <input type="hidden" name="do" value="index" />
       </div>
     </form>
   </map>
@@ -142,7 +166,7 @@
 <?php endif; ?>
 
 <div id="tasklist">
-  <form action="index.php" id="massops" method="post">
+  <form action="{$_SERVER['PHP_SELF']}" id="massops" method="post">
     <div>
       <table id="tasklist_table">
         <thead>

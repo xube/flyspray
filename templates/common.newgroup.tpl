@@ -1,6 +1,6 @@
 <fieldset><legend>{L('createnewgroup')}</legend>
 
-<form action="{$baseurl}" method="post" id="newgroup">
+<form action="{$_SERVER['PHP_SELF']}" method="post" id="newgroup">
   <table class="box">
     <tr>
       <td><label for="groupname">{L('groupname')}</label></td>
@@ -15,8 +15,8 @@
       <td>{!tpl_checkbox('manage_project', Req::val('manage_project'), 'manageproject')}</td>
     </tr>
     <tr>
-      <td><label for="viewnewtasks">{L('viewtasks')}</label></td>
-      <td>{!tpl_checkbox('view_tasks', Req::val('view_tasks', Req::val('action') != 'newgroup.newgroup'), 'viewasks')}</td>
+      <td><label for="viewtasks">{L('viewtasks')}</label></td>
+      <td>{!tpl_checkbox('view_tasks', Req::val('view_tasks', Req::val('action') != 'newgroup.newgroup'), 'viewtasks')}</td>
     </tr>
     <tr>
       <td><label for="opennewtasks">{L('opennewtasks')}</label></td>
@@ -49,10 +49,6 @@
     <tr>
       <td><label for="deletecomments">{L('deletecomments')}</label></td>
       <td>{!tpl_checkbox('delete_comments', Req::val('delete_comments'), 'deletecomments')}</td>
-    </tr>
-    <tr>
-      <td><label for="viewattachments">{L('viewattachments')}</label></td>
-      <td>{!tpl_checkbox('view_attachments', Req::val('view_attachments'), 'viewattachments')}</td>
     </tr>
     <tr>
       <td><label for="createattachments">{L('createattachments')}</label></td>

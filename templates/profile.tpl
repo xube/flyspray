@@ -32,13 +32,13 @@
     <th>{L('projectgroup')}</th>
     <td>
     <?php if ($user->perms('manage_project')): ?>
-    <form method="post" action="{$baseurl}"><div>
+    <form method="post" action="{$_SERVER['PHP_SELF']}"><div>
       <select id="projectgroupin" class="adminlist" name="project_group_in">
         <?php $sel = $theuser->perms('project_group') == '' ? 0 : $theuser->perms('project_group'); ?>
         {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), $sel)}
       </select>
       <input type="hidden" name="old_project_id" value="{$theuser->perms('project_group')}" />
-      <input type="hidden" name="action" value="edituser" />
+      <input type="hidden" name="action" value="admin.edituser" />
       <input type="hidden" name="user_id" value="{$theuser->id}" />
       <input type="hidden" name="onlypmgroup" value="1" />
 
@@ -54,7 +54,7 @@
     </td>
   </tr>
   <tr>
-    <th><a href="{$baseurl}?opened={$theuser->id}&amp;status[]=">{L('tasksopened')}</a></th>
+    <th><a href="index.php?opened={$theuser->id}&amp;status[]=">{L('tasksopened')}</a></th>
     <td>
       {$tasks}
     </td>

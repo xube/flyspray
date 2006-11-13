@@ -8,6 +8,10 @@ body {
 	padding:0;
 }
 
+table {
+	font-size:1em !Important;
+}
+
 img {
 	border:none;
 }
@@ -439,6 +443,7 @@ div#search {
 	border:1px solid gray;
 	background-color:#e6eef6;
 	padding:0.4em 0.5em;
+	position:relative;
 }
 
 div#search input.text,div#search button {
@@ -449,7 +454,11 @@ div#search label.multisel {
 	position:absolute;
 	margin-left:-0.3em;
 }
-	
+
+div.search_select {
+	float:left;
+}
+
 div#search input.users {
 	margin-top:1.2em;
 }
@@ -481,7 +490,7 @@ span#searchstate a {
 }
 
 div#search select {
-	margin-top:1.2em;
+	margin-top:1.3em;
 }
 
 div#search fieldset legend {
@@ -493,7 +502,8 @@ div.dateselect {
 }
 
 span.save_search {
-	float:right;
+	position:absolute;
+	right:0.5em;
 }
 
 div#tasklist {
@@ -964,6 +974,7 @@ div.success {
 }
 
 div#toolboxmenu {
+	position:relative;
 	float:left;
 	padding-top:15px;
 }
@@ -1087,12 +1098,10 @@ div#fileupload {
 }
 
 span.pendingreq {
-	font-size:120%;
-	font-weight:700;
-	color:red;
-	background:url(em.png) no-repeat left;
+	border:solid 1px red;
+	background:url(em.png) white no-repeat 3px 50%;
 	margin:0 0 0 9px;
-	padding:2px 0 2px 17px;
+	padding:3px 3px 3px 23px;
 }
 
 a.pendingreq {

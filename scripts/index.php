@@ -31,6 +31,7 @@ $visible = explode(' ', trim($proj->id ? $proj->prefs['visible_columns'] : $fs->
 if (Get::has('reset')) {
     foreach ($user->search_keys as $key) {
         unset($_GET[$key]);
+        unset($_REQUEST[$key]); // datepickers use $_REQUEST
     }
     unset($_GET['reset']);
 }
@@ -48,10 +49,9 @@ $page->assign('total', count($id_list));
 function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 {
     global $proj, $page;
-
     $imgbase = '<img src="%s" alt="%s" />';
     $class   = '';
-    $html    = L($colname);
+    $html    = Filters::noXSS(L($colname));
     if ($colname == 'comments' || $colname == 'attachments') {
         $html = sprintf($imgbase, $page->get_image(substr($colname, 0, -1)), $html);
     }
@@ -77,7 +77,7 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
     
     $new_order = array('order' => $colname, 'sort' => $sort1, 'order2' => $order2, 'sort2' => $sort2);
     $html = sprintf('<a title="%s" href="%s">%s</a>',
-            L('sortthiscolumn'), CreateUrl('index', $proj->id, null, array_merge($_GET, $new_order)), $html);
+            L('sortthiscolumn'), Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, $new_order))), $html);
 
     return sprintf($format, $class, $html);
 }
@@ -110,7 +110,13 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             'dateclosed' => 'date_closed',
             'progress'   => '',
             'os'         => 'os_name',
-    );
+        );
+
+    //must be an array , must contain elements and be alphanumeric (permitted  "_")
+    if(!is_array($task) || empty($task) || !ctype_alnum(str_replace('_','', $colname))) {
+        //run away..
+        return '';
+    }
 
     switch ($colname) {
         case 'id':
@@ -163,7 +169,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
     return sprintf($format, 'task_'.$colname, $value);
 }
 
-// }}}
+// } }}
 
 // Javascript replacement
 if (Get::val('toggleadvanced')) {

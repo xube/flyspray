@@ -3,7 +3,7 @@
   <p>{L('listnote')}</p>
   <?php
   $countlines = -1;
-  $categories = $proj->listCategories($proj->id, false, false);
+  $categories = $proj->listCategories($proj->id, false, false, false);
   $root = $categories[0];
   unset($categories[0]);
   
@@ -18,7 +18,7 @@
     </div>
   </div>
   <?php endif; ?>
-    <form action="{$baseurl}" method="post">
+    <form action="{$_SERVER['PHP_SELF']}" method="post">
       <table class="list" id="catTable">
          <thead>
          <tr>
@@ -85,7 +85,7 @@
     <hr />
 
     <!-- Form to add a new category to the list -->
-    <form action="{$baseurl}" method="post">
+    <form action="{$_SERVER['PHP_SELF']}" method="post">
       <table class="list">
         <tr>
           <td>
@@ -98,7 +98,7 @@
             <label for="parent_id">{L('parent')}</label>
             <select id="parent_id" name="parent_id">
               <option value="{$root['category_id']}">{L('notsubcategory')}</option>
-              {!tpl_options($proj->listCategories($proj->id), Req::val('parent_id'))}
+              {!tpl_options($proj->listCategories($proj->id, false), Req::val('parent_id'))}
             </select>
           </td>
           <td class="buttons">

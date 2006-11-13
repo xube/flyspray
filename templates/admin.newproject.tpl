@@ -2,7 +2,7 @@
   <h3>{L('admintoolboxlong')} :: {L('createnewproject')}</h3>
   <fieldset class="box">
     <legend>{L('newproject')}</legend>
-    <form action="{$baseurl}" method="post">
+    <form action="{$_SERVER['PHP_SELF']}" method="post">
       <div>
         <input type="hidden" name="action" value="admin.newproject" />
         <input type="hidden" name="area" value="newproject" />
@@ -29,7 +29,7 @@
           </td>
         </tr>
         <tr>
-          <td><label for="intro_message">{L('intromessage')}</label></td>
+          <td><label for="intromesg">{L('intromessage')}</label></td>
           <td>
             <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
             <div class="hide preview" id="preview"></div>

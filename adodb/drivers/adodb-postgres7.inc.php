@@ -1,6 +1,6 @@
 <?php
 /*
- V4.91 2 Aug 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
+ V4.93 10 Oct 2006  (c) 2000-2006 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -28,7 +28,7 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 		if (ADODB_ASSOC_CASE !== 2) {
 			$this->rsPrefix .= 'assoc_';
 		}
-		$this->_bindInputArray = PHP_VERSION >= 5.1;
+		$this->_bindInputArray = function_exists('pg_query_params');
 	}
 
 	

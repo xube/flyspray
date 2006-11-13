@@ -8,7 +8,7 @@
     </div>
 </div>
 <?php endif; ?>
-<form action="{$baseurl}" method="post">
+<form action="{$_SERVER['PHP_SELF']}" method="post">
   <table class="list" id="listTable">
    <thead>
      <tr>
@@ -82,7 +82,7 @@
       </script>
 </form>
 <hr />
-<form action="{$baseurl}" method="post">
+<form action="{$_SERVER['PHP_SELF']}" method="post">
   <table class="list">
     <tr>
       <td>
@@ -112,6 +112,7 @@
       </td>
       <?php endif; ?>
       <td class="buttons">
+        <input type="hidden" name="project" value="{$proj->id}" />
         <button type="submit">{L('addnew')}</button>
       </td>
     </tr>

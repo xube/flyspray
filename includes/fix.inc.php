@@ -6,10 +6,16 @@
  * correctly.
  *
  */
-
 ini_set('display_errors', 1);
 
+// html errors will mess the layout
+ini_set('html_errors', 0);
+
 error_reporting(E_ALL);
+
+// our default charset
+
+ini_set('default_charset','utf-8');
 
 // This to stop PHP being retarded and using the '&' char for session id delimiters
 ini_set('arg_separator.output','&amp;');
@@ -27,6 +33,10 @@ ini_set('magic_quotes_runtime',0);
 //this one too
 ini_set('magic_quotes_sybase',0);
 
+// no transparent session id improperly configured servers
+
+@ini_set('session.use_trans_sid', 0); // might cause error in setup
+
 //see http://php.net/manual/en/ref.session.php#ini.session.use-only-cookies
 ini_set('session.use_only_cookies',1);
 
@@ -40,6 +50,7 @@ ini_set('session.auto_start',0);
  */
 
 ini_set('session.cookie_httponly',1);
+
 
 // we live is register_globals Off world forever..
 //This code was written By Stefan Esser from the hardened PHP project (sesser@php.net)
@@ -69,6 +80,15 @@ function unregister_GLOBALS()
 
    foreach ($input as $k => $v) {
        if (!in_array($k, $noUnset) && isset($GLOBALS[$k])) {
+
+           unset($GLOBALS[$k]);
+           /* no, this is not a bug, we use double unset() .. it is to circunvent 
+           /* this PHP critical vulnerability 
+            * http://www.hardened-php.net/hphp/zend_hash_del_key_or_index_vulnerability.html
+            * this is intended to minimize the catastrophic effects that has on systems with
+            * register_globals on.. users with register_globals off are still vulnerable but
+            * afaik,there is nothing we can do for them.
+            */
            unset($GLOBALS[$k]);
        }
    }
@@ -85,26 +105,26 @@ unregister_GLOBALS();
 * the BSD license, but has been slightly  modified for Flyspray.
 */
 
-if (extension_loaded('filter') && input_name_to_filter(ini_get('filter.default')) !== FILTER_UNSAFE_RAW) {
+if (PHP_VERSION >= 5.2 && extension_loaded('filter') && filter_id(ini_get('filter.default')) !== FILTER_UNSAFE_RAW) {
 
     if(count($_GET)) {
         foreach ($_GET as $key => $value) {
-            $_GET[$key] = input_get(INPUT_GET, $key, FILTER_UNSAFE_RAW);
+            $_GET[$key] = filter_input(INPUT_GET, $key, FILTER_UNSAFE_RAW);
         }
     }
     if(count($_POST)) {
         foreach ($_POST as $key => $value) {
-            $_POST[$key] = input_get(INPUT_POST, $key, FILTER_UNSAFE_RAW);
+            $_POST[$key] = filter_input(INPUT_POST, $key, FILTER_UNSAFE_RAW);
         }
     }
     if(count($_COOKIE)) {
         foreach ($_COOKIE as $key => $value) {
-            $_COOKIE[$key] = input_get(INPUT_COOKIE, $key, FILTER_UNSAFE_RAW);
+            $_COOKIE[$key] = filter_input(INPUT_COOKIE, $key, FILTER_UNSAFE_RAW);
         }
     }
     if(isset($_SESSION) && is_array($_SESSION) && count($_SESSION)) {
         foreach ($_SESSION as $key => $value) {
-            $_SESSION[$key] = input_get(INPUT_SESSION, $key, FILTER_UNSAFE_RAW);
+            $_SESSION[$key] = filter_input(INPUT_SESSION, $key, FILTER_UNSAFE_RAW);
         }
     }
 
@@ -121,7 +141,7 @@ if (!isset($_SERVER['REQUEST_URI']))
         $_SERVER['REQUEST_URI'] = $_SERVER['PHP_SELF'];
     }
 
-    if ($_SERVER['QUERY_STRING']) {
+    if (isset($_SERVER['QUERY_STRING'])) {
         $_SERVER['REQUEST_URI'] .=  '?'.$_SERVER['QUERY_STRING'];
     }
 }
@@ -217,5 +237,22 @@ if (!function_exists('array_intersect_key')) {
         return call_user_func_array('php_compat_array_intersect_key', $args);   
     }
 }
+
+//for reasons outside flsypray, the PHP core may throw Exceptions in PHP5
+// for a good example see this article
+// http://ilia.ws/archives/107-Another-unserialize-abuse.html
+
+if(PHP_VERSION >= 5) {
+
+function flyspray_exception_handler($exception) {
+
+    die("Completely unexpected exception: " .  
+        htmlspecialchars($exception->getMessage(),ENT_QUOTES, 'utf-8')  . "<br/>" .
+      "This should <strong> never </strong> happend, please inform Flyspray Developers");
+
+}
+    set_exception_handler('flyspray_exception_handler');
+}
+
 
 ?>

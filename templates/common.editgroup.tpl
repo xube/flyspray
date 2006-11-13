@@ -1,6 +1,16 @@
 <fieldset class="box"> <legend>{L('editgroup')}</legend>
+    <form action="{$_SERVER['PHP_SELF']}" method="get">
+        <div>
+            <label for="selectgroup">{L('editgroup')}</label>
+            <select name="id" id="selectgroup">{!tpl_options(Flyspray::ListGroups($proj->id), Req::num('id'))}</select>
+            <button type="submit">{L('edit')}</button>
+            <input type="hidden" name="do" value="{Req::val('do')}" />
+            <input type="hidden" name="area" value="editgroup" />
+        </div>
+    </form>
+    <hr />
   <?php $group_details = Flyspray::getGroupDetails(Req::num('id')); ?>
-  <form action="{$baseurl}" method="post">
+  <form action="{$_SERVER['PHP_SELF']}" method="post">
     <table class="box">
       <tr>
         <td>
@@ -58,10 +68,6 @@
         <td>{!tpl_checkbox('delete_comments', Req::val('delete_comments', !Req::val('action') && $group_details['delete_comments']), 'deletecomments')}</td>
       </tr>
       <tr>
-        <td><label for="viewattachments">{L('viewattachments')}</label></td>
-        <td>{!tpl_checkbox('view_attachments', Req::val('view_attachments', !Req::val('action') && $group_details['view_attachments']), 'viewattachments')}</td>
-      </tr>
-      <tr>
         <td><label for="createattachments">{L('createattachments')}</label></td>
         <td>{!tpl_checkbox('create_attachments', Req::val('create_attachments', !Req::val('action') && $group_details['create_attachments']), 'createattachments')}</td>
       </tr>
@@ -109,7 +115,7 @@
       <?php if (!$proj->id): ?>
       <tr>
         <td><label for="groupopen">{L('groupenabled')}</label></td>
-        <td>{!tpl_checkbox('group_open', Req::val('group_open', !Req::val('action') && $group_details['group_open']), 'group_open')}</td>
+        <td>{!tpl_checkbox('group_open', Req::val('group_open', !Req::val('action') && $group_details['group_open']), 'groupopen')}</td>
       </tr>
       <?php endif; ?>
       <?php endif; ?>
@@ -130,9 +136,9 @@
       </tr>
       <tr>
         <td colspan="2" class="buttons">
+          <input type="hidden" name="project_id" value="{$proj->id}" />
           <input type="hidden" name="action" value="{Req::val('action', $do . '.editgroup')}" />
           <input type="hidden" name="area" value="editgroup" />
-          <input type="hidden" name="id" value="{Req::val('id')}" />
           <input type="hidden" name="group_id" value="{$group_details['group_id']}" />
           <button type="submit">{L('updatedetails')}</button>
         </td>
@@ -142,7 +148,7 @@
   
   <hr />
 
-  <form action="{$baseurl}" method="post">
+  <form action="{$_SERVER['PHP_SELF']}" method="post">
    <div>
     <h3>{L('groupmembers')}</h3>
     <table id="manage_users_in_groups" class="userlist">
