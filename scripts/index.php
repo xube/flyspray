@@ -19,10 +19,8 @@ if (@$user->infos['tasks_perpage'] > 0) {
     $perpage = $user->infos['tasks_perpage'];
 }
 
-$pagenum = Get::num('pagenum', 1);
-if ($pagenum < 1) {
-  $pagenum = 1;
-}
+$pagenum = max(1, Get::num('pagenum', 1));
+
 $offset = $perpage * ($pagenum - 1);
 
 // Get the visibility state of all columns
@@ -43,44 +41,6 @@ $page->uses('tasks', 'offset', 'perpage', 'pagenum', 'visible');
 // List of task IDs for next/previous links
 $_SESSION['tasklist'] = $id_list;
 $page->assign('total', count($id_list));
-
-// tpl function that Displays a header cell for report list {{{
-
-function tpl_list_heading($colname, $format = "<th%s>%s</th>")
-{
-    global $proj, $page;
-    $imgbase = '<img src="%s" alt="%s" />';
-    $class   = '';
-    $html    = Filters::noXSS(L($colname));
-    if ($colname == 'comments' || $colname == 'attachments') {
-        $html = sprintf($imgbase, $page->get_image(substr($colname, 0, -1)), $html);
-    }
-
-    if (Get::val('order') == $colname) {
-        $class  = ' class="orderby"';
-        $sort1  = Get::safe('sort', 'desc') == 'desc' ? 'asc' : 'desc';
-        $sort2  = Get::safe('sort2', 'desc');
-        $order2 = Get::safe('order2');
-        $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, $page->get_image(Get::val('sort')), Get::safe('sort'));
-    }
-    else {
-        $sort1  = 'desc';
-        if (in_array($colname,
-                    array('project', 'tasktype', 'category', 'openedby', 'assignedto')))
-        {
-            $sort1 = 'asc';
-        }
-        $sort2  = Get::safe('sort', 'desc');
-        $order2 = Get::safe('order');
-    }
-
-    
-    $new_order = array('order' => $colname, 'sort' => $sort1, 'order2' => $order2, 'sort2' => $sort2);
-    $html = sprintf('<a title="%s" href="%s">%s</a>',
-            L('sortthiscolumn'), Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, $new_order))), $html);
-
-    return sprintf($format, $class, $html);
-}
 
 // }}}
 // tpl function that draws a cell {{{

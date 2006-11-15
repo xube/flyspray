@@ -715,7 +715,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'edittask':  $return = $url . '&task_id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
             case 'user':      $return = $baseurl . '?do=user&area=users&id=' . $arg1; break;
-            case 'edituser':  $return = $baseurl . '?do=admin&area=users&user_id=' . $arg1; break;
+            case 'edituser':  $return = $baseurl . '?do=admin&area=user&user_id=' . $arg1; break;
             case 'logout':    $return = $baseurl . '?do=authenticate&logout=1'; break;
 
             case 'details':
@@ -745,10 +745,13 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-function pagenums($pagenum, $perpage, $totalcount)
+function pagenums($pagenum, $perpage, $totalcount, $url_type = 'index', $url_arg = null)
 {
     global $proj;
-    $pagenum = intval($pagenum);
+    if (is_null($url_arg)) {
+        $url_arg = $proj->id;
+    }
+    $pagenum = max( (($totalcount) ? 1 : 0) , intval($pagenum));
     $perpage = intval($perpage);
     $totalcount = intval($totalcount);
 
@@ -766,10 +769,10 @@ function pagenums($pagenum, $perpage, $totalcount)
         $finish = min($start + 4, $pages);
 
         if ($start > 1)
-            $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => 1)))) . '">&lt;&lt;' . L('first') . ' </a>';
+            $output .= '<a href="' . Filters::noXSS(CreateURL($url_type, $url_arg, null, array_merge($_GET, array('pagenum' => 1)))) . '">&lt;&lt;' . L('first') . ' </a>';
 
         if ($pagenum > 1)
-            $output .= '<a id="previous" accesskey="p" href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum - 1)))) . '">&lt; ' . L('previous') . '</a> - ';
+            $output .= '<a id="previous" accesskey="p" href="' . Filters::noXSS(CreateURL($url_type, $url_arg, null, array_merge($_GET, array('pagenum' => $pagenum - 1)))) . '">&lt; ' . L('previous') . '</a> - ';
 
         for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
             if ($pagelink != $start)
@@ -778,19 +781,58 @@ function pagenums($pagenum, $perpage, $totalcount)
             if ($pagelink == $pagenum) {
                 $output .= '<strong>' . $pagelink . '</strong>';
             } else {
-                $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagelink)))) . '">' . $pagelink . '</a>';
+                $output .= '<a href="' . Filters::noXSS(CreateURL($url_type, $url_arg, null, array_merge($_GET, array('pagenum' => $pagelink)))) . '">' . $pagelink . '</a>';
             }
         }
 
         if ($pagenum < $pages)
-            $output .= ' - <a id="next" accesskey="n" href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum + 1)))) . '">' . L('next') . ' &gt;</a>';
+            $output .= ' - <a id="next" accesskey="n" href="' . Filters::noXSS(CreateURL($url_type, $url_arg, null, array_merge($_GET, array('pagenum' => $pagenum + 1)))) . '">' . L('next') . ' &gt;</a>';
         if ($finish < $pages)
-            $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pages)))) . '"> ' . L('last') . ' &gt;&gt;</a>';
+            $output .= '<a href="' . Filters::noXSS(CreateURL($url_type, $url_arg, null, array_merge($_GET, array('pagenum' => $pages)))) . '"> ' . L('last') . ' &gt;&gt;</a>';
         $output .= '</span>';
     }
 
     return $output;
-} // }}}    
+} // }}}
+
+// tpl function that Displays a header cell for report list {{{
+
+function tpl_list_heading($colname, $format = "<th%s>%s</th>")
+{
+    global $proj, $page;
+    $imgbase = '<img src="%s" alt="%s" />';
+    $class   = '';
+    $html    = Filters::noXSS(L($colname));
+    if ($colname == 'comments' || $colname == 'attachments') {
+        $html = sprintf($imgbase, $page->get_image(substr($colname, 0, -1)), $html);
+    }
+
+    if (Get::val('order') == $colname) {
+        $class  = ' class="orderby"';
+        $sort1  = Get::safe('sort', 'desc') == 'desc' ? 'asc' : 'desc';
+        $sort2  = Get::safe('sort2', 'desc');
+        $order2 = Get::safe('order2');
+        $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, $page->get_image(Get::val('sort')), Get::safe('sort'));
+    }
+    else {
+        $sort1  = 'desc';
+        if (in_array($colname,
+                    array('project', 'tasktype', 'category', 'openedby', 'assignedto')))
+        {
+            $sort1 = 'asc';
+        }
+        $sort2  = Get::safe('sort', 'desc');
+        $order2 = Get::safe('order');
+    }
+
+    
+    $new_order = array('order' => $colname, 'sort' => $sort1, 'order2' => $order2, 'sort2' => $sort2);
+    $html = sprintf('<a title="%s" href="%s">%s</a>',
+            L('sortthiscolumn'), Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, $new_order))), $html);
+
+    return sprintf($format, $class, $html);
+}
+
 class Url {
 	var $url = '';
 	var $parsed;

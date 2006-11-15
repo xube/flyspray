@@ -148,52 +148,6 @@
   
   <hr />
 
-  <form action="{$_SERVER['PHP_SELF']}" method="post">
-   <div>
-    <h3>{L('groupmembers')}</h3>
-    <table id="manage_users_in_groups" class="userlist">
-    <tr>
-      <th>
-        <a href="javascript:ToggleSelected('manage_users_in_groups')">
-          <img title="{L('toggleselected')}" alt="{L('toggleselected')}" src="{$this->get_image('kaboodleloop')}" width="16" height="16" />
-        </a>
-      </th>
-      <th>{L('username')}</th>
-      <th>{L('realname')}</th>
-      <th>{L('accountenabled')}</th>
-    </tr>
-    <?php
-    foreach($proj->listUsersIn($group_details['group_id']) as $usr): ?>
-    <tr>
-      <td class="ttcolumn">{!tpl_checkbox('users['.$usr['user_id'].']')}</td>
-      <td><a href="{CreateURL('edituser', $usr['user_id'])}">{$usr['user_name']}</a></td>
-      <td>{$usr['real_name']}</td>
-      <?php if ($usr['account_enabled']) : ?>
-      <td class="imgcol"><img src="{$this->get_image('button_ok')}" alt="{L('yes')}" /></td>
-      <?php else: ?>
-      <td class="imgcol"><img src="{$this->get_image('button_cancel')}" alt="{L('no')}" /></td>
-      <?php endif; ?>
-    </tr>
-    <?php
-    $users_in[] = $usr['user_id'];
-    endforeach;
-    ?>
-
-    <tr>
-      <td colspan="4">
-        <button type="submit">{L('moveuserstogroup')}</button>
-        <select class="adminlist" name="switch_to_group">
-          <?php if ($proj->id): ?>
-          <option value="0">{L('nogroup')}</option>
-          <?php endif; ?>
-          {!tpl_options(Flyspray::listGroups($proj->id), null, false, null, $group_details['group_id'])}
-        </select>
-      </td>
-    </tr>
-  </table>
-  <input type="hidden" name="project_id" value="{$proj->id}" />
-  <input type="hidden" name="action" value="movetogroup" />
-  <input type="hidden" name="old_group" value="{$group_details['group_id']}" />
-  </div> 
- </form>
+  <h3><a href="{CreateURL('admin', 'users', null, array('group_id' => $group_details['group_id']))}">{L('groupmembers')}</a></h3>
+    
 </fieldset>

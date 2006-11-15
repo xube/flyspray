@@ -1,6 +1,7 @@
 <div id="toolboxmenu">
   <a id="globprefslink" href="{CreateURL('admin', 'prefs')}">{L('preferences')}</a>
-  <a id="globuglink" href="{CreateURL('admin', 'groups')}">{L('usersandgroups')}</a>
+  <a id="globuglink" href="{CreateURL('admin', 'groups')}">{L('groups')}</a>
+  <a id="globuglink" href="{CreateURL('admin', 'users')}">{L('users')}</a>
   <a id="globttlink" href="{CreateURL('admin', 'tt')}">{L('tasktypes') }</a>
   <a id="globstatuslink" href="{CreateURL('admin', 'status')}">{L('taskstatuses') }</a>
   <a id="globreslink" href="{CreateURL('admin', 'res')}">{L('resolutions') }</a>

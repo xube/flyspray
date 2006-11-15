@@ -808,6 +808,11 @@ Regards,',
 'request1'                => 'A task closure has been requested.',
 'request2'                => 'A request to re-open the task has been made.',
 'allpriorities'           => 'All Priorities',
+'csvexport'               => 'CSV export',
+'groups'                  => 'Groups',
+'global'                  => 'Global',
+'userlist'                => 'Userlist',
+'any'                     => 'Any',
 ); 
 
 ?>

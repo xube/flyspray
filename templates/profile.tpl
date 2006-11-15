@@ -22,35 +22,11 @@
     </td>
   </tr>
   <tr>
-    <th>{L('globalgroup')}</th>
+    <th>{L('groups')}</th>
     <td>
-      {$groups[Flyspray::array_find('group_id', $theuser->infos['global_group'], $groups)]['group_name']}
-    </td>
-  </tr>
-  <?php if ($proj->id): ?>
-  <tr>
-    <th>{L('projectgroup')}</th>
-    <td>
-    <?php if ($user->perms('manage_project')): ?>
-    <form method="post" action="{$_SERVER['PHP_SELF']}"><div>
-      <select id="projectgroupin" class="adminlist" name="project_group_in">
-        <?php $sel = $theuser->perms('project_group') == '' ? 0 : $theuser->perms('project_group'); ?>
-        {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), $sel)}
-      </select>
-      <input type="hidden" name="old_project_id" value="{$theuser->perms('project_group')}" />
-      <input type="hidden" name="action" value="admin.edituser" />
-      <input type="hidden" name="user_id" value="{$theuser->id}" />
-      <input type="hidden" name="onlypmgroup" value="1" />
-
-      <button type="submit">{L('update')}</button>
-    </div></form>
-    <?php else: ?>
-      <?php if ($theuser->perms('project_group')): ?>
-      {$project_groups[Flyspray::array_find('group_id', $theuser->infos['project_group'], $project_groups)]['group_name']}
-      <?php else: ?>
-      {L('none')}
-      <?php endif; ?>
-    <?php endif; ?>
+      <?php foreach ($groups as $project => $project_groups): ?>
+      <strong>{$project}</strong>: {$project_groups[0]['group_name']} <br />
+      <?php endforeach; ?>
     </td>
   </tr>
   <tr>
@@ -65,7 +41,6 @@
       {$comments}
     </td>
   </tr> 
-  <?php endif; ?>
   <?php if ($theuser->infos['register_date']): ?>
   <tr>
     <th>{L('regdate')}</th>

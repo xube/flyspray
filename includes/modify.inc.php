@@ -635,7 +635,6 @@ switch ($action = Req::val('action'))
             }
         }
         
-        if (!Post::val('onlypmgroup')):
         if ($user->perms('is_admin') || $user->id == Post::val('user_id')): // only admin or user himself can change
         
         if (!Post::val('real_name') || (!Post::val('email_address') && !Post::val('jabber_id'))) {
@@ -694,22 +693,50 @@ switch ($action = Req::val('action'))
                          WHERE group_id = ? AND user_id = ?',
                     array(Post::val('group_in'), Post::val('old_global_id'), Post::val('user_id')));
         }
-        
-        endif; // end non project group changes
-
-        if ($user->perms('manage_project') && !is_null(Post::val('project_group_in')) && Post::val('project_group_in') != Post::val('old_project_id')) {
-           $db->Query('DELETE FROM {users_in_groups} WHERE group_id = ? AND user_id = ?',
-                        array(Post::val('old_project_id'), Post::val('user_id')));
-            if (Post::val('project_group_in')) {
-                $db->Query('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
-                           array(Post::val('project_group_in'), Post::val('user_id')));
-            }
-        }
 
         $_SESSION['SUCCESS'] = L('userupdated');
         Flyspray::Redirect($_SESSION['prev_page']);
         break;
-
+    // ##################
+    // add/move user to a group
+    // ##################
+    case 'admin.addusertogroup':
+        if ($uid = Post::val('uid')) {
+            $uids = preg_split('/[\s,;]+/', $uid, -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($uids as $uid) {
+                $uid = Flyspray::username_to_id($uid);
+                
+                if (!$uid) {
+                    Flyspray::show_error(L('usernotexist'));
+                    break;
+                }
+              
+                // If user is already a member of one of the project's groups, **move** (not add) him to the new group
+                $sql = $db->Query('SELECT project_id FROM {groups} WHERE group_id = ?', array(Post::num('user_to_group')));
+                $group_project = $db->FetchOne($sql);
+                
+                if (!$user->perms('manage_project', $group_project)) {
+                    break;
+                }
+                
+                $sql = $db->Query('SELECT g.group_id
+                                     FROM {users_in_groups} uig, {groups} g
+                                    WHERE g.group_id = uig.group_id AND uig.user_id = ? AND project_id = ?',
+                                    array($uid, $group_project));
+                if ($db->CountRows($sql)) {
+                    $oldid = $db->FetchOne($sql);
+                    $db->Query('UPDATE {users_in_groups} SET group_id = ? WHERE user_id = ? AND group_id = ?',
+                                array(Post::num('user_to_group'), $uid, $oldid));
+                } else {
+                    $db->Query('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
+                                array(Post::num('user_to_group'), $uid));
+                }
+                $_SESSION['SUCCESS'] = L('useradded');
+            }            
+        }   
+        
+        Flyspray::Redirect($_SESSION['prev_page']);
+        break;
     // ##################
     // updating a group definition
     // ##################

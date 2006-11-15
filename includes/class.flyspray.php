@@ -403,7 +403,6 @@ class Flyspray
         sort($theme_array);
         return $theme_array;
     } // }}}
-    // List a project's group {{{
     /**
      * Returns a list of a project's groups
      * @param integer $proj_id
@@ -419,6 +418,37 @@ class Flyspray
                             WHERE  project_id = ?
                          ORDER BY  group_id ASC', array($proj_id));
         return $db->FetchAllArray($res);
+    }
+    /**
+     * Returns a list of all groups, sorted by project
+     * @param integer $user_id restrict to groups the user is member of
+     * @access public static
+     * @return array
+     * @version 1.0
+     */
+    function listallGroups($user_id = null)
+    {
+        global $db;
+        
+        $group_list = array(L('global') => null);
+        $params = array();
+        $query = 'SELECT g.group_id, group_name, group_desc, g.project_id, project_title
+                    FROM {groups} g
+               LEFT JOIN {projects} p ON p.project_id = g.project_id';
+        if (!is_null($user_id)) {
+            $query .= ' LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
+                            WHERE uig.user_id = ? ';
+            $params[] = $user_id;
+        }
+        $sql = $db->Query($query, $params);
+                        
+        while ($row = $db->FetchRow($sql)) {
+            $group_list[$row['project_title']][] = $row;
+        }
+        $group_list[L('global')] = $group_list[''];
+        unset($group_list['']);
+        
+        return $group_list;
     }
     // }}}
     // List languages {{{

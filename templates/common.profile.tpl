@@ -97,17 +97,14 @@
           <input type="hidden" name="old_global_id" value="{$theuser->infos['global_group']}" />
         </td>
       </tr>
-      <?php if ($proj->id): ?>
       <tr>
-        <td><label for="projectgroupin">{L('projectgroup')}</label></td>
+        <td><label>{L('groups')}</label></td>
         <td>
-          <select id="projectgroupin" class="adminlist" name="project_group_in" {tpl_disableif(!$user->perms('manage_project'))}>
-            {!tpl_options(array_merge($project_groups, array(0 => array('group_name' => L('none'), 0 => 0, 'group_id' => 0, 1 => L('none')))), Req::val('project_group_in', $theuser->perms('project_group')))}
-          </select>
-          <input type="hidden" name="old_project_id" value="{$theuser->perms('project_group')}" />
+            <?php foreach ($all_groups as $project => $project_groups): ?>
+            <strong>{$project}</strong>: {$project_groups[0]['group_name']} <br />
+            <?php endforeach; ?>
         </td>
       </tr>
-      <?php endif; ?>
       <tr>
         <td colspan="2"><hr /></td>
       </tr>

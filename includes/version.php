@@ -52,14 +52,14 @@ class Version
     // initialise values
     $this->mProductName = 'Flyspray';
     $this->mUnixName = 'flyspray';
-    $this->mRelease = '0.9';
+    $this->mRelease = '1.0';
     $this->mDevStatus = 'devel';
-    $this->mDevLevel = '9';
-    $this->mCodename = 'Fly Flapper';
+    $this->mDevLevel = '0';
+    $this->mCodename = 'Funiculì funiculà';
     $this->mRelDate = '26/08/2005';
     $this->mRelTime = '10:00';
     $this->mRelTimeZone = 'GMT +10';
-    $this->mCopyright = 'Copyright 2005 © Tony Collins.  All rights reserved.';
+    $this->mCopyright = 'Copyright 2005-2006 © The Flyspray development team.  All rights reserved.';
     $this->mAuthor = 'Tony Collins';
     $this->mUrl = '<a href="http://flyspray.rocks.cc" title="Flyspray home page">Flyspray</a> is Free Software released under the GNU/GPL License.';
     $this->mVersion = $this->mProductName . ' ' . $this->mRelease . ".". $this->mDevLevel . " " . $this->mDevStatus . " [".$this->mCodename ."] " . $this->mRelDate . " " . $this->mRelTime . " " . $this->mRelTimeZone;

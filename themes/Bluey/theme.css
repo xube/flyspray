@@ -12,6 +12,11 @@ table {
 	font-size:1em !Important;
 }
 
+table caption {
+	font-size:120%;
+	font-weight:bold;
+}
+
 img {
 	border:none;
 }
@@ -198,6 +203,22 @@ p.box for instance for adding comments
 table.box serves the same purpose
  table.login is the framework for the login form at the bottom of a page
  table.userlist is found in the user&groups section */
+.admin-edit-user {
+	padding-left:26px;
+	margin-top:-5px;
+}
+
+ul#admin-groups-list {
+	margin:0 0 0 1em;
+	padding:0;
+}
+
+ul#admin-groups-list li {
+	list-style:none;
+	margin:0 0 0.5em 0;
+	padding:0;
+}	
+
 div.box,p.box,table.userlist {
 	border:1px solid #ccc;
 	background-color:#e6eef6;
@@ -549,11 +570,15 @@ table#pagenumbers {
 	width:100%;
 }
 
+table#pagenumbers td {
+	border:0;
+}
+
 table#pagenumbers td#taskrange {
 	padding:0 0 0 5px;
 }
 
-table#pagenumbers td#numbers {
+td#numbers {
 	text-align:right;
 	padding:0 5px 0 0;
 }
@@ -878,12 +903,6 @@ table#pagenumbers tr#massopsactions td#export {
 
 td#export img {
 	vertical-align:middle;
-}
-
-div.groupedit {
-	background:url(kgpg_edit.png) no-repeat top left;
-	padding-left:50px;
-	height:64px;
 }
 
 div#closeform {

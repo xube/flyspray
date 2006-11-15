@@ -9,12 +9,6 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$page->assign('groups', Flyspray::ListGroups());
-
-if ($proj->id) {
-    $page->assign('project_groups', Flyspray::ListGroups($proj->id));
-}
-
 $id = Flyspray::username_to_id(Get::val('id', Get::val('uid')));
 
 $theuser = new User($id);
@@ -29,6 +23,7 @@ $page->assign('comments', $db->fetchOne($sql));
 $sql = $db->Query('SELECT count(*) FROM {tasks} WHERE opened_by = ?', array($theuser->id));
 $page->assign('tasks', $db->fetchOne($sql));
 
+$page->assign('groups', Flyspray::listallGroups($theuser->id));
 $page->assign('theuser', $theuser);
 
 $page->setTitle($fs->prefs['page_title'] . L('viewprofile'));
