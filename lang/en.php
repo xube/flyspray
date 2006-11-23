@@ -813,6 +813,9 @@ Regards,',
 'global'                  => 'Global',
 'userlist'                => 'Userlist',
 'any'                     => 'Any',
+'useradded'               => 'User has been added to the group.',
+'addormoveusers'          => 'Add (or if necessary move) one or more users',
+'currentglobalgroups'     => 'Current global Groups',
 ); 
 
 ?>

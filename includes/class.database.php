@@ -202,17 +202,27 @@ class Database
      * MySQL would do it. Postgre doesn't like the queries MySQL needs.
      *
      * @param object $result 
-     * @param string $column 
+     * @param string $column
+     * @param array $collect_columns collect data.
+     *  example: user tables with groups joined. collect group_id when grouping by user_id to
+     *           get an array of group_ids per user instead of a single group_id
      * @access public
      * @return array process the returned array with foreach ($return as $row) {}
      */
-    function GroupBy(&$result, $column)
+    function GroupBy(&$result, $column, $collect_columns = array(), $reindex = true)
     {
         $rows = array();
-        while ($row = $this->FetchRow($result)) {
-            $rows[$row[$column]] = $row;
-        }
-        return array_values($rows);
+        while (!$result->EOF) {
+            foreach ($collect_columns as $col) {
+                if (isset($rows[$result->fields[$column]][$col])) {
+                    $result->fields[$col] = array_merge( (array) $rows[$result->fields[$column]][$col],
+                                                                 array($result->fields[$col]));
+                }
+            }
+            $rows[$result->fields[$column]] = $result->fields;
+			$result->MoveNext();
+		}
+        return ($reindex) ? array_values($rows) : $rows;
     }
     
     function GetColumnNames($table, $alt, $prefix)

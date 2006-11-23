@@ -57,6 +57,9 @@ define('STATUS_UNCONFIRMED',      1);
 define('STATUS_NEW',              2);
 define('STATUS_ASSIGNED',         3);
 
+// Function parameters
+define('REINDEX', true);
+
 // developers or advanced users only
 //define('DEBUG_SQL',true);
 //define('JABBER_DEBUG', true);

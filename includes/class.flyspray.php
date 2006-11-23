@@ -130,11 +130,11 @@ class Flyspray
 
         $url = FlySpray::absoluteURI($url);
 
-        if($local_only) {
+        if ($local_only) {
 
             $check_url = parse_url($url);
             
-            if($check_url['host'] != $_SERVER['HTTP_HOST']) {
+            if ($check_url['host'] != $_SERVER['HTTP_HOST']) {
 
                 /* We are redirecting to other place
                 * which is not flyspray, or not this host
@@ -313,7 +313,7 @@ class Flyspray
 
         //for some reason, task_id is not here
         // run away inmediately..
-        if(!is_numeric($task_id)) {
+        if (!is_numeric($task_id)) {
             return false;
         }
 
@@ -428,13 +428,15 @@ class Flyspray
      */
     function listallGroups($user_id = null)
     {
-        global $db;
+        global $db, $fs;
         
         $group_list = array(L('global') => null);
         $params = array();
+
         $query = 'SELECT g.group_id, group_name, group_desc, g.project_id, project_title
                     FROM {groups} g
                LEFT JOIN {projects} p ON p.project_id = g.project_id';
+        // Limit to groups a specific user is in
         if (!is_null($user_id)) {
             $query .= ' LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
                             WHERE uig.user_id = ? ';
@@ -443,6 +445,10 @@ class Flyspray
         $sql = $db->Query($query, $params);
                         
         while ($row = $db->FetchRow($sql)) {
+            // make sure that the user only sees projects he is allowed to
+            if ($row['project_id'] != '0' && Flyspray::array_find('project_id', $row['project_id'], $fs->projects) === false) {
+                continue;
+            }
             $group_list[$row['project_title']][] = $row;
         }
         $group_list[L('global')] = $group_list[''];
@@ -528,7 +534,7 @@ class Flyspray
                              ((!is_numeric($time)) ? time() : $time), 
                               $type, $field, $oldvalue, $newvalue); 
 
-        if($db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, 
+        if ($db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, 
                        old_value, new_value) VALUES (?, ?, ?, ?, ?, ?, ?)', $query_params)) {
 
                            return true;
@@ -647,7 +653,7 @@ class Flyspray
 
         $auth_details = $db->FetchRow($result);
 
-        if(!$result || !count($auth_details)) {
+        if (!$result || !count($auth_details)) {
             return 0;
         }
 
@@ -811,7 +817,7 @@ class Flyspray
                 continue;
             }
 
-            if($old[$key] != $new[$key]) {
+            if ($old[$key] != $new[$key]) {
                 switch ($key)
                 {
                     case 'due_date':
@@ -902,7 +908,7 @@ class Flyspray
      * @param string $value
      * @param array $array
      * @access public static
-     * @return integer
+     * @return mixed
      * @version 1.0
      */
     function array_find($key, $value, $array)
@@ -912,6 +918,7 @@ class Flyspray
                 return $num;
             }
         }
+        return false;
     }
 
     /**
@@ -983,7 +990,7 @@ class Flyspray
      */
     function get_tmp_dir()
     {
-        if(function_exists('sys_get_temp_dir')) {
+        if (function_exists('sys_get_temp_dir')) {
             return sys_get_temp_dir();
             
         } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -1023,23 +1030,23 @@ class Flyspray
             $info = $info = new finfo(FILEINFO_MIME);                 
             $type = $info->file($fname);
         
-        } elseif(function_exists('mime_content_type')) {
+        } elseif (function_exists('mime_content_type')) {
             
             $type = mime_content_type($fname);
         // I hope we don't have to...
-        } elseif(!FlySpray::function_disabled('exec') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        } elseif (!FlySpray::function_disabled('exec') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
 
                $type = @explode('; ', @exec(trim('file -bi ' . escapeshellarg($fname))));
                     
         }
-                // if wasn't possible to determine , return empty string so
-                // we can use the browser reported mime-type (probably fake) 
-                return $type;
+        // if wasn't possible to determine , return empty string so
+        // we can use the browser reported mime-type (probably fake) 
+        return $type;
     }
 
     function getSvnRev()
     {
-        if(is_file(BASEDIR. '/REVISION') && is_dir(BASEDIR . '/.svn')) {
+        if (is_file(BASEDIR. '/REVISION') && is_dir(BASEDIR . '/.svn')) {
 
             return 'r' . intval(file_get_contents(BASEDIR .'/REVISION'));
         }
@@ -1047,6 +1054,5 @@ class Flyspray
         return '';
     }
     
-
 }
 ?>

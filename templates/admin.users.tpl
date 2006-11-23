@@ -8,26 +8,42 @@
   
   <div id="search">
     <form action="{$_SERVER['SCRIPT_NAME']}" method="get">
-    <label for="user_name">{L('username')}</label><input type="text" class="text" id="user_name" name="user_name" value="{Get::val('user_name')}" />
-    <label for="real_name">{L('realname')}</label><input type="text" class="text" id="real_name" name="real_name" value="{Get::val('real_name')}" />
-    <label for="email_address">{L('email')}</label><input type="text" class="text" id="email_address" name="email_address" value="{Get::val('email_address')}" />
-    <label for="jabber_id">{L('jabber')}</label><input type="text" class="text" id="jabber_id" name="jabber_id" value="{Get::val('jabber_id')}" />
-    <label for="group_id">{L('group')}</label>
-    <select name="group_id" id="group_id">
-      {!tpl_options(array('0' => L('any')), Get::val('group_id'))}
-      <?php foreach ($all_groups as $project => $project_groups): ?>
-      <optgroup label="{$project}">
-      {!tpl_options($project_groups, Get::val('group_id'))}
-      </optgroup>
-      <?php endforeach; ?>
-    </select>
-    <button type="submit">{L('search')}</button>
+    <table id="search-user-form">
+      <tr>
+        <td>
+          <label class="notable" for="user_name">{L('username')}</label><input type="text" class="text" id="user_name" name="user_name" value="{Get::val('user_name')}" />
+        </td>
+        <td>
+          <label class="notable" for="real_name">{L('realname')}</label><input type="text" class="text" id="real_name" name="real_name" value="{Get::val('real_name')}" />
+        </td>
+        <td rowspan="2">
+            <label class="notable multisel" for="group_id">{L('group')}</label>
+            <select name="group_id[]" multiple="multiple" size="7" id="group_id">
+              {!tpl_options(array(0 => L('any')), Get::val('group_id', 0))}
+              <?php foreach ($all_groups as $project => $project_groups): ?>
+              <optgroup label="{$project}">
+              {!tpl_options($project_groups, Get::val('group_id'))}
+              </optgroup>
+              <?php endforeach; ?>
+            </select>
+        </td>
+        <td rowspan="2"><button type="submit">{L('search')}</button></td>
+      </tr>
+      <tr>
+        <td>
+          <label class="notable "for="email_address">{L('email')}</label><input type="text" class="text" id="email_address" name="email_address" value="{Get::val('email_address')}" />
+        </td><td>
+          <label class="notable" for="jabber_id">{L('jabber')}</label><input type="text" class="text" id="jabber_id" name="jabber_id" value="{Get::val('jabber_id')}" />
+        </td>
+      </tr>
+    </table>
     
     <input type="hidden" name="do" value="admin" />
     <input type="hidden" name="area" value="users" />
     </form>
   </div>
   
+  <form method="post" action="{$_SERVER['SCRIPT_NAME']}">
   <table id="full_user_list" class="userlist">
   <colgroup>
     <col width="15" />
@@ -35,7 +51,8 @@
     <col width="*" />
     <col width="*" />
     <col width="*" />
-    <col style="width:6em;" />
+    <col width="*" />
+    <col style="width:5em;" />
   </colgroup>
   <thead>
     <tr>
@@ -48,6 +65,7 @@
       {!tpl_list_heading('realname')}
       {!tpl_list_heading('email')}
       {!tpl_list_heading('jabber')}
+      <th>{L('groups')}</th>
       {!tpl_list_heading('status')}
     </tr>
   </thead>
@@ -65,6 +83,29 @@
     <td>{$usr['real_name']}</td>
     <td><a href="mailto:{$usr['email_address']}">{$usr['email_address']}</a></td>
     <td><a href="mailto:{$usr['jabber_id']}">{$usr['jabber_id']}</a></td>
+    <td>
+      <?php 
+      // First let's make sure there are arrays (not necessarily the case)
+      settype($user_groups[$usr['user_id']]['group_name'], 'array');
+      settype($user_groups[$usr['user_id']]['project_id'], 'array');
+      foreach ( (array) $user_groups[$usr['user_id']]['group_id'] as $key => $group): ?>
+        <?php
+        // go through all projects and only show the groups if user has permission
+        // to see the project
+        $group_project_id = $user_groups[$usr['user_id']]['project_id'][$key];
+        if ($group_project_id == '0'): ?>
+        {L('global')}:
+        <a href="{CreateUrl('editgroup', $group, 'admin')}">
+          {$user_groups[$usr['user_id']]['group_name'][$key]}
+        </a><br />
+        <?php elseif (($title_key = Flyspray::array_find('project_id', $group_project_id, $fs->projects)) !== false): ?>
+        {$fs->projects[$title_key]['project_title']}:
+        <a href="{CreateUrl('editgroup', $group, 'admin')}">
+          {$user_groups[$usr['user_id']]['group_name'][$key]}
+        </a><br />
+        <?php endif; ?>
+      <?php endforeach; ?>
+    </td>
     <?php if ($usr['account_enabled']) : ?>
     <td class="imgcol"><img src="{$this->get_image('button_ok')}" alt="{L('yes')}" /></td>
     <?php else: ?>
@@ -73,14 +114,12 @@
   </tr>
   <?php endforeach; ?>
   <tr>
-    <td colspan="6">
+    <td colspan="7">
       <table id="pagenumbers">
         <tr>
         <td>
-          <form>
-            <div>
-            <button type="submit">{L('moveuserstogroup')} (not yet working)</button>
-            <select class="adminlist" name="switch_to_group">
+            <button type="submit">{L('moveuserstogroup')}</button>
+            <select class="adminlist" name="new_group">
             <?php if ($proj->id): ?>
             <option value="0">{L('nogroup')}</option>
             <?php endif; ?>
@@ -88,8 +127,6 @@
             </select>
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <input type="hidden" name="action" value="movetogroup" />
-            </div>
-          </form>
         </td>
         <td id="numbers">{!pagenums(Get::num('pagenum'), 50, $user_count, 'admin', 'users')}</td>
         </tr>
@@ -97,4 +134,5 @@
     </td>
   </tr>
   </table>
+  </form>
 </div>

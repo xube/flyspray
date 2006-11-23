@@ -1228,29 +1228,35 @@ switch ($action = Req::val('action'))
     // change a bunch of users' groups
     // ##################
     case 'movetogroup':
-        // Check that both groups belong to the same project
-        $sql = $db->Query('SELECT project_id FROM {groups} WHERE group_id = ? OR group_id = ?',
-                          array(Post::val('switch_to_group'), Post::val('old_group')));
-        $old_pr = $db->FetchOne($sql);
-        $new_pr = $db->FetchOne($sql);
-        if ($proj->id != $old_pr || ($new_pr && $new_pr != $proj->id)) {
-            break;
-        }
+        // Check the project the user is moved to
+        $sql = $db->Query('SELECT project_id FROM {groups} WHERE group_id = ?',
+                           array(Post::val('new_group')));
+        $new_project = $db->FetchOne($sql);
         
-        if (!$user->perms('manage_project', $old_pr) || !is_array(Post::val('users'))) {
+        // Now check that the user may actually move someone to the group        
+        if (!$user->perms('manage_project', $new_project) || !is_array(Post::val('users'))) {
             break;
         }
         
         foreach (Post::val('users') as $user_id => $val) {
-            if (Post::val('switch_to_group') == '0') {
-                $db->Query('DELETE FROM  {users_in_groups}
-                                  WHERE  user_id = ? AND group_id = ?',
-                        array($user_id, Post::val('old_group')));
-            } else {
+            // Is user already in the project? If so, UPDATE the group ID
+            $sql = $db->Query('SELECT g.group_id
+                                 FROM {users_in_groups} uig
+                            LEFT JOIN {groups} g ON g.group_id = uig.group_id
+                                WHERE g.project_id = ? AND uig.user_id = ?',
+                                array($new_project, $user_id));
+            
+            if ($db->CountRows($sql)) {
+                $old_group = $db->FetchOne($sql);
                 $db->Query('UPDATE  {users_in_groups}
                                SET  group_id = ?
                              WHERE  user_id = ? AND group_id = ?',
-                         array(Post::val('switch_to_group'), $user_id, Post::val('old_group')));
+                           array(Post::val('new_group'), $user_id, $old_group));
+            // If not, INSERT a new row
+            } else {
+                $db->Query('INSERT INTO {users_in_groups} (user_id, group_id)
+                                 VALUES (?, ?)',
+                            array($user_id, Post::val('new_group')));
             }
         }
 
@@ -1430,7 +1436,7 @@ switch ($action = Req::val('action'))
         }
 
         $user_details = $db->FetchRow($sql);
-        //no microtime(), time,even with microseconds is predictable ;-)
+        // no microtime(), time, even with microseconds is predictable ;-)
         $magic_url    = md5(uniqid(rand(), true));
 
         // Insert the random "magic url" into the user's profile

@@ -229,7 +229,7 @@ if ($use_public) {
     $dot = escapeshellcmd($path_to_dot);
     $tname = escapeshellarg($tname);
 
-    $cmd = "$dot -T $fmt -o \"" . BASEDIR . '/' . escapeshellarg($file_name . '.' . $fmt) . "\" $tname";
+    $cmd = "$dot -T $fmt -o " . escapeshellarg( BASEDIR . '/' . $file_name . '.' . $fmt) . " $tname";
     shell_exec($cmd);
 
     $cmd = "$dot -T cmapx " . $tname;
@@ -239,7 +239,6 @@ if ($use_public) {
     $page->assign('map',    $data['map']);
     // Remove files so that they are not exposed to the public
     unlink($unlink);
-    unlink(BASEDIR . '/' . $file_name . '.' . $fmt);    
 }
 
 $page->assign('image', $baseurl . $file_name . '.' . $fmt);

@@ -148,6 +148,6 @@
   
   <hr />
 
-  <h3><a href="{CreateURL('admin', 'users', null, array('group_id' => $group_details['group_id']))}">{L('groupmembers')}</a></h3>
+  <h3><a href="{CreateURL('admin', 'users', null, array('group_id[]' => $group_details['group_id']))}">{L('groupmembers')} ({count($proj->listUsersIn($group_details['group_id']))})</a></h3>
     
 </fieldset>

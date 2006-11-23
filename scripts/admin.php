@@ -67,6 +67,7 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
                 $order_column[0], Filters::enum(Get::val('sort', 'desc'), array('asc', 'desc')),
                 $order_column[1], Filters::enum(Get::val('sort2', 'desc'), array('asc', 'desc')));
         
+        // Search options
         $search_keys = array('user_name', 'real_name', 'email_address', 'jabber_id');
         $where = 'WHERE 1=1 ';
         $args = array();
@@ -77,18 +78,20 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
             }
         }
         // Search for users in a specific group
-        if (Get::num('group_id')) {
+        $groups = Get::val('group_id');
+        if (is_array($groups) && count($groups) && !in_array(0, $groups)) {
             $where = ' LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id ' . $where;
-            $where .= ' AND uig.group_id = ? ';
-            $args[] = Get::num('group_id');
+            $where .= ' AND (' . substr(str_repeat(' uig.group_id = ? OR ', count($groups)), 0, -3) . ' ) ';
+            $args = array_merge($args, $groups);
         }
                 
-        $sql = $db->Query('SELECT *
+        $sql = $db->Query('SELECT u.user_id, u.user_name, u.real_name,
+                                  u.jabber_id, u.email_address, u.account_enabled
                              FROM {users} u '                        
                          . $where .
                         'ORDER BY ' . $sortorder, $args);
 
-        $users = $db->FetchAllArray($sql);
+        $users = $db->GroupBy($sql, 'user_id');
         $page->assign('user_count', count($users));
         
         // Offset and limit
@@ -98,8 +101,18 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
             $user_list[] = $users[$i];
         }
         
+        // Get the user groups in a separate query because groups may be hidden
+        // because of search options which are disregarded here
+        $where = substr(str_repeat(' uig.user_id = ? OR ', count($user_list)), 0, -3);
+        $sql = $db->Query('SELECT user_id, g.group_id, g.group_name, g.project_id
+                             FROM {groups} g
+                        LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
+                            WHERE ' . $where, array_map(create_function('$x', 'return $x[0];'), $user_list));
+        $user_groups = $db->GroupBy($sql, 'user_id', array('group_id', 'group_name', 'project_id'), !REINDEX);
+
         $page->assign('all_groups', Flyspray::listallGroups());
         $page->uses('user_list');
+        $page->uses('user_groups');
         break;
 }
 

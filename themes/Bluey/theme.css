@@ -197,6 +197,18 @@ label.text {
 	font-weight:400;
 }
 
+table#search-user-form select {
+	margin:0 2em;
+}
+
+table#search-user-form label.multisel {
+	margin-left:1.3em;
+}
+
+table#search-user-form td {
+	text-align:right;
+	vertical-align:middle;
+}
 
 /* div.box and p.box is used for areas that only administrators can use
 p.box for instance for adding comments
@@ -471,7 +483,7 @@ div#search input.text,div#search button {
 	margin:0;
 }
 
-div#search label.multisel {
+label.multisel {
 	position:absolute;
 	margin-left:-0.3em;
 }

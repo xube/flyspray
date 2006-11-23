@@ -3,8 +3,8 @@
   <fieldset class="box">
     <legend>{L('usersandgroups')}</legend>
     <form action="{$_SERVER['PHP_SELF']}" method="post">
-    <p>Add (or if necessary move) one or more users {!tpl_userselect('uid')}
-       to <select name="user_to_group">
+    <p>{L('addormoveusers')} {!tpl_userselect('uid')}
+       {L('to')} <select name="user_to_group">
           <?php foreach ($group_list as $project => $project_groups): ?>
           <optgroup label="{$project}">
           {!tpl_options($project_groups)}
@@ -23,7 +23,7 @@
     </p>
 
     <table class="userlist">
-      <caption>Current global Groups ({count($groups)})</caption>
+      <caption>{L('currentglobalgroups')} ({count($groups)})</caption>
       <colgroup>
         <col width="3*" />
         <col width="*" />
@@ -40,7 +40,7 @@
         <small>{$group['group_desc']}</small>
         <?php endif; ?>
         </td>
-        <td><a href="{CreateURL('admin', 'users', null, array('group_id' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
+        <td><a href="{CreateURL('admin', 'users', null, array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
         <?php if ($group['group_open']) : ?>
         <td class="imgcol"><img src="{$this->get_image('button_ok')}" alt="{L('yes')}" /></td>
         <?php else: ?>
