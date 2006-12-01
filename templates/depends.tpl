@@ -1,5 +1,5 @@
 <div class="box"><p><b>{L('pruninglevel')}: </b>{!implode(" &nbsp;|&nbsp; \n", $strlist)}</p>
-<h2><a href="{CreateUrl('details', $task_id)}">FS#{!$task_id}</a>: {L('dependencygraph')}</h2>
+<h2>{L('dependencygraphfor')} {!tpl_tasklink($task_id)}</h2>
 
 <?php if ($fmt == 'svg'): ?>
 <object class="depimage" data="{$image}"
