@@ -850,7 +850,7 @@ class Backend
 
     /**
      * Returns an array of tasks (respecting pagination) and an ID list (all tasks)
-     * @param array $args
+     * @param array $args call by reference because we have to modifiy $_GET if we use default values from a user profile
      * @param array $visible
      * @param integer $offset
      * @param integer $comment
@@ -859,7 +859,7 @@ class Backend
      * @return array
      * @version 1.0
      */
-    function get_task_list($args, $visible, $offset = 0, $perpage = null)
+    function get_task_list(&$args, $visible, $offset = 0, $perpage = null)
     {
         global $proj, $db, $user, $conf;
         /* build SQL statement {{{ */
@@ -966,9 +966,27 @@ class Backend
         
         // make sure that only columns can be sorted that are visible
         $order_keys = array_intersect_key($order_keys, array_flip($visible));
-
+        
+        // Default user sort column and order
+        if (!$user->isAnon()) {
+            if (!isset($args['sort'])) {
+                $args['sort'] = $user->infos['defaultorder'];
+            }
+            
+            if (!isset($args['order'])) {
+                $usercolumns = explode(' ', $user->infos['defaultsortcolumn']);
+                foreach ($usercolumns as $column) {
+                    if (isset($order_keys[$column])) {
+                        $args['order'] = $column;
+                        break;
+                    }
+                }
+            }
+        }
+        
         $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'sev'), array_keys($order_keys))];
         $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'sev'), array_keys($order_keys))];
+
         $sortorder  = sprintf('%s %s, %s %s, t.task_id ASC',
                 $order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')),
                 $order_column[1], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));

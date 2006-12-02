@@ -110,13 +110,9 @@
           <td><label>{L('visiblecolumns')}</label></td>
           <td class="text">
             <?php // Set the selectable column names
-            $columnnames = array('id', 'tasktype', 'category', 'severity',
-            'priority', 'summary', 'dateopened', 'status', 'openedby',
-            'assignedto', 'lastedit', 'reportedin', 'dueversion', 'duedate',
-            'comments', 'attachments', 'progress', 'dateclosed', 'os', 'votes');
             $selectedcolumns = explode(' ', Req::val('visible_columns', $proj->prefs['visible_columns']));
             ?>
-            {!tpl_double_select('visible_columns', $columnnames, $selectedcolumns, true)}
+            {!tpl_double_select('visible_columns', $fs->columnnames, $selectedcolumns, true)}
           </td>
         </tr>
       </table>

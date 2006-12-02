@@ -469,11 +469,11 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
     return sprintf($html, $opt1, $opt2);
 } // }}}
 // {{{ Checkboxes
-function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null)
+function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null, $type = 'checkbox')
 {
     $name  = htmlspecialchars($name,  ENT_QUOTES, 'utf-8');
     $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
-    $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
+    $html  = '<input type="' . $type . '" name="'.$name.'" value="'.$value.'" ';
     if (is_string($id)) {
         $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, 'utf-8').'" ';
     }

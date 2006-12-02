@@ -817,6 +817,9 @@ Regards,',
 'addormoveusers'          => 'Add (or if necessary move) one or more users',
 'currentglobalgroups'     => 'Current global Groups',
 'dependencygraphfor'      => 'Dependency graph for',
+'defaultsortcolumn'       => 'Default sort column',
+'asc'                     => 'Ascending',
+'desc'                    => 'Descending',
 ); 
 
 ?>

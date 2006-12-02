@@ -76,6 +76,14 @@
         </td> 
       </tr>
       <tr>
+        <td><label>{L('defaultsortcolumn')}</label></td>
+        <td>
+            <label class="left notable">{!tpl_checkbox('defaultorder', $theuser->infos['defaultorder'] == 'asc', null, 'asc', null, 'radio')} {L('asc')}</label>
+            <label class="left notable">{!tpl_checkbox('defaultorder', $theuser->infos['defaultorder'] == 'desc', null, 'desc', null, 'radio')} {L('desc')}</label>
+            {!tpl_double_select('defaultsortcolumn[]', $fs->columnnames, explode(' ', $theuser->infos['defaultsortcolumn']), true)}
+        </td> 
+      </tr>
+      <tr>
         <td colspan="2"><hr /></td>
       </tr>
       <?php if ($user->perms('is_admin')): ?>

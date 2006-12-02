@@ -58,6 +58,16 @@ class Flyspray
      * @var array
      */
     var $priorities = array();
+    
+    /**
+     * List of all columns, needed in templates
+     * @access public
+     * @var array
+     */
+    var $columnnames = array('id', 'project', 'tasktype', 'category', 'severity',
+                             'priority', 'summary', 'dateopened', 'status', 'openedby',
+                             'assignedto', 'lastedit', 'reportedin', 'dueversion', 'duedate',
+                             'comments', 'attachments', 'progress', 'dateclosed', 'os', 'votes');
 
     // Application-wide preferences {{{
     /**

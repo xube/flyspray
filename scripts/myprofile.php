@@ -14,8 +14,7 @@ if ($user->isAnon()) {
 }
 
 $page->assign('groups', Flyspray::ListGroups());
-
-$page->assign('project_groups', Flyspray::ListGroups($proj->id));
+$page->assign('all_groups', Flyspray::listallGroups());
         
 $page->assign('theuser', $user);
 
