@@ -8,7 +8,7 @@
     </div>
 </div>
 <?php endif; ?>
-<form action="{$_SERVER['PHP_SELF']}" method="post">
+<form action="{$_SERVER['SCRIPT_NAME']}" method="post">
   <table class="list" id="listTable">
    <thead>
      <tr>
@@ -69,6 +69,7 @@
     </tr>
     <?php endif; ?>
   </table>
+  <?php if (count($rows)): ?>
   <script type="text/javascript">
         <?php
             echo 'TableControl.create("listTable",{
@@ -79,10 +80,11 @@
                 handle: "grip"
             });';
         ?>
-      </script>
+  </script>
+  <?php endif; ?>
 </form>
 <hr />
-<form action="{$_SERVER['PHP_SELF']}" method="post">
+<form action="{$_SERVER['SCRIPT_NAME']}" method="post">
   <table class="list">
     <tr>
       <td>
@@ -96,6 +98,7 @@
         <input type="hidden" name="project_id" value="{$proj->id}" />
         <input type="hidden" name="area" value="{Req::val('area')}" />
         <?php endif; ?>
+        <input type="hidden" name="do" value="{Req::val('do')}" />
         <input id="listnamenew" class="text" type="text" size="15" maxlength="40" value="{Req::val('list_name')}" name="list_name" />
       </td>
       <td>

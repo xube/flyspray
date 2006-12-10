@@ -16,13 +16,13 @@
 <?php if (!($user->isAnon() && count($fs->projects) == 0)): ?>
 <div id="search">
   <map id="projectsearchform" name="projectsearchform">
-    <form action="{$_SERVER['PHP_SELF']}" method="get">
+    <form action="{$_SERVER['SCRIPT_NAME']}" method="get">
       <div>
-        <button type="submit">{L('searchthisproject')}</button>
+        <button id="searchthisproject" type="submit">{L('searchthisproject')}</button>
         <input class="text" id="searchtext" name="string" type="text" size="20"
                maxlength="100" value="{Get::val('string')}" accesskey="q" />
         
-        <input type="hidden" name="project" value="{Get::num('project', 0)}" />
+        <input type="hidden" name="project" value="{Get::num('project', $proj->id)}" />
         <?php if (!$user->isAnon()): ?>
         <span class="save_search"><label for="save_search" id="lblsaveas">{L('saveas')}</label>
         <input class="text" type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
@@ -163,7 +163,7 @@
 <?php endif; ?>
 
 <div id="tasklist">
-  <form action="{$_SERVER['PHP_SELF']}" id="massops" method="post">
+  <form action="{$_SERVER['SCRIPT_NAME']}" id="massops" method="post">
     <div>
       <table id="tasklist_table">
         <thead>

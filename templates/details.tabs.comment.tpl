@@ -13,13 +13,13 @@
   <span class="DoNotPrint">
     <?php if ($user->perms('edit_comments') || ($user->perms('edit_own_comments') && $comment['user_id'] == $user->id)): ?>
     &mdash;
-    <a href="index.php?do=editcomment&amp;task_id={$task_details['task_id']}&amp;id={$comment['comment_id']}">
+    <a href="{$_SERVER['SCRIPT_NAME']}?do=editcomment&amp;task_id={$task_details['task_id']}&amp;id={$comment['comment_id']}">
       {L('edit')}</a>
     <?php endif; ?>
 
     <?php if ($user->perms('delete_comments')): ?>
     &mdash;
-    <a href="index.php?action=details.deletecomment&amp;task_id={$task_details['task_id']}&amp;comment_id={$comment['comment_id']}"
+    <a href="{$_SERVER['SCRIPT_NAME']}?action=details.deletecomment&amp;task_id={$task_details['task_id']}&amp;comment_id={$comment['comment_id']}"
       onclick="return confirm('{L('confirmdeletecomment')}');">
       {L('delete')}</a>
     <?php endif ?>
@@ -43,7 +43,7 @@
 
   <?php if ($user->perms('add_comments') && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
   <fieldset><legend>{L('addcomment')}</legend>
-  <form enctype="multipart/form-data" action="{$_SERVER['PHP_SELF']}" method="post">
+  <form enctype="multipart/form-data" action="{$_SERVER['SCRIPT_NAME']}" method="post">
     <div>
       <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>

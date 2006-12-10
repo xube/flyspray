@@ -158,7 +158,7 @@ class FSTpl extends Tpl
 function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','percent_complete'))
 {
     global $user;
-    
+
     $params = array();
 
     if (!is_array($task) || !isset($task['status_name'])) {
@@ -166,11 +166,11 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $task = Flyspray::GetTaskDetails($td_id, true);
     }
 
-    if ($strict === true && !$user->can_view_task($task)) {
+    if ($strict === true && (!is_object($user) || !$user->can_view_task($task))) {
         return '';
     }
 
-    if ($user->can_view_task($task)) {
+    if (is_object($user) && $user->can_view_task($task)) {
         $summary = utf8_substr($task['item_summary'], 0, 64);
     } else {
         $summary = L('taskmadeprivate');
@@ -180,7 +180,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $text = 'FS#'. (int) $task['task_id'] . ' - '. htmlspecialchars($summary, ENT_QUOTES, 'utf-8');
     } elseif(is_string($text)) {
         $text = htmlspecialchars(utf8_substr($text, 0, 64), ENT_QUOTES, 'utf-8');
-    }else {
+    } else {
         //we can't handle non-string stuff here.
         return '';
     }
@@ -325,12 +325,12 @@ function tpl_datepicker($name, $label = '', $value = 0) {
       * coders may be willing to fix the 2038 issue ( in the strange case 32 bit systems are still used by that year) :-)
       */
 
-    } elseif(Req::has($name) && strlen(Req::val($name))) {
+    } elseif (Req::has($name) && strlen(Req::val($name))) {
 
         //strtotime sadly returns -1 on faliure in php < 5.1 instead of false
         $ts = strtotime(Req::val($name));
 
-        foreach(array('m','d','Y') as $period) {
+        foreach (array('m','d','Y') as $period) {
             //checkdate only accepts arguments of type integer
             $$period = intval(date($period, $ts));
         }
@@ -579,7 +579,7 @@ function formatDate($timestamp, $extended = false, $default = '')
 
     $dateformat = '';
     $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
-    $st = date('Z')/3600-1; // server GMT timezone
+    $st = date('Z')/3600; // server GMT timezone
 
     if (!$user->isAnon()) {
         $dateformat = $user->infos[$format_id];

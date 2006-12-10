@@ -1,7 +1,7 @@
 <h3>{$proj->prefs['project_title']} :: {L('newtask')}</h3>
 
 <div id="taskdetails">
-    <form enctype="multipart/form-data" action="{$_SERVER['PHP_SELF']}" method="post">
+    <form enctype="multipart/form-data" action="{$_SERVER['SCRIPT_NAME']}" method="post">
     <h2 class="severity{Req::val('task_severity', 2)} summary" id="edit_summary">
       <label for="itemsummary">{L('summary')}</label>
       <input id="itemsummary" class="text severity{Req::val('task_severity', 2)}" type="text" value="{Req::val('item_summary')}"
@@ -99,6 +99,14 @@
             {!tpl_datepicker('due_date', '', Req::val('due_date'))}
           </td>
         </tr>
+        <?php endif; ?>
+        <?php if ($user->perms('manage_project')): ?>
+            <tr>
+              <td><label for="private">{L('private')}</label></td>
+              <td>
+                {!tpl_checkbox('mark_private', Req::val('mark_private', 0), 'private')}
+              </td>
+            </tr>
         <?php endif; ?>
       </table>
     </div>

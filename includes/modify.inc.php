@@ -50,7 +50,7 @@ switch ($action = Req::val('action'))
             $_SESSION['SUCCESS'] = L('newtaskadded');
             
             if ($user->isAnon()) {        
-                Flyspray::Redirect(CreateURL('details', $task_id, null, array('task_token' => $token)));
+                Flyspray::Redirect(CreateURL('details', $task_id, null, array('task_token' => Get::val('task_token'))));
             } else {
                 Flyspray::Redirect(CreateURL('details', $task_id));
             }
@@ -75,7 +75,7 @@ switch ($action = Req::val('action'))
 
 
         if ($due_date = Post::val('due_date', 0)) {
-            $due_date = strtotime(Post::val('due_date') . '+23 hours 59 minutes 59 seconds');
+            $due_date = Flyspray::strtotime(Post::val('due_date'));
             Backend::add_reminder($task['task_id'], L('defaultreminder') . "\n\n" . CreateURL('details', $task['task_id']), 2*24*60*60, time());
         }
 
@@ -318,7 +318,7 @@ switch ($action = Req::val('action'))
         //send the email first.
 
         if($notify->Create(NOTIFY_CONFIRMATION, null, array($baseurl, $magic_url, $user_name, $confirm_code),
-                        array(Post::val('email_address')), Post::num('notify_type'))) {
+            array(Post::val('email_address'), Post::val('jabber_id')), Post::num('notify_type'))) {
         
                 //email sent succefully, now update the database.
             $reg_values = array(time(), $confirm_code, $user_name, $real_name,
@@ -340,8 +340,8 @@ switch ($action = Req::val('action'))
             } else {
                 Flyspray::show_error(L('codenotsent'));
                 break;
-          }
-
+            }
+         
         break;
 
     // ##################
@@ -512,6 +512,11 @@ switch ($action = Req::val('action'))
             break;
         }
 
+        $viscols =    $fs->prefs['visible_columns'] 
+                    ? $fs->prefs['visible_columns'] 
+                    : 'id tasktype severity summary status dueversion progress';
+
+
         $db->Query('INSERT INTO  {projects}
                                  ( project_title, theme_style, intro_message,
                                    others_view, anon_open, project_is_active,
@@ -520,7 +525,7 @@ switch ($action = Req::val('action'))
                   array(Post::val('project_title'), Post::val('theme_style'),
                         Post::val('intro_message'), Post::val('others_view', 0),
                         Post::val('anon_open', 0),
-                        'id tasktype severity summary status dueversion progress',
+                        $viscols,
                         Post::val('lang_code'), ''));
 
         $sql = $db->Query('SELECT project_id FROM {projects} ORDER BY project_id DESC', false, 1);
@@ -827,6 +832,9 @@ switch ($action = Req::val('action'))
 
         for($i = 0; $i < count($listname); $i++) {
             if ($listname[$i] != '') {
+                if (!isset($listshow[$id])) {
+                    $listshow[$id] = 0;
+                }
                 $update = $db->Query("UPDATE  $list_table_name
                                          SET  $list_column_name = ?, list_position = ?, show_in_list = ?
                                        WHERE  $list_id = ? AND project_id = ?",
@@ -894,6 +902,9 @@ switch ($action = Req::val('action'))
         for($i = 0; $i < count($listname); $i++) {
             if (is_numeric($listposition[$i])  && $listname[$i] != '') {
 
+                if (!isset($listshow[$id])) {
+                    $listshow[$id] = 0;
+                }
                 $update = $db->Query("UPDATE  $list_table_name
                                          SET  $list_column_name = ?, list_position = ?,
                                               show_in_list = ?, version_tense = ?
@@ -963,6 +974,9 @@ switch ($action = Req::val('action'))
 
         for ($i = 0; $i < count($listname); $i++) {
             if ($listname[$i] != '') {
+                if (!isset($listshow[$id])) {
+                    $listshow[$id] = 0;
+                }
                 $update = $db->Query('UPDATE  {list_category}
                                          SET  category_name = ?,
                                               show_in_list = ?, category_owner = ?,
@@ -1191,7 +1205,7 @@ switch ($action = Req::val('action'))
     // ##################
     case 'details.addreminder':        
         $how_often  = Post::val('timeamount1', 1) * Post::val('timetype1');
-        $start_time = strtotime(Post::val('timeamount2', 0));
+        $start_time = Flyspray::strtotime(Post::val('timeamount2', 0));
         
         if (!Backend::add_reminder($task['task_id'], Post::val('reminder_message'), $how_often, $start_time, Post::val('to_user_id'))) {
             Flyspray::show_error(L('usernotexist'));

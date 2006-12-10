@@ -18,7 +18,7 @@
     </div>
   </div>
   <?php endif; ?>
-    <form action="{$_SERVER['PHP_SELF']}" method="post">
+    <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
       <table class="list" id="catTable">
          <thead>
          <tr>
@@ -68,6 +68,7 @@
         </tr>
         <?php endif; ?>
       </table>
+      <?php if (count($categories)): ?>
       <script type="text/javascript">
         <?php
             echo 'TableControl.create("catTable",{
@@ -80,12 +81,13 @@
             });';
         ?>
       </script>
+      <?php endif; ?>
     </form>
 
     <hr />
 
     <!-- Form to add a new category to the list -->
-    <form action="{$_SERVER['PHP_SELF']}" method="post">
+    <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
       <table class="list">
         <tr>
           <td>

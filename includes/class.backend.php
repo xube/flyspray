@@ -674,9 +674,12 @@ class Backend
 
         // Process the due_date
         if ( ($due_date = $args['due_date']) || ($due_date = 0) ) {
-            $due_date = strtotime("$due_date +23 hours 59 minutes 59 seconds");
+            $due_date = Flyspray::strtotime($due_date);
         }
 
+        $sql_params[] = 'mark_private';
+        $sql_values[] = intval($user->perms('manage_project') && isset($args['mark_private']) && $args['mark_private'] == '1');
+        
         $sql_params[] = 'due_date';
         $sql_values[] = $due_date;
         
@@ -777,12 +780,12 @@ class Backend
         $notify->Create(NOTIFY_TASK_OPENED, $task_id);
 
         // If the reporter wanted to be added to the notification list
-        if ($args['notifyme'] == '1' && $user->id != $owner) {
+        if (isset($args['notifyme']) && $args['notifyme'] == '1' && $user->id != $owner) {
             Backend::add_notification($user->id, $task_id, true);
         }
         
         if ($user->isAnon()) {
-            $notify->Create(NOTIFY_ANON_TASK, $task_id, null, $args['anon_email']);
+            $notify->Create(NOTIFY_ANON_TASK, $task_id, $token, $args['anon_email']);
         }
 
         return $task_id;
@@ -835,14 +838,14 @@ class Backend
             preg_match("/\b(?:FS#|bug )(\d+)\b/", $comment, $dupe_of);
             if (count($dupe_of) >= 2) {
                 $existing = $db->Query('SELECT * FROM {related} WHERE this_task = ? AND related_task = ? AND is_duplicate = 1',
-                                            array($task_id, $dupe_of[1]));
+                                        array($task_id, $dupe_of[1]));
                                        
                 if ($existing && $db->CountRows($existing) == 0) {  
                     $db->Query('INSERT INTO {related} (this_task, related_task, is_duplicate) VALUES(?, ?, 1)',
                                 array($task_id, $dupe_of[1]));
                 }
+                Backend::add_vote($task['opened_by'], $dupe_of[1]);
             }
-            Backend::add_vote($task['opened_by'], $dupe_of[1]);
         }
         
         return true;
@@ -984,8 +987,8 @@ class Backend
             }
         }
         
-        $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'sev'), array_keys($order_keys))];
-        $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'sev'), array_keys($order_keys))];
+        $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'severity'), array_keys($order_keys))];
+        $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'severity'), array_keys($order_keys))];
 
         $sortorder  = sprintf('%s %s, %s %s, t.task_id ASC',
                 $order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')),
@@ -1059,11 +1062,11 @@ class Backend
         foreach ($dates as $post => $db_key) {
             if ($date = array_get($args, $post . 'from')) {
                 $where[]      = '(' . $db_key . ' >= ?)';
-                $sql_params[] = strtotime($date);
+                $sql_params[] = Flyspray::strtotime($date);
             }
             if ($date = array_get($args, $post . 'to')) {
                 $where[]      = '(' . $db_key . ' <= ? AND ' . $db_key . ' > 0)';
-                $sql_params[] = strtotime($date);
+                $sql_params[] = Flyspray::strtotime($date);
             }
         }
 

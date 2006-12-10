@@ -7,7 +7,7 @@ class User
     var $infos = array();
     var $searches = array();
     var $search_keys = array('string', 'type', 'sev', 'pri', 'due', 'dev', 'cat', 'status', 'order', 'sort', 'percent', 'changedfrom', 'closedfrom',
-                             'opened', 'search_in_comments', 'search_for_all', 'reported', 'only_primary', 'only_watched', 'closedto',
+                             'opened', 'closed', 'search_in_comments', 'search_for_all', 'reported', 'only_primary', 'only_watched', 'closedto',
                              'changedto', 'duedatefrom', 'duedateto', 'openedfrom', 'openedto', 'has_attachment');
 
     function User($uid = 0)
@@ -33,16 +33,6 @@ class User
         $this->get_perms();
     }
 
-    /* misc functions {{{ */
-    function didSearch() {
-        foreach ($this->search_keys as $key) {
-            if (Get::has($key)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     function save_search($do = 'index')
     {
         global $db;
@@ -58,7 +48,7 @@ class User
                 $arr[$key] = Get::val($key);
             }            
                         
-            if (Get::val('search_name') && $this->didSearch()) {
+            if (Get::val('search_name')) {
                 $fields = array('search_string'=> serialize($arr), 'time'=> time(),
                                 'user_id'=> $this->id , 'name'=> Get::val('search_name'));
 
