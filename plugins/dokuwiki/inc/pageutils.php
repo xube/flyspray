@@ -240,10 +240,25 @@ function metaFiles($id){
  * @author Andreas Gohr <andi@splitbrain.org>
  */
 function mediaFN($id){
-  global $conf;
+  global $conf, $db, $user; // <- from Flyspray
   $id = cleanID($id);
-  $id = str_replace(':','/',$id);
+  if (basename($id) == $id) {
+    // Add permission check!
+    $sql = $db->Query('SELECT file_name, t.*
+                         FROM {attachments} att
+                    LEFT JOIN {tasks} t ON att.task_id = t.task_id
+                        WHERE orig_name = ?', array($id));
+    $fn = $id; // if file is not shown show at least something
+    if ($db->CountRows($sql)) {
+        $row = $db->FetchRow($sql);
+        if ($user->can_view_task($row)) {
+            $fn = BASEDIR . '/attachments/' . $row['file_name'];
+        }
+    }
+  } else {
+    $id = str_replace(':','/',$id);
     $fn = $conf['mediadir'].'/'.utf8_encodeFN($id);
+  }
   return $fn;
 }
 

@@ -43,11 +43,11 @@ if ($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
 
 /* permission stuff */
 if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
-    $user = new User(Cookie::val('flyspray_userid'), $proj);
+    $user = new User(Cookie::val('flyspray_userid'));
     $user->check_account_ok();
     $user->save_search($do);
 } else {
-    $user = new User(0, $proj);
+    $user = new User(0);
 }
 
 if (Get::val('getfile')) {

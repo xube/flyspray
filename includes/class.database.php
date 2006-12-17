@@ -84,7 +84,6 @@ class Database
                .'Check your settings in flyspray.conf.php');
         }
             $this->dblink->SetFetchMode(ADODB_FETCH_BOTH);
-            
             /* 
              * this will work only in the following systems/PHP versions
              *
@@ -136,6 +135,11 @@ class Database
 
     function Query($sql, $inputarr = false, $numrows = -1, $offset = -1)
     {
+        //use transactions only for non SELECT statements.
+
+        $hastrans = ($this->dblink->hasTransactions && 
+                     strpos($sql , 'SELECT') === FALSE);
+                     
         // auto add $dbprefix where we have {table}
         $sql = $this->_add_prefix($sql);
 

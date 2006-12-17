@@ -8,6 +8,26 @@
 
   if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
   define('DOKU_DISABLE_GZIP_OUTPUT', 1);
+  
+  // Access to Flyspray's attachments
+  define('IN_FS', true);
+  require_once DOKU_INC.'../../includes/class.gpc.php';
+  require_once DOKU_INC.'../../includes/fix.inc.php';
+  require_once DOKU_INC.'../../includes/class.flyspray.php';
+  require_once DOKU_INC.'../../includes/constants.inc.php';
+  require_once DOKU_INC.'../../includes/class.database.php';
+  require_once DOKU_INC.'../../includes/class.user.php';
+  $db = new Database;
+  $db->dbOpenFast($conf['database']);
+  $fs = new Flyspray();
+  
+  if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
+    $user = new User(Cookie::val('flyspray_userid'));
+    $user->check_account_ok();
+  } else {
+      $user = new User(0);
+  }
+  
   require_once(DOKU_INC.'inc/init.php');
   require_once(DOKU_INC.'inc/common.php');
   require_once(DOKU_INC.'inc/pageutils.php');
@@ -46,13 +66,6 @@
       exit;
     }
 
-    //check permissions (namespace only)
-    if(auth_quickaclcheck(getNS($MEDIA).':X') < AUTH_READ){
-      header("HTTP/1.0 401 Unauthorized");
-      //fixme add some image for imagefiles
-      print 'Unauthorized';
-      exit;
-    }
     $FILE  = mediaFN($MEDIA);
   }
 
