@@ -22,7 +22,7 @@ class Flyspray
      * @access public
      * @var string
      */
-    var $version = '1.0 dev';
+    var $version = '0.9.9 dev';
 
     /**
      * Flyspray preferences
@@ -124,7 +124,7 @@ class Flyspray
      * @return bool
      * @version 1.0
      */
-    function Redirect($url, $exit = true, $rfc2616 = true, $local_only= true)
+    function Redirect($url, $exit = true, $rfc2616 = true)
     {
 
         @ob_clean();
@@ -140,19 +140,6 @@ class Flyspray
 
         $url = FlySpray::absoluteURI($url);
 
-        if ($local_only) {
-
-            $check_url = parse_url($url);
-            
-            if ($check_url['host'] != $_SERVER['HTTP_HOST']) {
-
-                /* We are redirecting to other place
-                * which is not flyspray, or not this host
-                * we don't want that.
-                 */
-                return false;
-            }
-        }
 
         header('Location: '. $url);
 
@@ -323,7 +310,7 @@ class Flyspray
 
         //for some reason, task_id is not here
         // run away inmediately..
-        if (!is_numeric($task_id)) {
+        if(!is_numeric($task_id)) {
             return false;
         }
 
@@ -413,6 +400,7 @@ class Flyspray
         sort($theme_array);
         return $theme_array;
     } // }}}
+    // List a project's group {{{
     /**
      * Returns a list of a project's groups
      * @param integer $proj_id
@@ -428,43 +416,6 @@ class Flyspray
                             WHERE  project_id = ?
                          ORDER BY  group_id ASC', array($proj_id));
         return $db->FetchAllArray($res);
-    }
-    /**
-     * Returns a list of all groups, sorted by project
-     * @param integer $user_id restrict to groups the user is member of
-     * @access public static
-     * @return array
-     * @version 1.0
-     */
-    function listallGroups($user_id = null)
-    {
-        global $db, $fs;
-        
-        $group_list = array(L('global') => null);
-        $params = array();
-
-        $query = 'SELECT g.group_id, group_name, group_desc, g.project_id, project_title
-                    FROM {groups} g
-               LEFT JOIN {projects} p ON p.project_id = g.project_id';
-        // Limit to groups a specific user is in
-        if (!is_null($user_id)) {
-            $query .= ' LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
-                            WHERE uig.user_id = ? ';
-            $params[] = $user_id;
-        }
-        $sql = $db->Query($query, $params);
-                        
-        while ($row = $db->FetchRow($sql)) {
-            // make sure that the user only sees projects he is allowed to
-            if ($row['project_id'] != '0' && Flyspray::array_find('project_id', $row['project_id'], $fs->projects) === false) {
-                continue;
-            }
-            $group_list[$row['project_title']][] = $row;
-        }
-        $group_list[L('global')] = $group_list[''];
-        unset($group_list['']);
-        
-        return $group_list;
     }
     // }}}
     // List languages {{{
@@ -544,7 +495,7 @@ class Flyspray
                              ((!is_numeric($time)) ? time() : $time), 
                               $type, $field, $oldvalue, $newvalue); 
 
-        if ($db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, 
+        if($db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed, 
                        old_value, new_value) VALUES (?, ?, ?, ?, ?, ?, ?)', $query_params)) {
 
                            return true;
@@ -659,11 +610,11 @@ class Flyspray
                            LEFT JOIN  {groups} g ON uig.group_id = g.group_id
                            LEFT JOIN  {users} u ON uig.user_id = u.user_id
                                WHERE  u.user_name = ? AND g.project_id = ?
-                            ORDER BY  g.group_id ASC", array($username, '0'));
+                            ORDER BY  g.group_id ASC", array($username, 0));
 
         $auth_details = $db->FetchRow($result);
 
-        if (!$result || !count($auth_details)) {
+        if(!$result || !count($auth_details)) {
             return 0;
         }
 
@@ -747,6 +698,7 @@ class Flyspray
      * @access public static
      * @return void
      * @version 1.0
+     * @notes smile intented
      */
     function startSession()
     {
@@ -758,7 +710,6 @@ class Flyspray
                         'UseLinux',
                         'NoMicrosoft',
                         'ThinkB4Replying',
-                        'BuyTonyAMac',
                         'FreeSoftware',
                         'ReadTheFAQ',
                         'RTFM',
@@ -792,18 +743,6 @@ class Flyspray
         }
     }  // }}}
 
-    // {{{
-    /**
-     * Generate a long random number
-     * @access public static
-     * @return float
-     * @version 1.0
-     */
-    function make_seed()
-    {
-        list($usec, $sec) = explode(' ', microtime());
-        return (float) $sec + ((float) $usec * 100000);
-    } // }}}
     // Compare tasks {{{
     /**
      * Compares two tasks and returns an array of differences
@@ -827,7 +766,7 @@ class Flyspray
                 continue;
             }
 
-            if ($old[$key] != $new[$key]) {
+            if($old[$key] != $new[$key]) {
                 switch ($key)
                 {
                     case 'due_date':
@@ -923,7 +862,7 @@ class Flyspray
      * @param string $value
      * @param array $array
      * @access public static
-     * @return mixed
+     * @return integer
      * @version 1.0
      */
     function array_find($key, $value, $array)
@@ -933,7 +872,6 @@ class Flyspray
                 return $num;
             }
         }
-        return false;
     }
 
     /**
@@ -1005,7 +943,7 @@ class Flyspray
      */
     function get_tmp_dir()
     {
-        if (function_exists('sys_get_temp_dir')) {
+        if(function_exists('sys_get_temp_dir')) {
             return sys_get_temp_dir();
             
         } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -1042,14 +980,14 @@ class Flyspray
 
         if (extension_loaded('fileinfo') && class_exists('finfo')) {
 
-            $info = $info = new finfo(FILEINFO_MIME);                 
+            $info = new finfo(FILEINFO_MIME);                 
             $type = $info->file($fname);
         
-        } elseif (function_exists('mime_content_type')) {
+        } elseif(function_exists('mime_content_type')) {
             
             $type = mime_content_type($fname);
         // I hope we don't have to...
-        } elseif (!FlySpray::function_disabled('exec') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        } elseif(!FlySpray::function_disabled('exec') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
 
                $type = trim(@exec('file -bi ' . escapeshellarg($fname)));
                     
@@ -1090,12 +1028,13 @@ class Flyspray
      */
     function getSvnRev()
     {
-        if (is_file(BASEDIR. '/REVISION') && is_dir(BASEDIR . '/.svn')) {
+        if(is_file(BASEDIR. '/REVISION') && is_dir(BASEDIR . '/.svn')) {
 
             return 'r' . intval(file_get_contents(BASEDIR .'/REVISION'));
         }
         
         return '';
     }    
+
 }
 ?>

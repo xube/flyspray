@@ -11,7 +11,6 @@ if (!defined('IN_FS')) {
 
 // Include the notifications class
 require_once BASEDIR . '/includes/class.notify.php';
-$notify = new Notifications;
 
 $lt = Post::isAlnum('list_type') ? Post::val('list_type') : '';
 $list_table_name = null;
@@ -135,7 +134,7 @@ switch ($action = Req::val('action'))
         
         $changes = Flyspray::compare_tasks($task, $new_details_full);
         if (count($changes) > 0) {
-            $notify->Create(NOTIFY_TASK_CHANGED, $task['task_id'], $changes);
+            Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_CHANGED, array('changes' => $changes));
         }
 
         if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
@@ -149,7 +148,7 @@ switch ($action = Req::val('action'))
                 if (!$user->infos['notify_own']) {
                     $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
                 }
-                $notify->Create(NOTIFY_NEW_ASSIGNEE, $task['task_id'], null, $notify->SpecificAddresses($new_assignees));
+                Notifications::send($new_assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, $task['task_id']);
             }
         }
         
@@ -206,7 +205,7 @@ switch ($action = Req::val('action'))
         
         Flyspray::logEvent($task['task_id'], 3, $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
 
-        $notify->Create(NOTIFY_TASK_REOPENED, $task['task_id']);
+        Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_REOPENED);
 
         // If there's an admin request related to this, close it
         $db->Query('UPDATE  {admin_requests}
@@ -247,10 +246,8 @@ switch ($action = Req::val('action'))
         }
         
         if (!Post::val('user_name') || !Post::val('real_name')
-            || (!Post::val('email_address') && Post::num('notify_type') == '1')
-            || (!Post::val('jabber_id') && Post::num('notify_type') == '2')
-            || (!Post::val('jabber_id') && !Post::val('email_address') && Post::num('notify_type') == '3')
-        ) {
+            || !Post::val('email_address'))
+         {
             // If the form wasn't filled out correctly, show an error
             Flyspray::show_error(L('registererror'));
             break;
@@ -265,7 +262,7 @@ switch ($action = Req::val('action'))
             break;
         }
         //jabber_id is optional
-        if ($jabber_id && !Flyspray::check_email($jabber_id)) {
+        if ($jabber_id && !Jabber::check_jid($jabber_id)) {
             Flyspray::show_error(L('novalidjabber'));
             break;
         }
@@ -298,27 +295,27 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE jabber_id = ? AND jabber_id != '' OR email_address = ? AND email_address != ''",
+        $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE 
+                           jabber_id = ? AND jabber_id != '' 
+                           OR email_address = ? AND email_address != ''",
                           array($jabber_id, $email));
         if ($db->fetchOne($sql)) {
             Flyspray::show_error(L('emailtaken'));
             break;
         }
         
-        // Generate a random bunch of numbers for the confirmation code
-        mt_srand(Flyspray::make_seed());
-        $randval = mt_rand();
+        // Generate a random bunch of numbers for the confirmation code and the confirmation url
+
+        foreach(array('randval','magic_url') as $genrandom) {
+
+            $$genrandom = md5(uniqid(rand(), true));
+        }
 
         // Convert those numbers to a seemingly random string using crypt
         $confirm_code = crypt($randval, $conf['general']['cookiesalt']);
 
-        // Generate a looonnnnggg random string to send as an URL to complete this registration
-        $magic_url = md5(uniqid(rand(), true));
-
         //send the email first.
-
-        if($notify->Create(NOTIFY_CONFIRMATION, null, array($baseurl, $magic_url, $user_name, $confirm_code),
-            array(Post::val('email_address'), Post::val('jabber_id')), Post::num('notify_type'))) {
+        if (Notifications::send(Post::val('email_address'), ADDRESS_EMAIL, NOTIFY_CONFIRMATION, array($baseurl, $magic_url, $user_name, $confirm_code))) {
         
                 //email sent succefully, now update the database.
             $reg_values = array(time(), $confirm_code, $user_name, $real_name,
@@ -385,16 +382,15 @@ switch ($action = Req::val('action'))
     // ##################
     // new user self-registration with a confirmation code
     // ##################
-    case 'newuser.newuser':
+    case 'register.newuser':
+    case 'admin.newuser':
         if (!($user->perms('is_admin') || $user->can_self_register())) {
             break;
         }
 
         if (!Post::val('user_name') || !Post::val('real_name')
-            || (!Post::val('email_address') && Post::num('notify_type') == '1')
-            || (!Post::val('jabber_id') && Post::num('notify_type') == '2')
-            || (!Post::val('jabber_id') && !Post::val('email_address') && Post::num('notify_type') == '3')
-        ) {
+            || !Post::val('email_address'))
+        {
             // If the form wasn't filled out correctly, show an error
             Flyspray::show_error(L('registererror'));
             break;
@@ -411,6 +407,15 @@ switch ($action = Req::val('action'))
             $group_in = $fs->prefs['anon_group'];
         }
 
+        $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE 
+                           jabber_id = ? AND jabber_id != '' 
+                           OR email_address = ? AND email_address != ''",
+                          array(Post::val('jabber_id'), Post::val('email_address')));
+        if ($db->fetchOne($sql)) {
+            Flyspray::show_error(L('emailtaken'));
+            break;
+        }
+        
         if (!Backend::create_user(Post::val('user_name'), Post::val('user_pass'),
                               Post::val('real_name'), Post::val('jabber_id'),
                               Post::val('email_address'), Post::num('notify_type'),
@@ -481,7 +486,7 @@ switch ($action = Req::val('action'))
         }
         
         $settings = array('jabber_server', 'jabber_port', 'jabber_username', 'notify_registration',
-                'jabber_password', 'anon_group', 'user_notify', 'admin_email',
+                'jabber_password', 'anon_group', 'user_notify', 'admin_email', 'send_background',
                 'lang_code', 'spam_proof', 'default_project', 'dateformat', 'jabber_ssl',
                 'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server', 'page_title',
                 'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds');
@@ -1071,7 +1076,7 @@ switch ($action = Req::val('action'))
         Flyspray::logEvent($task['task_id'], 11, Post::val('related_task'));
         Flyspray::logEvent(Post::val('related_task'), 11, $task['task_id']);
 
-        $notify->Create(NOTIFY_REL_ADDED, $task['task_id'], Post::val('related_task'));
+        Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_REL_ADDED, array('rel_task' => Post::val('related_task')));
 
         $_SESSION['SUCCESS'] = L('relatedaddedmsg');
         Flyspray::Redirect(CreateURL('details', $task['task_id'] .'#related'));
@@ -1086,11 +1091,15 @@ switch ($action = Req::val('action'))
         }
 
         foreach (Post::val('related_id') as $related) {
+            $sql = $db->Query('SELECT this_task, related_task FROM {related} WHERE related_id = ?',
+                              array($related));
             $db->Query('DELETE FROM {related} WHERE related_id = ? AND (this_task = ? OR related_task = ?)',
-                       array($related, $task['task_id'], $task['task_id']));
+                        array($related, $task['task_id'], $task['task_id']));
             if ($db->AffectedRows()) {
-                Flyspray::logEvent($task['task_id'], 12, $related);
-                Flyspray::logEvent($related, 12, $task['task_id']);
+                $related_task = $db->FetchRow($sql);
+                $related_task = ($related_task['this_task'] == $task['task_id']) ? $related_task['related_task'] : $task['task_id'];
+                Flyspray::logEvent($task['task_id'], 12, $related_task);
+                Flyspray::logEvent($related_task, 12, $task['task_id']);
                 $_SESSION['SUCCESS'] = L('relatedremoved');
             }
         }
@@ -1324,7 +1333,7 @@ switch ($action = Req::val('action'))
         $pms = $db->fetchCol($sql);
 
         // Call the functions to create the address arrays, and send notifications
-        $notify->Create(NOTIFY_PM_REQUEST, $task['task_id'], null, $notify->SpecificAddresses($pms));
+        Notifications::send($pms, ADDRESS_USER, NOTIFY_PM_REQUEST, $task['task_id']);
 
         $_SESSION['SUCCESS'] = L('adminrequestmade');
         Flyspray::Redirect(CreateURL('details', $task['task_id']));
@@ -1351,7 +1360,7 @@ switch ($action = Req::val('action'))
                     array($user->id, time(), Req::val('deny_reason'), Req::val('req_id')));
 
         Flyspray::logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
-        $notify->Create(NOTIFY_PM_DENY_REQUEST, $req_details['task_id'], Req::val('deny_reason'));
+        Notifications::send($req_details['task_id'], ADDRESS_TASK, NOTIFY_PM_DENY_REQUEST, Req::val('deny_reason'));
 
         $_SESSION['SUCCESS'] = L('pmreqdeniedmsg');
         Flyspray::Redirect($_SESSION['prev_page']);
@@ -1392,8 +1401,8 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $notify->Create(NOTIFY_DEP_ADDED, $task['task_id'], Post::val('dep_task_id'));
-        $notify->Create(NOTIFY_REV_DEP, Post::val('dep_task_id'), $task['task_id']);
+        Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_DEP_ADDED, array('dep_task' => Post::val('dep_task_id')));
+        Notifications::send(Post::val('dep_task_id'), ADDRESS_TASK, NOTIFY_REV_DEP, array('dep_task' => $task['task_id']));
 
         // Log this event to the task history, both ways
         Flyspray::logEvent($task['task_id'], 22, Post::val('dep_task_id'));
@@ -1425,8 +1434,8 @@ switch ($action = Req::val('action'))
                     array(Get::val('depend_id'), $task['task_id']));
         
         if ($db->AffectedRows()) {
-            $notify->Create(NOTIFY_DEP_REMOVED, $dep_info['task_id'], $dep_info['dep_task_id']);
-            $notify->Create(NOTIFY_REV_DEP_REMOVED, $dep_info['dep_task_id'], $dep_info['task_id']);
+            Notifications::send($dep_info['task_id'], ADDRESS_TASK, NOTIFY_DEP_REMOVED, array('dep_task' => $dep_info['dep_task_id']));
+            Notifications::send($dep_info['dep_task_id'], ADDRESS_TASK, NOTIFY_REV_DEP_REMOVED, array('dep_task' => $dep_info['task_id']));
 
             Flyspray::logEvent($dep_info['task_id'], 24, $dep_info['dep_task_id']);
             Flyspray::logEvent($dep_info['dep_task_id'], 25, $dep_info['task_id']);
@@ -1460,7 +1469,7 @@ switch ($action = Req::val('action'))
                      WHERE user_id = ?',
                 array($magic_url, $user_details['user_id']));
 
-        $notify->Create(NOTIFY_PW_CHANGE, null, array($baseurl, $magic_url), $notify->SpecificAddresses(array($user_details['user_id']), true));
+        Notifications::send($user_details['user_id'], ADDRESS_USER, NOTIFY_PW_CHANGE, array($baseurl, $magic_url));
 
         $_SESSION['SUCCESS'] = L('magicurlsent');
         Flyspray::Redirect('./');

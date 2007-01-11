@@ -163,7 +163,7 @@ $language = array(
 'lookandfeel'             => 'Look and Feel',
 'globaltheme'             => 'Global Theme',
 'emailnotify'             => 'Email Notifications',
-'fromaddress'             => 'From Address',
+'fromaddress'             => 'Dummy from/to address',
 'smtpserver'              => 'SMTP Server',
 'smtpuser'                => 'SMTP Username',
 'smtppass'                => 'SMTP Password',
@@ -820,6 +820,7 @@ Regards,',
 'defaultsortcolumn'       => 'Default sort column',
 'asc'                     => 'Ascending',
 'desc'                    => 'Descending',
+'sendbackground'         => 'Send notifications in background',
 ); 
 
 ?>

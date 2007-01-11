@@ -35,7 +35,6 @@ define('NOTIFY_TASK_REOPENED',    4);
 define('NOTIFY_DEP_ADDED',        5);
 define('NOTIFY_DEP_REMOVED',      6);
 define('NOTIFY_COMMENT_ADDED',    7);
-define('NOTIFY_ATT_ADDED',        8);
 define('NOTIFY_REL_ADDED',        9);
 define('NOTIFY_OWNERSHIP',       10);
 define('NOTIFY_CONFIRMATION',    11);
@@ -48,10 +47,15 @@ define('NOTIFY_ADDED_ASSIGNEES', 17);
 define('NOTIFY_ANON_TASK',       18);
 define('NOTIFY_PW_CHANGE',       19);
 define('NOTIFY_NEW_USER',        20);
+define('NOTIFY_REMINDER',        21);
 
 define('NOTIFY_EMAIL',            1);
 define('NOTIFY_JABBER',           2);
 define('NOTIFY_BOTH',             3);
+define('ADDRESS_TASK',            1);
+define('ADDRESS_USER',            2);
+define('ADDRESS_EMAIL',           3);
+define('ADDRESS_DONE',            4);
 
 define('STATUS_UNCONFIRMED',      1);
 define('STATUS_NEW',              2);

@@ -33,6 +33,14 @@ class User
         $this->get_perms();
     }
 
+    /**
+     * save_search 
+     * 
+     * @param string $do 
+     * @access public
+     * @return void
+     * @notes FIXME: must return something, should not merge _GET and _REQUEST with other stuff.
+     */
     function save_search($do = 'index')
     {
         global $db;
@@ -94,6 +102,7 @@ class User
         while ($row = $db->FetchRow($sql)) {
             $this->perms[$row['project_id']] = $row;
         }
+        // Fill permissions for global project
         $this->perms[0] = array_map(create_function('$x', 'return 1;'), end($this->perms));
 
         if (!$this->isAnon()) {

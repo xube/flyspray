@@ -157,7 +157,6 @@
                                 NOTIFY_DEP_ADDED       => L('pm.depadded'),
                                 NOTIFY_DEP_REMOVED     => L('pm.depremoved'),
                                 NOTIFY_COMMENT_ADDED   => L('commentadded'),
-                                NOTIFY_ATT_ADDED       => L('attachmentadded'),
                                 NOTIFY_REL_ADDED       => L('relatedadded'),
                                 NOTIFY_OWNERSHIP       => L('ownershiptaken'),
                                 NOTIFY_PM_REQUEST      => L('pmrequest'),

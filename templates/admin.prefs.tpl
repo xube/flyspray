@@ -92,6 +92,12 @@
           </td>
         </tr>
         <tr>
+          <td><label for="send_background">{L('sendbackground')}</label></td>
+          <td>
+              {!tpl_checkbox('send_background', $fs->prefs['send_background'], 'send_background', 1)}
+          </td>
+        </tr>
+        <tr>
           <th colspan="2"><hr />
             {L('emailnotify')}
           </th>

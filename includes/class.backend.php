@@ -130,7 +130,7 @@ class Backend
      */
     function assign_to_me($user_id, $tasks)
     {
-        global $db, $notify;
+        global $db;
         
         $user = $GLOBALS['user'];
         if ($user_id != $user->id) {
@@ -163,7 +163,7 @@ class Backend
             
             if ($db->affectedRows()) {
                 Flyspray::logEvent($row['task_id'], 19, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
-                $notify->Create(NOTIFY_OWNERSHIP, $row['task_id']);
+                Notifications::send($row['task_id'], ADDRESS_TASK, NOTIFY_OWNERSHIP);
             }
 
             if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
@@ -184,7 +184,7 @@ class Backend
      */
     function add_to_assignees($user_id, $tasks, $do = false)
     {
-        global $db, $notify;
+        global $db;
         
         $user = $GLOBALS['user'];
         if ($user_id != $user->id) {
@@ -210,7 +210,7 @@ class Backend
 
             if ($db->affectedRows()) {
                 Flyspray::logEvent($row['task_id'], 29, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
-                $notify->Create(NOTIFY_ADDED_ASSIGNEES, $row['task_id']);
+                Notifications::send($row['task_id'], ADDRESS_TASK, NOTIFY_ADDED_ASSIGNEES);
             }
             
             if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
@@ -260,7 +260,7 @@ class Backend
      */
     function add_comment($task, $comment_text, $time = null)
     {
-        global $db, $user, $notify;
+        global $db, $user;
         
         if (!($user->perms('add_comments', $task['project_id']) && (!$task['is_closed'] || $user->perms('comment_closed', $task['project_id'])))) {
             return false;
@@ -287,9 +287,9 @@ class Backend
         Flyspray::logEvent($task['task_id'], 4, $cid);
 
         if (Backend::upload_files($task['task_id'], $cid)) {
-            $notify->Create(NOTIFY_COMMENT_ADDED, $task['task_id'], 'files');
+            Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_COMMENT_ADDED, array('files' => true, 'cid' => $cid));
         } else {
-            $notify->Create(NOTIFY_COMMENT_ADDED, $task['task_id']);
+            Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_COMMENT_ADDED, array('cid' => $cid));
         }
 
         return true;
@@ -306,9 +306,7 @@ class Backend
      */
     function upload_files($task_id, $comment_id = 0, $source = 'userfile')
     {
-        global $db, $notify, $conf, $user;
-
-        mt_srand(Flyspray::make_seed());
+        global $db, $conf, $user;
 
         $task = Flyspray::GetTaskDetails($task_id);
 
@@ -426,7 +424,7 @@ class Backend
      */
     function create_user($user_name, $password, $real_name, $jabber_id, $email, $notify_type, $time_zone, $group_in)
     {
-        global $fs, $db, $notify, $baseurl;
+        global $fs, $db, $baseurl;
         
         // Limit lengths
         $user_name = substr(trim($user_name), 0, 32);
@@ -450,8 +448,7 @@ class Backend
         // Autogenerate a password
         if (!$password) {
             $auto = true;
-            mt_srand(Flyspray::make_seed());
-            $password = substr(md5(mt_rand() . $user_name), 0, mt_rand(7, 9));
+            $password = substr(md5(uniqid(rand(), true)), 0, mt_rand(7, 9));
         }
         
         $db->Query("INSERT INTO  {users}
@@ -483,13 +480,12 @@ class Backend
         
         // Send a user his details (his username might be altered, password auto-generated)
         if ($fs->prefs['notify_registration']) {
-            $sql = $db->Query('SELECT email_address
+            $sql = $db->Query('SELECT user_id
                                  FROM {users} u
                             LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
                                 WHERE g.group_id = 1');
-            $notify->Create(NOTIFY_NEW_USER, null,
-                            array($baseurl, $user_name, $real_name, $email, $jabber_id, $password, $auto),
-                            $db->FetchAllArray($sql), NOTIFY_EMAIL);
+            Notifications::send($db->FetchAllArray($sql), ADDRESS_USER, NOTIFY_NEW_USER, 
+                          array($baseurl, $user_name, $real_name, $email, $jabber_id, $password, $auto));
         }
         
         return true;
@@ -632,11 +628,12 @@ class Backend
      * @access public
      * @return integer the task ID on success
      * @version 1.0
+     * @notes $args is POST data, bad..bad user..
      */
     function create_task($args)
     {
         global $db, $user, $proj;
-        $notify = new Notifications();
+
         if ($proj->id !=  $args['project_id']) {
             $proj = new Project($args['project_id']);
         }
@@ -662,7 +659,7 @@ class Backend
                 'operating_system', 'task_severity', 'task_priority');
 
         $sql_values = array(time(), time(), $args['project_id'], $item_summary,
-                $detailed_desc, intval($user->id), '0');
+                $detailed_desc, intval($user->id), 0);
 
         $sql_params = array();
         foreach ($param_names as $param_name) {
@@ -725,8 +722,7 @@ class Backend
             Flyspray::logEvent($task_id, 14, trim($args['assigned_to']));
             
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-            $notify->Create(NOTIFY_NEW_ASSIGNEE, $task_id, null,
-                            $notify->SpecificAddresses(Flyspray::int_explode(' ', $args['assigned_to'])));
+            Notifications::send(Flyspray::int_explode(' ', $args['assigned_to']), ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, $task_id);
         }        
                     
         // Log that the task was opened
@@ -777,7 +773,7 @@ class Backend
         }
         
         // Create the Notification
-        $notify->Create(NOTIFY_TASK_OPENED, $task_id);
+        Notifications::send($task_id, ADDRESS_TASK, NOTIFY_TASK_OPENED);
 
         // If the reporter wanted to be added to the notification list
         if (isset($args['notifyme']) && $args['notifyme'] == '1' && $user->id != $owner) {
@@ -785,7 +781,7 @@ class Backend
         }
         
         if ($user->isAnon()) {
-            $notify->Create(NOTIFY_ANON_TASK, $task_id, $token, $args['anon_email']);
+            Notifications::send($args['anon_email'], ADDRESS_EMAIL, NOTIFY_ANON_TASK, array('token' => $token));
         }
 
         return $task_id;
@@ -803,7 +799,7 @@ class Backend
      */
     function close_task($task_id, $reason, $comment, $mark100 = true)
     {
-        global $db, $notify, $user;
+        global $db, $user;
         $task = Flyspray::GetTaskDetails($task_id);
         
         if (!$user->can_close_task($task)) {
@@ -824,7 +820,7 @@ class Backend
             Flyspray::logEvent($task_id, 3, 100, $task['percent_complete'], 'percent_complete');
         }
 
-        $notify->Create(NOTIFY_TASK_CLOSED, $task_id);
+        Notifications::send($task_id, ADDRESS_TASK, NOTIFY_TASK_CLOSED);
         Flyspray::logEvent($task_id, 2, $reason, $comment);
 
         // If there's an admin request related to this, close it
