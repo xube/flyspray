@@ -169,6 +169,12 @@
             </select>
           </td>
         </tr>
+        <tr>
+          <td><label for="send_digest">{L('senddigest')}</label></td>
+          <td>
+            {!tpl_checkbox('send_digest', Req::val('send_digest', $proj->prefs['send_digest']), 'send_digest')}
+          </td>
+        </tr>
       </table>
     </div>
 

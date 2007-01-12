@@ -820,7 +820,14 @@ Regards,',
 'defaultsortcolumn'       => 'Default sort column',
 'asc'                     => 'Ascending',
 'desc'                    => 'Descending',
-'sendbackground'         => 'Send notifications in background',
+'sendbackground'          => 'Send notifications in background',
+'reopenedby'              => 'Reopened by',
+'openedtasks'             => 'Opened tasks',
+'closedtasks'             => 'Closed tasks',
+'reopenedtasks'           => 'Reopened tasks',
+'assignedtasks'           => 'New task ownerships',
+'digestfor'               => 'This is your weekly digest for',
+'senddigest'              => 'Send digest to project managers',
 ); 
 
 ?>

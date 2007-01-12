@@ -13,3 +13,6 @@ VALUES (
 ALTER TABLE `flyspray_prefs` DROP `pref_desc`;
 ALTER TABLE `flyspray_notification_messages` CHANGE `message_subject` `message_data` TEXT NOT NULL;
 ALTER TABLE `flyspray_notification_messages` DROP `message_body` ;
+
+ALTER TABLE `flyspray_projects` ADD `send_digest` TINYINT( 1 ) DEFAULT '0' NOT NULL ;
+ALTER TABLE `flyspray_projects` ADD `last_digest` INT DEFAULT '0' NOT NULL ;

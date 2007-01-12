@@ -603,7 +603,7 @@ switch ($action = Req::val('action'))
         }
 
         $cols = array( 'project_title', 'theme_style', 'lang_code', 'default_task', 'default_entry',
-                'intro_message', 'project_is_active', 'others_view', 'anon_open',
+                'intro_message', 'project_is_active', 'others_view', 'anon_open', 'send_digest',
                 'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
                 'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign');
         $args = array_map('Post_to0', $cols);

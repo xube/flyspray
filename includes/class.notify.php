@@ -341,7 +341,7 @@ class Notifications
         {
             // do not send notifs on own actions if the user does not want to
             // unless he is the only recipient (confirm code etc.)
-            if ($user_details['user_id'] == $user->id && !$user->infos['notify_own'] && count($users) > 1) {
+            if ($row['user_id'] == $user->id && !$user->infos['notify_own'] && count($users) > 1) {
                 continue;
             }
             
@@ -696,7 +696,8 @@ class Notifications
                 break;
             
             case NOTIFY_REMINDER:
-                $body = $row['reminder_message'];
+            case NOTIFY_DIGEST:
+                $body = $data['message'] . "\r\n\r\n";
                 break;
         }
 
