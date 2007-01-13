@@ -115,7 +115,7 @@ do {
             }
         }
         
-        if (Notifications::send_now(array_map(create_function('$x', 'return $x[0];'), $db->FetchAllArray($pms)), ADDRESS_USER, NOTIFY_DIGEST, array('message' => $message))) {
+        if (Notifications::send_now($db->FetchCol($pms), ADDRESS_USER, NOTIFY_DIGEST, array('message' => $message))) {
             $db->Query('UPDATE {projects} SET last_digest = ? WHERE project_id = ?',
                         array(time(), $project['project_id']));
         }
