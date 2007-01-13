@@ -116,15 +116,9 @@ class Notifications
                 $swift = new Swift(new Swift_Connection_NativeMail);
             }
             
-            if (count($to) > 1) {
-                // do not disclose user's address
-                foreach ($to as $val) {
-                    if ($fs->prefs['admin_email'] != $val) {
-                        $swift->AddBcc($val);
-                    }
-                }
-                // remember: admin_email should only be a dummy address
-                $to = $fs->prefs['admin_email'];
+            // do not disclose user's address
+            foreach ($emails as $mail) {
+                $swift->AddBcc($mail);
             }
             
             // check for reply-to
@@ -141,7 +135,7 @@ class Notifications
             $swift->setCharset('utf-8');
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
-            $result = $swift->send($to, '"Flyspray" <' . $fs->prefs['admin_email'] . '>', $subject, $body) && $result;
+            $result = $swift->send(false, $fs->prefs['admin_email'], $subject, $body) && $result;
             $swift->close();
         }
         
