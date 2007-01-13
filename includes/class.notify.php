@@ -158,7 +158,7 @@ class Notifications
                                  $fs->prefs['jabber_port']);
             
             foreach ($jids as $jid) {
-                $result = $jabber->send_message($jid, $body, 'normal') && $result;
+                $result = $jabber->send_message($jid, $body, $subject, 'normal') && $result;
             }
         }
         
