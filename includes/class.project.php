@@ -9,7 +9,7 @@ class Project
     {
         global $db, $fs;
 
-        if (is_numeric($id)) {
+        if (is_numeric($id) && $id > 0) {
             $sql = $db->Query("SELECT p.*, c.content AS pm_instructions, c.last_updated AS cache_update
                                  FROM {projects} p
                             LEFT JOIN {cache} c ON c.topic = p.project_id AND c.type = 'msg'

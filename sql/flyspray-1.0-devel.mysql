@@ -16,3 +16,6 @@ ALTER TABLE `flyspray_notification_messages` DROP `message_body` ;
 
 ALTER TABLE `flyspray_projects` ADD `send_digest` TINYINT( 1 ) DEFAULT '0' NOT NULL ;
 ALTER TABLE `flyspray_projects` ADD `last_digest` INT DEFAULT '0' NOT NULL ;
+
+
+ALTER TABLE `flyspray_users` ADD `notify_blacklist` VARCHAR( 50 ) DEFAULT '' NOT NULL ;

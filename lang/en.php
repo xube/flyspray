@@ -828,6 +828,7 @@ Regards,',
 'assignedtasks'           => 'New task ownerships',
 'digestfor'               => 'This is your weekly digest for',
 'senddigest'              => 'Send digest to project managers',
+'notifyblacklist'         => 'Disable notifications',
 ); 
 
 ?>

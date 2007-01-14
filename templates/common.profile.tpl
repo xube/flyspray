@@ -84,6 +84,30 @@
         </td> 
       </tr>
       <tr>
+        <td><label>{L('notifyblacklist')}</label></td>
+        <td>
+            <select id="notify_blacklist" size="10" multiple="multiple" name="notify_blacklist[]">
+            {!tpl_options(array(0 => L('none'),
+                                NOTIFY_TASK_OPENED     => L('taskopened'),
+                                NOTIFY_TASK_CHANGED    => L('pm.taskchanged'),
+                                NOTIFY_TASK_CLOSED     => L('taskclosed'),
+                                NOTIFY_TASK_REOPENED   => L('pm.taskreopened'),
+                                NOTIFY_DEP_ADDED       => L('pm.depadded'),
+                                NOTIFY_DEP_REMOVED     => L('pm.depremoved'),
+                                NOTIFY_COMMENT_ADDED   => L('commentadded'),
+                                NOTIFY_REL_ADDED       => L('relatedadded'),
+                                NOTIFY_OWNERSHIP       => L('ownershiptaken'),
+                                NOTIFY_PM_REQUEST      => L('pmrequest'),
+                                NOTIFY_PM_DENY_REQUEST => L('pmrequestdenied'),
+                                NOTIFY_NEW_ASSIGNEE    => L('newassignee'),
+                                NOTIFY_REV_DEP         => L('revdepadded'),
+                                NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
+                                NOTIFY_ADDED_ASSIGNEES => L('assigneeadded')),
+                                Req::val('notify_types', Flyspray::int_explode(' ', $user->infos['notify_blacklist'])))}
+            </select>
+        </td> 
+      </tr>
+      <tr>
         <td colspan="2"><hr /></td>
       </tr>
       <?php if ($user->perms('is_admin')): ?>

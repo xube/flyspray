@@ -25,6 +25,7 @@ class Notifications
         
         $proj = new Project(0);
         $data['project'] = $proj->prefs;
+        $data['notify_type'] = $type;
         
         if ($fs->prefs['send_background'] && $to_type != ADDRESS_EMAIL) {
             return Notifications::send_later($to, $to_type, $type, $data);
@@ -68,12 +69,12 @@ class Notifications
             
             case ADDRESS_USER:
                 // list of user IDs
-                list($emails, $jids) = Notifications::user_to_address($to);
+                list($emails, $jids) = Notifications::user_to_address($to, $type);
                 break;
             
             case ADDRESS_TASK:
                 // now we need everyone on the notification list and the assignees
-                list($emails, $jids) = Notifications::task_notifications($to, ADDRESS_EMAIL);
+                list($emails, $jids) = Notifications::task_notifications($to, $type, ADDRESS_EMAIL);
                 // we have project specific options
                 $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($to));
                 $proj = new Project($db->fetchOne($sql));
@@ -161,7 +162,7 @@ class Notifications
                 $result = $jabber->send_message($jid, $body, $subject, 'normal') && $result;
             }
         }
-        
+
         return $result;
     }
 
@@ -186,7 +187,7 @@ class Notifications
         if ($to_type == ADDRESS_TASK) {
             $data['task_id'] = $to;
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
-            list(, , $to) = Notifications::task_notifications($to, ADDRESS_USER);
+            list(, , $to) = Notifications::task_notifications($to, $type, ADDRESS_USER);
             // we have project specific options
             $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($to));
             $proj = new Project($db->fetchOne($sql));
@@ -241,15 +242,17 @@ class Notifications
         $sql = $db->Query('SELECT message_id, message_data FROM {notification_messages} ORDER BY time_created DESC');
         while ($row = $db->FetchRow($sql))
         {
+            $data = unserialize($row['message_data']);
             // ...and after that the corresponding recipients
-            $rec = $db->Query('SELECT nr.user_id, u.notify_type, u.notify_own, u.email_address, u.jabber_id
+            $rec = $db->Query('SELECT nr.user_id, u.notify_type, u.notify_own, u.email_address,
+                                      u.jabber_id, u.notify_blacklist
                                  FROM {notification_recipients} nr
                             LEFT JOIN {users} u ON nr.user_id = u.user_id
                                 WHERE message_id = ?',
                                 array($row['message_id']));
             
             while ($msg = $db->FetchRow($rec)) {
-                Notifications::add_to_list($emails, $jids, $msg);
+                Notifications::add_to_list($emails, $jids, $msg, $data['notify_type']);
             }
             
             if (Notifications::send_now(array($emails, $jids), ADDRESS_DONE, 0, $row)) {
@@ -262,11 +265,12 @@ class Notifications
     /**
      * Gets user IDs or addresses needed for a task notification
      * @param integer $task_id
+     * @param integer $notify_type
      * @param integer $output addresses or user IDs
      * @access public
      * @return array array($emails, $jids, $users)
      */
-    function task_notifications($task_id, $output = ADDRESS_EMAIL)
+    function task_notifications($task_id, $notify_type, $output = ADDRESS_EMAIL)
     {
         global $db, $fs, $user;
 
@@ -275,13 +279,15 @@ class Notifications
         $emails = array();
 
         // Get list of users from the notification tab
-        $users1 = $db->Query('SELECT u.user_id, u.notify_type, u.notify_own, u.email_address, u.jabber_id
+        $users1 = $db->Query('SELECT u.user_id, u.notify_type, u.notify_own, u.email_address,
+                                     u.jabber_id, u.notify_blacklist
                                 FROM {notifications} n
                            LEFT JOIN {users} u ON n.user_id = u.user_id
                                WHERE n.task_id = ?',
                                array($task_id));
         // Get assignees
-        $users2 = $db->Query('SELECT u.user_id, u.notify_type, u.notify_own, u.email_address, u.jabber_id
+        $users2 = $db->Query('SELECT u.user_id, u.notify_type, u.notify_own, u.email_address,
+                                     u.jabber_id, u.notify_blacklist
                                 FROM {assigned} a
                            LEFT JOIN {users} u ON a.user_id = u.user_id
                                WHERE a.task_id = ?',
@@ -301,7 +307,7 @@ class Notifications
                 continue;
             }
             
-            Notifications::add_to_list($emails, $jids, $row);
+            Notifications::add_to_list($emails, $jids, $row, $notify_type);
         }
         
         return array($emails, $jids, array_unique($users)); 
@@ -310,10 +316,11 @@ class Notifications
     /**
      * Converts user IDs to addresses
      * @param array $users
+     * @param integer $notify_type
      * @access public
      * @return array array($emails, $jids)
      */
-    function user_to_address($users)
+    function user_to_address($users, $notify_type)
     {
         global $db, $fs, $user;
 
@@ -339,7 +346,7 @@ class Notifications
                 continue;
             }
             
-            Notifications::add_to_list($emails, $jids, $row);
+            Notifications::add_to_list($emails, $jids, $row, $notify_type);
         }
 
         return array($emails, $jids);
@@ -350,20 +357,27 @@ class Notifications
      * @param array $emails
      * @param array $jids
      * @param array $row
+     * @param integer $notify_type type of current notification
      * @access public
      */
-    function add_to_list(&$emails, &$jids, &$row)
+    function add_to_list(&$emails, &$jids, &$row, $notify_type = 0)
     {
         global $fs;
+        
+        if ($notify_type && in_array($notify_type, Flyspray::int_explode(' ', $row['notify_blacklist']))) {
+            return;
+        }
 
-        if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == NOTIFY_EMAIL || $row['notify_type'] == NOTIFY_BOTH) )
-             || $fs->prefs['user_notify'] == '2')
+        if (trim($row['email_address']) && (
+             ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == NOTIFY_EMAIL || $row['notify_type'] == NOTIFY_BOTH) )
+             || $fs->prefs['user_notify'] == '2'))
         {
             $emails[] = $row['email_address'];
         }
 
-        if ( ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == NOTIFY_JABBER || $row['notify_type'] == NOTIFY_BOTH) )
-             || $fs->prefs['user_notify'] == '3')
+        if (trim($row['jabber_id']) && (
+             ($fs->prefs['user_notify'] == '1' && ($row['notify_type'] == NOTIFY_JABBER || $row['notify_type'] == NOTIFY_BOTH) )
+             || $fs->prefs['user_notify'] == '3'))
         {
             $jids[] = $row['jabber_id'];
         }
