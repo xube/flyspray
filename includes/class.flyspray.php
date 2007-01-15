@@ -610,7 +610,7 @@ class Flyspray
     } // }}}
     //  {{{
     /**
-     * Crypt a password with the method set in the configfile
+     * Crypt a password with md5
      * @param string $password
      * @access public static
      * @return string
@@ -618,16 +618,7 @@ class Flyspray
      */
     function cryptPassword($password)
     {
-        global $conf;
-        $pwcrypt = $conf['general']['passwdcrypt'];
-
-        if (strtolower($pwcrypt) == 'sha1') {
-            return sha1($password);
-        } elseif (strtolower($pwcrypt) == 'md5') {
-            return md5($password);
-        } else {
-            return crypt($password);
-        }
+        return md5($password);
     } // }}}
     // {{{
     /**
@@ -655,18 +646,7 @@ class Flyspray
             return 0;
         }
 
-        //encrypt the password with the method used in the db
-        switch (strlen($auth_details['user_pass'])) {
-            case 40:
-                $password = sha1($password);
-                break;
-            case 32:
-                $password = md5($password);
-                break;
-            default:
-                $password = crypt($password, $auth_details['user_pass']); //using the salt from db
-                break;
-        }
+        $password = Flyspray::cryptPassword($password);
 
         // Compare the crypted password to the one in the database
         if ($password == $auth_details['user_pass']

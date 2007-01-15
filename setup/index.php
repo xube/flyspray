@@ -921,7 +921,6 @@ class Setup extends Flyspray
       $config[] = '[general]';
       $config[] = "cookiesalt = \"$cookiesalt\"			; Randomisation value for cookie encoding";
       $config[] = 'output_buffering = "on"				; Available options: "on" or "gzip"';
-      $config[] = "passwdcrypt = \"md5\"					; Available options: \"crypt\", \"md5\", \"sha1\"";
       $config[] = "address_rewriting = \"0\"	; Boolean. 0 = off, 1 = on.";
       $config[] = "reminder_daemon = \"$daemonise\"		; Boolean. 0 = off, 1 = on.";
       $config[] = "doku_url = \"http://en.wikipedia.org/wiki/\"      ; URL to your external wiki for [[dokulinks]] in FS";
