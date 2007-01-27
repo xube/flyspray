@@ -22,7 +22,7 @@ class Flyspray
      * @access public
      * @var string
      */
-    var $version = '0.9.9 dev';
+    var $version = '1.0.0 dev';
 
     /**
      * Flyspray preferences
@@ -58,7 +58,7 @@ class Flyspray
      * @var array
      */
     var $priorities = array();
-    
+
     /**
      * List of all columns, needed in templates
      * @access public
@@ -432,7 +432,7 @@ class Flyspray
     function listallGroups($user_id = null)
     {
         global $db, $fs;
-        
+
         $group_list = array(L('global') => null);
         $params = array();
 
@@ -446,7 +446,7 @@ class Flyspray
             $params[] = $user_id;
         }
         $sql = $db->Query($query, $params);
-                        
+
         while ($row = $db->FetchRow($sql)) {
             // make sure that the user only sees projects he is allowed to
             if ($row['project_id'] != '0' && Flyspray::array_find('project_id', $row['project_id'], $fs->projects) === false) {
@@ -456,7 +456,7 @@ class Flyspray
         }
         $group_list[L('global')] = $group_list[''];
         unset($group_list['']);
-        
+
         return $group_list;
     }
     // }}}
