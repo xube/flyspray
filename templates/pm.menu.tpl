@@ -1,6 +1,7 @@
 <div id="toolboxmenu">
   <a id="projprefslink" href="{CreateURL('pm', 'prefs',      $proj->id)}">{L('preferences')}</a>
-  <a id="projuglink"    href="{CreateURL('pm', 'groups',     $proj->id)}">{L('usergroups')}</a>
+  <a id="projuglink"    href="{CreateURL('pm', 'groups',     $proj->id)}">{L('groups')}</a>
+  <a id="projuglink"    href="{CreateURL('pm', 'users',     $proj->id)}">{L('users')}</a>
   <a id="projttlink"    href="{CreateURL('pm', 'tasktype',         $proj->id)}">{L('tasktypes')}</a>
   <a id="projstatuslink" href="{CreateURL('pm', 'status',     $proj->id)}">{L('taskstatuses')}</a>
   <a id="projreslink"   href="{CreateURL('pm', 'resolution',        $proj->id)}">{L('resolutions')}</a>

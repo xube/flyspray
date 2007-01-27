@@ -1,36 +1,46 @@
 <div id="toolbox">
-  <h3>{L('pmtoolbox')} :: {$proj->prefs['project_title']} : {L('groupmanage')}</h3>
+  <h3>{L('admintoolboxlong')} :: {L('usersandgroups')}</h3>
   <fieldset class="box">
     <legend>{L('usersandgroups')}</legend>
-    <?php if ($user->perms('is_admin')): ?>
-    <p>
-      <img src="{$this->get_image('personal')}" alt="" class="middle" /> <a href="{CreateURL('admin', 'newuser', $proj->id)}">{L('newuser')}</a>
+    <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+    <p>{L('addormoveusers')} {!tpl_userselect('uid')}
+       {L('to')} <select name="user_to_group">
+          {!tpl_options(Flyspray::listGroups($proj->id))}
+          <option value="0">{L('nogroup')}</option>
+          </select>
+       <input type="hidden" name="do" value="pm" />
+       <input type="hidden" name="area" value="groups" />
+       <input type="hidden" name="action" value="pm.addusertogroup" />
+       <button type="submit">OK</button>
     </p>
-    <?php endif; ?>
+    </form>
+
     <p>
       <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{CreateURL('pm', 'newgroup', $proj->id)}">{L('newgroup')}</a>
     </p>
 
-    <div class="groupedit">
-    <form action="{$_SERVER['SCRIPT_NAME']}" method="get">
-        <div>
-            <label for="selectgroup">{L('editgroup')}</label>
-            <select name="id" id="selectgroup">{!tpl_options(Flyspray::ListGroups($proj->id))}</select>
-            <button type="submit">{L('edit')}</button>
-            <input type="hidden" name="do" value="pm" />
-            <input type="hidden" name="area" value="editgroup" />
-        </div>
-    </form>
-    
-    <form action="{$_SERVER['SCRIPT_NAME']}" method="get">
-        <div>
-            <label for="edit_user">{L('edituser')}</label>
-            {!tpl_userselect('uid', '', 'edit_user')}               
-            <button type="submit">{L('edit')}</button>
+    <table class="userlist">
+      <caption>{L('currentgroups')} ({count($groups)})</caption>
+      <colgroup>
+        <col width="3*" />
+        <col width="*" />
+      </colgroup>
+      <thead>
+        <tr><th>{L('groupname')}</th><th>{L('users')}</th></tr>
+      </thead>
+      <?php foreach ($groups as $group): ?>
+      <tr>
+        <td><a href="{CreateUrl('editgroup', $group['group_id'], 'pm')}">{$group['group_name']}</a>
+        <?php if ($group['group_desc'] != ''): ?>
+        <br />
+        <small>{$group['group_desc']}</small>
+        <?php endif; ?>
+        </td>
+        <td><a href="{CreateURL('pm', 'users', null, array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
+      </tr>
+    <?php endforeach; ?>
+    </table>
 
-            <input type="hidden" name="do" value="user" />
-        </div>
-    </form>
     </div>
   </fieldset>
 </div>

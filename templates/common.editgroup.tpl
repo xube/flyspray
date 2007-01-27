@@ -131,7 +131,7 @@
       <tr>
         <td><label for="add_user">{L('addusergroup')}</label></td>
         <td>
-            {!tpl_userselect('uid', '', 'add_user')}   
+            {!tpl_userselect('uid', '', 'add_user')}
         </td>
       </tr>
       <tr>
@@ -145,9 +145,9 @@
       </tr>
     </table>
   </form>
-  
+
   <hr />
 
-  <h3><a href="{CreateURL('admin', 'users', null, array('group_id[]' => $group_details['group_id']))}">{L('groupmembers')} ({count($proj->listUsersIn($group_details['group_id']))})</a></h3>
-    
+  <h3><a href="{CreateURL($do, 'users', $proj->id, array('group_id[]' => $group_details['group_id']))}">{L('groupmembers')} ({count($proj->listUsersIn($group_details['group_id']))})</a></h3>
+
 </fieldset>

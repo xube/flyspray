@@ -834,6 +834,8 @@ Regards,',
 'digestfor'               => 'This is your weekly digest for',
 'senddigest'              => 'Send digest to project managers',
 'notifyblacklist'         => 'Disable notifications',
+'currentgroups'           => 'Current Groups',
+'userremovedproject'      => 'User removed from project.',
 );
 
 ?>

@@ -472,11 +472,11 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
     return sprintf($html, $opt1, $opt2);
 } // }}}
 // {{{ Checkboxes
-function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null, $type = 'checkbox')
+function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null)
 {
     $name  = htmlspecialchars($name,  ENT_QUOTES, 'utf-8');
     $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
-    $html  = '<input type="' . $type . '" name="'.$name.'" value="'.$value.'" ';
+    $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
     if (is_string($id)) {
         $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, 'utf-8').'" ';
     }
@@ -728,7 +728,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'edittask':  $return = $url . '&task_id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
             case 'user':      $return = $baseurl . '?do=user&area=users&id=' . $arg1; break;
-            case 'edituser':  $return = $baseurl . '?do=admin&area=user&user_id=' . $arg1; break;
+            case 'edituser':  $return = $baseurl . '?do=admin&area=users&user_id=' . $arg1; break;
             case 'logout':    $return = $baseurl . '?do=authenticate&logout=1'; break;
 
             case 'details':
@@ -758,13 +758,10 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 } // }}}
 // Page numbering {{{ 
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
-function pagenums($pagenum, $perpage, $totalcount, $url_type = 'index', $url_arg = null)
+function pagenums($pagenum, $perpage, $totalcount)
 {
     global $proj;
-    if (is_null($url_arg)) {
-        $url_arg = $proj->id;
-    }
-    $pagenum = max( (($totalcount) ? 1 : 0) , intval($pagenum));
+    $pagenum = intval($pagenum);
     $perpage = intval($perpage);
     $totalcount = intval($totalcount);
 
@@ -794,7 +791,7 @@ function pagenums($pagenum, $perpage, $totalcount, $url_type = 'index', $url_arg
             if ($pagelink == $pagenum) {
                 $output .= '<strong>' . $pagelink . '</strong>';
             } else {
-                $output .= '<a href="' . Filters::noXSS(CreateURL($url_type, $url_arg, null, array_merge($_GET, array('pagenum' => $pagelink)))) . '">' . $pagelink . '</a>';
+                $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagelink)))) . '">' . $pagelink . '</a>';
             }
         }
 
@@ -807,6 +804,45 @@ function pagenums($pagenum, $perpage, $totalcount, $url_type = 'index', $url_arg
 
     return $output;
 } // }}}
+
+// tpl function that Displays a header cell for report list {{{
+
+function tpl_list_heading($colname, $format = "<th%s>%s</th>")
+{
+    global $proj, $page;
+    $imgbase = '<img src="%s" alt="%s" />';
+    $class   = '';
+    $html    = Filters::noXSS(L($colname));
+    if ($colname == 'comments' || $colname == 'attachments') {
+        $html = sprintf($imgbase, $page->get_image(substr($colname, 0, -1)), $html);
+    }
+
+    if (Get::val('order') == $colname) {
+        $class  = ' class="orderby"';
+        $sort1  = Get::safe('sort', 'desc') == 'desc' ? 'asc' : 'desc';
+        $sort2  = Get::safe('sort2', 'desc');
+        $order2 = Get::safe('order2');
+        $html  .= '&nbsp;&nbsp;'.sprintf($imgbase, $page->get_image(Get::val('sort')), Get::safe('sort'));
+    }
+    else {
+        $sort1  = 'desc';
+        if (in_array($colname,
+                    array('project', 'tasktype', 'category', 'openedby', 'assignedto')))
+        {
+            $sort1 = 'asc';
+        }
+        $sort2  = Get::safe('sort', 'desc');
+        $order2 = Get::safe('order');
+    }
+
+
+    $new_order = array('order' => $colname, 'sort' => $sort1, 'order2' => $order2, 'sort2' => $sort2);
+    $html = sprintf('<a title="%s" href="%s">%s</a>',
+            L('sortthiscolumn'), Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, $new_order))), $html);
+
+    return sprintf($format, $class, $html);
+}
+
 class Url {
 	var $url = '';
 	var $parsed;
