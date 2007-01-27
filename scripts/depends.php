@@ -5,6 +5,10 @@
   | ~~~~~~~~~~~~~~~~~~~~~                                  |
   \********************************************************/
 
+/**
+ * XXX: This stuff looks incredible ugly, rewrite me for 1.0  
+ */
+
 if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
@@ -16,7 +20,11 @@ if ( !($task_details = Flyspray::GetTaskDetails(Req::num('task_id')))
 }
 
 $path_to_dot = array_get($conf['general'], 'dot_path', '');
-$fmt         = array_get($conf['general'], 'dot_format', 'png');
+//php 4 on windows does not have is_executable..
+$func = function_exists('is_executable') ? 'is_executable' : 'is_file';
+$path_to_dot = $func($path_to_dot) ? $path_to_dot : '';
+$fmt         = Filters::enum(array_get($conf['general'], 'dot_format', 'png'), array('png','svg'));
+
 /* March 10 2006 Jason Porter: Removed the $basedir as $path_for_images
  * should be relative, we use this path also in the HTML output.  Saving
  * the file from dot happens later, and that should be the absolute path.
@@ -213,8 +221,11 @@ if ($tmp = fopen($tname, 'wb')) {
 }
 // Now run dot on it:
 if ($use_public) {
+
     if (!is_file(BASEDIR . '/' . $file_name . '.' . $fmt)) {
-        $data = file_get_contents(array_get($conf['general'], 'dot_public') . '/' . $baseurl . $file_name . '.' . $fmt);
+        
+        $data = Flyspray::remote_request(array_get($conf['general'], 'dot_public') . '/' . $baseurl . $file_name . '.' . $fmt, GET_CONTENTS);
+
         $f = fopen(BASEDIR . '/' . $file_name . '.' . $fmt, 'wb');
         fwrite($f, $data);
         fclose($f);
@@ -224,12 +235,13 @@ if ($use_public) {
 
     $page->assign('remote', $remote = true);
     $page->assign('map',    array_get($conf['general'], 'dot_public') . '/' . $baseurl . $file_name . '.map');
+
 } else {
 
     $dot = escapeshellcmd($path_to_dot);
     $tname = escapeshellarg($tname);
 
-    $cmd = "$dot -T $fmt -o " . escapeshellarg( BASEDIR . '/' . $file_name . '.' . $fmt) . " $tname";
+    $cmd = "$dot -T $fmt -o " . escapeshellarg(BASEDIR . '/' . $file_name . '.' . $fmt) .  ' ' . $tname;
     shell_exec($cmd);
 
     $cmd = "$dot -T cmapx " . $tname;

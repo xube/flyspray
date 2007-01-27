@@ -3,14 +3,6 @@
    | This script converts the private/public history entries   |
    \***********************************************************/
    
-define('IN_FS', true);
-
-require_once '../../../includes/class.flyspray.php';
-require_once '../../../includes/constants.inc.php';
-require_once BASEDIR . '/includes/class.database.php';
-
-$db = new Database;
-$db->dbOpenFast($conf['database']);
 
 $check_sql = $db->Query('SELECT * FROM {history} WHERE event_type = 26 OR event_type = 27');
 

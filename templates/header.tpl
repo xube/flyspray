@@ -45,9 +45,9 @@
         if (isset($_SESSION['SUCCESS']) && isset($_SESSION['ERROR'])):
         ?>window.setTimeout('Effect.Fade(\'mixedbar\', &lbrace;duration:.3&rbrace;)', 10000);<?php
         elseif (isset($_SESSION['SUCCESS'])):
-        ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)', 6000);<?php
+        ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)', 8000);<?php
         elseif (isset($_SESSION['ERROR'])):
-        ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)', 6000);<?php endif ?>">
+        ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)', 8000);<?php endif ?>">
   
   <div id="container">
     <!-- Remove this to remove the logo -->
@@ -76,7 +76,7 @@
       <div class="clear"></div>
       <?php $show_message = array('details', 'index', 'newtask', 'reports', 'depends');
             $actions = explode('.', Req::val('action'));
-            if ($proj->prefs['intro_message'] && in_array($do, $show_message) || in_array(reset($actions), $show_message)): ?>
+            if ($proj->prefs['intro_message'] && (in_array($do, $show_message) || in_array(reset($actions), $show_message))): ?>
       <div id="intromessage">{!TextFormatter::render($proj->prefs['intro_message'], false, 'msg', $proj->id,
                                ($proj->prefs['last_updated'] < $proj->prefs['cache_update']) ? $proj->prefs['pm_instructions'] : '')}</div>
       <?php endif; ?>

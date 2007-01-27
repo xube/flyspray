@@ -4,7 +4,7 @@
   xmlns="http://purl.org/rss/1.0/"
   xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel rdf:about="{$baseurl}">
-    <title>Flyspray</title>
+    <title>{$fs->prefs['page_title']}</title>
     <link>{$baseurl}</link>
     <description>{$feed_description}</description>
     <dc:date>{date('Y-m-d\TH:i:s\Z',$most_recent)}</dc:date>
@@ -21,7 +21,7 @@
   </channel>
   <?php foreach($task_details as $row): ?>
   <item rdf:about="{CreateURL('details', $row['task_id'])}">
-    <title>{$row['item_summary']}</title>
+    <title>FS#{$row['task_id']}: {$row['item_summary']}</title>
     <link>{CreateURL('details', $row['task_id'])}</link>
     <dc:date>{date('Y-m-d\TH:i:s\Z',intval($row['last_edited_time']))}</dc:date>
     <dc:creator>{$row['real_name']}</dc:creator>

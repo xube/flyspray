@@ -25,6 +25,9 @@ $offset = $perpage * ($pagenum - 1);
 
 // Get the visibility state of all columns
 $visible = explode(' ', trim($proj->id ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']));
+if (!is_array($visible) || !count($visible) || !$visible[0]) {
+    $visible = array('id');
+}
 
 list($tasks, $id_list) = Backend::get_task_list($_GET, $visible, $offset, $perpage);
 
@@ -65,7 +68,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
         );
 
     //must be an array , must contain elements and be alphanumeric (permitted  "_")
-    if(!is_array($task) || empty($task) || !ctype_alnum(str_replace('_','', $colname))) {
+    if(!is_array($task) || empty($task) || preg_match('![^A-Za-z0-9_]!', $colname)) {
         //run away..
         return '';
     }
@@ -75,7 +78,10 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             $value = tpl_tasklink($task, $task['task_id']);
             break;
         case 'summary':
-            $value = tpl_tasklink($task, $task['item_summary']);
+            $value = tpl_tasklink($task, utf8_substr($task['item_summary'], 0, 55));
+            if (utf8_strlen($task['item_summary']) > 55) {
+                $value .= '...';
+            }
             break;
 
         case 'severity':
@@ -103,7 +109,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
         case 'progress':
             $value = tpl_img($page->get_image('percent-' . $task['percent_complete'], false),
-                    $task['percent_complete'] . '% ' . L('complete'));
+                    $task['percent_complete'] . '%');
             break;
 
         case 'assignedto':
@@ -136,19 +142,7 @@ if(Get::has('hideupdatemsg')) {
 } else if ($conf['general']['update_check'] && $user->perms('is_admin')
            && $fs->prefs['last_update_check'] < time()-60*60*24*3) {
     if (!isset($_SESSION['latest_version'])) {
-		$fs_server  = @fsockopen('flyspray.org', 80, $errno, $errstr, 8);
-		if(is_resource($fs_server)) {
-
-			$out = "GET /version.txt HTTP/1.0\r\n";
-		    $out .= "Host: flyspray.org\r\n";
-		    $out .= "Connection: Close\r\n\r\n";
-
-			fwrite($fs_server, $out);
-			while (!feof($fs_server)) {
-				$latest = fgetss($fs_server, 20);
-			}
-			fclose($fs_server);
-		}
+        $latest = Flyspray::remote_request('http://flyspray.org/version.txt', GET_CONTENTS);
 		//if for some silly reason we get and empty response, we use the actual version
  		$_SESSION['latest_version'] = empty($latest) ? $fs->version : $latest ; 
         $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_id = 23', array(time()));

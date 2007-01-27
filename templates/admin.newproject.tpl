@@ -2,7 +2,7 @@
   <h3>{L('admintoolboxlong')} :: {L('createnewproject')}</h3>
   <fieldset class="box">
     <legend>{L('newproject')}</legend>
-    <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+    <form action="{CreateURL('admin', 'newproject')}" method="post">
       <div>
         <input type="hidden" name="action" value="admin.newproject" />
         <input type="hidden" name="area" value="newproject" />
@@ -10,7 +10,7 @@
       <table class="box">
         <tr>
           <td><label for="projecttitle">{L('projecttitle')}</label></td>
-          <td><input id="projecttitle" name="project_title" value="{Req::val('project_title')}" type="text" class="text" size="40" maxlength="100" /></td>
+          <td><input id="projecttitle" name="project_title" value="{Req::val('project_title')}" type="text" class="required text" size="40" maxlength="100" /></td>
         </tr>
         <tr>
           <td><label for="themestyle">{L('themestyle')}</label></td>

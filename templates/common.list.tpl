@@ -8,7 +8,7 @@
     </div>
 </div>
 <?php endif; ?>
-<form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+<form action="{CreateURL($do, $list_type, $proj->id)}" method="post">
   <table class="list" id="listTable">
    <thead>
      <tr>
@@ -84,14 +84,14 @@
   <?php endif; ?>
 </form>
 <hr />
-<form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+<form action="{CreateURL($do, $list_type, $proj->id)}" method="post">
   <table class="list">
     <tr>
       <td>
         <?php if ($list_type == 'version'): ?>
-        <input type="hidden" name="action" value="{Req::val('action', $do . '.add_to_version_list')}" />
+        <input type="hidden" name="action" value="{$do}.add_to_version_list" />
         <?php else: ?>
-        <input type="hidden" name="action" value="{Req::val('action', $do . '.add_to_list')}" />
+        <input type="hidden" name="action" value="{$do}.add_to_list" />
         <?php endif; ?>
         <input type="hidden" name="list_type" value="{$list_type}" />
         <?php if ($proj->id): ?>

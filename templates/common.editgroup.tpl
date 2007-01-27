@@ -10,7 +10,7 @@
     </form>
     <hr />
   <?php $group_details = Flyspray::getGroupDetails(Req::num('id')); ?>
-  <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+  <form action="{CreateURL('editgroup', Req::num('id'), $do)}" method="post">
     <table class="box">
       <tr>
         <td>

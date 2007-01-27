@@ -808,6 +808,11 @@ Regards,',
 'request1'                => 'A task closure has been requested.',
 'request2'                => 'A request to re-open the task has been made.',
 'allpriorities'           => 'All Priorities',
+'noroadmap'               => 'No roadmap available (no project specific "future" versions exist).',
+'expand'                  => 'Expand',
+'collapse'                => 'Collapse',
+'expandall'               => 'Expand all',
+'collapseall'             => 'Collapse all',
 'csvexport'               => 'CSV export',
 'groups'                  => 'Groups',
 'global'                  => 'Global',
@@ -829,6 +834,6 @@ Regards,',
 'digestfor'               => 'This is your weekly digest for',
 'senddigest'              => 'Send digest to project managers',
 'notifyblacklist'         => 'Disable notifications',
-); 
+);
 
 ?>

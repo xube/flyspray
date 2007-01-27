@@ -1,9 +1,9 @@
 <?php
 
 /**
-* Esta tradución es actualmente mantenida por 
+* Esta tradución es actualmente mantenida por
 *  Cristian Rodriguez.
-*  Envia un mail con tus correcciones a judas_iscariote@imapmail.org
+*  Envia un mail con tus correcciones a judas.iscariote@flyspray.org
 *
 *  Asegurate de usar un editor que guarde y lea este archivo en utf-8 asi
 *  como que utilize finales de linea UNIX..ahh.. y NO USES entidades html ¡¡
@@ -804,6 +804,11 @@ $translation = array(
 'allpriorities'           => 'Todas las Prioridades',
 'request1'                => 'Se ha solicitado cerrar una tarea.',
 'request2'                => 'Una solicitud para reabrir una tarea ha sido efectuada',
+'expand'                  => 'Expandir',
+'collapse'                => 'Contraer',
+'expandall'               => 'Expandir todo',
+'collapseall'             => 'Contraer todo',
+
 );
 
 ?>

@@ -4,15 +4,6 @@
    | format.                                                   |
    \***********************************************************/
    
-define('IN_FS', true);
-
-require_once '../../../includes/class.flyspray.php';
-require_once '../../../includes/constants.inc.php';
-require_once BASEDIR . '/includes/class.database.php';
-
-$db = new Database;
-$db->dbOpenFast($conf['database']);
-
 function rebuild_tree($parent, $left, $pr) {
     global $db;
    // the right value of this node is the left value + 1
@@ -47,9 +38,6 @@ $projects = $db->Query('SELECT project_id FROM {projects}');
 rebuild_tree(0, 1, 0);
 while ($pr = $db->FetchRow($projects)) {
     rebuild_tree(0, 1, $pr['project_id']);
-} 
-
-$db->Query('ALTER TABLE {list_category} DROP parent_id');
-$db->Query('ALTER TABLE {list_category} DROP list_position');
+}
 
 ?>

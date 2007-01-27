@@ -65,6 +65,7 @@ define('STATUS_ASSIGNED',         3);
 // Function parameters
 define('REINDEX', true);
 
+define('GET_CONTENTS', true);
 // developers or advanced users only
 //define('DEBUG_SQL',true);
 //define('JABBER_DEBUG', true);

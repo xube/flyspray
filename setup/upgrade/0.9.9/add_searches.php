@@ -3,15 +3,6 @@
    | This script addes some default saved searches for every   |
    | user.                                                     |
    \***********************************************************/
-   
-define('IN_FS', true);
-
-require_once '../../../includes/class.flyspray.php';
-require_once '../../../includes/constants.inc.php';
-require_once BASEDIR . '/includes/class.database.php';
-
-$db = new Database;
-$db->dbOpenFast($conf['database']);
 
 $check_sql = $db->Query('SELECT user_id FROM {users}');
 

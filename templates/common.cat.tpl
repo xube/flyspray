@@ -18,7 +18,7 @@
     </div>
   </div>
   <?php endif; ?>
-    <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+    <form action="{CreateURL($do, 'cat', $proj->id)}" method="post">
       <table class="list" id="catTable">
          <thead>
          <tr>
@@ -38,7 +38,7 @@
             <input type="hidden" name="lft[]" value="{$row['lft']}" />
             <input type="hidden" name="rgt[]" value="{$row['rgt']}" />
             <input type="hidden" name="id[]" value="{$row['category_id']}" />
-            <span class="depthmark">{!str_repeat('&rarr;', $row['depth'])}</span>
+            <span class="depthmark">{!str_repeat('&rarr;', intval($row['depth']))}</span>
             <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" 
               value="{$row['category_name']}" />
           </td>
@@ -87,7 +87,7 @@
     <hr />
 
     <!-- Form to add a new category to the list -->
-    <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+    <form action="{CreateURL($do, 'cat', $proj->id)}" method="post">
       <table class="list">
         <tr>
           <td>
@@ -104,7 +104,7 @@
             </select>
           </td>
           <td class="buttons">
-            <input type="hidden" name="action" value="{Req::val('action', $do . '.add_category')}" />
+            <input type="hidden" name="action" value="{$do}.add_category" />
             <input type="hidden" name="area" value="{Req::val('area')}" />
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <button type="submit">{L('addnew')}</button>

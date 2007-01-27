@@ -31,7 +31,7 @@
   </div>
 
   <table><tr><td id="taskfieldscell"><?php // small layout table ?>
-  
+
   <div id="taskfields">
 	 <table>
 		<tr>
@@ -129,7 +129,7 @@
           0
           <?php endif; ?>
           <?php if ($user->can_vote($task_details) > 0): ?>
-          <a href="{$_SERVER['SCRIPT_NAME']}?action=details.addvote&amp;task_id={$task_details['task_id']}">
+          <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=details.addvote&amp;task_id={$task_details['task_id']}">
             ({L('addvote')})</a>
           <?php elseif ($user->can_vote($task_details) == -2): ?>
           ({L('alreadyvotedthistask')})
@@ -146,12 +146,12 @@
             <?php else: ?>
             {L('no')}
             <?php endif; ?>
-            
+
             <?php if ($user->can_change_private($task_details) && $task_details['mark_private']): ?>
-            <a href="{$_SERVER['SCRIPT_NAME']}?action=makepublic&amp;task_id={$task_details['task_id']}">
+            <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=makepublic&amp;task_id={$task_details['task_id']}">
             ({L('makepublic')})</a>
             <?php elseif ($user->can_change_private($task_details) && !$task_details['mark_private']): ?>
-            <a href="{$_SERVER['SCRIPT_NAME']}?action=makeprivate&amp;task_id={$task_details['task_id']}">
+            <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=makeprivate&amp;task_id={$task_details['task_id']}">
                ({L('makeprivate')})</a>
             <?php endif; ?>
           </td>
@@ -165,14 +165,14 @@
               <?php else: ?>
               {L('no')}
               <?php endif; ?>
-            
+
               <?php if (!$watched): ?>
               <a accesskey="w"
-              href="{$_SERVER['SCRIPT_NAME']}?action=details.add_notification&amp;ids={$task_details['task_id']}&amp;user_id={$user->id}">
+              href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task_details['task_id']}&amp;action=details.add_notification&amp;ids={$task_details['task_id']}&amp;user_id={$user->id}">
               ({L('watchtask')})</a>
               <?php else: ?>
               <a accesskey="w"
-              href="{$_SERVER['SCRIPT_NAME']}?action=remove_notification&amp;ids={$task_details['task_id']}&amp;user_id={$user->id}">
+              href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task_details['task_id']}&amp;action=remove_notification&amp;ids={$task_details['task_id']}&amp;user_id={$user->id}">
               ({L('stopwatching')})</a>
               <?php endif; ?>
           </td>
@@ -182,7 +182,7 @@
   </div>
 
   </td><td>
-  
+
   <div id="taskdetailsfull">
 	 <h3 class="taskdesc">{L('details')}</h3>
      <div id="taskdetailstext">{!$task_text}</div>
@@ -190,7 +190,7 @@
      <?php $attachments = $proj->listTaskAttachments($task_details['task_id']);
            $this->display('common.attachments.tpl', 'attachments', $attachments); ?>
   </div>
-  
+
   </td></tr></table>
 
   <div id="taskinfo">
@@ -205,7 +205,7 @@
 		<?php if ($user->can_edit_task($task_details)): ?>
 		<span class="DoNotPrint"> &mdash;
 		  <a class="removedeplink"
-			 href="{$_SERVER['SCRIPT_NAME']}?action=removedep&amp;depend_id={$dependency['depend_id']}&amp;task_id={$task_details['task_id']}">
+			 href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=removedep&amp;depend_id={$dependency['depend_id']}&amp;task_id={$task_details['task_id']}">
 			 {L('remove')}</a>
 		</span>
 		<?php endif; ?>
@@ -214,14 +214,14 @@
 
 		<br class="DoNotPrint" />
 
-		<?php if ( (count($deps) || count($blocks)) && (Flyspray::function_disabled('shell_exec') || array_get($conf['general'], 'dot_public'))): ?>
+		<?php if ( (count($deps) || count($blocks)) && (!Flyspray::function_disabled('shell_exec') || array_get($conf['general'], 'dot_public'))): ?>
 		<a class="DoNotPrint" href="{CreateURL('depends', $task_details['task_id'])}">{L('depgraph')}</a>
 		<br />
 		<br />
 		<?php endif; ?>
 
 		<?php if ($user->can_edit_task($task_details)): ?>
-		<form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+		<form action="{CreateUrl('details', $task_details['task_id'])}" method="post">
 		  <div>
 			 <input type="hidden" name="action" value="details.newdep" />
 			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
@@ -262,13 +262,13 @@
 	 <?php if ($task_details['is_closed']): ?>
 
 	 <?php if ($user->can_close_task($task_details)): ?>
-	 <a class="button" href="{$_SERVER['SCRIPT_NAME']}?action=reopen&amp;task_id={$task_details['task_id']}">
+	 <a class="button" href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=reopen&amp;task_id={$task_details['task_id']}">
 		{L('reopenthistask')}</a>
 	 <?php elseif (!$user->isAnon() && !Flyspray::adminRequestCheck(2, $task_details['task_id'])): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('reopenrequest')}</a>
 	 <div id="closeform" class="popup hide">
-		<form name="form3" action="{$_SERVER['SCRIPT_NAME']}" method="post" id="formclosetask">
+		<form name="form3" action="{CreateUrl('details', $task_details['task_id'])}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="requestreopen" />
 			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
@@ -286,11 +286,11 @@
 	 <a href="{CreateUrl('details', $task_details['task_id'], null, array('showclose' => !Req::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
 		{L('closetask')}</a>
      <div id="closeform" class="<?php if (Req::val('action') != 'details.close' && !Req::val('showclose')): ?>hide <?php endif; ?>popup">
-		<form action="{$_SERVER['SCRIPT_NAME']}" method="post" id="formclosetask">
+		<form action="{CreateUrl('details', $task_details['task_id'])}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="details.close" />
 			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
-			 <select class="adminlist" name="resolution_reason">
+			 <select class="adminlist" name="resolution_reason" onmouseup="Event.stop(event);">
 				<option value="0">{L('selectareason')}</option>
 				{!tpl_options($proj->listResolutions(), Req::val('resolution_reason'))}
 			 </select>
@@ -307,7 +307,7 @@
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('requestclose')}</a>
 	 <div id="closeform" class="popup hide">
-		<form name="form3" action="{$_SERVER['SCRIPT_NAME']}" method="post" id="formclosetask">
+		<form name="form3" action="{CreateUrl('details', $task_details['task_id'])}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="requestclose" />
 			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
@@ -321,13 +321,13 @@
 
 	 <?php if ($user->can_take_ownership($task_details)): ?>
 	 <a id="own" class="button"
-		href="{$_SERVER['SCRIPT_NAME']}?action=takeownership&amp;ids={$task_details['task_id']}">
+		href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task_details['task_id']}&amp;action=takeownership&amp;ids={$task_details['task_id']}">
 		{L('assigntome')}</a>
 	 <?php endif; ?>
 
 	 <?php if ($user->can_add_to_assignees($task_details) && !empty($task_details['assigned_to'])): ?>
 	 <a id="own_add" class="button"
-		href="{$_SERVER['SCRIPT_NAME']}?action=addtoassignees&amp;ids={$task_details['task_id']}">
+		href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task_details['task_id']}&amp;action=addtoassignees&amp;ids={$task_details['task_id']}">
 		{L('addmetoassignees')}</a>
 	 <?php endif; ?>
 

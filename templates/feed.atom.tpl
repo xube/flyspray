@@ -1,6 +1,6 @@
 {!'<?xml version="1.0" ?>'}
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title type="text">Flyspray</title>
+  <title type="text">{$fs->prefs['page_title']}</title>
   <subtitle type="text">
     {$feed_description}
   </subtitle>
@@ -13,7 +13,7 @@
   <link rel="alternate" type="text/html" hreflang="en" href="{$_SERVER['SCRIPT_NAME']}"/>
   <?php foreach ($task_details as $row): ?>
   <entry>
-    <title>{$row['item_summary']}</title>
+    <title>FS#{$row['task_id']}: {$row['item_summary']}</title>
     <link href="{CreateURL('details', $row['task_id'])}" />    
     <updated>{date('Y-m-d\TH:i:s\Z',intval($row['last_edited_time']))}</updated>    
     <published>{date('Y-m-d\TH:i:s\Z',intval($row['date_opened']))}</published>
