@@ -836,6 +836,7 @@ Regards,',
 'notifyblacklist'         => 'Disable notifications',
 'currentgroups'           => 'Current Groups',
 'userremovedproject'      => 'User removed from project.',
+'projectmanagers'         => 'Project Manager(s)',
 );
 
 ?>

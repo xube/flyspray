@@ -280,7 +280,7 @@ function tpl_userlink($uid)
                            . htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
                            . htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
     } elseif (empty($cache[$uid])) {
-        $cache[$uid] = eL('anonymous');
+        $cache[$uid] = L('anonymous');
     }
 
     return $cache[$uid];
@@ -472,11 +472,11 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
     return sprintf($html, $opt1, $opt2);
 } // }}}
 // {{{ Checkboxes
-function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null)
+function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null, $type = 'checkbox')
 {
     $name  = htmlspecialchars($name,  ENT_QUOTES, 'utf-8');
     $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
-    $html  = '<input type="checkbox" name="'.$name.'" value="'.$value.'" ';
+    $html  = '<input type="' . $type . '" name="'.$name.'" value="'.$value.'" ';
     if (is_string($id)) {
         $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, 'utf-8').'" ';
     }
@@ -487,7 +487,7 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
     return ($attr ? $html. join_attrs($attr) : $html) . '/>';
 } // }}}
 // {{{ Image display
-function tpl_img($src, $alt = '')
+function tpl_img($src, $alt)
 {
     global $baseurl;
     if (is_file(BASEDIR .'/'.$src)) {
@@ -495,7 +495,7 @@ function tpl_img($src, $alt = '')
             .htmlspecialchars($src, ENT_QUOTES,'utf-8').'" alt="'
             .htmlspecialchars($alt, ENT_QUOTES,'utf-8').'" />';
     }
-    return htmlspecialchars($alt, ENT_QUOTES,'utf-8');
+    return '';
 } // }}}
 // {{{ Text formatting
 $path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_formattext.inc.php';
@@ -601,7 +601,7 @@ function formatDate($timestamp, $extended = false, $default = '')
     $zone = L('GMT') . (($st == 0) ? ' ' : (($st > 0) ? '+' . $st : $st));
     $dateformat = str_replace('%GMT', $zone, $dateformat);
 
-    return utf8_encode(strftime(Filters::noXSS($dateformat), (int) $timestamp));
+    return utf8_encode(strftime($dateformat, $timestamp));
 } /// }}}
 // {{{ Draw permissions table
 function tpl_draw_perms($perms)
@@ -671,16 +671,6 @@ function tpl_disableif ($if)
         return 'disabled="disabled"';
     }
 }
-
-function tpl_form($action, $method = 'post', $enctype = 'application/x-www-form-urlencoded')
-{
-    $form = sprintf('<form action="%s" method="%s">',
-                        htmlspecialchars($action, ENT_QUOTES, 'utf-8'),
-                        htmlspecialchars($method, ENT_QUOTES, 'utf-8'),
-                        htmlspecialchars($enctype, ENT_QUOTES, 'utf-8'));
-    $form .= "\n" . '<input type="hidden" name="prev_page" value="" />';
-}
-
 // {{{ Url handling
 // Create an URL based upon address-rewriting preferences {{{
 function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
@@ -756,7 +746,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
     }
     return $url->get();
 } // }}}
-// Page numbering {{{ 
+// Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
 function pagenums($pagenum, $perpage, $totalcount)
 {

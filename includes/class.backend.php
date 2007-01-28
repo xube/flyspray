@@ -1141,13 +1141,13 @@ class Backend
 
         // Get the column names of table tasks for the group by statement
         if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
-             $groupby .= "p.project_title, p.project_is_active, lst.status_name, lt.tasktype_name,{$order_column[0]},{$order_column[1]}, lr.resolution_name, ";
+             $groupby .= "p.project_title, lst.status_name, lt.tasktype_name,{$order_column[0]},{$order_column[1]}, lr.resolution_name, ";
         }
         $groupby .= $db->GetColumnNames('{tasks}', 't.task_id', 't.');
 
         $sql = $db->Query("
                           SELECT   t.*, $select
-                                   p.project_title, p.project_is_active,
+                                   p.project_title,
                                    lst.status_name AS status_name,
                                    lt.tasktype_name AS task_type,
                                    lr.resolution_name

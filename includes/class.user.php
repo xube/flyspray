@@ -97,7 +97,7 @@ class User
 
         $this->perms = array(0 => array());
         // Get project settings which are important for permissions
-        $sql = $db->Query('SELECT project_id, others_view, project_is_active, anon_open, comment_closed
+        $sql = $db->Query('SELECT project_id, others_view, anon_open, comment_closed
                              FROM {projects}');
         while ($row = $db->FetchRow($sql)) {
             $this->perms[$row['project_id']] = $row;
@@ -180,8 +180,7 @@ class User
         }
 
         return $this->perms('view_tasks')
-          || ($this->perms('project_is_active', $proj)
-              && ($this->perms('others_view', $proj) || $this->perms('project_group', $proj)));
+             || $this->perms('others_view', $proj) || $this->perms('project_group', $proj);
     }
 
     function can_view_task($task)
@@ -240,8 +239,7 @@ class User
 
     function can_open_task($proj)
     {
-        return $proj->id && ($this->perms('manage_project') ||
-                 $this->perms('project_is_active', $proj->id) && ($this->perms('open_new_tasks') || $this->perms('anon_open', $proj->id)));
+        return $proj->id && ($this->perms('manage_project') || $this->perms('open_new_tasks') || $this->perms('anon_open', $proj->id));
     }
 
     function can_change_private($task)

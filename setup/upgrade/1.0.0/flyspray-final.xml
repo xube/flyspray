@@ -571,10 +571,6 @@
       <DEFAULT value="0"/>
     </field>
     <field name="intro_message" type="X"/>
-    <field name="project_is_active" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
     <field name="visible_columns" type="C" size="255">
       <NOTNULL/>
     </field>

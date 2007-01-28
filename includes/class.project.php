@@ -25,7 +25,6 @@ class Project
         $this->prefs['project_title'] = L('allprojects');
         $this->prefs['theme_style']   = $fs->prefs['global_theme'];
         $this->prefs['lang_code']   = $fs->prefs['lang_code'];
-        $this->prefs['project_is_active'] = 1;
         $this->prefs['others_view'] = 1;
         $this->prefs['intro_message'] = '';
         $this->prefs['anon_open'] = 0;

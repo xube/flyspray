@@ -229,7 +229,7 @@ ul#admin-groups-list li {
 	list-style:none;
 	margin:0 0 0.5em 0;
 	padding:0;
-}	
+}
 
 div.box,p.box,table.userlist {
 	border:1px solid #ccc;
@@ -603,7 +603,6 @@ table.list th,table.list td {
 table.toplevel th {
 	text-align:left;
 	padding:0 1em 0 0.5em;
-	width:9em;
 }
 
 table.toplevel ul {

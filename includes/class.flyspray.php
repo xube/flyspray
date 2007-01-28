@@ -58,7 +58,7 @@ class Flyspray
      * @var array
      */
     var $priorities = array();
-
+    
     /**
      * List of all columns, needed in templates
      * @access public
@@ -365,22 +365,15 @@ class Flyspray
     // List projects {{{
     /**
      * Returns a list of all projects
-     * @param bool $active_only show only active projects
      * @access public static
      * @return array
      * @version 1.0
      */
-    function listProjects($active_only = true)
+    function listProjects()
     {
         global $db;
 
-        $query = 'SELECT  project_id, project_title FROM {projects}';
-
-        if ($active_only)  {
-            $query .= ' WHERE  project_is_active = 1';
-        }
-
-        $sql = $db->Query($query);
+        $sql = $db->Query('SELECT  project_id, project_title FROM {projects}');
         return $db->fetchAllArray($sql);
     } // }}}
     // List themes {{{
@@ -432,7 +425,7 @@ class Flyspray
     function listallGroups($user_id = null)
     {
         global $db, $fs;
-
+        
         $group_list = array(L('global') => null);
         $params = array();
 
@@ -446,7 +439,7 @@ class Flyspray
             $params[] = $user_id;
         }
         $sql = $db->Query($query, $params);
-
+                        
         while ($row = $db->FetchRow($sql)) {
             // make sure that the user only sees projects he is allowed to
             if ($row['project_id'] != '0' && Flyspray::array_find('project_id', $row['project_id'], $fs->projects) === false) {
@@ -456,7 +449,7 @@ class Flyspray
         }
         $group_list[L('global')] = $group_list[''];
         unset($group_list['']);
-
+        
         return $group_list;
     }
     // }}}

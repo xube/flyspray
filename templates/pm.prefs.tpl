@@ -60,10 +60,6 @@
           </td>
         </tr>
         <tr>
-          <td><label for="isactive">{L('isactive')}</label></td>
-          <td>{!tpl_checkbox('project_is_active', Post::val('project_is_active', $proj->prefs['project_is_active']), 'isactive')}</td>
-        </tr>
-        <tr>
           <td><label>{!tpl_checkbox('delete_project', null)} {L('deleteproject')}</label></td>
           <td>
               <select name="move_to">{!tpl_options(array_merge(array(0 => L('none')), Flyspray::listProjects()), null, false, null, (string) $proj->id)}</select>

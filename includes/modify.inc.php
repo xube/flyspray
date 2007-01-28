@@ -691,8 +691,11 @@ switch ($action = Req::val('action'))
                     Post::val('jabber_id', 0), Post::num('notify_type'),
                     Post::val('dateformat', 0), Post::val('dateformat_extended', 0),
                     Post::val('defaultorder', 'asc'), Post::val('tasks_perpage'), Post::val('time_zone'),
-                    implode(' ', Post::val('defaultsortcolumn')), implode(' ', Post::val('notify_blacklist')),
+                    implode(' ', Post::val('defaultsortcolumn')), implode(' ', Post::val('notify_blacklist', array())),
                     Post::val('user_id')));
+        if ($do == 'myprofile') {
+            $user = new User($user->id);
+        }
 
         endif; // end only admin or user himself can change
 

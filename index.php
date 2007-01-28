@@ -134,7 +134,7 @@ if ($proj->id && $user->perms('manage_project')) {
 }
 
 $sql = $db->Query(
-        'SELECT  project_id, project_title, project_is_active, others_view,
+        'SELECT  project_id, project_title, others_view,
                  upper(project_title) AS sort_names
            FROM  {projects}
        ORDER BY  sort_names');

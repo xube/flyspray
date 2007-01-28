@@ -113,7 +113,7 @@ if (Post::val('upgrade')) {
         }
     }
 
-    $db->Query("UPDATE {prefs} SET pref_value = ? WHERE pref_name = 'fs_ver'", array($fs->version));
+    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
     $page->assign('done', true);
 }
 
@@ -157,12 +157,11 @@ class ConfUpdater
             }
             // Upgrade to MySQLi if possible
             if ($key == 'dbtype' && strtolower($value) == 'mysql' && function_exists('mysqli_connect')) {
-
                 //mysqli is broken on 64bit systems in versions < 5.1 do not use it, tested, does not work.
-                if(php_uname('m') == 'x86_64' && version_compare(phpversion(), '5.1.0', '<')) {
+                if (php_uname('m') == 'x86_64' && version_compare(phpversion(), '5.1.0', '<')) {
                     continue;
                 }
-                 $settings[$key] = 'mysqli';
+                $settings[$key] = 'mysqli';
             }
         }
     }

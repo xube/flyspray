@@ -46,7 +46,7 @@ if ($fs->prefs['cache_feeds']) {
     // Get the time when a task has been changed last
     $sql = $db->Query("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
                          FROM  {tasks}    t
-                   INNER JOIN  {projects} p ON t.project_id = p.project_id AND p.project_is_active = '1'
+                   INNER JOIN  {projects} p ON t.project_id = p.project_id
                         WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
                                AND p.others_view = '1' ", array($closed));
     $most_recent = max($db->fetchRow($sql));
@@ -75,7 +75,7 @@ $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_op
                            t.last_edited_time, t.opened_by, u.real_name, u.email_address
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
-               INNER JOIN  {projects} p ON t.project_id = p.project_id AND p.project_is_active = '1'
+               INNER JOIN  {projects} p ON t.project_id = p.project_id
                     WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
                            AND p.others_view = '1'
                  ORDER BY  $orderby DESC", array($closed), $max_items);

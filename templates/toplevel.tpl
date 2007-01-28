@@ -8,6 +8,14 @@
 <div class="box">
 <h2><a href="{CreateUrl('project', $project['project_id'])}">{$project['project_title']}</a></h2>
 <table class="toplevel">
+  <?php if (count($stats[$project['project_id']]['project_managers'])): ?>
+  <tr>
+    <th><strong>{L('projectmanagers')}</strong></th>
+    <td>
+      {!$stats[$project['project_id']]['project_managers']}
+    </td>
+  </tr>
+  <?php endif; ?>
   <tr>
     <th><strong>{L('viewtasks')}</strong></th>
     <td>
@@ -49,10 +57,10 @@
   <tr>
     <th><strong>{L('feeds')}</strong></th>
     <td>
-        <b>{L('rss')} 1.0</b> <a href="{$baseurl}feed.php?feed_type=rss1&amp;project={$project['project_id']}">{L('opened')}</a> - 
-        <a href="{$baseurl}feed.php?feed_type=rss1&amp;topic=edit&amp;project={$project['project_id']}">{L('edited')}</a> - 
-        <a href="{$baseurl}feed.php?feed_type=rss1&amp;topic=clo&amp;project={$project['project_id']}">{L('closed')}</a> | 
-        <b>{L('rss')} 2.0</b> <a href="{$baseurl}feed.php?feed_type=rss2&amp;project={$project['project_id']}">{L('opened')}</a> - 
+        <b>{L('rss')} 1.0</b> <a href="{$baseurl}feed.php?feed_type=rss1&amp;project={$project['project_id']}">{L('opened')}</a> -
+        <a href="{$baseurl}feed.php?feed_type=rss1&amp;topic=edit&amp;project={$project['project_id']}">{L('edited')}</a> -
+        <a href="{$baseurl}feed.php?feed_type=rss1&amp;topic=clo&amp;project={$project['project_id']}">{L('closed')}</a> |
+        <b>{L('rss')} 2.0</b> <a href="{$baseurl}feed.php?feed_type=rss2&amp;project={$project['project_id']}">{L('opened')}</a> -
         <a href="{$baseurl}feed.php?feed_type=rss2&amp;topic=edit&amp;project={$project['project_id']}">{L('edited')}</a> -
         <a href="{$baseurl}feed.php?feed_type=rss2&amp;topic=clo&amp;project={$project['project_id']}">{L('closed')}</a> |
         <b>{L('atom')}</b> <a href="{$baseurl}feed.php?feed_type=atom&amp;project={$project['project_id']}">{L('opened')}</a> -

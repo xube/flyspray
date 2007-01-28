@@ -106,13 +106,14 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
         // Get the user groups in a separate query because groups may be hidden
         // because of search options which are disregarded here
         if (count($user_list)) {
-            $where = substr(str_repeat(' uig.user_id = ? OR ', count($user_list)), 0, -3);
+            $in = implode(',', array_map(create_function('$x', 'return $x[0];'), $user_list));
             $sql = $db->Query('SELECT user_id, g.group_id, g.group_name, g.project_id
                                  FROM {groups} g
                             LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
-                                WHERE ' . $where, array_map(create_function('$x', 'return $x[0];'), $user_list));
+                                WHERE user_id IN ('. $in .')');
             $user_groups = $db->GroupBy($sql, 'user_id', array('group_id', 'group_name', 'project_id'), !REINDEX);
         }
+
 
         $page->assign('all_groups', Flyspray::listallGroups());
         $page->uses('user_list');
