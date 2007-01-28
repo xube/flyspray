@@ -22,11 +22,11 @@ class Notifications
     function send($to, $to_type, $type, $data = array())
     {
         global $fs;
-        
+
         $proj = new Project(0);
         $data['project'] = $proj->prefs;
         $data['notify_type'] = $type;
-        
+
         if ($fs->prefs['send_background'] && $to_type != ADDRESS_EMAIL) {
             return Notifications::send_later($to, $to_type, $type, $data);
         } else {
@@ -47,11 +47,11 @@ class Notifications
     function send_now($to, $to_type, $type, $data = array())
     {
         global $db, $fs;
-        
+
         $emails = array();
         $jids = array();
         $result = true;
-        
+
         switch ($to_type)
         {
             case ADDRESS_DONE:
@@ -61,17 +61,17 @@ class Notifications
                 $subject = $data['subject'];
                 $body = $data['body'];
                 break;
-                
+
             case ADDRESS_EMAIL:
                 // this happens on email confirmation, when no user exists
                 $emails = (is_array($to)) ? $to : array($to);
                 break;
-            
+
             case ADDRESS_USER:
                 // list of user IDs
                 list($emails, $jids) = Notifications::user_to_address($to, $type);
                 break;
-            
+
             case ADDRESS_TASK:
                 // now we need everyone on the notification list and the assignees
                 list($emails, $jids) = Notifications::task_notifications($to, $type, ADDRESS_EMAIL);
@@ -83,25 +83,25 @@ class Notifications
                 $data['task'] = Flyspray::getTaskDetails($data['task_id']);
                 break;
         }
-        
+
         if ($to_type != ADDRESS_DONE) {
             list($subject, $body) = Notifications::generate_message($type, $data);
         }
-        
+
         if (isset($data['task_id'])) {
-            // Now, we add the project contact addresses, 
+            // Now, we add the project contact addresses,
             // but only if the task is public
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
             if ($data['task']['mark_private'] != '1' && in_array($type, Flyspray::int_explode(' ', $data['project']['notify_types'])))
             {
                 $proj_emails = preg_split('/[\s,;]+/', $proj->prefs['notify_email'], -1, PREG_SPLIT_NO_EMPTY);
                 $proj_jids   = preg_split('/[\s,;]+/', $proj->prefs['notify_jabber'], -1, PREG_SPLIT_NO_EMPTY);
-            
+
                 $emails = array_merge($proj_emails, $emails);
                 $jids   = array_merge($proj_jids, $emails);
             }
         }
-        
+
         // Now we start sending
         if (count($emails)) {
             $emails = array_unique($emails);
@@ -116,48 +116,48 @@ class Notifications
                 require_once(BASEDIR . '/includes/external/swift-mailer/Swift/Connection/NativeMail.php');
                 $swift = new Swift(new Swift_Connection_NativeMail);
             }
-            
+
             // do not disclose user's address
             foreach ($emails as $mail) {
                 $swift->AddBcc($mail);
             }
-            
+
             // check for reply-to
             if (isset($data['project']) && $data['project']['notify_reply']) {
                 $swift->setReplyTo($data['project']['notify_reply']);
             }
-            
+
             // threaded messages
             if (isset($data['task_id'])) {
                 $inreplyto = '<FS' . intval($data['task_id']) . '@' . parse_url($GLOBALS['baseurl'], PHP_URL_HOST) . '>';
                 $swift->addheaders('In-Reply-To: ' . $inreplyto);
             }
-            
+
             $swift->setCharset('utf-8');
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
             $result = $swift->send(false, $fs->prefs['admin_email'], $subject, $body) && $result;
             $swift->close();
         }
-        
+
         if (count($jids)) {
             $jids = array_unique($jids);
             if (!$fs->prefs['jabber_server'] ||
-                !$fs->prefs['jabber_username'] || 
+                !$fs->prefs['jabber_username'] ||
                 !$fs->prefs['jabber_password']) {
                 return false;
             }
-            
+
             // nothing that can't be guessed correctly ^^
             if (!$fs->prefs['jabber_port']) {
                 $fs->prefs['jabber_port'] = 5222;
             }
-            
-            $jabber = new Jabber($fs->prefs['jabber_username'] . '@' . $fs->prefs['jabber_server'], 
+
+            $jabber = new Jabber($fs->prefs['jabber_username'] . '@' . $fs->prefs['jabber_server'],
                                  $fs->prefs['jabber_password'],
                                  $fs->prefs['jabber_ssl'],
                                  $fs->prefs['jabber_port']);
-            
+
             foreach ($jids as $jid) {
                 $result = $jabber->send_message($jid, $body, $subject, 'normal') && $result;
             }
@@ -178,22 +178,22 @@ class Notifications
     function send_later($to, $to_type, $type, $data = array())
     {
         global $db, $user;
-        
+
         // we only "send later" to registered users
         if ($to_type == ADDRESS_EMAIL) {
             return false;
         }
-        
+
         if ($to_type == ADDRESS_TASK) {
             $data['task_id'] = $to;
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
             list(, , $to) = Notifications::task_notifications($to, $type, ADDRESS_USER);
             // we have project specific options
-            $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($to));
+            $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
             $proj = new Project($db->fetchOne($sql));
             $data['project'] = $proj->prefs;
         } // otherwise we already have a list of users
-        
+
         list($data['subject'], $data['body']) = Notifications::generate_message($type, $data);
         $time = time(); // on a sidenote: never do strange things like $date = time() or $time = date('U');
 
@@ -204,7 +204,7 @@ class Notifications
                         array(serialize($data), $time))) {
             return false;
         }
-        
+
         // ugly but postgre doesn't give us a choice?
         $result = $db->Query('SELECT message_id
                                 FROM {notification_messages}
@@ -212,17 +212,17 @@ class Notifications
                             ORDER BY message_id DESC',
                               array($time), 1);
         $message_id = $db->fetchOne($result);
-        
+
         foreach ($to as $user_id) {
             if ($user_id == $user->id && !$user->infos['notify_own']) {
                 continue;
             }
-            
+
             $db->Query('INSERT INTO {notification_recipients}
                                     (message_id, user_id)
                              VALUES (?, ?)', array($message_id, $user_id));
         }
-                    
+
         return true;
     }
 
@@ -234,10 +234,10 @@ class Notifications
     function send_stored()
     {
         global $db;
-        
+
         $emails = array();
         $jids = array();
-        
+
         // First we get the messages in chronological order...
         $sql = $db->Query('SELECT message_id, message_data FROM {notification_messages} ORDER BY time_created DESC');
         while ($row = $db->FetchRow($sql))
@@ -250,16 +250,16 @@ class Notifications
                             LEFT JOIN {users} u ON nr.user_id = u.user_id
                                 WHERE message_id = ?',
                                 array($row['message_id']));
-            
+
             while ($msg = $db->FetchRow($rec)) {
                 Notifications::add_to_list($emails, $jids, $msg, $data['notify_type']);
             }
-            
+
             if (Notifications::send_now(array($emails, $jids), ADDRESS_DONE, 0, $row)) {
                 $db->Query('DELETE FROM {notification_recipients} WHERE message_id = ?', array($row['message_id']));
                 $db->Query('DELETE FROM {notification_messages} WHERE message_id = ?', array($row['message_id']));
             }
-        }        
+        }
     }
 
     /**
@@ -300,19 +300,19 @@ class Notifications
             if ($row['user_id'] == $user->id && !$user->infos['notify_own']) {
                 continue;
             }
-            
+
             // if only user IDs are needed, skip the address part
             if ($output == ADDRESS_USER) {
                 $users[] = $row['user_id'];
                 continue;
             }
-            
+
             Notifications::add_to_list($emails, $jids, $row, $notify_type);
         }
-        
-        return array($emails, $jids, array_unique($users)); 
+
+        return array($emails, $jids, array_unique($users));
     }
-    
+
     /**
      * Converts user IDs to addresses
      * @param array $users
@@ -326,7 +326,7 @@ class Notifications
 
         $jids = array();
         $emails = array();
-        
+
         $users = (is_array($users)) ? $users : array($users);
 
         if (count($users) < 1) {
@@ -345,7 +345,7 @@ class Notifications
             if ($row['user_id'] == $user->id && !$user->infos['notify_own'] && count($users) > 1) {
                 continue;
             }
-            
+
             Notifications::add_to_list($emails, $jids, $row, $notify_type);
         }
 
@@ -363,7 +363,7 @@ class Notifications
     function add_to_list(&$emails, &$jids, &$row, $notify_type = 0)
     {
         global $fs;
-        
+
         if ($notify_type && in_array($notify_type, Flyspray::int_explode(' ', $row['notify_blacklist']))) {
             return;
         }
@@ -382,7 +382,7 @@ class Notifications
             $jids[] = $row['jabber_id'];
         }
     }
-    
+
     /**
      * Generates a message depending on the $type and using $data
      * @param integer $type
@@ -468,7 +468,7 @@ class Notifications
         */
 
         $body = L('donotreply') . "\r\n\r\n";
-        
+
         switch ($type)
         {
             case NOTIFY_TASK_OPENED:
@@ -490,7 +490,7 @@ class Notifications
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_TASK_CHANGED:
                 $translation = array('priority_name' => L('priority'),
                                      'severity_name' => L('severity'),
@@ -507,7 +507,7 @@ class Notifications
                                      'item_summary' => L('summary'),
                                      'detailed_desc' => L('taskedited'),
                                      'project_title' => L('attachedtoproject'));
-                              
+
                 $body .= L('taskchanged') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ': ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
@@ -525,11 +525,11 @@ class Notifications
                         $body .= $translation[$change[0]] . ': ' . ( ($change[1]) ? $change[1] : '[-]' ) . ' -> ' . ( ($change[2]) ? $change[2] : '[-]' ) . "\r\n";
                     }
                 }
-                
+
                 $body .= "\r\n" . L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_TASK_CLOSED:
                 $body .=  L('notify.taskclosed') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
@@ -543,7 +543,7 @@ class Notifications
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_TASK_REOPENED:
                 $body .=  L('notify.taskreopened') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
@@ -551,7 +551,7 @@ class Notifications
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_DEP_ADDED:
                 $depend_task = Flyspray::getTaskDetails($data['dep_task']);
 
@@ -563,7 +563,7 @@ class Notifications
                 $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
                 $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n";
                 break;
-            
+
             case NOTIFY_DEP_REMOVED:
                 $depend_task = Flyspray::getTaskDetails($data['dep_task']);
 
@@ -573,9 +573,9 @@ class Notifications
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n\r\n";
                 $body .= L('removeddepis') . ':' . "\r\n\r\n";
                 $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n"; 
+                $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_COMMENT_ADDED:
                 // Get the comment information
                 $result = $db->Query('SELECT comment_text FROM {comments} WHERE comment_id = ?', array($data['cid']));
@@ -594,7 +594,7 @@ class Notifications
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . '#comment' . $data['cid'] . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_REL_ADDED:
                 $related_task = Flyspray::getTaskDetails($data['rel_task']);
 
@@ -606,14 +606,14 @@ class Notifications
                 $body .= 'FS#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\r\n";
                 $body .= CreateURL('details', $related_task['task_id']) . "\r\n\r\n";
                 break;
-            
+
             case NOTIFY_OWNERSHIP:
                 $body .= implode(', ', $data['task']['assigned_to_name']) . ' ' . L('takenownership') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
-            
+
             case NOTIFY_CONFIRMATION:
                 $body .= L('noticefrom') . " {$data['project']['project_title']}\r\n\r\n";
                 $body .= L('addressused') . "\r\n\r\n";
@@ -622,7 +622,7 @@ class Notifications
                 $body .= L('username') . ": $data[2] \r\n";
                 $body .= L('confirmcodeis') . " $data[3] \r\n\r\n";
                 break;
-                
+
             case NOTIFY_PM_REQUEST:
                 $body .= L('requiresaction') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
@@ -630,7 +630,7 @@ class Notifications
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_PM_DENY_REQUEST:
                 $body .= L('pmdeny') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
@@ -640,7 +640,7 @@ class Notifications
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_NEW_ASSIGNEE:
                 $body .= L('assignedtoyou') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
@@ -648,7 +648,7 @@ class Notifications
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
-            
+
             case NOTIFY_REV_DEP:
                 $depend_task = Flyspray::getTaskDetails($data['dep_task']);
 
@@ -660,7 +660,7 @@ class Notifications
                 $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
                 $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n";
                 break;
-                
+
             case NOTIFY_REV_DEP_REMOVED:
                 $depend_task = Flyspray::getTaskDetails($data['dep_task']);
 
@@ -672,25 +672,25 @@ class Notifications
                 $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
                 $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n";
                 break;
-            
+
             case NOTIFY_ADDED_ASSIGNEES:
                 $body .= L('useraddedtoassignees') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n\r\n";
                 break;
-                
+
             case NOTIFY_ANON_TASK:
                 $body .= L('thankyouforbug') . "\r\n\r\n";
                 $body .= CreateURL('details', $data['task_id'], null, array('task_token' => $data['token'])) . "\r\n\r\n";
                 break;
-            
+
             case NOTIFY_PW_CHANGE:
                 $body = L('messagefrom'). $data[0] . "\r\n\r\n";
                 $body .= L('magicurlmessage')." \r\n";
                 $body .= "{$data[0]}index.php?do=lostpw&magic_url=$data[1]\r\n";
                 break;
-            
+
             case NOTIFY_NEW_USER:
                 $body = L('messagefrom'). $data[0] . "\r\n\r\n";
                 $body .= L('newuserregistered')." \r\n\r\n";
@@ -702,7 +702,7 @@ class Notifications
                 $body .= L('emailaddress') . ': ' . $data[3] . "\r\n";
                 $body .= L('jabberid') . ':' . $data[4] . "\r\n\r\n";
                 break;
-            
+
             case NOTIFY_REMINDER:
             case NOTIFY_DIGEST:
                 $body = $data['message'] . "\r\n\r\n";

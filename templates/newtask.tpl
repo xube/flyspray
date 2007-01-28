@@ -7,9 +7,9 @@
       <input id="itemsummary" class="text severity{Req::val('task_severity', 2)}" type="text" value="{Req::val('item_summary')}"
         name="item_summary" size="80" maxlength="100" />
     </h2>
-    
+
     <table><tr><td id="taskfieldscell"><?php // small layout table ?>
-    
+
     <div id="taskfields">
       <table>
         <tr>
@@ -110,7 +110,7 @@
         <?php endif; ?>
       </table>
     </div>
-    
+
     </td><td>
 
     <div id="taskdetailsfull">
@@ -129,8 +129,8 @@
           <span>
             <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
               <a href="javascript://" tabindex="6" onclick="removeUploadField(this, 'uploadfilebox');">{L('remove')}</a><br />
-          </span>  
-        </noscript>    
+          </span>
+        </noscript>
       </div>
       <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields('uploadfilebox')">
         {L('uploadafile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
@@ -140,7 +140,7 @@
       </button>
       <?php endif; ?>
 
-    <p class="buttons">
+    <p>
         <?php if ($user->isAnon()): ?>
         <label class="inline" for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30" /><br />
         <?php endif; ?>
@@ -154,17 +154,20 @@
         <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
         <button tabindex="9" type="button" onclick="showPreview('details', '{$baseurl}', 'preview')">{L('preview')}</button>
         <?php endif; ?>
-
-        <?php if (!$user->isAnon()): ?>
-        &nbsp;&nbsp;<input class="text" type="checkbox" id="notifyme" name="notifyme"
-        value="1" checked="checked" />&nbsp;<label class="inline left" for="notifyme">{L('notifyme')}</label>
-        <?php endif; ?>
+        <div>
+          <?php if (!$user->isAnon()): ?>
+          <input type="checkbox" id="notifyme" name="notifyme"
+          value="1" checked="checked" />&nbsp;<label class="inline left" for="notifyme">{L('notifyme')}</label><br />
+          <?php endif; ?>
+          {!tpl_checkbox('more_tasks', Req::val('more_tasks', 0), 'more_tasks')}<label class="inline left" for="more_tasks">
+                {L('addmoretasks')}</label>
+        </div>
     </p>
     </div>
-    
+
     </td></tr></table>
 
   </form>
-  
+
   <div class="clear"></div>
 </div>

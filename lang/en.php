@@ -837,6 +837,7 @@ Regards,',
 'currentgroups'           => 'Current Groups',
 'userremovedproject'      => 'User removed from project.',
 'projectmanagers'         => 'Project Manager(s)',
+'addmoretasks'            => 'Add more tasks of this kind',
 );
 
 ?>

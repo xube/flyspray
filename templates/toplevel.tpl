@@ -8,7 +8,7 @@
 <div class="box">
 <h2><a href="{CreateUrl('project', $project['project_id'])}">{$project['project_title']}</a></h2>
 <table class="toplevel">
-  <?php if (count($stats[$project['project_id']]['project_managers'])): ?>
+  <?php if ($stats[$project['project_id']]['project_managers']): ?>
   <tr>
     <th><strong>{L('projectmanagers')}</strong></th>
     <td>

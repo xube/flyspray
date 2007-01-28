@@ -47,6 +47,9 @@ switch ($action = Req::val('action'))
         // Status and redirect
         if ($task_id) {
             $_SESSION['SUCCESS'] = L('newtaskadded');
+            if (Post::val('more_tasks')) {
+                break;
+            }
 
             if ($user->isAnon()) {
                 Flyspray::Redirect(CreateURL('details', $task_id, null, array('task_token' => Get::val('task_token'))));
