@@ -75,13 +75,16 @@ class Notifications
             case ADDRESS_TASK:
                 // now we need everyone on the notification list and the assignees
                 list($emails, $jids) = Notifications::task_notifications($to, $type, ADDRESS_EMAIL);
-                // we have project specific options
-                $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($to));
-                $proj = new Project($db->fetchOne($sql));
-                $data['project'] = $proj->prefs;
                 $data['task_id'] = $to;
-                $data['task'] = Flyspray::getTaskDetails($data['task_id']);
                 break;
+        }
+
+        if (isset($data['task_id'])) {
+            $data['task'] = Flyspray::getTaskDetails($data['task_id']);
+            // we have project specific options
+            $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
+            $proj = new Project($db->fetchOne($sql));
+            $data['project'] = $proj->prefs;
         }
 
         if ($to_type != ADDRESS_DONE) {
@@ -186,13 +189,16 @@ class Notifications
 
         if ($to_type == ADDRESS_TASK) {
             $data['task_id'] = $to;
+            list(,, $to) = Notifications::task_notifications($to, $type, ADDRESS_USER);
+        } // otherwise we already have a list of users
+
+        if (isset($data['task_id'])) {
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
-            list(, , $to) = Notifications::task_notifications($to, $type, ADDRESS_USER);
             // we have project specific options
             $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
             $proj = new Project($db->fetchOne($sql));
             $data['project'] = $proj->prefs;
-        } // otherwise we already have a list of users
+        }
 
         list($data['subject'], $data['body']) = Notifications::generate_message($type, $data);
         $time = time(); // on a sidenote: never do strange things like $date = time() or $time = date('U');
@@ -297,7 +303,7 @@ class Notifications
         foreach ($notif_list as $row)
         {
             // do not send notifs on own actions if the user does not want to
-            if ($row['user_id'] == $user->id && !$user->infos['notify_own']) {
+            if (!$row['user_id'] || $row['user_id'] == $user->id && !$user->infos['notify_own']) {
                 continue;
             }
 
@@ -432,7 +438,7 @@ class Notifications
         // Generate the nofication message
         if (!isset($notify_type_msg[$type]))  {
             $subject = L('notifyfromfs');
-        } else if ($data['project']['notify_subject']) {
+        } else if (isset($data['project']['notify_subject']) && $data['project']['notify_subject']) {
             $subject = str_replace(array('%p','%s','%t', '%a'),
                             array($data['project']['project_title'], $data['task']['item_summary'], $data['task_id'], $notify_type_msg[$type]),
                             $data['project']['notify_subject']);
