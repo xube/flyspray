@@ -689,6 +689,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 
             case 'admin':
             case 'edituser':
+            case 'myprofile':
             case 'user':      $return = $url . $type . '/' . $arg1; break;
 
             case 'project':   $return = $url . 'proj' . $arg1; break;
@@ -702,7 +703,6 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 
             case 'logout':
             case 'lostpw':
-            case 'myprofile':
             case 'register':
             case 'reports':  $return = $url . $type; break;
         }
@@ -715,6 +715,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
 
         switch ($type) {
             case 'admin':     $return = $url . '&area=' . $arg1; break;
+            case 'myprofile':     $return = $url . '&area=' . $arg1; break;
             case 'edittask':  $return = $url . '&task_id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
             case 'user':      $return = $baseurl . '?do=user&area=users&id=' . $arg1; break;

@@ -1542,6 +1542,55 @@ switch ($action = Req::val('action'))
             Flyspray::show_error(L('votefailed'));
             break;
         }
+
+    // ##################
+    // Adding a personal note
+    // ##################
+    case 'addnote':
+        if ($user->isAnon()) {
+            break;
+        }
+
+        $db->Query('INSERT INTO {notes} (message_subject, message_body, last_updated, user_id)
+                         VALUES (?, ?, ?, ?)',
+                    array(Post::val('message_subject'), Post::val('message_body'), time(), $user->id));
+        $_SESSION['SUCCESS'] = L('noteadded');
+        break;
+
+    // ##################
+    // Deleting a personal note
+    // ##################
+    case 'deletenote':
+        if ($user->isAnon()) {
+            break;
+        }
+
+        $sql = $db->Query('DELETE FROM {notes} WHERE note_id = ? AND user_id = ?',
+                          array(Get::val('note_id'), $user->id));
+
+        if ($db->AffectedRows()) {
+            $_SESSION['SUCCESS'] = L('notedeleted');
+        }
+        break;
+
+    // ##################
+    // Update a personal note
+    // ##################
+    case 'updatenote':
+        if ($user->isAnon()) {
+            break;
+        }
+
+        $sql = $db->Query('UPDATE {notes}
+                              SET message_subject = ?, message_body = ?, last_updated = ?
+                            WHERE note_id = ? AND user_id = ?',
+                          array(Post::val('message_subject'), Post::val('message_body'), time(),
+                                Post::val('note_id'), $user->id));
+
+        if ($db->AffectedRows()) {
+            $_SESSION['SUCCESS'] = L('noteupdated');
+        }
+        break;
 }
 
 ?>

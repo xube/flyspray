@@ -963,6 +963,20 @@ table#profile th {
 	padding:0.1em 0.8em 0.1em 0.2em;
 }
 
+div.myprofile-notifs {
+	margin-top:1.1em;
+}
+
+div.myprofile-notifs table {
+	margin:0.2em 0 0 1.5em;
+}
+
+div.myprofile-notifs table td {
+	border-left:solid gray 1px;
+	border-bottom:solid gray 1px;
+	padding:0.1em 0.2em;
+}
+
 fieldset {
 	margin:1em 0.5em;
 	padding:0.5em 0.7em 0.5em;
@@ -1371,6 +1385,28 @@ div#updatemsg {
 	font-weight:bold;
 }
 
+div#mynote {
+	padding:0.1em 0.5em 0.5em 0.5em;
+	background:white;
+	border:solid 1px #E8D58F;
+	margin-right:1em;
+}
+
+div#note_subject {
+	position:relative;
+	border-bottom:solid 1px #E8D58F;
+}
+
+div#note_updated {
+	position:absolute;
+	top:0.2em;
+	right:0.5em;
+}
+
+div#note_subject h3 {
+	margin: 0.3em;
+}
+
 /* Dokuwiki {{{ */
 .code a {
 	text-decoration:none;
@@ -1481,8 +1517,12 @@ blockquote blockquote {
 	background:#FF9;
 }
 
-.fade {
+.fade, .fade a {
 	color:gray;
+}
+
+.fade a:hover {
+	color:black;
 }
 
 .code .br0 {color:#6c6;}

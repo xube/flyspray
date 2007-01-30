@@ -6,7 +6,7 @@
 
 AddDefaultCharset utf-8
 
-# php5 as  apache 1/2 module 
+# php5 as  apache 1/2 module
 <IfModule mod_php5.c>
 php_flag register_globals Off
 php_flag magic_quotes_gpc Off
@@ -61,11 +61,12 @@ RewriteRule ^newtask$ index.php?do=newtask [L,QSA]
 RewriteRule ^newtask/proj([0-9]+)$ index.php?do=newtask&project=$1 [L,QSA]
 
 RewriteRule ^reports$ index.php?do=reports [L,QSA]
-RewriteRule ^myprofile$ index.php?do=myprofile [L,QSA]
+RewriteRule ^myprofile/?$ index.php?do=myprofile [L,QSA]
 RewriteRule ^user/([0-9]+)$ index.php?do=user&id=$1 [L,QSA]
 RewriteRule ^logout$ index.php?do=authenticate&logout=1 [L,QSA]
 
 RewriteRule ^admin/([a-zA-Z]+)$ index.php?do=admin&area=$1 [L,QSA]
+RewriteRule ^myprofile/([a-zA-Z]+)$ index.php?do=myprofile&area=$1 [L,QSA]
 RewriteRule ^pm/proj([0-9]+)/([a-zA-Z]+)$ index.php?do=pm&project=$1&area=$2 [L,QSA]
 
 RewriteRule ^admin/editgroup/([0-9]+)$ index.php?do=admin&area=editgroup&id=$1 [L,QSA]
