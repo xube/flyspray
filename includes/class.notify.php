@@ -110,21 +110,15 @@ class Notifications
             $emails = array_unique($emails);
             // first choose method
             if ($fs->prefs['smtp_server']) {
-                require_once(BASEDIR . '/includes/external/swift-mailer/Swift/Connection/SMTP.php');
+                include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/SMTP.php';
                 $swift = new Swift(new Swift_Connection_SMTP($fs->prefs['smtp_server']));
                 if ($fs->prefs['smtp_user']) {
                     $swift->authenticate($fs->prefs['smtp_user'], $fs->prefs['smtp_pass']);
                 }
             } else {
-                require_once(BASEDIR . '/includes/external/swift-mailer/Swift/Connection/NativeMail.php');
+                include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/NativeMail.php';
                 $swift = new Swift(new Swift_Connection_NativeMail);
             }
-
-            // do not disclose user's address
-            foreach ($emails as $mail) {
-                $swift->AddBcc($mail);
-            }
-
             // check for reply-to
             if (isset($data['project']) && $data['project']['notify_reply']) {
                 $swift->setReplyTo($data['project']['notify_reply']);
@@ -132,14 +126,18 @@ class Notifications
 
             // threaded messages
             if (isset($data['task_id'])) {
-                $inreplyto = '<FS' . intval($data['task_id']) . '@' . parse_url($GLOBALS['baseurl'], PHP_URL_HOST) . '>';
-                $swift->addheaders('In-Reply-To: ' . $inreplyto);
+                $hostdata = parse_url($GLOBALS['baseurl']);
+                $inreplyto = '<FS' . intval($data['task_id']) . '@' . $hostdata['host']. '>'; 
+                $swift->addHeaders('In-Reply-To: ' . $inreplyto);
+                $swift->addHeaders('References: ' . $inreplyto);
             }
 
             $swift->setCharset('utf-8');
+            $swift->addHeaders("Precedence: list");
+
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
-            $result = $swift->send(false, $fs->prefs['admin_email'], $subject, $body) && $result;
+            $result = $swift->send($emails, $fs->prefs['admin_email'], $subject, $body) && $result;
             $swift->close();
         }
 
