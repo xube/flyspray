@@ -6,10 +6,10 @@
         <td>
             <select name="events[]" multiple="multiple" id="events[]" size="{count($events)+count($user_events)+2}">
             <optgroup label="{L('Tasks')}">
-            {!tpl_options($events, Req::val('events'))}
+            {!tpl_options($events, Get::val('events'))}
             </optgroup>
             <optgroup label="{L('users')}">
-            {!tpl_options($user_events, Req::val('events'))}
+            {!tpl_options($user_events, Get::val('events'))}
             </optgroup>
             </select>    
         </td>
@@ -23,7 +23,7 @@
             <div>
                 <label for="event_number">{L('show')}</label>
                 <select name="event_number" id="event_number">
-                 {!tpl_options(array(-1 => L('all'), 10 => 10, 20 => 20, 50 => 50, 100 => 100, 200 => 200), Req::val('event_number', 20))}
+                 {!tpl_options(array(-1 => L('all'), 10 => 10, 20 => 20, 50 => 50, 100 => 100, 200 => 200), Get::val('event_number', 20))}
                 </select>
                 {L('events')}
             </div>
@@ -42,17 +42,17 @@
    <thead>
     <tr>
       <th>
-        <a href="{CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'type' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'type') + $_GET)}">
+        <a href="{CreateURL('reports', null, null, array('sort' => (Get::val('order') == 'type' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'type') + $_GET)}">
           {L('event')}
         </a>
       </th>
       <th>
-        <a href="{CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'user' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'user') + $_GET)}">
+        <a href="{CreateURL('reports', null, null, array('sort' => (Get::val('order') == 'user' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'user') + $_GET)}">
           {L('user')}
         </a>
       </th>
       <th>
-        <a href="{CreateURL('reports', null, null, array('sort' => (Req::val('order') == 'date' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'date') + $_GET)}">
+        <a href="{CreateURL('reports', null, null, array('sort' => (Get::val('order') == 'date' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'date') + $_GET)}">
           {L('eventdate')}
         </a>
       </th>

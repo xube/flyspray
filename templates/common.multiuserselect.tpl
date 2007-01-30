@@ -11,7 +11,7 @@
                    <select size="8" style="width:200px;" name="rassigned_to" onkeypress="deleteuser(event)" id="rassigned_to">
                      {!tpl_options($userlist)}
                    </select>
-                   <input type="hidden" value="{Req::val('assigned_to', $old_assigned)}" id="vassigned_to" name="assigned_to" />
+                   <input type="hidden" value="{Post::val('assigned_to', $old_assigned)}" id="vassigned_to" name="assigned_to" />
 				</div>
                 <script type="text/javascript">
                 function entercheck(e, add)

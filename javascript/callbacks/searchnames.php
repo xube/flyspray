@@ -11,8 +11,8 @@ header('Content-type: text/html; charset=utf-8');
 require_once('../../header.php');
 $baseurl = dirname(dirname($baseurl)) .'/' ;
 
-if (Req::has('name')) {
-    $searchterm = strtolower(Req::val('name'));
+if (Get::has('name')) {
+    $searchterm = strtolower(Get::val('name'));
 }
 
 // Get the list of users from the global groups above

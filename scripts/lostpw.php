@@ -11,11 +11,11 @@ if (!defined('IN_FS')) {
 
 $page->setTitle($fs->prefs['page_title'] . L('lostpw'));
 
-if (!Req::has('magic_url') && $user->isAnon()) {
+if (!Get::has('magic_url') && $user->isAnon()) {
     // Step One: user requests magic url
     $page->pushTpl('lostpw.step1.tpl');
 }
-elseif (Req::has('magic_url') && $user->isAnon()) {
+elseif (Get::has('magic_url') && $user->isAnon()) {
     // Step Two: user enters new password
 
     $check_magic = $db->Query('SELECT * FROM {users} WHERE magic_url = ?',

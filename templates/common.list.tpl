@@ -98,11 +98,11 @@
         <input type="hidden" name="project_id" value="{$proj->id}" />
         <?php endif; ?>
         <input type="hidden" name="area" value="{Req::val('area')}" />
-        <input type="hidden" name="do" value="{Req::val('do')}" />
-        <input id="listnamenew" class="text" type="text" size="15" maxlength="40" value="{Req::val('list_name')}" name="list_name" />
+        <input type="hidden" name="do" value="{$do}" />
+        <input id="listnamenew" class="text" type="text" size="15" maxlength="40" value="{Post::val('list_name')}" name="list_name" />
       </td>
       <td>
-        <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" value="{Req::val('list_position')}" name="list_position" />
+        <input id="listpositionnew" class="text" type="text" size="3" maxlength="3" value="{Post::val('list_position')}" name="list_position" />
       </td>
       <td>
         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />

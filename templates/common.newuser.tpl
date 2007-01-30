@@ -14,37 +14,37 @@
         <?php endif; ?>
         <label for="username">{L('username')}</label>
       </td>
-      <td><input id="username" name="user_name" value="{Req::val('user_name')}" class="required text" type="text" size="20" maxlength="20" onblur="checkname(this.value);" />
+      <td><input id="username" name="user_name" value="{Post::val('user_name')}" class="required text" type="text" size="20" maxlength="20" onblur="checkname(this.value);" />
       <br /><span id="errormessage"></span></td>
     </tr>
     <tr>
       <td><label for="userpass">{L('password')}</label></td>
-      <td><input id="userpass" class="password" name="user_pass" value="{Req::val('user_pass')}" type="password" size="20" maxlength="100" /></td>
+      <td><input id="userpass" class="password" name="user_pass" value="{Post::val('user_pass')}" type="password" size="20" maxlength="100" /></td>
     </tr>
     <tr>
       <td><label for="userpass2">{L('confirmpass')}</label></td>
       <td>
-        <input id="userpass2" class="password" name="user_pass2" value="{Req::val('user_pass2')}" type="password" size="20" maxlength="100" /><br />
+        <input id="userpass2" class="password" name="user_pass2" value="{Post::val('user_pass2')}" type="password" size="20" maxlength="100" /><br />
         {L('leaveemptyauto')}
       </td>
     </tr>
     <tr>
       <td><label for="realname">{L('realname')}</label></td>
-      <td><input id="realname" name="real_name" class="required text" value="{Req::val('real_name')}" type="text" size="20" maxlength="100" /></td>
+      <td><input id="realname" name="real_name" class="required text" value="{Post::val('real_name')}" type="text" size="20" maxlength="100" /></td>
     </tr>
     <tr>
       <td><label for="emailaddress">{L('emailaddress')}</label></td>
-      <td><input id="emailaddress" name="email_address" class="text required" value="{Req::val('email_address')}" type="text" size="20" maxlength="100" /></td>
+      <td><input id="emailaddress" name="email_address" class="text required" value="{Post::val('email_address')}" type="text" size="20" maxlength="100" /></td>
     </tr>
     <tr>
       <td><label for="jabberid">{L('jabberid')}</label></td>
-      <td><input id="jabberid" name="jabber_id" class="text" type="text" value="{Req::val('jabber_id')}" size="20" maxlength="100" /></td>
+      <td><input id="jabberid" name="jabber_id" class="text" type="text" value="{Post::val('jabber_id')}" size="20" maxlength="100" /></td>
     </tr>
     <tr>
       <td><label for="notify_type">{L('notifications')}</label></td>
       <td>
         <select id="notify_type" name="notify_type">
-          {!tpl_options(array(L('none'), L('email'), L('jabber'), L('both')), Req::val('notify_type'))}
+          {!tpl_options(array(L('none'), L('email'), L('jabber'), L('both')), Post::val('notify_type'))}
         </select>
       </td>
     </tr>
@@ -58,7 +58,7 @@
               $times[$i] = L('GMT') . (($i == 0) ? ' ' : (($i > 0) ? '+' . $i : $i));
             }
           ?>
-          {!tpl_options($times, Req::val('time_zone', 0))}
+          {!tpl_options($times, Post::val('time_zone', 0))}
         </select>
       </td> 
     </tr>
@@ -67,7 +67,7 @@
       <td><label for="groupin">{L('globalgroup')}</label></td>
       <td>
         <select id="groupin" class="adminlist" name="group_in">
-          {!tpl_options($groups, Req::val('group_in'))}
+          {!tpl_options($groups, Post::val('group_in'))}
         </select>
       </td>
     </tr>

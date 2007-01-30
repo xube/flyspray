@@ -44,13 +44,13 @@ $user_events = array(30 => L('created'),
 $page->assign('events', $events);
 $page->assign('user_events', $user_events);
 
-$sort = strtoupper(Req::enum('sort', array('desc', 'asc')));
+$sort = strtoupper(Get::enum('sort', array('desc', 'asc')));
 
 $where = array();
 $params = array();
 $orderby = '';
 
-switch (Req::val('order')) {
+switch (Get::val('order')) {
     case 'type':
         $orderby = "h.event_type {$sort}, h.event_date {$sort}";
         break;
@@ -61,7 +61,7 @@ switch (Req::val('order')) {
         $orderby = "h.event_date {$sort}, h.event_type {$sort}";
 }
 
-foreach (Req::val('events', array()) as $eventtype) {
+foreach (Get::val('events', array()) as $eventtype) {
     $where[] = 'h.event_type = ?'; 
     $params[] = $eventtype;
 }
@@ -72,10 +72,10 @@ if ($proj->id) {
     $params[] = $proj->id;
 }
 
-if ( ($fromdate = Req::val('fromdate')) || Req::val('todate')) {
+if ( ($fromdate = Get::val('fromdate')) || Req::val('todate')) {
         $where .= ' AND ';
         $ufromdate = Flyspray::strtotime($fromdate) + 0;
-        $todate = Req::val('todate');
+        $todate = Get::val('todate');
         $utodate   = Flyspray::strtotime($todate) + 86400;
         
         if ($fromdate) {
@@ -91,12 +91,12 @@ if ( ($fromdate = Req::val('fromdate')) || Req::val('todate')) {
         }
 }
 
-if (count(Req::val('events'))) { 
+if (count(Get::val('events'))) {
     $histories = $db->Query("SELECT h.*
                         FROM  {history} h
                    LEFT JOIN {tasks} t ON h.task_id = t.task_id
                         WHERE $where
-                     ORDER BY $orderby", $params, Req::num('event_number', -1));
+                     ORDER BY $orderby", $params, Get::num('event_number', -1));
 
     $histories = $db->FetchAllArray($histories);
 }

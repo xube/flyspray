@@ -30,11 +30,11 @@ while (($entry = $dir->read()) !== false) {
 
 $do = Req::enum('do', $modes, $proj->prefs['default_entry']);
 
-if ($do == 'admin' && Req::has('switch') && Req::val('project') != '0') {
+if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
     $do = 'pm';
-} elseif ($do == 'pm' && Req::has('switch') && Req::val('project') == '0') {
+} elseif ($do == 'pm' && Get::has('switch') && Get::val('project') == '0') {
     $do = 'admin';
-} elseif (Req::has('show') || (Req::has('switch') && ($do == 'details'))) {
+} elseif (Get::has('show') || (Get::has('switch') && ($do == 'details'))) {
     $do = 'index';
 }
 

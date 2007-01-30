@@ -13,7 +13,7 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if ( !($task_details = Flyspray::GetTaskDetails(Req::num('task_id')))
+if ( !($task_details = Flyspray::GetTaskDetails(Get::num('task_id')))
         || !$user->can_view_task($task_details))
 {
     Flyspray::show_error(9);
@@ -34,14 +34,14 @@ if (Flyspray::function_disabled('shell_exec') && !array_get($conf['general'], 'd
     Flyspray::show_error(24, true, null, $_SESSION['prev_page']);
 }
 
-$id = Req::num('task_id');
+$id = Get::num('task_id');
 $page->assign('task_id', $id);
 
 // ASAP Todo items:
 // - Need to get the configuration options put into the installer/configurator
 //   (someone who knows them well should probably do it)
 
-$prunemode = Req::num('prune', 0);
+$prunemode = Get::num('prune', 0);
 $selfurl   = CreateURL('depends', $id);
 $pmodes    = array(L('none'), L('pruneclosedlinks'), L('pruneclosedtasks'));
 

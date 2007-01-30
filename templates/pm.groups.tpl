@@ -41,6 +41,5 @@
     <?php endforeach; ?>
     </table>
 
-    </div>
   </fieldset>
 </div>

@@ -33,7 +33,7 @@
       </tr>
       <tr>
         <td>
-          <label class="notable "for="email_address">{L('email')}</label><input type="text" class="text" id="email_address" name="email_address" value="{Get::val('email_address')}" />
+          <label class="notable" for="email_address">{L('email')}</label><input type="text" class="text" id="email_address" name="email_address" value="{Get::val('email_address')}" />
         </td><td>
           <label class="notable" for="jabber_id">{L('jabber')}</label><input type="text" class="text" id="jabber_id" name="jabber_id" value="{Get::val('jabber_id')}" />
         </td>

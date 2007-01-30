@@ -9,19 +9,19 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if (Req::val('logout')) {
+if (Get::val('logout')) {
     $user->logout();
     Flyspray::Redirect($baseurl);
 }
 
-if (Req::val('user_name') != '' && Req::val('password') != '') {
+if (Post::val('user_name') != '' && Post::val('password') != '') {
     // Otherwise, they requested login.  See if they provided the correct credentials...
-    $username = Req::val('user_name');
-    $password = Req::val('password');
+    $username = Post::val('user_name');
+    $password = Post::val('password');
 
     // Run the username and password through the login checker
     if (($user_id = Flyspray::checkLogin($username, $password)) < 1) {
-        $_SESSION['failed_login'] = Req::val('user_name');
+        $_SESSION['failed_login'] = Post::val('user_name');
         if ($user_id == -1) {
             Flyspray::show_error(23);
         } else  /* $user_id == 0 */ {
@@ -29,7 +29,7 @@ if (Req::val('user_name') != '' && Req::val('password') != '') {
         }
     } else {
         // Determine if the user should be remembered on this machine
-        if (Req::has('remember_login')) {
+        if (Post::has('remember_login')) {
             $cookie_time = time() + (60 * 60 * 24 * 30); // Set cookies for 30 days
         } else {
             $cookie_time = 0; // Set cookies to expire when session ends (browser closes)
@@ -53,5 +53,5 @@ else {
     Flyspray::show_error(8);
 }
 
-Flyspray::Redirect(Req::val('return_to'));
+Flyspray::Redirect(Post::val('return_to'));
 ?>

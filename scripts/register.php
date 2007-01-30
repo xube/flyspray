@@ -17,7 +17,7 @@ if (!$user->isAnon()) {
 
 if ($user->can_register()) {
     // 32 is the length of the magic_url
-    if (Req::has('magic_url') && strlen(Req::val('magic_url')) == 32) {
+    if (Get::has('magic_url') && strlen(Get::val('magic_url')) == 32) {
         // If the user came here from their notification link
         $sql = $db->Query('SELECT * FROM {registrations} WHERE magic_url = ?',
                           array(Get::val('magic_url')));

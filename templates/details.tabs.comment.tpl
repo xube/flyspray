@@ -49,7 +49,7 @@
       <div class="hide preview" id="preview"></div>
       <?php endif; ?>
       <input type="hidden" name="action" value="details.addcomment" />
-      <input type="hidden" name="task_id" value="{Req::val('task_id', $task_details['task_id'])}" />
+      <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
       <?php if ($user->perms('create_attachments')): ?>
       <div id="uploadfilebox">
         <span style="display: none;"><?php // this span is shown/copied in javascript when adding files ?>
@@ -77,7 +77,7 @@
       <button tabindex="9" type="button" onclick="showPreview('comment_text', '{$baseurl}', 'preview')">{L('preview')}</button>
       <?php endif; ?>
       <?php if (!$watched): ?>
-      {!tpl_checkbox('notifyme', Req::val('notifyme', !(Req::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
+      {!tpl_checkbox('notifyme', Post::val('notifyme', !(Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
       <?php endif; ?>
     </div>
   </form>

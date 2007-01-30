@@ -94,13 +94,13 @@
             <input id="listnamenew" class="text" type="text" size="15" maxlength="40" name="list_name" />
           </td>
           <td title="{L('categoryownertip')}">
-            {!tpl_userselect('category_owner', Req::val('category_owner'), 'categoryownernew')}
+            {!tpl_userselect('category_owner', Post::val('category_owner'), 'categoryownernew')}
           </td>
           <td title="{L('categoryparenttip')}">
             <label for="parent_id">{L('parent')}</label>
             <select id="parent_id" name="parent_id">
               <option value="{$root['category_id']}">{L('notsubcategory')}</option>
-              {!tpl_options($proj->listCategories($proj->id, false), Req::val('parent_id'))}
+              {!tpl_options($proj->listCategories($proj->id, false), Post::val('parent_id'))}
             </select>
           </td>
           <td class="buttons">

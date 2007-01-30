@@ -12,18 +12,18 @@ $page = new FSTpl();
 // Set up the basic XML head
 header ('Content-type: text/html; charset=utf-8');
 
-$max_items  = (Req::num('num', 10) == 10) ? 10 : 20;
+$max_items  = (Get::num('num', 10) == 10) ? 10 : 20;
 $sql_project = '';
 if ($proj->id) {
     $sql_project = ' AND p.project_id = ' . $db->qstr($proj->id);
 }
 
-$feed_type  = Req::val('feed_type', 'rss2');
+$feed_type  = Get::val('feed_type', 'rss2');
 if ($feed_type != 'rss1' && $feed_type != 'rss2') {
     $feed_type = 'atom';
 }
 
-switch (Req::val('topic')) {
+switch (Get::val('topic')) {
     case 'clo': $orderby = 'date_closed'; $closed = 0;
                 $title   = 'Recently closed tasks';
     break;

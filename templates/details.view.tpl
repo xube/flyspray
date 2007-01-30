@@ -225,7 +225,7 @@
 		  <div>
 			 <input type="hidden" name="action" value="details.newdep" />
 			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
-			 <input class="text" type="text" value="{Req::val('dep_task_id')}" name="dep_task_id" size="5" maxlength="10" />
+			 <input class="text" type="text" value="" name="dep_task_id" size="5" maxlength="10" />
 			 <button type="submit" name="submit">{L('addnew')}</button>
 		  </div>
 		</form>
@@ -283,22 +283,22 @@
 	 <?php else: ?>
 
 	 <?php if ($user->can_close_task($task_details) && !$d_open): ?>
-	 <a href="{CreateUrl('details', $task_details['task_id'], null, array('showclose' => !Req::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
+	 <a href="{CreateUrl('details', $task_details['task_id'], null, array('showclose' => !Get::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
 		{L('closetask')}</a>
-     <div id="closeform" class="<?php if (Req::val('action') != 'details.close' && !Req::val('showclose')): ?>hide <?php endif; ?>popup">
+     <div id="closeform" class="<?php if (Req::val('action') != 'details.close' && !Get::val('showclose')): ?>hide <?php endif; ?>popup">
 		<form action="{CreateUrl('details', $task_details['task_id'])}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="details.close" />
 			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 			 <select class="adminlist" name="resolution_reason" onmouseup="Event.stop(event);">
 				<option value="0">{L('selectareason')}</option>
-				{!tpl_options($proj->listResolutions(), Req::val('resolution_reason'))}
+				{!tpl_options($proj->listResolutions(), Post::val('resolution_reason'))}
 			 </select>
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>
-			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="25">{Req::val('closure_comment')}</textarea>
+			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="25">{Post::val('closure_comment')}</textarea>
 			 <?php if($task_details['percent_complete'] != '100'): ?>
-             <label>{!tpl_checkbox('mark100', Req::val('mark100', !(Req::val('action') == 'details.close')))}&nbsp;&nbsp;{L('mark100')}</label>
+             <label>{!tpl_checkbox('mark100', Post::val('mark100', !(Req::val('action') == 'details.close')))}&nbsp;&nbsp;{L('mark100')}</label>
              <?php endif; ?>
 		  </div>
 		</form>

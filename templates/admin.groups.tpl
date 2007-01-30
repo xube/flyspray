@@ -17,7 +17,7 @@
        <button type="submit">OK</button>
     </p>
     </form>
-    
+
     <p>
       <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{CreateURL('admin', 'newgroup', $proj->id)}">{L('newgroup')}</a>
     </p>
@@ -27,7 +27,7 @@
       <colgroup>
         <col width="3*" />
         <col width="*" />
-        <col style="width:10em;" />      
+        <col style="width:10em;" />
       </colgroup>
       <thead>
         <tr><th>{L('groupname')}</th><th>{L('users')}</th><th>{L('groupenabled')}</th></tr>
@@ -47,9 +47,8 @@
         <td class="imgcol"><img src="{$this->get_image('button_cancel')}" alt="{L('no')}" /></td>
         <?php endif; ?>
       </tr>
-    <?php endforeach; ?> 
+    <?php endforeach; ?>
     </table>
-    
-    </div>
+
   </fieldset>
 </div>

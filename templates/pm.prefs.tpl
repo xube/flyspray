@@ -168,7 +168,7 @@
         <tr>
           <td><label for="send_digest">{L('senddigest')}</label></td>
           <td>
-            {!tpl_checkbox('send_digest', Req::val('send_digest', $proj->prefs['send_digest']), 'send_digest')}
+            {!tpl_checkbox('send_digest', Post::val('send_digest', $proj->prefs['send_digest']), 'send_digest')}
           </td>
         </tr>
       </table>

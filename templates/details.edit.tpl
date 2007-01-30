@@ -1,21 +1,21 @@
 <div id="taskdetails">
   <form action="{CreateUrl('details', 261)}" id="taskeditform" enctype="multipart/form-data" method="post">
 	 <div>
-		<h2 class="summary severity{Req::val('task_severity', $task_details['task_severity'])}">
+		<h2 class="summary severity{Post::val('task_severity', $task_details['task_severity'])}">
 		  <a href="{CreateUrl('details', $task_details['task_id'])}">FS#{$task_details['task_id']}</a> &mdash;
-		  <input class="text severity{Req::val('task_severity', $task_details['task_severity'])}" type="text"
+		  <input class="text severity{Post::val('task_severity', $task_details['task_severity'])}" type="text"
 			name="item_summary" size="80" maxlength="100"
-			value="{Req::val('item_summary', $task_details['item_summary'])}" />
+			value="{Post::val('item_summary', $task_details['item_summary'])}" />
 		</h2>
 		<input type="hidden" name="action" value="details.update" />
         <input type="hidden" name="edit" value="1" />
 		<input type="hidden" name="task_id" value="{$task_details['task_id']}" />
-		<input type="hidden" name="edit_start_time" value="{Req::val('edit_start_time', time())}" />
+		<input type="hidden" name="edit_start_time" value="{Post::val('edit_start_time', time())}" />
 
 		<div id="fineprint">
 		  {L('attachedtoproject')} &mdash;
 		  <select name="project_id">
-			{!tpl_options($fs->projects, Req::val('project_id', $proj->id))}
+			{!tpl_options($fs->projects, Post::val('project_id', $proj->id))}
 		  </select>
 		  <br />
 		  {L('openedby')} {!tpl_userlink($task_details['opened_by'])}
@@ -35,7 +35,7 @@
 			 <td><label for="tasktype">{L('tasktype')}</label></td>
 			 <td>
 				<select id="tasktype" name="task_type">
-				 {!tpl_options($proj->listTaskTypes(), Req::val('task_type', $task_details['task_type']))}
+				 {!tpl_options($proj->listTaskTypes(), Post::val('task_type', $task_details['task_type']))}
 				</select>
 			 </td>
 			</tr>
@@ -43,7 +43,7 @@
 			 <td><label for="category">{L('category')}</label></td>
 			 <td>
 				<select id="category" name="product_category">
-				 {!tpl_options($proj->listCategories(), Req::val('product_category', $task_details['product_category']))}
+				 {!tpl_options($proj->listCategories(), Post::val('product_category', $task_details['product_category']))}
 				</select>
 			 </td>
 			</tr>
@@ -51,7 +51,7 @@
 			 <td><label for="status">{L('status')}</label></td>
 			 <td>
 				<select id="status" name="item_status">
-				 {!tpl_options($proj->listTaskStatuses(), Req::val('item_status', $task_details['item_status']))}
+				 {!tpl_options($proj->listTaskStatuses(), Post::val('item_status', $task_details['item_status']))}
 				</select>
 			 </td>
 			</tr>
@@ -78,7 +78,7 @@
 			 <td><label for="os">{L('operatingsystem')}</label></td>
 			 <td>
 				<select id="os" name="operating_system">
-				 {!tpl_options($proj->listOs(), Req::val('operating_system', $task_details['operating_system']))}
+				 {!tpl_options($proj->listOs(), Post::val('operating_system', $task_details['operating_system']))}
 				</select>
 			 </td>
 			</tr>
@@ -86,7 +86,7 @@
 			 <td><label for="severity">{L('severity')}</label></td>
              <td>
 				<select id="severity" name="task_severity">
-				 {!tpl_options($fs->severities, Req::val('task_severity', $task_details['task_severity']))}
+				 {!tpl_options($fs->severities, Post::val('task_severity', $task_details['task_severity']))}
 				</select>
 			 </td>
 			</tr>
@@ -94,7 +94,7 @@
 			 <td><label for="priority">{L('priority')}</label></td>
 			 <td>
 				<select id="priority" name="task_priority">
-				 {!tpl_options($fs->priorities, Req::val('task_priority', $task_details['task_priority']))}
+				 {!tpl_options($fs->priorities, Post::val('task_priority', $task_details['task_priority']))}
 				</select>
 			 </td>
 			</tr>
@@ -102,7 +102,7 @@
 			 <td><label for="reportedver">{L('reportedversion')}</label></td>
 			 <td>
 				<select id="reportedver" name="reportedver">
-				{!tpl_options($proj->listVersions(false, 2, $task_details['product_version']), Req::val('reportedver', $task_details['product_version']))}
+				{!tpl_options($proj->listVersions(false, 2, $task_details['product_version']), Post::val('reportedver', $task_details['product_version']))}
 				</select>
 			 </td>
 			</tr>
@@ -111,14 +111,14 @@
 			 <td>
 				<select id="dueversion" name="closedby_version">
 				 <option value="0">{L('undecided')}</option>
-				 {!tpl_options($proj->listVersions(false, 3), Req::val('closedby_version', $task_details['closedby_version']))}
+				 {!tpl_options($proj->listVersions(false, 3), Post::val('closedby_version', $task_details['closedby_version']))}
 				</select>
 			 </td>
 			</tr>
 			<tr>
 			 <td><label for="duedate">{L('duedate')}</label></td>
 			 <td id="duedate">
-                {!tpl_datepicker('due_date', '', Req::val('due_date', $task_details['due_date']))}
+                {!tpl_datepicker('due_date', '', Post::val('due_date', $task_details['due_date']))}
 			 </td>
 			</tr>
 			<tr>
@@ -126,7 +126,7 @@
 			 <td>
 				<select id="percent" name="percent_complete">
 				 <?php $arr = array(); for ($i = 0; $i<=100; $i+=10) $arr[$i] = $i.'%'; ?>
-				 {!tpl_options($arr, Req::val('percent_complete', $task_details['percent_complete']))}
+				 {!tpl_options($arr, Post::val('percent_complete', $task_details['percent_complete']))}
 				</select>
 			 </td>
 			</tr>
@@ -134,7 +134,7 @@
             <tr>
               <td><label for="private">{L('private')}</label></td>
               <td>
-                {!tpl_checkbox('mark_private', Req::val('mark_private', $task_details['mark_private']), 'private')}
+                {!tpl_checkbox('mark_private', Post::val('mark_private', $task_details['mark_private']), 'private')}
               </td>
             </tr>
             <?php endif; ?>
@@ -171,7 +171,7 @@
           <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
           <div class="hide preview" id="preview"></div>
           <?php endif; ?>
-          {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'), Req::val('detailed_desc', $task_details['detailed_desc']))}
+          {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'), Post::val('detailed_desc', $task_details['detailed_desc']))}
           <br />
           <?php if ($user->perms('add_comments') && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
               <button type="button" onclick="showstuff('edit_add_comment');this.style.display='none';">{L('addcomment')}</button>
