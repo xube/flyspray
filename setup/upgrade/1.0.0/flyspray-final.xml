@@ -134,6 +134,10 @@
       <col>project_id</col>
       <col>max_items</col>
     </index>
+    <index name="cache_type_id">
+      <col>type</col>
+      <col>topic</col>
+    </index>
   </table>
   <table name="comments">
     <field name="comment_id" type="I" size="10">
@@ -483,6 +487,29 @@
     <index name="project_id_version">
       <col>project_id</col>
       <col>version_tense</col>
+    </index>
+  </table>
+  <table name="notes">
+    <field name="note_id" type="I" size="11">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="user_id" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="message_subject" type="C" size="200">
+      <NOTNULL/>
+    </field>
+    <field name="message_body" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="last_updated" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <index name="notes_user">
+      <col>user_id</col>
     </index>
   </table>
   <table name="notification_messages">
