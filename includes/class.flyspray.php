@@ -58,7 +58,7 @@ class Flyspray
      * @var array
      */
     var $priorities = array();
-    
+
     /**
      * List of all columns, needed in templates
      * @access public
@@ -112,9 +112,12 @@ class Flyspray
         $this->max_file_size = ((bool) ini_get('file_uploads')) ? round((min($sizes)/1024/1024), 1) : 0;
     } // }}}
 
-    function short_version()
+    function base_version($version)
     {
-        return substr($this->version, 0, strpos($this->version, ' '));
+        if (strpos($version, ' ') === false) {
+            return $version;
+        }
+        return substr($version, 0, strpos($version, ' '));
     }
 
     // {{{ Redirect to $url
@@ -151,7 +154,7 @@ class Flyspray
         if ($rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&
             $_SERVER['REQUEST_METHOD'] != 'HEAD') {
             $url = htmlspecialchars($url, ENT_QUOTES, 'utf-8');
-            printf('%s to: <a href="%s">%s</a>.', L('Redirect'), $url, $url);
+            printf('%s to: <a href="%s">%s</a>.', eL('Redirect'), $url, $url);
         }
         if ($exit) {
             exit;
@@ -319,7 +322,7 @@ class Flyspray
             return false;
         }
 
-        $get_details = $db->Query('SELECT t.*, p.*,
+        $get_details = $db->Query('SELECT t.*,
                                           c.category_name, c.category_owner, c.lft, c.rgt, c.project_id as cproj,
                                           o.os_name,
                                           r.resolution_name,
@@ -331,7 +334,6 @@ class Flyspray
                                           uc.real_name      AS closed_by_name,
                                           lst.status_name   AS status_name
                                     FROM  {tasks}              t
-                               LEFT JOIN  {projects}           p  ON t.project_id = p.project_id
                                LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
                                LEFT JOIN  {list_os}            o  ON t.operating_system = o.os_id
                                LEFT JOIN  {list_resolution}    r  ON t.resolution_reason = r.resolution_id
@@ -425,7 +427,7 @@ class Flyspray
     function listallGroups($user_id = null)
     {
         global $db, $fs;
-        
+
         $group_list = array(L('global') => null);
         $params = array();
 
@@ -439,7 +441,7 @@ class Flyspray
             $params[] = $user_id;
         }
         $sql = $db->Query($query, $params);
-                        
+
         while ($row = $db->FetchRow($sql)) {
             // make sure that the user only sees projects he is allowed to
             if ($row['project_id'] != '0' && Flyspray::array_find('project_id', $row['project_id'], $fs->projects) === false) {
@@ -449,7 +451,7 @@ class Flyspray
         }
         $group_list[L('global')] = $group_list[''];
         unset($group_list['']);
-        
+
         return $group_list;
     }
     // }}}

@@ -118,7 +118,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
                 $value .= ', +' . ($task['num_assigned'] - 1);
             }
             break;
-            
+
         default:
             $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
             break;
@@ -144,7 +144,7 @@ if(Get::has('hideupdatemsg')) {
     if (!isset($_SESSION['latest_version'])) {
         $latest = Flyspray::remote_request('http://flyspray.org/version.txt', GET_CONTENTS);
 		//if for some silly reason we get and empty response, we use the actual version
- 		$_SESSION['latest_version'] = empty($latest) ? $fs->version : $latest ; 
+ 		$_SESSION['latest_version'] = empty($latest) ? $fs->version : $latest ;
         $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_id = 23', array(time()));
 	}
 }

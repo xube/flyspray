@@ -8,6 +8,7 @@
 require_once dirname(__FILE__) . '/includes/fix.inc.php';
 require_once dirname(__FILE__) . '/includes/class.flyspray.php';
 require_once dirname(__FILE__) . '/includes/constants.inc.php';
+require_once BASEDIR . '/includes/i18n.inc.php';
 
 // If it is empty,take the user to the setup page
 
@@ -22,14 +23,14 @@ require_once BASEDIR . '/includes/class.backend.php';
 require_once BASEDIR . '/includes/class.project.php';
 require_once BASEDIR . '/includes/class.user.php';
 require_once BASEDIR . '/includes/class.tpl.php';
-require_once BASEDIR . '/includes/i18n.inc.php';
 
 $db = new Database;
 $db->dbOpenFast($conf['database']);
 $fs = new Flyspray;
 
 if (is_readable(BASEDIR . '/setup/index.php') && strpos($fs->version, 'dev') === false) {
-    die('Please empty the folder "' . BASEDIR . DIRECTORY_SEPARATOR . 'setup" before you start using Flyspray.');
+    die('Please empty the folder "' . BASEDIR . DIRECTORY_SEPARATOR . "setup  before you start using Flyspray.\n".
+        "If you are upgrading, please go to the setup directory and launch upgrade.php");
 }
 
 // Any "do" mode that accepts a task_id or id field should be added here.

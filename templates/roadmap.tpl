@@ -4,8 +4,8 @@
 <h3>{L('roadmapfor')} {$milestone['name']}
     <?php if (count($milestone['open_tasks'])): ?>
     <small class="DoNotPrint">
-      <a href="javascript:<?php foreach($milestone['open_tasks'] as $task): ?>showstuff('dd{$task['task_id']}');<?php endforeach; ?>">{L('expandall')}</a> |
-      <a href="javascript:<?php foreach($milestone['open_tasks'] as $task): ?>hidestuff('dd{$task['task_id']}');<?php endforeach; ?>">{L('collapseall')}</a>
+      <a href="javascript:<?php foreach($milestone['open_tasks'] as $task): ?>showstuff('dd{$task['task_id']}');hidestuff('expand{$task['task_id']}');showstuff('hide{$task['task_id']}', 'inline');<?php endforeach; ?>">{L('expandall')}</a> |
+      <a href="javascript:<?php foreach($milestone['open_tasks'] as $task): ?>hidestuff('dd{$task['task_id']}');hidestuff('hide{$task['task_id']}');showstuff('expand{$task['task_id']}', 'inline');<?php endforeach; ?>">{L('collapseall')}</a>
     </small>
     <?php endif; ?>
 </h3>
@@ -15,7 +15,7 @@
 				alt="" width="200" height="20" />
 </p>
 
-<p>{$milestone['percent_complete']} {L('of')}
+<p>{$milestone['percent_complete']}{L('of')}
    <a href="{$_SERVER['SCRIPT_NAME']}?tasks=&amp;project={$proj->id}&amp;due={$milestone['id']}&amp;status[]=">
      {count($milestone['all_tasks'])} {L('tasks')}
    </a> {L('completed')}

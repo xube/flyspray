@@ -2,14 +2,15 @@
 // +----------------------------------------------------------------------
 // | PHP Source
 // +----------------------------------------------------------------------
-// | Copyright (C) 2006  by Cristian Rodriguez R <soporte@onfocus.cl>
+// | Copyright (C) 2006  by Cristian Rodriguez R <judas.iscariote@flyspray.org>
+// | Copyright (C) 2007  by Florian  Florian Schmitz <floele@flyspray.org>
 // +----------------------------------------------------------------------
 // |
 // | Copyright: See COPYING file that comes with this distribution
 // +----------------------------------------------------------------------
 //
 
-set_time_limit(0);
+@set_time_limit(0);
 ini_set('memory_limit', '32M');
 
 // define basic stuff first.
@@ -32,7 +33,7 @@ require_once OBJECTS_PATH . '/fix.inc.php';
 require_once OBJECTS_PATH . '/class.gpc.php';
 require_once OBJECTS_PATH . '/class.database.php';
 require_once OBJECTS_PATH . '/class.flyspray.php';
-require_once OBJECTS_PATH . '/class.tpl.php';
+@require_once OBJECTS_PATH . '/class.tpl.php';
 
 // Initialise DB
 require_once APPLICATION_PATH . '/adodb/adodb.inc.php';
@@ -47,13 +48,13 @@ $db->dbOpenFast($conf['database']);
 $fs = new Flyspray();
 
 define('APPLICATION_SETUP_INDEX', Flyspray::absoluteURI());
-define('UPGRADE_VERSION', $fs->short_version());
+define('UPGRADE_VERSION', Flyspray::base_version($fs->version));
 define('UPGRADE_PATH', BASEDIR . '/upgrade/' . UPGRADE_VERSION);
 
 // Get installed version
 $sql = $db->Query('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('fs_ver'));
 $installed_version = $db->FetchOne($sql);
-
+$db->dblink->debug = true;
 $page = new Tpl;
 $page->assign('title', 'Upgrade ');
 $page->assign('installed_version', $installed_version); // get version info from database
@@ -70,7 +71,7 @@ if (Post::val('upgrade')) {
     new ConfUpdater(CONFIG_PATH);
 
     // dev version upgrade?
-    if (UPGRADE_VERSION == $installed_version) {
+    if (UPGRADE_VERSION == Flyspray::base_version($installed_version)) {
         $type = 'develupgrade';
     } else {
         $type = 'defaultupgrade';
@@ -81,17 +82,31 @@ if (Post::val('upgrade')) {
         die('#1 Bad upgrade.info file.');
     }
 
+    // files which are already done
+    $sql = $db->Query('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('upgrader_done'));
+    $done = $db->FetchOne($sql);
+    $done = ($done) ? unserialize($done) : array();
+
     ksort($upgrade_info[$type]);
     foreach ($upgrade_info[$type] as $file) {
+        // skip all files which have been executed already
+        $hash = pack('H*', md5_file(UPGRADE_PATH . '/' . $file));
+        if (in_array($hash, $done)) {
+            continue;
+        }
+
         if (substr($file, -4) == '.php') {
             require_once UPGRADE_PATH . '/' . $file;
+            $done[] = $hash;
         }
 
         if (substr($file, -4) == '.xml') {
             $schema = new adoSchema($db->dblink);
             $schema->SetPrefix($conf['database']['dbprefix']);
             $schema->ParseSchemaFile(UPGRADE_PATH . '/' . $file);
-            $schema->ExecuteSchema();
+            if ($schema->ExecuteSchema()) {
+                $done[] = $hash;
+            }
         }
     }
 
@@ -114,6 +129,7 @@ if (Post::val('upgrade')) {
     }
 
     $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(serialize($done), 'upgrader_done'));
     $page->assign('done', true);
 }
 

@@ -2,6 +2,7 @@
 1="flyspray-final.xml"
 
 [develupgrade]
+0="clean_db.php"
 1="flyspray-final.xml"
 
 [fsprefs]
@@ -30,3 +31,4 @@ visible_columns="id project tasktype severity summary status progress"
 smtp_server=""
 smtp_user=""
 smtp_pass=""
+upgrader_done=""

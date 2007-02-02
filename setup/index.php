@@ -3,10 +3,10 @@
 // | Installer - there is still a lot to clean up, but it works
 // +----------------------------------------------------------------------
 // | Copyright (C) 2005 by Jeffery Fernandez <developer@jefferyfernandez.id.au>
-// | Copyright (C) 2006-2007  by Cristian Rodriguez <soporte@onfocus.cl> and Florian Schmitz <floele@gmail.com>
+// | Copyright (C) 2006-2007  by Cristian Rodriguez <judas.iscariote@flyspray.org> and Florian Schmitz <floele@gmail.com>
 // +----------------------------------------------------------------------
 
-set_time_limit(0);
+@set_time_limit(0);
 session_start();
 ini_set('memory_limit', '32M');
 
@@ -956,7 +956,7 @@ class Setup extends Flyspray
    {
       // Get the sql file name and set the path
 
-       $sql_file	= APPLICATION_PATH . '/setup/upgrade/' . $this->short_version() . '/flyspray-install.xml';
+       $sql_file	= APPLICATION_PATH . '/setup/upgrade/' . $this->base_version($this->version) . '/flyspray-install.xml';
 
        // Check if the install/upgrade file exists
       if (!is_readable($sql_file)) {
