@@ -30,7 +30,6 @@ class Notifications
         if ($fs->prefs['send_background'] && $to_type != ADDRESS_EMAIL) {
             return Notifications::send_later($to, $to_type, $type, $data);
         } else {
-            Notifications::send_stored();
             return Notifications::send_now($to, $to_type, $type, $data);
         }
     }
@@ -478,7 +477,7 @@ class Notifications
             case NOTIFY_TASK_OPENED:
                 $body .=  L('newtaskopened') . "\r\n\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
-                $body .= L('attachedtoproject') . ' - ' .  $data['task']['project_title'] . "\r\n";
+                $body .= L('attachedtoproject') . ' - ' .  $data['project']['project_title'] . "\r\n";
                 $body .= L('summary') . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('tasktype') . ' - ' . $data['task']['tasktype_name'] . "\r\n";
                 $body .= L('category') . ' - ' . $data['task']['category_name'] . "\r\n";

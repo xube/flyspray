@@ -708,7 +708,7 @@ class Backend
         }
 
         // Process the due_date
-        if ( ($due_date = $args['due_date']) || ($due_date = 0) ) {
+        if ( ($due_date = array_get($args, 'due_date', 0)) || ($due_date = 0) ) {
             $due_date = Flyspray::strtotime($due_date);
         }
 
@@ -722,6 +722,7 @@ class Backend
         $sql_values[] = '';
 
         // Token for anonymous users
+        $token = '';
         if ($user->isAnon()) {
             $token = md5(uniqid(rand(), true));
             $sql_params[] = 'task_token';
@@ -819,10 +820,10 @@ class Backend
         }
 
         if ($user->isAnon()) {
-            Notifications::send($args['anon_email'], ADDRESS_EMAIL, NOTIFY_ANON_TASK, array('token' => $token));
+            Notifications::send($args['anon_email'], ADDRESS_EMAIL, NOTIFY_ANON_TASK, array('task_id' => $task_id, 'token' => $token));
         }
 
-        return $task_id;
+        return array($task_id, $token);
     }
 
     /**

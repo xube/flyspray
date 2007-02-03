@@ -16,7 +16,7 @@
 
   <div id="fineprint">
 	 {L('attachedtoproject')} &mdash;
-	 <a href="{$_SERVER['SCRIPT_NAME']}?project={$task_details['project_id']}">{$task_details['project_title']}</a>
+	 <a href="{$_SERVER['SCRIPT_NAME']}?project={$task_details['project_id']}">{$proj->prefs['project_title']}</a>
 	 <br />
 	 {L('openedby')} {!tpl_userlink($task_details['opened_by'])}
      <?php if ($task_details['anon_email'] && $user->perms('view_tasks')): ?>

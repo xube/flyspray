@@ -576,8 +576,6 @@
       <NOTNULL/>
     </field>
     <field name="pref_value" type="X" />
-      <NOTNULL/>
-    </field>
   </table>
   <table name="projects">
     <field name="project_id" type="I" size="3">
@@ -853,6 +851,7 @@
     </field>
     <field name="anon_email" type="C" size="100">
       <NOTNULL/>
+      <DEFAULT value=""/>
     </field>
     <field name="task_token" type="C" size="32">
       <NOTNULL/>
