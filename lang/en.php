@@ -851,6 +851,8 @@ Regards,',
 'updatenote'              => 'Update note',
 'nosubject'               => '(no subject)',
 'noteupdated'             => 'Note updated!',
+'allowanonuserlist'       => 'Allow anonymous users to see userlist',
+'viewuserlist'            => 'View userlist',
 );
 
 ?>

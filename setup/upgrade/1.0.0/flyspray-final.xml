@@ -34,7 +34,7 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="deny_reason" type="C" size="255">
+    <field name="deny_reason" type="X">
       <NOTNULL/>
     </field>
   </table>
@@ -284,6 +284,10 @@
       <DEFAULT value="0"/>
     </field>
     <field name="edit_assignments" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="view_userlist" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
@@ -571,9 +575,8 @@
     <field name="pref_name" type="C" size="20">
       <NOTNULL/>
     </field>
-    <field name="pref_value" type="C" size="250">
+    <field name="pref_value" type="X" />
       <NOTNULL/>
-      <DEFAULT value="0"/>
     </field>
   </table>
   <table name="projects">

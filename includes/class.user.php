@@ -39,7 +39,6 @@ class User
      * @param string $do
      * @access public
      * @return void
-     * @notes FIXME: must return something, should not merge _GET and _REQUEST with other stuff.
      */
     function save_search($do = 'index')
     {
@@ -90,7 +89,7 @@ class User
         $fields = array('is_admin', 'manage_project', 'view_tasks', 'edit_own_comments',
                 'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                 'view_comments', 'add_comments', 'edit_comments', 'edit_assignments',
-                'delete_comments', 'create_attachments',
+                'delete_comments', 'create_attachments', 'view_userlist',
                 'delete_attachments', 'view_history', 'close_own_tasks',
                 'close_other_tasks', 'assign_to_self', 'assign_others_to_self',
                 'add_to_assignees', 'view_reports', 'add_votes', 'group_open');
@@ -245,6 +244,12 @@ class User
     function can_change_private($task)
     {
         return !$task['is_closed'] && ($this->perms('manage_project', $task['project_id']) || in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
+    }
+
+    function can_view_userlist()
+    {
+        global $fs;
+        return $fs->prefs['anon_userlist'] || $this->perms('view_userlist');
     }
 
     function can_vote($task)

@@ -90,7 +90,7 @@ if (Post::val('upgrade')) {
     ksort($upgrade_info[$type]);
     foreach ($upgrade_info[$type] as $file) {
         // skip all files which have been executed already
-        $hash = pack('H*', md5_file(UPGRADE_PATH . '/' . $file));
+        $hash = md5_file(UPGRADE_PATH . '/' . $file);
         if (in_array($hash, $done)) {
             continue;
         }

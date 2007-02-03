@@ -1,9 +1,12 @@
 [defaultupgrade]
+0="clean_db.php"
 1="flyspray-final.xml"
+2="add_data.php"
 
 [develupgrade]
 0="clean_db.php"
 1="flyspray-final.xml"
+2="add_data.php"
 
 [fsprefs]
 fs_ver="0.9.9" ; doesn't matter which version
@@ -32,3 +35,4 @@ smtp_server=""
 smtp_user=""
 smtp_pass=""
 upgrader_done=""
+anon_userlist="1"

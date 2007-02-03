@@ -464,7 +464,7 @@ switch ($action = Req::val('action'))
                         'modify_all_tasks', 'view_comments', 'add_comments', 'edit_assignments',
                         'edit_comments', 'delete_comments', 'create_attachments',
                         'delete_attachments', 'view_history', 'close_own_tasks',
-                        'close_other_tasks', 'assign_to_self',
+                        'close_other_tasks', 'assign_to_self', 'view_userlist',
                         'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
 
                 $params = array_map('Post_to0',$cols);
@@ -489,7 +489,7 @@ switch ($action = Req::val('action'))
 
         $settings = array('jabber_server', 'jabber_port', 'jabber_username', 'notify_registration',
                 'jabber_password', 'anon_group', 'user_notify', 'admin_email', 'send_background',
-                'lang_code', 'spam_proof', 'default_project', 'dateformat', 'jabber_ssl',
+                'lang_code', 'spam_proof', 'default_project', 'dateformat', 'jabber_ssl', 'anon_userlist',
                 'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server', 'page_title',
                 'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds');
         foreach ($settings as $setting) {
@@ -527,7 +527,7 @@ switch ($action = Req::val('action'))
 
         $db->Query('INSERT INTO  {projects}
                                  ( project_title, theme_style, intro_message,
-                                   others_view, anon_open, project_is_active,
+                                   others_view, anon_open,
                                    visible_columns, lang_code, notify_reply)
                          VALUES  (?, ?, ?, ?, ?, 1, ?, ?, ?)',
                   array(Post::val('project_title'), Post::val('theme_style'),
@@ -606,7 +606,7 @@ switch ($action = Req::val('action'))
         }
 
         $cols = array( 'project_title', 'theme_style', 'lang_code', 'default_task', 'default_entry',
-                'intro_message', 'project_is_active', 'others_view', 'anon_open', 'send_digest',
+                'intro_message', 'others_view', 'anon_open', 'send_digest',
                 'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
                 'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign');
         $args = array_map('Post_to0', $cols);
@@ -818,7 +818,7 @@ switch ($action = Req::val('action'))
                                 array('manage_project', 'view_tasks', 'edit_own_comments',
                                   'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                                   'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
-                                  'create_attachments', 'delete_attachments',
+                                  'create_attachments', 'delete_attachments', 'view_userlist',
                                   'view_history', 'close_own_tasks', 'close_other_tasks', 'edit_assignments',
                                   'assign_to_self', 'assign_others_to_self', 'add_to_assignees', 'view_reports',
                                   'add_votes', 'group_open'));

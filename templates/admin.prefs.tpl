@@ -8,7 +8,7 @@
    <li><a href="#notifications">{L('notifications')}</a></li>
    <li><a href="#lookandfeel">{L('lookandfeel')}</a></li>
   </ul>
-  
+
    <div id="general" class="tab">
       <table class="box">
         <tr>
@@ -52,6 +52,10 @@
             {!tpl_options(array('0' => L('no_cache'), '1' => L('cache_disk'), '2' => L('cache_db')), $fs->prefs['cache_feeds'])}
             </select>
           </td>
+        </tr>
+        <tr>
+          <td><label for="anon_userlist">{L('allowanonuserlist')}</label></td>
+          <td>{!tpl_checkbox('anon_userlist', $fs->prefs['anon_userlist'], 'anon_userlist')}</td>
         </tr>
       </table>
     </div>
@@ -137,7 +141,7 @@
             <input id="jabberserver" class="text" type="text" name="jabber_server" size="25" maxlength="100" value="{$fs->prefs['jabber_server']}" />
 		<?php if(extension_loaded('openssl')) : ?>
             {!tpl_checkbox('jabber_ssl', $fs->prefs['jabber_ssl'], 'jabber_ssl')} <label class="inline" for="jabber_ssl">{L('ssl')}</label>
-        <?php endif; ?>  
+        <?php endif; ?>
 		</td>
         </tr>
         <tr>

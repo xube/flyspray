@@ -95,9 +95,15 @@
       <td>{!tpl_checkbox('edit_assignments', Req::val('edit_assignments'), 'editassignments')}</td>
     </tr>
     <tr>
+      <td><label for="view_userlist">{L('viewuserlist')}</label></td>
+      <td>{!tpl_checkbox('view_userlist', Req::val('view_userlist'), 'view_userlist')}</td>
+    </tr>
+    <?php if ($proj->id): ?>
+    <tr>
       <td><label for="groupopen">{L('groupenabled')}</label></td>
       <td>{!tpl_checkbox('group_open', Req::val('group_open', Req::val('action') != 'newgroup.newgroup'), 'groupopen')}</td>
     </tr>
+    <?php endif; ?>
     <tr>
       <td colspan="2" class="buttons">
         <input type="hidden" name="action" value="<?php if ($proj->id): ?>pm<?php else: ?>admin<?php endif; ?>.newgroup" />

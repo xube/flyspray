@@ -111,7 +111,10 @@
         <td><label for="editassignments">{L('editassignments')}</label></td>
         <td>{!tpl_checkbox('edit_assignments', Req::val('edit_assignments', !Req::val('action') && $group_details['edit_assignments']), 'editassignments')}</td>
       </tr>
-
+      <tr>
+        <td><label for="view_userlist">{L('viewuserlist')}</label></td>
+        <td>{!tpl_checkbox('view_userlist', Req::val('view_userlist', !Req::val('action') && $group_details['view_userlist']), 'view_userlist')}</td>
+      </tr>
       <?php if (!$proj->id): ?>
       <tr>
         <td><label for="groupopen">{L('groupenabled')}</label></td>
