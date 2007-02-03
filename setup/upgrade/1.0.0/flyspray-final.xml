@@ -607,6 +607,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="anon_view_tasks" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
     <field name="notify_email" type="X"/>
     <field name="notify_jabber" type="X"/>
     <field name="notify_reply" type="X"/>

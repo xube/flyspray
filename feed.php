@@ -7,6 +7,14 @@ define('IN_FS', true);
 define('IN_FEED', true);
 
 require_once(dirname(__FILE__).'/header.php');
+
+if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
+    $user = new User(Cookie::val('flyspray_userid'));
+    $user->check_account_ok();
+} else {
+    $user = new User();
+}
+
 $page = new FSTpl();
 
 // Set up the basic XML head
@@ -47,10 +55,10 @@ if ($fs->prefs['cache_feeds']) {
     $sql = $db->Query("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
                          FROM  {tasks}    t
                    INNER JOIN  {projects} p ON t.project_id = p.project_id
-                        WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
-                               AND p.others_view = '1' ", array($closed));
+                        WHERE  t.is_closed <> ? $sql_project",
+                        array($closed));
     $most_recent = max($db->fetchRow($sql));
-    
+
     if ($fs->prefs['cache_feeds'] == '1') {
         if (is_file(BASEDIR .'/cache/'.$filename) && $most_recent <= filemtime(BASEDIR . '/cache/'.$filename)) {
             readfile(BASEDIR . '/cache/'.$filename);
@@ -72,15 +80,14 @@ if ($fs->prefs['cache_feeds']) {
 
 /* build a new feed if cache didn't work */
 $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed,
-                           t.last_edited_time, t.opened_by, u.real_name, u.email_address
+                           t.last_edited_time, t.opened_by, u.real_name, u.email_address, t.*
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
                INNER JOIN  {projects} p ON t.project_id = p.project_id
-                    WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
-                           AND p.others_view = '1'
-                 ORDER BY  $orderby DESC", array($closed), $max_items);
+                 ORDER BY  $orderby DESC",
+                   array($closed), $max_items);
 
-$task_details     = $db->fetchAllArray($sql);
+$task_details     = array_filter($db->fetchAllArray($sql), array($user, 'can_view_task'));
 $feed_description = $proj->prefs['feed_description'] ? $proj->prefs['feed_description'] : $fs->prefs['page_title'] . $proj->prefs['project_title'].': '.$title;
 $feed_image       = false;
 if ($proj->prefs['feed_img_url']

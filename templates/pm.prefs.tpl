@@ -70,6 +70,10 @@
           <td>{!tpl_checkbox('others_view', Post::val('others_view', $proj->prefs['others_view']), 'othersview')}</td>
         </tr>
         <tr>
+          <td><label for="anon_view_tasks">{L('anonviewtasks')}</label></td>
+          <td>{!tpl_checkbox('anon_view_tasks', Post::val('anon_view_tasks', $proj->prefs['anon_view_tasks']), 'anon_view_tasks')}</td>
+        </tr>
+        <tr>
           <td><label for="anon_open">{L('allowanonopentask')}</label></td>
           <td>{!tpl_checkbox('anon_open', Post::val('anon_open', $proj->prefs['anon_open']), 'anon_open')}</td>
         </tr>

@@ -853,6 +853,7 @@ Regards,',
 'noteupdated'             => 'Note updated!',
 'allowanonuserlist'       => 'Allow anonymous users to see userlist',
 'viewuserlist'            => 'View userlist',
+'anonviewtasks'           => 'Allow anonymous users to see tasks',
 );
 
 ?>
