@@ -572,9 +572,9 @@ class Flyspray
     {
         global $db;
 
-        $check = $db->Query("SELECT *
+        $check = $db->Query('SELECT *
                                FROM {admin_requests}
-                              WHERE request_type = ? AND task_id = ? AND resolved_by = 0",
+                              WHERE request_type = ? AND task_id = ? AND resolved_by = 0',
                             array($type, $task_id));
         return (bool)($db->CountRows($check));
     } // }}}
@@ -590,7 +590,6 @@ class Flyspray
     {
         global $db;
 
-        // Get current user details.  We need this to see if their account is enabled or disabled
         $result = $db->Query('SELECT * FROM {users} WHERE user_id = ?', array(intval($user_id)));
         return $db->FetchRow($result);
     } // }}}
@@ -605,7 +604,12 @@ class Flyspray
     function getGroupDetails($group_id)
     {
         global $db;
-        $sql = $db->Query('SELECT * FROM {groups} WHERE group_id = ?', array($group_id));
+        $sql = $db->Query('SELECT *, count(uig.user_id) AS num_users
+                             FROM {groups} g
+                        LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
+                            WHERE g.group_id = ?
+                         GROUP BY g.group_id',
+                          array($group_id));
         return $db->FetchRow($sql);
     } // }}}
     //  {{{

@@ -54,7 +54,7 @@ define('UPGRADE_PATH', BASEDIR . '/upgrade/' . UPGRADE_VERSION);
 // Get installed version
 $sql = $db->Query('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('fs_ver'));
 $installed_version = $db->FetchOne($sql);
-$db->dblink->debug = true;
+
 $page = new Tpl;
 $page->assign('title', 'Upgrade ');
 $page->assign('installed_version', $installed_version); // get version info from database

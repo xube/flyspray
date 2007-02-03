@@ -86,7 +86,7 @@
     <td><a href="{CreateURL('edituser', $usr['user_id'])}">{$usr['user_name']}</a></td>
     <td>{$usr['real_name']}</td>
     <td><a href="mailto:{$usr['email_address']}">{$usr['email_address']}</a></td>
-    <td><a href="mailto:{$usr['jabber_id']}">{$usr['jabber_id']}</a></td>
+    <td>{$usr['jabber_id']}</td>
     <td>
       <?php
       // First let's make sure there are arrays (not necessarily the case)

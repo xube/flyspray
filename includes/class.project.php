@@ -20,7 +20,7 @@ class Project
                 return;
             }
         }
-        
+
         $this->id = 0;
         $this->prefs['project_title'] = L('allprojects');
         $this->prefs['theme_style']   = $fs->prefs['global_theme'];
@@ -42,11 +42,11 @@ class Project
     /* cached list functions {{{ */
 
     // helpers {{{
-    
+
     function _pm_list_sql($type, $join)
     {
         global $db;
-        
+
         // deny the possibility of shooting ourselves in the foot.
         // although there is no risky usage atm, the api should never do unexpected things.
         if(preg_match('![^A-Za-z0-9_]!', $type)) {
@@ -56,7 +56,7 @@ class Project
         $groupby = $db->GetColumnNames('{list_' . $type . '}',  'l.' . $type . '_id', 'l.');
 
         $join = 't.'.join(" = l.{$type}_id OR t.", $join)." = l.{$type}_id";
-        
+
         return "SELECT  l.*, count(t.task_id) AS used_in_tasks
                   FROM  {list_{$type}} l
              LEFT JOIN  {tasks}        t  ON ($join)
@@ -67,10 +67,10 @@ class Project
     }
 
     /**
-     * _list_sql 
-     * 
-     * @param mixed $type 
-     * @param mixed $where 
+     * _list_sql
+     *
+     * @param mixed $type
+     * @param mixed $where
      * @access protected
      * @return string
      * @notes The $where parameter is dangerous, think twice what you pass there..
@@ -124,7 +124,7 @@ class Project
     function listVersions($pm = false, $tense = null, $reported_version = null)
     {
         global $db;
-        
+
         $params = array($this->id);
 
         if (is_null($tense)) {
@@ -133,7 +133,7 @@ class Project
             $where = 'AND version_tense = ?';
             $params[] = $tense;
         }
-        
+
         if ($pm) {
             return $db->cached_query(
                     'pm_version',
@@ -152,17 +152,17 @@ class Project
                     $params);
         }
     }
-    
-    
+
+
     function listCategories($project_id = null, $hide_hidden = true, $remove_root = true, $depth = true)
     {
         global $db, $conf;
-        
+
         // start with a empty arrays
         $right = array();
         $cats = array();
         $g_cats = array();
-        
+
         // null = categories of current project + global project, int = categories of specific project
         if (is_null($project_id)) {
             $project_id = $this->id;
@@ -170,7 +170,7 @@ class Project
                 $g_cats = $this->listCategories(0);
             }
         }
-        
+
         // retrieve the left and right value of the root node
         $result = $db->Query("SELECT lft, rgt
                                 FROM {list_category}
@@ -193,7 +193,7 @@ class Project
             if ($hide_hidden && !$row['show_in_list'] && !$row['lft'] == 1) {
                 continue;
             }
-            
+
            // check if we should remove a node from the stack
            while (count($right) > 0 && $right[count($right)-1] < $row['rgt']) {
                array_pop($right);
@@ -203,7 +203,7 @@ class Project
            // add this node to the stack
            $right[] = $row['rgt'];
         }
-        
+
         // Adjust output for select boxes
         if ($depth) {
             foreach ($cats as $key => $cat) {
@@ -213,7 +213,7 @@ class Project
                 }
             }
         }
-        
+
         if ($remove_root) {
             unset($cats[0]);
         }
@@ -248,22 +248,8 @@ class Project
                     $this->_list_sql('status'), array($this->id));
         }
     }
-    
-    // }}}
 
-    function listUsersIn($group_id = null)
-    {
-        global $db;
-        return $db->cached_query(
-                'users_in'.(is_null($group_id) ? $group_id : intval($group_id)),
-                "SELECT  u.*
-                   FROM  {users}           u
-             INNER JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
-             INNER JOIN  {groups}          g   ON uig.group_id = g.group_id
-                  WHERE  g.group_id = ?
-               ORDER BY  u.user_name ASC",
-                array($group_id));
-    }
+    // }}}
 
     function listAttachments($cid)
     {

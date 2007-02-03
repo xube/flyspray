@@ -34,9 +34,9 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
     case 'user':
         $id = Flyspray::username_to_id(Req::val('user_id'));
 
-        $theuser = new User($id, $proj);
+        $theuser = new User($id);
         if ($theuser->isAnon()) {
-            Flyspray::show_error(5, true, null, $_SESSION['prev_page']);
+            Flyspray::show_error(5);
         }
         $page->assign('all_groups', Flyspray::listallGroups($theuser->id));
         $page->assign('groups', Flyspray::listGroups());
