@@ -43,27 +43,21 @@ class Project
 
     // helpers {{{
 
-    function _pm_list_sql($type, $join)
+    function get_edit_list($list_id)
     {
         global $db;
-
-        // deny the possibility of shooting ourselves in the foot.
-        // although there is no risky usage atm, the api should never do unexpected things.
-        if(preg_match('![^A-Za-z0-9_]!', $type)) {
-            return '';
-        }
+        
         //Get the column names of list tables for the group by statement
-        $groupby = $db->GetColumnNames('{list_' . $type . '}',  'l.' . $type . '_id', 'l.');
-
-        $join = 't.'.join(" = l.{$type}_id OR t.", $join)." = l.{$type}_id";
-
-        return "SELECT  l.*, count(t.task_id) AS used_in_tasks
-                  FROM  {list_{$type}} l
-             LEFT JOIN  {tasks}        t  ON ($join)
-                            AND t.project_id = l.project_id
-                 WHERE  l.project_id = ?
-              GROUP BY  $groupby
-              ORDER BY  list_position";
+        $groupby = $db->GetColumnNames('{list_items}',  'lb.list_item_id', 'lb.');
+        
+        $sql = $db->Query('SELECT lb.*, count(t.task_id) AS used_in_tasks
+                             FROM {list_items} lb
+                        LEFT JOIN {tasks} t ON lb.list_item_id IN (t.item_status, t.resolution_reason, t.operating_system, t.task_type)
+                            WHERE list_id = ?
+                         GROUP BY ' . $groupby . '
+                         ORDER BY list_position',
+                          array($list_id));
+        return $db->FetchAllArray($sql);
     }
 
     /**
@@ -79,13 +73,15 @@ class Project
     function _list_sql($type, $where = null)
     {
         // sanity check.
-        if(preg_match('![^A-Za-z0-9_]!', $type)) {
+        if (preg_match('![^A-Za-z0-9_]!', $type)) {
             return '';
         }
 
-        return "SELECT  {$type}_id, {$type}_name
-                  FROM  {list_{$type}}
-                 WHERE  show_in_list = 1 AND ( project_id = ? OR project_id = 0 )
+        return "SELECT  list_item_id, item_name
+                  FROM  {list_items} lb
+             LEFT JOIN  {lists} ls ON lb.list_id = ls.list_id
+                 WHERE  show_in_list = 1 AND list_name = '" . $type . "'
+                        AND (project_id = ? OR project_id = 0)
                         $where
               ORDER BY  list_position";
     }
@@ -93,70 +89,36 @@ class Project
     // }}}
     // PM dependant functions {{{
 
-    function listTaskTypes($pm = false)
+    function get_list($type)
     {
-        global $db;
-        if ($pm) {
-            return $db->cached_query(
-                    'pm_task_types',
-                    $this->_pm_list_sql('tasktype', array('task_type')),
-                    array($this->id));
-        } else {
-            return $db->cached_query(
-                    'task_types', $this->_list_sql('tasktype'), array($this->id));
-        }
+        global  $db;
+        return $db->cached_query($type, $this->_list_sql($type), array($this->id));
     }
 
-    function listOs($pm = false)
-    {
-        global $db;
-        if ($pm) {
-            return $db->cached_query(
-                    'pm_os',
-                    $this->_pm_list_sql('os', array('operating_system')),
-                    array($this->id));
-        } else {
-            return $db->cached_query('os', $this->_list_sql('os'),
-                    array($this->id));
-        }
-    }
-
-    function listVersions($pm = false, $tense = null, $reported_version = null)
+    function listVersions($tense = null, $reported_version = null)
     {
         global $db;
 
         $params = array($this->id);
+        $where = '';
 
-        if (is_null($tense)) {
-            $where = '';
-        } else {
+        if (!is_null($tense)) {
             $where = 'AND version_tense = ?';
             $params[] = $tense;
         }
 
-        if ($pm) {
-            return $db->cached_query(
-                    'pm_version',
-                    $this->_pm_list_sql('version', array('product_version', 'closedby_version')),
-                    array($params[0]));
-        } elseif (is_null($reported_version)) {
-            return $db->cached_query(
-                    'version_'.$tense,
-                    $this->_list_sql('version', $where),
-                    $params);
-        } else {
+        if (!is_null($reported_version)) {
+            $where .= ' OR list_item_id = ?';
             $params[] = $reported_version;
-            return $db->cached_query(
-                    'version_'.$tense,
-                    $this->_list_sql('version', $where . ' OR version_id = ?'),
-                    $params);
         }
+        
+        return $db->cached_query('version_' . intval($tense), $this->_list_sql('version', $where), $params);
     }
 
 
     function listCategories($project_id = null, $hide_hidden = true, $remove_root = true, $depth = true)
     {
-        global $db, $conf;
+        global $db;
 
         // start with a empty arrays
         $right = array();
@@ -173,7 +135,8 @@ class Project
 
         // retrieve the left and right value of the root node
         $result = $db->Query("SELECT lft, rgt
-                                FROM {list_category}
+                                FROM {list_category} lc
+                           LEFT JOIN {lists} l ON lc.list_id = l.list_id
                                WHERE category_name = 'root' AND lft = 1 AND project_id = ?",
                              array($project_id));
         $row = $db->FetchRow($result);
@@ -184,7 +147,8 @@ class Project
         $result = $db->Query('SELECT c.category_id, c.category_name, c.*, count(t.task_id) AS used_in_tasks
                                 FROM {list_category} c
                            LEFT JOIN {tasks} t ON (t.product_category = c.category_id)
-                               WHERE c.project_id = ? AND lft BETWEEN ? AND ?
+                           LEFT JOIN {lists} l ON c.list_id = l.list_id
+                               WHERE l.project_id = ? AND lft BETWEEN ? AND ?
                             GROUP BY ' . $groupby . '
                             ORDER BY lft ASC',
                              array($project_id, intval($row['lft']), intval($row['rgt'])));
@@ -219,34 +183,6 @@ class Project
         }
 
         return array_merge($cats, $g_cats);
-    }
-
-    function listResolutions($pm = false)
-    {
-        global $db;
-        if ($pm) {
-            return $db->cached_query(
-                    'pm_resolutions',
-                    $this->_pm_list_sql('resolution', array('resolution_reason')),
-                    array($this->id));
-        } else {
-            return $db->cached_query('resolution',
-                    $this->_list_sql('resolution'), array($this->id));
-        }
-    }
-
-    function listTaskStatuses($pm = false)
-    {
-        global $db;
-        if ($pm) {
-            return $db->cached_query(
-                    'pm_statuses',
-                    $this->_pm_list_sql('status', array('item_status')),
-                    array($this->id));
-        } else {
-            return $db->cached_query('status',
-                    $this->_list_sql('status'), array($this->id));
-        }
     }
 
     // }}}

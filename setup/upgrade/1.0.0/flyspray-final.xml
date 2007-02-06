@@ -287,11 +287,11 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="view_userlist" type="I" size="1">
+    <field name="group_open" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="group_open" type="I" size="1">
+    <field name="view_userlist" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
@@ -339,10 +339,6 @@
       <KEY/>
       <AUTOINCREMENT/>
     </field>
-    <field name="project_id" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
     <field name="category_name" type="C" size="30">
       <NOTNULL/>
     </field>
@@ -364,133 +360,55 @@
       <DEFAULT value="0"/>
       <UNSIGNED/>
     </field>
-    <index name="project_id_cat">
-      <col>project_id</col>
-    </index>
-  </table>
-  <table name="list_os">
-    <field name="os_id" type="I" size="3">
-      <KEY/>
-      <AUTOINCREMENT/>
-    </field>
-    <field name="project_id" type="I" size="3">
+    <field name="list_id" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="os_name" type="C" size="20">
+    <index name="cat_list_id">
+      <col>list_id</col>
+    </index>
+  </table>
+  <table name="list_items">
+    <field name="list_item_id" type="I" size="11">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="item_name" type="C" size="30">
       <NOTNULL/>
     </field>
-    <field name="list_position" type="I" size="3">
+    <field name="list_position" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
     <field name="show_in_list" type="I" size="1">
       <NOTNULL/>
-      <DEFAULT value="0"/>
+      <DEFAULT value="1"/>
     </field>
-    <index name="project_id_os">
-      <col>project_id</col>
+    <field name="version_tense" type="I" size="1"/>
+    <field name="list_id" type="C" size="20">
+      <NOTNULL/>
+    </field>
+    <index name="lists_items_lid">
+      <col>list_id</col>
     </index>
   </table>
-  <table name="list_resolution">
-    <field name="resolution_id" type="I" size="3">
+  <table name="lists">
+    <field name="list_id" type="I" size="11">
       <KEY/>
       <AUTOINCREMENT/>
     </field>
-    <field name="resolution_name" type="C" size="30">
+    <field name="list_name" type="C" size="30">
       <NOTNULL/>
     </field>
-    <field name="list_position" type="I" size="3">
+    <field name="list_type" type="C" size="20">
       <NOTNULL/>
-      <DEFAULT value="0"/>
     </field>
-    <field name="show_in_list" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="project_id" type="I" size="3">
+    <field name="project_id" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <index name="project_id_res">
+    <index name="lists_pr_id">
       <col>project_id</col>
-    </index>
-  </table>
-  <table name="list_status">
-    <field name="status_id" type="I" size="3">
-      <KEY/>
-      <AUTOINCREMENT/>
-    </field>
-    <field name="status_name" type="C" size="20">
-      <NOTNULL/>
-    </field>
-    <field name="list_position" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="show_in_list" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="project_id" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <index name="project_id_status">
-      <col>project_id</col>
-    </index>
-  </table>
-  <table name="list_tasktype">
-    <field name="tasktype_id" type="I" size="3">
-      <KEY/>
-      <AUTOINCREMENT/>
-    </field>
-    <field name="tasktype_name" type="C" size="20">
-      <NOTNULL/>
-    </field>
-    <field name="list_position" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="show_in_list" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="project_id" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <index name="project_id_tt">
-      <col>project_id</col>
-    </index>
-  </table>
-  <table name="list_version">
-    <field name="version_id" type="I" size="3">
-      <KEY/>
-      <AUTOINCREMENT/>
-    </field>
-    <field name="project_id" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="version_name" type="C" size="20">
-      <NOTNULL/>
-    </field>
-    <field name="list_position" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="show_in_list" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="version_tense" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <index name="project_id_version">
-      <col>project_id</col>
-      <col>version_tense</col>
     </index>
   </table>
   <table name="notes">
@@ -528,6 +446,7 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="message_data" type="X"/>
   </table>
   <table name="notification_recipients">
     <field name="recipient_id" type="I" size="10">
@@ -575,7 +494,9 @@
     <field name="pref_name" type="C" size="20">
       <NOTNULL/>
     </field>
-    <field name="pref_value" type="X" />
+    <field name="pref_value" type="X">
+      <NOTNULL/>
+    </field>
   </table>
   <table name="projects">
     <field name="project_id" type="I" size="3">
@@ -602,10 +523,6 @@
       <DEFAULT value="0"/>
     </field>
     <field name="anon_open" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="anon_view_tasks" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
@@ -640,6 +557,10 @@
     <field name="default_entry" type="C" size="8">
       <NOTNULL/>
       <DEFAULT value="index"/>
+    </field>
+    <field name="anon_view_tasks" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
     </field>
     <field name="send_digest" type="I" size="1">
       <NOTNULL/>
@@ -851,7 +772,6 @@
     </field>
     <field name="anon_email" type="C" size="100">
       <NOTNULL/>
-      <DEFAULT value=""/>
     </field>
     <field name="task_token" type="C" size="32">
       <NOTNULL/>

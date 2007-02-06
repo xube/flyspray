@@ -9,38 +9,38 @@ function get_events($task_id, $where = '', $sort = 'ASC')
     global $db;
     $sort = Filters::enum($sort, array('ASC', 'DESC'));
     return $db->Query("SELECT h.*,
-                      tt1.tasktype_name AS task_type1,
-                      tt2.tasktype_name AS task_type2,
-                      los1.os_name AS operating_system1,
-                      los2.os_name AS operating_system2,
+                      tt1.item_name AS task_type1,
+                      tt2.item_name AS task_type2,
+                      los1.item_name AS operating_system1,
+                      los2.item_name AS operating_system2,
                       lc1.category_name AS product_category1,
                       lc2.category_name AS product_category2,
                       p1.project_title AS project_id1,
                       p2.project_title AS project_id2,
-                      lv1.version_name AS product_version1,
-                      lv2.version_name AS product_version2,
-                      ls1.status_name AS item_status1,
-                      ls2.status_name AS item_status2,
-                      lr.resolution_name,
+                      lv1.item_name AS product_version1,
+                      lv2.item_name AS product_version2,
+                      ls1.item_name AS item_status1,
+                      ls2.item_name AS item_status2,
+                      lr.item_name AS resolution_name,
                       c.date_added AS c_date_added,
                       c.user_id AS c_user_id,
                       att.orig_name, att.file_desc
 
                 FROM  {history} h
 
-            LEFT JOIN {list_tasktype} tt1 ON tt1.tasktype_id = h.old_value AND h.field_changed='task_type'
-            LEFT JOIN {list_tasktype} tt2 ON tt2.tasktype_id = h.new_value AND h.field_changed='task_type'
+            LEFT JOIN {list_items} tt1 ON tt1.list_item_id = h.old_value AND h.field_changed='task_type'
+            LEFT JOIN {list_items} tt2 ON tt2.list_item_id = h.new_value AND h.field_changed='task_type'
 
-            LEFT JOIN {list_os} los1 ON los1.os_id = h.old_value AND h.field_changed='operating_system'
-            LEFT JOIN {list_os} los2 ON los2.os_id = h.new_value AND h.field_changed='operating_system'
+            LEFT JOIN {list_items} los1 ON los1.list_item_id = h.old_value AND h.field_changed='operating_system'
+            LEFT JOIN {list_items} los2 ON los2.list_item_id = h.new_value AND h.field_changed='operating_system'
 
             LEFT JOIN {list_category} lc1 ON lc1.category_id = h.old_value AND h.field_changed='product_category'
             LEFT JOIN {list_category} lc2 ON lc2.category_id = h.new_value AND h.field_changed='product_category'
 
-            LEFT JOIN {list_status} ls1 ON ls1.status_id = h.old_value AND h.field_changed='item_status'
-            LEFT JOIN {list_status} ls2 ON ls2.status_id = h.new_value AND h.field_changed='item_status'
+            LEFT JOIN {list_items} ls1 ON ls1.list_item_id = h.old_value AND h.field_changed='item_status'
+            LEFT JOIN {list_items} ls2 ON ls2.list_item_id = h.new_value AND h.field_changed='item_status'
 
-            LEFT JOIN {list_resolution} lr ON lr.resolution_id = h.new_value AND h.event_type = 2
+            LEFT JOIN {list_items} lr ON lr.list_item_id = h.new_value AND h.event_type = 2
 
             LEFT JOIN {projects} p1 ON p1.project_id = h.old_value AND h.field_changed='project_id'
             LEFT JOIN {projects} p2 ON p2.project_id = h.new_value AND h.field_changed='project_id'
@@ -49,9 +49,9 @@ function get_events($task_id, $where = '', $sort = 'ASC')
 
             LEFT JOIN {attachments} att ON att.attachment_id = h.new_value AND h.event_type = 7
 
-            LEFT JOIN {list_version} lv1 ON lv1.version_id = h.old_value
+            LEFT JOIN {list_items} lv1 ON lv1.list_item_id = h.old_value
                       AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
-            LEFT JOIN {list_version} lv2 ON lv2.version_id = h.new_value
+            LEFT JOIN {list_items} lv2 ON lv2.list_item_id = h.new_value
                       AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
 
                 WHERE h.task_id = ? $where

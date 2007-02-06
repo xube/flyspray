@@ -78,11 +78,11 @@ do {
         // Now generate the message, we are interested in opened/reopened, closed and assigned tasks
         $opened = $reopened = $closed = $assigned = array();
         $message = L('digestfor') . ' ' . $project['project_title'] . ":\n\n";
-        $sql = $db->Query('SELECT h.event_type, lr.resolution_name, t.task_id, t.item_summary, u.user_name, u.real_name
+        $sql = $db->Query('SELECT h.event_type, lr.item_name AS resolution_name, t.task_id, t.item_summary, u.user_name, u.real_name
                              FROM {history} h
                         LEFT JOIN {tasks} t ON h.task_id = t.task_id
                         LEFT JOIN {users} u ON h.user_id = u.user_id
-                        LEFT JOIN {list_resolution} lr ON h.new_value = lr.resolution_id AND event_type = 2
+                        LEFT JOIN {list_items} lr ON h.new_value = lr.list_item_id AND event_type = 2
                             WHERE t.project_id = ? AND event_type IN (1,2,13,19)
                                   AND event_date > ?',
                             array($project['project_id'], max($project['last_digest'], time() - 60*60*24*7)));

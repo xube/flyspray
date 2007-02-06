@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<schema version="0.3">
+  <table name="list_items">
+    <field name="list_item_id" type="I" size="11">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="item_name" type="C" size="30">
+      <NOTNULL/>
+    </field>
+    <field name="list_position" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="show_in_list" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="1"/>
+    </field>
+    <field name="version_tense" type="I" size="1"/>
+    <field name="list_id" type="C" size="20">
+      <NOTNULL/>
+    </field>
+    <index name="lists_items_lid">
+      <col>list_id</col>
+    </index>
+  </table>
+  <table name="lists">
+    <field name="list_id" type="I" size="11">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="list_name" type="C" size="30">
+      <NOTNULL/>
+    </field>
+    <field name="list_type" type="C" size="20">
+      <NOTNULL/>
+    </field>
+    <field name="project_id" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <index name="lists_pr_id">
+      <col>project_id</col>
+    </index>
+  </table>
+  <table name="list_category">
+    <field name="category_id" type="I" size="3">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="category_name" type="C" size="30">
+      <NOTNULL/>
+    </field>
+    <field name="project_id" type="I" size="3">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="show_in_list" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="category_owner" type="I" size="3">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="lft" type="I" size="10">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+      <UNSIGNED/>
+    </field>
+    <field name="rgt" type="I" size="10">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+      <UNSIGNED/>
+    </field>
+    <field name="list_id" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <index name="cat_list_id">
+      <col>list_id</col>
+    </index>
+  </table>
+</schema>

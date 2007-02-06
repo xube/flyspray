@@ -1,12 +1,16 @@
 [defaultupgrade]
 0="clean_db.php"
-1="flyspray-final.xml"
-2="add_data.php"
+1="upgrade_lists.xml"
+2="upgrade_lists.php"
+3="flyspray-final.xml"
+4="add_data.php"
 
 [develupgrade]
 0="clean_db.php"
-1="flyspray-final.xml"
-2="add_data.php"
+1="upgrade_lists.xml"
+2="upgrade_lists.php"
+3="flyspray-final.xml"
+4="add_data.php"
 
 [fsprefs]
 fs_ver="0.9.9" ; doesn't matter which version

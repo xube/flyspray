@@ -21,11 +21,10 @@ $proj = new Project(0);
 
 $page->pushTpl('admin.menu.tpl');
 
-$areas = array('prefs', 'cat', 'editgroup', 'groups', 'users', 'newgroup',
-               'newproject', 'newuser', 'os', 'res', 'status', 'tt', 'user', 'ver');
+$areas = array('prefs', 'editgroup', 'groups', 'users', 'newgroup',
+               'newproject', 'newuser', 'lists', 'user', 'list');
 
 switch ($area = Req::enum('area', $areas, 'prefs')) {
-    case 'cat':
     case 'editgroup':
     case 'newuser':
         $page->assign('groups', Flyspray::listGroups());
@@ -119,6 +118,29 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
         $page->uses('user_list');
         $page->uses('user_groups');
         break;
+        
+        case 'lists':
+            $sql = $db->Query('SELECT * FROM {lists}
+                                WHERE project_id = 0
+                             ORDER BY list_type');
+            $page->assign('lists', $db->FetchAllArray($sql));
+            break;
+        
+        case 'list':
+            // Which type of list?
+            $sql = $db->Query('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
+                              array(Req::val('list_id')));
+            $row = $db->fetchRow($sql);
+            $list_type = $row[0];
+            $list_name = $row[1];
+            
+            if ($list_type == 'category') {
+                $area = 'cat';
+            } else {
+                $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));
+            }
+            $page->uses('list_type', 'list_name');
+            break;
 }
 
 $page->setTitle($fs->prefs['page_title'] . L('admintoolboxlong'));

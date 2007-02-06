@@ -15,10 +15,11 @@ if (!$proj->id) {
 $page->setTitle($fs->prefs['page_title'] . L('roadmap'));
 
 // Get milestones
-$milestones = $db->Query('SELECT   version_id, version_name
-                          FROM     {list_version}
-                          WHERE    project_id = ? AND version_tense = 3
-                          ORDER BY list_position ASC',
+$milestones = $db->Query('SELECT list_item_id AS version_id, item_name AS version_name
+                            FROM {list_items} li
+                       LEFT JOIN {lists} l ON l.list_id = li.list_id
+                           WHERE project_id = ? AND version_tense = 3
+                        ORDER BY list_position ASC',
                           array($proj->id));
                           
 $data = array();

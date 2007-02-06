@@ -292,7 +292,7 @@
 			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 			 <select class="adminlist" name="resolution_reason" onmouseup="Event.stop(event);">
 				<option value="0">{L('selectareason')}</option>
-				{!tpl_options($proj->listResolutions(), Post::val('resolution_reason'))}
+				{!tpl_options($proj->get_list('resolution'), Post::val('resolution_reason'))}
 			 </select>
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>

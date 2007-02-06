@@ -18,7 +18,7 @@
     </div>
   </div>
   <?php endif; ?>
-    <form action="{CreateURL($do, 'cat', $proj->id)}" method="post">
+    <form action="{CreateURL($do, 'list', $proj->id)}" method="post">
       <table class="list" id="catTable">
          <thead>
          <tr>
@@ -61,7 +61,8 @@
           <td colspan="3"></td>
           <td class="buttons">
             <input type="hidden" name="action" value="update_category" />
-            <input type="hidden" name="list_type" value="category" />
+            <input type="hidden" name="area" value="list" />
+            <input type="hidden" name="list_id" value="{Req::val('list_id')}" />
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <button type="submit">{L('update')}</button>
           </td>
@@ -87,7 +88,7 @@
     <hr />
 
     <!-- Form to add a new category to the list -->
-    <form action="{CreateURL($do, 'cat', $proj->id)}" method="post">
+    <form action="{CreateURL($do, 'list', $proj->id)}" method="post">
       <table class="list">
         <tr>
           <td>
@@ -105,8 +106,9 @@
           </td>
           <td class="buttons">
             <input type="hidden" name="action" value="{$do}.add_category" />
-            <input type="hidden" name="area" value="{Req::val('area')}" />
+            <input type="hidden" name="area" value="list" />
             <input type="hidden" name="project_id" value="{$proj->id}" />
+            <input type="hidden" name="list_id" value="{Req::val('list_id')}" />
             <button type="submit">{L('addnew')}</button>
           </td>
         </tr>

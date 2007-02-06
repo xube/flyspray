@@ -12,17 +12,6 @@ if (!defined('IN_FS')) {
 // Include the notifications class
 require_once BASEDIR . '/includes/class.notify.php';
 
-$lt = Post::isAlnum('list_type') ? Post::val('list_type') : '';
-$list_table_name = null;
-$list_column_name = null;
-$list_id = null;
-
-if (strlen($lt)) {
-    $list_table_name  = '{list_'.$lt .'}';
-    $list_column_name = $lt . '_name';
-    $list_id = $lt . '_id';
-}
-
 function Post_to0($key) { return Post::val($key, 0); }
 
 if (Req::num('task_id')) {
@@ -555,25 +544,6 @@ switch ($action = Req::val('action'))
                                    ".join(',', $cols).")
                          VALUES  ( ". $db->fill_placeholders($cols, 3) .")", $args);
 
-        $db->Query("INSERT INTO  {list_category}
-                                 ( project_id, category_name,
-                                   show_in_list, category_owner, lft, rgt)
-                         VALUES  ( ?, ?, 1, 0, 1, 4)", array($pid, 'root'));
-
-        $db->Query("INSERT INTO  {list_category}
-                                 ( project_id, category_name,
-                                   show_in_list, category_owner, lft, rgt )
-                         VALUES  ( ?, ?, 1, 0, 2, 3)", array($pid, 'Backend / Core'));
-
-        $db->Query("INSERT INTO  {list_os}
-                                 ( project_id, os_name, list_position, show_in_list )
-                         VALUES  (?, ?, 1, 1)", array($pid, 'All'));
-
-        $db->Query("INSERT INTO  {list_version}
-                                 ( project_id, version_name, list_position,
-                                   show_in_list, version_tense )
-                         VALUES  (?, ?, 1, 1, 2)", array($pid, '1.0'));
-
         $_SESSION['SUCCESS'] = L('projectcreated');
         Flyspray::Redirect(CreateURL('pm', 'prefs', $pid));
         break;
@@ -839,73 +809,7 @@ switch ($action = Req::val('action'))
     // updating a list
     // ##################
     case 'update_list':
-        if (!$user->perms('manage_project') || !isset($list_table_name)) {
-            break;
-        }
-
-        $listname     = Post::val('list_name');
-        $listposition = Post::val('list_position');
-        $listshow     = Post::val('show_in_list');
-        $listdelete   = Post::val('delete');
-        $listid       = Post::val('id');
-
-        for($i = 0; $i < count($listname); $i++) {
-            if ($listname[$i] != '') {
-                if (!isset($listshow[$id])) {
-                    $listshow[$id] = 0;
-                }
-                $update = $db->Query("UPDATE  $list_table_name
-                                         SET  $list_column_name = ?, list_position = ?, show_in_list = ?
-                                       WHERE  $list_id = ? AND project_id = ?",
-                                      array($listname[$i], intval($listposition[$i]), intval($listshow[$i]), $listid[$i], $proj->id));
-            } else {
-                Flyspray::show_error(L('fieldsmissing'));
-            }
-        }
-
-        if (is_array($listdelete) && count($listdelete)) {
-            $deleteids = "$list_id = " . join(" OR $list_id =", array_map('intval', array_keys($listdelete)));
-            $db->Query("DELETE FROM $list_table_name WHERE project_id = ? AND ($deleteids)", array($proj->id));
-        }
-
-        $_SESSION['SUCCESS'] = L('listupdated');
-        break;
-
-    // ##################
-    // adding a list item
-    // ##################
-    case 'pm.add_to_list':
-    case 'admin.add_to_list':
-        if (!$user->perms('manage_project') || !isset($list_table_name)) {
-            break;
-        }
-
-        if (!Post::val('list_name')) {
-            Flyspray::show_error(L('fillallfields'));
-            break;
-        }
-
-        $position = Post::num('list_position');
-        if (!$position) {
-            $position = intval($db->FetchOne($db->Query("SELECT max(list_position)+1
-                                                    FROM $list_table_name
-                                                   WHERE project_id = ?",
-                                                 array($proj->id))));
-        }
-
-        $db->Query("INSERT INTO  $list_table_name
-                                 (project_id, $list_column_name, list_position, show_in_list)
-                         VALUES  (?, ?, ?, ?)",
-                array($proj->id, Post::val('list_name'), $position, '1'));
-
-        $_SESSION['SUCCESS'] = L('listitemadded');
-        break;
-
-    // ##################
-    // updating the version list
-    // ##################
-    case 'update_version_list':
-        if (!$user->perms('manage_project') || !isset($list_table_name)) {
+        if (!$user->perms('manage_project')) {
             break;
         }
 
@@ -917,57 +821,70 @@ switch ($action = Req::val('action'))
         $listid       = Post::val('id');
 
         for($i = 0; $i < count($listname); $i++) {
-            if (is_numeric($listposition[$i])  && $listname[$i] != '') {
-
-                if (!isset($listshow[$id])) {
-                    $listshow[$id] = 0;
+            if ($listname[$i] != '') {
+                $params = array($listname[$i], intval($listposition[$i]), intval(array_get($listshow, $i, 0)), $listid[$i], $proj->id);
+                $version_tense = '';
+                if (is_array($listtense)) {
+                    $version_tense = 'version_tense = ?,';
+                    array_unshift($params, intval($listtense[$i]));
                 }
-                $update = $db->Query("UPDATE  $list_table_name
-                                         SET  $list_column_name = ?, list_position = ?,
-                                              show_in_list = ?, version_tense = ?
-                                       WHERE  $list_id = ? AND project_id = ?",
-                        array($listnames[$id], intval($listposition[$id]),
-                            intval($listshow[$id]), intval($listtense[$id]), $id, $proj->id));
+                
+                $update = $db->Query('UPDATE  {list_items} lb
+                                   LEFT JOIN  {lists} l ON l.list_id = lb.list_id 
+                                         SET  '. $version_tense .' item_name = ?, list_position = ?, show_in_list = ?
+                                       WHERE  list_item_id = ? AND project_id = ?',
+                                      $params);
             } else {
                 Flyspray::show_error(L('fieldsmissing'));
             }
         }
 
         if (is_array($listdelete) && count($listdelete)) {
-            $deleteids = "$list_id = " . join(" OR $list_id =", array_map('intval', array_keys($listdelete)));
-            $db->Query("DELETE FROM $list_table_name WHERE project_id = ? AND ($deleteids)", array($proj->id));
+            $deleteids = 'list_item_id = ' . join(' OR list_item_id =', array_map('intval', array_keys($listdelete)));
+            $db->Query("DELETE lb FROM {list_items} lb
+                     LEFT JOIN {lists} l ON l.list_id = lb.list_id
+                         WHERE project_id = ? AND ($deleteids)",
+                        array($proj->id));
         }
 
         $_SESSION['SUCCESS'] = L('listupdated');
         break;
 
     // ##################
-    // adding a version list item
+    // adding a list item
     // ##################
-    case 'pm.add_to_version_list':
-    case 'admin.add_to_version_list':
-        if (!$user->perms('manage_project') || !isset($list_table_name)) {
+    case 'pm.add_to_list':
+    case 'admin.add_to_list':
+        if (!$user->perms('manage_project')) {
             break;
         }
 
-        if (!Post::val('list_name')) {
+        if (!Post::val('item_name')) {
             Flyspray::show_error(L('fillallfields'));
             break;
         }
 
         $position = Post::num('list_position');
         if (!$position) {
-            $position = $db->FetchOne($db->Query("SELECT max(list_position)+1
-                                                    FROM $list_table_name
-                                                   WHERE project_id = ?",
-                                                 array($proj->id)));
+            $position = intval($db->FetchOne($db->Query("SELECT max(list_position)+1
+                                                           FROM {list_items}
+                                                          WHERE list_id = ?",
+                                                        array(Post::val('list_id')))));
         }
-
-        $db->Query("INSERT INTO  $list_table_name
-                                (project_id, $list_column_name, list_position, show_in_list, version_tense)
-                        VALUES  (?, ?, ?, ?, ?)",
-                 array($proj->id, Post::val('list_name'),
-                     intval($position), '1', Post::val('version_tense')));
+        
+        $cols = array('item_name', 'list_id');
+        if (Post::val('version_tense')) {
+            $cols[] = 'version_tense';
+        }
+        
+        $params = array();
+        $params[] = $position;
+        $params = array_merge($params, array_map('Post_to0', $cols));
+        
+        $db->Query('INSERT INTO  {list_items}
+                                 (list_position,'. implode(',', $cols) .', show_in_list)
+                         VALUES  (?,'. $db->fill_placeholders($cols) .', 1)',
+                    $params);
 
         $_SESSION['SUCCESS'] = L('listitemadded');
         break;
@@ -989,19 +906,20 @@ switch ($action = Req::val('action'))
 
         for ($i = 0; $i < count($listname); $i++) {
             if ($listname[$i] != '') {
-                if (!isset($listshow[$id])) {
-                    $listshow[$id] = 0;
+                if (!isset($listshow[$i])) {
+                    $listshow[$i] = 0;
                 }
-                $update = $db->Query('UPDATE  {list_category}
+                $update = $db->Query('UPDATE  {list_category} lc
+                                   LEFT JOIN  {lists} l ON l.list_id = lc.list_id
                                          SET  category_name = ?,
                                               show_in_list = ?, category_owner = ?,
                                               lft = ?, rgt = ?
                                        WHERE  category_id = ? AND project_id = ?',
                                   array($listname[$i], intval($listshow[$i]), Flyspray::username_to_id(Post::val('category_owner' . $i)), $listlft[$i], $listrgt[$i], $listid[$i], $proj->id));
                 // Correct visibility for sub categories
-                if ($listshow[$id] == 0) {
-                    foreach ($listnames as $key => $value) {
-                        if ($listlft[$key] > $listlft[$id] && $listrgt[$key] < $listrgt[$id]) {
+                if ($listshow[$i] == 0) {
+                    foreach ($listname as $key => $value) {
+                        if ($listlft[$key] > $listlft[$i] && $listrgt[$key] < $listrgt[$i]) {
                             $listshow[$key] = 0;
                         }
                     }
@@ -1013,7 +931,10 @@ switch ($action = Req::val('action'))
 
         if (is_array($listdelete) && count($listdelete)) {
             $deleteids = "$list_id = " . join(" OR $list_id =", array_map('intval', array_keys($listdelete)));
-            $db->Query("DELETE FROM {list_category} WHERE project_id = ? AND ($deleteids)", array($proj->id));
+            $db->Query("DELETE lc FROM {list_category} lc
+                     LEFT JOIN {lists} l ON lc.list_id = l.list_id
+                         WHERE project_id = ? AND ($deleteids)",
+                         array($proj->id));
         }
 
         $_SESSION['SUCCESS'] = L('listupdated');
@@ -1035,15 +956,25 @@ switch ($action = Req::val('action'))
 
         // Get right value of last node
         $right = $db->Query('SELECT rgt FROM {list_category} WHERE category_id = ?', array(Post::val('parent_id', -1)));
-        $right = $db->FetchOne($right);
-        $db->Query('UPDATE {list_category} SET rgt=rgt+2 WHERE rgt >= ? AND project_id = ?', array($right, $proj->id));
-        $db->Query('UPDATE {list_category} SET lft=lft+2 WHERE lft >= ? AND project_id = ?', array($right, $proj->id));
+        $right = intval($db->FetchOne($right));
+
+        $db->Query('UPDATE {list_category} lc
+                 LEFT JOIN {lists} l ON lc.list_id = l.list_id
+                       SET rgt=rgt+2
+                     WHERE rgt >= ? AND project_id = ?',
+                     array($right, $proj->id));
+        $db->Query('UPDATE {list_category} lc
+                 LEFT JOIN {lists} l ON lc.list_id = l.list_id 
+                       SET lft=lft+2
+                     WHERE lft >= ? AND project_id = ?',
+                     array($right, $proj->id));
 
         $db->Query("INSERT INTO  {list_category}
-                                 ( project_id, category_name, show_in_list, category_owner, lft, rgt )
+                                 ( list_id, category_name, show_in_list, category_owner, lft, rgt )
                          VALUES  (?, ?, 1, ?, ?, ?)",
-                array($proj->id, Post::val('list_name'),
+                array(Post::val('list_id'), Post::val('list_name'),
                       Post::val('category_owner', 0) == '' ? '0' : Flyspray::username_to_id(Post::val('category_owner', 0)), $right, $right+1));
+
 
         $_SESSION['SUCCESS'] = L('listitemadded');
         break;
@@ -1595,6 +1526,42 @@ switch ($action = Req::val('action'))
         if ($db->AffectedRows()) {
             $_SESSION['SUCCESS'] = L('noteupdated');
         }
+        break;
+        
+    // ##################
+    // Update lists
+    // ##################
+    case 'update_lists':
+        if (!$user->perms('manage_project')) {
+            break;
+        }
+        
+        $types = Post::val('list_type');
+        $names = Post::val('list_name');
+        $delete = Post::val('delete');
+        
+        foreach (Post::val('id') as $id) {
+            if (isset($delete[$id])) {
+                $db->Query('DELETE FROM {lists} WHERE list_id = ? AND project_id = ?',
+                           array($id, $proj->id));
+                continue;
+            }
+            $db->Query('UPDATE {lists} SET list_name = ?, list_type = ? WHERE list_id = ? AND project_id = ?',
+                        array($names[$id], $types[$id], $id, $proj->id));
+        }
+        break;
+        
+    // ##################
+    // Add a new list
+    // ##################
+    case 'add_list':
+        if (!$user->perms('manage_project')) {
+            break;
+        }
+
+        $db->Query('INSERT INTO {lists} (list_name, list_type, project_id)
+                         VALUES (?, ?, ?)',
+                        array(Post::val('list_name'), Post::val('list_type'), $proj->id));
         break;
 }
 

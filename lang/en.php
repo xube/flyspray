@@ -854,6 +854,11 @@ Regards,',
 'allowanonuserlist'       => 'Allow anonymous users to see userlist',
 'viewuserlist'            => 'View userlist',
 'anonviewtasks'           => 'Allow anonymous users to see tasks',
+'lists'                   => 'Lists',
+'listtype'                => 'List type',
+'basic'                   => 'Basic',
+'versions'                => 'Versions',
+'list'                    => 'List',
 );
 
 ?>

@@ -91,13 +91,13 @@ if (Post::val('upgrade')) {
     foreach ($upgrade_info[$type] as $file) {
         // skip all files which have been executed already
         $hash = md5_file(UPGRADE_PATH . '/' . $file);
-        if (in_array($hash, $done)) {
+        if (isset($done[$file]) && $done[$file] == $hash) {
             continue;
         }
 
         if (substr($file, -4) == '.php') {
             require_once UPGRADE_PATH . '/' . $file;
-            $done[] = $hash;
+            $done[$file] = $hash;
         }
 
         if (substr($file, -4) == '.xml') {
@@ -105,7 +105,7 @@ if (Post::val('upgrade')) {
             $schema->SetPrefix($conf['database']['dbprefix']);
             $schema->ParseSchemaFile(UPGRADE_PATH . '/' . $file);
             if ($schema->ExecuteSchema()) {
-                $done[] = $hash;
+                $done[$file] = $hash;
             }
         }
     }

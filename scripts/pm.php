@@ -16,8 +16,8 @@ if (!$user->perms('manage_project') || !$proj->id) {
     Flyspray::show_error(16);
 }
 
-$areas = array('prefs', 'cat', 'editgroup', 'groups', 'users', 'newgroup',
-               'pendingreq', 'os', 'res', 'status', 'tt', 'user', 'ver');
+$areas = array('prefs', 'editgroup', 'groups', 'users', 'newgroup',
+               'pendingreq', 'lists', 'user', 'list');
 
 switch ($area = Req::enum('area', $areas, 'prefs')) {
     case 'pendingreq':
@@ -104,6 +104,29 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
         $page->uses('user_list');
         $page->uses('user_groups');
         break;
+        
+        case 'lists':
+            $sql = $db->Query('SELECT * FROM {lists}
+                                WHERE project_id = ?
+                             ORDER BY list_type', array($proj->id));
+            $page->assign('lists', $db->FetchAllArray($sql));
+            break;
+
+        case 'list':
+            // Which type of list?
+            $sql = $db->Query('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
+                              array(Req::val('list_id')));
+            $row = $db->fetchRow($sql);
+            $list_type = $row[0];
+            $list_name = $row[1];
+            
+            if ($list_type == 'category') {
+                $area = 'cat';
+            } else {
+                $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));
+            }
+            $page->uses('list_type', 'list_name');
+            break;
 }
 
 $page->setTitle($fs->prefs['page_title'] . L('pmtoolbox'));

@@ -60,24 +60,24 @@ else {
     // Parent categories
     $parent = $db->Query('SELECT  *
                             FROM  {list_category}
-                           WHERE  lft < ? AND rgt > ? AND project_id  = ? AND lft != 1
+                           WHERE  lft < ? AND rgt > ? AND list_id  = ? AND lft != 1
                         ORDER BY  lft ASC',
-                        array($task_details['lft'], $task_details['rgt'], $task_details['cproj']));
+                        array($task_details['lft'], $task_details['rgt'], $task_details['cat_list_id']));
 
     // Check for task dependencies that block closing this task
-    $check_deps   = $db->Query('SELECT  t.*, s.status_name, r.resolution_name, d.depend_id
+    $check_deps   = $db->Query('SELECT  t.*, s.item_name AS status_name, r.item_name AS resolution_name, d.depend_id
                                   FROM  {dependencies} d
                              LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
-                             LEFT JOIN  {list_status} s ON t.item_status = s.status_id 
-                             LEFT JOIN  {list_resolution} r ON t.resolution_reason = r.resolution_id 
+                             LEFT JOIN  {list_items} s ON t.item_status = s.list_item_id 
+                             LEFT JOIN  {list_items} r ON t.resolution_reason = r.list_item_id 
                                  WHERE  d.task_id = ?', array($task_id));
 
     // Check for tasks that this task blocks
-    $check_blocks = $db->Query('SELECT  t.*, s.status_name, r.resolution_name
+    $check_blocks = $db->Query('SELECT  t.*, s.item_name AS status_name, r.item_name AS resolution_name
                                   FROM  {dependencies} d
                              LEFT JOIN  {tasks} t on d.task_id = t.task_id
-                             LEFT JOIN  {list_status} s ON t.item_status = s.status_id
-                             LEFT JOIN  {list_resolution} r ON t.resolution_reason = r.resolution_id 
+                             LEFT JOIN  {list_items} s ON t.item_status = s.list_item_id
+                             LEFT JOIN  {list_items} r ON t.resolution_reason = r.list_item_id 
                                  WHERE  d.dep_task_id = ?', array($task_id));
 
     // Check for pending PM requests
@@ -169,21 +169,21 @@ else {
     $page->assign('comment_attachments', $attachments);
 
     // Relations, notifications and reminders
-    $sql = $db->Query('SELECT  t.*, r.*, s.status_name, res.resolution_name
+    $sql = $db->Query('SELECT  t.*, r.*, s.item_name AS status_name, res.item_name AS resolution_name
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON (r.related_task = t.task_id AND r.this_task = ? OR r.this_task = t.task_id AND r.related_task = ?)
-                    LEFT JOIN  {list_status} s ON t.item_status = s.status_id 
-                    LEFT JOIN  {list_resolution} res ON t.resolution_reason = res.resolution_id 
+                    LEFT JOIN  {list_items} s ON t.item_status = s.list_item_id 
+                    LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id 
                         WHERE  t.task_id is NOT NULL AND is_duplicate = 0 AND ( t.mark_private = 0 OR ? = 1 )
                      ORDER BY  t.task_id ASC',
             array($task_id, $task_id, $user->perms('manage_project')));
     $page->assign('related', $db->fetchAllArray($sql));
 
-    $sql = $db->Query('SELECT  t.*, r.*, s.status_name, res.resolution_name
+    $sql = $db->Query('SELECT  t.*, r.*, s.item_name AS status_name, res.item_name AS resolution_name
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON r.this_task = t.task_id
-                    LEFT JOIN  {list_status} s ON t.item_status = s.status_id 
-                    LEFT JOIN  {list_resolution} res ON t.resolution_reason = res.resolution_id 
+                    LEFT JOIN  {list_items} s ON t.item_status = s.list_item_id 
+                    LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id 
                         WHERE  is_duplicate = 1 AND r.related_task = ?
                      ORDER BY  t.task_id ASC',
                       array($task_id));

@@ -35,7 +35,7 @@
 			 <td><label for="tasktype">{L('tasktype')}</label></td>
 			 <td>
 				<select id="tasktype" name="task_type">
-				 {!tpl_options($proj->listTaskTypes(), Post::val('task_type', $task_details['task_type']))}
+				 {!tpl_options($proj->get_list('tasktype'), Post::val('task_type', $task_details['task_type']))}
 				</select>
 			 </td>
 			</tr>
@@ -51,7 +51,7 @@
 			 <td><label for="status">{L('status')}</label></td>
 			 <td>
 				<select id="status" name="item_status">
-				 {!tpl_options($proj->listTaskStatuses(), Post::val('item_status', $task_details['item_status']))}
+				 {!tpl_options($proj->get_list('status'), Post::val('item_status', $task_details['item_status']))}
 				</select>
 			 </td>
 			</tr>
@@ -78,7 +78,7 @@
 			 <td><label for="os">{L('operatingsystem')}</label></td>
 			 <td>
 				<select id="os" name="operating_system">
-				 {!tpl_options($proj->listOs(), Post::val('operating_system', $task_details['operating_system']))}
+				 {!tpl_options($proj->get_list('os'), Post::val('operating_system', $task_details['operating_system']))}
 				</select>
 			 </td>
 			</tr>
@@ -102,7 +102,7 @@
 			 <td><label for="reportedver">{L('reportedversion')}</label></td>
 			 <td>
 				<select id="reportedver" name="reportedver">
-				{!tpl_options($proj->listVersions(false, 2, $task_details['product_version']), Post::val('reportedver', $task_details['product_version']))}
+				{!tpl_options($proj->listVersions(2, $task_details['product_version']), Post::val('reportedver', $task_details['product_version']))}
 				</select>
 			 </td>
 			</tr>
@@ -111,7 +111,7 @@
 			 <td>
 				<select id="dueversion" name="closedby_version">
 				 <option value="0">{L('undecided')}</option>
-				 {!tpl_options($proj->listVersions(false, 3), Post::val('closedby_version', $task_details['closedby_version']))}
+				 {!tpl_options($proj->listVersions(3), Post::val('closedby_version', $task_details['closedby_version']))}
 				</select>
 			 </td>
 			</tr>

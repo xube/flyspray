@@ -575,12 +575,11 @@ class Backend
             return false;
         }
 
-        $tables = array('list_category', 'list_os', 'list_resolution', 'list_tasktype',
-                        'list_status', 'list_version', 'admin_requests',
+        $tables = array('lists', 'admin_requests',
                         'cache', 'projects', 'tasks');
 
         foreach ($tables as $table) {
-            if ($move_to && $table !== 'projects' && $table !== 'list_category') {
+            if ($move_to && $table !== 'projects') {
                 $action = 'UPDATE ';
                 $sql_params = array($move_to, $pid);
             } else {
@@ -781,8 +780,9 @@ class Backend
         }
         else {
             // check parent categories
-            $result = $db->Query('SELECT  *
-                                    FROM  {list_category}
+            $result = $db->Query('SELECT  lc.*
+                                    FROM  {list_category} lc
+                               LEFT JOIN  {lists} l ON lc.list_id = l.list_id
                                    WHERE  lft < ? AND rgt > ? AND project_id  = ?
                                 ORDER BY  lft DESC',
                                    array($cat_details['lft'], $cat_details['rgt'], $cat_details['project_id']));
@@ -912,9 +912,9 @@ class Backend
         $groupby = '';
         $from   = '             {tasks}         t
                      LEFT JOIN  {projects}      p   ON t.project_id = p.project_id
-                     LEFT JOIN  {list_tasktype} lt  ON t.task_type = lt.tasktype_id
-                     LEFT JOIN  {list_status}   lst ON t.item_status = lst.status_id
-                     LEFT JOIN  {list_resolution} lr ON t.resolution_reason = lr.resolution_id ';
+                     LEFT JOIN  {list_items}  lt  ON t.task_type = lt.list_item_id
+                     LEFT JOIN  {list_items}   lst ON t.item_status = lst.list_item_id
+                     LEFT JOIN  {list_items} lr ON t.resolution_reason = lr.list_item_id ';
         // Only join tables which are really necessary to speed up the db-query
         if (array_get($args, 'cat') || in_array('category', $visible)) {
             $from   .= ' LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id ';
@@ -934,9 +934,9 @@ class Backend
             $select .= ' COUNT(DISTINCT c.comment_id)   AS num_comments, ';
         }
         if (in_array('reportedin', $visible)) {
-            $from   .= ' LEFT JOIN  {list_version} lv   ON t.product_version = lv.version_id ';
-            $select .= ' lv.version_name                AS product_version, ';
-            $groupby .= 'lv.version_name, ';
+            $from   .= ' LEFT JOIN  {list_items} lv   ON t.product_version = lv.list_item_id ';
+            $select .= ' lv.item_name                AS product_version, ';
+            $groupby .= 'lv.item_name, ';
         }
         if (array_get($args, 'opened') || in_array('openedby', $visible)) {
             $from   .= ' LEFT JOIN  {users} uo          ON t.opened_by = uo.user_id ';
@@ -949,14 +949,14 @@ class Backend
             $groupby .= 'uc.real_name, ';
         }
         if (array_get($args, 'due') || in_array('dueversion', $visible)) {
-            $from   .= ' LEFT JOIN  {list_version} lvc  ON t.closedby_version = lvc.version_id ';
-            $select .= ' lvc.version_name               AS closedby_version, ';
-            $groupby .= 'lvc.version_name, ';
+            $from   .= ' LEFT JOIN  {list_items} lvc  ON t.closedby_version = lvc.list_item_id ';
+            $select .= ' lvc.item_name               AS closedby_version, ';
+            $groupby .= 'lvc.item_name, ';
         }
         if (in_array('os', $visible)) {
-            $from   .= ' LEFT JOIN  {list_os} los       ON t.operating_system = los.os_id ';
-            $select .= ' los.os_name                    AS os_name, ';
-            $groupby .= 'los.os_name, ';
+            $from   .= ' LEFT JOIN  {list_items} los       ON t.operating_system = los.list_item_id ';
+            $select .= ' los.list_item_id                    AS os_name, ';
+            $groupby .= 'los.list_item_id, ';
         }
         if (in_array('attachments', $visible) || array_get($args, 'has_attachment')) {
             $from   .= ' LEFT JOIN  {attachments} att   ON t.task_id = att.task_id ';
@@ -1082,8 +1082,9 @@ class Backend
                                           array($val));
                     $cat_details = $db->FetchRow($result);
 
-                    $result = $db->Query('SELECT  *
-                                            FROM  {list_category}
+                    $result = $db->Query('SELECT  lc.*
+                                            FROM  {list_category} lc
+                                       LEFT JOIN {lists} l ON lc.list_id = l.list_id
                                            WHERE  lft > ? AND rgt < ? AND project_id  = ?',
                                            array($cat_details['lft'], $cat_details['rgt'], $cat_details['project_id']));
                     while ($row = $db->FetchRow($result)) {
@@ -1142,16 +1143,16 @@ class Backend
 
         // Get the column names of table tasks for the group by statement
         if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
-             $groupby .= "p.project_title, lst.status_name, lt.tasktype_name,{$order_column[0]},{$order_column[1]}, lr.resolution_name, ";
+             $groupby .= "p.project_title, lst.item_name, lt.item_name,{$order_column[0]},{$order_column[1]}, lr.item_name, ";
         }
         $groupby .= $db->GetColumnNames('{tasks}', 't.task_id', 't.');
 
         $sql = $db->Query("
                           SELECT   t.*, $select
                                    p.project_title,
-                                   lst.status_name AS status_name,
-                                   lt.tasktype_name AS task_type,
-                                   lr.resolution_name
+                                   lst.item_name AS status_name,
+                                   lt.item_name AS task_type,
+                                   lr.item_name AS resolution_name
                           FROM     $from
                           $where
                           GROUP BY $groupby

@@ -16,7 +16,7 @@
           <td><label for="tasktype">{L('tasktype')}</label></td>
           <td>
             <select name="task_type" id="tasktype">
-              {!tpl_options($proj->listTaskTypes(), Req::val('task_type'))}
+              {!tpl_options($proj->get_list('tasktype'), Req::val('task_type'))}
             </select>
           </td>
         </tr>
@@ -33,7 +33,7 @@
           <td><label for="status">{L('status')}</label></td>
           <td>
             <select id="status" name="item_status" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
-              {!tpl_options($proj->listTaskStatuses(), Req::val('item_status', 2))}
+              {!tpl_options($proj->get_list('status'), Req::val('item_status', 2))}
             </select>
           </td>
         </tr>
@@ -53,7 +53,7 @@
           <td><label for="os">{L('operatingsystem')}</label></td>
           <td>
             <select id="os" name="operating_system">
-              {!tpl_options($proj->listOs(), Req::val('operating_system'))}
+              {!tpl_options($proj->get_list('os'), Req::val('operating_system'))}
             </select>
           </td>
         </tr>
@@ -79,7 +79,7 @@
           <td><label for="reportedver">{L('reportedversion')}</label></td>
           <td>
             <select class="adminlist" name="product_version" id="reportedver">
-              {!tpl_options($proj->listVersions(false, 2), Req::val('product_version'))}
+              {!tpl_options($proj->listVersions(2), Req::val('product_version'))}
             </select>
           </td>
         </tr>
@@ -88,7 +88,7 @@
           <td>
             <select id="dueversion" name="closedby_version" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
               <option value="0">{L('undecided')}</option>
-              {!tpl_options($proj->listVersions(false, 3), Req::val('closedby_version'))}
+              {!tpl_options($proj->listVersions(3), Req::val('closedby_version'))}
             </select>
           </td>
         </tr>

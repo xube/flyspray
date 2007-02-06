@@ -61,7 +61,7 @@
         <div class="search_select">
         <label class="default multisel" for="type">{L('tasktype')}</label>
         <select name="type[]" id="type" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('alltasktypes')) + $proj->listTaskTypes(), Get::val('type', ''))}
+          {!tpl_options(array('' => L('alltasktypes')) + $proj->get_list('tasktype'), Get::val('type', ''))}
         </select>
         </div>
 
@@ -82,14 +82,14 @@
         <div class="search_select">
         <label class="default multisel" for="due">{L('dueversion')}</label>
         <select name="due[]" id="due" multiple="multiple" size="5">
-          {!tpl_options(array_merge(array('' => L('dueanyversion'), 0 => L('unassigned')), $proj->listVersions(false)), Get::val('due', ''))}
+          {!tpl_options(array_merge(array('' => L('dueanyversion'), 0 => L('unassigned')), $proj->listVersions()), Get::val('due', ''))}
         </select>
         </div>
 
         <div class="search_select">
         <label class="default multisel" for="reported">{L('reportedversion')}</label>
         <select name="reported[]" id="reported" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('anyversion')) + $proj->listVersions(false), Get::val('reported', ''))}
+          {!tpl_options(array('' => L('anyversion')) + $proj->listVersions(), Get::val('reported', ''))}
         </select>
         </div>
 
@@ -106,7 +106,7 @@
           {!tpl_options(array('' => L('allstatuses')) +
                         array('open' => L('allopentasks')) +
                         array('closed' => L('allclosedtasks')) +
-                        $proj->listTaskStatuses(), Get::val('status', 'open'))}
+                        $proj->get_list('status'), Get::val('status', 'open'))}
         </select>
         </div>
 

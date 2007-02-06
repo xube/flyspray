@@ -323,24 +323,24 @@ class Flyspray
         }
 
         $get_details = $db->Query('SELECT t.*,
-                                          c.category_name, c.category_owner, c.lft, c.rgt, c.project_id as cproj,
-                                          o.os_name,
-                                          r.resolution_name,
-                                          tt.tasktype_name,
-                                          vr.version_name   AS reported_version_name,
-                                          vd.version_name   AS due_in_version_name,
+                                          c.category_name, c.category_owner, c.lft, c.rgt, c.list_id as cat_list_id,
+                                          o.item_name AS os_name,
+                                          r.item_name AS resolution_name,
+                                          tt.item_name AS tasktype_name,
+                                          vr.item_name   AS reported_version_name,
+                                          vd.item_name   AS due_in_version_name,
                                           uo.real_name      AS opened_by_name,
                                           ue.real_name      AS last_edited_by_name,
                                           uc.real_name      AS closed_by_name,
-                                          lst.status_name   AS status_name
+                                          lst.item_name   AS status_name
                                     FROM  {tasks}              t
                                LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
-                               LEFT JOIN  {list_os}            o  ON t.operating_system = o.os_id
-                               LEFT JOIN  {list_resolution}    r  ON t.resolution_reason = r.resolution_id
-                               LEFT JOIN  {list_tasktype}      tt ON t.task_type = tt.tasktype_id
-                               LEFT JOIN  {list_version}       vr ON t.product_version = vr.version_id
-                               LEFT JOIN  {list_version}       vd ON t.closedby_version = vd.version_id
-                               LEFT JOIN  {list_status}       lst ON t.item_status = lst.status_id
+                               LEFT JOIN  {list_items}            o  ON t.operating_system = o.list_item_id
+                               LEFT JOIN  {list_items}    r  ON t.resolution_reason = r.list_item_id
+                               LEFT JOIN  {list_items}      tt ON t.task_type = tt.list_item_id
+                               LEFT JOIN  {list_items}       vr ON t.product_version = vr.list_item_id
+                               LEFT JOIN  {list_items}       vd ON t.closedby_version = vd.list_item_id
+                               LEFT JOIN  {list_items}       lst ON t.item_status = lst.list_item_id
                                LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
                                LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
                                LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id

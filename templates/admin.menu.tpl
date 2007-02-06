@@ -2,11 +2,7 @@
   <a href="{CreateURL('admin', 'prefs')}">{L('preferences')}</a>
   <a href="{CreateURL('admin', 'groups')}">{L('groups')}</a>
   <a href="{CreateURL('admin', 'users')}">{L('users')}</a>
-  <a href="{CreateURL('admin', 'tasktype')}">{L('tasktypes') }</a>
-  <a href="{CreateURL('admin', 'status')}">{L('taskstatuses') }</a>
-  <a href="{CreateURL('admin', 'resolution')}">{L('resolutions') }</a>
-  <a href="{CreateURL('admin', 'cat')}">{L('categories') }</a>
-  <a href="{CreateURL('admin', 'os')}">{L('operatingsystems')}</a>
+  <a href="{CreateURL('admin', 'lists')}">{L('lists')}</a>
   <a href="{CreateURL('admin', 'version')}">{L('versions') }</a>
   <a href="{CreateURL('admin', 'newproject')}">{L('newproject')}</a>
 </div>

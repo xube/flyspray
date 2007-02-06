@@ -60,25 +60,25 @@ $starttime = microtime();
 
 $sql= 'SELECT t1.task_id AS id1, t1.item_summary AS sum1, 
              t1.percent_complete AS pct1, t1.is_closed AS clsd1, 
-             lst1.status_name AS stat1, t1.task_severity AS sev1,
+             lst1.item_name AS stat1, t1.task_severity AS sev1,
              t1.task_priority AS pri1,
              t1.closure_comment AS com1, u1c.real_name AS clsdby1,
-             r1.resolution_name as res1,
+             r1.item_name as res1,
              t2.task_id AS id2, t2.item_summary AS sum2, 
              t2.percent_complete AS pct2, t2.is_closed AS clsd2, 
-             lst2.status_name AS stat2, t2.task_severity AS sev2,
+             lst2.item_name AS stat2, t2.task_severity AS sev2,
              t2.task_priority AS pri2,
              t2.closure_comment AS com2, u2c.real_name AS clsdby2,
-             r2.resolution_name as res2
+             r2.item_name as res2
        FROM  {dependencies} AS d
        JOIN  {tasks} AS t1 ON d.task_id=t1.task_id
   LEFT JOIN  {users} AS u1c ON t1.closed_by=u1c.user_id
-  LEFT JOIN  {list_status} AS lst1 ON t1.item_status = lst1.status_id
-  LEFT JOIN  {list_resolution} AS r1 ON t1.resolution_reason=r1.resolution_id
+  LEFT JOIN  {list_items} AS lst1 ON t1.item_status = lst1.list_item_id
+  LEFT JOIN  {list_items} AS r1 ON t1.resolution_reason=r1.list_item_id
        JOIN  {tasks} AS t2 ON d.dep_task_id=t2.task_id
-  LEFT JOIN  {list_status} AS lst2 ON t2.item_status = lst2.status_id
+  LEFT JOIN  {list_items} AS lst2 ON t2.item_status = lst2.list_item_id
   LEFT JOIN  {users} AS u2c ON t2.closed_by=u2c.user_id
-  LEFT JOIN  {list_resolution} AS r2 ON t2.resolution_reason=r2.resolution_id
+  LEFT JOIN  {list_items} AS r2 ON t2.resolution_reason=r2.list_item_id
       WHERE  t1.project_id= ?
    ORDER BY  d.task_id, d.dep_task_id';
 
