@@ -126,7 +126,7 @@ class Notifications
             // threaded messages
             if (isset($data['task_id'])) {
                 $hostdata = parse_url($GLOBALS['baseurl']);
-                $inreplyto = '<FS' . intval($data['task_id']) . '@' . $hostdata['host']. '>'; 
+                $inreplyto = '<FS' . intval($data['task_id']) . '@' . $hostdata['host']. '>';
                 $swift->addHeaders('In-Reply-To: ' . $inreplyto);
                 $swift->addHeaders('References: ' . $inreplyto);
             }
@@ -142,8 +142,7 @@ class Notifications
 
         if (count($jids)) {
             $jids = array_unique($jids);
-            if (!$fs->prefs['jabber_server'] ||
-                !$fs->prefs['jabber_username'] ||
+            if (!$fs->prefs['jabber_username'] ||
                 !$fs->prefs['jabber_password']) {
                 return false;
             }
@@ -153,10 +152,12 @@ class Notifications
                 $fs->prefs['jabber_port'] = 5222;
             }
 
-            $jabber = new Jabber($fs->prefs['jabber_username'] . '@' . $fs->prefs['jabber_server'],
+            $jabber = new Jabber($fs->prefs['jabber_username'],
                                  $fs->prefs['jabber_password'],
                                  $fs->prefs['jabber_ssl'],
-                                 $fs->prefs['jabber_port']);
+                                 $fs->prefs['jabber_port'],
+                                 $fs->prefs['jabber_server']);
+            $jabber->login();
 
             foreach ($jids as $jid) {
                 $result = $jabber->send_message($jid, $body, $subject, 'normal') && $result;
