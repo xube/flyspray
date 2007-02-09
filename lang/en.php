@@ -859,6 +859,14 @@ Regards,',
 'basic'                   => 'Basic',
 'versions'                => 'Versions',
 'list'                    => 'List',
+'ldapnotsupported'        => 'PHP LDAP extension is not installed. Thus LDAP is not supported and you won\'t see any options for it.',
+'ldapenabled'             => 'LDAP enabled',
+'ldapserver'              => 'LDAP Server',
+'ldapbasedn'              => 'Base DN',
+'ldapuserkey'             => 'User key',
+'ldapuser'                => 'User for connection',
+'ldappassword'            => 'Password for connection',
+'ldap'                    => 'LDAP settings',
 );
 
 ?>

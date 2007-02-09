@@ -82,7 +82,41 @@
             </select>
           </td>
         </tr>
+      <?php if (function_exists('ldap_connect')): ?>
+        <tr>
+        <th colspan="2"><hr />
+            {L('ldap')}
+          </th>
+        </tr>
+        <tr>
+          <td><label for="ldap_enabled">{L('ldapenabled')}</label></td>
+          <td>{!tpl_checkbox('ldap_enabled', $fs->prefs['ldap_enabled'], 'ldap_enabled')}</td>
+        </tr>
+        <tr>
+          <td><label for="ldap_server">{L('ldapserver')}</label></td>
+          <td><input id="ldap_server" name="ldap_server" class="text" type="text" size="40" value="{$fs->prefs['ldap_server']}" /></td>
+        </tr>
+        <tr>
+          <td><label for="ldap_base_dn">{L('ldapbasedn')}</label></td>
+          <td><input id="ldap_base_dn" name="ldap_base_dn" class="text" type="text" size="40" value="{$fs->prefs['ldap_base_dn']}" /></td>
+        </tr>
+        <tr>
+          <td><label for="ldap_userkey">{L('ldapuserkey')}</label></td>
+          <td><input id="ldap_userkey" name="ldap_userkey" class="text" type="text" size="40" value="{$fs->prefs['ldap_userkey']}" /></td>
+        </tr>
+        <tr>
+          <td><label for="ldap_user">{L('ldapuser')}</label></td>
+          <td><input id="ldap_user" name="ldap_user" class="text" type="text" size="40" value="{$fs->prefs['ldap_user']}" /></td>
+        </tr>
+        <tr>
+          <td><label for="ldap_password">{L('ldappassword')}</label></td>
+          <td><input id="ldap_password" name="ldap_password" class="text" type="text" size="40" value="{$fs->prefs['ldap_password']}" /></td>
+        </tr>
       </table>
+      <?php else: ?>
+      </table>
+      <p><em>{L('ldapnotsupported')}</em></p>
+      <?php endif; ?>
     </div>
 
     <div id="notifications" class="tab">

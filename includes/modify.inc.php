@@ -480,7 +480,8 @@ switch ($action = Req::val('action'))
                 'jabber_password', 'anon_group', 'user_notify', 'admin_email', 'send_background',
                 'lang_code', 'spam_proof', 'default_project', 'dateformat', 'jabber_ssl', 'anon_userlist',
                 'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server', 'page_title',
-                'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds');
+                'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds',
+                'ldap_enabled', 'ldap_server', 'ldap_base_dn', 'ldap_userkey', 'ldap_user', 'ldap_password');
         foreach ($settings as $setting) {
             $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
                     array(Post::val($setting, 0), $setting));
@@ -828,9 +829,9 @@ switch ($action = Req::val('action'))
                     $version_tense = 'version_tense = ?,';
                     array_unshift($params, intval($listtense[$i]));
                 }
-                
+
                 $update = $db->Query('UPDATE  {list_items} lb
-                                   LEFT JOIN  {lists} l ON l.list_id = lb.list_id 
+                                   LEFT JOIN  {lists} l ON l.list_id = lb.list_id
                                          SET  '. $version_tense .' item_name = ?, list_position = ?, show_in_list = ?
                                        WHERE  list_item_id = ? AND project_id = ?',
                                       $params);
@@ -871,16 +872,16 @@ switch ($action = Req::val('action'))
                                                           WHERE list_id = ?",
                                                         array(Post::val('list_id')))));
         }
-        
+
         $cols = array('item_name', 'list_id');
         if (Post::val('version_tense')) {
             $cols[] = 'version_tense';
         }
-        
+
         $params = array();
         $params[] = $position;
         $params = array_merge($params, array_map('Post_to0', $cols));
-        
+
         $db->Query('INSERT INTO  {list_items}
                                  (list_position,'. implode(',', $cols) .', show_in_list)
                          VALUES  (?,'. $db->fill_placeholders($cols) .', 1)',
@@ -964,7 +965,7 @@ switch ($action = Req::val('action'))
                      WHERE rgt >= ? AND project_id = ?',
                      array($right, $proj->id));
         $db->Query('UPDATE {list_category} lc
-                 LEFT JOIN {lists} l ON lc.list_id = l.list_id 
+                 LEFT JOIN {lists} l ON lc.list_id = l.list_id
                        SET lft=lft+2
                      WHERE lft >= ? AND project_id = ?',
                      array($right, $proj->id));
@@ -1527,7 +1528,7 @@ switch ($action = Req::val('action'))
             $_SESSION['SUCCESS'] = L('noteupdated');
         }
         break;
-        
+
     // ##################
     // Update lists
     // ##################
@@ -1535,11 +1536,11 @@ switch ($action = Req::val('action'))
         if (!$user->perms('manage_project')) {
             break;
         }
-        
+
         $types = Post::val('list_type');
         $names = Post::val('list_name');
         $delete = Post::val('delete');
-        
+
         foreach (Post::val('id') as $id) {
             if (isset($delete[$id])) {
                 $db->Query('DELETE FROM {lists} WHERE list_id = ? AND project_id = ?',
@@ -1550,7 +1551,7 @@ switch ($action = Req::val('action'))
                         array($names[$id], $types[$id], $id, $proj->id));
         }
         break;
-        
+
     // ##################
     // Add a new list
     // ##################

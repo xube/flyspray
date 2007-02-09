@@ -834,11 +834,14 @@
     </field>
     <field name="dateformat" type="C" size="30">
       <NOTNULL/>
+      <DEFAULT value=""/>
     </field>
     <field name="dateformat_extended" type="C" size="30">
+      <DEFAULT value=""/>
       <NOTNULL/>
     </field>
     <field name="magic_url" type="C" size="40">
+      <DEFAULT value=""/>
       <NOTNULL/>
     </field>
     <field name="tasks_perpage" type="I" size="3">
@@ -854,6 +857,7 @@
       <DEFAULT value="0"/>
     </field>
     <field name="defaultsortcolumn" type="C" size="255">
+      <DEFAULT value=""/>
       <NOTNULL/>
     </field>
     <field name="defaultorder" type="C" size="4">
@@ -861,6 +865,7 @@
       <DEFAULT value="asc"/>
     </field>
     <field name="notify_blacklist" type="C" size="50">
+      <DEFAULT value=""/>
       <NOTNULL/>
     </field>
     <index name="user_name">

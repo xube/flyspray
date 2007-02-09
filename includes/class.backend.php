@@ -469,41 +469,41 @@ class Backend
 
         $varnames = array('iwatch','atome','iopened');
 
-        $toserialize = array('string' => NULL,
+        $toserialize = array('string' => null,
                         'type' => array (''),
                         'sev' => array (''),
                         'due' => array (''),
-                        'dev' => NULL,
+                        'dev' => null,
                         'cat' => array (''),
                         'status' => array ('open'),
-                        'order' => NULL,
-                        'sort' => NULL,
+                        'order' => null,
+                        'sort' => null,
                         'percent' => array (''),
-                        'opened' => NULL,
-                        'search_in_comments' => NULL,
-                        'search_for_all' => NULL,
+                        'opened' => null,
+                        'search_in_comments' => null,
+                        'search_for_all' => null,
                         'reported' => array (''),
-                        'only_primary' => NULL,
-                        'only_watched' => NULL);
+                        'only_primary' => null,
+                        'only_watched' => null);
 
 
-                foreach($varnames as $tmpname) {
+        foreach($varnames as $tmpname) {
 
-                    if($tmpname == 'iwatch') {
+            if($tmpname == 'iwatch') {
 
-                        $tmparr = array('only_watched' => '1');
+                $tmparr = array('only_watched' => '1');
 
-                    } elseif ($tmpname == 'atome') {
+            } elseif ($tmpname == 'atome') {
 
-                        $tmparr = array('dev'=> $uid);
+                $tmparr = array('dev'=> $uid);
 
-                    } elseif($tmpname == 'iopened') {
+            } elseif($tmpname == 'iopened') {
 
-                        $tmparr = array('opened'=> $uid);
-                    }
+                $tmparr = array('opened'=> $uid);
+            }
 
-                    $$tmpname = $tmparr + $toserialize;
-                }
+            $$tmpname = $tmparr + $toserialize;
+        }
 
         // Now give him his default searches
         $db->Query('INSERT INTO {searches} (user_id, name, search_string, time)
@@ -972,10 +972,10 @@ class Backend
 
         if (array_get($args, 'only_primary')) {
             $from   .= ' LEFT JOIN  {dependencies} dep  ON dep.dep_task_id = t.task_id ';
-            $where[] = 'dep.depend_id IS NULL';
+            $where[] = 'dep.depend_id IS null';
         }
         if (array_get($args, 'has_attachment')) {
-            $where[] = 'att.attachment_id IS NOT NULL';
+            $where[] = 'att.attachment_id IS NOT null';
         }
 
         if ($proj->id) {
@@ -1064,7 +1064,7 @@ class Backend
                     $sql_params[] = $val;
                 } elseif (is_array($db_key)) {
                     if ($key == 'dev' && ($val == 'notassigned' || $val == '0' || $val == '-1')) {
-                        $temp .= ' a.user_id is NULL  OR';
+                        $temp .= ' a.user_id is null  OR';
                     } else {
                         if (!is_numeric($val)) $val = '%' . $val . '%';
                         foreach ($db_key as $value) {

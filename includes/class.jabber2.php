@@ -463,16 +463,17 @@ class Jabber
             }
         }
 
+        $pack = md5($this->user . ':' . $data['realm'] . ':' . $this->password);
         if (isset($data['authzid'])) {
-            $a1 = pack('H32', md5($this->user . ':' . $data['realm'] . ':' . $this->password))  . ':' . $data['nonce'] . ':' . $data['cnonce'] . ':' . $data['authzid'];
+            $a1 = pack('H32', $pack)  . sprintf(':%s:%s:%s', $data['nonce'], $data['cnonce'], $data['authzid']);
         } else {
-            $a1 = pack('H32', md5($this->user . ':' . $data['realm'] . ':' . $this->password))  . ':' . $data['nonce'] . ':' . $data['cnonce'];
+            $a1 = pack('H32', $pack)  . sprintf(':%s:%s', $data['nonce'], $data['cnonce']);
         }
 
         // should be: qop = auth
         $a2 = 'AUTHENTICATE:'. $data['digest-uri'];
 
-        return md5(md5($a1) . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . md5($a2));
+        return md5(sprintf('%s:%s:%s:%s:%s:%s', md5($a1), $data['nonce'], $data['nc'], $data['cnonce'], $data['qop'], md5($a2)));
     }
 
     /**
