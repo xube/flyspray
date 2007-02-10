@@ -46,10 +46,10 @@ class Project
     function get_edit_list($list_id)
     {
         global $db;
-        
+
         //Get the column names of list tables for the group by statement
         $groupby = $db->GetColumnNames('{list_items}',  'lb.list_item_id', 'lb.');
-        
+
         $sql = $db->Query('SELECT lb.*, count(t.task_id) AS used_in_tasks
                              FROM {list_items} lb
                         LEFT JOIN {tasks} t ON lb.list_item_id IN (t.item_status, t.resolution_reason, t.operating_system, t.task_type)
@@ -111,7 +111,7 @@ class Project
             $where .= ' OR list_item_id = ?';
             $params[] = $reported_version;
         }
-        
+
         return $db->cached_query('version_' . intval($tense), $this->_list_sql('version', $where), $params);
     }
 
@@ -186,6 +186,21 @@ class Project
     }
 
     // }}}
+
+    function fields($project_id = null)
+    {
+        global $db;
+
+        if (is_null($project_id)) {
+            $project_id = $this->id;
+        }
+
+        $sql = $db->Query('SELECT *
+                             FROM {fields}
+                            WHERE project_id IN (?, ?)',
+                           array($project_id, 0));
+        return $db->FetchAllArray($sql);
+    }
 
     function listAttachments($cid)
     {

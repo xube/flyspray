@@ -498,10 +498,14 @@ function tpl_img($src, $alt)
     return '';
 } // }}}
 // {{{ Text formatting
-$path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_formattext.inc.php';
+//format has been already checked in constants.inc.php
+if(isset($conf['general']['syntax_plugin'])) {
 
-if (is_readable($path_to_plugin)) {
-    include($path_to_plugin);
+    $path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_formattext.inc.php';
+
+    if (is_readable($path_to_plugin)) {
+        include($path_to_plugin);
+    }
 }
 
 class TextFormatter
@@ -576,6 +580,8 @@ function formatDate($timestamp, $extended = false, $default = '')
 {
     global $db, $conf, $user, $fs;
 
+    setlocale(LC_ALL, str_replace('-', '_', L('locale')) . '.utf8');
+
     if (!$timestamp) {
         return $default;
     }
@@ -600,8 +606,8 @@ function formatDate($timestamp, $extended = false, $default = '')
 
     $zone = L('GMT') . (($st == 0) ? ' ' : (($st > 0) ? '+' . $st : $st));
     $dateformat = str_replace('%GMT', $zone, $dateformat);
-
-    return utf8_encode(strftime($dateformat, $timestamp));
+    //it returned utf-8 encoded by the system
+    return strftime(Filters::noXSS($dateformat), (int) $timestamp);
 } /// }}}
 // {{{ Draw permissions table
 function tpl_draw_perms($perms)
@@ -617,8 +623,8 @@ function tpl_draw_perms($perms)
             'add_votes', 'edit_own_comments');
 
     $yesno = array(
-            '<td class="bad">No</td>',
-            '<td class="good">Yes</td>');
+            '<td class="bad">' . eL('no') . '</td>',
+            '<td class="good">' . eL('yes') . '</td>');
 
     // FIXME: html belongs in a template, not in the template class
     $html = '<table border="1" onmouseover="perms.hide()" onmouseout="perms.hide()">';

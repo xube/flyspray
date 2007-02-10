@@ -9,6 +9,7 @@
     <meta http-equiv="Content-Style-Type" content="text/css" />
 
     <link rel="icon" type="image/png" href="{$this->get_image('favicon')}" />
+    <link rel="index" id="indexlink" type="text/html" href="{$baseurl}" />
     <?php foreach ($fs->projects as $project): ?>
     <link rel="section" type="text/html" href="{$baseurl}?project={$project[0]}" />
     <?php endforeach; ?>

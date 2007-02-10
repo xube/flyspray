@@ -15,7 +15,7 @@ if (!$user->can_view_project($proj->id)) {
 }
 
 $perpage = '20';
-if (@$user->infos['tasks_perpage'] > 0) {
+if (isset($user->infos['tasks_perpage']) && $user->infos['tasks_perpage'] > 0) {
     $perpage = $user->infos['tasks_perpage'];
 }
 
@@ -38,7 +38,7 @@ $_SESSION['tasklist'] = $id_list;
 $page->assign('total', count($id_list));
 
 // }}}
-// tpl function that draws a cell {{{
+// tpl function that  draws a cell {{{
 
 function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
     global $fs, $proj, $page;
@@ -101,7 +101,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
         case 'status':
             if ($task['is_closed']) {
-                $value = L('closed');
+                $value = eL('closed');
             } else {
                 $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
             }
@@ -136,7 +136,7 @@ if (Get::val('toggleadvanced')) {
     $_COOKIE['advancedsearch'] = $advanced_search;
 }
 
-// Update check {{{
+// Update check {{{ 
 if(Get::has('hideupdatemsg')) {
     unset($_SESSION['latest_version']);
 } else if ($conf['general']['update_check'] && $user->perms('is_admin')

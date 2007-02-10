@@ -464,18 +464,8 @@ class Flyspray
      */
     function listLangs()
     {
-        $lang_array = array();
-        if ($handle = dir(BASEDIR . '/lang')) {
-            while (false !== ($file = $handle->read())) {
-                if ($file{0} != '.') {
-                    $lang_array[] = str_replace('.php', '', $file);
-                }
-            }
-            $handle->close();
-        }
+        return str_replace('.php', '', array_map('basename', glob(BASEDIR ."/lang/*.php")));
 
-        sort($lang_array);
-        return $lang_array;
     } // }}}
     // Log events to the history table {{{
     /**
@@ -943,7 +933,7 @@ class Flyspray
     {
         include_once dirname(__FILE__) . '/external/Validate.php';
 
-        return is_string($email) && Validate::email($email, array('use_rfc822'=>true));
+        return is_string($email) && Validate::email($email);
     }
 
     /**

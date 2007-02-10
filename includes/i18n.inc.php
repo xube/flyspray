@@ -37,8 +37,14 @@ function load_translations()
 {
     global $proj, $language;
     // Load translations
+    // if no valid lang_code, return english
+    // valid == a-z and "_" case insensitive
+    if(!preg_match('/^[a-z_]+$/iD', $proj->prefs['lang_code'])) {
+        return;
+    }
+
     $translation = BASEDIR . "/lang/{$proj->prefs['lang_code']}.php";
-    if ($proj->prefs['lang_code'] != 'en' && is_file($translation)) {
+    if ($proj->prefs['lang_code'] != 'en' && is_readable($translation)) {
         include_once($translation);
         $language = array_merge($language, $translation);
     }
