@@ -110,7 +110,15 @@ class Notifications
             // first choose method
             if ($fs->prefs['smtp_server']) {
                 include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/SMTP.php';
-                $swift = new Swift(new Swift_Connection_SMTP($fs->prefs['smtp_server']));
+                // connection... SSL, TLS or none
+                if ($fs->prefs['email_ssl']) {
+                    $connection = new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SECURE_PORT, SWIFT_SSL);
+                } else if ($fs->prefs['email_tls']) {
+                    $connection = new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SECURE_PORT, SWIFT_TLS);
+                } else {
+                    $connection = new Swift_Connection_SMTP($fs->prefs['smtp_server']);
+                }
+                $swift = new Swift($connection);
                 if ($fs->prefs['smtp_user']) {
                     $swift->authenticate($fs->prefs['smtp_user'], $fs->prefs['smtp_pass']);
                 }

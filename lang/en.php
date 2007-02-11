@@ -867,6 +867,8 @@ Regards,',
 'ldapuser'                => 'User for connection',
 'ldappassword'            => 'Password for connection',
 'ldap'                    => 'LDAP settings',
+'jabbernotsupported'      => 'XML extension not available in PHP, so Jabber is not supported.',
+'tls'                     => 'TLS',
 );
 
 ?>

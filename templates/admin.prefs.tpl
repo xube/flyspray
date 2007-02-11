@@ -150,6 +150,10 @@
           <td><label for="smtpserv">{L('smtpserver')}</label></td>
           <td>
             <input id="smtpserv" name="smtp_server" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_server']}" />
+            <?php if (!extension_loaded('openssl')) : ?>
+            {!tpl_checkbox('email_ssl', $fs->prefs['email_ssl'], 'email_ssl')} <label class="inline" for="email_ssl">{L('ssl')}</label>
+            {!tpl_checkbox('email_tls', $fs->prefs['email_tls'], 'email_tls')} <label class="inline" for="email_tls">{L('tls')}</label>
+            <?php endif; ?>
           </td>
         </tr>
         <tr>
@@ -164,6 +168,7 @@
             <input id="smtppass" name="smtp_pass" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_pass']}" />
           </td>
         </tr>
+        <?php if (extension_loaded('xml')) : ?>
         <tr>
           <th colspan="2"><hr />
             {L('jabbernotify')}
@@ -173,7 +178,7 @@
           <td><label for="jabberserver">{L('jabberserver')}</label></td>
           <td>
             <input id="jabberserver" class="text" type="text" name="jabber_server" size="25" maxlength="100" value="{$fs->prefs['jabber_server']}" />
-		<?php if(extension_loaded('openssl')) : ?>
+		<?php if (extension_loaded('openssl')) : ?>
             {!tpl_checkbox('jabber_ssl', $fs->prefs['jabber_ssl'], 'jabber_ssl')} <label class="inline" for="jabber_ssl">{L('ssl')}</label>
         <?php endif; ?>
 		</td>
@@ -196,6 +201,9 @@
             <input id="jabberpassword" name="jabber_password" class="password" type="password" size="40" maxlength="100" value="{$fs->prefs['jabber_password']}" />
           </td>
         </tr>
+        <?php else: ?>
+        <tr><td><em>{L('jabbernotsupported')}</em></td></tr>
+        <?php endif; ?>
       </table>
     </div>
 

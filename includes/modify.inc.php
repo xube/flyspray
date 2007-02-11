@@ -480,7 +480,7 @@ switch ($action = Req::val('action'))
                 'jabber_password', 'anon_group', 'user_notify', 'admin_email', 'send_background',
                 'lang_code', 'spam_proof', 'default_project', 'dateformat', 'jabber_ssl', 'anon_userlist',
                 'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server', 'page_title',
-                'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds',
+                'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds', 'email_ssl', 'email_tls',
                 'ldap_enabled', 'ldap_server', 'ldap_base_dn', 'ldap_userkey', 'ldap_user', 'ldap_password');
         foreach ($settings as $setting) {
             $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
