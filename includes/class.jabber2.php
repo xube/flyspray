@@ -89,7 +89,7 @@ class Jabber
         if (function_exists("dns_get_record")) {
             $record = dns_get_record("_xmpp-client._tcp.$server", DNS_SRV);
             if (!empty($record)) {
-                $server = $record[0]["target"];
+                $server = $record[0]['target'];
             }
         } else {
             $this->log('Warning: dns_get_record function not found. gtalk will not work.');
@@ -138,10 +138,9 @@ class Jabber
             $read = trim(fread($this->connection, 4096));
             $data .= $read;
         } while (time() <= $start + $timeout && ($data == '' || $read != ''
-                                                 || (strlen($data) && $data[strlen($data) - 1] != '>')));
+                                                 || (substr(rtrim($data), -1) != '>')));
 
         if ($data != '') {
-            // do a response
             $this->log('RECV: '. $data);
             return Jabber::xmlize($data);
         } else {
@@ -265,7 +264,7 @@ class Jabber
         switch (key($xml)) {
             case 'stream:stream':
                 // Connection initialised (or after authentication). Not much to do here...
-                $this->session['id'] = $xml["stream:stream"][0]['@']['id'];
+                $this->session['id'] = $xml['stream:stream'][0]['@']['id'];
                 if (isset($xml['stream:stream'][0]['#']['stream:features'])) {
                     // we already got all info we need
                     $this->features = $xml['stream:stream'][0]['#'];
@@ -474,14 +473,19 @@ class Jabber
         }
     }
 
-    function send_message($to, $text, $subject = '', $type = 'normal') {
+    function send_message($to, $text, $subject = '', $type = 'normal')
+    {
         if (!isset($this->session['jid'])) {
             return false;
         }
 
+        if (!in_array($type, array('chat', 'normal', 'error', 'groupchat', 'headline'))) {
+            $type = 'normal';
+        }
+
         return $this->send("<message from='" . Jabber::jspecialchars($this->session['jid']) . "'
                                      to='" . Jabber::jspecialchars($to) . "'
-                                     type='" . Jabber::jspecialchars($type) . "'
+                                     type='$type'
                                      id='" . uniqid('msg') . "'>
                               <subject>" . Jabber::jspecialchars($subject) . "</subject>
                               <body>" . Jabber::jspecialchars($text) . "</body>
