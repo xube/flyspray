@@ -141,7 +141,7 @@ switch ($action = Req::val('action'))
                     $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
                 }
                 if(count($new_assignees)) {
-                    $notify->Create(NOTIFY_NEW_ASSIGNEE, $task['task_id'], null, $notify->SpecificAddresses($new_assignees));
+                    Notifications::send($new_assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, $task['task_id']);
                 }
             }
         }
@@ -1273,7 +1273,7 @@ switch ($action = Req::val('action'))
         $pms = $db->fetchCol($sql);
         if (count($pms)) {
             // Call the functions to create the address arrays, and send notifications
-            $notify->Create(NOTIFY_PM_REQUEST, $task['task_id'], null, $notify->SpecificAddresses($pms));
+            Notifications::send($pms, ADDRESS_USER, NOTIFY_PM_REQUEST, $task['task_id']);
         }
 
         $_SESSION['SUCCESS'] = L('adminrequestmade');
@@ -1406,7 +1406,7 @@ switch ($action = Req::val('action'))
                 array($magic_url, $user_details['user_id']));
 
         if(count($user_details)) {
-            $notify->Create(NOTIFY_PW_CHANGE, null, array($baseurl, $magic_url), $notify->SpecificAddresses(array($user_details['user_id']), true));
+            Notifications::send($user_details['user_id'], ADDRESS_USER, NOTIFY_PW_CHANGE, array($baseurl, $magic_url));
         }
 
         $_SESSION['SUCCESS'] = L('magicurlsent');
