@@ -22,7 +22,7 @@ $proj = new Project(0);
 $page->pushTpl('admin.menu.tpl');
 
 $areas = array('prefs', 'editgroup', 'groups', 'users', 'newgroup',
-               'newproject', 'newuser', 'lists', 'user', 'list');
+               'newproject', 'newuser', 'lists', 'user', 'list', 'system');
 
 switch ($area = Req::enum('area', $areas, 'prefs')) {
     case 'editgroup':
@@ -118,14 +118,14 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
         $page->uses('user_list');
         $page->uses('user_groups');
         break;
-        
+
         case 'lists':
             $sql = $db->Query('SELECT * FROM {lists}
                                 WHERE project_id = 0
                              ORDER BY list_type');
             $page->assign('lists', $db->FetchAllArray($sql));
             break;
-        
+
         case 'list':
             // Which type of list?
             $sql = $db->Query('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
@@ -133,13 +133,19 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
             $row = $db->fetchRow($sql);
             $list_type = $row[0];
             $list_name = $row[1];
-            
+
             if ($list_type == 'category') {
                 $area = 'cat';
             } else {
                 $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));
             }
             $page->uses('list_type', 'list_name');
+            break;
+
+        case 'system':
+            $sql = $db->Query('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('fs_ver'));
+
+            $page->assign('db_version', $db->FetchOne($sql));
             break;
 }
 

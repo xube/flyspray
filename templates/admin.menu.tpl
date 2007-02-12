@@ -4,4 +4,5 @@
   <a href="{CreateURL('admin', 'users')}">{L('users')}</a>
   <a href="{CreateURL('admin', 'lists')}">{L('lists')}</a>
   <a href="{CreateURL('admin', 'newproject')}">{L('newproject')}</a>
+  <a href="{CreateURL('admin', 'system')}">{L('system')}</a>
 </div>
