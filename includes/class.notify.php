@@ -112,40 +112,52 @@ class Notifications
                 include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/SMTP.php';
                 // connection... SSL, TLS or none
                 if ($fs->prefs['email_ssl']) {
-                    $connection = new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SECURE_PORT, SWIFT_SSL);
+                    $connection =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_SSL);
                 } else if ($fs->prefs['email_tls']) {
-                    $connection = new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SECURE_PORT, SWIFT_TLS);
+                    $connection =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_TLS);
                 } else {
-                    $connection = new Swift_Connection_SMTP($fs->prefs['smtp_server']);
+                    $connection =& new Swift_Connection_SMTP($fs->prefs['smtp_server']);
                 }
-                $swift = new Swift($connection);
                 if ($fs->prefs['smtp_user']) {
-                    $swift->authenticate($fs->prefs['smtp_user'], $fs->prefs['smtp_pass']);
+                    $connection->setUsername($fs->prefs['smtp_user']);  
+                    $connection->setPassword($fs->prefs['smtp_pass']);
                 }
+                $swift =& new Swift($connection);
+                $swift->log->enable();
             } else {
                 include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/NativeMail.php';
-                $swift = new Swift(new Swift_Connection_NativeMail);
+                $swift =& new Swift(new Swift_Connection_NativeMail);
             }
+            
+            $message =& new Swift_Message($subject, $body);
             // check for reply-to
             if (isset($data['project']) && $data['project']['notify_reply']) {
-                $swift->setReplyTo($data['project']['notify_reply']);
+                $message->setReplyTo($data['project']['notify_reply']);
             }
 
             // threaded messages
             if (isset($data['task_id'])) {
                 $hostdata = parse_url($GLOBALS['baseurl']);
                 $inreplyto = '<FS' . intval($data['task_id']) . '@' . $hostdata['host']. '>';
-                $swift->addHeaders('In-Reply-To: ' . $inreplyto);
-                $swift->addHeaders('References: ' . $inreplyto);
+                $message->headers->set('In-Reply-To', $inreplyto);
+                $message->headers->set('References', $inreplyto);
             }
 
-            $swift->setCharset('utf-8');
-            $swift->addHeaders("Precedence: list");
+            $message->headers->setCharset('utf-8');
+            $message->headers->set('Precedence', 'list');
 
+            $recipients =& new Swift_RecipientList();
+
+            foreach($emails as $email) {
+                $recipients->addTo($email);
+            }
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
-            $result = $swift->send($emails, $fs->prefs['admin_email'], $subject, $body) && $result;
-            $swift->close();
+            $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
+            //echo "<pre>";
+            //$swift->log->dump();
+            //echo "</pre>";
+            $swift->disconnect();
         }
 
         if (count($jids)) {

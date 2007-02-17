@@ -1,48 +1,34 @@
-Swift Mailer is a basic PHP Mailer class intended to do nothing
-more than handle sending emails from PHP scripts.
+Swift Mailer is an advanced Mailing Library for PHP.
 
-Please refer to the LICENSE file before copying this class
-or modifying it (it basically says you can do what you want
-with it).
+At each release two versions are packaged up.  One is for PHP5 and the other for PHP4.
+Make sure you have downloaded the correct version.
 
-The Swift Mailer library can handle
-pretty much everything you'd want when sending emails.
+For installation instructions take a look at the INSTALL file.  If you have used version 2
+of Swift Mailer in the past you should note that these instructions have since been changed.
 
- * Attachments
- * Multipart Messaging
- * Basic, single part messaging
- * Custom Headers
- * Encoding
- * Inline images
- * Embedded files
- * Redundant connections
- * Rotating connections
- * Silent recipient denied handling
- * TLS Encryption
- * Bcc Sending
- * Batch Mailing
- * Custom SMTP commands
- * SSL Connections
- * Pluggable SMTP Authentication
- * Plugin Support with event handling features
+    <Cheeky>
+    An enormous amount of time and effort has been devoted to the development of this release
+    for public use.  Swift is released free of charge but if you feel that this library is worth
+    it and has helped you in any way you may wish to consider giving a donation by PayPal:
+    
+    PayPal to: chris@w3style.co.uk
+    
+    Donations help to contribute towards my hosting costs and anything on-top is just a bonus
+    which makes me feel all warm and fuzzy inside ;)
+    </Cheeky>
 
-This library does NOT require the use of the mail() function
-which is blocked by many shared hosts.  Instead, it makes
-use of fsockopen() to establish a connection with an SMTP -
-server.  This connection can be used to perform as many
-tasks as required when when sending emails.
+For those who are familiar with version 2 you should take a look at the CHANGES file since
+version 3 is a complete re-write of version 2 and implements a completely new API.  For the
+most part EasySwift provides a wrapper which gives the API of version 2.
 
-The functionality built in to the class should comply with
-RFC 2821, and RFC 2554 which you can find under the docs/
-directory.
+Because I moderate at http://forums.devnetwork.net/ I am lucky enough to have a forum just for
+Swift Mailer.  If you have any queries then feel free to either drop me and email or ask on the
+forum: http://forums.devnetwork.net/viewforum.php?f=52
 
-For some examples of using Swift Mailer refer to the snippets at
-docs/examples/.
+I hope you like this fresh new release of Swift Mailer!
 
-You should refer to the online documentation to be sure you're
-reading the most up-to-date stuff: http://swiftmailer.org/documentation/
+Chris Corbyn <chris@w3style.co.uk>
 
-For bugs and support (limited) please contact the author
-
-"Chris Corbyn" <chris@w3style.co.uk>
-
+Oh, and by the way if anybody knows of any (Senior) PHP Developer positions available in the
+North of the UK, or near Melbourne, Australia (pertaining to my being able to get a work permit for
+Australia that is) drop me an email at the address above.  I'm looking :)
