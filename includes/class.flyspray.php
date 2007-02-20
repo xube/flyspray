@@ -52,13 +52,6 @@ class Flyspray
      */
     var $severities = array();
 
-    /**
-     * List of priorities. Loaded in i18n.inc.php
-     * @access public
-     * @var array
-     */
-    var $priorities = array();
-
     // Application-wide preferences {{{
     /**
      * Constructor, starts session, loads settings

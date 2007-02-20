@@ -663,8 +663,16 @@ class Backend
             return 0;
         }
 
+        // check required fields
         if (!(($item_summary = $args['item_summary']) && ($detailed_desc = $args['detailed_desc']))) {
             return 0;
+        }
+
+        foreach ($proj->fields as $field) {
+            if ($field['value_required'] && !array_get($args, 'field' . $field['field_id'])) {
+                Flyspray::show_error(L('missingrequired'));
+                return 0;
+            }
         }
 
         $sql_values = array(time(), time(), $args['project_id'], $item_summary,

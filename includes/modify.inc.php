@@ -45,9 +45,6 @@ switch ($action = Req::val('action'))
             } else {
                 Flyspray::Redirect(CreateURL('details', $task_id));
             }
-        } else {
-            Flyspray::show_error(L('databasemodfailed'));
-            break;
         }
         break;
 
@@ -59,9 +56,17 @@ switch ($action = Req::val('action'))
             break;
         }
 
+        // check missing fields
         if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
             Flyspray::show_error(L('summaryanddetails'));
             break;
+        }
+
+        foreach ($proj->fields as $field) {
+            if ($field['value_required'] && !Post::val('field' . $field['field_id'])) {
+                Flyspray::show_error(L('missingrequired'));
+                break 2;
+            }
         }
 
         $time = time();
@@ -489,7 +494,7 @@ switch ($action = Req::val('action'))
 
         $viscols =    $fs->prefs['visible_columns']
                     ? $fs->prefs['visible_columns']
-                    : 'id tasktype severity summary status dueversion progress';
+                    : 'id severity summary progress';
 
 
         $db->Query('INSERT INTO  {projects}

@@ -105,6 +105,9 @@ if (!$db->CountRows($sql)) {
             }
         }
     }
+    // Clean columns
+    $db->Query('UPDATE {projects} SET visible_columns = ?', array('id severity summary progress'));
+    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array('id severity summary progress', 'visible_columns'));
 }
 
 // Try to guess resolution list

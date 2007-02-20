@@ -189,9 +189,7 @@ foreach ($node_list as $n => $r) {
       ($r['clsd'] ? L('closed') . ": $r[res]".
        (!empty($r['clsdby']) ? " ($r[clsdby])" : "").
        ($r['com']!='' ? " - $r[com]" : "")
-       : $fs->severities[$r['sev']]. L('severity') . "/".
-       $fs->priorities[$r['pri']]. L('priority') . " - ".
-       L('status') . ": ".$r['status_name']);
+       : $fs->severities[$r['sev']]. L('severity');
     $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
         ($r['clsd'] ? 'color=black,' : '') .
         ($r['clsd'] ? 'fillcolor=white,' : "fillcolor=\"$col\",") .
