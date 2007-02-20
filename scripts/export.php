@@ -20,25 +20,17 @@ function tpl_csv_cell($task, $colname) {
     $indexes = array (
             'id'         => 'task_id',
             'project'    => 'project_title',
-            'tasktype'   => 'task_type',
-            'category'   => 'category_name',
             'severity'   => '',
-            'priority'   => '',
             'summary'    => 'item_summary',
             'dateopened' => 'date_opened',
-            'status'     => 'status_name',
             'openedby'   => 'opened_by_name',
             'assignedto' => 'assigned_to_name',
             'lastedit'   => 'event_date',
-            'reportedin' => 'product_version',
-            'dueversion' => 'closedby_version',
-            'duedate'    => 'due_date',
             'comments'   => 'num_comments',
             'votes'      => 'num_votes',
             'attachments'=> 'num_attachments',
             'dateclosed' => 'date_closed',
             'progress'   => '',
-            'os'         => 'os_name',
     );
 
     switch ($colname) {
@@ -53,23 +45,10 @@ function tpl_csv_cell($task, $colname) {
             $value = $fs->severities[$task['task_severity']];
             break;
 
-        case 'priority':
-            $value = $fs->priorities[$task['task_priority']];
-            break;
-
-        case 'duedate':
         case 'dateopened':
         case 'dateclosed':
         case 'lastedit':
             $value = formatDate($task[$indexes[$colname]]);
-            break;
-
-        case 'status':
-            if ($task['is_closed']) {
-                $value = L('closed');
-            } else {
-                $value = $task[$indexes[$colname]];
-            }
             break;
 
         case 'progress':
@@ -82,9 +61,13 @@ function tpl_csv_cell($task, $colname) {
                 $value .= ', +' . ($task['num_assigned'] - 1);
             }
             break;
-            
+
         default:
-            $value = $task[$indexes[$colname]];
+            if (isset($indexes[$colname])) {
+                $value = $task[$indexes[$colname]];
+            } else {
+                $value = $task[$colname . '_name'];
+            }
             break;
     }
 

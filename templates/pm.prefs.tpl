@@ -85,6 +85,14 @@
           <td><label for="auto_assign">{L('autoassign')}</label></td>
           <td>{!tpl_checkbox('auto_assign', Post::val('auto_assign', $proj->prefs['auto_assign']), 'auto_assign')}</td>
         </tr>
+        <tr>
+          <td><label for="roadmap_field">{L('roadmapfield')}</label></td>
+          <td>
+            <select name="roadmap_field">
+            {!tpl_options(array_filter($proj->fields, create_function('$x', 'return ($x["list_type"] == LIST_VERSION);')), Post::val('roadmap_field', $proj->prefs['roadmap_field']))}
+            </select>
+          </td>
+        </tr>
       </table>
     </div>
 
@@ -112,7 +120,7 @@
             <?php // Set the selectable column names
             $selectedcolumns = explode(' ', Post::val('visible_columns', $proj->prefs['visible_columns']));
             ?>
-            {!tpl_double_select('visible_columns', $fs->columnnames, $selectedcolumns, true)}
+            {!tpl_double_select('visible_columns', $proj->columns, $selectedcolumns)}
           </td>
         </tr>
       </table>

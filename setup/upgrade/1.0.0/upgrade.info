@@ -1,6 +1,7 @@
 [defaultupgrade]
 0="clean_db.php"
 1="upgrade_lists.xml"
+2="upgrade_fields.xml"
 2="upgrade_lists.php"
 3="flyspray-final.xml"
 4="add_data.php"
@@ -48,3 +49,4 @@ ldap_user=""
 ldap_password=""
 email_ssl="0"
 email_tls="0"
+resolution_list="0"

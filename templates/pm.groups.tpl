@@ -1,5 +1,5 @@
 <div id="toolbox">
-  <h3>{L('admintoolboxlong')} :: {L('usersandgroups')}</h3>
+  <h3>{L('pmtoolbox')} :: {L('usersandgroups')}</h3>
   <fieldset class="box">
     <legend>{L('usersandgroups')}</legend>
     <form action="{$_SERVER['SCRIPT_NAME']}" method="post">

@@ -21,7 +21,7 @@ $proj = new Project(0);
 
 $page->pushTpl('admin.menu.tpl');
 
-$areas = array('prefs', 'editgroup', 'groups', 'users', 'newgroup',
+$areas = array('prefs', 'editgroup', 'groups', 'users', 'newgroup', 'fields',
                'newproject', 'newuser', 'lists', 'user', 'list', 'system');
 
 switch ($area = Req::enum('area', $areas, 'prefs')) {
@@ -119,10 +119,23 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
         $page->uses('user_groups');
         break;
 
+        case 'prefs':
+            $sql = $db->Query('SELECT * FROM {lists}
+                                WHERE project_id = 0
+                             ORDER BY list_type, list_name');
+            $page->assign('lists', $db->FetchAllArray($sql));
+            break;
+
+        case 'fields':
+            $sql = $db->Query('SELECT * FROM {lists}
+                             ORDER BY project_id, list_type, list_name');
+            $page->assign('lists', $db->FetchAllArray($sql));
+            break;
+
         case 'lists':
             $sql = $db->Query('SELECT * FROM {lists}
                                 WHERE project_id = 0
-                             ORDER BY list_type');
+                             ORDER BY list_type, list_name');
             $page->assign('lists', $db->FetchAllArray($sql));
             break;
 
@@ -134,7 +147,7 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
             $list_type = $row[0];
             $list_name = $row[1];
 
-            if ($list_type == 'category') {
+            if ($list_type == LIST_CATEGORY) {
                 $area = 'cat';
             } else {
                 $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));

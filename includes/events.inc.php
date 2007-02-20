@@ -9,38 +9,26 @@ function get_events($task_id, $where = '', $sort = 'ASC')
     global $db;
     $sort = Filters::enum($sort, array('ASC', 'DESC'));
     return $db->Query("SELECT h.*,
-                      tt1.item_name AS task_type1,
-                      tt2.item_name AS task_type2,
-                      los1.item_name AS operating_system1,
-                      los2.item_name AS operating_system2,
-                      lc1.category_name AS product_category1,
-                      lc2.category_name AS product_category2,
                       p1.project_title AS project_id1,
                       p2.project_title AS project_id2,
-                      lv1.item_name AS product_version1,
-                      lv2.item_name AS product_version2,
-                      ls1.item_name AS item_status1,
-                      ls2.item_name AS item_status2,
                       lr.item_name AS resolution_name,
                       c.date_added AS c_date_added,
                       c.user_id AS c_user_id,
-                      att.orig_name, att.file_desc
+                      att.orig_name, att.file_desc,
+                      lfn.item_name AS new_value_l,
+                      lfn.item_name AS old_value_l,
+                      lcfn.category_name AS new_value_c,
+                      lcfn.category_name AS old_value_c,
+                      f.field_name
 
                 FROM  {history} h
 
-            LEFT JOIN {list_items} tt1 ON tt1.list_item_id = h.old_value AND h.field_changed='task_type'
-            LEFT JOIN {list_items} tt2 ON tt2.list_item_id = h.new_value AND h.field_changed='task_type'
-
-            LEFT JOIN {list_items} los1 ON los1.list_item_id = h.old_value AND h.field_changed='operating_system'
-            LEFT JOIN {list_items} los2 ON los2.list_item_id = h.new_value AND h.field_changed='operating_system'
-
-            LEFT JOIN {list_category} lc1 ON lc1.category_id = h.old_value AND h.field_changed='product_category'
-            LEFT JOIN {list_category} lc2 ON lc2.category_id = h.new_value AND h.field_changed='product_category'
-
-            LEFT JOIN {list_items} ls1 ON ls1.list_item_id = h.old_value AND h.field_changed='item_status'
-            LEFT JOIN {list_items} ls2 ON ls2.list_item_id = h.new_value AND h.field_changed='item_status'
-
             LEFT JOIN {list_items} lr ON lr.list_item_id = h.new_value AND h.event_type = 2
+            LEFT JOIN {list_items} lfn ON lfn.list_item_id = h.new_value AND h.event_type = 3
+            LEFT JOIN {list_items} lfo ON lfo.list_item_id = h.old_value AND h.event_type = 3
+            LEFT JOIN {list_category} lcfn ON lcfn.category_id = h.new_value AND h.event_type = 3
+            LEFT JOIN {list_category} lcfo ON lcfo.category_id = h.old_value AND h.event_type = 3
+            LEFT JOIN {fields} f ON f.field_id = h.field_changed AND h.event_type = 3
 
             LEFT JOIN {projects} p1 ON p1.project_id = h.old_value AND h.field_changed='project_id'
             LEFT JOIN {projects} p2 ON p2.project_id = h.new_value AND h.field_changed='project_id'
@@ -49,27 +37,20 @@ function get_events($task_id, $where = '', $sort = 'ASC')
 
             LEFT JOIN {attachments} att ON att.attachment_id = h.new_value AND h.event_type = 7
 
-            LEFT JOIN {list_items} lv1 ON lv1.list_item_id = h.old_value
-                      AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
-            LEFT JOIN {list_items} lv2 ON lv2.list_item_id = h.new_value
-                      AND (h.field_changed='product_version' OR h.field_changed='closedby_version')
-
                 WHERE h.task_id = ? $where
              ORDER BY event_date $sort, event_type ASC", array($task_id));
 }
 
 /**
- * XXX: A mess,remove my in 1.0 
+ * XXX: A mess,remove my in 1.0
  */
 function event_description($history) {
     $return = '';
     global $fs, $baseurl, $details;
 
     $translate = array('item_summary' => 'summary', 'project_id' => 'attachedtoproject',
-                       'task_type' => 'tasktype', 'product_category' => 'category', 'item_status' => 'status',
-                       'task_priority' => 'priority', 'operating_system' => 'operatingsystem', 'task_severity' => 'severity',
-                       'product_version' => 'reportedversion', 'mark_private' => 'visibility');
-    // if soemthing gets double escaped, add it here. 
+                       'task_severity' => 'severity', 'mark_private' => 'visibility');
+    // if soemthing gets double escaped, add it here.
     $noescape = array('new_value', 'old_value');
 
     foreach($history as $key=> $value) {
@@ -92,17 +73,8 @@ function event_description($history) {
             switch ($field) {
                 case 'item_summary':
                 case 'project_id':
-                case 'task_type':
-                case 'product_category':
-                case 'item_status':
-                case 'task_priority':
-                case 'operating_system':
                 case 'task_severity':
-                case 'product_version':
-                    if($field == 'task_priority') {
-                        $old_value = $fs->priorities[$old_value];
-                        $new_value = $fs->priorities[$new_value];
-                    } elseif($field == 'task_severity') {
+                    if($field == 'task_severity') {
                         $old_value = $fs->severities[$old_value];
                         $new_value = $fs->severities[$new_value];
                     } elseif($field != 'item_summary') {
@@ -111,16 +83,6 @@ function event_description($history) {
                     }
                     $field = eL($translate[$field]);
                     break;
-                case 'closedby_version':
-                    $field = eL('dueinversion');
-                    $old_value = ($old_value == '0') ? eL('undecided') : $history['product_version1'];
-                    $new_value = ($new_value == '0') ? eL('undecided') : $history['product_version2'];
-                    break;
-                 case 'due_date':
-                    $field = eL('duedate');
-                    $old_value = formatDate($old_value, false, eL('undecided'));
-                    $new_value = formatDate($new_value, false, eL('undecided'));
-                    break;
                 case 'percent_complete':
                     $field = eL('percentcomplete');
                     $old_value .= '%';
@@ -128,16 +90,8 @@ function event_description($history) {
                     break;
                 case 'mark_private':
                     $field = eL($translate[$field]);
-                    if ($old_value == 1) {
-                        $old_value = eL('private');
-                    } else {
-                        $old_value = eL('public');
-                    }
-                    if ($new_value == 1) {
-                        $new_value = eL('private');
-                    } else {
-                        $new_value = eL('public');
-                    }
+                    $old_value = ($old_value) ? eL('private') : eL('public');
+                    $new_value = ($new_value) ? eL('private') : eL('public');
                     break;
                 case 'detailed_desc':
                     $field = "<a href=\"javascript:getHistory('{$history['task_id']}', '$baseurl', 'history', '{$history['history_id']}');showTabById('history', true);\">" . eL('details') . '</a>';
@@ -148,6 +102,9 @@ function event_description($history) {
                     $old_value = '';
                     $new_value = '';
                     break;
+            }
+            if (is_numeric($field)) {
+                $field = $history['field_name'];
             }
             $return .= eL('fieldchanged').": {$field}";
             if ($old_value || $new_value) {

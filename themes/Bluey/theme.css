@@ -9,7 +9,7 @@ body {
 }
 
 table {
-	font-size:1em !Important;
+	font-size:1em !important;
 }
 
 table caption {
@@ -49,6 +49,10 @@ div#showvotes {
 	max-height:20em;
 	overflow:auto;
 	padding:5px;
+}
+
+div#taskfields th, div#taskfields td {
+	white-space:nowrap !important;
 }
 
 table.list thead th {
@@ -316,6 +320,10 @@ div#menu div#projectselector button {
 }
 
 div#projectselector option[selected] {
+	font-weight:bold;
+}
+
+option.project_id0 {
 	font-weight:bold;
 }
 

@@ -59,16 +59,6 @@ class Flyspray
      */
     var $priorities = array();
 
-    /**
-     * List of all columns, needed in templates
-     * @access public
-     * @var array
-     */
-    var $columnnames = array('id', 'project', 'tasktype', 'category', 'severity',
-                             'priority', 'summary', 'dateopened', 'status', 'openedby',
-                             'assignedto', 'lastedit', 'reportedin', 'dueversion', 'duedate',
-                             'comments', 'attachments', 'progress', 'dateclosed', 'os', 'votes');
-
     // Application-wide preferences {{{
     /**
      * Constructor, starts session, loads settings
@@ -308,7 +298,7 @@ class Flyspray
      */
     function GetTaskDetails($task_id, $cache_enabled = false)
     {
-        global $db, $fs;
+        global $db, $fs, $proj;
 
         static $cache = array();
 
@@ -318,51 +308,52 @@ class Flyspray
 
         //for some reason, task_id is not here
         // run away inmediately..
-        if(!is_numeric($task_id)) {
+        if (!is_numeric($task_id)) {
             return false;
         }
 
-        $get_details = $db->Query('SELECT t.*,
-                                          c.category_name, c.category_owner, c.lft, c.rgt, c.list_id as cat_list_id,
-                                          o.item_name AS os_name,
-                                          r.item_name AS resolution_name,
-                                          tt.item_name AS tasktype_name,
-                                          vr.item_name   AS reported_version_name,
-                                          vd.item_name   AS due_in_version_name,
-                                          uo.real_name      AS opened_by_name,
-                                          ue.real_name      AS last_edited_by_name,
-                                          uc.real_name      AS closed_by_name,
-                                          lst.item_name   AS status_name
-                                    FROM  {tasks}              t
-                               LEFT JOIN  {list_category}      c  ON t.product_category = c.category_id
-                               LEFT JOIN  {list_items}            o  ON t.operating_system = o.list_item_id
-                               LEFT JOIN  {list_items}    r  ON t.resolution_reason = r.list_item_id
-                               LEFT JOIN  {list_items}      tt ON t.task_type = tt.list_item_id
-                               LEFT JOIN  {list_items}       vr ON t.product_version = vr.list_item_id
-                               LEFT JOIN  {list_items}       vd ON t.closedby_version = vd.list_item_id
-                               LEFT JOIN  {list_items}       lst ON t.item_status = lst.list_item_id
-                               LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
-                               LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
-                               LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
-                                   WHERE  t.task_id = ?', array($task_id));
+        $task = $db->Query('  SELECT  t.*,
+                                      r.item_name AS resolution_name,
+                                      uo.real_name      AS opened_by_name,
+                                      ue.real_name      AS last_edited_by_name,
+                                      uc.real_name      AS closed_by_name
+                                FROM  {tasks}              t
+                           LEFT JOIN  {list_items}    r  ON t.resolution_reason = r.list_item_id
+                           LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
+                           LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
+                           LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
+                               WHERE  t.task_id = ?', array($task_id));
 
-        if (!$db->CountRows($get_details)) {
+        if (!$db->CountRows($task)) {
             return false;
         }
 
-        if ($get_details = $db->FetchRow($get_details)) {
-            $get_details += array('severity_name' => $fs->severities[$get_details['task_severity']]);
-            $get_details += array('priority_name' => $fs->priorities[$get_details['task_priority']]);
+        if ($task = $db->FetchRow($task)) {
+            $task += array('severity_name' => $fs->severities[$task['task_severity']]);
         }
 
-        $get_details['assigned_to'] = $get_details['assigned_to_name'] = array();
+        // Now add custom fields
+        $sql = $db->Query('SELECT field_value, field_name, f.field_id, li.item_name, lc.category_name
+                             FROM {field_values} fv
+                        LEFT JOIN {fields} f ON f.field_id = fv.field_id
+                        LEFT JOIN {lists} l ON l.list_id = f.list_id
+                        LEFT JOIN {list_items} li ON (l.list_type <> ? AND f.list_id = li.list_id AND field_value = li.list_item_id)
+                        LEFT JOIN {list_category} lc ON (l.list_type = ? AND f.list_id = lc.list_id AND field_value = lc.category_id)
+                            WHERE task_id = ?', array(LIST_CATEGORY, LIST_CATEGORY, $task['task_id']));
+        while ($row = $db->FetchRow($sql)) {
+            $task['f' . $row['field_id']] = $row['field_value'];
+            $task['f' . $row['field_id'] . '_name'] = ($row['item_name'] ? $row['item_name'] : $row['category_name']);
+        }
+
+        $task['assigned_to'] = $task['assigned_to_name'] = array();
         if ($assignees = Flyspray::GetAssignees($task_id, true)) {
-            $get_details['assigned_to'] = $assignees[0];
-            $get_details['assigned_to_name'] = $assignees[1];
+            $task['assigned_to'] = $assignees[0];
+            $task['assigned_to_name'] = $assignees[1];
         }
-        $cache[$task_id] = $get_details;
 
-        return $get_details;
+        $cache[$task_id] = $task;
+
+        return $task;
     } // }}}
     // List projects {{{
     /**
@@ -705,7 +696,7 @@ class Flyspray
      */
     function startSession()
     {
-        if (defined('IN_FEED')) {
+        if (defined('IN_FEED') || isset($_SESSION['SESSNAME'])) {
             return;
         }
 
@@ -757,37 +748,44 @@ class Flyspray
      */
     function compare_tasks($old, $new)
     {
-        $comp = array('priority_name', 'severity_name', 'status_name', 'assigned_to_name', 'due_in_version_name',
-                     'reported_version_name', 'tasktype_name', 'os_name', 'category_name',
-                     'due_date', 'percent_complete', 'item_summary', 'due_in_version_name',
-                     'detailed_desc', 'project_title', 'mark_private');
-
+        global $proj;
+        $comp = array('task_severity' => 'severity_name',
+                      'assigned_to_name', 'percent_complete',
+                      'item_summary', 'detailed_desc', 'mark_private');
+        $translation = array('severity_name' => L('severity'),
+                             'assigned_to_name' => L('assignedto'),
+                             'percent_complete' => L('percentcomplete'),
+                             'mark_private' => L('visibility'),
+                             'item_summary' => L('summary'),
+                             'detailed_desc' => L('taskedited'));
         $changes = array();
-        foreach ($old as $key => $value)
+        foreach ($comp as $db => $key)
         {
-            if (!in_array($key, $comp) || ($key === 'due_date' && intval($old[$key]) === intval($new[$key]))) {
-                continue;
-            }
-
-            if($old[$key] != $new[$key]) {
+            if ($old[$key] != $new[$key]) {
                 switch ($key)
                 {
-                    case 'due_date':
-                        $new[$key] = formatDate($new[$key]);
-                        $value = formatDate($value);
-                        break;
-
                     case 'percent_complete':
                         $new[$key] .= '%';
-                        $value .= '%';
+                        $old[$key] .= '%';
                         break;
 
                     case 'mark_private':
                         $new[$key] = $new[$key] ? L('private') : L('public');
-                        $value = $value ? L('private') : L('public');
+                        $old[$key] = $old[$key] ? L('private') : L('public');
                         break;
                 }
-                $changes[] = array($key, $value, $new[$key]);
+                $changes[] = array($key, $old[$key], $new[$key], $translation[$key], (is_numeric($db)) ? $key : $db );
+            }
+        }
+
+        foreach ($proj->fields as $field) {
+            $key = 'f'. $field['field_id'];
+            if ($old[$key] != $new[$key]) {
+                if ($field['field_type'] == FIELD_DATE) {
+                    $changes[] = array($key, formatDate($old[$key]), formatDate($new[$key]), $field['field_name'], $field['field_id']);
+                } else {
+                    $changes[] = array($key, $old[$key . '_name'], $new[$key . '_name'], $field['field_name'], $field['field_id']);
+                }
             }
         }
 

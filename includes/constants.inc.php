@@ -22,13 +22,13 @@ if (isset($conf['general']['force_baseurl']) && $conf['general']['force_baseurl'
             $webdir = dirname($webdir);
         }
     }
-    
+
     $baseurl = rtrim(Flyspray::absoluteURI($webdir),'/\\') . '/' ;
 }
 
 if(isset($conf['general']['syntax_plugin']) && preg_match('/^[a-z0-9_]+$/iD', $conf['general']['syntax_plugin'])) {
 
-$path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' 
+$path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/'
                   . $conf['general']['syntax_plugin'] . '_constants.inc.php';
 
     if (is_readable($path_to_plugin)) {
@@ -66,16 +66,18 @@ define('ADDRESS_USER',            2);
 define('ADDRESS_EMAIL',           3);
 define('ADDRESS_DONE',            4);
 
-define('STATUS_UNCONFIRMED',      1);
-define('STATUS_NEW',              2);
-define('STATUS_ASSIGNED',         3);
+define('FIELD_LIST',              1);
+define('FIELD_DATE',              2);
+
+define('LIST_BASIC',              1);
+define('LIST_VERSION',            2);
+define('LIST_CATEGORY',           3);
 
 // Function parameters
 define('REINDEX', true);
-
 define('GET_CONTENTS', true);
+
+
 // developers or advanced users only
 //define('DEBUG_SQL',true);
-//define('JABBER_DEBUG', true);
-//define('JABBER_DEBUG_FILE''/path/to/my/debug/file');
 ?>

@@ -38,7 +38,7 @@ require_once OBJECTS_PATH . '/fix.inc.php';
 require_once OBJECTS_PATH . '/class.gpc.php';
 require_once OBJECTS_PATH . '/class.flyspray.php';
 require_once OBJECTS_PATH . '/class.tpl.php';
-require_once BASEDIR . '/array_combine.php';
+
 // ---------------------------------------------------------------------
 // Application Web locations
 // ---------------------------------------------------------------------
@@ -808,7 +808,7 @@ class Setup extends Flyspray
 
       // Setting the database for the ADODB connection
       require_once($this->mAdodbPath);
-      
+
       $this->mDbConnection =& NewADOConnection(strtolower($db_type));
       $this->mDbConnection->Connect($db_hostname, $db_username, $db_password, $db_name);
       $this->mDbConnection->SetCharSet('utf8');

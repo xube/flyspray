@@ -64,29 +64,28 @@ switch ($action = Req::val('action'))
             break;
         }
 
-
-        if ($due_date = Post::val('due_date', 0)) {
-            $due_date = Flyspray::strtotime(Post::val('due_date'));
-            Backend::add_reminder($task['task_id'], L('defaultreminder') . "\n\n" . CreateURL('details', $task['task_id']), 2*24*60*60, time());
-        }
-
         $time = time();
 
         $db->Query('UPDATE  {tasks}
-                       SET  project_id = ?, task_type = ?, item_summary = ?,
-                            detailed_desc = ?, item_status = ?, mark_private = ?,
-                            product_category = ?, closedby_version = ?, operating_system = ?,
-                            task_severity = ?, task_priority = ?, last_edited_by = ?,
-                            last_edited_time = ?, due_date = ?, percent_complete = ?, product_version = ?
+                       SET  project_id = ?, item_summary = ?,
+                            detailed_desc = ?, mark_private = ?,
+                            task_severity = ?, last_edited_by = ?,
+                            last_edited_time = ?, percent_complete = ?
                      WHERE  task_id = ?',
-                array(Post::val('project_id'), Post::val('task_type'),
-                    Post::val('item_summary'), Post::val('detailed_desc'),
-                    Post::val('item_status'), intval($user->can_change_private($task) && Post::val('mark_private')),
-                    Post::val('product_category'), Post::val('closedby_version', 0),
-                    Post::val('operating_system'), Post::val('task_severity'),
-                    Post::val('task_priority'), intval($user->id), $time, intval($due_date),
-                    Post::val('percent_complete'), Post::val('reportedver'),
-                    $task['task_id']));
+                array(Post::val('project_id'), Post::val('item_summary'),
+                      Post::val('detailed_desc'), intval($user->can_change_private($task) && Post::val('mark_private')),
+                      Post::val('task_severity'), intval($user->id), $time,
+                      Post::val('percent_complete'), $task['task_id']));
+        // Now the custom fields
+        foreach ($proj->fields as $field) {
+            $field_value = Post::val('field' . $field['field_id']);
+            if ($field['field_type'] == FIELD_DATE) {
+                $field_value = Flyspray::strtotime($field_value);
+            }
+            $db->Replace('{field_values}',
+                         array('field_id'=> $field['field_id'], 'task_id'=> $task['task_id'], 'field_value' => $field_value),
+                         array('field_id','task_id'));
+        }
 
         // Update the list of users assigned this task
         if ($user->perms('edit_assignments') && Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
@@ -106,25 +105,14 @@ switch ($action = Req::val('action'))
         // Get the details of the task we just updated
         // To generate the changed-task message
         $new_details_full = Flyspray::GetTaskDetails($task['task_id']);
-        // Not very nice...maybe combine compare_tasks() and logEvent() ?
-        $result = $db->Query("SELECT * FROM {tasks} WHERE task_id = ?",
-                             array($task['task_id']));
-        $new_details = $db->FetchRow($result);
-
-        foreach ($new_details as $key => $val) {
-            if (strstr($key, 'last_edited_') || $key == 'assigned_to'
-                    || is_numeric($key))
-            {
-                continue;
-            }
-
-            if ($val != $task[$key]) {
-                // Log the changed fields in the task history
-                Flyspray::logEvent($task['task_id'], 3, $val, $task[$key], $key, $time);
-            }
-        }
 
         $changes = Flyspray::compare_tasks($task, $new_details_full);
+        foreach ($changes as $change) {
+            if ($change[4] == 'assigned_to_name') {
+                continue;
+            }
+            Flyspray::logEvent($task['task_id'], 3, $change[2], $change[1], $change[4], $time);
+        }
         if (count($changes) > 0) {
             Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_CHANGED, array('changes' => $changes));
         }
@@ -140,8 +128,8 @@ switch ($action = Req::val('action'))
                 if (!$user->infos['notify_own']) {
                     $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
                 }
-                if(count($new_assignees)) {
-                    Notifications::send($new_assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, $task['task_id']);
+                if (count($new_assignees)) {
+                    Notifications::send($new_assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, array('task_id' => $task['task_id']));
                 }
             }
         }
@@ -476,25 +464,12 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $settings = array('jabber_server', 'jabber_port', 'jabber_username', 'notify_registration',
-                'jabber_password', 'anon_group', 'user_notify', 'admin_email', 'send_background',
-                'lang_code', 'spam_proof', 'default_project', 'dateformat', 'jabber_ssl', 'anon_userlist',
-                'dateformat_extended', 'anon_reg', 'global_theme', 'smtp_server', 'page_title',
-                'smtp_user', 'smtp_pass', 'funky_urls', 'reminder_daemon','cache_feeds', 'email_ssl', 'email_tls',
-                'ldap_enabled', 'ldap_server', 'ldap_base_dn', 'ldap_userkey', 'ldap_user', 'ldap_password');
-        foreach ($settings as $setting) {
+        foreach (array_keys($fs->prefs) as $setting) {
             $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
                     array(Post::val($setting, 0), $setting));
-            // Update prefs for following scripts
-            $fs->prefs[$setting] = Post::val($setting, 0);
         }
 
-        // Process the list of groups into a format we can store
-        $viscols = trim(Post::val('visible_columns'));
-        $db->Query("UPDATE  {prefs} SET pref_value = ?
-                     WHERE  pref_name = 'visible_columns'",
-                array($viscols));
-        $fs->prefs['visible_columns'] = $viscols;
+        $fs = new Flyspray;
 
         $_SESSION['SUCCESS'] = L('optionssaved');
         break;
@@ -579,7 +554,7 @@ switch ($action = Req::val('action'))
 
         $cols = array( 'project_title', 'theme_style', 'lang_code', 'default_task', 'default_entry',
                 'intro_message', 'others_view', 'anon_open', 'send_digest', 'anon_view_tasks',
-                'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
+                'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply', 'roadmap_field',
                 'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign');
         $args = array_map('Post_to0', $cols);
         $cols[] = 'notify_types';
@@ -1273,7 +1248,7 @@ switch ($action = Req::val('action'))
         $pms = $db->fetchCol($sql);
         if (count($pms)) {
             // Call the functions to create the address arrays, and send notifications
-            Notifications::send($pms, ADDRESS_USER, NOTIFY_PM_REQUEST, $task['task_id']);
+            Notifications::send($pms, ADDRESS_USER, NOTIFY_PM_REQUEST, array('task_id' => $task['task_id']));
         }
 
         $_SESSION['SUCCESS'] = L('adminrequestmade');
@@ -1300,7 +1275,7 @@ switch ($action = Req::val('action'))
                     array($user->id, time(), Req::val('deny_reason'), Req::val('req_id')));
 
         Flyspray::logEvent($req_details['task_id'], 28, Req::val('deny_reason'));
-        Notifications::send($req_details['task_id'], ADDRESS_TASK, NOTIFY_PM_DENY_REQUEST, Req::val('deny_reason'));
+        Notifications::send($req_details['task_id'], ADDRESS_TASK, NOTIFY_PM_DENY_REQUEST, array('deny_reason' => Req::val('deny_reason')));
 
         $_SESSION['SUCCESS'] = L('pmreqdeniedmsg');
         break;
@@ -1563,8 +1538,62 @@ switch ($action = Req::val('action'))
 
         $db->Query('INSERT INTO {lists} (list_name, list_type, project_id)
                          VALUES (?, ?, ?)',
-                        array(Post::val('list_name'), Post::val('list_type'), $proj->id));
+                        array(Post::val('list_name'), Post::num('list_type'), $proj->id));
         break;
+
+    // ##################
+    // Update fields
+    // ##################
+    case 'update_fields':
+        if (!$user->perms('manage_project')) {
+            break;
+        }
+
+        $types = Post::val('field_type');
+        $names = Post::val('field_name');
+        $lists = Post::val('list_id');
+        $tense = Post::val('version_tense');
+        $default = Post::val('default_value');
+        $delete = Post::val('delete');
+        $force = Post::val('force_default');
+
+        foreach (Post::val('id') as $id) {
+            if (isset($delete[$id])) {
+                $db->Query('DELETE FROM {fields} WHERE field_id = ? AND project_id = ?',
+                            array($id, $proj->id));
+                // sort of permission check (the query below does not check project_id)
+                if ($db->AffectedRows()) {
+                    $db->Query('DELETE FROM {field_values} WHERE field_id = ?', array($id));
+                }
+                continue;
+            }
+
+            if ($proj->fields[Flyspray::array_find('field_id', $id, $proj->fields)]['field_type'] == FIELD_DATE) {
+                $default[$id] = Flyspray::strtotime(array_get($default, $id, 0));
+            }
+            $db->Query('UPDATE {fields} SET field_name = ?, field_type = ?, list_id = ?,
+                                            version_tense = ?, default_value = ?, force_default = ?
+                         WHERE field_id = ? AND project_id = ?',
+                        array($names[$id], $types[$id], array_get($lists, $id, null),
+                              array_get($tense, $id, 0), array_get($default, $id, 0),
+                              array_get($force, $id, 0), $id, $proj->id));
+        }
+        $proj = new Project($proj->id);
+        break;
+
+    // ##################
+    // Add a new field
+    // ##################
+    case 'add_field':
+        if (!$user->perms('manage_project') || !Post::val('field_name')) {
+            break;
+        }
+
+        $db->Query('INSERT INTO {fields} (field_name, field_type, list_id, project_id)
+                         VALUES (?, ?, ?, ?)',
+                        array(Post::val('field_name'), Post::num('field_type'), Post::num('list_id'), $proj->id));
+        break;
+
 }
 
 ?>

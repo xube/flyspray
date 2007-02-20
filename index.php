@@ -1,5 +1,4 @@
 <?php
-
 /*
    This is the main script that everything else is included
    in.  Mostly what it does is check the user permissions
@@ -26,7 +25,6 @@ if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
 } elseif (Get::has('show') || (Get::has('switch') && ($do == 'details'))) {
     $do = 'index';
 }
-
 
 
 /* permission stuff */

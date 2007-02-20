@@ -56,34 +56,43 @@ else {
         $prev_id = isset($id_list[$i - 1]) ? $id_list[$i - 1] : '';
         $next_id = isset($id_list[$i + 1]) ? $id_list[$i + 1] : '';
     }
-    
-    // Parent categories
-    $parent = $db->Query('SELECT  *
-                            FROM  {list_category}
-                           WHERE  lft < ? AND rgt > ? AND list_id  = ? AND lft != 1
-                        ORDER BY  lft ASC',
-                        array($task_details['lft'], $task_details['rgt'], $task_details['cat_list_id']));
+
+    // Parent categories for each category field
+    $parents = array();
+    foreach ($proj->fields as $field) {
+        if ($field['list_type'] != LIST_CATEGORY) {
+            continue;
+        }
+        $sql = $db->Query('SELECT lft, rgt FROM {list_category} WHERE category_id = ?',
+                          array($task_details['f' . $field['field_id']]));
+        $cat = $db->FetchRow($sql);
+
+        $parent = $db->Query('SELECT  category_name
+                                FROM  {list_category}
+                               WHERE  lft < ? AND rgt > ? AND list_id  = ? AND lft <> 1
+                            ORDER BY  lft ASC',
+                            array($cat['lft'], $cat['rgt'], $field['list_id']));
+        $parents[$field['field_id']] = $db->FetchCol($parent);
+    }
 
     // Check for task dependencies that block closing this task
-    $check_deps   = $db->Query('SELECT  t.*, s.item_name AS status_name, r.item_name AS resolution_name, d.depend_id
+    $check_deps   = $db->Query('SELECT  t.*, r.item_name AS resolution_name, d.depend_id
                                   FROM  {dependencies} d
                              LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
-                             LEFT JOIN  {list_items} s ON t.item_status = s.list_item_id 
-                             LEFT JOIN  {list_items} r ON t.resolution_reason = r.list_item_id 
+                             LEFT JOIN  {list_items} r ON t.resolution_reason = r.list_item_id
                                  WHERE  d.task_id = ?', array($task_id));
 
     // Check for tasks that this task blocks
-    $check_blocks = $db->Query('SELECT  t.*, s.item_name AS status_name, r.item_name AS resolution_name
+    $check_blocks = $db->Query('SELECT  t.*, r.item_name AS resolution_name
                                   FROM  {dependencies} d
                              LEFT JOIN  {tasks} t on d.task_id = t.task_id
-                             LEFT JOIN  {list_items} s ON t.item_status = s.list_item_id
-                             LEFT JOIN  {list_items} r ON t.resolution_reason = r.list_item_id 
+                             LEFT JOIN  {list_items} r ON t.resolution_reason = r.list_item_id
                                  WHERE  d.dep_task_id = ?', array($task_id));
 
     // Check for pending PM requests
-    $get_pending  = $db->Query("SELECT  *
+    $get_pending  = $db->Query('SELECT  *
                                   FROM  {admin_requests}
-                                 WHERE  task_id = ?  AND resolved_by = 0",
+                                 WHERE  task_id = ?  AND resolved_by = 0',
                                  array($task_id));
 
     // Get info on the dependencies again
@@ -96,20 +105,14 @@ else {
                                    FROM  {notifications}
                                   WHERE  task_id = ?  AND user_id = ?',
                                   array($task_id, $user->id));
-    
-    // Check if task has been reopened some time
-    $reopened     =  $db->Query('SELECT  COUNT(*)
-                                   FROM  {history}
-                                  WHERE  task_id = ?  AND event_type = 13',
-                                  array($task_id));
-    
+
     // Check for cached version
     $cached = $db->Query("SELECT content, last_updated
                             FROM {cache}
                            WHERE topic = ? AND type = 'task'",
                            array($task_details['task_id']));
     $cached = $db->FetchRow($cached);
-    
+
     // List of votes
     $get_votes = $db->Query('SELECT u.user_id, u.user_name, u.real_name, v.date_time
                                FROM {votes} v
@@ -128,18 +131,17 @@ else {
     $page->assign('next_id',   $next_id);
     $page->assign('task_text', $task_text);
     $page->assign('deps',      $db->fetchAllArray($check_deps));
-    $page->assign('parent',    $db->fetchAllArray($parent));
     $page->assign('blocks',    $db->fetchAllArray($check_blocks));
     $page->assign('votes',    $db->fetchAllArray($get_votes));
     $page->assign('penreqs',   $db->fetchAllArray($get_pending));
     $page->assign('d_open',    $db->fetchOne($open_deps));
     $page->assign('watched',   $db->fetchOne($watching));
-    $page->assign('reopened',  $db->fetchOne($reopened));
+    $page->uses('parents');
     $page->pushTpl('details.view.tpl');
 
     ////////////////////////////
     // tabbed area
-    
+
     // Comments + cache
     $sql = $db->Query('  SELECT * FROM {comments} c
                       LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = ? AND c.last_edited_time <= ca.last_updated)
@@ -156,7 +158,7 @@ else {
         $comment_changes[$row['event_date']][] = $row;
     }
     $page->assign('comment_changes', $comment_changes);
-    
+
     // Comment attachments
     $attachments = array();
     $sql = $db->Query('SELECT *
@@ -165,25 +167,23 @@ else {
                        array($task_id));
     while ($row = $db->FetchRow($sql)) {
         $attachments[$row['comment_id']][] = $row;
-    } 
+    }
     $page->assign('comment_attachments', $attachments);
 
     // Relations, notifications and reminders
-    $sql = $db->Query('SELECT  t.*, r.*, s.item_name AS status_name, res.item_name AS resolution_name
+    $sql = $db->Query('SELECT  t.*, r.*, res.item_name AS resolution_name
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON (r.related_task = t.task_id AND r.this_task = ? OR r.this_task = t.task_id AND r.related_task = ?)
-                    LEFT JOIN  {list_items} s ON t.item_status = s.list_item_id 
-                    LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id 
+                    LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id
                         WHERE  t.task_id is NOT NULL AND is_duplicate = 0 AND ( t.mark_private = 0 OR ? = 1 )
                      ORDER BY  t.task_id ASC',
             array($task_id, $task_id, $user->perms('manage_project')));
     $page->assign('related', $db->fetchAllArray($sql));
 
-    $sql = $db->Query('SELECT  t.*, r.*, s.item_name AS status_name, res.item_name AS resolution_name
+    $sql = $db->Query('SELECT  t.*, r.*, res.item_name AS resolution_name
                          FROM  {related} r
                     LEFT JOIN  {tasks} t ON r.this_task = t.task_id
-                    LEFT JOIN  {list_items} s ON t.item_status = s.list_item_id 
-                    LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id 
+                    LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id
                         WHERE  is_duplicate = 1 AND r.related_task = ?
                      ORDER BY  t.task_id ASC',
                       array($task_id));

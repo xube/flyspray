@@ -77,7 +77,25 @@ if (Post::val('upgrade')) {
         $type = 'defaultupgrade';
     }
 
-    // Next a mix of XML schema files and PHP upgrade scripts
+    // global prefs update
+    if (isset($upgrade_info['fsprefs'])) {
+        $sql = $db->Query('SELECT pref_name FROM {prefs}');
+        $existing = $db->FetchCol($sql);
+        // Add what is missing
+        foreach ($upgrade_info['fsprefs'] as $name => $value) {
+            if (!in_array($name, $existing)) {
+                $db->Query('INSERT INTO {prefs} (pref_name, pref_value) VALUES (?, ?)', array($name, $value));
+            }
+        }
+        // Delete what is too much
+        foreach ($existing as $name) {
+            if (!isset($upgrade_info['fsprefs'][$name])) {
+                $db->Query('DELETE FROM {prefs} WHERE pref_name = ?', array($name));
+            }
+        }
+    }
+
+    // Now a mix of XML schema files and PHP upgrade scripts
     if (!isset($upgrade_info[$type])) {
         die('#1 Bad upgrade.info file.');
     }
@@ -106,24 +124,6 @@ if (Post::val('upgrade')) {
             $schema->ParseSchemaFile(UPGRADE_PATH . '/' . $file);
             if ($schema->ExecuteSchema()) {
                 $done[$file] = $hash;
-            }
-        }
-    }
-
-    // Last but not least global prefs update
-    if (isset($upgrade_info['fsprefs'])) {
-        $sql = $db->Query('SELECT pref_name FROM {prefs}');
-        $existing = $db->FetchCol($sql);
-        // Add what is missing
-        foreach ($upgrade_info['fsprefs'] as $name => $value) {
-            if (!in_array($name, $existing)) {
-                $db->Query('INSERT INTO {prefs} (pref_name, pref_value) VALUES (?, ?)', array($name, $value));
-            }
-        }
-        // Delete what is too much
-        foreach ($existing as $name) {
-            if (!isset($upgrade_info['fsprefs'][$name])) {
-                $db->Query('DELETE FROM {prefs} WHERE pref_name = ?', array($name));
             }
         }
     }

@@ -12,31 +12,22 @@
 
     <div id="taskfields">
       <table>
+        <?php foreach ($proj->fields as $field): ?>
         <tr>
-          <td><label for="tasktype">{L('tasktype')}</label></td>
-          <td>
-            <select name="task_type" id="tasktype">
-              {!tpl_options($proj->get_list('tasktype'), Req::val('task_type'))}
-            </select>
+          <th id="f{$field['field_id']}">{$field['field_name']}</th>
+          <td headers="f{$field['field_id']}">
+          <?php if ($field['list_id'] && $field['field_type'] == FIELD_LIST): ?>
+          <select id="f{$field['field_id']}" name="field{$field['field_id']}" {!tpl_disableif($field['force_default'] && !$user->perms('modify_all_tasks'))}>
+            {!tpl_options($proj->get_list($field['list_id'], $field['list_type'], $field['version_tense']),
+                          Post::val('field' . $field['field_id'], $field['default_value']))}
+          </select>
+          <?php elseif ($field['field_type'] == FIELD_DATE): ?>
+          <?php if ($field['force_default'] && !$user->perms('modify_all_tasks')) $attrs = array('readonly' => 'readonly'); else $attrs = array(); ?>
+            {!tpl_datepicker('field' . $field['field_id'], '', Post::val('field' . $field['field_id'], $field['default_value']), $attrs)}
+          <?php endif; ?>
           </td>
         </tr>
-
-        <tr>
-          <td><label for="category">{L('category')}</label></td>
-          <td>
-            <select class="adminlist" name="product_category" id="category">
-              {!tpl_options($proj->listCategories(), Req::val('product_category'))}
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td><label for="status">{L('status')}</label></td>
-          <td>
-            <select id="status" name="item_status" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
-              {!tpl_options($proj->get_list('status'), Req::val('item_status', 2))}
-            </select>
-          </td>
-        </tr>
+        <?php endforeach; ?>
         <?php if ($user->perms('modify_all_tasks')): ?>
         <tr>
           <td>
@@ -49,15 +40,6 @@
           </td>
         </tr>
         <?php endif; ?>
-        <tr>
-          <td><label for="os">{L('operatingsystem')}</label></td>
-          <td>
-            <select id="os" name="operating_system">
-              {!tpl_options($proj->get_list('os'), Req::val('operating_system'))}
-            </select>
-          </td>
-        </tr>
-        <tr>
           <td><label for="severity">{L('severity')}</label></td>
           <td>
             <select onchange="getElementById('edit_summary').className = 'summary severity' + this.value;
@@ -67,39 +49,6 @@
             </select>
           </td>
         </tr>
-        <tr>
-          <td><label for="priority">{L('priority')}</label></td>
-          <td>
-            <select id="priority" name="task_priority" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
-              {!tpl_options($fs->priorities, Req::val('task_priority', 2))}
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td><label for="reportedver">{L('reportedversion')}</label></td>
-          <td>
-            <select class="adminlist" name="product_version" id="reportedver">
-              {!tpl_options($proj->listVersions(2), Req::val('product_version'))}
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td><label for="dueversion">{L('dueinversion')}</label></td>
-          <td>
-            <select id="dueversion" name="closedby_version" <?php if (!$user->perms('modify_all_tasks')) echo ' disabled="disabled"';?>>
-              <option value="0">{L('undecided')}</option>
-              {!tpl_options($proj->listVersions(3), Req::val('closedby_version'))}
-            </select>
-          </td>
-        </tr>
-        <?php if ($user->perms('modify_all_tasks')): ?>
-        <tr>
-          <td><label for="due_date">{L('duedate')}</label></td>
-          <td id="duedate">
-            {!tpl_datepicker('due_date', '', Req::val('due_date'))}
-          </td>
-        </tr>
-        <?php endif; ?>
         <?php if ($user->perms('manage_project')): ?>
             <tr>
               <td><label for="private">{L('private')}</label></td>
@@ -118,7 +67,7 @@
       <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>
       <?php endif; ?>
-      {!TextFormatter::textarea('detailed_desc', 10, 70, array('id' => 'details'), Req::val('detailed_desc', $proj->prefs['default_task']))}
+      {!TextFormatter::textarea('detailed_desc', 15, 80, array('id' => 'details'), Req::val('detailed_desc', $proj->prefs['default_task']))}
       <?php if ($user->perms('create_attachments')): ?>
       <div id="uploadfilebox">
         <span style="display: none"><?php // this span is shown/copied in javascript when adding files ?>

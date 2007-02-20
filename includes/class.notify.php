@@ -24,7 +24,7 @@ class Notifications
         global $fs;
 
         $proj = new Project(0);
-        $data['project'] = $proj->prefs;
+        $data['project'] = $proj;
         $data['notify_type'] = $type;
 
         if ($fs->prefs['send_background'] && $to_type != ADDRESS_EMAIL) {
@@ -83,7 +83,7 @@ class Notifications
             // we have project specific options
             $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
             $proj = new Project($db->fetchOne($sql));
-            $data['project'] = $proj->prefs;
+            $data['project'] = $proj;
         }
 
         if ($to_type != ADDRESS_DONE) {
@@ -94,7 +94,7 @@ class Notifications
             // Now, we add the project contact addresses,
             // but only if the task is public
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
-            if ($data['task']['mark_private'] != '1' && in_array($type, Flyspray::int_explode(' ', $data['project']['notify_types'])))
+            if ($data['task']['mark_private'] != '1' && in_array($type, Flyspray::int_explode(' ', $data['project']->prefs['notify_types'])))
             {
                 $proj_emails = preg_split('/[\s,;]+/', $proj->prefs['notify_email'], -1, PREG_SPLIT_NO_EMPTY);
                 $proj_jids   = preg_split('/[\s,;]+/', $proj->prefs['notify_jabber'], -1, PREG_SPLIT_NO_EMPTY);
@@ -119,7 +119,7 @@ class Notifications
                     $connection =& new Swift_Connection_SMTP($fs->prefs['smtp_server']);
                 }
                 if ($fs->prefs['smtp_user']) {
-                    $connection->setUsername($fs->prefs['smtp_user']);  
+                    $connection->setUsername($fs->prefs['smtp_user']);
                     $connection->setPassword($fs->prefs['smtp_pass']);
                 }
                 $swift =& new Swift($connection);
@@ -128,11 +128,11 @@ class Notifications
                 include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/NativeMail.php';
                 $swift =& new Swift(new Swift_Connection_NativeMail);
             }
-            
+
             $message =& new Swift_Message($subject, $body);
             // check for reply-to
-            if (isset($data['project']) && $data['project']['notify_reply']) {
-                $message->setReplyTo($data['project']['notify_reply']);
+            if (isset($data['project']) && $data['project']->prefs['notify_reply']) {
+                $message->setReplyTo($data['project']->prefs['notify_reply']);
             }
 
             // threaded messages
@@ -215,7 +215,7 @@ class Notifications
             // we have project specific options
             $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
             $proj = new Project($db->fetchOne($sql));
-            $data['project'] = $proj->prefs;
+            $data['project'] = $proj;
         }
 
         list($data['subject'], $data['body']) = Notifications::generate_message($type, $data);
@@ -456,12 +456,12 @@ class Notifications
         // Generate the nofication message
         if (!isset($notify_type_msg[$type]))  {
             $subject = L('notifyfromfs');
-        } else if (isset($data['project']['notify_subject']) && $data['project']['notify_subject']) {
+        } else if (isset($data['project']->prefs['notify_subject']) && $data['project']->prefs['notify_subject']) {
             $subject = str_replace(array('%p','%s','%t', '%a'),
-                            array($data['project']['project_title'], $data['task']['item_summary'], $data['task_id'], $notify_type_msg[$type]),
-                            $data['project']['notify_subject']);
+                            array($data['project']->prefs['project_title'], $data['task']['item_summary'], $data['task_id'], $notify_type_msg[$type]),
+                            $data['project']->prefs['notify_subject']);
         } else {
-            $subject = L('notifyfrom') . $data['project']['project_title'];
+            $subject = L('notifyfrom') . $data['project']->prefs['project_title'];
         }
 
         $subject = strtr($subject, "\r\n", ' ');
@@ -498,40 +498,27 @@ class Notifications
             case NOTIFY_TASK_OPENED:
                 $body .=  L('newtaskopened') . "\r\n\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
-                $body .= L('attachedtoproject') . ' - ' .  $data['project']['project_title'] . "\r\n";
+                $body .= L('attachedtoproject') . ' - ' .  $data['project']->prefs['project_title'] . "\r\n";
                 $body .= L('summary') . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('tasktype') . ' - ' . $data['task']['tasktype_name'] . "\r\n";
-                $body .= L('category') . ' - ' . $data['task']['category_name'] . "\r\n";
-                $body .= L('status') . ' - ' . $data['task']['status_name'] . "\r\n";
                 $body .= L('assignedto') . ' - ' . implode(', ', $data['task']['assigned_to_name']) . "\r\n";
-                $body .= L('operatingsystem') . ' - ' . $data['task']['os_name'] . "\r\n";
                 $body .= L('severity') . ' - ' . $data['task']['severity_name'] . "\r\n";
-                $body .= L('priority') . ' - ' . $data['task']['priority_name'] . "\r\n";
-                $body .= L('reportedversion') . ' - ' . $data['task']['reported_version_name'] . "\r\n";
-                $body .= L('dueinversion') . ' - ' . $data['task']['due_in_version_name'] . "\r\n";
-                $body .= L('duedate') . ' - ' . $due_date . "\r\n";
                 $body .= L('details') . ' - ' . $data['task']['detailed_desc'] . "\r\n\r\n";
+                foreach ($data['project']->fields as $field) {
+                    $body .= $field['field_name'] . ' - ';
+                    if ($data['task']['f' . $field['field_id'] . '_name']) {
+                        $body .= $data['task']['f' . $field['field_id'] . '_name'];
+                    } elseif ($field['field_type'] == FIELD_DATE && $data['task']['f' . $field['field_id']]) {
+                        $body .= formatDate($data['task']['f' . $field['field_id']]);
+                    } else {
+                        $body .= L('notspecified');
+                    }
+                    $body .= "\r\n\r\n";
+                }
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;
 
             case NOTIFY_TASK_CHANGED:
-                $translation = array('priority_name' => L('priority'),
-                                     'severity_name' => L('severity'),
-                                     'status_name'   => L('status'),
-                                     'assigned_to_name' => L('assignedto'),
-                                     'due_in_version_name' => L('dueinversion'),
-                                     'reported_version_name' => L('reportedversion'),
-                                     'tasktype_name' => L('tasktype'),
-                                     'os_name' => L('operatingsystem'),
-                                     'category_name' => L('category'),
-                                     'due_date' => L('duedate'),
-                                     'percent_complete' => L('percentcomplete'),
-                                     'mark_private' => L('visibility'),
-                                     'item_summary' => L('summary'),
-                                     'detailed_desc' => L('taskedited'),
-                                     'project_title' => L('attachedtoproject'));
-
                 $body .= L('taskchanged') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ': ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
@@ -544,9 +531,9 @@ class Notifications
                     }
 
                     if ($change[0] == 'detailed_desc') {
-                        $body .= $translation[$change[0]] . ":\r\n-------\r\n" . $change[2] . "\r\n-------\r\n";
+                        $body .= $change[3] . ":\r\n-------\r\n" . $change[2] . "\r\n-------\r\n";
                     } else {
-                        $body .= $translation[$change[0]] . ': ' . ( ($change[1]) ? $change[1] : '[-]' ) . ' -> ' . ( ($change[2]) ? $change[2] : '[-]' ) . "\r\n";
+                        $body .= $change[3] . ': ' . ( ($change[1]) ? $change[1] : '[-]' ) . ' -> ' . ( ($change[2]) ? $change[2] : '[-]' ) . "\r\n";
                     }
                 }
 
@@ -639,7 +626,7 @@ class Notifications
                 break;
 
             case NOTIFY_CONFIRMATION:
-                $body .= L('noticefrom') . " {$data['project']['project_title']}\r\n\r\n";
+                $body .= L('noticefrom') . " {$data['project']->prefs['project_title']}\r\n\r\n";
                 $body .= L('addressused') . "\r\n\r\n";
                 $body .= "{$data[0]}index.php?do=register&magic_url={$data[1]}\r\n\r\n";
                 // In case that spaces in the username have been removed
@@ -660,7 +647,7 @@ class Notifications
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
                 $body .= L('denialreason') . ':' . "\r\n";
-                $body .= $data . "\r\n\r\n";
+                $body .= $data['deny_reason'] . "\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;

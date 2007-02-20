@@ -73,15 +73,15 @@
             ?>
             {!tpl_options($times, Post::val('time_zone', $theuser->infos['time_zone']))}
           </select>
-        </td> 
+        </td>
       </tr>
       <tr>
         <td><label>{L('defaultsortcolumn')}</label></td>
         <td>
             <label class="left notable">{!tpl_checkbox('defaultorder', $theuser->infos['defaultorder'] == 'asc', null, 'asc', null, 'radio')} {L('asc')}</label>
             <label class="left notable">{!tpl_checkbox('defaultorder', $theuser->infos['defaultorder'] == 'desc', null, 'desc', null, 'radio')} {L('desc')}</label>
-            {!tpl_double_select('defaultsortcolumn[]', $fs->columnnames, explode(' ', $theuser->infos['defaultsortcolumn']), true)}
-        </td> 
+            {!tpl_double_select('defaultsortcolumn[]', $proj->columns, explode(' ', $theuser->infos['defaultsortcolumn']), true)}
+        </td>
       </tr>
       <tr>
         <td><label>{L('notifyblacklist')}</label></td>
@@ -105,7 +105,7 @@
                                 NOTIFY_ADDED_ASSIGNEES => L('assigneeadded')),
                                 Post::val('notify_types', Flyspray::int_explode(' ', $user->infos['notify_blacklist'])))}
             </select>
-        </td> 
+        </td>
       </tr>
       <tr>
         <td colspan="2"><hr /></td>
@@ -157,7 +157,6 @@
       <tr>
         <td colspan="2" class="buttons">
           <input type="hidden" name="action" value="{Req::val('action', $do . '.edituser')}" />
-          <?php if (Req::val('area') || $do == 'admin'): ?><input type="hidden" name="area" value="users" /><?php endif; ?>
           <input type="hidden" name="user_id" value="{$theuser->id}" />
           <button type="submit">{L('updatedetails')}</button>
         </td>

@@ -22,7 +22,7 @@
       </td>
       <td>
         <select name="list_type[{$list['list_id']}]">
-          {!tpl_options(array('basic' => L('basic'), 'versions' => L('versions'), 'category' => L('category')), $list['list_type'])}
+          {!tpl_options(array(LIST_BASIC => L('basic'), LIST_VERSION => L('versions'), LIST_CATEGORY => L('category')), $list['list_type'])}
         </select>
       </td>
       <td title="{L('deletetip')}">
@@ -56,7 +56,7 @@
       </td>
       <td>
         <select name="list_type">
-          {!tpl_options(array('basic' => L('basic'), 'versions' => L('versions'), 'category' => L('category')), Req::val('list_type'))}
+          {!tpl_options(array(LIST_BASIC => L('basic'), LIST_VERSION => L('versions'), LIST_CATEGORY => L('category')), Req::num('list_type'))}
         </select>
       </td>
       <td class="buttons">

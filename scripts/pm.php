@@ -17,7 +17,7 @@ if (!$user->perms('manage_project') || !$proj->id) {
 }
 
 $areas = array('prefs', 'editgroup', 'groups', 'users', 'newgroup',
-               'pendingreq', 'lists', 'user', 'list');
+               'pendingreq', 'lists', 'user', 'list', 'fields');
 
 switch ($area = Req::enum('area', $areas, 'prefs')) {
     case 'pendingreq':
@@ -104,11 +104,17 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
         $page->uses('user_list');
         $page->uses('user_groups');
         break;
-        
+
         case 'lists':
             $sql = $db->Query('SELECT * FROM {lists}
                                 WHERE project_id = ?
                              ORDER BY list_type', array($proj->id));
+            $page->assign('lists', $db->FetchAllArray($sql));
+            break;
+
+        case 'fields':
+            $sql = $db->Query('SELECT * FROM {lists}
+                             ORDER BY project_id, list_type, list_name');
             $page->assign('lists', $db->FetchAllArray($sql));
             break;
 
@@ -119,8 +125,8 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
             $row = $db->fetchRow($sql);
             $list_type = $row[0];
             $list_name = $row[1];
-            
-            if ($list_type == 'category') {
+
+            if ($list_type == LIST_CATEGORY) {
                 $area = 'cat';
             } else {
                 $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));

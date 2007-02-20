@@ -5,7 +5,7 @@
 </div>
 <?php endif; ?>
 
-<?php if(isset($updatemsg)): ?>
+<?php if (isset($updatemsg)): ?>
 <div id="updatemsg">
     <a href="http://flyspray.org/">{L('updatefs')}</a> {L('currentversion')}
     <span class="bad">{$fs->version}</span> {L('latestversion')} <span class="good">{$_SESSION['latest_version']}</span>.
@@ -58,12 +58,15 @@
 
         <fieldset><legend>{L('taskproperties')}</legend>
 
+        <?php foreach ($proj->fields as $field): ?>
+        <?php if ($field['field_type'] != FIELD_LIST) continue; ?>
         <div class="search_select">
-        <label class="default multisel" for="type">{L('tasktype')}</label>
-        <select name="type[]" id="type" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('alltasktypes')) + $proj->get_list('tasktype'), Get::val('type', ''))}
+        <label class="default multisel" for="field{$field['field_id']}">{$field['field_name']}</label>
+        <select name="field{$field['field_id']}[]" id="field{$field['field_id']}" multiple="multiple" size="5">
+          {!tpl_options(array('' => L('allitems')) + $proj->get_list($field['list_id'], $field['list_type']), Get::val('field' . $field['field_id'], ''))}
         </select>
         </div>
+        <?php endforeach; ?>
 
         <div class="search_select">
         <label class="default multisel" for="sev">{L('severity')}</label>
@@ -73,40 +76,11 @@
         </div>
 
         <div class="search_select">
-        <label class="default multisel" for="pri">{L('priority')}</label>
-        <select name="pri[]" id="pri" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('allpriorities')) + $fs->priorities, Get::val('pri', ''))}
-        </select>
-        </div>
-
-        <div class="search_select">
-        <label class="default multisel" for="due">{L('dueversion')}</label>
-        <select name="due[]" id="due" multiple="multiple" size="5">
-          {!tpl_options(array_merge(array('' => L('dueanyversion'), 0 => L('unassigned')), $proj->listVersions()), Get::val('due', ''))}
-        </select>
-        </div>
-
-        <div class="search_select">
-        <label class="default multisel" for="reported">{L('reportedversion')}</label>
-        <select name="reported[]" id="reported" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('anyversion')) + $proj->listVersions(), Get::val('reported', ''))}
-        </select>
-        </div>
-
-        <div class="search_select">
-        <label class="default multisel" for="cat">{L('category')}</label>
-        <select name="cat[]" id="cat" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('allcategories')) + $proj->listCategories(), Get::val('cat', ''))}
-        </select>
-        </div>
-
-        <div class="search_select">
-        <label class="default multisel" for="status">{L('status')}</label>
-        <select name="status[]" id="status" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('allstatuses')) +
-                        array('open' => L('allopentasks')) +
-                        array('closed' => L('allclosedtasks')) +
-                        $proj->get_list('status'), Get::val('status', 'open'))}
+        <label class="default multisel" for="state">{L('state')}</label>
+        <select name="status[]" id="state" multiple="multiple" size="2">
+          {!tpl_options(array('open' => L('allopentasks')) +
+                        array('closed' => L('allclosedtasks')),
+                        Get::val('status', 'open'))}
         </select>
         </div>
 
@@ -133,10 +107,13 @@
         </fieldset>
 
         <fieldset><legend>{L('dates')}</legend>
+        <?php foreach ($proj->fields as $field): ?>
+        <?php if ($field['field_type'] != FIELD_DATE) continue; ?>
         <div class="dateselect">
-          {!tpl_datepicker('duedatefrom', L('selectduedatefrom'))}
-          {!tpl_datepicker('duedateto', L('selectduedateto'))}
+          {!tpl_datepicker($field['field_id'] . 'from', $field['field_name'] . ' ' . L('from'))}
+          {!tpl_datepicker($field['field_id'] . 'to', L('to'))}
         </div>
+        <?php endforeach; ?>
 
         <div class="dateselect">
           {!tpl_datepicker('changedfrom', L('selectsincedatefrom'))}
@@ -180,7 +157,7 @@
             </th>
             <?php endif; ?>
             <?php foreach ($visible as $col): ?>
-            {!tpl_list_heading($col, "<th%s>%s</th>")}
+            {!tpl_list_heading($proj->columns[$col])}
             <?php endforeach; ?>
           </tr>
         </thead>

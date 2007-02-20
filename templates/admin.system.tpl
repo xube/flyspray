@@ -34,7 +34,7 @@
     <tr>
       <th colspan="2">{L('extensions')}</th>
     </tr>
-    <?php foreach (array('openssl', 'xml') as $ext): ?>
+    <?php foreach (array('openssl', 'xml', 'ldap') as $ext): ?>
     <tr>
       <th>{$ext}</th>
       <td>

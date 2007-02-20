@@ -57,6 +57,14 @@
           <td><label for="anon_userlist">{L('allowanonuserlist')}</label></td>
           <td>{!tpl_checkbox('anon_userlist', $fs->prefs['anon_userlist'], 'anon_userlist')}</td>
         </tr>
+        <tr>
+          <td><label for="resolution_list">{L('resolutionlist')}</label></td>
+          <td>
+            <select id="resolution_list" name="resolution_list">
+            {!tpl_options($lists, $fs->prefs['resolution_list'])}
+            </select>
+          </td>
+        </tr>
       </table>
     </div>
 
@@ -223,7 +231,7 @@
             <?php // Set the selectable column names
             $selectedcolumns = explode(' ', $fs->prefs['visible_columns']);
             ?>
-            {!tpl_double_select('visible_columns', $fs->columnnames, $selectedcolumns, true)}
+            {!tpl_double_select('visible_columns', $proj->columns, $selectedcolumns)}
           </td>
         </tr>
       </table>

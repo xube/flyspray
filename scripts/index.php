@@ -46,25 +46,18 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
     $indexes = array (
             'id'         => 'task_id',
             'project'    => 'project_title',
-            'tasktype'   => 'task_type',
-            'category'   => 'category_name',
             'severity'   => '',
-            'priority'   => '',
             'summary'    => 'item_summary',
             'dateopened' => 'date_opened',
-            'status'     => 'status_name',
             'openedby'   => 'opened_by_name',
             'assignedto' => 'assigned_to_name',
             'lastedit'   => 'event_date',
-            'reportedin' => 'product_version',
-            'dueversion' => 'closedby_version',
-            'duedate'    => 'due_date',
             'comments'   => 'num_comments',
             'votes'      => 'num_votes',
             'attachments'=> 'num_attachments',
             'dateclosed' => 'date_closed',
             'progress'   => '',
-            'os'         => 'os_name',
+            'state'      => '',
         );
 
     //must be an array , must contain elements and be alphanumeric (permitted  "_")
@@ -78,33 +71,20 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             $value = tpl_tasklink($task, $task['task_id']);
             break;
         case 'summary':
-            $value = tpl_tasklink($task, utf8_substr($task['item_summary'], 0, 55));
+            $value = tpl_tasklink($task, utf8_substr($task['item_summary'], 0, 55), false, array(), array('state','age','percent_complete'));
             if (utf8_strlen($task['item_summary']) > 55) {
                 $value .= '...';
             }
             break;
 
         case 'severity':
-            $value = $fs->severities[$task['task_severity']];
+            $value = @$fs->severities[$task['task_severity']];
             break;
 
-        case 'priority':
-            $value = $fs->priorities[$task['task_priority']];
-            break;
-
-        case 'duedate':
         case 'dateopened':
         case 'dateclosed':
         case 'lastedit':
             $value = formatDate($task[$indexes[$colname]]);
-            break;
-
-        case 'status':
-            if ($task['is_closed']) {
-                $value = eL('closed');
-            } else {
-                $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
-            }
             break;
 
         case 'progress':
@@ -119,8 +99,22 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             }
             break;
 
+        case 'state':
+            if ($task['is_closed']) {
+                $value = L('closed');
+            } elseif ($task['closed_by']) {
+                $value = L('reopened');
+            } else {
+                $value = L('open');
+            }
+            break;
+
         default:
-            $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+            if (isset($indexes[$colname])) {
+                $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+            } else {
+                $value = htmlspecialchars($task[$colname . '_name'], ENT_QUOTES, 'utf-8');
+            }
             break;
     }
 
@@ -136,8 +130,8 @@ if (Get::val('toggleadvanced')) {
     $_COOKIE['advancedsearch'] = $advanced_search;
 }
 
-// Update check {{{ 
-if(Get::has('hideupdatemsg')) {
+// Update check {{{
+if (Get::has('hideupdatemsg')) {
     unset($_SESSION['latest_version']);
 } else if ($conf['general']['update_check'] && $user->perms('is_admin')
            && $fs->prefs['last_update_check'] < time()-60*60*24*3) {

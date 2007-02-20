@@ -82,8 +82,8 @@ function unregister_GLOBALS()
        if (!in_array($k, $noUnset) && isset($GLOBALS[$k])) {
 
            unset($GLOBALS[$k]);
-           /* no, this is not a bug, we use double unset() .. it is to circunvent 
-           /* this PHP critical vulnerability 
+           /* no, this is not a bug, we use double unset() .. it is to circunvent
+           /* this PHP critical vulnerability
             * http://www.hardened-php.net/hphp/zend_hash_del_key_or_index_vulnerability.html
             * this is intended to minimize the catastrophic effects that has on systems with
             * register_globals on.. users with register_globals off are still vulnerable but
@@ -221,7 +221,7 @@ function php_compat_array_intersect_key()
     // Intersect keys
     $arg_keys = array_map('array_keys', $args);
     $result_keys = call_user_func_array('array_intersect', $arg_keys);
-    
+
     // Build return array
     $result = array();
     foreach($result_keys as $key) {
@@ -235,7 +235,64 @@ if (!function_exists('array_intersect_key')) {
     function array_intersect_key()
     {
         $args = func_get_args();
-        return call_user_func_array('php_compat_array_intersect_key', $args);   
+        return call_user_func_array('php_compat_array_intersect_key', $args);
+    }
+}
+
+/**
+ * Replace array_combine()
+ *
+ * @category    PHP
+ * @package     PHP_Compat
+ * @link        http://php.net/function.array_combine
+ * @author      Aidan Lister <aidan@php.net>
+ * @version     $Revision: 1.22 $
+ * @since       PHP 5
+ * @require     PHP 4.0.0 (user_error)
+ */
+function php_compat_array_combine($keys, $values)
+{
+    if (!is_array($keys)) {
+        user_error('array_combine() expects parameter 1 to be array, ' .
+            gettype($keys) . ' given', E_USER_WARNING);
+        return;
+    }
+
+    if (!is_array($values)) {
+        user_error('array_combine() expects parameter 2 to be array, ' .
+            gettype($values) . ' given', E_USER_WARNING);
+        return;
+    }
+
+    $key_count = count($keys);
+    $value_count = count($values);
+    if ($key_count !== $value_count) {
+        user_error('array_combine() Both parameters should have equal number of elements', E_USER_WARNING);
+        return false;
+    }
+
+    if ($key_count === 0 || $value_count === 0) {
+        user_error('array_combine() Both parameters should have number of elements at least 0', E_USER_WARNING);
+        return false;
+    }
+
+    $keys    = array_values($keys);
+    $values  = array_values($values);
+
+    $combined = array();
+    for ($i = 0; $i < $key_count; $i++) {
+        $combined[$keys[$i]] = $values[$i];
+    }
+
+    return $combined;
+}
+
+
+// Define
+if (!function_exists('array_combine')) {
+    function array_combine($keys, $values)
+    {
+        return php_compat_array_combine($keys, $values);
     }
 }
 
@@ -247,7 +304,7 @@ if(PHP_VERSION >= 5) {
 
 function flyspray_exception_handler($exception) {
 
-    die("Completely unexpected exception: " .  
+    die("Completely unexpected exception: " .
         htmlspecialchars($exception->getMessage(),ENT_QUOTES, 'utf-8')  . "<br/>" .
       "This should <strong> never </strong> happend, please inform Flyspray Developers");
 

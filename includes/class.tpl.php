@@ -10,7 +10,7 @@ class Tpl
     var $_vars  = array();
     var $_theme = '';
     var $_tpls  = array();
-    var $_title = "";
+    var $_title = '';
 
     function uses()
     {
@@ -22,16 +22,22 @@ class Tpl
     {
         if (is_string($arg0)) {
             $this->_vars[$arg0] = $arg1;
-        }elseif (is_array($arg0)) {
+        } elseif (is_array($arg0)) {
             $this->_vars += $arg0;
-        }elseif (is_object($arg0)) {
+        } elseif (is_object($arg0)) {
             $this->_vars += get_object_vars($arg0);
         }
     }
 
     function setTheme($theme)
     {
-        $this->_theme = str_replace('//', '/', $theme.'/');
+        // Check available themes
+        $themes = Flyspray::listThemes();
+        if (in_array($theme, $themes)) {
+            $this->_theme = $theme.'/';
+        } else {
+            $this->_theme = $themes[0].'/';
+        }
     }
 
     function setTitle($title)
@@ -59,17 +65,6 @@ class Tpl
     function pushTpl($_tpl)
     {
         $this->_tpls[] = $_tpl;
-    }
-
-    function catch_start()
-    {
-        ob_start();
-    }
-
-    function catch_end()
-    {
-        $this->_tpls[] = array(ob_get_contents());
-        ob_end_clean();
     }
 
     function display($_tpl, $_arg0 = null, $_arg1 = null)
@@ -132,7 +127,7 @@ class Tpl
 
 class FSTpl extends Tpl
 {
-    var $_uses = array('fs', 'conf', 'baseurl', 'language', 'proj', 'user');
+    var $_uses = array('fs', 'conf', 'baseurl', 'proj', 'user');
 
     function get_image($name, $base = true)
 	{
@@ -158,15 +153,14 @@ class FSTpl extends Tpl
 
 // {{{ costful templating functions, TODO: optimize them
 
-function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('status','summary','percent_complete'))
+function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $title = array('state','summary','percent_complete'))
 {
     global $user;
 
     $params = array();
 
-    if (!is_array($task) || !isset($task['status_name'])) {
-        $td_id = (is_array($task) && isset($task['task_id'])) ? $task['task_id'] : $task;
-        $task = Flyspray::GetTaskDetails($td_id, true);
+    if (!is_array($task)) {
+        $task = Flyspray::GetTaskDetails($task, true);
     }
 
     if ($strict === true && (!is_object($user) || !$user->can_view_task($task))) {
@@ -198,12 +192,14 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     {
         switch($info)
         {
-            case 'status':
+            case 'state':
                 if ($task['is_closed']) {
-                    $title_text[] = $task['resolution_name'];
+                    $title_text[] = L('closed');
                     $attrs['class'] = 'closedtasklink';
+                } elseif ($task['closed_by']) {
+                    $title_text[] = L('reopened');
                 } else {
-                    $title_text[] = $task['status_name'];
+                    $title_text[] = L('open');
                 }
                 break;
 
@@ -225,13 +221,8 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
                     $title_text[] = $task['percent_complete'].'%';
                 break;
 
-            case 'category':
-                if ($task['product_category']) {
-                    if (!isset($task['category_name'])) {
-                        $task = Flyspray::GetTaskDetails($task['task_id'], true);
-                    }
-                    $title_text[] = $task['category_name'];
-                }
+            case 'age':
+                $title_text[] = formatDate($task['date_opened']);
                 break;
 
             // ... more options if necessary
@@ -306,7 +297,7 @@ function join_attrs($attr = null) {
     return '';
 }
 // {{{ Datepicker
-function tpl_datepicker($name, $label = '', $value = 0) {
+function tpl_datepicker($name, $label = '', $value = 0, $attrs = array()) {
     //global $user;
 
     $date = '';
@@ -347,6 +338,7 @@ function tpl_datepicker($name, $label = '', $value = 0) {
     $page->assign('name', $name);
     $page->assign('date', $date);
     $page->assign('label', $label);
+    $page->assign('attrs', $attrs);
     $page->assign('dateformat', '%Y-%m-%d');
     $page->display('common.datepicker.tpl');
 }
@@ -379,7 +371,7 @@ function tpl_userselect($name, $value = null, $id = '', $attrs = array()) {
 // }}}
 
 // {{{ Options for a <select>
-function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null, $remove = null)
+function tpl_options($options, $selected = null, $labelIsValue = false, $attr = null, $remove = null, $classcol = null)
 {
     $html = '';
 
@@ -392,6 +384,9 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
 
     foreach ($options as $value=>$label)
     {
+        if (!is_null($classcol) && isset($label[$classcol])) {
+            $attr['class'] = $classcol . $label[$classcol];
+        }
         if (is_array($label)) {
             $value = $label[0];
             $label = $label[1];
@@ -408,6 +403,7 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         if (in_array($value, $selected)) {
             $html .= ' selected="selected"';
         }
+
         $html .= ($attr ? join_attrs($attr): '') . '>' . $label . '</option>';
     }
     if (!$html) {
@@ -614,14 +610,6 @@ function tpl_draw_perms($perms)
 {
     global $proj;
 
-    $perm_fields = array('is_admin', 'manage_project', 'view_tasks',
-            'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks', 'edit_assignments',
-            'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
-            'create_attachments', 'delete_attachments',
-            'view_history', 'close_own_tasks', 'close_other_tasks',
-            'assign_to_self', 'assign_others_to_self', 'view_reports',
-            'add_votes', 'edit_own_comments');
-
     $yesno = array(
             '<td class="bad">' . eL('no') . '</td>',
             '<td class="good">' . eL('yes') . '</td>');
@@ -633,7 +621,8 @@ function tpl_draw_perms($perms)
     $html .= '</th></tr></thead><tbody>';
 
     foreach ($perms[$proj->id] as $key => $val) {
-        if (!is_numeric($key) && in_array($key, $perm_fields)) {
+        if (!is_numeric($key) && !isset($proj->prefs[$key]) &&
+            !in_array($key, array('project_id', 'group_open', 'record_id', 'project_group', 'anon_view_tasks'))) {
             $display_key = htmlspecialchars(str_replace( '_', ' ', $key), ENT_QUOTES, 'utf-8');
             $html .= '<tr><th>' . $display_key . '</th>';
             $html .= $yesno[ ($val || $perms[0]['is_admin']) ].'</tr>';
@@ -809,7 +798,8 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
     global $proj, $page;
     $imgbase = '<img src="%s" alt="%s" />';
     $class   = '';
-    $html    = Filters::noXSS(L($colname));
+    $html    = $colname;
+    $colname = strtolower($colname);
     if ($colname == 'comments' || $colname == 'attachments') {
         $html = sprintf($imgbase, $page->get_image(substr($colname, 0, -1)), $html);
     }
@@ -823,11 +813,6 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
     }
     else {
         $sort1  = 'desc';
-        if (in_array($colname,
-                    array('project', 'tasktype', 'category', 'openedby', 'assignedto')))
-        {
-            $sort1 = 'asc';
-        }
         $sort2  = Get::safe('sort', 'desc');
         $order2 = Get::safe('order');
     }

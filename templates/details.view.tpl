@@ -1,4 +1,4 @@
-<div id="taskdetails">
+﻿<div id="taskdetails">
 <span id="navigation"> <?php if ($prev_id): ?>
   {!tpl_tasklink($prev_id, L('previoustask'), false, array('id'=>'prev', 'accesskey' => 'p'))}
   <?php endif; ?>
@@ -34,29 +34,34 @@
 
   <div id="taskfields">
 	 <table>
-		<tr>
-		  <th id="tasktype">{L('tasktype')}</th>
-		  <td headers="tasktype">{$task_details['tasktype_name']}</td>
+        <?php foreach ($proj->fields as $field): ?>
+        <tr>
+		  <th id="f{$field['field_id']}">{$field['field_name']}</th>
+		  <td headers="f{$field['field_id']}">
+          <?php if ($task_details['f' . $field['field_id'] . '_name']): ?>
+            <?php if ($field['list_type'] == LIST_CATEGORY): ?>
+              <?php foreach ($parents[$field['field_id']] as $cat): ?>
+			  {$cat} &#8594;
+			  <?php endforeach; ?>
+            <?php endif; ?>
+            {$task_details['f' . $field['field_id'] . '_name']}
+          <?php elseif ($field['field_type'] == FIELD_DATE && $task_details['f' . $field['field_id']]): ?>
+          {formatDate($task_details['f' . $field['field_id']])}
+          <?php else: ?>
+          <span class="fade">{L('notspecified')}</span>
+          <?php endif; ?>
+          </td>
 		</tr>
+        <?php endforeach; ?>
 		<tr>
-		  <th id="category">{L('category')}</th>
-		  <td headers="category">
-			 <?php foreach ($parent as $cat): ?>
-			 {$cat['category_name']} &#8594;
-			 <?php endforeach; ?>
-			 {$task_details['category_name']}
-		  </td>
-		</tr>
-		<tr>
-		  <th id="status">{L('status')}</th>
-		  <td headers="status">
+		  <th id="state">{L('state')}</th>
+		  <td headers="state">
 			 <?php if ($task_details['is_closed']): ?>
 			 {L('closed')}
-			 <?php else: ?>
-			 {$task_details['status_name']}
-               <?php if ($reopened): ?>
-                &nbsp; <strong class="reopened">{L('reopened')}</strong>
-               <?php endif; ?>
+			 <?php elseif ($task_details['closed_by']): ?>
+             <strong class="reopened">{L('reopened')}</strong>
+             <?php else: ?>
+             {L('open')}
 			 <?php endif; ?>
 		  </td>
 		</tr>
@@ -74,36 +79,8 @@
 		  </td>
 		</tr>
 		<tr>
-		  <th id="os">{L('operatingsystem')}</th>
-		  <td headers="os">{$task_details['os_name']}</td>
-		</tr>
-		<tr>
 		  <th id="severity">{L('severity')}</th>
 		  <td headers="severity">{$task_details['severity_name']}</td>
-		</tr>
-		<tr>
-		  <th id="priority">{L('priority')}</th>
-		  <td headers="priority">{$task_details['priority_name']}</td>
-		</tr>
-		<tr>
-		  <th id="reportedver">{L('reportedversion')}</th>
-		  <td headers="reportedver">{$task_details['reported_version_name']}</td>
-		</tr>
-		<tr>
-		  <th id="dueversion">{L('dueinversion')}</th>
-		  <td headers="dueversion">
-			 <?php if ($task_details['due_in_version_name']): ?>
-			 {$task_details['due_in_version_name']}
-			 <?php else: ?>
-			 {L('undecided')}
-			 <?php endif; ?>
-		  </td>
-		</tr>
-		<tr>
-		  <th id="duedate">{L('duedate')}</th>
-		  <td headers="duedate">
-			 {formatDate($task_details['due_date'], false, L('undecided'))}
-		  </td>
 		</tr>
 		<tr>
 		  <th id="percent">{L('percentcomplete')}</th>
@@ -292,7 +269,7 @@
 			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
 			 <select class="adminlist" name="resolution_reason" onmouseup="Event.stop(event);">
 				<option value="0">{L('selectareason')}</option>
-				{!tpl_options($proj->get_list('resolution'), Post::val('resolution_reason'))}
+				{!tpl_options($proj->get_list($fs->prefs['resolution_list']), Post::val('resolution_reason'))}
 			 </select>
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>

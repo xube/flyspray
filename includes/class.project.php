@@ -4,10 +4,34 @@ class Project
 {
     var $id = 0;
     var $prefs = array();
+    var $fields = array();
+
+    /**
+     * List of all columns, needed in templates
+     * @access public
+     * @var array
+     */
+    var $columns = array('id', 'project', 'severity', 'summary', 'dateopened', 'openedby',
+                         'assignedto', 'lastedit', 'comments', 'attachments', 'progress',
+                         'dateclosed', 'votes', 'state');
 
     function Project($id)
     {
         global $db, $fs;
+
+        // Get custom fields
+        $sql = $db->Query('SELECT f.*, l.list_type
+                            FROM {fields} f
+                       LEFT JOIN {lists} l ON f.list_id = l.list_id
+                           WHERE f.project_id IN (0, ?) ORDER BY field_name',
+                          array($id));
+        $this->fields = $db->FetchAllArray($sql);
+
+        // Extend the columns
+        $this->columns = array_combine($this->columns, array_map('L', $this->columns));
+        foreach ($this->fields as $field) {
+            $this->columns['f' . $field['field_id']] = $field['field_name'];
+        }
 
         if (is_numeric($id) && $id > 0) {
             $sql = $db->Query("SELECT p.*, c.content AS pm_instructions, c.last_updated AS cache_update
@@ -32,6 +56,8 @@ class Project
         $this->prefs['feed_img_url'] = '';
         $this->prefs['default_entry'] = 'index';
         $this->prefs['notify_reply'] = '';
+
+        return;
     }
 
     function setCookie()
@@ -73,15 +99,13 @@ class Project
     function _list_sql($type, $where = null)
     {
         // sanity check.
-        if (preg_match('![^A-Za-z0-9_]!', $type)) {
+        if (!is_numeric($type)) {
             return '';
         }
 
         return "SELECT  list_item_id, item_name
-                  FROM  {list_items} lb
-             LEFT JOIN  {lists} ls ON lb.list_id = ls.list_id
-                 WHERE  show_in_list = 1 AND list_name = '" . $type . "'
-                        AND (project_id = ? OR project_id = 0)
+                  FROM  {list_items}
+                 WHERE  show_in_list = 1 AND list_id = '{$type}'
                         $where
               ORDER BY  list_position";
     }
@@ -89,69 +113,54 @@ class Project
     // }}}
     // PM dependant functions {{{
 
-    function get_list($type)
-    {
-        global  $db;
-        return $db->cached_query($type, $this->_list_sql($type), array($this->id));
-    }
-
-    function listVersions($tense = null, $reported_version = null)
+    function get_list($id, $type = LIST_BASIC, $tense = null, $selected = null)
     {
         global $db;
 
-        $params = array($this->id);
+        $params =  array();
         $where = '';
 
-        if (!is_null($tense)) {
-            $where = 'AND version_tense = ?';
-            $params[] = $tense;
+        if ($type == LIST_CATEGORY) {
+            return $this->listCategories($id);
+        } else if ($type == LIST_VERSION) {
+            if ($tense > 0) {
+                $where = 'AND version_tense = ?';
+                $params[] = $tense;
+            }
+
+            if (!is_null($selected)) {
+                $where .= ' OR list_item_id = ?';
+                $params[] = $selected;
+            }
         }
 
-        if (!is_null($reported_version)) {
-            $where .= ' OR list_item_id = ?';
-            $params[] = $reported_version;
-        }
-
-        return $db->cached_query('version_' . intval($tense), $this->_list_sql('version', $where), $params);
+        return $db->cached_query($id . intval($tense), $this->_list_sql($id, $where), $params);
     }
 
-
-    function listCategories($project_id = null, $hide_hidden = true, $remove_root = true, $depth = true)
+    function listCategories($id, $hide_hidden = true, $remove_root = true, $depth = true)
     {
         global $db;
 
         // start with a empty arrays
         $right = array();
         $cats = array();
-        $g_cats = array();
-
-        // null = categories of current project + global project, int = categories of specific project
-        if (is_null($project_id)) {
-            $project_id = $this->id;
-            if ($this->id != 0) {
-                $g_cats = $this->listCategories(0);
-            }
-        }
 
         // retrieve the left and right value of the root node
         $result = $db->Query("SELECT lft, rgt
-                                FROM {list_category} lc
-                           LEFT JOIN {lists} l ON lc.list_id = l.list_id
-                               WHERE category_name = 'root' AND lft = 1 AND project_id = ?",
-                             array($project_id));
+                                FROM {list_category}
+                               WHERE category_name = 'root' AND lft = 1 AND list_id = ?",
+                             array($id));
         $row = $db->FetchRow($result);
 
         $groupby = $db->GetColumnNames('{list_category}', 'c.category_id', 'c.');
 
         // now, retrieve all descendants of the root node
-        $result = $db->Query('SELECT c.category_id, c.category_name, c.*, count(t.task_id) AS used_in_tasks
+        $result = $db->Query('SELECT c.category_id, c.category_name, c.*
                                 FROM {list_category} c
-                           LEFT JOIN {tasks} t ON (t.product_category = c.category_id)
-                           LEFT JOIN {lists} l ON c.list_id = l.list_id
-                               WHERE l.project_id = ? AND lft BETWEEN ? AND ?
+                               WHERE list_id = ? AND lft BETWEEN ? AND ?
                             GROUP BY ' . $groupby . '
                             ORDER BY lft ASC',
-                             array($project_id, intval($row['lft']), intval($row['rgt'])));
+                             array($id, intval($row['lft']), intval($row['rgt'])));
 
         while ($row = $db->FetchRow($result)) {
             if ($hide_hidden && !$row['show_in_list'] && !$row['lft'] == 1) {
@@ -182,25 +191,10 @@ class Project
             unset($cats[0]);
         }
 
-        return array_merge($cats, $g_cats);
+        return $cats;
     }
 
     // }}}
-
-    function fields($project_id = null)
-    {
-        global $db;
-
-        if (is_null($project_id)) {
-            $project_id = $this->id;
-        }
-
-        $sql = $db->Query('SELECT *
-                             FROM {fields}
-                            WHERE project_id IN (?, ?)',
-                           array($project_id, 0));
-        return $db->FetchAllArray($sql);
-    }
 
     function listAttachments($cid)
     {

@@ -21,7 +21,9 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="reason_given" type="X"/>
+    <field name="reason_given" type="X">
+      <NOTNULL/>
+    </field>
     <field name="time_submitted" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
@@ -111,7 +113,9 @@
     <field name="type" type="C" size="4">
       <NOTNULL/>
     </field>
-    <field name="content" type="X"/>
+    <field name="content" type="X">
+      <NOTNULL/>
+    </field>
     <field name="topic" type="C" size="30">
       <NOTNULL/>
     </field>
@@ -156,7 +160,9 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="comment_text" type="X"/>
+    <field name="comment_text" type="X">
+      <NOTNULL/>
+    </field>
     <field name="last_edited_time" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
@@ -182,6 +188,68 @@
       <UNIQUE/>
       <col>task_id</col>
       <col>dep_task_id</col>
+    </index>
+  </table>
+  <table name="field_values">
+    <field name="record_id" type="I" size="11">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="field_id" type="I" size="11">
+      <NOTNULL/>
+    </field>
+    <field name="task_id" type="I" size="11">
+      <NOTNULL/>
+    </field>
+    <field name="field_value" type="X">
+      <NOTNULL/>
+    </field>
+    <index name="field_values_unique">
+      <UNIQUE/>
+      <col>field_id</col>
+      <col>task_id</col>
+    </index>
+    <index name="field_values_task">
+      <col>task_id</col>
+    </index>
+    <index name="field_values_field">
+      <col>field_id</col>
+    </index>
+  </table>
+  <table name="fields">
+    <field name="field_id" type="I" size="11">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="field_name" type="C" size="50">
+      <NOTNULL/>
+    </field>
+    <field name="field_type" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="1"/>
+    </field>
+    <field name="version_tense" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="default_value" type="X"/>
+    <field name="force_default" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="list_id" type="I" size="11"/>
+    <field name="project_id" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <index name="fields_project">
+      <col>project_id</col>
+    </index>
+    <index name="fields_listid">
+      <col>list_id</col>
+    </index>
+    <index name="fields_type">
+      <col>field_type</col>
     </index>
   </table>
   <table name="groups">
@@ -287,11 +355,11 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="group_open" type="I" size="1">
+    <field name="view_userlist" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="view_userlist" type="I" size="1">
+    <field name="group_open" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
@@ -328,8 +396,12 @@
     <field name="field_changed" type="C" size="50">
       <NOTNULL/>
     </field>
-    <field name="old_value" type="X"/>
-    <field name="new_value" type="X"/>
+    <field name="old_value" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="new_value" type="X">
+      <NOTNULL/>
+    </field>
     <index name="idx_task_id">
       <col>task_id</col>
     </index>
@@ -439,9 +511,6 @@
       <KEY/>
       <AUTOINCREMENT/>
     </field>
-    <field name="message_data" type="X">
-      <NOTNULL/>
-    </field>
     <field name="time_created" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
@@ -514,7 +583,9 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="intro_message" type="X"/>
+    <field name="intro_message" type="X">
+      <NOTNULL/>
+    </field>
     <field name="visible_columns" type="C" size="255">
       <NOTNULL/>
     </field>
@@ -526,15 +597,29 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="notify_email" type="X"/>
-    <field name="notify_jabber" type="X"/>
-    <field name="notify_reply" type="X"/>
+    <field name="anon_view_tasks" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="notify_email" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="notify_jabber" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="notify_reply" type="X">
+      <NOTNULL/>
+    </field>
     <field name="notify_types" type="C" size="100">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="feed_img_url" type="X"/>
-    <field name="feed_description" type="X"/>
+    <field name="feed_img_url" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="feed_description" type="X">
+      <NOTNULL/>
+    </field>
     <field name="notify_subject" type="C" size="100">
       <NOTNULL/>
     </field>
@@ -553,20 +638,22 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="default_task" type="X"/>
+    <field name="default_task" type="X">
+      <NOTNULL/>
+    </field>
     <field name="default_entry" type="C" size="8">
       <NOTNULL/>
       <DEFAULT value="index"/>
-    </field>
-    <field name="anon_view_tasks" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
     </field>
     <field name="send_digest" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
     <field name="last_digest" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="roadmap_field" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
@@ -660,7 +747,9 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="reminder_message" type="X"/>
+    <field name="reminder_message" type="X">
+      <NOTNULL/>
+    </field>
   </table>
   <table name="searches">
     <field name="id" type="I" size="11">
@@ -674,7 +763,9 @@
     <field name="name" type="C" size="50">
       <NOTNULL/>
     </field>
-    <field name="search_string" type="X"/>
+    <field name="search_string" type="X">
+      <NOTNULL/>
+    </field>
     <field name="time" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
@@ -686,10 +777,6 @@
       <AUTOINCREMENT/>
     </field>
     <field name="project_id" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="task_type" type="I" size="3">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
@@ -714,39 +801,17 @@
       <DEFAULT value="0"/>
     </field>
     <field name="closure_comment" type="X"/>
-    <field name="item_summary" type="C" size="100">
+    <field name="item_summary" type="C" size="255">
       <NOTNULL/>
     </field>
-    <field name="detailed_desc" type="X"/>
-    <field name="item_status" type="I" size="3">
+    <field name="detailed_desc" type="X">
       <NOTNULL/>
-      <DEFAULT value="0"/>
     </field>
     <field name="resolution_reason" type="I" size="3">
       <NOTNULL/>
       <DEFAULT value="1"/>
     </field>
-    <field name="product_category" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="product_version" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="closedby_version" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="operating_system" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
     <field name="task_severity" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="task_priority" type="I" size="3">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
@@ -763,10 +828,6 @@
       <DEFAULT value="0"/>
     </field>
     <field name="mark_private" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="due_date" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
@@ -810,7 +871,9 @@
     <field name="user_name" type="C" size="32">
       <NOTNULL/>
     </field>
-    <field name="user_pass" type="C" size="40"/>
+    <field name="user_pass" type="C" size="40">
+      <NOTNULL/>
+    </field>
     <field name="real_name" type="C" size="100">
       <NOTNULL/>
     </field>

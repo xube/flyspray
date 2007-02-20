@@ -32,7 +32,7 @@
  * !!!
  */
 
-die("I am in line " . __LINE__ . ",remove me to use this tool");
+//die("I am in line " . __LINE__ . ",remove me to use this tool");
 
 require_once dirname(dirname(__FILE__)) . '/includes/fix.inc.php';
 
@@ -239,7 +239,7 @@ foreach ($language as $key => $val)
   {
     $bg = ($j++ & 1)? '#fff': '#eed';
     // Key
-    echo "<tr style=\"background-color:'$bg';\" valign=\"top\"><td align=\"right\">".($i+1)."</td><td><b>$key</b></td>";
+    echo "<tr id=tr$i style=\"background-color:'$bg';\" valign=\"top\"><td align=\"right\">".($i+1)."</td><td><b>$key</b></td>";
     // English (underline leading and trailing spaces)
     $space = "<b style=\"color:red;\" title=\"Remember to include a space in the translation!\">_</b>";
     echo "<td>". (preg_match("/^[ \t]/",$val)? $space: "") . nl2br(htmlentities($val)). (preg_match("/[ \t]$/",$val)? $space: "") ."</td>\n";
@@ -249,7 +249,7 @@ foreach ($language as $key => $val)
     // Count lines in both english and translation
     $lines = 1 + max(preg_match_all("/\n/", $val, $matches), preg_match_all("/\n/", $trans, $matches));
     // Javascript call on some input events
-    $onchange = "onchange=\"set('$key');\" onkeypress=\"set('$key');\"";
+    $onchange = "onchange=\"set('$key');\" onblur=\"document.getElementById('tr$i').style.backgroundColor='#ffffff';\" onfocus=\"document.getElementById('tr$i').style.backgroundColor='#f0f0f0';\" onkeypress=\"set('$key');\"";
     // \ is displayed as \\ in edit fields to allow \n as line feed
     $trans = str_replace("\\", "\\\\", $trans);
     if($lines > 1 || strlen(utf8_decode($val)) > 60 || strlen(utf8_decode($trans)) > 60)

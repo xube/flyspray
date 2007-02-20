@@ -165,11 +165,6 @@ class Backend
                 Flyspray::logEvent($row['task_id'], 19, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
                 Notifications::send($row['task_id'], ADDRESS_TASK, NOTIFY_OWNERSHIP);
             }
-
-            if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
-                $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
-                Flyspray::logEvent($row['task_id'], 3, 3, 1, 'item_status');
-            }
         }
     }
 
@@ -211,11 +206,6 @@ class Backend
             if ($db->affectedRows()) {
                 Flyspray::logEvent($row['task_id'], 29, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
                 Notifications::send($row['task_id'], ADDRESS_TASK, NOTIFY_ADDED_ASSIGNEES);
-            }
-
-            if ($row['item_status'] == STATUS_UNCONFIRMED || $row['item_status'] == STATUS_NEW) {
-                $db->Query('UPDATE {tasks} SET item_status = 3 WHERE task_id = ?', array($row['task_id']));
-                Flyspray::logEvent($row['task_id'], 3, 3, 1, 'item_status');
             }
         }
     }
@@ -677,39 +667,14 @@ class Backend
             return 0;
         }
 
-        // Some fields can have default values set
-        if (!$user->perms('modify_all_tasks')) {
-            $args['closedby_version'] = 0;
-            $args['task_priority'] = 2;
-            $args['due_date'] = 0;
-            $args['item_status'] = STATUS_UNCONFIRMED;
-        }
-
-        $param_names = array('task_type', 'item_status',
-                'product_category', 'product_version', 'closedby_version',
-                'operating_system', 'task_severity', 'task_priority');
-
         $sql_values = array(time(), time(), $args['project_id'], $item_summary,
-                $detailed_desc, intval($user->id), 0);
+                            $detailed_desc, intval($user->id), 0);
 
-        $sql_params = array();
-        foreach ($param_names as $param_name) {
-            if (isset($args[$param_name])) {
-                $sql_params[] = $param_name;
-                $sql_values[] = $args[$param_name];
-            }
-        }
-
-        // Process the due_date
-        if ( ($due_date = array_get($args, 'due_date', 0)) || ($due_date = 0) ) {
-            $due_date = Flyspray::strtotime($due_date);
-        }
+        $sql_params[] = 'task_severity';
+        $sql_values[] = array_get($args, 'task_severity', 2); // low severity
 
         $sql_params[] = 'mark_private';
         $sql_values[] = intval($user->perms('manage_project') && isset($args['mark_private']) && $args['mark_private'] == '1');
-
-        $sql_params[] = 'due_date';
-        $sql_values[] = $due_date;
 
         $sql_params[] = 'closure_comment';
         $sql_values[] = '';
@@ -720,10 +685,10 @@ class Backend
             $token = md5(uniqid(rand(), true));
             $sql_params[] = 'task_token';
             $sql_values[] = $token;
-
-            $sql_params[] = 'anon_email';
-            $sql_values[] = $args['anon_email'];
         }
+
+        $sql_params[] = 'anon_email';
+        $sql_values[] = array_get($args, 'anon_email', '');
 
         $sql_params = join(', ', $sql_params);
         $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
@@ -742,19 +707,34 @@ class Backend
                                    percent_complete, $sql_params )
                          VALUES  (?, $sql_placeholder)", $sql_values);
 
+        // Now the custom fields
+        foreach ($proj->fields as $field) {
+            if ($field['field_type'] == FIELD_DATE) {
+                if ($value = array_get($args, 'field' . $field['field_id'], 0)) {
+                    $value = Flyspray::strtotime($value);
+                }
+            } else {
+                $value = array_get($args, 'field' . $field['field_id'], 0);
+            }
+            if ($field['force_default'] && !$user->perms('modify_all_tasks')) {
+                $value = $field['default_value'];
+            }
+            $db->Query('INSERT INTO {field_values} (task_id, field_id, field_value)
+                             VALUES (?, ?, ?)', array($task_id, $field['field_id'], $value));
+        }
+
         // Log the assignments and send notifications to the assignees
-        if (isset($args['assigned_to']) && trim($args['assigned_to']))
-        {
+        if (isset($args['assigned_to']) && trim($args['assigned_to'])) {
             // Convert assigned_to and store them in the 'assigned' table
             foreach (Flyspray::int_explode(' ', trim($args['assigned_to'])) as $key => $val)
             {
                 $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task_id), array('user_id','task_id'));
             }
-            // Log to task history
+
             Flyspray::logEvent($task_id, 14, trim($args['assigned_to']));
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-            Notifications::send(Flyspray::int_explode(' ', $args['assigned_to']), ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, $task_id);
+            Notifications::send(Flyspray::int_explode(' ', $args['assigned_to']), ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, array('task_id' => $task_id));
         }
 
         // Log that the task was opened
@@ -762,47 +742,50 @@ class Backend
 
         Backend::upload_files($task_id);
 
-        $result = $db->Query('SELECT  *
-                                FROM  {list_category}
-                               WHERE  category_id = ?',
-                               array($args['product_category']));
-        $cat_details = $db->FetchRow($result);
+        // find category owners
+        $owners = array();
+        foreach ($proj->fields as $field) {
+            if ($field['list_type'] != LIST_CATEGORY) {
+                continue;
+            }
 
-        // We need to figure out who is the category owner for this task
-        if (!empty($cat_details['category_owner'])) {
-            $owner = $cat_details['category_owner'];
-        }
-        else {
+            $sql = $db->Query('SELECT  *
+                                 FROM  {list_category}
+                                WHERE  category_id = ?',
+                               array(array_get($args, 'field' . $field['field_id'], 0)));
+            $cat = $db->FetchRow($sql);
+
+            if ($cat['category_owner']) {
+                $owners[] = $cat['category_owner'];
+            } else {
             // check parent categories
-            $result = $db->Query('SELECT  lc.*
-                                    FROM  {list_category} lc
-                               LEFT JOIN  {lists} l ON lc.list_id = l.list_id
-                                   WHERE  lft < ? AND rgt > ? AND project_id  = ?
-                                ORDER BY  lft DESC',
-                                   array($cat_details['lft'], $cat_details['rgt'], $cat_details['project_id']));
-            while ($row = $db->FetchRow($result)) {
-                // If there's a parent category owner, send to them
-                if (!empty($row['category_owner'])) {
-                    $owner = $row['category_owner'];
-                    break;
+                $sql = $db->Query('SELECT  *
+                                     FROM  {list_category}
+                                    WHERE  lft < ? AND rgt > ? AND list_id  = ?
+                                 ORDER BY  lft DESC',
+                                   array($cat['lft'], $cat['rgt'], $cat['list_id']));
+                while ($row = $db->FetchRow($sql)) {
+                    // If there's a parent category owner, send to them
+                    if ($row['category_owner']) {
+                        $owners[] = $row['category_owner'];
+                        break;
+                    }
                 }
             }
         }
-
-        if (!isset($owner)) {
-            $owner = $proj->prefs['default_cat_owner'];
+        // last try...
+        if (!count($owners) && $proj->prefs['default_cat_owner']) {
+            $owners[] = $proj->prefs['default_cat_owner'];
         }
 
-        if ($owner) {
-            if ($proj->prefs['auto_assign'] && ($args['item_status'] == STATUS_UNCONFIRMED || $args['item_status'] == STATUS_NEW)) {
-                Backend::add_to_assignees($owner, $task_id, true);
+        if (count($owners)) {
+            foreach ($owners as $owner) {
+                if ($proj->prefs['auto_assign']) {
+                    Backend::add_to_assignees($owner, $task_id, true);
+                }
+
+                Backend::add_notification($owner, $task_id, true);
             }
-            Backend::add_notification($owner, $task_id, true);
-        }
-
-        // Reminder for due_date field
-        if ($due_date) {
-            Backend::add_reminder($task_id, L('defaultreminder') . "\n\n" . CreateURL('details', $task_id), 2*24*60*60, time());
         }
 
         // Create the Notification
@@ -906,15 +889,8 @@ class Backend
         $groupby = '';
         $from   = '             {tasks}         t
                      LEFT JOIN  {projects}      p   ON t.project_id = p.project_id
-                     LEFT JOIN  {list_items}  lt  ON t.task_type = lt.list_item_id
-                     LEFT JOIN  {list_items}   lst ON t.item_status = lst.list_item_id
                      LEFT JOIN  {list_items} lr ON t.resolution_reason = lr.list_item_id ';
         // Only join tables which are really necessary to speed up the db-query
-        if (array_get($args, 'cat') || in_array('category', $visible)) {
-            $from   .= ' LEFT JOIN  {list_category} lc  ON t.product_category = lc.category_id ';
-            $select .= ' lc.category_name               AS category_name, ';
-            $groupby .= 'lc.category_name, ';
-        }
         if (in_array('votes', $visible)) {
             $from   .= ' LEFT JOIN  {votes} vot         ON t.task_id = vot.task_id ';
             $select .= ' COUNT(DISTINCT vot.vote_id)    AS num_votes, ';
@@ -927,11 +903,6 @@ class Backend
             $from   .= ' LEFT JOIN  {comments} c        ON t.task_id = c.task_id ';
             $select .= ' COUNT(DISTINCT c.comment_id)   AS num_comments, ';
         }
-        if (in_array('reportedin', $visible)) {
-            $from   .= ' LEFT JOIN  {list_items} lv   ON t.product_version = lv.list_item_id ';
-            $select .= ' lv.item_name                AS product_version, ';
-            $groupby .= 'lv.item_name, ';
-        }
         if (array_get($args, 'opened') || in_array('openedby', $visible)) {
             $from   .= ' LEFT JOIN  {users} uo          ON t.opened_by = uo.user_id ';
             $select .= ' uo.real_name                   AS opened_by_name, ';
@@ -941,16 +912,6 @@ class Backend
             $from   .= ' LEFT JOIN  {users} uc          ON t.closed_by = uc.user_id ';
             $select .= ' uc.real_name                   AS closed_by_name, ';
             $groupby .= 'uc.real_name, ';
-        }
-        if (array_get($args, 'due') || in_array('dueversion', $visible)) {
-            $from   .= ' LEFT JOIN  {list_items} lvc  ON t.closedby_version = lvc.list_item_id ';
-            $select .= ' lvc.item_name               AS closedby_version, ';
-            $groupby .= 'lvc.item_name, ';
-        }
-        if (in_array('os', $visible)) {
-            $from   .= ' LEFT JOIN  {list_items} los       ON t.operating_system = los.list_item_id ';
-            $select .= ' los.list_item_id                    AS os_name, ';
-            $groupby .= 'los.list_item_id, ';
         }
         if (in_array('attachments', $visible) || array_get($args, 'has_attachment')) {
             $from   .= ' LEFT JOIN  {attachments} att   ON t.task_id = att.task_id ';
@@ -972,33 +933,21 @@ class Backend
             $where[] = 'att.attachment_id IS NOT null';
         }
 
-        if ($proj->id) {
-            $where[]       = 't.project_id = ?';
-            $sql_params[]  = $proj->id;
-        }
-
         $order_keys = array (
                 'id'           => 't.task_id',
                 'project'      => 'project_title',
-                'tasktype'     => 'tasktype_name',
                 'dateopened'   => 'date_opened',
                 'summary'      => 'item_summary',
                 'severity'     => 'task_severity',
-                'category'     => 'lc.category_name',
-                'status'       => 'is_closed, item_status',
-                'dueversion'   => 'lvc.list_position',
-                'duedate'      => 'due_date',
                 'progress'     => 'percent_complete',
                 'lastedit'     => 'event_date',
-                'priority'     => 'task_priority',
                 'openedby'     => 'uo.real_name',
-                'reportedin'   => 't.product_version',
                 'assignedto'   => 'u.real_name',
                 'dateclosed'   => 't.date_closed',
-                'os'           => 'los.os_name',
                 'votes'        => 'num_votes',
                 'attachments'  => 'num_attachments',
                 'comments'     => 'num_comments',
+                'state'        => 'closed_by, is_closed',
         );
 
         // Default user sort column and order
@@ -1028,14 +977,74 @@ class Backend
                 $order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')),
                 $order_column[1], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));
 
+        // search custom fields
+        $custom_fields_joined = array();
+        foreach ($proj->fields as $field) {
+            $ref = 'f' . $field['field_id'];
+            if ($field['field_type'] == FIELD_DATE) {
+                if (!array_get($args, $field['field_id'] . 'from') && !array_get($args, $field['field_id'] . 'to')) {
+                    continue;
+                }
+
+                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = ? ";
+                $sql_params[] = $field['field_id'];
+                $custom_fields_joined[] = $field['field_id'];
+
+                if ($date = array_get($args, $field['field_id'] . 'from')) {
+                    $where[]      = "({$ref}.field_value >= ?)";
+                    $sql_params[] = Flyspray::strtotime($date);
+                }
+                if ($date = array_get($args, $field['field_id'] . 'to')) {
+                    $where[]      = "({$ref}.field_value <= ? AND {$ref}.field_value > 0)";
+                    $sql_params[] = Flyspray::strtotime($date);
+                }
+            } else {
+                if (in_array('', array_get($args, 'field' . $field['field_id'], array('')))) {
+                    continue;
+                }
+
+                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = ? ";
+                $sql_params[] = $field['field_id'];
+                $custom_fields_joined[] = $field['field_id'];
+                $fwhere = array();
+
+                foreach ($args['field' . $field['field_id']] as $val) {
+                    $fwhere[] = " {$ref}.field_value = ? ";
+                    $sql_params[] = $val;
+                }
+                if (count($fwhere)) {
+                    $where[] =  ' (' . implode(' OR ', $fwhere) . ') ';
+                }
+            }
+        }
+        // now join custom fields used in columns
+        foreach ($proj->columns as $col => $name) {
+            if (preg_match('/f(\d+)/', $col, $match) && in_array($col, $visible)) {
+                if (!in_array($match[1], $custom_fields_joined)) {
+                    $from   .= " LEFT JOIN {field_values} $col ON t.task_id = $col.task_id AND $col.field_id = " . intval($match[1]);
+                }
+                $from .= " LEFT JOIN {fields} f$col ON f$col.field_id = $col.field_id
+                           LEFT JOIN {lists} l$col ON l$col.list_id = f$col.list_id
+                           LEFT JOIN {list_items} li$col ON (l$col.list_type <> " . LIST_CATEGORY . " AND f$col.list_id = li$col.list_id AND $col.field_value = li$col.list_item_id)
+                           LEFT JOIN {list_category} lc$col ON (l$col.list_type = " . LIST_CATEGORY . " AND f$col.list_id = lc$col.list_id AND $col.field_value = lc$col.category_id) ";
+                $select .= " li$col.item_name AS {$col}_name, "; // adding data to queries not nice, but otherwise sql_params and joins are not in sync
+            }
+        }
+
+        // open / closed (never thought that I'd use XOR some time)
+        if (in_array('open', array_get($args, 'status', array('open'))) XOR in_array('closed', array_get($args, 'status', array()))) {
+            $where[] = ' is_closed = ? ';
+            $sql_params[] = (int) in_array('closed', array_get($args, 'status', array()));
+        }
+
         /// process search-conditions {{{
-        $submits = array('type' => 'task_type', 'sev' => 'task_severity', 'due' => 'closedby_version', 'reported' => 'product_version',
-                         'cat' => 'product_category', 'status' => 'item_status', 'percent' => 'percent_complete', 'pri' => 'task_priority',
+        $submits = array('sev' => 'task_severity',
+                         'percent' => 'percent_complete',
                          'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
                          'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'),
                          'closed' => array('closed_by', 'uc.user_name', 'uc.real_name'));
         foreach ($submits as $key => $db_key) {
-            $type = array_get($args, $key, ($key == 'status') ? 'open' : '');
+            $type = array_get($args, $key, '');
             settype($type, 'array');
 
             if (in_array('', $type)) continue;
@@ -1047,18 +1056,12 @@ class Backend
 
             $temp = '';
             foreach ($type as $val) {
-                // add conditions for the status selection
-                if ($key == 'status' && $val == 'closed') {
-                    $temp  .= " is_closed = '1' AND";
-                } elseif ($key == 'status') {
-                    $temp .= " is_closed <> '1' AND";
-                }
-                if (is_numeric($val) && !is_array($db_key) && !($key == 'status' && $val == 'closed')) {
+                if (is_numeric($val) && !is_array($db_key)) {
                     $temp .= ' ' . $db_key . ' = ?  OR';
                     $sql_params[] = $val;
                 } elseif (is_array($db_key)) {
                     if ($key == 'dev' && ($val == 'notassigned' || $val == '0' || $val == '-1')) {
-                        $temp .= ' a.user_id is null  OR';
+                        $temp .= ' a.user_id IS NULL  OR';
                     } else {
                         if (!is_numeric($val)) $val = '%' . $val . '%';
                         foreach ($db_key as $value) {
@@ -1067,33 +1070,13 @@ class Backend
                         }
                     }
                 }
-
-                // Add the subcategories to the query
-                if ($key == 'cat') {
-                    $result = $db->Query('SELECT  *
-                                            FROM  {list_category}
-                                           WHERE  category_id = ?',
-                                          array($val));
-                    $cat_details = $db->FetchRow($result);
-
-                    $result = $db->Query('SELECT  lc.*
-                                            FROM  {list_category} lc
-                                       LEFT JOIN {lists} l ON lc.list_id = l.list_id
-                                           WHERE  lft > ? AND rgt < ? AND project_id  = ?',
-                                           array($cat_details['lft'], $cat_details['rgt'], $cat_details['project_id']));
-                    while ($row = $db->FetchRow($result)) {
-                        $temp  .= ' product_category = ?  OR';
-                        $sql_params[] = $row['category_id'];
-                    }
-                }
             }
 
             if ($temp) $where[] = '(' . substr($temp, 0, -3) . ')';
         }
         /// }}}
 
-        $dates = array('duedate' => 'due_date', 'changed' => 'event_date',
-                       'opened' => 'date_opened', 'closed' => 'date_closed');
+        $dates = array('changed' => 'event_date', 'opened' => 'date_opened', 'closed' => 'date_closed');
         foreach ($dates as $post => $db_key) {
             if ($date = array_get($args, $post . 'from')) {
                 $where[]      = '(' . $db_key . ' >= ?)';
@@ -1133,6 +1116,11 @@ class Backend
             $sql_params[] = $user->id;
         }
 
+        if ($proj->id) {
+            $where[]       = 't.project_id = ?';
+            $sql_params[]  = $proj->id;
+        }
+
         $where = (count($where)) ? 'WHERE '. join(' AND ', $where) : '';
 
         // Get the column names of table tasks for the group by statement
@@ -1144,8 +1132,6 @@ class Backend
         $sql = $db->Query("
                           SELECT   t.*, $select
                                    p.project_title,
-                                   lst.item_name AS status_name,
-                                   lt.item_name AS task_type,
                                    lr.item_name AS resolution_name
                           FROM     $from
                           $where

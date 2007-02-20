@@ -15,7 +15,7 @@
        <th>{L('name')}</th>
        <th>{L('order')}</th>
        <th>{L('show')}</th>
-       <?php if ($list_type == 'versions'): ?><th>{L('tense')}</th><?php endif; ?>
+       <?php if ($list_type == LIST_VERSION): ?><th>{L('tense')}</th><?php endif; ?>
        <th>{L('delete')}</th>
      </tr>
    </thead>
@@ -36,7 +36,7 @@
       <td title="{L('showtip')}">
         {!tpl_checkbox('show_in_list['.$countlines.']', $row['show_in_list'], 'showinlist'.$countlines)}
       </td>
-      <?php if ($list_type == 'versions'): ?>
+      <?php if ($list_type == LIST_VERSION): ?>
       <td title="{L('listtensetip')}">
         <select id="tense{$countlines}" name="version_tense[]">
           {!tpl_options(array(1=>L('past'), 2=>L('present'), 3=>L('future')), $row['version_tense'])}
@@ -45,7 +45,7 @@
       <?php endif; ?>
       <td title="{L('deletetip')}">
         <input id="delete{$row['list_item_id']}" type="checkbox"
-        <?php if ($row['used_in_tasks'] || ($list_type == 'status' && $row['list_item_id'] < 7) || ($list_type == 'resolution' && $row['list_item_id'] == 6)): ?>
+        <?php if ($row['used_in_tasks']): ?>
         disabled="disabled"
         <?php endif; ?>
         name="delete[{$row['list_item_id']}]" value="1" />
@@ -96,7 +96,7 @@
       <td>
         <input id="showinlistnew" type="checkbox" name="show_in_list" checked="checked" disabled="disabled" />
       </td>
-      <?php if ($list_type == 'versions'): ?>
+      <?php if ($list_type == LIST_VERSION): ?>
       <td title="{L('listtensetip')}">
         <select id="tensenew" name="version_tense">
           {!tpl_options(array(1=>L('past'), 2=>L('present'), 3=>L('future')), 2)}
