@@ -18,8 +18,7 @@
           <td headers="f{$field['field_id']}">
           <?php if ($field['list_id'] && $field['field_type'] == FIELD_LIST): ?>
           <select id="f{$field['field_id']}" name="field{$field['field_id']}" {!tpl_disableif($field['force_default'] && !$user->perms('modify_all_tasks'))}>
-            {!tpl_options($proj->get_list($field['list_id'], $field['list_type'], $field['version_tense']),
-                          Post::val('field' . $field['field_id'], $field['default_value']))}
+            {!tpl_options($proj->get_list($field), Post::val('field' . $field['field_id'], $field['default_value']))}
           </select>
           <?php elseif ($field['field_type'] == FIELD_DATE): ?>
           <?php if ($field['force_default'] && !$user->perms('modify_all_tasks')) $attrs = array('readonly' => 'readonly'); else $attrs = array(); ?>
@@ -92,10 +91,6 @@
     <p>
         <?php if ($user->isAnon()): ?>
         <label class="inline" for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30" /><br />
-        <?php endif; ?>
-        <?php if (!$user->perms('modify_all_tasks')): ?>
-        <input type="hidden" name="item_status"   value="1" />
-        <input type="hidden" name="task_priority" value="2" />
         <?php endif; ?>
         <input type="hidden" name="action" value="newtask.newtask" />
         <input type="hidden" name="project_id" value="{$proj->id}" />

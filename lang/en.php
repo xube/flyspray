@@ -900,6 +900,7 @@ Regards,',
 'defaultvalue'            => 'Default value',
 'forcedefaulttip'         => 'Force the default value for new tasks',
 'forcedefault'            => 'Force default',
+'required'                => 'Required',
 );
 
 ?>

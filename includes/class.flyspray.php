@@ -515,8 +515,7 @@ class Flyspray
 
         if($db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed,
                        old_value, new_value) VALUES (?, ?, ?, ?, ?, ?, ?)', $query_params)) {
-
-                           return true;
+            return true;
          }
 
         return false;

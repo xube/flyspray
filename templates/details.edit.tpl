@@ -37,7 +37,7 @@
               <td headers="f{$field['field_id']}">
               <?php if ($field['list_id'] && $field['field_type'] == FIELD_LIST): ?>
               <select id="f{$field['field_id']}" name="field{$field['field_id']}">
-                {!tpl_options($proj->get_list($field['list_id'], $field['list_type'], $field['version_tense'], $task_details['f' . $field['field_id']]),
+                {!tpl_options($proj->get_list($field, $task_details['f' . $field['field_id']]),
                               Post::val('field' . $field['field_id'], $task_details['f' . $field['field_id']]))}
               </select>
               <?php elseif ($field['field_type'] == FIELD_DATE): ?>

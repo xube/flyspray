@@ -76,10 +76,11 @@ class Project
         //Get the column names of list tables for the group by statement
         $groupby = $db->GetColumnNames('{list_items}',  'lb.list_item_id', 'lb.');
 
-        $sql = $db->Query('SELECT lb.*, count(t.task_id) AS used_in_tasks
+        $sql = $db->Query('SELECT lb.*, count(fv.task_id) AS used_in_tasks
                              FROM {list_items} lb
-                        LEFT JOIN {tasks} t ON lb.list_item_id IN (t.item_status, t.resolution_reason, t.operating_system, t.task_type)
-                            WHERE list_id = ?
+                        LEFT JOIN {fields} f ON f.list_id = lb.list_id
+                        LEFT JOIN {field_values} fv ON (fv.field_id = f.field_id AND field_value = lb.list_item_id)
+                            WHERE lb.list_id = ?
                          GROUP BY ' . $groupby . '
                          ORDER BY list_position',
                           array($list_id));
@@ -113,19 +114,21 @@ class Project
     // }}}
     // PM dependant functions {{{
 
-    function get_list($id, $type = LIST_BASIC, $tense = null, $selected = null)
+    function get_list($field, $selected = null)
     {
         global $db;
-
+        $default = array('list_type' => LIST_BASIC, 'version_tense' => null, 'value_required' => 1);
+        $field = array_merge($default, $field);
         $params =  array();
         $where = '';
+        $required = (!$field['value_required']) ? array(array(0 => 0, 1 => L('notspecified'))) : array();
 
-        if ($type == LIST_CATEGORY) {
-            return $this->listCategories($id);
-        } else if ($type == LIST_VERSION) {
-            if ($tense > 0) {
+        if ($field['list_type'] == LIST_CATEGORY) {
+            return array_merge($required, $this->listCategories($field['list_id']));
+        } else if ($field['list_type'] == LIST_VERSION) {
+            if ($field['version_tense'] > 0) {
                 $where = 'AND version_tense = ?';
-                $params[] = $tense;
+                $params[] = $field['version_tense'];
             }
 
             if (!is_null($selected)) {
@@ -134,7 +137,8 @@ class Project
             }
         }
 
-        return $db->cached_query($id . intval($tense), $this->_list_sql($id, $where), $params);
+        return array_merge($required,
+                  $db->cached_query($field['list_id'] . intval($field['version_tense']), $this->_list_sql($field['list_id'], $where), $params));
     }
 
     function listCategories($id, $hide_hidden = true, $remove_root = true, $depth = true)

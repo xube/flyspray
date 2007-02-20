@@ -1556,6 +1556,7 @@ switch ($action = Req::val('action'))
         $default = Post::val('default_value');
         $delete = Post::val('delete');
         $force = Post::val('force_default');
+        $required = Post::val('value_required');
 
         foreach (Post::val('id') as $id) {
             if (isset($delete[$id])) {
@@ -1571,10 +1572,10 @@ switch ($action = Req::val('action'))
             if ($proj->fields[Flyspray::array_find('field_id', $id, $proj->fields)]['field_type'] == FIELD_DATE) {
                 $default[$id] = Flyspray::strtotime(array_get($default, $id, 0));
             }
-            $db->Query('UPDATE {fields} SET field_name = ?, field_type = ?, list_id = ?,
+            $db->Query('UPDATE {fields} SET field_name = ?, field_type = ?, list_id = ?, value_required = ?,
                                             version_tense = ?, default_value = ?, force_default = ?
                          WHERE field_id = ? AND project_id = ?',
-                        array($names[$id], $types[$id], array_get($lists, $id, null),
+                        array($names[$id], $types[$id], array_get($lists, $id, null), array_get($required, $id, 0),
                               array_get($tense, $id, 0), array_get($default, $id, 0),
                               array_get($force, $id, 0), $id, $proj->id));
         }

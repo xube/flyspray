@@ -8,6 +8,7 @@
        <th>{L('versiontense')}</th>
        <th>{L('defaultvalue')}</th>
        <th title="{L('forcedefaulttip')}">{L('forcedefault')}</th>
+       <th>{L('required')}</th>
        <th>{L('delete')}</th>
      </tr>
    </thead>
@@ -42,14 +43,17 @@
       <td>
         <?php if ($field['list_id'] && $field['field_type'] == FIELD_LIST): ?>
         <select name="default_value[{$field['field_id']}]">
-          {!tpl_options($proj->get_list($field['list_id'], $field['list_type']), $field['default_value'])}
+          {!tpl_options($proj->get_list($field), $field['default_value'])}
         </select>
         <?php elseif ($field['field_type'] == FIELD_DATE): ?>
           {!tpl_datepicker('default_value[' . $field['field_id'] . ']', '', $field['default_value'])}
         <?php endif; ?>
       </td>
       <td>
-          {!tpl_checkbox('force_default[' . $field['field_id'] . ']', $field['force_default'])}
+        {!tpl_checkbox('force_default[' . $field['field_id'] . ']', $field['force_default'])}
+      </td>
+      <td>
+        {!tpl_checkbox('value_required[' . $field['field_id'] . ']', $field['value_required'])}
       </td>
       <td title="{L('deletetip')}">
         <input type="checkbox" name="delete[{$field['field_id']}]" value="1" />

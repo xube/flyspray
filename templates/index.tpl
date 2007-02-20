@@ -63,7 +63,7 @@
         <div class="search_select">
         <label class="default multisel" for="field{$field['field_id']}">{$field['field_name']}</label>
         <select name="field{$field['field_id']}[]" id="field{$field['field_id']}" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('allitems')) + $proj->get_list($field['list_id'], $field['list_type']), Get::val('field' . $field['field_id'], ''))}
+          {!tpl_options(array('' => L('allitems')) + $proj->get_list($field), Get::val('field' . $field['field_id'], ''))}
         </select>
         </div>
         <?php endforeach; ?>

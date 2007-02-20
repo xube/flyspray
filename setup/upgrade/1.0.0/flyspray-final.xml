@@ -237,6 +237,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="value_required" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
     <field name="list_id" type="I" size="11"/>
     <field name="project_id" type="I" size="11">
       <NOTNULL/>
@@ -396,9 +400,7 @@
     <field name="field_changed" type="C" size="50">
       <NOTNULL/>
     </field>
-    <field name="old_value" type="X">
-      <NOTNULL/>
-    </field>
+    <field name="old_value" type="X" />
     <field name="new_value" type="X">
       <NOTNULL/>
     </field>

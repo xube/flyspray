@@ -418,21 +418,6 @@ class Notifications
     {
         global $db, $fs, $user;
 
-        // Adjust task details
-        if (isset($data['task'])) {
-            // Set the due date correctly
-            if ($data['task']['due_date'] == '0') {
-                $due_date = L('undecided');
-            } else {
-                $due_date = formatDate($data['task']['due_date']);
-            }
-
-            // Set the due version correctly
-            if ($data['task']['closedby_version'] == '0') {
-                $data['task']['due_in_version_name'] = L('undecided');
-            }
-        }
-
         // Get the string of modification
         $notify_type_msg = array(
             0 => L('none'),
