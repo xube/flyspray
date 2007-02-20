@@ -62,4 +62,95 @@
       <col>field_type</col>
     </index>
   </table>
+ <table name="projects">
+    <field name="project_id" type="I" size="3">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="project_title" type="C" size="100">
+      <NOTNULL/>
+    </field>
+    <field name="theme_style" type="C" size="20">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="default_cat_owner" type="I" size="3">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="intro_message" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="visible_columns" type="C" size="255">
+      <NOTNULL/>
+    </field>
+    <field name="others_view" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="anon_open" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="anon_view_tasks" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="notify_email" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="notify_jabber" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="notify_reply" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="notify_types" type="C" size="100">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="feed_img_url" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="feed_description" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="notify_subject" type="C" size="100">
+      <NOTNULL/>
+    </field>
+    <field name="lang_code" type="C" size="10">
+      <NOTNULL/>
+    </field>
+    <field name="comment_closed" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="auto_assign" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="last_updated" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="default_task" type="X">
+      <NOTNULL/>
+    </field>
+    <field name="default_entry" type="C" size="8">
+      <NOTNULL/>
+      <DEFAULT value="index"/>
+    </field>
+    <field name="send_digest" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="last_digest" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="roadmap_field" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+  </table>
 </schema>
