@@ -669,8 +669,9 @@ class Backend
         }
 
         foreach ($proj->fields as $field) {
-            if ($field['value_required'] && !array_get($args, 'field' . $field['field_id'])) {
-                Flyspray::show_error(L('missingrequired'));
+            if ($field['value_required'] && !array_get($args, 'field' . $field['field_id'])
+                && !($field['force_default'] && !$user->perms('modify_all_tasks'))) {
+                Flyspray::show_error(L('missingrequired') . ' (' . $field['field_name'] . ')');
                 return 0;
             }
         }

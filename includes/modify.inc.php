@@ -52,7 +52,7 @@ switch ($action = Req::val('action'))
     // Modifying an existing task
     // ##################
     case 'details.update':
-        if (!$user->can_edit_task($task)) {
+        if (!$user->can_edit_task($task) && !$user->can_correct_task($task)) {
             break;
         }
 
@@ -63,8 +63,9 @@ switch ($action = Req::val('action'))
         }
 
         foreach ($proj->fields as $field) {
-            if ($field['value_required'] && !Post::val('field' . $field['field_id'])) {
-                Flyspray::show_error(L('missingrequired'));
+            if ($field['value_required'] && !Post::val('field' . $field['field_id'])
+                && !($field['force_default'] && !$user->perms('modify_all_tasks'))) {
+                Flyspray::show_error(L('missingrequired') . ' (' . $field['field_name'] . ')');
                 break 2;
             }
         }
@@ -83,6 +84,9 @@ switch ($action = Req::val('action'))
                       Post::val('percent_complete'), $task['task_id']));
         // Now the custom fields
         foreach ($proj->fields as $field) {
+            if ($field['force_default'] && !$user->can_edit_task($task)) {
+                continue; // make sure that a user who is only correcting his task does not change certain fields
+            }
             $field_value = Post::val('field' . $field['field_id']);
             if ($field['field_type'] == FIELD_DATE) {
                 $field_value = Flyspray::strtotime($field_value);

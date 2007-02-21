@@ -10,23 +10,23 @@
   <?php endif; ?>
 </span>
 
-  <h2 class="summary severity{$task_details['task_severity']}">
-	 FS#{$task_details['task_id']} &mdash; {$task_details['item_summary']}
+  <h2 class="summary severity{$task['task_severity']}">
+	 FS#{$task['task_id']} &mdash; {$task['item_summary']}
   </h2>
 
   <div id="fineprint">
 	 {L('attachedtoproject')} &mdash;
-	 <a href="{$_SERVER['SCRIPT_NAME']}?project={$task_details['project_id']}">{$proj->prefs['project_title']}</a>
+	 <a href="{$_SERVER['SCRIPT_NAME']}?project={$task['project_id']}">{$proj->prefs['project_title']}</a>
 	 <br />
-	 {L('openedby')} {!tpl_userlink($task_details['opened_by'])}
-     <?php if ($task_details['anon_email'] && $user->perms('view_tasks')): ?>
-     ({$task_details['anon_email']})
+	 {L('openedby')} {!tpl_userlink($task['opened_by'])}
+     <?php if ($task['anon_email'] && $user->perms('view_tasks')): ?>
+     ({$task['anon_email']})
      <?php endif; ?>
-	 - {formatDate($task_details['date_opened'], true)}
-	 <?php if ($task_details['last_edited_by']): ?>
+	 - {formatDate($task['date_opened'], true)}
+	 <?php if ($task['last_edited_by']): ?>
 	 <br />
-	 {L('editedby')}  {!tpl_userlink($task_details['last_edited_by'])}
-	 - {formatDate($task_details['last_edited_time'], true)}
+	 {L('editedby')}  {!tpl_userlink($task['last_edited_by'])}
+	 - {formatDate($task['last_edited_time'], true)}
 	 <?php endif; ?>
   </div>
 
@@ -38,15 +38,15 @@
         <tr>
 		  <th id="f{$field['field_id']}">{$field['field_name']}</th>
 		  <td headers="f{$field['field_id']}">
-          <?php if ($task_details['f' . $field['field_id'] . '_name']): ?>
+          <?php if ($task['f' . $field['field_id'] . '_name']): ?>
             <?php if ($field['list_type'] == LIST_CATEGORY): ?>
               <?php foreach ($parents[$field['field_id']] as $cat): ?>
 			  {$cat} &#8594;
 			  <?php endforeach; ?>
             <?php endif; ?>
-            {$task_details['f' . $field['field_id'] . '_name']}
-          <?php elseif ($field['field_type'] == FIELD_DATE && $task_details['f' . $field['field_id']]): ?>
-          {formatDate($task_details['f' . $field['field_id']])}
+            {$task['f' . $field['field_id'] . '_name']}
+          <?php elseif ($field['field_type'] == FIELD_DATE && $task['f' . $field['field_id']]): ?>
+          {formatDate($task['f' . $field['field_id']])}
           <?php else: ?>
           <span class="fade">{L('notspecified')}</span>
           <?php endif; ?>
@@ -56,9 +56,9 @@
 		<tr>
 		  <th id="state">{L('state')}</th>
 		  <td headers="state">
-			 <?php if ($task_details['is_closed']): ?>
+			 <?php if ($task['is_closed']): ?>
 			 {L('closed')}
-			 <?php elseif ($task_details['closed_by']): ?>
+			 <?php elseif ($task['closed_by']): ?>
              <strong class="reopened">{L('reopened')}</strong>
              <?php else: ?>
              {L('open')}
@@ -80,14 +80,14 @@
 		</tr>
 		<tr>
 		  <th id="severity">{L('severity')}</th>
-		  <td headers="severity">{$task_details['severity_name']}</td>
+		  <td headers="severity">{$task['severity_name']}</td>
 		</tr>
 		<tr>
 		  <th id="percent">{L('percentcomplete')}</th>
 		  <td headers="percent">
-			 <img src="{$this->get_image('percent-' . $task_details['percent_complete'])}"
-				title="{$task_details['percent_complete']}% {L('complete')}"
-				alt="{$task_details['percent_complete']}%" />
+			 <img src="{$this->get_image('percent-' . $task['percent_complete'])}"
+				title="{$task['percent_complete']}% {L('complete')}"
+				alt="{$task['percent_complete']}%" />
 		  </td>
 		</tr>
         <tr class="votes">
@@ -105,12 +105,12 @@
           <?php else: ?>
           0
           <?php endif; ?>
-          <?php if ($user->can_vote($task_details) > 0): ?>
-          <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=details.addvote&amp;task_id={$task_details['task_id']}">
+          <?php if ($user->can_vote($task) > 0): ?>
+          <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=details.addvote&amp;task_id={$task['task_id']}">
             ({L('addvote')})</a>
-          <?php elseif ($user->can_vote($task_details) == -2): ?>
+          <?php elseif ($user->can_vote($task) == -2): ?>
           ({L('alreadyvotedthistask')})
-          <?php elseif ($user->can_vote($task_details) == -3): ?>
+          <?php elseif ($user->can_vote($task) == -3): ?>
           ({L('alreadyvotedthisday')})
           <?php endif; ?>
           </td>
@@ -118,17 +118,17 @@
         <tr>
 		  <th id="private">{L('private')}</th>
 		  <td headers="private">
-            <?php if ($task_details['mark_private']): ?>
+            <?php if ($task['mark_private']): ?>
             {L('yes')}
             <?php else: ?>
             {L('no')}
             <?php endif; ?>
 
-            <?php if ($user->can_change_private($task_details) && $task_details['mark_private']): ?>
-            <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=makepublic&amp;task_id={$task_details['task_id']}">
+            <?php if ($user->can_change_private($task) && $task['mark_private']): ?>
+            <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=makepublic&amp;task_id={$task['task_id']}">
             ({L('makepublic')})</a>
-            <?php elseif ($user->can_change_private($task_details) && !$task_details['mark_private']): ?>
-            <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=makeprivate&amp;task_id={$task_details['task_id']}">
+            <?php elseif ($user->can_change_private($task) && !$task['mark_private']): ?>
+            <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=makeprivate&amp;task_id={$task['task_id']}">
                ({L('makeprivate')})</a>
             <?php endif; ?>
           </td>
@@ -145,11 +145,11 @@
 
               <?php if (!$watched): ?>
               <a accesskey="w"
-              href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task_details['task_id']}&amp;action=details.add_notification&amp;ids={$task_details['task_id']}&amp;user_id={$user->id}">
+              href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task['task_id']}&amp;action=details.add_notification&amp;ids={$task['task_id']}&amp;user_id={$user->id}">
               ({L('watchtask')})</a>
               <?php else: ?>
               <a accesskey="w"
-              href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task_details['task_id']}&amp;action=remove_notification&amp;ids={$task_details['task_id']}&amp;user_id={$user->id}">
+              href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task['task_id']}&amp;action=remove_notification&amp;ids={$task['task_id']}&amp;user_id={$user->id}">
               ({L('stopwatching')})</a>
               <?php endif; ?>
           </td>
@@ -164,7 +164,7 @@
 	 <h3 class="taskdesc">{L('details')}</h3>
      <div id="taskdetailstext">{!$task_text}</div>
 
-     <?php $attachments = $proj->listTaskAttachments($task_details['task_id']);
+     <?php $attachments = $proj->listTaskAttachments($task['task_id']);
            $this->display('common.attachments.tpl', 'attachments', $attachments); ?>
   </div>
 
@@ -176,13 +176,13 @@
 		<br />
 		<?php foreach ($deps as $dependency): ?>
 		<?php $link = tpl_tasklink($dependency, null, true);
-				if(!$link) continue;
+			  if (!$link) continue;
 		?>
 		{!$link}
-		<?php if ($user->can_edit_task($task_details)): ?>
+		<?php if ($user->can_edit_task($task)): ?>
 		<span class="DoNotPrint"> &mdash;
 		  <a class="removedeplink"
-			 href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=removedep&amp;depend_id={$dependency['depend_id']}&amp;task_id={$task_details['task_id']}">
+			 href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=removedep&amp;depend_id={$dependency['depend_id']}&amp;task_id={$task['task_id']}">
 			 {L('remove')}</a>
 		</span>
 		<?php endif; ?>
@@ -192,16 +192,16 @@
 		<br class="DoNotPrint" />
 
 		<?php if ( (count($deps) || count($blocks)) && (!Flyspray::function_disabled('shell_exec') || array_get($conf['general'], 'dot_public'))): ?>
-		<a class="DoNotPrint" href="{CreateURL('depends', $task_details['task_id'])}">{L('depgraph')}</a>
+		<a class="DoNotPrint" href="{CreateURL('depends', $task['task_id'])}">{L('depgraph')}</a>
 		<br />
 		<br />
 		<?php endif; ?>
 
-		<?php if ($user->can_edit_task($task_details)): ?>
-		<form action="{CreateUrl('details', $task_details['task_id'])}" method="post">
+		<?php if ($user->can_edit_task($task)): ?>
+		<form action="{CreateUrl('details', $task['task_id'])}" method="post">
 		  <div>
 			 <input type="hidden" name="action" value="details.newdep" />
-			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
+			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
 			 <input class="text" type="text" value="" name="dep_task_id" size="5" maxlength="10" />
 			 <button type="submit" name="submit">{L('addnew')}</button>
 		  </div>
@@ -224,31 +224,31 @@
 	 </div>
   </div>
 
-  <?php if ($task_details['is_closed']): ?>
+  <?php if ($task['is_closed']): ?>
   <div id="taskclosed">
-      {L('closedby')}&nbsp;&nbsp;{!tpl_userlink($task_details['closed_by'])}<br />
-      {formatDate($task_details['date_closed'], true)}<br />
-      <strong>{L('reasonforclosing')}</strong> &nbsp;{$task_details['resolution_name']}<br />
-      <?php if ($task_details['closure_comment']): ?>
-      <strong>{L('closurecomment')}</strong> &nbsp;{!TextFormatter::render($task_details['closure_comment'], true)}
+      {L('closedby')}&nbsp;&nbsp;{!tpl_userlink($task['closed_by'])}<br />
+      {formatDate($task['date_closed'], true)}<br />
+      <strong>{L('reasonforclosing')}</strong> &nbsp;{$task['resolution_name']}<br />
+      <?php if ($task['closure_comment']): ?>
+      <strong>{L('closurecomment')}</strong> &nbsp;{!TextFormatter::render($task['closure_comment'], true)}
       <?php endif; ?>
   </div>
   <?php endif; ?>
 
   <div id="actionbuttons">
-	 <?php if ($task_details['is_closed']): ?>
+	 <?php if ($task['is_closed']): ?>
 
-	 <?php if ($user->can_close_task($task_details)): ?>
-	 <a class="button" href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=reopen&amp;task_id={$task_details['task_id']}">
+	 <?php if ($user->can_close_task($task)): ?>
+	 <a class="button" href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=reopen&amp;task_id={$task['task_id']}">
 		{L('reopenthistask')}</a>
-	 <?php elseif (!$user->isAnon() && !Flyspray::adminRequestCheck(2, $task_details['task_id'])): ?>
+	 <?php elseif (!$user->isAnon() && !Flyspray::adminRequestCheck(2, $task['task_id'])): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('reopenrequest')}</a>
 	 <div id="closeform" class="popup hide">
-		<form name="form3" action="{CreateUrl('details', $task_details['task_id'])}" method="post" id="formclosetask">
+		<form name="form3" action="{CreateUrl('details', $task['task_id'])}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="requestreopen" />
-			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
+			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
 			 <label for="reason">{L('reasonforreq')}</label>
 			 <textarea id="reason" name="reason_given"></textarea><br />
 			 <button type="submit">{L('submitreq')}</button>
@@ -259,14 +259,14 @@
 
 	 <?php else: ?>
 
-	 <?php if ($user->can_close_task($task_details) && !$d_open): ?>
-	 <a href="{CreateUrl('details', $task_details['task_id'], null, array('showclose' => !Get::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
+	 <?php if ($user->can_close_task($task) && !$d_open): ?>
+	 <a href="{CreateUrl('details', $task['task_id'], null, array('showclose' => !Get::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
 		{L('closetask')}</a>
      <div id="closeform" class="<?php if (Req::val('action') != 'details.close' && !Get::val('showclose')): ?>hide <?php endif; ?>popup">
-		<form action="{CreateUrl('details', $task_details['task_id'])}" method="post" id="formclosetask">
+		<form action="{CreateUrl('details', $task['task_id'])}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="details.close" />
-			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
+			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
 			 <select class="adminlist" name="resolution_reason" onmouseup="Event.stop(event);">
 				<option value="0">{L('selectareason')}</option>
 				{!tpl_options($proj->get_list(array('list_id' => $fs->prefs['resolution_list'])), Post::val('resolution_reason'))}
@@ -274,20 +274,20 @@
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>
 			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="25">{Post::val('closure_comment')}</textarea>
-			 <?php if($task_details['percent_complete'] != '100'): ?>
+			 <?php if($task['percent_complete'] != '100'): ?>
              <label>{!tpl_checkbox('mark100', Post::val('mark100', !(Req::val('action') == 'details.close')))}&nbsp;&nbsp;{L('mark100')}</label>
              <?php endif; ?>
 		  </div>
 		</form>
 	 </div>
-	 <?php elseif (!$d_open && !$user->isAnon() && !Flyspray::AdminRequestCheck(1, $task_details['task_id'])): ?>
+	 <?php elseif (!$d_open && !$user->isAnon() && !Flyspray::AdminRequestCheck(1, $task['task_id'])): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('requestclose')}</a>
 	 <div id="closeform" class="popup hide">
-		<form name="form3" action="{CreateUrl('details', $task_details['task_id'])}" method="post" id="formclosetask">
+		<form name="form3" action="{CreateUrl('details', $task['task_id'])}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="requestclose" />
-			 <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
+			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
 			 <label for="reason">{L('reasonforreq')}</label>
 			 <textarea id="reason" name="reason_given"></textarea><br />
 			 <button type="submit">{L('submitreq')}</button>
@@ -296,20 +296,20 @@
 	 </div>
 	 <?php endif; ?>
 
-	 <?php if ($user->can_take_ownership($task_details)): ?>
+	 <?php if ($user->can_take_ownership($task)): ?>
 	 <a id="own" class="button"
-		href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task_details['task_id']}&amp;action=takeownership&amp;ids={$task_details['task_id']}">
+		href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task['task_id']}&amp;action=takeownership&amp;ids={$task['task_id']}">
 		{L('assigntome')}</a>
 	 <?php endif; ?>
 
-	 <?php if ($user->can_add_to_assignees($task_details) && !empty($task_details['assigned_to'])): ?>
+	 <?php if ($user->can_add_to_assignees($task) && !empty($task['assigned_to'])): ?>
 	 <a id="own_add" class="button"
-		href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task_details['task_id']}&amp;action=addtoassignees&amp;ids={$task_details['task_id']}">
+		href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task['task_id']}&amp;action=addtoassignees&amp;ids={$task['task_id']}">
 		{L('addmetoassignees')}</a>
 	 <?php endif; ?>
 
-	 <?php if ($user->can_edit_task($task_details)): ?>
-	 <a id="edittask" class="button" href="{CreateURL('edittask', $task_details['task_id'])}">
+	 <?php if ($user->can_edit_task($task) || $user->can_correct_task($task)): ?>
+	 <a id="edittask" class="button" href="{CreateURL('edittask', $task['task_id'])}">
 		{L('edittask')}</a>
 	 <?php endif; ?>
 

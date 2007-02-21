@@ -14,23 +14,23 @@ if (!defined('IN_FS')) {
 
 $task_id = Req::num('task_id');
 
-if ( !($task_details = Flyspray::GetTaskDetails($task_id))
-        || !$user->can_view_task($task_details))
+if ( !($task = Flyspray::GetTaskDetails($task_id))
+        || !$user->can_view_task($task))
 {
     Flyspray::show_error(10);
 }
 
 require_once(BASEDIR . '/includes/events.inc.php');
 
-$page->uses('task_details');
+$page->uses('task');
 
 // Send user variables to the template
-$page->assign('assigned_users', $task_details['assigned_to']);
-$page->assign('old_assigned', implode(' ', $task_details['assigned_to']));
+$page->assign('assigned_users', $task['assigned_to']);
+$page->assign('old_assigned', implode(' ', $task['assigned_to']));
 
-$page->setTitle('FS#' . $task_details['task_id'] . ': ' . $task_details['item_summary']);
+$page->setTitle('FS#' . $task['task_id'] . ': ' . $task['item_summary']);
 
-if ((Get::val('edit') || (Post::has('item_summary') && !isset($_SESSION['SUCCESS']))) && $user->can_edit_task($task_details)) {
+if ((Get::val('edit') || (Post::has('item_summary') && !isset($_SESSION['SUCCESS']))) && ($user->can_edit_task($task) || $user->can_correct_task($task))) {
     $result = $db->Query('SELECT u.user_id, u.user_name, u.real_name, g.group_name
                             FROM {assigned} a, {users} u
                        LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
@@ -64,7 +64,7 @@ else {
             continue;
         }
         $sql = $db->Query('SELECT lft, rgt FROM {list_category} WHERE category_id = ?',
-                          array($task_details['f' . $field['field_id']]));
+                          array($task['f' . $field['field_id']]));
         $cat = $db->FetchRow($sql);
 
         $parent = $db->Query('SELECT  category_name
@@ -110,7 +110,7 @@ else {
     $cached = $db->Query("SELECT content, last_updated
                             FROM {cache}
                            WHERE topic = ? AND type = 'task'",
-                           array($task_details['task_id']));
+                           array($task['task_id']));
     $cached = $db->FetchRow($cached);
 
     // List of votes
@@ -121,10 +121,10 @@ else {
                             ORDER BY v.date_time DESC',
                             array($task_id));
 
-    if ($task_details['last_edited_time'] > $cached['last_updated'] || !defined('FLYSPRAY_USE_CACHE')) {
-        $task_text = TextFormatter::render($task_details['detailed_desc'], false, 'task', $task_details['task_id']);
+    if ($task['last_edited_time'] > $cached['last_updated'] || !defined('FLYSPRAY_USE_CACHE')) {
+        $task_text = TextFormatter::render($task['detailed_desc'], false, 'task', $task['task_id']);
     } else {
-        $task_text = TextFormatter::render($task_details['detailed_desc'], false, 'task', $task_details['task_id'], $cached['content']);
+        $task_text = TextFormatter::render($task['detailed_desc'], false, 'task', $task['task_id'], $cached['content']);
     }
 
     $page->assign('prev_id',   $prev_id);
@@ -205,7 +205,7 @@ else {
 
     $page->pushTpl('details.tabs.tpl');
 
-    if ($user->perms('view_comments') || $proj->prefs['others_view'] || ($user->isAnon() && $task_details['task_token'] && Get::val('task_token') == $task_details['task_token'])) {
+    if ($user->perms('view_comments') || $proj->prefs['others_view'] || ($user->isAnon() && $task['task_token'] && Get::val('task_token') == $task['task_token'])) {
         $page->pushTpl('details.tabs.comment.tpl');
     }
 

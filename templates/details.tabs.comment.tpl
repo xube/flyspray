@@ -2,7 +2,7 @@
   <?php foreach($comments as $comment): ?>
   <em>
     <a name="comment{$comment['comment_id']}" id="comment{$comment['comment_id']}"
-      href="{CreateURL('details', $task_details['task_id'])}#comment{$comment['comment_id']}">
+      href="{CreateURL('details', $task['task_id'])}#comment{$comment['comment_id']}">
       <img src="{$this->get_image('comment')}"
         title="{L('commentlink')}" alt="" />
     </a>
@@ -13,13 +13,13 @@
   <span class="DoNotPrint">
     <?php if ($user->perms('edit_comments') || ($user->perms('edit_own_comments') && $comment['user_id'] == $user->id)): ?>
     &mdash;
-    <a href="{$_SERVER['SCRIPT_NAME']}?do=editcomment&amp;task_id={$task_details['task_id']}&amp;id={$comment['comment_id']}">
+    <a href="{$_SERVER['SCRIPT_NAME']}?do=editcomment&amp;task_id={$task['task_id']}&amp;id={$comment['comment_id']}">
       {L('edit')}</a>
     <?php endif; ?>
 
     <?php if ($user->perms('delete_comments')): ?>
     &mdash;
-    <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=details.deletecomment&amp;task_id={$task_details['task_id']}&amp;comment_id={$comment['comment_id']}"
+    <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=details.deletecomment&amp;task_id={$task['task_id']}&amp;comment_id={$comment['comment_id']}"
       onclick="return confirm('{L('confirmdeletecomment')}');">
       {L('delete')}</a>
     <?php endif ?>
@@ -41,15 +41,15 @@
 
   <?php endforeach; ?>
 
-  <?php if ($user->perms('add_comments') && (!$task_details['is_closed'] || $proj->prefs['comment_closed'])): ?>
+  <?php if ($user->perms('add_comments') && (!$task['is_closed'] || $proj->prefs['comment_closed'])): ?>
   <fieldset><legend>{L('addcomment')}</legend>
-  <form enctype="multipart/form-data" action="{CreateUrl('details', $task_details['task_id'])}" method="post">
+  <form enctype="multipart/form-data" action="{CreateUrl('details', $task['task_id'])}" method="post">
     <div>
       <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>
       <?php endif; ?>
       <input type="hidden" name="action" value="details.addcomment" />
-      <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
+      <input type="hidden" name="task_id" value="{$task['task_id']}" />
       <?php if ($user->perms('create_attachments')): ?>
       <div id="uploadfilebox">
         <span style="display: none;"><?php // this span is shown/copied in javascript when adding files ?>

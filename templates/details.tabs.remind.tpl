@@ -1,7 +1,7 @@
-<?php if (!$task_details['is_closed']): ?>
+<?php if (!$task['is_closed']): ?>
   <div id="remind" class="tab">
-  
-  <form method="post" action="{CreateUrl('details', $task_details['task_id'])}#remind" >
+
+  <form method="post" action="{CreateUrl('details', $task['task_id'])}#remind" >
     <table id="reminders" class="userlist">
     <tr>
       <th>
@@ -18,7 +18,7 @@
     <?php foreach ($reminders as $row): ?>
     <tr>
       <td class="ttcolumn">
-        <input type="checkbox" name="reminder_id[]" {!tpl_disableif(!$user->can_edit_task($task_details))} value="{$row['reminder_id']}" />
+        <input type="checkbox" name="reminder_id[]" {!tpl_disableif(!$user->can_edit_task($task))} value="{$row['reminder_id']}" />
       </td>
      <td>{!tpl_userlink($row['user_id'])}</td>
      <td>{formatDate($row['start_time'])}</td>
@@ -38,16 +38,16 @@
     <?php endforeach; ?>
     <tr><td colspan="4">
       <input type="hidden" name="action" value="deletereminder" />
-      <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
+      <input type="hidden" name="task_id" value="{$task['task_id']}" />
       <button type="submit">{L('remove')}</button></td></tr>
     </table>
   </form>
 
   <fieldset><legend>{L('addreminder')}</legend>
-  <form action="{CreateUrl('details', $task_details['task_id'])}#remind" method="post" id="formaddreminder">
+  <form action="{CreateUrl('details', $task['task_id'])}#remind" method="post" id="formaddreminder">
     <div>
       <input type="hidden" name="action" value="details.addreminder" />
-      <input type="hidden" name="task_id" value="{$task_details['task_id']}" />
+      <input type="hidden" name="task_id" value="{$task['task_id']}" />
 
         <label class="default multisel" for="to_user_id">{L('remindthisuser')}</label>
         {!tpl_userselect('to_user_id', Post::val('to_user_id'), 'to_user_id')}
@@ -65,7 +65,7 @@
 
       <br />
       <textarea class="text" name="reminder_message"
-        rows="10" cols="72">{Post::val('reminder_message', L('defaultreminder') . "\n\n" . CreateURL('details', $task_details['task_id']))}</textarea>
+        rows="10" cols="72">{Post::val('reminder_message', L('defaultreminder') . "\n\n" . CreateURL('details', $task['task_id']))}</textarea>
       <br />
       <button type="submit">{L('addreminder')}</button>
     </div>

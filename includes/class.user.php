@@ -210,6 +210,11 @@ class User
                      && in_array($this->id, Flyspray::GetAssignees($task['task_id']))));
     }
 
+    function can_correct_task($task)
+    {
+        return $this->id == $task['opened_by'] && ($task['date_opened'] > time() - 60*60*24);
+    }
+
     function can_take_ownership($task)
     {
         $assignees = Flyspray::GetAssignees($task['task_id']);
