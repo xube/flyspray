@@ -1,5 +1,5 @@
   <?php
-  if ($attachments && $user->can_view_task($task_details)): ?>
+  if ($attachments && $user->can_view_task($task)): ?>
   <div class="attachments">
   <?php foreach ($attachments as $attachment): ?>
     <a title="{$attachment['orig_name']}" href="?getfile={$attachment['attachment_id']}">

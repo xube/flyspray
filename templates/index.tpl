@@ -162,17 +162,17 @@
           </tr>
         </thead>
         <tbody>
-        <?php foreach ($tasks as $task_details):?>
-        <tr id="task{!$task_details['task_id']}" class="severity{$task_details['task_severity']}">
+        <?php foreach ($tasks as $task):?>
+        <tr id="task{!$task['task_id']}" class="severity{$task['task_severity']}">
           <td class="caret">
           </td>
           <?php if (!$user->isAnon()): ?>
           <td class="ttcolumn">
-            <input class="ticktask" type="checkbox" name="ids[]" value="{$task_details['task_id']}" />
+            <input class="ticktask" type="checkbox" name="ids[]" value="{$task['task_id']}" />
           </td>
           <?php endif; ?>
           <?php foreach ($visible as $col): ?>
-          {!tpl_draw_cell($task_details, $col)}
+          {!tpl_draw_cell($task, $col)}
           <?php endforeach; ?>
         </tr>
         <?php endforeach; ?>
