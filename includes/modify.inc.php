@@ -72,7 +72,7 @@ switch ($action = Req::val('action'))
 
         $time = time();
 
-        $db->Query('UPDATE  {tasks}
+        $db->Execute('UPDATE  {tasks}
                        SET  project_id = ?, item_summary = ?,
                             detailed_desc = ?, mark_private = ?,
                             task_severity = ?, last_edited_by = ?,
@@ -100,7 +100,7 @@ switch ($action = Req::val('action'))
         if ($user->perms('edit_assignments') && Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
 
             // Delete the current assignees for this task
-            $db->Query('DELETE FROM {assigned}
+            $db->Execute('DELETE FROM {assigned}
                               WHERE task_id = ?',
                         array($task['task_id']));
 
@@ -181,16 +181,16 @@ switch ($action = Req::val('action'))
         }
 
         // Get last %
-        $old_percent = $db->Query("SELECT old_value, new_value
+        $old_percent = $db->Execute("SELECT old_value, new_value
                                      FROM {history}
                                     WHERE field_changed = 'percent_complete'
                                           AND task_id = ? AND old_value != '100'
                                  ORDER BY event_date DESC
                                     LIMIT 1",
                                   array($task['task_id']));
-        $old_percent = $db->FetchRow($old_percent);
+        $old_percent = $old_percent->FetchRow();
 
-        $db->Query("UPDATE  {tasks}
+        $db->Execute("UPDATE  {tasks}
                        SET  resolution_reason = 0, closure_comment = '', date_closed = 0,
                             last_edited_time = ?, last_edited_by = ?, is_closed = 0, percent_complete = ?
                      WHERE  task_id = ?",
@@ -201,7 +201,7 @@ switch ($action = Req::val('action'))
         Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_REOPENED);
 
         // If there's an admin request related to this, close it
-        $db->Query('UPDATE  {admin_requests}
+        $db->Execute('UPDATE  {admin_requests}
                        SET  resolved_by = ?, time_resolved = ?
                      WHERE  task_id = ? AND request_type = ?',
                   array($user->id, time(), $task['task_id'], 2));
@@ -276,21 +276,21 @@ switch ($action = Req::val('action'))
 
         // Delete registration codes older than 24 hours
         $yesterday = time() - 86400;
-        $db->Query('DELETE FROM {registrations} WHERE reg_time < ?', array($yesterday));
+        $db->Execute('DELETE FROM {registrations} WHERE reg_time < ?', array($yesterday));
 
-        $sql = $db->Query('SELECT COUNT(*) FROM {users} u, {registrations} r
-                           WHERE  u.user_name = ? OR r.user_name = ?',
-                           array($user_name, $user_name));
-        if ($db->fetchOne($sql)) {
+        $taken = $db->GetOne('SELECT COUNT(*) FROM {users} u, {registrations} r
+                               WHERE u.user_name = ? OR r.user_name = ?',
+                               array($user_name, $user_name));
+        if ($taken) {
             Flyspray::show_error(L('usernametaken'));
             break;
         }
 
-        $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE
-                           jabber_id = ? AND jabber_id != ''
-                           OR email_address = ? AND email_address != ''",
-                          array($jabber_id, $email));
-        if ($db->fetchOne($sql)) {
+        $taken = $db->GetOne("SELECT COUNT(*) FROM {users} WHERE
+                              jabber_id = ? AND jabber_id != ''
+                              OR email_address = ? AND email_address != ''",
+                              array($jabber_id, $email));
+        if ($taken) {
             Flyspray::show_error(L('emailtaken'));
             break;
         }
@@ -313,11 +313,11 @@ switch ($action = Req::val('action'))
                         Post::val('email_address'), Post::val('jabber_id'),
                         Post::num('notify_type'), $magic_url, Post::num('time_zone'));
             // Insert everything into the database
-            $query = $db->Query("INSERT INTO  {registrations}
+            $query = $db->Execute("INSERT INTO  {registrations}
                                  ( reg_time, confirm_code, user_name, real_name,
                                    email_address, jabber_id, notify_type,
                                    magic_url, time_zone )
-                         VALUES ( " . $db->fill_placeholders($reg_values) . ' )', $reg_values);
+                         VALUES ( " . fill_placeholders($reg_values) . ' )', $reg_values);
 
                 if ($query) {
                     $_SESSION['SUCCESS'] = L('codesent');
@@ -350,9 +350,9 @@ switch ($action = Req::val('action'))
         }
 
         // Check that the user entered the right confirmation code
-        $sql = $db->Query("SELECT * FROM {registrations} WHERE magic_url = ?",
+        $sql = $db->Execute("SELECT * FROM {registrations} WHERE magic_url = ?",
                 array(Post::val('magic_url')));
-        $reg_details = $db->FetchRow($sql);
+        $reg_details = $sql->FetchRow();
 
         if ($reg_details['confirm_code'] != trim(Post::val('confirmation_code'))) {
             Flyspray::show_error(L('confirmwrong'));
@@ -398,11 +398,11 @@ switch ($action = Req::val('action'))
             $group_in = $fs->prefs['anon_group'];
         }
 
-        $sql = $db->Query("SELECT COUNT(*) FROM {users} WHERE
-                           jabber_id = ? AND jabber_id != ''
-                           OR email_address = ? AND email_address != ''",
-                          array(Post::val('jabber_id'), Post::val('email_address')));
-        if ($db->fetchOne($sql)) {
+        $taken = $db->GetOne("SELECT COUNT(*) FROM {users} WHERE
+                               jabber_id = ? AND jabber_id != ''
+                               OR email_address = ? AND email_address != ''",
+                              array(Post::val('jabber_id'), Post::val('email_address')));
+        if ($taken) {
             Flyspray::show_error(L('emailtaken'));
             break;
         }
@@ -436,12 +436,12 @@ switch ($action = Req::val('action'))
             break;
         } else {
             // Check to see if the group name is available
-            $sql = $db->Query("SELECT  COUNT(*)
-                                 FROM  {groups}
-                                WHERE  group_name = ? AND project_id = ?",
-                    array(Post::val('group_name'), $proj->id));
+            $taken = $db->Execute("SELECT  COUNT(*)
+                                     FROM  {groups}
+                                    WHERE  group_name = ? AND project_id = ?",
+                                   array(Post::val('group_name'), $proj->id));
 
-            if ($db->fetchOne($sql)) {
+            if ($taken) {
                 Flyspray::show_error(L('groupnametaken'));
                 break;
             } else {
@@ -456,8 +456,8 @@ switch ($action = Req::val('action'))
                 $params = array_map('Post_to0',$cols);
                 array_unshift($params, $proj->id);
 
-                $db->Query("INSERT INTO  {groups} (project_id, ". join(',', $cols).")
-                                 VALUES  (". $db->fill_placeholders($cols, 1) . ')', $params);
+                $db->Execute("INSERT INTO  {groups} (project_id, ". join(',', $cols).")
+                                 VALUES  (". fill_placeholders($cols, 1) . ')', $params);
 
                 $_SESSION['SUCCESS'] = L('newgroupadded');
             }
@@ -474,7 +474,7 @@ switch ($action = Req::val('action'))
         }
 
         foreach (array_keys($fs->prefs) as $setting) {
-            $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
+            $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
                     array(Post::val($setting, 0), $setting));
         }
 
@@ -501,7 +501,7 @@ switch ($action = Req::val('action'))
                     : 'id severity summary progress';
 
 
-        $db->Query('INSERT INTO  {projects}
+        $db->Execute('INSERT INTO  {projects}
                                  ( project_title, theme_style, intro_message,
                                    others_view, anon_open,
                                    visible_columns, lang_code, notify_email, notify_jabber)
@@ -511,8 +511,7 @@ switch ($action = Req::val('action'))
                         Post::val('anon_open', 0),  $viscols,
                         Post::val('lang_code', 'en'), '', ''));
 
-        $sql = $db->Query('SELECT project_id FROM {projects} ORDER BY project_id DESC', false, 1);
-        $pid = $db->fetchOne($sql);
+        $pid = $db->GetOne('SELECT project_id FROM {projects} ORDER BY project_id DESC', false);
 
         $cols = array( 'manage_project', 'view_tasks', 'open_new_tasks',
                 'modify_own_tasks', 'modify_all_tasks', 'view_comments',
@@ -525,10 +524,10 @@ switch ($action = Req::val('action'))
                 'Permission to do anything related to this project.',
                 intval($pid));
 
-        $db->Query("INSERT INTO  {groups}
+        $db->Execute("INSERT INTO  {groups}
                                  ( group_name, group_desc, project_id,
                                    ".join(',', $cols).")
-                         VALUES  ( ". $db->fill_placeholders($cols, 3) .")", $args);
+                         VALUES  ( ". fill_placeholders($cols, 3) .")", $args);
 
         $_SESSION['SUCCESS'] = L('projectcreated');
         Flyspray::Redirect(CreateURL('pm', 'prefs', $pid));
@@ -574,11 +573,11 @@ switch ($action = Req::val('action'))
         $args[] =  Flyspray::username_to_id(Post::val('default_cat_owner'));
         $args[] = $proj->id;
 
-        $update = $db->Query("UPDATE  {projects}
+        $update = $db->Execute("UPDATE  {projects}
                                  SET  ".join('=?, ', $cols)."=?
                                WHERE  project_id = ?", $args);
 
-        $update = $db->Query('UPDATE {projects} SET visible_columns = ? WHERE project_id = ?',
+        $update = $db->Execute('UPDATE {projects} SET visible_columns = ? WHERE project_id = ?',
                              array(trim(Post::val('visible_columns')), $proj->id));
 
         // Update project prefs for following scripts
@@ -593,8 +592,7 @@ switch ($action = Req::val('action'))
     case 'myprofile.edituser':
         if (Post::val('delete_user')) {
             // check that he is not the last user
-            $sql = $db->Query('SELECT count(*) FROM {users}');
-            if ($db->FetchOne($sql) > 1) {
+            if ($db->GetOne('SELECT count(*) FROM {users}') > 1) {
                 Backend::delete_user(Post::val('user_id'));
                 $_SESSION['SUCCESS'] = L('userdeleted');
                 Flyspray::Redirect(CreateURL('admin', 'groups'));
@@ -622,8 +620,8 @@ switch ($action = Req::val('action'))
                 break;
             }
             if (Post::val('oldpass')) {
-              $sql = $db->Query('SELECT user_pass FROM {users} WHERE user_id = ?', array(Post::val('user_id')));
-              $oldpass =  $db->FetchRow($sql);
+              $sql = $db->Execute('SELECT user_pass FROM {users} WHERE user_id = ?', array(Post::val('user_id')));
+              $oldpass =  $sql->FetchRow();
 
               if (Flyspray::cryptPassword(Post::val('oldpass')) != $oldpass['user_pass']){
                 Flyspray::show_error(L('oldpasswrong'));
@@ -631,7 +629,7 @@ switch ($action = Req::val('action'))
               }
             }
             $new_hash = Flyspray::cryptPassword(Post::val('changepass'));
-            $db->Query('UPDATE {users} SET user_pass = ? WHERE user_id = ?',
+            $db->Execute('UPDATE {users} SET user_pass = ? WHERE user_id = ?',
                     array($new_hash, Post::val('user_id')));
 
             // If the user is changing their password, better update their cookie hash
@@ -641,7 +639,7 @@ switch ($action = Req::val('action'))
             }
         }
 
-        $db->Query('UPDATE  {users}
+        $db->Execute('UPDATE  {users}
                        SET  real_name = ?, email_address = ?, notify_own = ?,
                             jabber_id = ?, notify_type = ?,
                             dateformat = ?, dateformat_extended = ?, defaultorder = ?,
@@ -661,10 +659,10 @@ switch ($action = Req::val('action'))
         endif; // end only admin or user himself can change
 
         if ($user->perms('is_admin')) {
-            $db->Query('UPDATE {users} SET account_enabled = ?  WHERE user_id = ?',
+            $db->Execute('UPDATE {users} SET account_enabled = ?  WHERE user_id = ?',
                     array(Post::val('account_enabled', 0), Post::val('user_id')));
 
-            $db->Query('UPDATE {users_in_groups} SET group_id = ?
+            $db->Execute('UPDATE {users_in_groups} SET group_id = ?
                          WHERE group_id = ? AND user_id = ?',
                     array(Post::val('group_in'), Post::val('old_global_id'), Post::val('user_id')));
         }
@@ -688,7 +686,7 @@ switch ($action = Req::val('action'))
 
                 // Delete from project?
                 if (!Post::num('user_to_group') && $proj->id) {
-                    $db->Query('DELETE uig FROM {users_in_groups} uig
+                    $db->Execute('DELETE uig FROM {users_in_groups} uig
                              LEFT JOIN {groups} g ON uig.group_id = g.group_id
                                  WHERE uig.user_id = ? AND g.project_id = ?',
                                 array($uid, $proj->id));
@@ -696,23 +694,21 @@ switch ($action = Req::val('action'))
                 }
 
                 // If user is already a member of one of the project's groups, **move** (not add) him to the new group
-                $sql = $db->Query('SELECT project_id FROM {groups} WHERE group_id = ?', array(Post::num('user_to_group')));
-                $group_project = $db->FetchOne($sql);
+                $group_project = $db->GetOne('SELECT project_id FROM {groups} WHERE group_id = ?', array(Post::num('user_to_group')));
 
                 if (!$user->perms('manage_project', $group_project)) {
                     break;
                 }
 
-                $sql = $db->Query('SELECT g.group_id
-                                     FROM {users_in_groups} uig, {groups} g
-                                    WHERE g.group_id = uig.group_id AND uig.user_id = ? AND project_id = ?',
-                                    array($uid, $group_project));
-                if ($db->CountRows($sql)) {
-                    $oldid = $db->FetchOne($sql);
-                    $db->Query('UPDATE {users_in_groups} SET group_id = ? WHERE user_id = ? AND group_id = ?',
+                $oldid = $db->GetOne('SELECT g.group_id
+                                        FROM {users_in_groups} uig, {groups} g
+                                       WHERE g.group_id = uig.group_id AND uig.user_id = ? AND project_id = ?',
+                                       array($uid, $group_project));
+                if ($oldid) {
+                    $db->Execute('UPDATE {users_in_groups} SET group_id = ? WHERE user_id = ? AND group_id = ?',
                                 array(Post::num('user_to_group'), $uid, $oldid));
                 } else {
-                    $db->Query('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
+                    $db->Execute('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
                                 array(Post::num('user_to_group'), $uid));
                 }
                 $_SESSION['SUCCESS'] = L('useradded');
@@ -742,26 +738,25 @@ switch ($action = Req::val('action'))
                 $uid = Flyspray::username_to_id($uid);
 
                 // If user is already a member of one of the project's groups, **move** (not add) him to the new group
-                $sql = $db->Query('SELECT g.group_id
-                                     FROM {users_in_groups} uig, {groups} g
-                                    WHERE g.group_id = uig.group_id AND uig.user_id = ? AND project_id = ?',
-                                    array($uid, $proj->id));
-                if ($db->CountRows($sql)) {
-                    $oldid = $db->FetchOne($sql);
-                    $db->Query('UPDATE {users_in_groups} SET group_id = ? WHERE user_id = ? AND group_id = ?',
+                $oldid = $db->GetOne('SELECT g.group_id
+                                        FROM {users_in_groups} uig, {groups} g
+                                       WHERE g.group_id = uig.group_id AND uig.user_id = ? AND project_id = ?',
+                                        array($uid, $proj->id));
+                if ($oldid) {
+                    $db->Execute('UPDATE {users_in_groups} SET group_id = ? WHERE user_id = ? AND group_id = ?',
                                 array(Post::val('group_id'), $uid, $oldid));
                 } else {
-                    $db->Query('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
+                    $db->Execute('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
                                 array(Post::val('group_id'), $uid));
                 }
             }
         }
 
         if (Post::val('delete_group') && Post::val('group_id') != '1') {
-            $db->Query('DELETE FROM {groups} WHERE group_id = ?', Post::val('group_id'));
+            $db->Execute('DELETE FROM {groups} WHERE group_id = ?', Post::val('group_id'));
 
             if (Post::val('move_to')) {
-                $db->Query('UPDATE {users_in_groups} SET group_id = ? WHERE group_id = ?',
+                $db->Execute('UPDATE {users_in_groups} SET group_id = ? WHERE group_id = ?',
                             array(Post::val('move_to'), Post::val('group_id')));
             }
 
@@ -784,7 +779,7 @@ switch ($action = Req::val('action'))
         $args[] = Post::val('group_id');
         $args[] = $proj->id;
 
-        $db->Query("UPDATE  {groups}
+        $db->Execute("UPDATE  {groups}
                        SET  ".join('=?,', $cols)."=?
                      WHERE  group_id = ? AND project_id = ?", $args);
 
@@ -815,7 +810,7 @@ switch ($action = Req::val('action'))
                     array_unshift($params, intval($listtense[$i]));
                 }
 
-                $update = $db->Query('UPDATE  {list_items} lb
+                $update = $db->Execute('UPDATE  {list_items} lb
                                    LEFT JOIN  {lists} l ON l.list_id = lb.list_id
                                          SET  '. $version_tense .' item_name = ?, list_position = ?, show_in_list = ?
                                        WHERE  list_item_id = ? AND project_id = ?',
@@ -827,7 +822,7 @@ switch ($action = Req::val('action'))
 
         if (is_array($listdelete) && count($listdelete)) {
             $deleteids = 'list_item_id = ' . join(' OR list_item_id =', array_map('intval', array_keys($listdelete)));
-            $db->Query("DELETE lb FROM {list_items} lb
+            $db->Execute("DELETE lb FROM {list_items} lb
                      LEFT JOIN {lists} l ON l.list_id = lb.list_id
                          WHERE project_id = ? AND ($deleteids)",
                         array($proj->id));
@@ -852,10 +847,10 @@ switch ($action = Req::val('action'))
 
         $position = Post::num('list_position');
         if (!$position) {
-            $position = intval($db->FetchOne($db->Query("SELECT max(list_position)+1
-                                                           FROM {list_items}
-                                                          WHERE list_id = ?",
-                                                        array(Post::val('list_id')))));
+            $position = intval($db->GetOne('SELECT max(list_position)+1
+                                              FROM {list_items}
+                                             WHERE list_id = ?',
+                                            array(Post::val('list_id'))));
         }
 
         $cols = array('item_name', 'list_id');
@@ -867,9 +862,9 @@ switch ($action = Req::val('action'))
         $params[] = $position;
         $params = array_merge($params, array_map('Post_to0', $cols));
 
-        $db->Query('INSERT INTO  {list_items}
+        $db->Execute('INSERT INTO  {list_items}
                                  (list_position,'. implode(',', $cols) .', show_in_list)
-                         VALUES  (?,'. $db->fill_placeholders($cols) .', 1)',
+                         VALUES  (?,'. fill_placeholders($cols) .', 1)',
                     $params);
 
         $_SESSION['SUCCESS'] = L('listitemadded');
@@ -895,7 +890,7 @@ switch ($action = Req::val('action'))
                 if (!isset($listshow[$i])) {
                     $listshow[$i] = 0;
                 }
-                $update = $db->Query('UPDATE  {list_category} lc
+                $update = $db->Execute('UPDATE  {list_category} lc
                                    LEFT JOIN  {lists} l ON l.list_id = lc.list_id
                                          SET  category_name = ?,
                                               show_in_list = ?, category_owner = ?,
@@ -917,7 +912,7 @@ switch ($action = Req::val('action'))
 
         if (is_array($listdelete) && count($listdelete)) {
             $deleteids = "$list_id = " . join(" OR $list_id =", array_map('intval', array_keys($listdelete)));
-            $db->Query("DELETE lc FROM {list_category} lc
+            $db->Execute("DELETE lc FROM {list_category} lc
                      LEFT JOIN {lists} l ON lc.list_id = l.list_id
                          WHERE project_id = ? AND ($deleteids)",
                          array($proj->id));
@@ -941,21 +936,20 @@ switch ($action = Req::val('action'))
         }
 
         // Get right value of last node
-        $right = $db->Query('SELECT rgt FROM {list_category} WHERE category_id = ?', array(Post::val('parent_id', -1)));
-        $right = intval($db->FetchOne($right));
+        $right = intval($db->GetOne('SELECT rgt FROM {list_category} WHERE category_id = ?', array(Post::val('parent_id', -1))));
 
-        $db->Query('UPDATE {list_category} lc
+        $db->Execute('UPDATE {list_category} lc
                  LEFT JOIN {lists} l ON lc.list_id = l.list_id
                        SET rgt=rgt+2
                      WHERE rgt >= ? AND project_id = ?',
                      array($right, $proj->id));
-        $db->Query('UPDATE {list_category} lc
+        $db->Execute('UPDATE {list_category} lc
                  LEFT JOIN {lists} l ON lc.list_id = l.list_id
                        SET lft=lft+2
                      WHERE lft >= ? AND project_id = ?',
                      array($right, $proj->id));
 
-        $db->Query("INSERT INTO  {list_category}
+        $db->Execute("INSERT INTO  {list_category}
                                  ( list_id, category_name, show_in_list, category_owner, lft, rgt )
                          VALUES  (?, ?, 1, ?, ?, ?)",
                 array(Post::val('list_id'), Post::val('list_name'),
@@ -973,29 +967,29 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $sql = $db->Query('SELECT  project_id
-                             FROM  {tasks}
-                            WHERE  task_id = ?',
-                          array(Post::val('related_task')));
-        if (!$db->CountRows($sql)) {
+        $pid = $db->GetOne('SELECT  project_id
+                              FROM  {tasks}
+                             WHERE  task_id = ?',
+                            array(Post::val('related_task')));
+        if (!$pid) {
             Flyspray::show_error(L('relatedinvalid'));
             break;
         }
 
-        $sql = $db->Query("SELECT related_id
-                             FROM {related}
-                            WHERE this_task = ? AND related_task = ?
-                                  OR
-                                  related_task = ? AND this_task = ?",
-                          array($task['task_id'], Post::val('related_task'),
-                                $task['task_id'], Post::val('related_task')));
+        $rid = $db->GetOne("SELECT related_id
+                              FROM {related}
+                             WHERE this_task = ? AND related_task = ?
+                                   OR
+                                   related_task = ? AND this_task = ?",
+                            array($task['task_id'], Post::val('related_task'),
+                                  $task['task_id'], Post::val('related_task')));
 
-        if ($db->CountRows($sql)) {
+        if ($rid) {
             Flyspray::show_error(L('relatederror'));
             break;
         }
 
-        $db->Query("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
+        $db->Execute("INSERT INTO {related} (this_task, related_task) VALUES(?,?)",
                 array($task['task_id'], Post::val('related_task')));
 
         Flyspray::logEvent($task['task_id'], 11, Post::val('related_task'));
@@ -1015,12 +1009,12 @@ switch ($action = Req::val('action'))
         }
 
         foreach (Post::val('related_id') as $related) {
-            $sql = $db->Query('SELECT this_task, related_task FROM {related} WHERE related_id = ?',
+            $sql = $db->Execute('SELECT this_task, related_task FROM {related} WHERE related_id = ?',
                               array($related));
-            $db->Query('DELETE FROM {related} WHERE related_id = ? AND (this_task = ? OR related_task = ?)',
+            $db->Execute('DELETE FROM {related} WHERE related_id = ? AND (this_task = ? OR related_task = ?)',
                         array($related, $task['task_id'], $task['task_id']));
-            if ($db->AffectedRows()) {
-                $related_task = $db->FetchRow($sql);
+            if ($db->Affected_Rows()) {
+                $related_task = $sql->FetchRow();
                 $related_task = ($related_task['this_task'] == $task['task_id']) ? $related_task['related_task'] : $task['task_id'];
                 Flyspray::logEvent($task['task_id'], 12, $related_task);
                 Flyspray::logEvent($related_task, 12, $task['task_id']);
@@ -1070,7 +1064,7 @@ switch ($action = Req::val('action'))
             array_push($params, $user->id);
         }
 
-        $db->Query("UPDATE  {comments}
+        $db->Execute("UPDATE  {comments}
                        SET  comment_text = ?, last_edited_time = ?
                      WHERE  comment_id = ? AND task_id = ? $where", $params);
 
@@ -1091,33 +1085,33 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $result = $db->Query('SELECT  task_id, comment_text, user_id, date_added
+        $result = $db->Execute('SELECT  task_id, comment_text, user_id, date_added
                                 FROM  {comments}
                                WHERE  comment_id = ?',
                             array(Get::val('comment_id')));
-        $comment = $db->FetchRow($result);
+        $comment = $result->FetchRow();
 
         // Check for files attached to this comment
-        $check_attachments = $db->Query('SELECT  *
-                                           FROM  {attachments}
-                                          WHERE  comment_id = ?',
-                                        array(Req::val('comment_id')));
+        $check_attachments = $db->GetOne('SELECT  count(*)
+                                            FROM  {attachments}
+                                           WHERE  comment_id = ?',
+                                          array(Req::val('comment_id')));
 
-        if ($db->CountRows($check_attachments) && !$user->perms('delete_attachments')) {
+        if ($check_attachments && !$user->perms('delete_attachments')) {
             Flyspray::show_error(L('commentattachperms'));
             break;
         }
 
-        $db->Query("DELETE FROM {comments} WHERE comment_id = ? AND task_id = ?",
+        $db->Execute("DELETE FROM {comments} WHERE comment_id = ? AND task_id = ?",
                    array(Req::val('comment_id'), $task['task_id']));
 
-        if ($db->AffectedRows()) {
+        if ($db->Affected_Rows()) {
             Flyspray::logEvent($task['task_id'], 6, $comment['user_id'],
                     $comment['comment_text'], $comment['date_added']);
         }
 
-        while ($attachment = $db->FetchRow($check_attachments)) {
-            $db->Query("DELETE from {attachments} WHERE attachment_id = ?",
+        while ($attachment = $check_attachments->FetchRow()) {
+            $db->Execute("DELETE from {attachments} WHERE attachment_id = ?",
                     array($attachment['attachment_id']));
 
             @unlink(BASEDIR .'/attachments/' . $attachment['file_name']);
@@ -1152,12 +1146,11 @@ switch ($action = Req::val('action'))
         }
 
         foreach (Post::val('reminder_id') as $reminder_id) {
-            $sql = $db->Query('SELECT to_user_id FROM {reminders} WHERE reminder_id = ?',
-                              array($reminder_id));
-            $reminder = $db->fetchOne($sql);
-            $db->Query('DELETE FROM {reminders} WHERE reminder_id = ? AND task_id = ?',
+            $reminder = $db->GetOne('SELECT to_user_id FROM {reminders} WHERE reminder_id = ?',
+                                     array($reminder_id));
+            $db->Execute('DELETE FROM {reminders} WHERE reminder_id = ? AND task_id = ?',
                        array($reminder_id, $task['task_id']));
-            if ($db && $db->affectedRows()) {
+            if ($db && $db->Affected_Rows()) {
                 Flyspray::logEvent($task['task_id'], 18, $reminder);
             }
         }
@@ -1170,9 +1163,8 @@ switch ($action = Req::val('action'))
     // ##################
     case 'movetogroup':
         // Check the project the user is moved to
-        $sql = $db->Query('SELECT project_id FROM {groups} WHERE group_id = ?',
-                           array(Post::val('new_group')));
-        $new_project = $db->FetchOne($sql);
+        $new_project = $db->GetOne('SELECT project_id FROM {groups} WHERE group_id = ?',
+                                    array(Post::val('new_group')));
 
         // Now check that the user may actually move someone to the group
         if (!$user->perms('manage_project', $new_project) || !is_array(Post::val('users'))) {
@@ -1182,7 +1174,7 @@ switch ($action = Req::val('action'))
         foreach (Post::val('users') as $user_id => $val) {
             // Remove from project?
             if (!Post::num('new_group') && $proj->id) {
-                $db->Query('DELETE uig FROM {users_in_groups} uig
+                $db->Execute('DELETE uig FROM {users_in_groups} uig
                               LEFT JOIN {groups} g ON uig.group_id = g.group_id
                                   WHERE uig.user_id = ? AND g.project_id = ?',
                             array($user_id, $proj->id));
@@ -1191,21 +1183,20 @@ switch ($action = Req::val('action'))
             }
 
             // Is user already in the project? If so, UPDATE the group ID
-            $sql = $db->Query('SELECT g.group_id
-                                 FROM {users_in_groups} uig
-                            LEFT JOIN {groups} g ON g.group_id = uig.group_id
-                                WHERE g.project_id = ? AND uig.user_id = ?',
-                                array($new_project, $user_id));
+            $old_group = $db->GetOne('SELECT g.group_id
+                                        FROM {users_in_groups} uig
+                                   LEFT JOIN {groups} g ON g.group_id = uig.group_id
+                                       WHERE g.project_id = ? AND uig.user_id = ?',
+                                       array($new_project, $user_id));
 
-            if ($db->CountRows($sql)) {
-                $old_group = $db->FetchOne($sql);
-                $db->Query('UPDATE  {users_in_groups}
+            if ($old_group) {
+                $db->Execute('UPDATE  {users_in_groups}
                                SET  group_id = ?
                              WHERE  user_id = ? AND group_id = ?',
                            array(Post::val('new_group'), $user_id, $old_group));
             // If not, INSERT a new row
             } else {
-                $db->Query('INSERT INTO {users_in_groups} (user_id, group_id)
+                $db->Execute('INSERT INTO {users_in_groups} (user_id, group_id)
                                  VALUES (?, ?)',
                             array($user_id, Post::val('new_group')));
             }
@@ -1247,14 +1238,13 @@ switch ($action = Req::val('action'))
         }
 
         // Now, get the project managers' details for this project
-        $sql = $db->Query("SELECT  u.user_id
-                             FROM  {users} u
-                        LEFT JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
-                        LEFT JOIN  {groups} g ON uig.group_id = g.group_id
-                            WHERE  g.project_id = ? AND g.manage_project = '1'",
-                          array($proj->id));
+        $pms = $db->GetCol("SELECT  u.user_id
+                              FROM  {users} u
+                         LEFT JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
+                         LEFT JOIN  {groups} g ON uig.group_id = g.group_id
+                             WHERE  g.project_id = ? AND g.manage_project = '1'",
+                             array($proj->id));
 
-        $pms = $db->fetchCol($sql);
         if (count($pms)) {
             // Call the functions to create the address arrays, and send notifications
             Notifications::send($pms, ADDRESS_USER, NOTIFY_PM_REQUEST, array('task_id' => $task['task_id']));
@@ -1267,18 +1257,18 @@ switch ($action = Req::val('action'))
     // denying a PM request
     // ##################
     case 'denypmreq':
-        $result = $db->Query("SELECT  task_id, project_id
+        $result = $db->Execute("SELECT  task_id, project_id
                                 FROM  {admin_requests}
                                WHERE  request_id = ?",
                               array(Req::val('req_id')));
-        $req_details = $db->FetchRow($result);
+        $req_details = $result->FetchRow();
 
         if (!$user->perms('manage_project', $req_details['project_id'])) {
             break;
         }
 
         // Mark the PM request as 'resolved'
-        $db->Query("UPDATE  {admin_requests}
+        $db->Execute("UPDATE  {admin_requests}
                        SET  resolved_by = ?, time_resolved = ?, deny_reason = ?
                      WHERE  request_id = ?",
                     array($user->id, time(), Req::val('deny_reason'), Req::val('req_id')));
@@ -1303,20 +1293,20 @@ switch ($action = Req::val('action'))
         }
 
         // First check that the user hasn't tried to add this twice
-        $sql1 = $db->Query('SELECT  COUNT(*) FROM {dependencies}
+        $sql1 = $db->GetOne('SELECT  COUNT(*) FROM {dependencies}
                              WHERE  task_id = ? AND dep_task_id = ?',
-                array($task['task_id'], Post::val('dep_task_id')));
+                             array($task['task_id'], Post::val('dep_task_id')));
 
         // or that they are trying to reverse-depend the same task, creating a mutual-block
-        $sql2 = $db->Query('SELECT  COUNT(*) FROM {dependencies}
+        $sql2 = $db->GetOne('SELECT  COUNT(*) FROM {dependencies}
                              WHERE  task_id = ? AND dep_task_id = ?',
-                array(Post::val('dep_task_id'), $task['task_id']));
+                            array(Post::val('dep_task_id'), $task['task_id']));
 
         // Check that the dependency actually exists!
-        $sql3 = $db->Query('SELECT COUNT(*) FROM {tasks} WHERE task_id = ?',
-                array(Post::val('dep_task_id')));
+        $sql3 = $db->GetOne('SELECT COUNT(*) FROM {tasks} WHERE task_id = ?',
+                            array(Post::val('dep_task_id')));
 
-        if ($db->fetchOne($sql1) || $db->fetchOne($sql2) || !$db->fetchOne($sql3)
+        if ($sql1 || $sql2 || !$sql3)
                 // Check that the user hasn't tried to add the same task as a dependency
                 || Post::val('task_id') == Post::val('dep_task_id'))
         {
@@ -1331,7 +1321,7 @@ switch ($action = Req::val('action'))
         Flyspray::logEvent($task['task_id'], 22, Post::val('dep_task_id'));
         Flyspray::logEvent(Post::val('dep_task_id'), 23, $task['task_id']);
 
-        $db->Query('INSERT INTO  {dependencies} (task_id, dep_task_id)
+        $db->Execute('INSERT INTO  {dependencies} (task_id, dep_task_id)
                          VALUES  (?,?)',
                     array($task['task_id'], Post::val('dep_task_id')));
 
@@ -1346,15 +1336,15 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $result = $db->Query('SELECT  * FROM {dependencies}
+        $result = $db->Execute('SELECT  * FROM {dependencies}
                                WHERE  depend_id = ?',
                             array(Get::val('depend_id')));
-        $dep_info = $db->FetchRow($result);
+        $dep_info = $result->FetchRow();
 
-        $db->Query('DELETE FROM {dependencies} WHERE depend_id = ? AND task_id = ?',
+        $db->Execute('DELETE FROM {dependencies} WHERE depend_id = ? AND task_id = ?',
                     array(Get::val('depend_id'), $task['task_id']));
 
-        if ($db->AffectedRows()) {
+        if ($db->Affected_Rows()) {
             Notifications::send($dep_info['task_id'], ADDRESS_TASK, NOTIFY_DEP_REMOVED, array('dep_task' => $dep_info['dep_task_id']));
             Notifications::send($dep_info['dep_task_id'], ADDRESS_TASK, NOTIFY_REV_DEP_REMOVED, array('dep_task' => $dep_info['task_id']));
 
@@ -1370,21 +1360,20 @@ switch ($action = Req::val('action'))
     // ##################
     case 'lostpw.sendmagic':
         // Check that the username exists
-        $sql = $db->Query('SELECT * FROM {users} WHERE user_name = ?',
+        $sql = $db->Execute('SELECT * FROM {users} WHERE user_name = ?',
                           array(Post::val('user_name')));
 
         // If the username doesn't exist, throw an error
-        if (!$db->CountRows($sql)) {
+        if (!($user_details = $sql->FetchRow())) {
             Flyspray::show_error(L('usernotexist'));
             break;
         }
 
-        $user_details = $db->FetchRow($sql);
         // no microtime(), time, even with microseconds is predictable ;-)
         $magic_url    = md5(uniqid(rand(), true));
 
         // Insert the random "magic url" into the user's profile
-        $db->Query('UPDATE {users}
+        $db->Execute('UPDATE {users}
                        SET magic_url = ?
                      WHERE user_id = ?',
                 array($magic_url, $user_details['user_id']));
@@ -1412,7 +1401,7 @@ switch ($action = Req::val('action'))
         }
 
         $new_pass_hash = Flyspray::cryptPassword(Post::val('pass1'));
-        $db->Query("UPDATE  {users} SET user_pass = ?, magic_url = ''
+        $db->Execute("UPDATE  {users} SET user_pass = ?, magic_url = ''
                      WHERE  magic_url = ?",
                    array($new_pass_hash, Post::val('magic_url')));
 
@@ -1428,7 +1417,7 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $db->Query('UPDATE  {tasks}
+        $db->Execute('UPDATE  {tasks}
                        SET  mark_private = 1
                      WHERE  task_id = ?', array($task['task_id']));
 
@@ -1445,7 +1434,7 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $db->Query('UPDATE  {tasks}
+        $db->Execute('UPDATE  {tasks}
                        SET  mark_private = 0
                      WHERE  task_id = ?', array($task['task_id']));
 
@@ -1473,7 +1462,7 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $db->Query('INSERT INTO {notes} (message_subject, message_body, last_updated, user_id)
+        $db->Execute('INSERT INTO {notes} (message_subject, message_body, last_updated, user_id)
                          VALUES (?, ?, ?, ?)',
                     array(Post::val('message_subject'), Post::val('message_body'), time(), $user->id));
         $_SESSION['SUCCESS'] = L('noteadded');
@@ -1487,10 +1476,10 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $sql = $db->Query('DELETE FROM {notes} WHERE note_id = ? AND user_id = ?',
+        $sql = $db->Execute('DELETE FROM {notes} WHERE note_id = ? AND user_id = ?',
                           array(Get::val('note_id'), $user->id));
 
-        if ($db->AffectedRows()) {
+        if ($db->Affected_Rows()) {
             $_SESSION['SUCCESS'] = L('notedeleted');
         }
         break;
@@ -1503,13 +1492,13 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $sql = $db->Query('UPDATE {notes}
+        $sql = $db->Execute('UPDATE {notes}
                               SET message_subject = ?, message_body = ?, last_updated = ?
                             WHERE note_id = ? AND user_id = ?',
                           array(Post::val('message_subject'), Post::val('message_body'), time(),
                                 Post::val('note_id'), $user->id));
 
-        if ($db->AffectedRows()) {
+        if ($db->Affected_Rows()) {
             $_SESSION['SUCCESS'] = L('noteupdated');
         }
         break;
@@ -1528,11 +1517,11 @@ switch ($action = Req::val('action'))
 
         foreach (Post::val('id') as $id) {
             if (isset($delete[$id])) {
-                $db->Query('DELETE FROM {lists} WHERE list_id = ? AND project_id = ?',
+                $db->Execute('DELETE FROM {lists} WHERE list_id = ? AND project_id = ?',
                            array($id, $proj->id));
                 continue;
             }
-            $db->Query('UPDATE {lists} SET list_name = ?, list_type = ? WHERE list_id = ? AND project_id = ?',
+            $db->Execute('UPDATE {lists} SET list_name = ?, list_type = ? WHERE list_id = ? AND project_id = ?',
                         array($names[$id], $types[$id], $id, $proj->id));
         }
         break;
@@ -1545,7 +1534,7 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $db->Query('INSERT INTO {lists} (list_name, list_type, project_id)
+        $db->Execute('INSERT INTO {lists} (list_name, list_type, project_id)
                          VALUES (?, ?, ?)',
                         array(Post::val('list_name'), Post::num('list_type'), $proj->id));
         break;
@@ -1569,11 +1558,11 @@ switch ($action = Req::val('action'))
 
         foreach (Post::val('id') as $id) {
             if (isset($delete[$id])) {
-                $db->Query('DELETE FROM {fields} WHERE field_id = ? AND project_id = ?',
+                $db->Execute('DELETE FROM {fields} WHERE field_id = ? AND project_id = ?',
                             array($id, $proj->id));
                 // sort of permission check (the query below does not check project_id)
-                if ($db->AffectedRows()) {
-                    $db->Query('DELETE FROM {field_values} WHERE field_id = ?', array($id));
+                if ($db->Affected_Rows()) {
+                    $db->Execute('DELETE FROM {field_values} WHERE field_id = ?', array($id));
                 }
                 continue;
             }
@@ -1581,7 +1570,7 @@ switch ($action = Req::val('action'))
             if ($proj->fields[Flyspray::array_find('field_id', $id, $proj->fields)]['field_type'] == FIELD_DATE) {
                 $default[$id] = Flyspray::strtotime(array_get($default, $id, 0));
             }
-            $db->Query('UPDATE {fields} SET field_name = ?, field_type = ?, list_id = ?, value_required = ?,
+            $db->Execute('UPDATE {fields} SET field_name = ?, field_type = ?, list_id = ?, value_required = ?,
                                             version_tense = ?, default_value = ?, force_default = ?
                          WHERE field_id = ? AND project_id = ?',
                         array($names[$id], $types[$id], array_get($lists, $id, null), array_get($required, $id, 0),
@@ -1599,7 +1588,7 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $db->Query('INSERT INTO {fields} (field_name, field_type, list_id, project_id)
+        $db->Execute('INSERT INTO {fields} (field_name, field_type, list_id, project_id)
                          VALUES (?, ?, ?, ?)',
                         array(Post::val('field_name'), Post::num('field_type'), Post::num('list_id'), $proj->id));
         break;

@@ -17,8 +17,7 @@
   require_once DOKU_INC.'../../includes/constants.inc.php';
   require_once DOKU_INC.'../../includes/class.database.php';
   require_once DOKU_INC.'../../includes/class.user.php';
-  $db = new Database;
-  $db->dbOpenFast($conf['database']);
+  $db = NewDatabase($conf['database']);
   $fs = new Flyspray();
   
   if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {

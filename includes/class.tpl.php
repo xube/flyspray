@@ -259,10 +259,10 @@ function tpl_userlink($uid)
     if (is_array($uid)) {
         list($uid, $uname, $rname) = $uid;
     } elseif (empty($cache[$uid])) {
-        $sql = $db->Query('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
+        $sql = $db->Execute('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
                            array(intval($uid)));
-        if ($sql && $db->countRows($sql)) {
-            list($uname, $rname) = $db->fetchRow($sql);
+        if ($row = $sql->FetchRow()) {
+            list($uname, $rname) = $row;
         }
     }
 
@@ -352,8 +352,7 @@ function tpl_userselect($name, $value = null, $id = '', $attrs = array()) {
     }
 
     if ($value && ctype_digit($value)) {
-        $sql = $db->Query('SELECT user_name FROM {users} WHERE user_id = ?', array($value));
-        $value = $db->FetchOne($sql);
+        $value = $db->GetOne('SELECT user_name FROM {users} WHERE user_id = ?', array($value));
     }
 
     if (!$value) {
@@ -575,8 +574,6 @@ class TextFormatter
 function formatDate($timestamp, $extended = false, $default = '')
 {
     global $db, $conf, $user, $fs;
-
-    setlocale(LC_ALL, str_replace('-', '_', L('locale')) . '.utf8');
 
     if (!$timestamp) {
         return $default;

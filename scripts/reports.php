@@ -92,13 +92,13 @@ if ( ($fromdate = Get::val('fromdate')) || Req::val('todate')) {
 }
 
 if (count(Get::val('events'))) {
-    $histories = $db->Query("SELECT h.*
+    $histories = $db->Execute("SELECT h.*
                         FROM  {history} h
                    LEFT JOIN {tasks} t ON h.task_id = t.task_id
                         WHERE $where
                      ORDER BY $orderby", $params, Get::num('event_number', -1));
 
-    $histories = $db->FetchAllArray($histories);
+    $histories = $histories->GetArray();
 }
 
 $page->uses('histories', 'sort');

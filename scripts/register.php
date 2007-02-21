@@ -19,10 +19,10 @@ if ($user->can_register()) {
     // 32 is the length of the magic_url
     if (Get::has('magic_url') && strlen(Get::val('magic_url')) == 32) {
         // If the user came here from their notification link
-        $sql = $db->Query('SELECT * FROM {registrations} WHERE magic_url = ?',
-                          array(Get::val('magic_url')));
+        $sql = $db->GetOne('SELECT reg_id FROM {registrations} WHERE magic_url = ?',
+                            array(Get::val('magic_url')));
 
-        if (!$db->CountRows($sql)) {
+        if (!$sql) {
             Flyspray::show_error(18);
         }
 

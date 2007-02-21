@@ -20,12 +20,12 @@ class Project
         global $db, $fs;
 
         // Get custom fields
-        $sql = $db->Query('SELECT f.*, l.list_type
+        $sql = $db->Execute('SELECT f.*, l.list_type
                             FROM {fields} f
                        LEFT JOIN {lists} l ON f.list_id = l.list_id
                            WHERE f.project_id IN (0, ?) ORDER BY field_name',
                           array($id));
-        $this->fields = $db->FetchAllArray($sql);
+        $this->fields = $sql->GetArray();
 
         // Extend the columns
         $this->columns = array_combine($this->columns, array_map('L', $this->columns));
@@ -34,18 +34,18 @@ class Project
         }
 
         if (is_numeric($id) && $id > 0) {
-            $sql = $db->Query("SELECT p.*, c.content AS pm_instructions, c.last_updated AS cache_update
+            $sql = $db->Execute("SELECT p.*, c.content AS pm_instructions, c.last_updated AS cache_update
                                  FROM {projects} p
                             LEFT JOIN {cache} c ON c.topic = p.project_id AND c.type = 'msg'
                                 WHERE p.project_id = ?", array($id));
-            if ($db->countRows($sql)) {
-                $this->prefs = $db->FetchRow($sql);
+            if ($this->prefs = $sql->FetchRow()) {
                 $this->id    = (int) $this->prefs['project_id'];
                 return;
             }
         }
 
         $this->id = 0;
+        $this->prefs = array();
         $this->prefs['project_title'] = L('allprojects');
         $this->prefs['theme_style']   = $fs->prefs['global_theme'];
         $this->prefs['lang_code']   = $fs->prefs['lang_code'];
@@ -74,9 +74,9 @@ class Project
         global $db;
 
         //Get the column names of list tables for the group by statement
-        $groupby = $db->GetColumnNames('{list_items}',  'lb.list_item_id', 'lb.');
+        $groupby = GetColumnNames('{list_items}',  'lb.list_item_id', 'lb');
 
-        $sql = $db->Query('SELECT lb.*, count(fv.task_id) AS used_in_tasks
+        $sql = $db->Execute('SELECT lb.*, count(fv.task_id) AS used_in_tasks
                              FROM {list_items} lb
                         LEFT JOIN {fields} f ON f.list_id = lb.list_id
                         LEFT JOIN {field_values} fv ON (fv.field_id = f.field_id AND field_value = lb.list_item_id)
@@ -84,7 +84,7 @@ class Project
                          GROUP BY ' . $groupby . '
                          ORDER BY list_position',
                           array($list_id));
-        return $db->FetchAllArray($sql);
+        return $sql->GetArray();
     }
 
     /**
@@ -137,8 +137,8 @@ class Project
             }
         }
 
-        return array_merge($required,
-                  $db->cached_query($field['list_id'] . intval($field['version_tense']), $this->_list_sql($field['list_id'], $where), $params));
+        $result = $db->CacheExecute(2, $this->_list_sql($field['list_id'], $where), $params);
+        return array_merge($required, $result->GetArray());
     }
 
     function listCategories($id, $hide_hidden = true, $remove_root = true, $depth = true)
@@ -150,23 +150,23 @@ class Project
         $cats = array();
 
         // retrieve the left and right value of the root node
-        $result = $db->Query("SELECT lft, rgt
+        $result = $db->Execute("SELECT lft, rgt
                                 FROM {list_category}
                                WHERE category_name = 'root' AND lft = 1 AND list_id = ?",
                              array($id));
-        $row = $db->FetchRow($result);
+        $row = $result->FetchRow();
 
-        $groupby = $db->GetColumnNames('{list_category}', 'c.category_id', 'c.');
+        $groupby = GetColumnNames('{list_category}', 'c.category_id', 'c');
 
         // now, retrieve all descendants of the root node
-        $result = $db->Query('SELECT c.category_id, c.category_name, c.*
+        $result = $db->Execute('SELECT c.category_id, c.category_name, c.*
                                 FROM {list_category} c
                                WHERE list_id = ? AND lft BETWEEN ? AND ?
                             GROUP BY ' . $groupby . '
                             ORDER BY lft ASC',
                              array($id, intval($row['lft']), intval($row['rgt'])));
 
-        while ($row = $db->FetchRow($result)) {
+        while ($row = $result->FetchRow()) {
             if ($hide_hidden && !$row['show_in_list'] && !$row['lft'] == 1) {
                 continue;
             }
@@ -203,25 +203,25 @@ class Project
     function listAttachments($cid)
     {
         global $db;
-        return $db->cached_query(
-                'attach_'.intval($cid),
-                "SELECT  *
+        $sql =  $db->CacheExecute(2,
+                'SELECT  *
                    FROM  {attachments}
                   WHERE  comment_id = ?
-               ORDER BY  attachment_id ASC",
+               ORDER BY  attachment_id ASC',
                array($cid));
+        return $sql->GetArray();
     }
 
     function listTaskAttachments($tid)
     {
         global $db;
-        return $db->cached_query(
-                'attach_'.intval($tid),
-                "SELECT  *
+        $sql = $db->CacheExecute(2,
+                'SELECT  *
                    FROM  {attachments}
                   WHERE  task_id = ? AND comment_id = 0
-               ORDER BY  attachment_id ASC",
+               ORDER BY  attachment_id ASC',
                array($tid));
+        return $sql->GetArray();
     }
     /* }}} */
 }

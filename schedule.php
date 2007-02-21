@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
   /********************************************************\
   | Scheduled Jobs (poor man's cron)                       |
@@ -40,7 +40,7 @@ do {
     $now = time();
     
     ############ Task one: Send reminders ############
-    $get_reminders = $db->Query("SELECT  r.reminder_message AS message, r.*
+    $get_reminders = $db->Execute("SELECT  r.reminder_message AS message, r.*
                                    FROM  {reminders} r
                              INNER JOIN  {users}     u ON u.user_id = r.to_user_id
                              INNER JOIN  {tasks}     t ON r.task_id = t.task_id
@@ -49,10 +49,10 @@ do {
                                                            AND r.last_sent + r.how_often < ?
                                ORDER BY  r.reminder_id", array(time(), time()));
 
-    while ($row = $db->FetchRow($get_reminders)) {
+    while ($row = $get_reminders->FetchRow()) {
         if (Notifications::send_now($row['to_user_id'], ADDRESS_USER, NOTIFY_REMINDER, $row)) {
            // Update the database with the time sent
-           $db->Query("UPDATE  {reminders}
+           $db->Execute("UPDATE  {reminders}
                           SET  last_sent = ?
                         WHERE  reminder_id = ?",
                        array(time(), $row['reminder_id']));
@@ -63,22 +63,22 @@ do {
     Notifications::send_stored();
     
     ############ Task three: send project manager digests ############
-    $sql = $db->Query('SELECT project_id, project_title, last_digest
+    $sql = $db->Execute('SELECT project_id, project_title, last_digest
                          FROM {projects}
                         WHERE send_digest = 1 AND last_digest < ?',
                         array(time() - 60*60*24*7));
-    while ($project = $db->FetchRow($sql)) {
+    while ($project = $sql->FetchRow()) {
         // find out all project managers
-        $pms = $db->Query('SELECT uig.user_id
-                             FROM {users_in_groups} uig
-                        LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                            WHERE g.project_id = ? AND g.manage_project = 1',
-                            array($project['project_id']));
+        $pms = $db->GetCol('SELECT uig.user_id
+                              FROM {users_in_groups} uig
+                         LEFT JOIN {groups} g ON uig.group_id = g.group_id
+                             WHERE g.project_id = ? AND g.manage_project = 1',
+                             array($project['project_id']));
         
         // Now generate the message, we are interested in opened/reopened, closed and assigned tasks
         $opened = $reopened = $closed = $assigned = array();
         $message = L('digestfor') . ' ' . $project['project_title'] . ":\n\n";
-        $sql = $db->Query('SELECT h.event_type, lr.item_name AS resolution_name, t.task_id, t.item_summary, u.user_name, u.real_name
+        $sql = $db->Execute('SELECT h.event_type, lr.item_name AS resolution_name, t.task_id, t.item_summary, u.user_name, u.real_name
                              FROM {history} h
                         LEFT JOIN {tasks} t ON h.task_id = t.task_id
                         LEFT JOIN {users} u ON h.user_id = u.user_id
@@ -87,7 +87,7 @@ do {
                                   AND event_date > ?',
                             array($project['project_id'], max($project['last_digest'], time() - 60*60*24*7)));
                             
-        while ($row = $db->FetchRow($sql)) {
+        while ($row = $sql->FetchRow()) {
             switch ($row['event_type'])
             {
                 case '1':
@@ -115,8 +115,8 @@ do {
             }
         }
         
-        if (Notifications::send_now($db->FetchCol($pms), ADDRESS_USER, NOTIFY_DIGEST, array('message' => $message))) {
-            $db->Query('UPDATE {projects} SET last_digest = ? WHERE project_id = ?',
+        if (Notifications::send_now($pms, ADDRESS_USER, NOTIFY_DIGEST, array('message' => $message))) {
+            $db->Execute('UPDATE {projects} SET last_digest = ? WHERE project_id = ?',
                         array(time(), $project['project_id']));
         }
     }

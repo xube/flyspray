@@ -78,12 +78,12 @@ $sql= 'SELECT t1.task_id AS id1, t1.item_summary AS sum1,
       WHERE  t1.project_id= ?
    ORDER BY  d.task_id, d.dep_task_id';
 
-$get_edges = $db->Query($sql, array($proj->id));
+$get_edges = $db->Execute($sql, array($proj->id));
 
 $edge_list = array();
 $rvrs_list = array();
 $node_list = array();
-while ($row = $db->FetchRow($get_edges)) {
+while ($row = $get_edges->FetchRow()) {
     extract($row, EXTR_REFS);
     $edge_list[$id1][] = $id2;
     $rvrs_list[$id2][] = $id1;

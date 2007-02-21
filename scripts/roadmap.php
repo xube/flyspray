@@ -15,10 +15,10 @@ if (!$proj->id) {
 $page->setTitle($fs->prefs['page_title'] . L('roadmap'));
 
 // Get milestones
-$sql = $db->Query('SELECT list_id FROM {fields} WHERE field_id = ?',
-                  array($proj->prefs['roadmap_field']));
-$list_id = $db->FetchOne($sql);
-$milestones = $db->Query('SELECT list_item_id AS version_id, item_name AS version_name
+$list_id = $db->GetOne('SELECT list_id FROM {fields} WHERE field_id = ?',
+                        array($proj->prefs['roadmap_field']));
+
+$milestones = $db->Execute('SELECT list_item_id AS version_id, item_name AS version_name
                             FROM {list_items} li
                            WHERE list_id = ? AND version_tense = 3
                         ORDER BY list_position ASC',
@@ -26,14 +26,14 @@ $milestones = $db->Query('SELECT list_item_id AS version_id, item_name AS versio
 
 $data = array();
 
-while ($row = $db->FetchRow($milestones)) {
+while ($row = $milestones->FetchRow()) {
     // Get all tasks related to a milestone
-    $all_tasks = $db->Query('SELECT  percent_complete, is_closed
+    $all_tasks = $db->Execute('SELECT  percent_complete, is_closed
                                FROM  {tasks} t
                           LEFT JOIN  {field_values} fv ON (fv.task_id = t.task_id AND field_id = ?)
                               WHERE  field_value = ? AND project_id = ?',
                              array($proj->prefs['roadmap_field'], $row['version_id'], $proj->id));
-    $all_tasks = $db->fetchAllArray($all_tasks);
+    $all_tasks = $all_tasks->GetArray();
 
     $percent_complete = 0;
     foreach($all_tasks as $task) {
@@ -45,12 +45,12 @@ while ($row = $db->FetchRow($milestones)) {
     }
     $percent_complete = round($percent_complete/max(count($all_tasks), 1));
 
-    $tasks = $db->Query('SELECT task_id, item_summary, detailed_desc, task_severity, mark_private, opened_by, content, task_token, t.project_id
+    $tasks = $db->Execute('SELECT task_id, item_summary, detailed_desc, task_severity, mark_private, opened_by, content, task_token, t.project_id
                            FROM {tasks} t
                       LEFT JOIN {cache} ca ON (t.task_id = ca.topic AND ca.type = ? AND t.last_edited_time <= ca.last_updated)
                           WHERE closedby_version = ? AND t.project_id = ? AND is_closed = 0',
                          array('rota', $row['version_id'], $proj->id));
-    $tasks = $db->fetchAllArray($tasks);
+    $tasks = $tasks->GetArray();
 
     $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks, 'percent_complete' => $percent_complete,
                     'all_tasks' => $all_tasks, 'name' => $row['version_name']);

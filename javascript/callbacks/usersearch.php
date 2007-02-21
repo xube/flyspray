@@ -23,14 +23,14 @@ if (!$user->can_view_userlist()) {
 $searchterm = '%' . reset($_POST) . '%';
 
 // Get the list of users from the global groups above
-$get_users = $db->Query('SELECT u.real_name, u.user_name
+$get_users = $db->Execute('SELECT u.real_name, u.user_name
                            FROM {users} u
                           WHERE u.user_name LIKE ? OR u.real_name LIKE ?',
                          array($searchterm, $searchterm), 20);
 
 $html = '<ul class="autocomplete">';
 
-while ($row = $db->FetchRow($get_users))
+while ($row = $get_users->FetchRow())
 {
    $data = array_map(array('Filters','noXSS'), $row);
 

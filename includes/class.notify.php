@@ -81,9 +81,8 @@ class Notifications
         if (isset($data['task_id'])) {
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
             // we have project specific options
-            $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
-            $proj = new Project($db->fetchOne($sql));
-            $data['project'] = $proj;
+            $pid = $db->GetOne('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
+            $data['project'] = new Project($pid);
         }
 
         if ($to_type != ADDRESS_DONE) {
@@ -213,16 +212,15 @@ class Notifications
         if (isset($data['task_id'])) {
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
             // we have project specific options
-            $sql = $db->Query('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
-            $proj = new Project($db->fetchOne($sql));
-            $data['project'] = $proj;
+            $pid = $db->GetOne('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
+            $data['project'] = new Project($pid);
         }
 
         list($data['subject'], $data['body']) = Notifications::generate_message($type, $data);
         $time = time(); // on a sidenote: never do strange things like $date = time() or $time = date('U');
 
         // just in case
-        if (!$db->Query('INSERT INTO {notification_messages}
+        if (!$db->Execute('INSERT INTO {notification_messages}
                                 (message_data, time_created)
                          VALUES (?, ?)',
                         array(serialize($data), $time))) {
@@ -230,19 +228,18 @@ class Notifications
         }
 
         // ugly but postgre doesn't give us a choice?
-        $result = $db->Query('SELECT message_id
-                                FROM {notification_messages}
-                               WHERE time_created = ?
-                            ORDER BY message_id DESC',
-                              array($time), 1);
-        $message_id = $db->fetchOne($result);
+        $message_id = $db->GetOne('SELECT message_id
+                                     FROM {notification_messages}
+                                    WHERE time_created = ?
+                                 ORDER BY message_id DESC',
+                                    array($time), 1);
 
         foreach ($to as $user_id) {
             if ($user_id == $user->id && !$user->infos['notify_own']) {
                 continue;
             }
 
-            $db->Query('INSERT INTO {notification_recipients}
+            $db->Execute('INSERT INTO {notification_recipients}
                                     (message_id, user_id)
                              VALUES (?, ?)', array($message_id, $user_id));
         }
@@ -263,25 +260,25 @@ class Notifications
         $jids = array();
 
         // First we get the messages in chronological order...
-        $sql = $db->Query('SELECT message_id, message_data FROM {notification_messages} ORDER BY time_created DESC');
-        while ($row = $db->FetchRow($sql))
+        $sql = $db->Execute('SELECT message_id, message_data FROM {notification_messages} ORDER BY time_created DESC');
+        while ($row = $sql->FetchRow())
         {
             $data = unserialize($row['message_data']);
             // ...and after that the corresponding recipients
-            $rec = $db->Query('SELECT nr.user_id, u.notify_type, u.notify_own, u.email_address,
+            $rec = $db->Execute('SELECT nr.user_id, u.notify_type, u.notify_own, u.email_address,
                                       u.jabber_id, u.notify_blacklist
                                  FROM {notification_recipients} nr
                             LEFT JOIN {users} u ON nr.user_id = u.user_id
                                 WHERE message_id = ?',
                                 array($row['message_id']));
 
-            while ($msg = $db->FetchRow($rec)) {
+            while ($msg = $rec->FetchRow()) {
                 Notifications::add_to_list($emails, $jids, $msg, $data['notify_type']);
             }
 
             if (Notifications::send_now(array($emails, $jids), ADDRESS_DONE, 0, $row)) {
-                $db->Query('DELETE FROM {notification_recipients} WHERE message_id = ?', array($row['message_id']));
-                $db->Query('DELETE FROM {notification_messages} WHERE message_id = ?', array($row['message_id']));
+                $db->Execute('DELETE FROM {notification_recipients} WHERE message_id = ?', array($row['message_id']));
+                $db->Execute('DELETE FROM {notification_messages} WHERE message_id = ?', array($row['message_id']));
             }
         }
     }
@@ -303,20 +300,20 @@ class Notifications
         $emails = array();
 
         // Get list of users from the notification tab
-        $users1 = $db->Query('SELECT u.user_id, u.notify_type, u.notify_own, u.email_address,
+        $users1 = $db->Execute('SELECT u.user_id, u.notify_type, u.notify_own, u.email_address,
                                      u.jabber_id, u.notify_blacklist
                                 FROM {notifications} n
                            LEFT JOIN {users} u ON n.user_id = u.user_id
                                WHERE n.task_id = ?',
                                array($task_id));
         // Get assignees
-        $users2 = $db->Query('SELECT u.user_id, u.notify_type, u.notify_own, u.email_address,
+        $users2 = $db->Execute('SELECT u.user_id, u.notify_type, u.notify_own, u.email_address,
                                      u.jabber_id, u.notify_blacklist
                                 FROM {assigned} a
                            LEFT JOIN {users} u ON a.user_id = u.user_id
                                WHERE a.task_id = ?',
                                array($task_id));
-        $notif_list = array_merge($db->FetchAllArray($users1), $db->FetchAllArray($users2));
+        $notif_list = array_merge($users1->GetArray(), $users2->GetArray());
 
         foreach ($notif_list as $row)
         {
@@ -357,12 +354,12 @@ class Notifications
             return array();
         }
 
-        $sql = $db->Query('SELECT *
+        $sql = $db->Execute('SELECT *
                              FROM {users}
                             WHERE' . substr(str_repeat(' user_id = ? OR ', count($users)), 0, -3),
                            array_values($users));
 
-        while ($row = $db->FetchRow($sql))
+        while ($row = $sql->FetchRow())
         {
             // do not send notifs on own actions if the user does not want to
             // unless he is the only recipient (confirm code etc.)
@@ -574,8 +571,8 @@ class Notifications
 
             case NOTIFY_COMMENT_ADDED:
                 // Get the comment information
-                $result = $db->Query('SELECT comment_text FROM {comments} WHERE comment_id = ?', array($data['cid']));
-                $comment = $db->FetchRow($result);
+                $result = $db->Execute('SELECT comment_text FROM {comments} WHERE comment_id = ?', array($data['cid']));
+                $comment = $result->FetchRow();
 
                 $body .= L('notify.commentadded') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";

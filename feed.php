@@ -49,12 +49,12 @@ $filename = $feed_type.'-'.$orderby.'-'.$proj->id.'-'.$max_items;
 
 
 // Get the time when a task has been changed last
-$sql = $db->Query("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
+$sql = $db->Execute("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
                      FROM  {tasks}    t
                INNER JOIN  {projects} p ON t.project_id = p.project_id AND p.project_is_active = '1'
                     WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
                            AND p.others_view = '1' ", array($closed));
-$most_recent = max($db->fetchRow($sql));
+$most_recent = max($sql->fetchRow());
 
 if ($fs->prefs['cache_feeds']) {
     if ($fs->prefs['cache_feeds'] == '1') {
@@ -64,12 +64,12 @@ if ($fs->prefs['cache_feeds']) {
         }
     }
     else {
-        $sql = $db->Query("SELECT  content
-                             FROM  {cache} p
-                            WHERE  type = ? AND topic = ? $sql_project
-                                   AND max_items = ?  AND last_updated >= ?",
-                        array($feed_type, $orderby, $max_items, $most_recent));
-        if ($content = $db->FetchOne($sql)) {
+        $content = $db->GetOne("SELECT  content
+                                  FROM  {cache} p
+                                 WHERE  type = ? AND topic = ? $sql_project
+                                        AND max_items = ?  AND last_updated >= ?",
+                               array($feed_type, $orderby, $max_items, $most_recent));
+        if ($content) {
             echo $content;
             exit;
         }
@@ -77,7 +77,7 @@ if ($fs->prefs['cache_feeds']) {
 }
 
 /* build a new feed if cache didn't work */
-$sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed,
+$sql = $db->Execute("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed,
                            t.last_edited_time, t.opened_by, u.real_name, u.email_address, t.*
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
@@ -85,7 +85,7 @@ $sql = $db->Query("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_op
                  ORDER BY  $orderby DESC",
                    array($closed), $max_items);
 
-$task_details     = array_filter($db->fetchAllArray($sql), array($user, 'can_view_task'));
+$task_details     = array_filter($sql->GetArray(), array($user, 'can_view_task'));
 $feed_description = $proj->prefs['feed_description'] ? $proj->prefs['feed_description'] : $fs->prefs['page_title'] . $proj->prefs['project_title'].': '.$title;
 $feed_image       = false;
 if ($proj->prefs['feed_img_url']

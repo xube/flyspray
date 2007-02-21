@@ -6,14 +6,14 @@
  * GPC classes
  *
  * This script contains classes for $_GET, $_REQUEST, $_POST and $_COOKIE
- * to safely retrieve values. Example: Get::val('foo', 'bar') to get $_GET['foo'] or 'bar' if 
- * the key does not exist. 
+ * to safely retrieve values. Example: Get::val('foo', 'bar') to get $_GET['foo'] or 'bar' if
+ * the key does not exist.
  *
  * @license http://opensource.org/licenses/lgpl-license.php Lesser GNU Public License
  * @package flyspray
  * @author Pierre Habouzit
  */
- 
+
 class Req
 {
     function has($key)
@@ -31,7 +31,7 @@ class Req
     {
         return Filters::num(Req::val($key, $default));
     }
-    
+
     function enum($key, $options, $default = null)
     {
         return Filters::enum(Req::val($key, $default), $options);
@@ -135,7 +135,7 @@ class Cookie
     }
 }
 //}}}
-/** 
+/**
  * Class Filters
  *
  * This is a simple class for safe input validation
@@ -143,7 +143,7 @@ class Cookie
  * @author Cristian Rodriguez R <soporte@onfocus.cl>
  * @license BSD
  * @notes this intented to be used by Flyspray internals functions/methods
- * please DO NOT use this in templates , if the code processing the input there 
+ * please DO NOT use this in templates , if the code processing the input there
  * is not safe, please fix the underlying problem.
  */
 class Filters {
@@ -159,7 +159,7 @@ class Filters {
     {
          return intval($data); // no further checks here please
     }
-    
+
     /**
      * Give user input free from potentially mailicious html
      * @param mixed $data
@@ -168,24 +168,24 @@ class Filters {
      */
     function noXSS($data)
     {
-        if(empty($data) || is_numeric($data)) {
-            return $data;
-        } elseif(is_string($data)) {
+        if (is_string($data)) {
             return htmlspecialchars($data, ENT_QUOTES, 'utf-8');
+        } elseif (empty($data) || is_numeric($data)) {
+            return $data;
         }
         return '';
     }
-    
+
     /**
      * is $data alphanumeric eh ?
      * @param string $data string value to check
      * @return bool
      * @access public static
-     * @notes unfortunately due to a bug in PHP < 5.1 
+     * @notes unfortunately due to a bug in PHP < 5.1
      * http://bugs.php.net/bug.php?id=30945 ctype_alnum
      * returned true on empty string, that's the reason why
      * we have to use strlen too.
-     * 
+     *
      * Be aware: $data MUST be an string, integers or any other
      * type is evaluated to FALSE
      */
@@ -207,7 +207,7 @@ class Filters {
         if (!in_array($data, $options) && isset($options[0])) {
             return $options[0];
         }
-        
+
         return $data;
     }
 }

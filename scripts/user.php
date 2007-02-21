@@ -17,15 +17,15 @@ if ($theuser->isAnon()) {
 }
 
 // Some possibly interesting information about the user
-$sql = $db->Query('SELECT count(*) FROM {comments} WHERE user_id = ?', array($theuser->id));
-$page->assign('comments', $db->fetchOne($sql));
+$sql = $db->GetOne('SELECT count(*) FROM {comments} WHERE user_id = ?', array($theuser->id));
+$page->assign('comments', $sql);
 
-$sql = $db->Query('SELECT count(*) FROM {tasks} WHERE opened_by = ?', array($theuser->id));
-$page->assign('tasks', $db->fetchOne($sql));
+$sql = $db->GetOne('SELECT count(*) FROM {tasks} WHERE opened_by = ?', array($theuser->id));
+$page->assign('tasks', $sql);
 
-$sql = $db->Query('SELECT count(*) FROM {assigned} WHERE user_id = ?', array($theuser->id));
+$sql = $db->GetOne('SELECT count(*) FROM {assigned} WHERE user_id = ?', array($theuser->id));
 $page->assign('groups', Flyspray::listallGroups($theuser->id));
-$page->assign('assigned', $db->fetchOne($sql));
+$page->assign('assigned', $sql);
 
 $page->assign('theuser', $theuser);
 

@@ -83,7 +83,7 @@ if (Post::val('user_name') != '' && Post::val('password') != '') {
         Flyspray::setcookie('flyspray_passhash', crypt($user->infos['user_pass'], $conf['general']['cookiesalt']), $cookie_time);
 
         // If the user had previously requested a password change, remove the magic url
-        $remove_magic = $db->Query("UPDATE {users} SET magic_url = '' WHERE user_id = ?",
+        $remove_magic = $db->Execute("UPDATE {users} SET magic_url = '' WHERE user_id = ?",
                                     array($user->id));
 
         $_SESSION['SUCCESS'] = L('loginsuccessful');

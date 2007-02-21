@@ -38,12 +38,12 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
 
 if (Get::val('getfile')) {
     // If a file was requested, deliver it
-    $result = $db->Query("SELECT  t.project_id,
+    $result = $db->Execute("SELECT  t.project_id,
                                   a.orig_name, a.file_name, a.file_type, t.*
                             FROM  {attachments} a
                       INNER JOIN  {tasks}       t ON a.task_id = t.task_id
                            WHERE  attachment_id = ?", array(Get::val('getfile')));
-    $task = $db->FetchRow($result);
+    $task = $result->FetchRow();
     list($proj_id, $orig_name, $file_name, $file_type) = $task;
 
     // Check if file exists, and user permission to access it!
@@ -112,29 +112,29 @@ if (Flyspray::requestDuplicated()) {
 
 if ($proj->id && $user->perms('manage_project')) {
     // Find out if there are any PM requests wanting attention
-    $sql = $db->Query(
+    $sql = $db->Execute(
             "SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
             array($proj->id));
-    list($count) = $db->fetchRow($sql);
+    list($count) = $sql->FetchRow();
 
     $page->assign('pm_pendingreq_num', $count);
 }
 
-$sql = $db->Query(
+$sql = $db->Execute(
         'SELECT  project_id, project_title, others_view,
                  upper(project_title) AS sort_names
            FROM  {projects}
        ORDER BY  sort_names');
 
-$fs->projects = array_filter($db->FetchAllArray($sql), array($user, 'can_view_project'));
+$fs->projects = array_filter($sql->GetArray(), array($user, 'can_view_project'));
 
 // Get e-mail addresses of the admins
 if ($user->isAnon() && !$fs->prefs['user_notify']) {
-    $sql = $db->Query('SELECT email_address
+    $sql = $db->Execute('SELECT email_address
                          FROM {users} u
                     LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
                         WHERE g.group_id = 1');
-    $page->assign('admin_emails', $db->FetchAllArray($sql));
+    $page->assign('admin_emails', $sql->GetArray());
 }
 
 // default title

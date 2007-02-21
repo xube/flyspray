@@ -21,24 +21,24 @@ $areas = array('prefs', 'editgroup', 'groups', 'users', 'newgroup',
 
 switch ($area = Req::enum('area', $areas, 'prefs')) {
     case 'pendingreq':
-        $sql = $db->Query("SELECT  *
+        $sql = $db->Execute("SELECT  *
                              FROM  {admin_requests} ar
                         LEFT JOIN  {tasks} t ON ar.task_id = t.task_id
                         LEFT JOIN  {users} u ON ar.submitted_by = u.user_id
                             WHERE  ar.project_id = ? AND resolved_by = 0
                          ORDER BY  ar.time_submitted ASC", array($proj->id));
 
-        $page->assign('pendings', $db->fetchAllArray($sql));
+        $page->assign('pendings', $sql->GetArray());
         break;
 
     case 'groups':
-        $sql = $db->Query('SELECT g.group_id, g.group_name, g.group_desc,
+        $sql = $db->Execute('SELECT g.group_id, g.group_name, g.group_desc,
                                   count(uig.user_id) AS num_users
                              FROM {groups} g
                         LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
                             WHERE g.project_id = ?
                          GROUP BY g.group_id', array($proj->id));
-        $page->assign('groups', $db->FetchAllArray($sql));
+        $page->assign('groups', $sql->GetArray());
         break;
 
     case 'users':
@@ -74,13 +74,13 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
             $args = array_merge($args, $groups);
         }
 
-        $sql = $db->Query('SELECT u.user_id, u.user_name, u.real_name, u.register_date,
+        $sql = $db->Execute('SELECT u.user_id, u.user_name, u.real_name, u.register_date,
                                   u.jabber_id, u.email_address, u.account_enabled
                              FROM {users} u '
                          . $where .
                         'ORDER BY ' . $sortorder, $args);
 
-        $users = $db->GroupBy($sql, 'user_id');
+        $users = GroupBy($sql, 'user_id');
         $page->assign('user_count', count($users));
 
         // Offset and limit
@@ -94,11 +94,11 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
         // because of search options which are disregarded here
         if (count($user_list)) {
             $in = implode(',', array_map(create_function('$x', 'return $x[0];'), $user_list));
-            $sql = $db->Query('SELECT user_id, g.group_id, g.group_name, g.project_id
+            $sql = $db->Execute('SELECT user_id, g.group_id, g.group_name, g.project_id
                                  FROM {groups} g
                             LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
                                 WHERE user_id IN ('. $in .')');
-            $user_groups = $db->GroupBy($sql, 'user_id', array('group_id', 'group_name', 'project_id'), !REINDEX);
+            $user_groups = GroupBy($sql, 'user_id', array('group_id', 'group_name', 'project_id'), !REINDEX);
         }
 
         $page->uses('user_list');
@@ -106,23 +106,23 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
         break;
 
         case 'lists':
-            $sql = $db->Query('SELECT * FROM {lists}
+            $sql = $db->Execute('SELECT * FROM {lists}
                                 WHERE project_id = ?
                              ORDER BY list_type', array($proj->id));
-            $page->assign('lists', $db->FetchAllArray($sql));
+            $page->assign('lists', $sql->GetArray());
             break;
 
         case 'fields':
-            $sql = $db->Query('SELECT * FROM {lists}
+            $sql = $db->Execute('SELECT * FROM {lists}
                              ORDER BY project_id, list_type, list_name');
-            $page->assign('lists', $db->FetchAllArray($sql));
+            $page->assign('lists', $sql->GetArray());
             break;
 
         case 'list':
             // Which type of list?
-            $sql = $db->Query('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
+            $sql = $db->Execute('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
                               array(Req::val('list_id')));
-            $row = $db->fetchRow($sql);
+            $row = $sql->FetchRow();
             $list_type = $row[0];
             $list_name = $row[1];
 

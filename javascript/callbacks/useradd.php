@@ -13,7 +13,7 @@ require_once('../../header.php');
 $searchterm = reset($_POST);
 
 // Get the list of users from the global groups above
-$get_users = $db->Query('SELECT u.real_name, u.user_name, u.user_id, g.group_name
+$get_users = $db->Execute('SELECT u.real_name, u.user_name, u.user_id, g.group_name
                            FROM {users} u
                       LEFT JOIN {users_in_groups} uig on uig.user_id = u.user_id 
                       LEFT JOIN {groups} g ON uig.group_id = g.group_id
@@ -21,7 +21,7 @@ $get_users = $db->Query('SELECT u.real_name, u.user_name, u.user_id, g.group_nam
                        ORDER BY g.group_name ASC',
                          array($searchterm, $searchterm), 1);
 
-if ($row = $db->FetchRow($get_users)) {
+if ($row = $get_users->FetchRow()) {
 
     array_walk($row, array('Filters','noXSS'));
     

@@ -39,8 +39,7 @@ require_once OBJECTS_PATH . '/class.flyspray.php';
 require_once APPLICATION_PATH . '/adodb/adodb.inc.php';
 require_once APPLICATION_PATH . '/adodb/adodb-xmlschema03.inc.php';
 
-$db = new Database;
-$db->dbOpenFast($conf['database']);
+$db = NewDatabase($conf['database']);
 
 // ---------------------------------------------------------------------
 // Application Web locations
@@ -52,8 +51,7 @@ define('UPGRADE_VERSION', Flyspray::base_version($fs->version));
 define('UPGRADE_PATH', BASEDIR . '/upgrade/' . UPGRADE_VERSION);
 
 // Get installed version
-$sql = $db->Query('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('fs_ver'));
-$installed_version = $db->FetchOne($sql);
+$installed_version = $db->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('fs_ver'));
 
 $page = new Tpl;
 $page->assign('title', 'Upgrade ');
@@ -79,18 +77,17 @@ if (Post::val('upgrade')) {
 
     // global prefs update
     if (isset($upgrade_info['fsprefs'])) {
-        $sql = $db->Query('SELECT pref_name FROM {prefs}');
-        $existing = $db->FetchCol($sql);
+        $existing = $db->GetCol('SELECT pref_name FROM {prefs}');
         // Add what is missing
         foreach ($upgrade_info['fsprefs'] as $name => $value) {
             if (!in_array($name, $existing)) {
-                $db->Query('INSERT INTO {prefs} (pref_name, pref_value) VALUES (?, ?)', array($name, $value));
+                $db->Execute('INSERT INTO {prefs} (pref_name, pref_value) VALUES (?, ?)', array($name, $value));
             }
         }
         // Delete what is too much
         foreach ($existing as $name) {
             if (!isset($upgrade_info['fsprefs'][$name])) {
-                $db->Query('DELETE FROM {prefs} WHERE pref_name = ?', array($name));
+                $db->Execute('DELETE FROM {prefs} WHERE pref_name = ?', array($name));
             }
         }
     }
@@ -101,8 +98,7 @@ if (Post::val('upgrade')) {
     }
 
     // files which are already done
-    $sql = $db->Query('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('upgrader_done'));
-    $done = $db->FetchOne($sql);
+    $done = $db->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('upgrader_done'));
     $done = ($done) ? unserialize($done) : array();
 
     ksort($upgrade_info[$type]);
@@ -119,7 +115,7 @@ if (Post::val('upgrade')) {
         }
 
         if (substr($file, -4) == '.xml') {
-            $schema = new adoSchema($db->dblink);
+            $schema = new adoSchema($db);
             $schema->SetPrefix($conf['database']['dbprefix']);
             $schema->ParseSchemaFile(UPGRADE_PATH . '/' . $file);
             if ($schema->ExecuteSchema()) {
@@ -128,8 +124,8 @@ if (Post::val('upgrade')) {
         }
     }
 
-    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
-    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(serialize($done), 'upgrader_done'));
+    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(serialize($done), 'upgrader_done'));
     $page->assign('done', true);
 }
 
@@ -207,7 +203,7 @@ class ConfUpdater
 $checks = $todo = array();
 $checks['version_compare'] = version_compare($installed_version, UPGRADE_VERSION) === -1;
 $checks['config_writable'] = is_writable(CONFIG_PATH);
-$checks['db_connect'] = (bool) $db->dblink;
+$checks['db_connect'] = (bool) $db;
 $checks['installed_version'] = version_compare($installed_version, '0.9.5') === 1;
 $todo['config_writable'] = 'Please make sure that the file at ' . CONFIG_PATH . ' is writable.';
 $todo['db_connect'] = 'Connection to the database could not be established. Check your config.';

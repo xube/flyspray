@@ -30,7 +30,7 @@ if ($details = Get::num('details')) {
 }
 
 $sql = get_events(Get::num('task_id'), $details);
-$histories = $db->fetchAllArray($sql);
+$histories = $sql->GetArray();
 
 $page = new FSTpl;
 $page->uses('histories', 'details');

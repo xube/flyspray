@@ -65,9 +65,9 @@ class Flyspray
 
         $this->startSession();
 
-        $res = $db->Query('SELECT pref_name, pref_value FROM {prefs}');
+        $res = $db->Execute('SELECT pref_name, pref_value FROM {prefs}');
 
-        while ($row = $db->FetchRow($res)) {
+        while ($row = $res->FetchRow()) {
             $this->prefs[$row['pref_name']] = $row['pref_value'];
         }
 
@@ -305,7 +305,7 @@ class Flyspray
             return false;
         }
 
-        $task = $db->Query('  SELECT  t.*,
+        $task = $db->Execute('  SELECT  t.*,
                                       r.item_name AS resolution_name,
                                       uo.real_name      AS opened_by_name,
                                       ue.real_name      AS last_edited_by_name,
@@ -317,23 +317,21 @@ class Flyspray
                            LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
                                WHERE  t.task_id = ?', array($task_id));
 
-        if (!$db->CountRows($task)) {
+        if ($task = $task->FetchRow()) {
+            $task += array('severity_name' => $fs->severities[$task['task_severity']]);
+        } else {
             return false;
         }
 
-        if ($task = $db->FetchRow($task)) {
-            $task += array('severity_name' => $fs->severities[$task['task_severity']]);
-        }
-
         // Now add custom fields
-        $sql = $db->Query('SELECT field_value, field_name, f.field_id, li.item_name, lc.category_name
+        $sql = $db->Execute('SELECT field_value, field_name, f.field_id, li.item_name, lc.category_name
                              FROM {field_values} fv
                         LEFT JOIN {fields} f ON f.field_id = fv.field_id
                         LEFT JOIN {lists} l ON l.list_id = f.list_id
                         LEFT JOIN {list_items} li ON (l.list_type <> ? AND f.list_id = li.list_id AND field_value = li.list_item_id)
                         LEFT JOIN {list_category} lc ON (l.list_type = ? AND f.list_id = lc.list_id AND field_value = lc.category_id)
                             WHERE task_id = ?', array(LIST_CATEGORY, LIST_CATEGORY, $task['task_id']));
-        while ($row = $db->FetchRow($sql)) {
+        while ($row = $sql->FetchRow()) {
             $task['f' . $row['field_id']] = $row['field_value'];
             $task['f' . $row['field_id'] . '_name'] = ($row['item_name'] ? $row['item_name'] : $row['category_name']);
         }
@@ -359,8 +357,8 @@ class Flyspray
     {
         global $db;
 
-        $sql = $db->Query('SELECT  project_id, project_title FROM {projects}');
-        return $db->fetchAllArray($sql);
+        $sql = $db->Execute('SELECT  project_id, project_title FROM {projects}');
+        return $sql->GetArray();
     } // }}}
     // List themes {{{
     /**
@@ -395,11 +393,11 @@ class Flyspray
     function listGroups($proj_id = 0)
     {
         global $db;
-        $res = $db->Query('SELECT  *
+        $res = $db->Execute('SELECT  *
                              FROM  {groups}
                             WHERE  project_id = ?
                          ORDER BY  group_id ASC', array($proj_id));
-        return $db->FetchAllArray($res);
+        return $res->GetArray();
     }
     /**
      * Returns a list of all groups, sorted by project
@@ -424,9 +422,9 @@ class Flyspray
                             WHERE uig.user_id = ? ';
             $params[] = $user_id;
         }
-        $sql = $db->Query($query, $params);
+        $sql = $db->Execute($query, $params);
 
-        while ($row = $db->FetchRow($sql)) {
+        while ($row = $sql->FetchRow()) {
             // make sure that the user only sees projects he is allowed to
             if ($row['project_id'] != '0' && Flyspray::array_find('project_id', $row['project_id'], $fs->projects) === false) {
                 continue;
@@ -506,7 +504,7 @@ class Flyspray
                              ((!is_numeric($time)) ? time() : $time),
                               $type, $field, $oldvalue, $newvalue);
 
-        if($db->Query('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed,
+        if($db->Execute('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed,
                        old_value, new_value) VALUES (?, ?, ?, ?, ?, ?, ?)', $query_params)) {
             return true;
          }
@@ -528,7 +526,7 @@ class Flyspray
     function AdminRequest($type, $project_id, $task_id, $submitter, $reason)
     {
         global $db;
-        $db->Query('INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
+        $db->Execute('INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
                          VALUES (?, ?, ?, ?, ?, ?)',
                     array($project_id, $task_id, $submitter, $type, $reason, time()));
     } // }}}
@@ -545,11 +543,11 @@ class Flyspray
     {
         global $db;
 
-        $check = $db->Query('SELECT *
-                               FROM {admin_requests}
-                              WHERE request_type = ? AND task_id = ? AND resolved_by = 0',
-                            array($type, $task_id));
-        return (bool)($db->CountRows($check));
+        $check = $db->Execute('SELECT request_id
+                                 FROM {admin_requests}
+                                WHERE request_type = ? AND task_id = ? AND resolved_by = 0',
+                               array($type, $task_id));
+        return (bool) $check->FetchRow();
     } // }}}
     // Get the current user's details {{{
     /**
@@ -563,8 +561,8 @@ class Flyspray
     {
         global $db;
 
-        $result = $db->Query('SELECT * FROM {users} WHERE user_id = ?', array(intval($user_id)));
-        return $db->FetchRow($result);
+        $result = $db->Execute('SELECT * FROM {users} WHERE user_id = ?', array(intval($user_id)));
+        return $result->FetchRow();
     } // }}}
     // Get group details {{{
     /**
@@ -577,13 +575,13 @@ class Flyspray
     function getGroupDetails($group_id)
     {
         global $db;
-        $sql = $db->Query('SELECT *, count(uig.user_id) AS num_users
+        $sql = $db->Execute('SELECT *, count(uig.user_id) AS num_users
                              FROM {groups} g
                         LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
                             WHERE g.group_id = ?
                          GROUP BY g.group_id',
                           array($group_id));
-        return $db->FetchRow($sql);
+        return $sql->FetchRow();
     } // }}}
     //  {{{
     /**
@@ -610,14 +608,14 @@ class Flyspray
     {
         global $db;
 
-        $result = $db->Query("SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass
+        $result = $db->Execute("SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass
                                 FROM  {users_in_groups} uig
                            LEFT JOIN  {groups} g ON uig.group_id = g.group_id
                            LEFT JOIN  {users} u ON uig.user_id = u.user_id
                                WHERE  u.user_name = ? AND g.project_id = ?
                             ORDER BY  g.group_id ASC", array($username, 0));
 
-        $auth_details = $db->FetchRow($result);
+        $auth_details = $result->FetchRow();
 
         if(!$result || !count($auth_details)) {
             return 0;
@@ -796,13 +794,13 @@ class Flyspray
     {
         global $db;
 
-        $sql = $db->Query('SELECT u.real_name, u.user_id
+        $sql = $db->Execute('SELECT u.real_name, u.user_id
                              FROM {users} u, {assigned} a
                             WHERE task_id = ? AND u.user_id = a.user_id',
                               array($task_id));
 
         $assignees = array();
-        while ($row = $db->FetchRow($sql)) {
+        while ($row = $sql->FetchRow()) {
             if ($name) {
                 $assignees[0][] = $row['user_id'];
                 $assignees[1][] = $row['real_name'];
@@ -907,10 +905,11 @@ class Flyspray
     {
         global $db;
 
-        $sql = $db->Query('SELECT user_id FROM {users} WHERE ' .
-                          (is_numeric($name) ? 'user_id' : 'user_name') . ' = ?', array($name));
+        $uid = $db->GetOne('SELECT user_id FROM {users} WHERE ' .
+                           (is_numeric($name) ? 'user_id' : 'user_name') . ' = ?',
+                            array($name));
 
-        return intval($db->FetchOne($sql));
+        return intval($uid);
     }
     /**
      * check_email

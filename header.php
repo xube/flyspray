@@ -27,8 +27,7 @@ require_once BASEDIR . '/includes/class.project.php';
 require_once BASEDIR . '/includes/class.user.php';
 require_once BASEDIR . '/includes/class.tpl.php';
 
-$db = new Database;
-$db->dbOpenFast($conf['database']);
+$db = NewDatabase($conf['database']);
 $fs = new Flyspray;
 
 if (is_readable(BASEDIR . '/setup/index.php') && strpos($fs->version, 'dev') === false) {
@@ -39,9 +38,10 @@ if (is_readable(BASEDIR . '/setup/index.php') && strpos($fs->version, 'dev') ===
 // Any "do" mode that accepts a task_id or id field should be added here.
 if (in_array(Req::val('do'), array('details', 'depends'))) {
     if (Req::num('task_id')) {
-        $result = $db->Query('SELECT  project_id
-                                FROM  {tasks} WHERE task_id = ?', array(Req::num('task_id')));
-        $project_id = $db->FetchOne($result);
+        $project_id = $db->GetOne('SELECT  project_id
+                                     FROM  {tasks}
+                                    WHERE task_id = ?',
+                                   array(Req::num('task_id')));
     }
 }
 

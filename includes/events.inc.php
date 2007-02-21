@@ -8,7 +8,7 @@ function get_events($task_id, $where = '', $sort = 'ASC')
 {
     global $db;
     $sort = Filters::enum($sort, array('ASC', 'DESC'));
-    return $db->Query("SELECT h.*,
+    return $db->Execute("SELECT h.*,
                       p1.project_title AS project_id1,
                       p2.project_title AS project_id2,
                       lr.item_name AS resolution_name,

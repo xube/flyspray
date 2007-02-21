@@ -15,19 +15,17 @@ class User
         global $db;
 
         if ($uid > 0) {
-            $sql = $db->Query('SELECT *, g.group_id AS global_group, uig.record_id AS global_record_id
+            $sql = $db->Execute('SELECT *, g.group_id AS global_group, uig.record_id AS global_record_id
                                  FROM {users} u, {users_in_groups} uig, {groups} g
                                 WHERE u.user_id = ? AND uig.user_id = ? AND g.project_id = 0
                                       AND uig.group_id = g.group_id',
                                 array($uid, $uid));
         }
 
-        if ($uid > 0 && $db->countRows($sql)) {
-            $this->infos = $db->FetchRow($sql);
+        if ($uid > 0 && $this->infos = $sql->FetchRow()) {
             $this->id = intval($uid);
         } else {
-            $this->infos['real_name'] = L('anonuser');
-            $this->infos['user_name'] = '';
+            $this->infos = array('real_name' => L('anonuser'), 'user_name' => '');
         }
 
         $this->get_perms();
@@ -65,8 +63,8 @@ class User
             }
         }
 
-        $sql = $db->Query('SELECT * FROM {searches} WHERE user_id = ? ORDER BY name ASC', array($this->id));
-        $this->searches = $db->FetchAllArray($sql);
+        $sql = $db->Execute('SELECT * FROM {searches} WHERE user_id = ? ORDER BY name ASC', array($this->id));
+        $this->searches = $sql->GetArray();
     }
 
     function perms($name, $project = null) {
@@ -96,10 +94,10 @@ class User
 
         $this->perms = array(0 => array());
         // Get project settings which are important for permissions
-        $sql = $db->Query('SELECT project_id, others_view, anon_open, comment_closed,
+        $sql = $db->Execute('SELECT project_id, others_view, anon_open, comment_closed,
                                   anon_view_tasks
                              FROM {projects}');
-        while ($row = $db->FetchRow($sql)) {
+        while ($row = $sql->FetchRow()) {
             $this->perms[$row['project_id']] = $row;
         }
         // Fill permissions for global project
@@ -107,7 +105,7 @@ class User
 
         if (!$this->isAnon()) {
             // Get the global group permissions for the current user
-            $sql = $db->Query("SELECT  ".join(', ', $fields).", g.project_id, uig.record_id,
+            $sql = $db->Execute("SELECT  ".join(', ', $fields).", g.project_id, uig.record_id,
                                        g.group_open, g.group_id AS project_group
                                  FROM  {groups} g
                             LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
@@ -116,10 +114,10 @@ class User
                              ORDER BY  g.project_id, g.group_id ASC",
                                 array($this->id));
 
-            while ($row = $db->FetchRow($sql)) {
+            while ($row = $sql->FetchRow()) {
                 if (!isset($this->perms[$row['project_id']])) {
                     // should not happen, so clean up the DB
-                    $db->Query('DELETE FROM {users_in_groups} WHERE record_id = ?', array($row['record_id']));
+                    $db->Execute('DELETE FROM {users_in_groups} WHERE record_id = ?', array($row['record_id']));
                     continue;
                 }
 
@@ -271,20 +269,20 @@ class User
         }
 
         // Check that the user hasn't already voted this task
-        $check = $db->Query('SELECT vote_id
-                               FROM {votes}
-                              WHERE user_id = ? AND task_id = ?',
+        $check = $db->GetOne('SELECT vote_id
+                                FROM {votes}
+                               WHERE user_id = ? AND task_id = ?',
                              array($this->id, $task['task_id']));
-        if ($db->CountRows($check)) {
+        if ($check) {
             return -2;
         }
 
         // Check that the user hasn't voted more than twice this day
-        $check = $db->Query('SELECT vote_id
-                               FROM {votes}
-                              WHERE user_id = ? AND date_time > ?',
-                             array($this->id, time() - 86400));
-        if ($db->CountRows($check) > 2) {
+        $check = $db->GetOne('SELECT count(*)
+                                FROM {votes}
+                               WHERE user_id = ? AND date_time > ?',
+                              array($this->id, time() - 86400));
+        if ($check > 2) {
             return -3;
         }
 

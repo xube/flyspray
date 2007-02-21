@@ -20,36 +20,35 @@ $stats = array();
 
 // Most wanted tasks for each project
 foreach ($projects as $project) {
-    $sql = $db->Query('SELECT v.task_id, count(*) AS num_votes
+    $sql = $db->SelectLimit('SELECT v.task_id, count(*) AS num_votes
                          FROM {votes} v
                     LEFT JOIN {tasks} t ON v.task_id = t.task_id AND t.project_id = ?
                         WHERE t.is_closed = 0
                      GROUP BY v.task_id
-                     ORDER BY num_votes DESC',
-                     array($project['project_id']), 5);
-    if ($db->CountRows($sql)) {
-        $most_wanted[$project['project_id']] = $db->FetchAllArray($sql);
-    }
+                     ORDER BY num_votes DESC', 5, 0,
+                     array($project['project_id']));
+
+    $most_wanted[$project['project_id']] = ($arr = $sql->GetArray()) ? $arr : array();
 }
 
 // Project stats
 foreach ($projects as $project) {
-    $sql = $db->Query('SELECT count(*) FROM {tasks} WHERE project_id = ?',
+    $sql = $db->GetOne('SELECT count(*) FROM {tasks} WHERE project_id = ?',
+                        array($project['project_id']));
+    $stats[$project['project_id']]['all'] = $sql;
+    $sql = $db->GetOne('SELECT count(*) FROM {tasks} WHERE project_id = ? AND is_closed = 0',
+                        array($project['project_id']));
+    $stats[$project['project_id']]['open'] = $sql;
+    $sql = $db->GetOne('SELECT avg(percent_complete) FROM {tasks} WHERE project_id = ? AND is_closed = 0',
                       array($project['project_id']));
-    $stats[$project['project_id']]['all'] = $db->fetchOne($sql);
-    $sql = $db->Query('SELECT count(*) FROM {tasks} WHERE project_id = ? AND is_closed = 0',
-                      array($project['project_id']));
-    $stats[$project['project_id']]['open'] = $db->fetchOne($sql);
-    $sql = $db->Query('SELECT avg(percent_complete) FROM {tasks} WHERE project_id = ? AND is_closed = 0',
-                      array($project['project_id']));
-    $stats[$project['project_id']]['average_done'] = round($db->fetchOne($sql), 0);
-    $sql = $db->Query('SELECT u.user_id
-                         FROM {users} u
-                    LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
-                    LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                        WHERE g.manage_project = 1 AND g.project_id = ?',
-                       array($project['project_id']));
-    $stats[$project['project_id']]['project_managers'] = implode(', ', array_map('tpl_userlink', $db->fetchCol($sql)));
+    $stats[$project['project_id']]['average_done'] = round($sql, 0);
+    $sql = $db->GetCol('SELECT u.user_id
+                          FROM {users} u
+                     LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
+                     LEFT JOIN {groups} g ON uig.group_id = g.group_id
+                         WHERE g.manage_project = 1 AND g.project_id = ?',
+                        array($project['project_id']));
+    $stats[$project['project_id']]['project_managers'] = implode(', ', array_map('tpl_userlink', $sql));
 }
 
 $page->uses('most_wanted', 'stats', 'projects');

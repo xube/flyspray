@@ -18,10 +18,10 @@ if (!Get::has('magic_url') && $user->isAnon()) {
 elseif (Get::has('magic_url') && $user->isAnon()) {
     // Step Two: user enters new password
 
-    $check_magic = $db->Query('SELECT * FROM {users} WHERE magic_url = ?',
-            array(Get::val('magic_url')));
+    $check_magic = $db->GetOne('SELECT user_id FROM {users} WHERE magic_url = ?',
+                                array(Get::val('magic_url')));
 
-    if (!$db->CountRows($check_magic)) {
+    if (!$check_magic) {
         Flyspray::show_error(12);
     }
     $page->pushTpl('lostpw.step2.tpl');
