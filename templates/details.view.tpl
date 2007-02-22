@@ -36,20 +36,9 @@
 	 <table>
         <?php foreach ($proj->fields as $field): ?>
         <tr>
-		  <th id="f{$field['field_id']}">{$field['field_name']}</th>
-		  <td headers="f{$field['field_id']}">
-          <?php if ($task['f' . $field['field_id'] . '_name']): ?>
-            <?php if ($field['list_type'] == LIST_CATEGORY): ?>
-              <?php foreach ($parents[$field['field_id']] as $cat): ?>
-			  {$cat} &#8594;
-			  <?php endforeach; ?>
-            <?php endif; ?>
-            {$task['f' . $field['field_id'] . '_name']}
-          <?php elseif ($field['field_type'] == FIELD_DATE && $task['f' . $field['field_id']]): ?>
-          {formatDate($task['f' . $field['field_id']])}
-          <?php else: ?>
-          <span class="fade">{L('notspecified')}</span>
-          <?php endif; ?>
+		  <th id="f{$field->id}">{$field->prefs['field_name']}</th>
+		  <td headers="f{$field->id}">
+            {!$field->view($task, $parents)}
           </td>
 		</tr>
         <?php endforeach; ?>

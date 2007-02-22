@@ -1,7 +1,7 @@
 // Set up the task list onclick handler
 addEvent(window,'load',setUpTasklistTable);
-function Disable(formid)
-{
+
+function Disable(formid) {
    document.formid.buSubmit.disabled = true;
    document.formid.submit();
 }
@@ -66,18 +66,21 @@ function showhidestuff(boxid) {
 	break;
    }
 }
+
 function setUpTasklistTable() {
   if (!$('tasklist_table')) {
     // No tasklist on the page
-    return;
+    return false;
   }
   var table = $('tasklist_table');
   addEvent(table,'click',tasklistTableClick);
+  return false;
 }
+
 function tasklistTableClick(e) {
   var src = eventGetSrc(e);
   if (src.nodeName != 'TD') {
-    return;
+    return false;
   }
   if (src.hasChildNodes()) {
     var checkBoxes = src.getElementsByTagName('input');
@@ -88,7 +91,7 @@ function tasklistTableClick(e) {
       } else {
         checkBoxes[0].checked = true;
       }
-      return;
+      return false;
     }
   }
   var row = src.parentNode;
@@ -100,6 +103,7 @@ function tasklistTableClick(e) {
     // just use the good old way to get to the task
     window.location = '?do=details&id=' + row.id.substr(4);
   }
+  return false;
 }
 
 function eventGetSrc(e) {
@@ -108,8 +112,9 @@ function eventGetSrc(e) {
   } else if (window.event) {
     return window.event.srcElement;
   } else {
-    return;
+    return false;
   }
+  return false;
 }
 
 function ToggleSelected(id) {
@@ -141,8 +146,8 @@ function addUploadFields(id) {
     el.appendChild(newBox);
   }
 }
-function adduserselect(url, user, selectid, error)
-{
+
+function adduserselect(url, user, selectid, error) {
     var myAjax = new Ajax.Request(url, {method: 'post', parameters: 'id=' + user, onComplete:function(originalRequest)
 	{
         if(originalRequest.responseText) {
@@ -150,7 +155,7 @@ function adduserselect(url, user, selectid, error)
             // Check if user does not yet exist
             for (i = 0; i < $('r' + selectid).options.length; i++) {
                 if ($('r' + selectid).options[i].value == user_info[1]) {
-                    return;
+                    return false;
                 }
             }
 
@@ -159,13 +164,16 @@ function adduserselect(url, user, selectid, error)
                 $('r' + selectid).options[$('r' + selectid).options.length]=opt;
                 updateDualSelectValue(selectid);
             } catch(ex) {
-                return;
+                return false;
             }
         } else {
             alert(error);
         }
+        return false;
 	}});
+	return false;
 }
+
 function checkok(url, message, form) {
 
     var myAjax = new Ajax.Request(url, {method: 'get', onComplete:function(originalRequest)
@@ -176,6 +184,7 @@ function checkok(url, message, form) {
 	}});
     return false;
 }
+
 function removeUploadField(element, id) {
   if (!id) {
     id = 'uploadfilebox';
@@ -194,8 +203,7 @@ function removeUploadField(element, id) {
   }
 }
 
-function updateDualSelectValue(id)
-{
+function updateDualSelectValue(id) {
     var rt  = $('r'+id);
     var val = $('v'+id);
     val.value = '';
@@ -205,6 +213,7 @@ function updateDualSelectValue(id)
         val.value += (i > 0 ? ' ' : '') + rt.options[i].value;
     }
 }
+
 function remove_0val(id) {
     el = $(id);
     for (i = 0; i < el.options.length; i++) {
@@ -213,6 +222,7 @@ function remove_0val(id) {
         }
     }
 }
+
 function fill_userselect(url, id) {
     var users = $('v' + id).value.split(' ');
     for (i = 0; i < users.length; i++) {
@@ -229,7 +239,6 @@ function dualSelect(from, to, id) {
 	// if (!to_el) alert("no element with id '" + (to+id) + "'");
 	to = to_el;
     }
-
     var i;
     var len = from.options.length;
     for(i=0;i<len;++i) {
@@ -243,19 +252,16 @@ function dualSelect(from, to, id) {
 	    from.options[i == len - 1 ? len - 2 : i].selected = true;
 	break;
     }
-
     updateDualSelectValue(id);
 }
 
 function selectMove(id, step) {
     var sel = $('r'+id);
-
     var i = 0;
-
     while (i < sel.options.length) {
         if (sel.options[i].selected) {
             if (i+step < 0 || i+step >= sel.options.length) {
-                return;
+                return false;
             }
 	    if (i + step == sel.options.length - 1)
 		sel.appendChild(sel.options[i]);
@@ -264,11 +270,13 @@ function selectMove(id, step) {
 	    else
 		sel.insertBefore(sel.options[i], sel.options[i+step+1]);
             updateDualSelectValue(id);
-            return;
+            return false;
         }
         i++;
     }
+    return false;
 }
+
 var Cookie = {
   getVar: function(name) {
     var cookie = document.cookie;
@@ -290,6 +298,7 @@ var Cookie = {
     document.cookie = name + '=;expires=' + date.toUTCString();
   }
 };
+
 function setUpSearchBox() {
   if ($('advancedsearch')) {
     var state = Cookie.getVar('advancedsearch');
@@ -300,6 +309,7 @@ function setUpSearchBox() {
     }
   }
 }
+
 function toggleSearchBox(themeurl) {
   var state = Cookie.getVar('advancedsearch');
   if ('1' == state) {
@@ -312,6 +322,7 @@ function toggleSearchBox(themeurl) {
       Cookie.setVar('advancedsearch','1');
   }
 }
+
 function deletesearch(id, url) {
     var img = $('rs' + id).getElementsByTagName('img')[0].src = url + 'themes/Bluey/ajax_load.gif';
     url = url + 'javascript/callbacks/deletesearches.php';
@@ -329,6 +340,7 @@ function deletesearch(id, url) {
                      }
                 });
 }
+
 function savesearch(query, baseurl, savetext) {
     url = baseurl + 'javascript/callbacks/savesearches.php?' + query + '&search_name=' + encodeURIComponent($('save_search').value);
     if($('save_search').value != '') {
@@ -343,6 +355,7 @@ function savesearch(query, baseurl, savetext) {
                      });
     }
 }
+
 function activelink(id) {
     if($(id).className == 'active') {
         $(id).className = 'inactive';
@@ -350,6 +363,7 @@ function activelink(id) {
         $(id).className = 'active';
     }
 }
+
 var useAltForKeyboardNavigation = false;  // Set this to true if you don't want to kill
                                          // Firefox's find as you type
 
@@ -360,8 +374,8 @@ function emptyElement(el) {
         oNodeToRemove.parentNode.removeChild(oNodeToRemove);
     }
 }
-function showPreview(textfield, baseurl, field)
-{
+
+function showPreview(textfield, baseurl, field) {
     var preview = $(field);
     emptyElement(preview);
 
@@ -382,9 +396,11 @@ function showPreview(textfield, baseurl, field)
         showstuff(field);
     }
 }
-function checkname(value){
+
+function checkname(value) {
     new Ajax.Request('javascript/callbacks/searchnames.php?name='+value, {onSuccess: function(t){ allow(t.responseText); } });
 }
+
 function allow(booler){
     if(booler.indexOf('false') > -1) {
         $('username').style.color ='red';
@@ -397,8 +413,8 @@ function allow(booler){
         $('errormessage').innerHTML = '';
     }
 }
-function getHistory(task_id, baseurl, field, details)
-{
+
+function getHistory(task_id, baseurl, field, details) {
     var url = baseurl + 'javascript/callbacks/gethistory.php?task_id=' + task_id;
     if (details) {
         url += '&details=' + details;
@@ -444,8 +460,7 @@ Perms.prototype.hide = function() {
 }
 
 // Replaces the currently selected text with the passed text.
-function replaceText(text, textarea)
-{
+function replaceText(text, textarea) {
 	textarea = document.getElementById( textarea );
 	// Attempt to create a text range (IE).
 	if (typeof(textarea.caretPos) != "undefined" && textarea.createTextRange)
@@ -552,10 +567,7 @@ function surroundText(text1, text2, textarea)
 }
 
 function stopBubble(e) {
-	if (!e) { var e = window.event; }
+	if (!e) { e = window.event; }
 	e.cancelBubble = true;
 	if (e.stopPropagation) { e.stopPropagation(); }
 }
-
-
-

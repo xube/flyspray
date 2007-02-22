@@ -296,6 +296,41 @@ if (!function_exists('array_combine')) {
     }
 }
 
+/**
+ * Replace glob() since this function is apparently
+ * disabled for no apparent reason ("security") on some systems
+ *
+ * @see glob()
+ * @require     PHP 4.3.0 (fnmatch)
+ */
+function glob_compat($pattern, $flags = 0) {
+
+    if (!function_exists('fnmatch')) {
+        function fnmatch($pattern, $string) {
+            return @preg_match('/^'.strtr(addcslashes($pattern, '\\.+^$(){}=!<>|'), array('*' => '.*', '?' => '.?')) . '$/i', $string);
+        }
+    }
+
+    $split = explode('/', $pattern);
+    $match = array_pop($split);
+    $path = implode('/', $split);
+    if (($dir = opendir($path)) !== false) {
+        $glob = array();
+        while (($file = readdir($dir)) !== false) {
+            if (fnmatch($match, $file)) {
+                if (is_dir("$path/$file") || !($flags & GLOB_ONLYDIR)) {
+                    if ($flags & GLOB_MARK) $file .= '/';
+                    $glob[] = $file;
+                }
+            }
+        }
+        closedir($dir);
+        if (!($flags & GLOB_NOSORT)) sort($glob);
+        return $glob;
+    }
+    return false;
+}
+
 //for reasons outside flsypray, the PHP core may throw Exceptions in PHP5
 // for a good example see this article
 // http://ilia.ws/archives/107-Another-unserialize-abuse.html

@@ -668,9 +668,9 @@ class Backend
         }
 
         foreach ($proj->fields as $field) {
-            if ($field['value_required'] && !array_get($args, 'field' . $field['field_id'])
-                && !($field['force_default'] && !$user->perms('modify_all_tasks'))) {
-                Flyspray::show_error(L('missingrequired') . ' (' . $field['field_name'] . ')');
+            if ($field->prefs['value_required'] && !array_get($args, 'field' . $field->id)
+                && !($field->prefs['force_default'] && !$user->perms('modify_all_tasks'))) {
+                Flyspray::show_error(L('missingrequired') . ' (' . $field->prefs['field_name'] . ')');
                 return 0;
             }
         }
@@ -716,18 +716,18 @@ class Backend
 
         // Now the custom fields
         foreach ($proj->fields as $field) {
-            if ($field['field_type'] == FIELD_DATE) {
-                if ($value = array_get($args, 'field' . $field['field_id'], 0)) {
+            if ($field->prefs['field_type'] == FIELD_DATE) {
+                if ($value = array_get($args, 'field' . $field->id, 0)) {
                     $value = Flyspray::strtotime($value);
                 }
             } else {
-                $value = array_get($args, 'field' . $field['field_id'], 0);
+                $value = array_get($args, 'field' . $field->id, 0);
             }
-            if ($field['force_default'] && !$user->perms('modify_all_tasks')) {
-                $value = $field['default_value'];
+            if ($field->prefs['force_default'] && !$user->perms('modify_all_tasks')) {
+                $value = $field->prefs['default_value'];
             }
             $db->Execute('INSERT INTO {field_values} (task_id, field_id, field_value)
-                             VALUES (?, ?, ?)', array($task_id, $field['field_id'], $value));
+                             VALUES (?, ?, ?)', array($task_id, $field->id, $value));
         }
 
         // Log the assignments and send notifications to the assignees
@@ -752,14 +752,14 @@ class Backend
         // find category owners
         $owners = array();
         foreach ($proj->fields as $field) {
-            if ($field['list_type'] != LIST_CATEGORY) {
+            if ($field->prefs['list_type'] != LIST_CATEGORY) {
                 continue;
             }
 
             $sql = $db->Execute('SELECT  *
                                  FROM  {list_category}
                                 WHERE  category_id = ?',
-                               array(array_get($args, 'field' . $field['field_id'], 0)));
+                               array(array_get($args, 'field' . $field->id, 0)));
             $cat = $sql->FetchRow();
 
             if ($cat['category_owner']) {
@@ -987,35 +987,35 @@ class Backend
         // search custom fields
         $custom_fields_joined = array();
         foreach ($proj->fields as $field) {
-            $ref = 'f' . $field['field_id'];
-            if ($field['field_type'] == FIELD_DATE) {
-                if (!array_get($args, $field['field_id'] . 'from') && !array_get($args, $field['field_id'] . 'to')) {
+            $ref = 'f' . $field->id;
+            if ($field->prefs['field_type'] == FIELD_DATE) {
+                if (!array_get($args, $field->id . 'from') && !array_get($args, $field->id . 'to')) {
                     continue;
                 }
 
                 $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = ? ";
-                $sql_params[] = $field['field_id'];
-                $custom_fields_joined[] = $field['field_id'];
+                $sql_params[] = $field->id;
+                $custom_fields_joined[] = $field->id;
 
-                if ($date = array_get($args, $field['field_id'] . 'from')) {
+                if ($date = array_get($args, $field->id . 'from')) {
                     $where[]      = "({$ref}.field_value >= ?)";
                     $sql_params[] = Flyspray::strtotime($date);
                 }
-                if ($date = array_get($args, $field['field_id'] . 'to')) {
+                if ($date = array_get($args, $field->id . 'to')) {
                     $where[]      = "({$ref}.field_value <= ? AND {$ref}.field_value > 0)";
                     $sql_params[] = Flyspray::strtotime($date);
                 }
             } else {
-                if (in_array('', array_get($args, 'field' . $field['field_id'], array('')))) {
+                if (in_array('', array_get($args, 'field' . $field->id, array('')))) {
                     continue;
                 }
 
                 $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = ? ";
-                $sql_params[] = $field['field_id'];
-                $custom_fields_joined[] = $field['field_id'];
+                $sql_params[] = $field->id;
+                $custom_fields_joined[] = $field->id;
                 $fwhere = array();
 
-                foreach ($args['field' . $field['field_id']] as $val) {
+                foreach ($args['field' . $field->id] as $val) {
                     $fwhere[] = " {$ref}.field_value = ? ";
                     $sql_params[] = $val;
                 }
@@ -1031,9 +1031,8 @@ class Backend
                     $from   .= " LEFT JOIN {field_values} $col ON t.task_id = $col.task_id AND $col.field_id = " . intval($match[1]);
                 }
                 $from .= " LEFT JOIN {fields} f$col ON f$col.field_id = $col.field_id
-                           LEFT JOIN {lists} l$col ON l$col.list_id = f$col.list_id
-                           LEFT JOIN {list_items} li$col ON (l$col.list_type <> " . LIST_CATEGORY . " AND f$col.list_id = li$col.list_id AND $col.field_value = li$col.list_item_id)
-                           LEFT JOIN {list_category} lc$col ON (l$col.list_type = " . LIST_CATEGORY . " AND f$col.list_id = lc$col.list_id AND $col.field_value = lc$col.category_id) ";
+                           LEFT JOIN {list_items} li$col ON (f$col.list_id = li$col.list_id AND $col.field_value = li$col.list_item_id)
+                           LEFT JOIN {list_category} lc$col ON (f$col.list_id = lc$col.list_id AND $col.field_value = lc$col.category_id) ";
                 $select .= " li$col.item_name AS {$col}_name, "; // adding data to queries not nice, but otherwise sql_params and joins are not in sync
             }
         }

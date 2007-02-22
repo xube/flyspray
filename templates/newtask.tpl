@@ -14,16 +14,9 @@
       <table>
         <?php foreach ($proj->fields as $field): ?>
         <tr>
-          <th id="f{$field['field_id']}">{$field['field_name']}</th>
-          <td headers="f{$field['field_id']}">
-          <?php if ($field['list_id'] && $field['field_type'] == FIELD_LIST): ?>
-          <select id="f{$field['field_id']}" name="field{$field['field_id']}" {!tpl_disableif($field['force_default'] && !$user->perms('modify_all_tasks'))}>
-            {!tpl_options($proj->get_list($field), Post::val('field' . $field['field_id'], $field['default_value']))}
-          </select>
-          <?php elseif ($field['field_type'] == FIELD_DATE): ?>
-          <?php if ($field['force_default'] && !$user->perms('modify_all_tasks')) $attrs = array('readonly' => 'readonly'); else $attrs = array(); ?>
-            {!tpl_datepicker('field' . $field['field_id'], '', Post::val('field' . $field['field_id'], $field['default_value']), $attrs)}
-          <?php endif; ?>
+          <th id="f{$field->id}">{$field->prefs['field_name']}</th>
+          <td headers="f{$field->id}">
+            {!$field->edit(USE_DEFAULT, LOCK_FIELD)}
           </td>
         </tr>
         <?php endforeach; ?>

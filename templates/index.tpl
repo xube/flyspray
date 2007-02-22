@@ -59,12 +59,10 @@
         <fieldset><legend>{L('taskproperties')}</legend>
 
         <?php foreach ($proj->fields as $field): ?>
-        <?php if ($field['field_type'] != FIELD_LIST) continue; ?>
+        <?php if ($field->prefs['field_type'] != FIELD_LIST) continue; ?>
         <div class="search_select">
-        <label class="default multisel" for="field{$field['field_id']}">{$field['field_name']}</label>
-        <select name="field{$field['field_id']}[]" id="field{$field['field_id']}" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('allitems')) + $proj->get_list($field), Get::val('field' . $field['field_id'], ''))}
-        </select>
+        <label class="default multisel" for="field{$field->id}">{$field->prefs['field_name']}</label>
+        {!$field->edit(!USE_DEFAULT, !LOCK_FIELD, array(), array('' => L('allitems')), array('multiple' => 'multiple', 'size' => 5))}
         </div>
         <?php endforeach; ?>
 
@@ -108,10 +106,10 @@
 
         <fieldset><legend>{L('dates')}</legend>
         <?php foreach ($proj->fields as $field): ?>
-        <?php if ($field['field_type'] != FIELD_DATE) continue; ?>
+        <?php if ($field->prefs['field_type'] != FIELD_DATE) continue; ?>
         <div class="dateselect">
-          {!tpl_datepicker($field['field_id'] . 'from', $field['field_name'] . ' ' . L('from'))}
-          {!tpl_datepicker($field['field_id'] . 'to', L('to'))}
+          {!tpl_datepicker($field->id . 'from', $field->prefs['field_name'] . ' ' . L('from'))}
+          {!tpl_datepicker($field->id . 'to', L('to'))}
         </div>
         <?php endforeach; ?>
 

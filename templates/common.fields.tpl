@@ -14,49 +14,43 @@
    </thead>
    <tbody>
     <?php foreach ($proj->fields as $field): ?>
-    <?php if ($proj->id && $field['project_id'] != $proj->id) continue; ?>
+    <?php if ($proj->id && $field->prefs['project_id'] != $proj->id) continue; ?>
     <tr>
       <td class="first">
-        <input type="hidden" name="id[]" value="{$field['field_id']}" />
-        <input class="text" type="text" size="15" maxlength="40" name="field_name[{$field['field_id']}]"
-          value="{$field['field_name']}" />
+        <input type="hidden" name="id[]" value="{$field->id}" />
+        <input class="text" type="text" size="15" maxlength="40" name="field_name[{$field->id}]"
+          value="{$field->prefs['field_name']}" />
       </td>
       <td>
-        <select name="field_type[{$field['field_id']}]">
-          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date')), $field['field_type'])}
+        <select name="field_type[{$field->id}]">
+          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date')), $field->prefs['field_type'])}
         </select>
       </td>
       <td>
-        <?php if ($field['field_type'] == FIELD_LIST): ?>
-        <select name="list_id[{$field['field_id']}]">
-          {!tpl_options($lists, $field['list_id'], false, null, null, 'project_id')}
-        </select>
-        <?php endif; ?>
-      </td>
-      <td>
-        <?php if ($field['list_type'] == LIST_VERSION): ?>
-        <select name="version_tense[{$field['field_id']}]">
-          {!tpl_options(array(0 => L('any'), 1 => L('past'), 2 => L('present'), 3 => L('future')), $field['version_tense'])}
+        <?php if ($field->prefs['field_type'] == FIELD_LIST): ?>
+        <select name="list_id[{$field->id}]">
+          {!tpl_options($lists, $field->prefs['list_id'], false, null, null, 'project_id')}
         </select>
         <?php endif; ?>
       </td>
       <td>
-        <?php if ($field['list_id'] && $field['field_type'] == FIELD_LIST): ?>
-        <select name="default_value[{$field['field_id']}]">
-          {!tpl_options($proj->get_list($field), $field['default_value'])}
+        <?php if ($field->prefs['list_type'] == LIST_VERSION): ?>
+        <select name="version_tense[{$field->id}]">
+          {!tpl_options(array(0 => L('any'), 1 => L('past'), 2 => L('present'), 3 => L('future')), $field->prefs['version_tense'])}
         </select>
-        <?php elseif ($field['field_type'] == FIELD_DATE): ?>
-          {!tpl_datepicker('default_value[' . $field['field_id'] . ']', '', $field['default_value'])}
         <?php endif; ?>
       </td>
       <td>
-        {!tpl_checkbox('force_default[' . $field['field_id'] . ']', $field['force_default'])}
+        {!$field->edit(USE_DEFAULT)}
       </td>
       <td>
-        {!tpl_checkbox('value_required[' . $field['field_id'] . ']', $field['value_required'])}
+        {!tpl_checkbox('force_default[' . $field->id . ']', $field->prefs['force_default'])}
+      </td>
+      <td>
+        {!tpl_checkbox('value_required[' . $field->id . ']', $field->prefs['value_required'])}
       </td>
       <td title="{L('deletetip')}">
-        <input type="checkbox" name="delete[{$field['field_id']}]" value="1" />
+        <input type="checkbox" name="delete[{$field->id}]" value="1" />
       </td>
     </tr>
     <?php endforeach; ?>
@@ -86,7 +80,7 @@
       </td>
       <td>
         <select name="field_type">
-          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date')), $field['field_type'])}
+          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date')), $field->prefs['field_type'])}
         </select>
       </td>
       <td>

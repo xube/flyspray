@@ -63,9 +63,9 @@ switch ($action = Req::val('action'))
         }
 
         foreach ($proj->fields as $field) {
-            if ($field['value_required'] && !Post::val('field' . $field['field_id'])
-                && !($field['force_default'] && !$user->perms('modify_all_tasks'))) {
-                Flyspray::show_error(L('missingrequired') . ' (' . $field['field_name'] . ')');
+            if ($field->prefs['value_required'] && !Post::val('field' . $field->id)
+                && !($field->prefs['force_default'] && !$user->perms('modify_all_tasks'))) {
+                Flyspray::show_error(L('missingrequired') . ' (' . $field->prefs['field_name'] . ')');
                 break 2;
             }
         }
@@ -84,15 +84,15 @@ switch ($action = Req::val('action'))
                       Post::val('percent_complete'), $task['task_id']));
         // Now the custom fields
         foreach ($proj->fields as $field) {
-            if ($field['force_default'] && !$user->can_edit_task($task)) {
+            if ($field->prefs['force_default'] && !$user->can_edit_task($task)) {
                 continue; // make sure that a user who is only correcting his task does not change certain fields
             }
-            $field_value = Post::val('field' . $field['field_id']);
-            if ($field['field_type'] == FIELD_DATE) {
+            $field_value = Post::val('field' . $field->id);
+            if ($field->prefs['field_type'] == FIELD_DATE) {
                 $field_value = Flyspray::strtotime($field_value);
             }
             $db->Replace('{field_values}',
-                         array('field_id'=> $field['field_id'], 'task_id'=> $task['task_id'], 'field_value' => $field_value),
+                         array('field_id'=> $field->id, 'task_id'=> $task['task_id'], 'field_value' => $field_value),
                          array('field_id','task_id'));
         }
 
@@ -1306,7 +1306,7 @@ switch ($action = Req::val('action'))
         $sql3 = $db->GetOne('SELECT COUNT(*) FROM {tasks} WHERE task_id = ?',
                             array(Post::val('dep_task_id')));
 
-        if ($sql1 || $sql2 || !$sql3)
+        if ($sql1 || $sql2 || !$sql3
                 // Check that the user hasn't tried to add the same task as a dependency
                 || Post::val('task_id') == Post::val('dep_task_id'))
         {
@@ -1551,7 +1551,6 @@ switch ($action = Req::val('action'))
         $names = Post::val('field_name');
         $lists = Post::val('list_id');
         $tense = Post::val('version_tense');
-        $default = Post::val('default_value');
         $delete = Post::val('delete');
         $force = Post::val('force_default');
         $required = Post::val('value_required');
@@ -1567,14 +1566,14 @@ switch ($action = Req::val('action'))
                 continue;
             }
 
-            if ($proj->fields[Flyspray::array_find('field_id', $id, $proj->fields)]['field_type'] == FIELD_DATE) {
+            if ($types[$id]['field_type'] == FIELD_DATE) {
                 $default[$id] = Flyspray::strtotime(array_get($default, $id, 0));
             }
             $db->Execute('UPDATE {fields} SET field_name = ?, field_type = ?, list_id = ?, value_required = ?,
                                             version_tense = ?, default_value = ?, force_default = ?
                          WHERE field_id = ? AND project_id = ?',
                         array($names[$id], $types[$id], array_get($lists, $id, null), array_get($required, $id, 0),
-                              array_get($tense, $id, 0), array_get($default, $id, 0),
+                              array_get($tense, $id, 0), Post::val('field' . $id, 0),
                               array_get($force, $id, 0), $id, $proj->id));
         }
         $proj = new Project($proj->id);

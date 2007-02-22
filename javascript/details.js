@@ -1,14 +1,14 @@
-Event.observe(window,'load',detailsInit);
+Event.observe(window, 'load', detailsInit);
 
 function detailsInit() {
   // set current task
   var title = document.getElementsByTagName('title')[0];
   title = title.textContent || title.text; //IE uses .text
   var arr = /\d+/.exec(title);
-  Cookie.setVar('current_task',arr[0]);
+  Cookie.setVar('current_task', arr[0]);
   if (!$('details')) {
     // make sure the page is not in edit mode
-    Event.observe(document,'keydown',keyboardNavigation);
+    Event.observe(document, 'keydown', keyboardNavigation);
   }
 }
 function keyboardNavigation(e) {
@@ -39,4 +39,5 @@ function keyboardNavigation(e) {
         }
         break;
   }
+  return;
 }

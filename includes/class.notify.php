@@ -486,11 +486,11 @@ class Notifications
                 $body .= L('severity') . ' - ' . $data['task']['severity_name'] . "\r\n";
                 $body .= L('details') . ' - ' . $data['task']['detailed_desc'] . "\r\n\r\n";
                 foreach ($data['project']->fields as $field) {
-                    $body .= $field['field_name'] . ' - ';
-                    if ($data['task']['f' . $field['field_id'] . '_name']) {
-                        $body .= $data['task']['f' . $field['field_id'] . '_name'];
-                    } elseif ($field['field_type'] == FIELD_DATE && $data['task']['f' . $field['field_id']]) {
-                        $body .= formatDate($data['task']['f' . $field['field_id']]);
+                    $body .= $field->prefs['field_name'] . ' - ';
+                    if ($data['task']['f' . $field->id . '_name']) {
+                        $body .= $data['task']['f' . $field->id . '_name'];
+                    } elseif ($field->prefs['field_type'] == FIELD_DATE && $data['task']['f' . $field->id]) {
+                        $body .= formatDate($data['task']['f' . $field->id]);
                     } else {
                         $body .= L('notspecified');
                     }

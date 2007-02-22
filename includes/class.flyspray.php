@@ -325,15 +325,20 @@ class Flyspray
 
         // Now add custom fields
         $sql = $db->Execute('SELECT field_value, field_name, f.field_id, li.item_name, lc.category_name
-                             FROM {field_values} fv
-                        LEFT JOIN {fields} f ON f.field_id = fv.field_id
-                        LEFT JOIN {lists} l ON l.list_id = f.list_id
-                        LEFT JOIN {list_items} li ON (l.list_type <> ? AND f.list_id = li.list_id AND field_value = li.list_item_id)
-                        LEFT JOIN {list_category} lc ON (l.list_type = ? AND f.list_id = lc.list_id AND field_value = lc.category_id)
-                            WHERE task_id = ?', array(LIST_CATEGORY, LIST_CATEGORY, $task['task_id']));
+                               FROM {field_values} fv
+                          LEFT JOIN {fields} f ON f.field_id = fv.field_id
+                          LEFT JOIN {list_items} li ON (f.list_id = li.list_id AND field_value = li.list_item_id)
+                          LEFT JOIN {list_category} lc ON (f.list_id = lc.list_id AND field_value = lc.category_id)
+                              WHERE task_id = ?', array($task['task_id']));
         while ($row = $sql->FetchRow()) {
             $task['f' . $row['field_id']] = $row['field_value'];
             $task['f' . $row['field_id'] . '_name'] = ($row['item_name'] ? $row['item_name'] : $row['category_name']);
+        }
+        // Add fields for tasks which have not all values set
+        foreach ($proj->fields as $field) {
+            if (!isset($task['f'. $field->id])) {
+                $task['f'. $field->id] = '';
+            }
         }
 
         $task['assigned_to'] = $task['assigned_to_name'] = array();
@@ -446,7 +451,7 @@ class Flyspray
      */
     function listLangs()
     {
-        return str_replace('.php', '', array_map('basename', glob(BASEDIR ."/lang/*.php")));
+        return str_replace('.php', '', array_map('basename', glob_compat(BASEDIR ."/lang/*.php")));
 
     } // }}}
     // Log events to the history table {{{
@@ -769,12 +774,12 @@ class Flyspray
         }
 
         foreach ($proj->fields as $field) {
-            $key = 'f'. $field['field_id'];
+            $key = 'f'. $field->id;
             if ($old[$key] != $new[$key]) {
-                if ($field['field_type'] == FIELD_DATE) {
-                    $changes[] = array($key, formatDate($old[$key]), formatDate($new[$key]), $field['field_name'], $field['field_id']);
+                if ($field->prefs['field_type'] == FIELD_DATE) {
+                    $changes[] = array($key, formatDate($old[$key]), formatDate($new[$key]), $field->prefs['field_name'], $field->id);
                 } else {
-                    $changes[] = array($key, $old[$key . '_name'], $new[$key . '_name'], $field['field_name'], $field['field_id']);
+                    $changes[] = array($key, $old[$key . '_name'], $new[$key . '_name'], $field->prefs['field_name'], $field->id);
                 }
             }
         }

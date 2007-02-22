@@ -25,12 +25,14 @@ class Project
                        LEFT JOIN {lists} l ON f.list_id = l.list_id
                            WHERE f.project_id IN (0, ?) ORDER BY field_name',
                           array($id));
-        $this->fields = $sql->GetArray();
+        while ($field = $sql->FetchRow()) {
+            $this->fields[] = new Field($field);
+        }
 
         // Extend the columns
         $this->columns = array_combine($this->columns, array_map('L', $this->columns));
         foreach ($this->fields as $field) {
-            $this->columns['f' . $field['field_id']] = $field['field_name'];
+            $this->columns['f' . $field->id] = $field->prefs['field_name'];
         }
 
         if (is_numeric($id) && $id > 0) {
@@ -114,11 +116,11 @@ class Project
     // }}}
     // PM dependant functions {{{
 
-    function get_list($field, $selected = null)
+    function get_list($field_prefs, $selected = null)
     {
         global $db;
         $default = array('list_type' => LIST_BASIC, 'version_tense' => null, 'value_required' => 1);
-        $field = array_merge($default, $field);
+        $field = array_merge($default, $field_prefs);
         $params =  array();
         $where = '';
         $required = (!$field['value_required']) ? array(array(0 => 0, 1 => L('notspecified'))) : array();

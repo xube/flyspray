@@ -60,19 +60,19 @@ else {
     // Parent categories for each category field
     $parents = array();
     foreach ($proj->fields as $field) {
-        if ($field['list_type'] != LIST_CATEGORY) {
+        if ($field->prefs['list_type'] != LIST_CATEGORY) {
             continue;
         }
         $sql = $db->Execute('SELECT lft, rgt FROM {list_category} WHERE category_id = ?',
-                          array($task['f' . $field['field_id']]));
+                          array($task['f' . $field->id]));
         $cat = $sql->FetchRow();
 
         $parent = $db->GetCol('SELECT  category_name
                                  FROM  {list_category}
                                 WHERE  lft < ? AND rgt > ? AND list_id  = ? AND lft <> 1
                              ORDER BY  lft ASC',
-                             array($cat['lft'], $cat['rgt'], $field['list_id']));
-        $parents[$field['field_id']] = $parent;
+                             array($cat['lft'], $cat['rgt'], $field->prefs['list_id']));
+        $parents[$field->id] = $parent;
     }
 
     // Check for task dependencies that block closing this task

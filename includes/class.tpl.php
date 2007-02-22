@@ -4,6 +4,8 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
+require_once('class.field.php');
+
 class Tpl
 {
     var $_uses  = array();

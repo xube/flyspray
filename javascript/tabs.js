@@ -16,6 +16,7 @@ function addEvent(elm, evType, fn, useCapture)
   } else {
     alert("Handler could not be removed");
   }
+  return false;
 }
 
 var _TAB_DIVS;

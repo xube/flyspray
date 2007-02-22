@@ -265,8 +265,8 @@ class JpegMeta
         }
 
         $field = $this->_info['exif']['ExposureTime'];
-        if($field['den'] == 1) return $field['num'];
-        return $field['num'].'/'.$field['den'];
+        if($field->prefs['den'] == 1) return $field->prefs['num'];
+        return $field->prefs['num'].'/'.$field->prefs['den'];
     }
 
     /**

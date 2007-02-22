@@ -76,6 +76,8 @@ define('LIST_CATEGORY',           3);
 // Function parameters
 define('REINDEX', true);
 define('GET_CONTENTS', true);
+define('LOCK_FIELD', true);
+define('USE_DEFAULT', true);
 
 
 // developers or advanced users only

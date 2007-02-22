@@ -55,8 +55,8 @@ function &_table_prefix(&$db, &$sql, $inputarray)
     return $null;
 }
 
-// that means: do not use RecordCount() or set it to true temporarily. supposedly makes stuff faster
-$ADODB_COUNTRECS = false;
+// if set to false, we'll get errors
+$ADODB_COUNTRECS = true;
 $ADODB_CACHE_DIR = BASEDIR . '/cache';
 
 /**
