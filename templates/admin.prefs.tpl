@@ -65,6 +65,16 @@
             </select>
           </td>
         </tr>
+        <?php if ($fs->prefs['resolution_list']): ?>
+        <tr>
+          <td><label for="resolution_dupe">{L('duplicateres')}</label></td>
+          <td>
+            <select id="resolution_dupe" name="resolution_dupe">
+            {!tpl_options($proj->get_list(array('list_id' => $fs->prefs['resolution_list'])), $fs->prefs['resolution_dupe'])}
+            </select>
+          </td>
+        </tr>
+        <?php endif; ?>
       </table>
     </div>
 

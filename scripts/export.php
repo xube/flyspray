@@ -62,6 +62,16 @@ function tpl_csv_cell($task, $colname) {
             }
             break;
 
+        case 'state':
+            if ($task['is_closed']) {
+                $value = L('closed');
+            } elseif ($task['closed_by']) {
+                $value = L('reopened');
+            } else {
+                $value = L('open');
+            }
+            break;
+
         default:
             if (isset($indexes[$colname])) {
                 $value = $task[$indexes[$colname]];

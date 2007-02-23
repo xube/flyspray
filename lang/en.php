@@ -901,6 +901,7 @@ Regards,',
 'forcedefaulttip'         => 'Force the default value for new tasks',
 'forcedefault'            => 'Force default',
 'required'                => 'Required',
+'duplicateres'            => 'Resolution for duplicate tasks',
 );
 
 ?>

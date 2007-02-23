@@ -822,7 +822,7 @@ class Backend
      */
     function close_task($task_id, $reason, $comment, $mark100 = true)
     {
-        global $db, $user;
+        global $db, $user, $fs;
         $task = Flyspray::GetTaskDetails($task_id);
 
         if (!$user->can_close_task($task)) {
@@ -857,7 +857,7 @@ class Backend
                     array($user->id, time(), $task_id, 1));
 
         // duplicate
-        if ($reason == 6) {
+        if ($reason == $fs->prefs['resolution_dupe']) {
             preg_match("/\b(?:FS#|bug )(\d+)\b/", $comment, $dupe_of);
             if (count($dupe_of) >= 2) {
                 $existing = $db->Execute('SELECT * FROM {related} WHERE this_task = ? AND related_task = ? AND is_duplicate = 1',
