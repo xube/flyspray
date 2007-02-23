@@ -1488,9 +1488,17 @@ table.inline td {
 	padding-left:17px;
 	background:url(link_icon.gif) no-repeat;
 }
-
-.urlextern {
-	background-image:url(link_icon.gif);
+.iw_bug {
+	background:url(bug.gif) no-repeat;
+}
+.iw_wp {
+	background:url(wp.gif) no-repeat;
+}
+.iw_google {
+	background:url(google.gif) no-repeat;
+}
+.iw_doku {
+	background:url(doku.gif) no-repeat;
 }
 
 .fn_top {
