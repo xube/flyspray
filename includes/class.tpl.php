@@ -388,6 +388,9 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         if (!is_null($classcol) && isset($label[$classcol])) {
             $attr['class'] = $classcol . $label[$classcol];
         }
+        if (is_object($label)) {
+            $label = $label->prefs;
+        }
         if (is_array($label)) {
             $value = $label[0];
             $label = $label[1];

@@ -1555,7 +1555,7 @@ switch ($action = Req::val('action'))
         $force = Post::val('force_default');
         $required = Post::val('value_required');
 
-        foreach (Post::val('id') as $id) {
+        foreach (Post::val('id', array()) as $id) {
             if (isset($delete[$id])) {
                 $db->Execute('DELETE FROM {fields} WHERE field_id = ? AND project_id = ?',
                             array($id, $proj->id));

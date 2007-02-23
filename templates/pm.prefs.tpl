@@ -89,7 +89,7 @@
           <td><label for="roadmap_field">{L('roadmapfield')}</label></td>
           <td>
             <select name="roadmap_field">
-            {!tpl_options(array_filter($proj->fields, create_function('$x', 'return ($x["list_type"] == LIST_VERSION);')), Post::val('roadmap_field', $proj->prefs['roadmap_field']))}
+            {!tpl_options(array_filter($proj->fields, create_function('$x', 'return ($x->prefs["list_type"] == LIST_VERSION);')), Post::val('roadmap_field', $proj->prefs['roadmap_field']))}
             </select>
           </td>
         </tr>

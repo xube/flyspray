@@ -199,7 +199,7 @@ class Jabber
                          <remove/>
                        </query>
                      </iq>");
-        return $this->response($this->listen());
+        return $this->response($this->listen(2)); // maybe we don't even get a response
     }
 
     /**
