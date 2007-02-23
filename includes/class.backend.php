@@ -1154,7 +1154,7 @@ class Backend
                 unset($tasks[$key]);
                 array_pop($id_list);
                 --$task_count;
-            } elseif (!is_null($perpage) && ($task_count < $offset || ($task_count > $offset - 1 + $perpage) || ($limit > 0 && $task_count >= $limit))) {
+            } elseif ($perpage && ($task_count < $offset || ($task_count > $offset - 1 + $perpage) || ($limit > 0 && $task_count >= $limit))) {
                 unset($tasks[$key]);
             }
 

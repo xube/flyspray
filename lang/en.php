@@ -902,6 +902,7 @@ Regards,',
 'forcedefault'            => 'Force default',
 'required'                => 'Required',
 'duplicateres'            => 'Resolution for duplicate tasks',
+'unlimited'               => 'Unlimited',
 );
 
 ?>

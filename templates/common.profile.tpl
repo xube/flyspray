@@ -57,7 +57,7 @@
         <td><label for="tasks_perpage">{L('tasksperpage')}</label></td>
         <td>
           <select name="tasks_perpage" id="tasks_perpage">
-            {!tpl_options(array(10, 25, 50, 100, 250), Post::val('tasks_perpage', $theuser->infos['tasks_perpage']), true)}
+            {!tpl_options(array(0 => L('unlimited'), 10 => 10, 25 => 25, 50 => 50, 100 => 100, 250 => 250), Post::val('tasks_perpage', $theuser->infos['tasks_perpage']))}
           </select>
         </td>
       </tr>

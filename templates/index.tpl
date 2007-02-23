@@ -180,6 +180,7 @@
         <tr>
           <?php if ($total): ?>
           <td id="taskrange">
+          <?php if (!$perpage) $perpage = $total; ?>
             {!sprintf(L('taskrange'), $offset + 1,
               ($offset + $perpage > $total ? $total : $offset + $perpage), $total)}
           </td>

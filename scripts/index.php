@@ -15,7 +15,7 @@ if (!$user->can_view_project($proj->id)) {
 }
 
 $perpage = '20';
-if (isset($user->infos['tasks_perpage']) && $user->infos['tasks_perpage'] > 0) {
+if (isset($user->infos['tasks_perpage'])) {
     $perpage = $user->infos['tasks_perpage'];
 }
 
