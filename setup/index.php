@@ -53,6 +53,7 @@ class Setup extends Flyspray
    var $mProceed;
    var $mPhpVersionStatus;
    var $mDatabaseStatus;
+   var $xmlStatus;
    var $mConfigText;
    var $mHtaccessText;
    var $mWriteStatus;
@@ -97,6 +98,7 @@ class Setup extends Flyspray
       //equal or mayor to 4.3.9 which is enough for us
       //earlier versions are really buggy anyway.
       $this->mPhpRequired			= '4.3.9';
+      $this->xmlStatus = function_exists('xml_parser_create');
 
       // If the database is supported in Flyspray, the function to check in PHP.
       $this->mSupportedDatabases	=
