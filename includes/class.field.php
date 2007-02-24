@@ -46,15 +46,24 @@ class Field
         }
 
         $html = '';
-        if ($task['f' . $this->id . '_name']) {
-            if ($this->prefs['list_type'] == LIST_CATEGORY) {
-                foreach ($parents[$this->id] as $cat) {
-                    $html .= htmlspecialchars($cat, ENT_QUOTES, 'utf-8') . '&#8594;';
+        switch ($this->prefs['field_type'])
+        {
+            case FIELD_LIST:
+                if ($this->prefs['list_type'] == LIST_CATEGORY) {
+                    foreach ($parents[$this->id] as $cat) {
+                        $html .= htmlspecialchars($cat, ENT_QUOTES, 'utf-8') . '&#8594;';
+                    }
                 }
-            }
-            $html .= htmlspecialchars($task['f' . $this->id . '_name'], ENT_QUOTES, 'utf-8');
-        } elseif ($this->prefs['field_type'] == FIELD_DATE) {
-            $html .= formatDate($task['f' . $this->id]);
+                $html .= htmlspecialchars($task['f' . $this->id . '_name'], ENT_QUOTES, 'utf-8');
+                break;
+            
+            case FIELD_DATE:
+                $html .= formatDate($task['f' . $this->id]);
+                break;
+            
+            case FIELD_TEXT:
+                $html .= htmlspecialchars($task['f' . $this->id], ENT_QUOTES, 'utf-8');
+                break;
         }
         return $html;
     }
@@ -62,7 +71,11 @@ class Field
     /**
      * Returns (safe) HTML which displays a field to edit a value
      * @access public
+     * @param bool $use_default use default field value or not
+     * @param bool $lock lock the field depending on the users perms ornot
      * @param array $task task data
+     * @param array $add_options add options to the select?
+     * @param array $attrs add attributes to the select
      * @return string
      */
     function edit($use_default = true, $lock = false, $task = array(), $add_options = array(), $attrs = array())
@@ -80,19 +93,33 @@ class Field
                          (count($task) > 3 && !$user->can_edit_task($task) || !$user->perms('modify_all_tasks'));
 
         $html = '';
-        if ($this->prefs['list_id'] && $this->prefs['field_type'] == FIELD_LIST) {
-            $html .= '<select id="f' . $this->id . '" name="field' . $this->id . (isset($attrs['multiple']) ? '[]' : '') . '" ' . join_attrs($attrs);
-            $html .= tpl_disableif($lock) . '>';
-            $html .= tpl_options(array_merge($add_options, $proj->get_list($this->prefs, $task['f' . $this->id])),
-                                 Req::val('field' . $this->id, $task['f' . $this->id]));
-            $html .= '</select>';
-        } elseif ($this->prefs['field_type'] == FIELD_DATE) {
-            $attrs = array();
-            if ($lock) {
-                $attrs = array('readonly' => 'readonly');
-            }
-
-            $html .= tpl_datepicker('field' . $this->id, '', Req::val('field' . $this->id, $task['f' . $this->id]), $attrs);
+        switch ($this->prefs['field_type'])
+        {
+            case FIELD_LIST:
+                if (!$this->prefs['list_id']) {
+                    return '';
+                }
+                
+                $html .= '<select id="f' . $this->id . '" name="field' . $this->id . (isset($attrs['multiple']) ? '[]' : '') . '" ' . join_attrs($attrs);
+                $html .= tpl_disableif($lock) . '>';
+                $html .= tpl_options(array_merge($add_options, $proj->get_list($this->prefs, $task['f' . $this->id])),
+                                     Req::val('field' . $this->id, $task['f' . $this->id]));
+                $html .= '</select>';
+                break;
+            
+            case FIELD_DATE:
+                $attrs = array();
+                if ($lock) {
+                    $attrs = array('readonly' => 'readonly');
+                }
+                
+                $html .= tpl_datepicker('field' . $this->id, '', Req::val('field' . $this->id, $task['f' . $this->id]), $attrs);
+                break;
+                
+            case FIELD_TEXT:
+                $html .= '<input type="text" class="text" id="field' . $this->id . '" name="field' . $this->id . '" value="' .
+                          htmlspecialchars($task['f' . $this->id], ENT_QUOTES, 'utf-8') . '" />';
+                break;
         }
 
         return $html;

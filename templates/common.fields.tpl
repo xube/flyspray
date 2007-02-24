@@ -23,7 +23,7 @@
       </td>
       <td>
         <select name="field_type[{$field->id}]">
-          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date')), $field->prefs['field_type'])}
+          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date'), FIELD_TEXT => L('text')), $field->prefs['field_type'])}
         </select>
       </td>
       <td>
@@ -80,7 +80,7 @@
       </td>
       <td>
         <select name="field_type">
-          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date')), $field->prefs['field_type'])}
+          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date'), FIELD_TEXT => L('text')), $field->prefs['field_type'])}
         </select>
       </td>
       <td>

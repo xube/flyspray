@@ -1,5 +1,5 @@
 <div id="taskdetails">
-  <form action="{CreateUrl('details', 261)}" id="taskeditform" enctype="multipart/form-data" method="post">
+  <form action="{CreateUrl('details', $task['task_id'])}" id="taskeditform" enctype="multipart/form-data" method="post">
 	 <div>
 		<h2 class="summary severity{Post::val('task_severity', $task['task_severity'])}">
 		  <a href="{CreateUrl('details', $task['task_id'])}">FS#{$task['task_id']}</a> &mdash;

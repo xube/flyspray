@@ -779,6 +779,8 @@ class Flyspray
                 if ($field->prefs['field_type'] == FIELD_DATE) {
                     $changes[] = array($key, formatDate($old[$key]), formatDate($new[$key]), $field->prefs['field_name'], $field->id);
                 } else {
+                    $old[$key . '_name'] = isset($old[$key . '_name']) ? $old[$key . '_name'] : $old[$key];
+                    $new[$key . '_name'] = isset($new[$key . '_name']) ? $new[$key . '_name'] : $new[$key];
                     $changes[] = array($key, $old[$key . '_name'], $new[$key . '_name'], $field->prefs['field_name'], $field->id);
                 }
             }

@@ -490,12 +490,12 @@ function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = n
 function tpl_img($src, $alt)
 {
     global $baseurl;
-    if (is_file(BASEDIR .'/'.$src)) {
+    if ($src && is_file(BASEDIR .'/'.$src)) {
         return '<img src="'.$baseurl
             .htmlspecialchars($src, ENT_QUOTES,'utf-8').'" alt="'
             .htmlspecialchars($alt, ENT_QUOTES,'utf-8').'" />';
     }
-    return '';
+    return htmlspecialchars($alt, ENT_QUOTES,'utf-8');
 } // }}}
 // {{{ Text formatting
 //format has been already checked in constants.inc.php

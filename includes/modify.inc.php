@@ -92,7 +92,7 @@ switch ($action = Req::val('action'))
                 $field_value = Flyspray::strtotime($field_value);
             }
             $db->Replace('{field_values}',
-                         array('field_id'=> $field->id, 'task_id'=> $task['task_id'], 'field_value' => $field_value),
+                         array('field_id'=> $field->id, 'task_id'=> $task['task_id'], 'field_value' => "'" . $field_value . "'"),
                          array('field_id','task_id'));
         }
 
