@@ -93,7 +93,7 @@ switch ($action = Req::val('action'))
             }
             $db->Replace('{field_values}',
                          array('field_id'=> $field->id, 'task_id'=> $task['task_id'], 'field_value' => "'" . $field_value . "'"),
-                         array('field_id','task_id'));
+                         array('field_id','task_id'), ADODB_AUTOQUOTE);
         }
 
         // Update the list of users assigned this task
@@ -107,7 +107,7 @@ switch ($action = Req::val('action'))
             // Convert assigned_to and store them in the 'assigned' table
             foreach (Flyspray::int_explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
             {
-                $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task['task_id']), array('user_id','task_id'));
+                $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task['task_id']), array('user_id','task_id'), ADODB_AUTOQUOTE);
             }
          }
 

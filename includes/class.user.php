@@ -59,7 +59,7 @@ class User
 
                 $keys = array('name','user_id');
 
-                $db->Replace('{searches}', $fields, $keys);
+                $db->Replace('{searches}', $fields, $keys, ADODB_AUTOQUOTE);
             }
         }
 

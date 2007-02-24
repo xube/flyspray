@@ -43,7 +43,7 @@ class dokuwiki_TextFormatter
 
                 $keys = array('type','topic');
                 //autoquote is always true on db class
-                $db->Replace('{cache}', $fields, $keys);
+                $db->Replace('{cache}', $fields, $keys, ADODB_AUTOQUOTE);
             }
         } else {
             $instructions = unserialize($instructions);

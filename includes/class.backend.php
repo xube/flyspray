@@ -201,7 +201,7 @@ class Backend
                 continue;
             }
 
-            $db->Replace('{assigned}', array('user_id'=> $user->id, 'task_id'=> $row['task_id']), array('user_id','task_id'));
+            $db->Replace('{assigned}', array('user_id'=> $user->id, 'task_id'=> $row['task_id']), array('user_id','task_id'), ADODB_AUTOQUOTE);
 
             if ($db->Affected_Rows()) {
                 Flyspray::logEvent($row['task_id'], 29, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
@@ -629,7 +629,7 @@ class Backend
                                 array('task_id'=> $task_id, 'to_user_id'=> $id,
                                      'from_user_id' => $user->id, 'start_time' => $start_time,
                                      'how_often' => $how_often, 'reminder_message' => $message),
-                                array('task_id', 'to_user_id', 'how_often', 'reminder_message'));
+                                array('task_id', 'to_user_id', 'how_often', 'reminder_message'), ADODB_AUTOQUOTE);
             if(!$sql) {
                 // query has failed :(
                 return false;
@@ -735,7 +735,7 @@ class Backend
             // Convert assigned_to and store them in the 'assigned' table
             foreach (Flyspray::int_explode(' ', trim($args['assigned_to'])) as $key => $val)
             {
-                $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task_id), array('user_id','task_id'));
+                $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task_id), array('user_id','task_id'), ADODB_AUTOQUOTE);
             }
 
             Flyspray::logEvent($task_id, 14, trim($args['assigned_to']));
@@ -1033,7 +1033,7 @@ class Backend
                 $from .= " LEFT JOIN {fields} f$col ON f$col.field_id = $col.field_id
                            LEFT JOIN {list_items} li$col ON (f$col.list_id = li$col.list_id AND $col.field_value = li$col.list_item_id)
                            LEFT JOIN {list_category} lc$col ON (f$col.list_id = lc$col.list_id AND $col.field_value = lc$col.category_id) ";
-                $select .= " li$col.item_name AS {$col}_name, "; // adding data to queries not nice, but otherwise sql_params and joins are not in sync
+                $select .= "$col.field_value AS $col, li$col.item_name AS {$col}_name, "; // adding data to queries not nice, but otherwise sql_params and joins are not in sync
             }
         }
 

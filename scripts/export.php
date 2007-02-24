@@ -75,8 +75,10 @@ function tpl_csv_cell($task, $colname) {
         default:
             if (isset($indexes[$colname])) {
                 $value = $task[$indexes[$colname]];
-            } else {
+            } elseif (isset($task[$colname . '_name'])) {
                 $value = $task[$colname . '_name'];
+            } else {
+                $value = $task[$colname];
             }
             break;
     }

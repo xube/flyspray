@@ -125,7 +125,7 @@ if ($fs->prefs['cache_feeds'])
 
         $keys = array('type','topic','project_id','max_items');
 
-        $db->Replace('{cache}', $fields, $keys) or die ('error updating the database cache');
+        $db->Replace('{cache}', $fields, $keys, ADODB_AUTOQUOTE) or die ('error updating the database cache');
     }
 }
 

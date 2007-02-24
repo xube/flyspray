@@ -111,10 +111,13 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
 
         default:
             if (isset($indexes[$colname])) {
-                $value = htmlspecialchars($task[$indexes[$colname]], ENT_QUOTES, 'utf-8');
+                $value = $task[$indexes[$colname]];
+            } elseif (isset($task[$colname . '_name'])) {
+                $value = $task[$colname . '_name'];
             } else {
-                $value = htmlspecialchars($task[$colname . '_name'], ENT_QUOTES, 'utf-8');
+                $value = $task[$colname];
             }
+            htmlspecialchars($value, ENT_QUOTES, 'utf-8');
             break;
     }
 
