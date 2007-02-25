@@ -138,7 +138,7 @@
               </button>
               <?php endif; ?>
 
-              <textarea accesskey="r" tabindex="8" id="comment_text" name="comment_text" cols="50" rows="10"></textarea>
+              <textarea tabindex="8" id="comment_text" name="comment_text" cols="50" rows="10"></textarea>
               </div>
           <?php endif; ?>
 		  <p class="buttons">
