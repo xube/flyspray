@@ -88,8 +88,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             break;
 
         case 'progress':
-            $value = tpl_img($page->get_image('percent-' . $task['percent_complete'], false),
-                    $task['percent_complete'] . '%');
+            $value = '<div class="taskpercent"><div style="width:'.$task['percent_complete'].'%"> </div></div>';
             break;
 
         case 'assignedto':

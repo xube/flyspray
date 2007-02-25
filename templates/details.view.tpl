@@ -73,10 +73,8 @@
 		</tr>
 		<tr>
 		  <th id="percent">{L('percentcomplete')}</th>
-		  <td headers="percent">
-			 <img src="{$this->get_image('percent-' . $task['percent_complete'])}"
-				title="{$task['percent_complete']}% {L('complete')}"
-				alt="{$task['percent_complete']}%" />
+		  <td headers="percent" class="middle">
+            <div class="taskpercent"><div style="width:{$task['percent_complete']}%"> </div></div>
 		  </td>
 		</tr>
         <tr class="votes">

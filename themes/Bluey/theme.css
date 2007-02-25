@@ -586,6 +586,22 @@ div#tasklist table td.progress {
 	text-align:center;
 }
 
+div.taskpercent.roadmapp {
+	width:200px;
+	height:20px;
+}
+
+div.taskpercent {
+	border:solid 1px #757F93;
+	height:8px;
+	min-width:60px;
+}
+
+div.taskpercent div {
+	background:#002672;
+	height:100%;
+}
+
 table#pagenumbers {
 	width:100%;
 }
@@ -1275,7 +1291,7 @@ td,th {
 	vertical-align:top;
 }
 
-img.middle {
+.middle {
 	vertical-align:middle;
 }
 

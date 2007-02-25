@@ -10,10 +10,7 @@
     <?php endif; ?>
 </h3>
 
-<p><img src="{$this->get_image('percent-' . round($milestone['percent_complete']/10)*10)}"
-				title="{(round($milestone['percent_complete']/10)*10)}% {L('complete')}"
-				alt="" width="200" height="20" />
-</p>
+<div class="taskpercent roadmapp"><div style="width:{round($milestone['percent_complete']/10)*10}%"> </div></div>
 
 <p>{$milestone['percent_complete']}{L('of')}
    <a href="{$_SERVER['SCRIPT_NAME']}?tasks=&amp;project={$proj->id}&amp;due={$milestone['id']}&amp;status[]=">
