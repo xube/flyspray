@@ -54,10 +54,14 @@ while ($row = $sql->FetchRow())
 }
 
 // Out of range value adjusted for column..
-$sql = $db->Execute('SELECT task_id, date_closed, last_edited_time, due_date FROM {tasks}');
+$sql = $db->Execute('SELECT * {tasks}');
 while ($row = $sql->FetchRow())
 {
-    $db->Execute('UPDATE {tasks} SET date_closed = ?, last_edited_time = ?, due_date = ? WHERE task_id = ?',
-               array(intval($row['date_closed']), intval($row['last_edited_time']), intval($row['due_date']), $row['task_id']));
+    $db->Execute('UPDATE {tasks} SET date_closed = ?, last_edited_time = ? WHERE task_id = ?',
+               array(intval($row['date_closed']), intval($row['last_edited_time']), $row['task_id']));
+    if (isset($row['due_date'])) {
+       $db->Execute('UPDATE {tasks} SET due_date = ? WHERE task_id = ?',
+                   array(intval($row['due_date']), $row['task_id']));
+    }
 }
 ?>
