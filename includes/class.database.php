@@ -68,13 +68,14 @@ $ADODB_CACHE_DIR = BASEDIR . '/cache';
  */
 function &NewDatabase($conf = array())
 {
-    if (!is_array($conf) || extract($conf, EXTR_REFS|EXTR_SKIP) < 6) {
+    if (!is_array($conf) || extract($conf, EXTR_REFS|EXTR_SKIP) < 5) {
         die( 'Flyspray was unable to connect to the database. '
             .'Check your settings in flyspray.conf.php');
     }
 
     $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname";
     $db =& ADONewConnection($dsn);
+    $dbprefix = isset($dbprefix) ? $dbprefix : '';
 
     if ($db === false || (!empty($dbprefix) && !preg_match('/^[a-z][a-z0-9_]+$/i', $dbprefix))) {
         die('Flyspray was unable to connect to the database. '
