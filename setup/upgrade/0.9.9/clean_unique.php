@@ -54,7 +54,7 @@ while ($row = $sql->FetchRow())
 }
 
 // Out of range value adjusted for column..
-$sql = $db->Execute('SELECT * {tasks}');
+$sql = $db->Execute('SELECT * FROM {tasks}');
 while ($row = $sql->FetchRow())
 {
     $db->Execute('UPDATE {tasks} SET date_closed = ?, last_edited_time = ? WHERE task_id = ?',

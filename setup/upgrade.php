@@ -73,7 +73,7 @@ if (Post::val('upgrade')) {
         }
     }
     // we should be done at this point
-    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
     $installed_version = $fs->version;
 }
 foreach ($folders as $folder) {
