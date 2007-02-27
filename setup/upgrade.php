@@ -48,28 +48,47 @@ $fs = new Flyspray();
 
 define('APPLICATION_SETUP_INDEX', Flyspray::absoluteURI());
 define('UPGRADE_VERSION', Flyspray::base_version($fs->version));
-define('UPGRADE_PATH', BASEDIR . '/upgrade/' . UPGRADE_VERSION);
 
 // Get installed version
 $installed_version = $db->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('fs_ver'));
 
 $page = new Tpl;
 $page->assign('title', 'Upgrade ');
-$page->assign('installed_version', $installed_version); // get version info from database
 $page->assign('short_version', UPGRADE_VERSION);
 
 // ---------------------------------------------------------------------
 // Now the hard work
 // ---------------------------------------------------------------------
 
-if (is_dir(UPGRADE_PATH)) {
-    $upgrade_info = parse_ini_file(UPGRADE_PATH . '/upgrade.info', true);
+// Find out which upgrades need to be run
+$folders = glob_compat(BASEDIR . '/upgrade/[0-9]*');
+usort($folders, 'version_compare'); // start with lowest version
+
+$upgrade_available = false;
+if (Post::val('upgrade')) {
+    foreach ($folders as $folder) {
+        if (version_compare($installed_version, $folder, '<=')) {
+            execute_upgrade_file(BASEDIR . '/upgrade/' . $folder, $installed_version);
+            $installed_version = $folder;
+        }
+    }
+    // we should be done at this point
+    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+    $installed_version = $fs->version;
+}
+foreach ($folders as $folder) {
+    if (version_compare($installed_version, $folder, '<=')) {
+        $upgrade_available = true;
+    }
 }
 
-if (Post::val('upgrade')) {
+function execute_upgrade_file($upgrade_path, $installed_version)
+{
+    global $db, $page, $conf;
     // At first the config file
-    new ConfUpdater(CONFIG_PATH);
+    new ConfUpdater(CONFIG_PATH, $upgrade_path);
 
+    $upgrade_info = parse_ini_file($upgrade_path . '/upgrade.info', true);
     // dev version upgrade?
     if (UPGRADE_VERSION == Flyspray::base_version($installed_version)) {
         $type = 'develupgrade';
@@ -106,27 +125,27 @@ if (Post::val('upgrade')) {
     ksort($upgrade_info[$type]);
     foreach ($upgrade_info[$type] as $file) {
         // skip all files which have been executed already
-        $hash = md5_file(UPGRADE_PATH . '/' . $file);
+        $hash = md5_file($upgrade_path . '/' . $file);
         if (isset($done[$file]) && $done[$file] == $hash) {
             continue;
         }
 
         if (substr($file, -4) == '.php') {
-            require_once UPGRADE_PATH . '/' . $file;
+            require_once $upgrade_path . '/' . $file;
             $done[$file] = $hash;
         }
 
         if (substr($file, -4) == '.xml') {
             $schema = new adoSchema($db);
             $schema->SetPrefix($conf['database']['dbprefix']);
-            $schema->ParseSchemaFile(UPGRADE_PATH . '/' . $file);
+            $schema->ParseSchemaFile($upgrade_path . '/' . $file);
             if ($schema->ExecuteSchema()) {
                 $done[$file] = $hash;
             }
         }
     }
 
-    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(basename($upgrade_path), 'fs_ver'));
     $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(serialize($done), 'upgrader_done'));
     $page->assign('done', true);
 }
@@ -142,14 +161,14 @@ class ConfUpdater
      * @access public
      * @return bool
      */
-    function ConfUpdater($location)
+    function ConfUpdater($location, $upgrade_path)
     {
         if (!is_writable($location)) {
             return false;
         }
 
         $this->old_config = parse_ini_file($location, true);
-        $this->new_config = parse_ini_file(UPGRADE_PATH . '/flyspray.conf.php', true);
+        $this->new_config = parse_ini_file($upgrade_path . '/flyspray.conf.php', true);
         // Now we overwrite all values of the *default* file if there is one in the existing config
         array_walk($this->new_config, array($this, '_merge_configs'));
 
@@ -207,7 +226,7 @@ $checks['version_compare'] = version_compare($installed_version, UPGRADE_VERSION
 $checks['config_writable'] = is_writable(CONFIG_PATH);
 $checks['db_connect'] = (bool) $db;
 $checks['installed_version'] = version_compare($installed_version, '0.9.5') === 1;
-$checks['upgrade_required'] = is_dir(UPGRADE_PATH);
+$checks['upgrade_required'] = $upgrade_available;
 $todo['config_writable'] = 'Please make sure that the file at ' . CONFIG_PATH . ' is writable.';
 $todo['db_connect'] = 'Connection to the database could not be established. Check your config.';
 $todo['version_compare'] = 'No newer version than yours can be installed with this upgrader.';
@@ -231,6 +250,7 @@ if (isset($upgrade_info['options'])) {
 
 $page->assign('index', APPLICATION_SETUP_INDEX);
 $page->uses('checks', 'fs', 'upgrade_possible');
+$page->assign('installed_version', $installed_version);
 
 $page->display('upgrade.tpl');
 
