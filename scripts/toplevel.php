@@ -52,7 +52,9 @@ foreach ($projects as $project) {
 }
 
 $page->uses('most_wanted', 'stats', 'projects');
+$feed_auth = ($user->isAnon() ? '' : '&user_id=' . $user->id . '&auth=' . md5($user->infos['user_pass'] . $user->infos['register_date']));
 
+$page->uses('feed_auth');
 $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('toplevel'));
 $page->pushTpl('toplevel.tpl');
 

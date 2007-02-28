@@ -57,15 +57,15 @@
   <tr>
     <th><strong>{L('feeds')}</strong></th>
     <td>
-        <b>{L('rss')} 1.0</b> <a href="{$baseurl}feed.php?feed_type=rss1&amp;project={$project['project_id']}">{L('opened')}</a> -
-        <a href="{$baseurl}feed.php?feed_type=rss1&amp;topic=edit&amp;project={$project['project_id']}">{L('edited')}</a> -
-        <a href="{$baseurl}feed.php?feed_type=rss1&amp;topic=clo&amp;project={$project['project_id']}">{L('closed')}</a> |
-        <b>{L('rss')} 2.0</b> <a href="{$baseurl}feed.php?feed_type=rss2&amp;project={$project['project_id']}">{L('opened')}</a> -
-        <a href="{$baseurl}feed.php?feed_type=rss2&amp;topic=edit&amp;project={$project['project_id']}">{L('edited')}</a> -
-        <a href="{$baseurl}feed.php?feed_type=rss2&amp;topic=clo&amp;project={$project['project_id']}">{L('closed')}</a> |
-        <b>{L('atom')}</b> <a href="{$baseurl}feed.php?feed_type=atom&amp;project={$project['project_id']}">{L('opened')}</a> -
-        <a href="{$baseurl}feed.php?feed_type=atom&amp;topic=edit&amp;project={$project['project_id']}">{L('edited')}</a> -
-        <a href="{$baseurl}feed.php?feed_type=atom&amp;topic=clo&amp;project={$project['project_id']}">{L('closed')}</a>
+        <b>{L('rss')} 1.0</b> <a href="{$baseurl}feed.php?feed_type=rss1&amp;project={$project['project_id']}{$feed_auth}">{L('opened')}</a> -
+        <a href="{$baseurl}feed.php?feed_type=rss1&amp;topic=edit&amp;project={$project['project_id']}{$feed_auth}">{L('edited')}</a> -
+        <a href="{$baseurl}feed.php?feed_type=rss1&amp;topic=clo&amp;project={$project['project_id']}{$feed_auth}">{L('closed')}</a> |
+        <b>{L('rss')} 2.0</b> <a href="{$baseurl}feed.php?feed_type=rss2&amp;project={$project['project_id']}{$feed_auth}">{L('opened')}</a> -
+        <a href="{$baseurl}feed.php?feed_type=rss2&amp;topic=edit&amp;project={$project['project_id']}{$feed_auth}">{L('edited')}</a> -
+        <a href="{$baseurl}feed.php?feed_type=rss2&amp;topic=clo&amp;project={$project['project_id']}{$feed_auth}">{L('closed')}</a> |
+        <b>{L('atom')}</b> <a href="{$baseurl}feed.php?feed_type=atom&amp;project={$project['project_id']}{$feed_auth}">{L('opened')}</a> -
+        <a href="{$baseurl}feed.php?feed_type=atom&amp;topic=edit&amp;project={$project['project_id']}{$feed_auth}">{L('edited')}</a> -
+        <a href="{$baseurl}feed.php?feed_type=atom&amp;topic=clo&amp;project={$project['project_id']}{$feed_auth}">{L('closed')}</a>
     </td>
   </tr>
 </table>
