@@ -68,29 +68,35 @@ $upgrade_available = false;
 if (Post::val('upgrade')) {
     foreach ($folders as $folder) {
         if (version_compare($installed_version, $folder, '<=')) {
-            execute_upgrade_file(BASEDIR . '/upgrade/' . $folder, $installed_version);
+            execute_upgrade_file($folder, $installed_version);
             $installed_version = $folder;
         }
     }
     // we should be done at this point
-    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
     $installed_version = $fs->version;
 }
 foreach ($folders as $folder) {
-    if (version_compare($installed_version, $folder, '<=')) {
+    if (version_compare($installed_version, $folder, '<')) {
+        $upgrade_available = true;
+    }
+    // or dev version
+    if ($folder == Flyspray::base_version($installed_version)
+        && version_compare($installed_version, $folder, '<=')) {
         $upgrade_available = true;
     }
 }
 
-function execute_upgrade_file($upgrade_path, $installed_version)
+function execute_upgrade_file($folder, $installed_version)
 {
     global $db, $page, $conf;
     // At first the config file
+    $upgrade_path = BASEDIR . '/upgrade/' . $folder;
     new ConfUpdater(CONFIG_PATH, $upgrade_path);
 
     $upgrade_info = parse_ini_file($upgrade_path . '/upgrade.info', true);
     // dev version upgrade?
-    if (UPGRADE_VERSION == Flyspray::base_version($installed_version)) {
+    if ($folder == Flyspray::base_version($installed_version)) {
         $type = 'develupgrade';
     } else {
         $type = 'defaultupgrade';
