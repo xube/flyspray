@@ -14,7 +14,7 @@
         <?php endif; ?>
         <label for="username">{L('username')}</label>
       </td>
-      <td><input id="username" name="user_name" value="{Post::val('user_name')}" class="required text" type="text" size="20" maxlength="20" onblur="checkname(this.value);" />
+      <td><input id="username" name="user_name" value="{Post::val('user_name')}" class="required text" type="text" size="32" maxlength="20" onblur="checkname(this.value);" />
       <br /><span id="errormessage"></span></td>
     </tr>
     <tr>
@@ -60,7 +60,7 @@
           ?>
           {!tpl_options($times, Post::val('time_zone', 0))}
         </select>
-      </td> 
+      </td>
     </tr>
     <?php if (isset($groups)): ?>
     <tr>

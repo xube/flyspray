@@ -314,10 +314,9 @@ class Backend
                 continue;
             }
 
-            $fname = $task_id.'_'.mt_rand();
-            while (is_file($path = BASEDIR .'/attachments/'.$fname)) {
-                $fname = $task_id.'_'.mt_rand();
-            }
+            
+            $fname = substr($task_id . '_' . md5(uniqid(mt_rand(), true)), 0, 30);
+            $path = BASEDIR .'/attachments/'. $fname ;
 
             $tmp_name = $_FILES[$source]['tmp_name'][$key];
 
@@ -397,6 +396,22 @@ class Backend
     }
 
     /**
+     * Cleans a username (length, special chars, spaces)
+     * @param string $user_name
+     * @access public
+     * @return string
+     */
+    function clean_username($user_name)
+    {
+        // Limit length
+        $user_name = substr(trim($user_name), 0, 32);
+        // Remove doubled up spaces and control chars
+        $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
+        // Strip special chars
+        return utf8_keepalphanum($user_name);
+    }
+
+    /**
      * Creates a new user
      * @param string $user_name
      * @param string $password
@@ -415,16 +430,11 @@ class Backend
     {
         global $fs, $db, $baseurl;
 
+        $user_name = Backend::clean_username($user_name);
         // Limit lengths
-        $user_name = substr(trim($user_name), 0, 32);
         $real_name = substr(trim($real_name), 0, 100);
         // Remove doubled up spaces and control chars
-        if (version_compare(PHP_VERSION, '4.3.4') == 1) {
-            $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
-            $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
-        }
-        // Strip special chars
-        $user_name = utf8_keepalphanum($user_name);
+        $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
 
         // Check to see if the username is available
         $username_exists = $db->GetOne('SELECT COUNT(*) FROM {users} WHERE user_name = ?', array($user_name));
@@ -904,7 +914,7 @@ class Backend
         }
         if (array_get($args, 'changedfrom') || array_get($args, 'changedto') || in_array('lastedit', $visible)) {
             $from   .= ' LEFT JOIN  {history} h         ON t.task_id = h.task_id ';
-            $select .= ' max(h.event_date)              AS event_date, ';
+            $select .= ' MAX(h.event_date)              AS event_date, ';
         }
         if (array_get($args, 'search_in_comments') || in_array('comments', $visible)) {
             $from   .= ' LEFT JOIN  {comments} c        ON t.task_id = c.task_id ';
@@ -928,7 +938,7 @@ class Backend
         $from   .= ' LEFT JOIN  {assigned} ass      ON t.task_id = ass.task_id ';
         $from   .= ' LEFT JOIN  {users} u           ON ass.user_id = u.user_id ';
         if (array_get($args, 'dev') || in_array('assignedto', $visible)) {
-            $select .= ' min(u.real_name)               AS assigned_to_name, ';
+            $select .= ' MIN(u.real_name)               AS assigned_to_name, ';
             $select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
         }
 
@@ -1061,6 +1071,7 @@ class Backend
             }
 
             $temp = '';
+            $condition = '';
             foreach ($type as $val) {
                 if (is_numeric($val) && !is_array($db_key)) {
                     $temp .= ' ' . $db_key . ' = ?  OR';
@@ -1069,9 +1080,14 @@ class Backend
                     if ($key == 'dev' && ($val == 'notassigned' || $val == '0' || $val == '-1')) {
                         $temp .= ' a.user_id IS NULL  OR';
                     } else {
-                        if (!is_numeric($val)) $val = '%' . $val . '%';
+                        if (is_numeric($val)) {
+                            $condition = ' = ? OR';
+                        } else {
+                           $val = '%' . $val . '%';
+                           $condition = ' LIKE ? OR';
+                        }
                         foreach ($db_key as $value) {
-                            $temp .= ' ' . $value . ' LIKE ?  OR';
+                            $temp .= ' ' . $value . $condition;
                             $sql_params[] = $val;
                         }
                     }

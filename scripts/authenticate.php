@@ -16,7 +16,7 @@ if (Get::val('logout')) {
 
 if (Post::val('user_name') != '' && Post::val('password') != '') {
     // Otherwise, they requested login.  See if they provided the correct credentials...
-    $username = Post::val('user_name');
+    $username = Backend::clean_username(Post::val('user_name'));
     $password = Post::val('password');
 
     // Run the username and password through the login checker

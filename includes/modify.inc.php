@@ -258,16 +258,12 @@ switch ($action = Req::val('action'))
             break;
         }
 
+        $user_name = Backend::clean_username($user_name);
+
         // Limit lengths
-        $user_name = substr(trim(Post::val('user_name')), 0, 32);
         $real_name = substr(trim(Post::val('real_name')), 0, 100);
         // Remove doubled up spaces and control chars
-        if (version_compare(PHP_VERSION, '4.3.4') == 1) {
-            $user_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $user_name);
-            $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
-        }
-        // Strip special chars
-        $user_name = utf8_keepalphanum($user_name);
+        $real_name = preg_replace('![\x00-\x1f\s]+!u', ' ', $real_name);
 
         if (!$user_name || !$real_name) {
             Flyspray::show_error(L('entervalidusername'));
