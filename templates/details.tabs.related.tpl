@@ -45,7 +45,7 @@
   <?php if ($user->can_edit_task($task) && !$task['is_closed']): ?>
   <form action="{CreateUrl('details', $task['task_id'])}#related" method="post" id="formaddrelatedtask">
     <div>
-      <input type="hidden" name="action" value="details.add_related" />
+      <input type="hidden" name="action" value="add_related" />
       <input type="hidden" name="task_id" value="{$task['task_id']}" />
       <label>{L('addnewrelated')}
         <input name="related_task" id="related_task_input" type="text" class="text" size="10" maxlength="10" /></label>

@@ -26,6 +26,7 @@ require_once BASEDIR . '/includes/class.backend.php';
 require_once BASEDIR . '/includes/class.project.php';
 require_once BASEDIR . '/includes/class.user.php';
 require_once BASEDIR . '/includes/class.tpl.php';
+require_once BASEDIR . '/includes/class.do.php';
 
 $db = NewDatabase($conf['database']);
 $fs = new Flyspray;

@@ -93,7 +93,7 @@
           0
           <?php endif; ?>
           <?php if ($user->can_vote($task) > 0): ?>
-          <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=details.addvote&amp;task_id={$task['task_id']}">
+          <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=addvote&amp;task_id={$task['task_id']}">
             ({L('addvote')})</a>
           <?php elseif ($user->can_vote($task) == -2): ?>
           ({L('alreadyvotedthistask')})
@@ -132,7 +132,7 @@
 
               <?php if (!$watched): ?>
               <a accesskey="w"
-              href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task['task_id']}&amp;action=details.add_notification&amp;ids={$task['task_id']}&amp;user_id={$user->id}">
+              href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;task_id={$task['task_id']}&amp;action=add_notification&amp;ids={$task['task_id']}&amp;user_id={$user->id}">
               ({L('watchtask')})</a>
               <?php else: ?>
               <a accesskey="w"
@@ -187,7 +187,7 @@
 		<?php if ($user->can_edit_task($task)): ?>
 		<form action="{CreateUrl('details', $task['task_id'])}" method="post">
 		  <div>
-			 <input type="hidden" name="action" value="details.newdep" />
+			 <input type="hidden" name="action" value="newdep" />
 			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
 			 <input class="text" type="text" value="" name="dep_task_id" size="5" maxlength="10" />
 			 <button type="submit" name="submit">{L('addnew')}</button>
@@ -249,10 +249,10 @@
 	 <?php if ($user->can_close_task($task) && !$d_open): ?>
 	 <a href="{CreateUrl('details', $task['task_id'], null, array('showclose' => !Get::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
 		{L('closetask')}</a>
-     <div id="closeform" class="<?php if (Req::val('action') != 'details.close' && !Get::val('showclose')): ?>hide <?php endif; ?>popup">
+     <div id="closeform" class="<?php if (Req::val('action') != 'close' && !Get::val('showclose')): ?>hide <?php endif; ?>popup">
 		<form action="{CreateUrl('details', $task['task_id'])}" method="post" id="formclosetask">
 		  <div>
-			 <input type="hidden" name="action" value="details.close" />
+			 <input type="hidden" name="action" value="close" />
 			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
 			 <select class="adminlist" name="resolution_reason" onmouseup="Event.stop(event);">
 				<option value="0">{L('selectareason')}</option>
@@ -262,7 +262,7 @@
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>
 			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="25">{Post::val('closure_comment')}</textarea>
 			 <?php if($task['percent_complete'] != '100'): ?>
-             <label>{!tpl_checkbox('mark100', Post::val('mark100', !(Req::val('action') == 'details.close')))}&nbsp;&nbsp;{L('mark100')}</label>
+             <label>{!tpl_checkbox('mark100', Post::val('mark100', !(Req::val('action') == 'close')))}&nbsp;&nbsp;{L('mark100')}</label>
              <?php endif; ?>
 		  </div>
 		</form>

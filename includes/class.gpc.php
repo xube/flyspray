@@ -226,4 +226,7 @@ function array_get(&$array, $key, $default = null)
 {
     return (isset($array[$key])) ? $array[$key] : $default;
 }
+
+// what is left of modify.inc.php
+function Post_to0($key) { return Post::val($key, 0); }
 ?>

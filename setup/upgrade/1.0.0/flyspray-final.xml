@@ -82,9 +82,6 @@
     <field name="file_name" type="C" size="30">
       <NOTNULL/>
     </field>
-    <field name="file_desc" type="C" size="100">
-      <NOTNULL/>
-    </field>
     <field name="file_type" type="C" size="50">
       <NOTNULL/>
     </field>

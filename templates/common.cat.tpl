@@ -1,12 +1,10 @@
-<fieldset class="box">
-  <legend>{L('categories')}</legend>
   <p>{L('listnote')}</p>
   <?php
   $countlines = -1;
-  $categories = $proj->listCategories($proj->id, false, false, false);
+  $categories = $proj->listCategories(Req::val('list_id'), false, false, false);
   $root = $categories[0];
   unset($categories[0]);
-  
+
   if (count($categories)) : ?>
   <div id="controlBox">
     <div class="grip"></div>
@@ -18,7 +16,7 @@
     </div>
   </div>
   <?php endif; ?>
-    <form action="{CreateURL($do, 'list', $proj->id)}" method="post">
+    <form action="{CreateURL($do, 'list', $proj->id, array('list_id' => Req::val('list_id')))}" method="post">
       <table class="list" id="catTable">
          <thead>
          <tr>
@@ -39,7 +37,7 @@
             <input type="hidden" name="rgt[]" value="{$row['rgt']}" />
             <input type="hidden" name="id[]" value="{$row['category_id']}" />
             <span class="depthmark">{!str_repeat('&rarr;', intval($row['depth']))}</span>
-            <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]" 
+            <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]"
               value="{$row['category_name']}" />
           </td>
           <td title="{L('categoryownertip')}">
@@ -50,8 +48,7 @@
           </td>
           <td title="{L('listdeletetip')}">
             <input id="delete{$row['category_id']}" type="checkbox"
-            <?php if ($row['used_in_tasks']): ?>disabled="disabled"<?php endif; ?>
-            name="delete[{$row['category_id']}]" value="1" />
+                   name="delete[{$row['category_id']}]" value="1" />
           </td>
         </tr>
         <?php endforeach; ?>
@@ -88,7 +85,7 @@
     <hr />
 
     <!-- Form to add a new category to the list -->
-    <form action="{CreateURL($do, 'list', $proj->id)}" method="post">
+    <form action="{CreateURL($do, 'list', $proj->id, array('list_id' => Req::val('list_id')))}" method="post">
       <table class="list">
         <tr>
           <td>
@@ -101,11 +98,11 @@
             <label for="parent_id">{L('parent')}</label>
             <select id="parent_id" name="parent_id">
               <option value="{$root['category_id']}">{L('notsubcategory')}</option>
-              {!tpl_options($proj->listCategories($proj->id, false), Post::val('parent_id'))}
+              {!tpl_options($proj->listCategories(Req::val('list_id'), false), Post::val('parent_id'))}
             </select>
           </td>
           <td class="buttons">
-            <input type="hidden" name="action" value="{$do}.add_category" />
+            <input type="hidden" name="action" value="add_category" />
             <input type="hidden" name="area" value="list" />
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <input type="hidden" name="list_id" value="{Req::val('list_id')}" />
@@ -113,5 +110,3 @@
           </td>
         </tr>
       </table>
-    </form>
-</fieldset>

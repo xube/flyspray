@@ -85,7 +85,7 @@
         <?php if ($user->isAnon()): ?>
         <label class="inline" for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30" /><br />
         <?php endif; ?>
-        <input type="hidden" name="action" value="newtask.newtask" />
+        <input type="hidden" name="action" value="newtask" />
         <input type="hidden" name="project_id" value="{$proj->id}" />
         <button accesskey="s" type="submit">{L('addthistask')}</button>
         <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
@@ -95,9 +95,9 @@
           <?php if (!$user->isAnon()): ?>
           <input type="checkbox" id="notifyme" name="notifyme"
           value="1" checked="checked" />&nbsp;<label class="inline left" for="notifyme">{L('notifyme')}</label><br />
-          <?php endif; ?>
           {!tpl_checkbox('more_tasks', Req::val('more_tasks', 0), 'more_tasks')}<label class="inline left" for="more_tasks">
-                {L('addmoretasks')}</label>
+          <?php endif; ?>
+          {L('addmoretasks')}</label>
         </div>
     </p>
     </div>

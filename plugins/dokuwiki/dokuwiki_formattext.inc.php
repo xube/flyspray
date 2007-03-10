@@ -77,7 +77,7 @@ class dokuwiki_TextFormatter
     }
     function textarea( $name, $rows, $cols, $attrs = null, $content = null) {
 
-    	$name = htmlspecialchars($name, ENT_QUOTES, 'utf-8');
+    	$name = Filters::noXSS($name);
         $rows = intval($rows);
         $cols = intval($cols);
         $return = '<div id="dokuwiki_toolbar">'
@@ -90,7 +90,7 @@ class dokuwiki_TextFormatter
         }
         $return .= '>';
         if (!is_null($content)) {
-            $return .= htmlspecialchars($content, ENT_QUOTES, 'utf-8');
+            $return .= Filters::noXSS($content);
         }
         $return .= '</textarea>';
         return $return;

@@ -19,7 +19,8 @@
   </table>
 
     <div>
-        <input type="hidden" name="action" value="register.registeruser" />
+        <input type="hidden" name="action" value="registeruser" />
+        <input type="hidden" name="do" value="register" />
         <input type="hidden" name="magic_url" value="{Req::val('magic_url')}" />
         <button type="submit" name="buSubmit">{L('registeraccount')}</button>
     </div>

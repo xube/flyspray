@@ -13,7 +13,7 @@
           </select>
        <input type="hidden" name="do" value="admin" />
        <input type="hidden" name="area" value="groups" />
-       <input type="hidden" name="action" value="admin.addusertogroup" />
+       <input type="hidden" name="action" value="addusertogroup" />
        <button type="submit">OK</button>
     </p>
     </form>

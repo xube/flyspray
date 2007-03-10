@@ -903,6 +903,12 @@ Regards,',
 'required'                => 'Required',
 'duplicateres'            => 'Resolution for duplicate tasks',
 'unlimited'               => 'Unlimited',
+'fieldadded'              => 'Field added successfully!',
+'fieldsupdated'           => 'Fields updated successfully!',
+'listadded'               => 'List added successfully!',
+'listsupdated'            => 'Lists updated successfully!',
+'taskalreadyclosed'       => 'Task is already closed!',
+'notedoesnotexist'        => 'The selected note does not exist!',
 );
 
 ?>

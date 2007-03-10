@@ -136,7 +136,7 @@ class Flyspray
 
         if ($rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&
             $_SERVER['REQUEST_METHOD'] != 'HEAD') {
-            $url = htmlspecialchars($url, ENT_QUOTES, 'utf-8');
+            $url = Filters::noXSS($url);
             printf('%s to: <a href="%s">%s</a>.', eL('Redirect'), $url, $url);
         }
         if ($exit) {
@@ -269,7 +269,7 @@ class Flyspray
 
         $requestarray = array_merge(array_keys($_POST), array_values($_POST));
 
-        if (preg_match('/^newtask.newtask|details.addcomment$/', Post::val('action', '')))
+        if (preg_match('/^newtask|addcomment$/', Post::val('action', '')))
         {
             $currentrequest = md5(serialize($requestarray));
             if (!empty($_SESSION['requests_hash'][$currentrequest])) {

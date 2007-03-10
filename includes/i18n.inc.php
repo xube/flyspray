@@ -30,7 +30,7 @@ function L($key)
 
 function eL($key)
 {
-    return htmlspecialchars(L($key), ENT_QUOTES, 'utf-8');
+    return Filters::noXSS(L($key));
 }
 
 function load_translations()

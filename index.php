@@ -13,10 +13,13 @@ if ($conf['general']['reminder_daemon'] == '1') {
     Flyspray::startReminderDaemon();
 }
 
-// Get available do-modes
+// Get available do-modes and include the classes
 $modes = str_replace('.php', '', array_map('basename', glob_compat(BASEDIR ."/scripts/*.php")));
 
 $do = Req::enum('do', $modes, $proj->prefs['default_entry']);
+foreach ($modes as $mode) {
+    require_once(BASEDIR . '/scripts/' . $mode . '.php');
+}
 
 if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
     $do = 'pm';
@@ -34,6 +37,11 @@ if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
     $user->save_search($do);
 } else {
     $user = new User(0);
+}
+
+if (Get::val('logout')) {
+    $user->logout();
+    Flyspray::Redirect($baseurl);
 }
 
 if (Get::val('getfile')) {
@@ -120,14 +128,6 @@ if ($proj->id && $user->perms('manage_project')) {
     $page->assign('pm_pendingreq_num', $count);
 }
 
-$sql = $db->Execute(
-        'SELECT  project_id, project_title, others_view,
-                 upper(project_title) AS sort_names
-           FROM  {projects}
-       ORDER BY  sort_names');
-
-$fs->projects = array_filter($sql->GetArray(), array($user, 'can_view_project'));
-
 // Get e-mail addresses of the admins
 if ($user->isAnon() && !$fs->prefs['user_notify']) {
     $sql = $db->Execute('SELECT email_address
@@ -143,14 +143,9 @@ $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title']);
 $page->assign('do', $do);
 $page->pushTpl('header.tpl');
 
-// DB modifications?
-if (Req::has('action')) {
-    require_once(BASEDIR . '/includes/modify.inc.php');
-}
-
-if (!defined('NO_DO')) {
-    require_once(BASEDIR . "/scripts/$do.php");
-}
+$class = 'FlysprayDo' . $do;
+$mode = new $class;
+$mode->show(Req::val('area'));
 
 $page->pushTpl('footer.tpl');
 $page->setTheme($proj->prefs['theme_style']);

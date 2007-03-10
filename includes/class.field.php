@@ -51,10 +51,10 @@ class Field
             case FIELD_LIST:
                 if ($this->prefs['list_type'] == LIST_CATEGORY) {
                     foreach ($parents[$this->id] as $cat) {
-                        $html .= htmlspecialchars($cat, ENT_QUOTES, 'utf-8') . '&#8594;';
+                        $html .= Filters::noXSS($cat) . '&#8594;';
                     }
                 }
-                $html .= htmlspecialchars($task['f' . $this->id . '_name'], ENT_QUOTES, 'utf-8');
+                $html .= Filters::noXSS($task['f' . $this->id . '_name']);
                 break;
             
             case FIELD_DATE:
@@ -62,7 +62,7 @@ class Field
                 break;
             
             case FIELD_TEXT:
-                $html .= htmlspecialchars($task['f' . $this->id], ENT_QUOTES, 'utf-8');
+                $html .= Filters::noXSS($task['f' . $this->id]);
                 break;
         }
         return $html;
@@ -118,7 +118,7 @@ class Field
                 
             case FIELD_TEXT:
                 $html .= '<input type="text" class="text" id="field' . $this->id . '" name="field' . $this->id . '" value="' .
-                          htmlspecialchars($task['f' . $this->id], ENT_QUOTES, 'utf-8') . '" />';
+                          Filters::noXSS($task['f' . $this->id]) . '" />';
                 break;
         }
 

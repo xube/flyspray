@@ -8,10 +8,29 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-// Get the visibility state of all columns
-$visible = explode(' ', trim($proj->id ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']));
+class FlysprayDoExport extends FlysprayDo
+{
+    function is_accessible()
+    {
+        return FlysprayDoIndex::is_accessible();
+    }
 
-list($tasks, $id_list) = Backend::get_task_list($_GET, $visible, 0);
+    function _show()
+    {
+        global $proj, $page, $fs;
+        // Get the visibility state of all columns
+        $visible = explode(' ', trim($proj->id ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']));
+
+        list($tasks, $id_list) = Backend::get_task_list($_GET, $visible, 0);
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: filename="export.csv"');
+        $page = new FSTpl;
+        $page->assign('tasks', $tasks);
+        $page->assign('visible', $visible);
+        $page->display('csvexport.tpl');
+        exit(); // no footer please
+    }
+}
 
 // Data for a cell
 function tpl_csv_cell($task, $colname) {
@@ -86,10 +105,4 @@ function tpl_csv_cell($task, $colname) {
     return str_replace(array(';', '"'), array('\;', '\"'), $value);
 }
 
-header('Content-Type: text/csv; charset=utf-8');
-header('Content-Disposition: filename="export.csv"');
-$page = new FSTpl;
-$page->uses('tasks', 'visible');
-$page->display('csvexport.tpl');
-exit(); // no footer please
 ?>

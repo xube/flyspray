@@ -258,7 +258,7 @@ switch ($action = Req::val('action'))
             break;
         }
 
-        $user_name = Backend::clean_username($user_name);
+        $user_name = Backend::clean_username(Post::val('user_name'));
 
         // Limit lengths
         $real_name = substr(trim(Post::val('real_name')), 0, 100);
@@ -958,7 +958,7 @@ switch ($action = Req::val('action'))
     // ##################
     // adding a related task entry
     // ##################
-    case 'details.add_related':
+    case 'add_related':
         if (!$user->can_edit_task($task)) {
             break;
         }

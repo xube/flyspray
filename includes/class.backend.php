@@ -16,6 +16,9 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
+// Include the notifications class
+require_once BASEDIR . '/includes/class.notify.php';
+
 class Backend
 {
     /**
@@ -119,6 +122,56 @@ class Backend
         }
     }
 
+    /**
+     * Adds one or more users to a group (few permission checks)
+     * @param string $users komma sperated list of users (preferably IDs)
+     * @param integer $group_id of new group
+     * @access public
+     * @return integer 0:failure 1:added 2:removed from project -1:perms error
+     * @version 1.0
+     */
+    function add_user_to_group($users, $group_id, $proj_id = 0)
+    {
+        global $db, $user;
+
+        $users = preg_split('/[\s,;]+/', $users, -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($users as $uid) {
+            $uid = Flyspray::username_to_id($uid);
+
+            if (!$uid) {
+                return 0;
+            }
+
+            // Delete from project?
+            if (!$group_id && $proj_id) {
+                $db->Execute('DELETE uig FROM {users_in_groups} uig
+                         LEFT JOIN {groups} g ON uig.group_id = g.group_id
+                             WHERE uig.user_id = ? AND g.project_id = ?',
+                            array($uid, $proj_id));
+                return 1;
+            }
+
+            // If user is already a member of one of the project's groups, **move** (not add) him to the new group
+            $group_project = $db->GetOne('SELECT project_id FROM {groups} WHERE group_id = ?', array($group_id));
+
+            if (!$user->perms('manage_project', $group_project)) {
+                return -1;
+            }
+
+            $oldid = $db->GetOne('SELECT g.group_id
+                                    FROM {users_in_groups} uig, {groups} g
+                                   WHERE g.group_id = uig.group_id AND uig.user_id = ? AND project_id = ?',
+                                   array($uid, $group_project));
+            if ($oldid) {
+                $db->Execute('UPDATE {users_in_groups} SET group_id = ? WHERE user_id = ? AND group_id = ?',
+                            array($group_id, $uid, $oldid));
+            } else {
+                $db->Execute('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
+                            array($group_id, $uid));
+            }
+            return 2;
+        }
+    }
 
     /**
      * Assigns one or more $tasks only to a user $user_id

@@ -156,7 +156,8 @@
       </tr>
       <tr>
         <td colspan="2" class="buttons">
-          <input type="hidden" name="action" value="{Req::val('action', $do . '.edituser')}" />
+          <input type="hidden" name="action" value="edituser" />
+          <input type="hidden" name="do" value="{$do}" />
           <input type="hidden" name="user_id" value="{$theuser->id}" />
           <button type="submit">{L('updatedetails')}</button>
         </td>

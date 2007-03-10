@@ -43,7 +43,8 @@
     </tr>
   </table>
  <div>
-    <input type="hidden" name="action" value="register.sendcode" />
+    <input type="hidden" name="action" value="sendcode" />
+    <input type="hidden" name="do" value="register" />
     <button type="submit" name="buSubmit" id="buSubmit">{L('sendcode')}</button>
   </div>
 

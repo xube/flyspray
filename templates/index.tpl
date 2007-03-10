@@ -195,7 +195,7 @@
         <tr id="massopsactions">
           <td>
             <select name="action">
-              <option value="details.add_notification">{L('watchtasks')}</option>
+              <option value="add_notification">{L('watchtasks')}</option>
               <option value="remove_notification">{L('stopwatchingtasks')}</option>
               <option value="takeownership">{L('assigntaskstome')}</option>
             </select>

@@ -15,7 +15,7 @@
 
       <button type="submit">{L('add')}</button>
       <input type="hidden" name="ids" value="{Req::num('ids', $task['task_id'])}" />
-      <input type="hidden" name="action" value="details.add_notification" />
+      <input type="hidden" name="action" value="add_notification" />
     </p>
   </form>
   <?php endif; ?>

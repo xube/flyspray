@@ -12,15 +12,19 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-if (!$user->perms('manage_project') || !$proj->id) {
-    Flyspray::show_error(16);
-}
 
-$areas = array('prefs', 'editgroup', 'groups', 'users', 'newgroup',
-               'pendingreq', 'lists', 'user', 'list', 'fields');
+class FlysprayDoPm extends FlysprayDo
+{
+    var $default_handler = 'prefs';
 
-switch ($area = Req::enum('area', $areas, 'prefs')) {
-    case 'pendingreq':
+    // **********************
+    // Begin all area_ functions
+    // **********************
+
+    function area_pendingreq()
+    {
+        global $db, $page, $proj;
+
         $sql = $db->Execute("SELECT  *
                              FROM  {admin_requests} ar
                         LEFT JOIN  {tasks} t ON ar.task_id = t.task_id
@@ -29,113 +33,109 @@ switch ($area = Req::enum('area', $areas, 'prefs')) {
                          ORDER BY  ar.time_submitted ASC", array($proj->id));
 
         $page->assign('pendings', $sql->GetArray());
-        break;
+    }
 
-    case 'groups':
-        $sql = $db->Execute('SELECT g.group_id, g.group_name, g.group_desc,
-                                  count(uig.user_id) AS num_users
-                             FROM {groups} g
-                        LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
-                            WHERE g.project_id = ?
-                         GROUP BY g.group_id', array($proj->id));
-        $page->assign('groups', $sql->GetArray());
-        break;
+    function area_prefs()     {}
+    function area_editgroup() { return FlysprayDoAdmin::area_editgroup(); }
+    function area_groups()    { return FlysprayDoAdmin::area_groups(); }
+    function area_users()     { return FlysprayDoAdmin::area_users(); }
+    function area_fields()    { return FlysprayDoAdmin::area_fields(); }
+    function area_lists()     { return FlysprayDoAdmin::area_lists(); }
+    function area_list()      { return FlysprayDoAdmin::area_list(); }
 
-    case 'users':
-        // Prepare the sorting
-        // XXX: keep in sync with admin.php
-        $order_keys = array('username' => 'user_name',
-                            'realname' => 'real_name',
-                            'email'    => 'email_address',
-                            'jabber'   => 'jabber_id',
-                            'regdate'  => 'register_date',
-                            'status'   => 'account_enabled');
-        $order_column[0] = $order_keys[Filters::enum(Get::val('order', 'sev'), array_keys($order_keys))];
-        $order_column[1] = $order_keys[Filters::enum(Get::val('order2', 'sev'), array_keys($order_keys))];
-        $sortorder  = sprintf('%s %s, %s %s, u.user_id ASC',
-                $order_column[0], Filters::enum(Get::val('sort', 'desc'), array('asc', 'desc')),
-                $order_column[1], Filters::enum(Get::val('sort2', 'desc'), array('asc', 'desc')));
+    // **********************
+    // End of area_ functions
+    // **********************
 
-        // Search options
-        $search_keys = array('user_name', 'real_name', 'email_address', 'jabber_id');
-        $where = 'WHERE 1=1 ';
-        $args = array();
-        foreach ($search_keys as $key) {
-            if (Get::val($key) != '') {
-                $where .= ' AND ' . $key . ' LIKE ? ';
-                $args[] = '%' . Get::val($key) . '%';
-            }
-        }
-        // Search for users in a specific group
-        $groups = Get::val('group_id');
-        if (is_array($groups) && count($groups) && !in_array(0, $groups)) {
-            $where = ' LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id ' . $where;
-            $where .= ' AND (' . substr(str_repeat(' uig.group_id = ? OR ', count($groups)), 0, -3) . ' ) ';
-            $args = array_merge($args, $groups);
-        }
+    // **********************
+    // Begin all action_ functions
+    // **********************
 
-        $sql = $db->Execute('SELECT u.user_id, u.user_name, u.real_name, u.register_date,
-                                  u.jabber_id, u.email_address, u.account_enabled
-                             FROM {users} u '
-                         . $where .
-                        'ORDER BY ' . $sortorder, $args);
+    function action_updateproject()
+    {
+        global $proj, $db, $baseurl;
 
-        $users = GroupBy($sql, 'user_id');
-        $page->assign('user_count', count($users));
+        if (Post::val('delete_project')) {
+            $url = (Post::val('move_to')) ? CreateURL('pm', 'prefs', Post::val('move_to')) : $baseurl;
 
-        // Offset and limit
-        $user_list = array();
-        $offset = (max(Get::num('pagenum') - 1, 0)) * 50;
-        for ($i = $offset; $i < $offset + 50 && $i < count($users); $i++) {
-            $user_list[] = $users[$i];
-        }
-
-        // Get the user groups in a separate query because groups may be hidden
-        // because of search options which are disregarded here
-        if (count($user_list)) {
-            $in = implode(',', array_map(create_function('$x', 'return $x[0];'), $user_list));
-            $sql = $db->Execute('SELECT user_id, g.group_id, g.group_name, g.project_id
-                                 FROM {groups} g
-                            LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
-                                WHERE user_id IN ('. $in .')');
-            $user_groups = GroupBy($sql, 'user_id', array('group_id', 'group_name', 'project_id'), !REINDEX);
-        }
-
-        $page->uses('user_list');
-        $page->uses('user_groups');
-        break;
-
-        case 'lists':
-            $sql = $db->Execute('SELECT * FROM {lists}
-                                WHERE project_id = ?
-                             ORDER BY list_type', array($proj->id));
-            $page->assign('lists', $sql->GetArray());
-            break;
-
-        case 'fields':
-            $sql = $db->Execute('SELECT * FROM {lists}
-                             ORDER BY project_id, list_type, list_name');
-            $page->assign('lists', $sql->GetArray());
-            break;
-
-        case 'list':
-            // Which type of list?
-            $sql = $db->Execute('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
-                              array(Req::val('list_id')));
-            $row = $sql->FetchRow();
-            $list_type = $row[0];
-            $list_name = $row[1];
-
-            if ($list_type == LIST_CATEGORY) {
-                $area = 'cat';
+            if (Backend::delete_project($proj->id, Post::val('move_to'))) {
+                return array(SUBMIT_OK, L('projectdeleted'), $url);
             } else {
-                $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));
+                return array(ERROR_INPUT, L('projectnotdeleted'), $url);
             }
-            $page->uses('list_type', 'list_name');
-            break;
+        }
+
+        if (!Post::val('project_title')) {
+            return array(ERROR_RECOVER, L('emptytitle'));
+        }
+
+        $cols = array( 'project_title', 'theme_style', 'lang_code', 'default_task', 'default_entry',
+                'intro_message', 'others_view', 'anon_open', 'send_digest', 'anon_view_tasks',
+                'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply', 'roadmap_field',
+                'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign');
+        $args = array_map('Post_to0', $cols);
+        $cols[] = 'notify_types';
+        $args[] = implode(' ', Post::val('notify_types'));
+        $cols[] = 'last_updated';
+        $args[] = time();
+        $cols[] = 'default_cat_owner';
+        $args[] =  Flyspray::username_to_id(Post::val('default_cat_owner'));
+        $args[] = $proj->id;
+
+        $db->Execute("UPDATE  {projects}
+                         SET  ".join('=?, ', $cols)."=?
+                       WHERE  project_id = ?", $args);
+
+        $db->Execute('UPDATE {projects} SET visible_columns = ? WHERE project_id = ?',
+                      array(trim(Post::val('visible_columns')), $proj->id));
+
+        return array(SUBMIT_OK, L('projectupdated'));
+    }
+
+    function action_add_field()       { return FlysprayDoAdmin::action_add_field(); }
+    function action_update_fields()   { return FlysprayDoAdmin::action_update_fields(); }
+    function action_add_list()        { return FlysprayDoAdmin::action_add_list(); }
+    function action_update_lists()    { return FlysprayDoAdmin::action_update_lists(); }
+    function action_add_category()    { return FlysprayDoAdmin::action_update_lists(); }
+    function action_update_category() { return FlysprayDoAdmin::action_update_category(); }
+    function action_newgroup()        { return FlysprayDoAdmin::action_newgroup(); }
+    function action_addusertogroup()  { return FlysprayDoAdmin::action_addusertogroup(); }
+    function action_add_to_list()     { return FlysprayDoAdmin::action_add_to_list(); }
+    function action_editgroup()       { return FlysprayDoAdmin::action_editgroup(); }
+
+    // **********************
+    // End of action_ functions
+    // **********************
+
+	function _show($area = null)
+	{
+		global $page, $fs, $db, $proj;
+
+        $page->pushTpl('pm.menu.tpl');
+
+        $this->handle('area', $area);
+
+		$page->setTitle($fs->prefs['page_title'] . L('pmtoolbox'));
+		$page->pushTpl('pm.'.$area.'.tpl');
+	}
+
+	function _onsubmit()
+	{
+        global $fs, $db, $proj, $user;
+
+        list($type, $msg, $url) = $this->handle('action', Post::val('action'));
+        if ($type != NO_SUBMIT) {
+        	$proj = new Project($proj->id);
+        }
+
+        return array($type, $msg, $url);
+	}
+
+	function is_accessible()
+	{
+		global $user, $proj;
+		return $user->perms('manage_project') && $proj->id;
+	}
 }
 
-$page->setTitle($fs->prefs['page_title'] . L('pmtoolbox'));
-$page->pushTpl('pm.menu.tpl');
-$page->pushTpl('pm.'.$area.'.tpl');
 ?>

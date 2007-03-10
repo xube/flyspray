@@ -140,6 +140,15 @@ class User
                 }
             }
         }
+        
+        // project list of $fs
+		$sql = $db->Execute(
+		        'SELECT  project_id, project_title, others_view,
+		                 upper(project_title) AS sort_names
+		           FROM  {projects}
+		       ORDER BY  sort_names');
+		
+		$fs->projects = array_filter($sql->GetArray(), array($this, 'can_view_project'));
     }
 
     function check_account_ok()

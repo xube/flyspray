@@ -176,9 +176,9 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     }
 
     if (is_null($text)) {
-        $text = 'FS#'. (int) $task['task_id'] . ' - '. htmlspecialchars($summary, ENT_QUOTES, 'utf-8');
+        $text = 'FS#'. (int) $task['task_id'] . ' - '. Filters::noXSS($summary);
     } elseif(is_string($text)) {
-        $text = htmlspecialchars(utf8_substr($text, 0, 64), ENT_QUOTES, 'utf-8');
+        $text = Filters::noXSS(utf8_substr($text, 0, 64));
     } else {
         //we can't handle non-string stuff here.
         return '';
@@ -242,8 +242,8 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $params['pagenum'] = Get::val('pagenum');
     }
 
-    $url = htmlspecialchars(CreateURL('details', $task['task_id'],  null, $params), ENT_QUOTES, 'utf-8');
-    $title_text = htmlspecialchars($title_text, ENT_QUOTES, 'utf-8');
+    $url = Filters::noXSS(CreateURL('details', $task['task_id'],  null, $params));
+    $title_text = Filters::noXSS($title_text);
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',$url, $title_text, join_attrs($attrs), $text);
 
     if ($task['is_closed']) {
@@ -269,9 +269,9 @@ function tpl_userlink($uid)
     }
 
     if (isset($uname)) {
-        $cache[$uid] = '<a href="'.htmlspecialchars(CreateURL( ($user->perms('is_admin')) ? 'edituser' : 'user', $uid), ENT_QUOTES, 'utf-8').'">'
-                           . htmlspecialchars($rname, ENT_QUOTES, 'utf-8').' ('
-                           . htmlspecialchars($uname, ENT_QUOTES, 'utf-8').')</a>';
+        $cache[$uid] = '<a href="'.Filters::noXSS(CreateURL('user', $uid)).'">'
+                           . Filters::noXSS($rname).' ('
+                           . Filters::noXSS($uname).')</a>';
     } elseif (empty($cache[$uid])) {
         $cache[$uid] = L('anonymous');
     }
@@ -291,8 +291,8 @@ function join_attrs($attr = null) {
     if (is_array($attr) && count($attr)) {
         $arr = array();
         foreach ($attr as $key=>$val) {
-            $arr[] = htmlspecialchars($key, ENT_QUOTES, 'utf-8') . '="'.
-                     htmlspecialchars($val, ENT_QUOTES, 'utf-8').'"';
+            $arr[] = Filters::noXSS($key) . '="'.
+                     Filters::noXSS($val).'"';
         }
         return ' '.join(' ', $arr);
     }
@@ -397,7 +397,7 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
         }
         $label = htmlspecialchars($label, ENT_QUOTES, 'utf-8');
         $value = $labelIsValue ? $label
-                               : htmlspecialchars($value, ENT_QUOTES, 'utf-8');
+                               : Filters::noXSS($value);
 
         if ($value === $remove) {
             continue;
@@ -452,8 +452,8 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
             $selectedones[$value] = $label;
             continue;
         }
-        $label = htmlspecialchars($label, ENT_QUOTES, 'utf-8');
-        $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
+        $label = Filters::noXSS($label);
+        $value = Filters::noXSS($value);
 
         $opt1 .= sprintf('<option title="%2$s" value="%1$s">%2$s</option>', $value, $label);
     }
@@ -463,8 +463,8 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
         if (!isset($selectedones[$value])) {
             continue;
         }
-        $label = htmlspecialchars($selectedones[$value], ENT_QUOTES, 'utf-8');
-        $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
+        $label = Filters::noXSS($selectedones[$value]);
+        $value = Filters::noXSS($value);
 
         $opt2 .= sprintf('<option title="%2$s" value="%1$s">%2$s</option>', $value, $label);
     }
@@ -474,11 +474,11 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
 // {{{ Checkboxes
 function tpl_checkbox($name, $checked = false, $id = null, $value = 1, $attr = null, $type = 'checkbox')
 {
-    $name  = htmlspecialchars($name,  ENT_QUOTES, 'utf-8');
-    $value = htmlspecialchars($value, ENT_QUOTES, 'utf-8');
+    $name  = Filters::noXSS($name);
+    $value = Filters::noXSS($value);
     $html  = '<input type="' . $type . '" name="'.$name.'" value="'.$value.'" ';
     if (is_string($id)) {
-        $html .= 'id="'.htmlspecialchars($id, ENT_QUOTES, 'utf-8').'" ';
+        $html .= 'id="'.Filters::noXSS($id).'" ';
     }
     if ($checked == true) {
         $html .= 'checked="checked" ';
@@ -492,10 +492,10 @@ function tpl_img($src, $alt)
     global $baseurl;
     if ($src && is_file(BASEDIR .'/'.$src)) {
         return '<img src="'.$baseurl
-            .htmlspecialchars($src, ENT_QUOTES,'utf-8').'" alt="'
-            .htmlspecialchars($alt, ENT_QUOTES,'utf-8').'" />';
+            .Filters::noXSS($src).'" alt="'
+            .Filters::noXSS($alt).'" />';
     }
-    return htmlspecialchars($alt, ENT_QUOTES,'utf-8');
+    return Filters::noXSS($alt);
 } // }}}
 // {{{ Text formatting
 //format has been already checked in constants.inc.php
@@ -539,7 +539,7 @@ class TextFormatter
             return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'render'),
                                   $text, $onyfs, $type, $id, $instructions);
         } else {
-            $text = nl2br(htmlspecialchars($text, ENT_QUOTES, 'utf-8'));
+            $text = nl2br(Filters::noXSS($text));
 
             // Change URLs into hyperlinks
             if (!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
@@ -558,7 +558,7 @@ class TextFormatter
                                   $name, $rows, $cols, $attrs, $content);
         }
 
-        $name = htmlspecialchars($name, ENT_QUOTES, 'utf-8');
+        $name = Filters::noXSS($name);
         $rows = intval($rows);
         $cols = intval($cols);
 
@@ -568,7 +568,7 @@ class TextFormatter
         }
         $return .= '>';
         if (is_string($content) && strlen($content)) {
-            $return .= htmlspecialchars($content, ENT_QUOTES, 'utf-8');
+            $return .= Filters::noXSS($content);
         }
         $return .= '</textarea>';
         return $return;
@@ -619,13 +619,13 @@ function tpl_draw_perms($perms)
     // FIXME: html belongs in a template, not in the template class
     $html = '<table border="1" onmouseover="perms.hide()" onmouseout="perms.hide()">';
     $html .= '<thead><tr><th colspan="2">';
-    $html .= htmlspecialchars(L('permissionsforproject').$proj->prefs['project_title'], ENT_QUOTES, 'utf-8');
+    $html .= Filters::noXSS(L('permissionsforproject').$proj->prefs['project_title']);
     $html .= '</th></tr></thead><tbody>';
 
     foreach ($perms[$proj->id] as $key => $val) {
         if (!is_numeric($key) && !isset($proj->prefs[$key]) &&
             !in_array($key, array('project_id', 'group_open', 'record_id', 'project_group', 'anon_view_tasks'))) {
-            $display_key = htmlspecialchars(str_replace( '_', ' ', $key), ENT_QUOTES, 'utf-8');
+            $display_key = Filters::noXSS(str_replace( '_', ' ', $key));
             $html .= '<tr><th>' . $display_key . '</th>';
             $html .= $yesno[ ($val || $perms[0]['is_admin']) ].'</tr>';
         }

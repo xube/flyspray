@@ -7,7 +7,7 @@
 <tr>
   <td>{formatDate($note['last_updated'])}</td>
   <td>
-    <a href="{CreateUrl('myprofile', 'notes')}?note_id={$note['note_id']}">
+    <a href="{CreateUrl('myprofile', 'notes', null, array('note_id' => $note['note_id']))}">
       <?php if ($note['message_subject'] == ''): ?>
       {L('nosubject')}
       <?php else: ?>
@@ -15,9 +15,9 @@
       <?php endif; ?>
     </a>
   </td>
-  <td><a href="{CreateUrl('myprofile', 'notes')}?note_id={$note['note_id']}">View</a>
-      <a href="{CreateUrl('myprofile', 'notes')}?note_id={$note['note_id']}&amp;edit=1">Edit</a>
-      <a href="{CreateUrl('myprofile', 'notes')}?action=deletenote&amp;note_id={$note['note_id']}"
+  <td><a href="{CreateUrl('myprofile', 'notes', null, array('note_id' => $note['note_id']))}">View</a>
+      <a href="{CreateUrl('myprofile', 'notes', null, array('note_id' => $note['note_id'], 'edit' => 1))}">Edit</a>
+      <a href="{CreateUrl('myprofile', 'notes', null, array('note_id' => $note['note_id'], 'action' => 'deletenote'))}"
          onclick="return confirm('{L('confirmdeletenote')}');">{L('delete')}</a></td>
 </tr>
 <?php endforeach; ?>
@@ -39,7 +39,7 @@
 {!TextFormatter::render($show_note['message_body'], false, 'note', $show_note['note_id'], $show_note['content'])}
 </div>
 <?php else: ?>
-<form method="post" action="{CreateUrl('myprofile', 'notes')}<?php if (Get::val('edit')): ?>?note_id={$show_note['note_id']}<?php endif; ?>">
+<form method="post" action="{CreateUrl('myprofile', 'notes')}">
 <div>
   <label for="message_subject">{L('notesubject')}</label>
   <input id="message_subject" size="50" type="text" name="message_subject" class="text" value="{(isset($show_note) ? $show_note['message_subject'] : Post::val('message_subject'))}" />

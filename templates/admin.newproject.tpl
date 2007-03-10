@@ -4,7 +4,7 @@
     <legend>{L('newproject')}</legend>
     <form action="{CreateURL('admin', 'newproject')}" method="post">
       <div>
-        <input type="hidden" name="action" value="admin.newproject" />
+        <input type="hidden" name="action" value="newproject" />
         <input type="hidden" name="area" value="newproject" />
       </div>
       <table class="box">
@@ -43,7 +43,7 @@
         </tr>
         <tr>
           <td><label for="othersview">{L('othersview')}</label></td>
-          <td>{!tpl_checkbox('others_view', Post::val('others_view', Post::val('action') != 'admin.newproject'), 'othersview')}</td>
+          <td>{!tpl_checkbox('others_view', Post::val('others_view', Post::val('action') != 'newproject'), 'othersview')}</td>
         </tr>
         <tr>
           <td><label for="anonopen">{L('allowanonopentask')}</label></td>

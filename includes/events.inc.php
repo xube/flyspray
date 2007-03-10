@@ -14,7 +14,7 @@ function get_events($task_id, $where = '', $sort = 'ASC')
                       lr.item_name AS resolution_name,
                       c.date_added AS c_date_added,
                       c.user_id AS c_user_id,
-                      att.orig_name, att.file_desc,
+                      att.orig_name,
                       lfn.item_name AS new_value_l,
                       lfn.item_name AS old_value_l,
                       lcfn.category_name AS new_value_c,
@@ -123,7 +123,7 @@ function event_description($history) {
             $return .= ')';
             break;
     case '4':      //Comment added
-            $return .= '<a href="' . htmlspecialchars(CreateUrl('details', $history['task_id']), ENT_QUOTES, 'utf-8') . '#comment'.$history['new_value'].'">' . eL('commentadded') . '</a>';
+            $return .= '<a href="' . Filters::noXSS(CreateUrl('details', $history['task_id'])) . '#comment'.$history['new_value'].'">' . eL('commentadded') . '</a>';
             break;
     case '5':      //Comment edited
             $return .= "<a href=\"javascript:getHistory('{$history['task_id']}', '$baseurl', 'history', '{$history['history_id']}');\">".eL('commentedited')."</a>";
@@ -149,9 +149,6 @@ function event_description($history) {
             $return .= eL('attachmentadded');
             if ($history['orig_name']) {
                  $return .= ": <a href=\"{$baseurl}?getfile=" . intval($new_value) . '">' . "{$history['orig_name']}</a>";
-                 if ($history['file_desc'] != '') {
-                      $return .= " ({$history['file_desc']})";
-                 }
             }
             break;
     case '8':    //Attachment deleted

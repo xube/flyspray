@@ -74,14 +74,25 @@ define('LIST_BASIC',              1);
 define('LIST_VERSION',            2);
 define('LIST_CATEGORY',           3);
 
+// Do modes
+define('MENU_GLOBAL',             1);
+define('MENU_PROJECT',            2);
+
+define('ERROR_INPUT',             6);
+define('ERROR_DB',                5);
+define('ERROR_PERMS',             4);
+define('ERROR_RECOVER',           3);
+define('SUBMIT_OK',               2);
+define('NO_SUBMIT',               1);
+
 // Function parameters
-define('REINDEX', true);
-define('GET_CONTENTS', true);
-define('LOCK_FIELD', true);
-define('USE_DEFAULT', true);
-define('ADODB_AUTOQUOTE', true);
+define('REINDEX',              true);
+define('GET_CONTENTS',         true);
+define('LOCK_FIELD',           true);
+define('USE_DEFAULT',          true);
+define('ADODB_AUTOQUOTE',      true);
 
 
 // developers or advanced users only
-//define('DEBUG_SQL',true);
+//define('DEBUG_SQL',          true);
 ?>

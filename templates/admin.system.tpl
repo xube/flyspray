@@ -14,7 +14,7 @@
     </tr>
     <tr>
       <th>{L('fsversion')} ({L('files')} / {L('database')})</th>
-      <td>{$fs->version} / {$db_version}</td>
+      <td>{$fs->version} / {$fs->prefs['fs_ver']}</td>
     </tr>
     <tr>
       <th colspan="2">{L('fileaccess')}</th>

@@ -46,7 +46,7 @@
   <fieldset><legend>{L('addreminder')}</legend>
   <form action="{CreateUrl('details', $task['task_id'])}#remind" method="post" id="formaddreminder">
     <div>
-      <input type="hidden" name="action" value="details.addreminder" />
+      <input type="hidden" name="action" value="addreminder" />
       <input type="hidden" name="task_id" value="{$task['task_id']}" />
 
         <label class="default multisel" for="to_user_id">{L('remindthisuser')}</label>

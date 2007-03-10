@@ -7,7 +7,7 @@
 			name="item_summary" size="80" maxlength="100"
 			value="{Post::val('item_summary', $task['item_summary'])}" />
 		</h2>
-		<input type="hidden" name="action" value="details.update" />
+		<input type="hidden" name="action" value="edit_task" />
         <input type="hidden" name="edit" value="1" />
 		<input type="hidden" name="task_id" value="{$task['task_id']}" />
 		<input type="hidden" name="edit_start_time" value="{Post::val('edit_start_time', time())}" />

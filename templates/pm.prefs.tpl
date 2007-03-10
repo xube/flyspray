@@ -204,7 +204,7 @@
     </div>
 
     <div class="tbuttons">
-      <input type="hidden" name="action" value="pm.updateproject" />
+      <input type="hidden" name="action" value="updateproject" />
       <input type="hidden" name="project_id" value="{$proj->id}" />
       <button type="submit">{L('saveoptions')}</button>
 

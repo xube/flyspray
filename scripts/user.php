@@ -9,27 +9,37 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-$id = Flyspray::username_to_id(Get::val('id', Get::val('uid')));
+class FlysprayDoUser extends FlysprayDo
+{
+    var $user = null;
 
-$theuser = new User($id);
-if ($theuser->isAnon()) {
-    Flyspray::show_error(19);
+    function is_accessible()
+    {
+        $id = Flyspray::username_to_id(Get::val('id', Get::val('uid')));
+        $this->user = new User($id);
+        return !$this->user->isAnon();
+    }
+
+    function _show()
+    {
+        global $db, $page, $fs;
+
+        // Some possibly interesting information about the user
+        $sql = $db->GetOne('SELECT count(*) FROM {comments} WHERE user_id = ?', array($this->user->id));
+        $page->assign('comments', $sql);
+
+        $sql = $db->GetOne('SELECT count(*) FROM {tasks} WHERE opened_by = ?', array($this->user->id));
+        $page->assign('tasks', $sql);
+
+        $sql = $db->GetOne('SELECT count(*) FROM {assigned} WHERE user_id = ?', array($this->user->id));
+        $page->assign('groups', Flyspray::listallGroups($this->user->id));
+        $page->assign('assigned', $sql);
+
+        $page->assign('theuser', $this->user);
+
+        $page->setTitle($fs->prefs['page_title'] . L('viewprofile'));
+        $page->pushTpl('profile.tpl');
+    }
 }
-
-// Some possibly interesting information about the user
-$sql = $db->GetOne('SELECT count(*) FROM {comments} WHERE user_id = ?', array($theuser->id));
-$page->assign('comments', $sql);
-
-$sql = $db->GetOne('SELECT count(*) FROM {tasks} WHERE opened_by = ?', array($theuser->id));
-$page->assign('tasks', $sql);
-
-$sql = $db->GetOne('SELECT count(*) FROM {assigned} WHERE user_id = ?', array($theuser->id));
-$page->assign('groups', Flyspray::listallGroups($theuser->id));
-$page->assign('assigned', $sql);
-
-$page->assign('theuser', $theuser);
-
-$page->setTitle($fs->prefs['page_title'] . L('viewprofile'));
-$page->pushTpl('profile.tpl');
 
 ?>
