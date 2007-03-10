@@ -909,6 +909,11 @@ Regards,',
 'listsupdated'            => 'Lists updated successfully!',
 'taskalreadyclosed'       => 'Task is already closed!',
 'notedoesnotexist'        => 'The selected note does not exist!',
+'errorocurred'            => 'Error occured',
+'inputerror'              => 'An input error occured. You passed invalid data to Flyspray, so that it cannot proceed. If you are sure
+                              that you passed valid data, consider this as bug.',
+'permserror'              => 'You have insufficient permissions to view this page or perform this action.',
+'dberror'                 => 'A database error occured. For details check the information below.',
 );
 
 ?>

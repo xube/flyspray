@@ -1,7 +1,16 @@
 <fieldset>
-  <legend>Error</legend>
+  <legend>{L('errorocurred')}</legend>
 
-  <div>An error occured!</div>
+  <p>
+  <?php if ($type == ERROR_INPUT): ?>
+  {L('inputerror')}
+  <?php elseif ($type == ERROR_PERMS): ?>
+  {L('permserror')}
+  <?php elseif ($type == ERROR_DB): ?>
+  {L('dberror')}
+  <?php endif; ?>
+  </p>
+
   <?php if ($message): ?>
   <p>{$message}</p>
   <?php endif; ?>
