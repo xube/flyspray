@@ -56,11 +56,11 @@ class Field
                 }
                 $html .= Filters::noXSS($task['f' . $this->id . '_name']);
                 break;
-            
+
             case FIELD_DATE:
                 $html .= formatDate($task['f' . $this->id]);
                 break;
-            
+
             case FIELD_TEXT:
                 $html .= Filters::noXSS($task['f' . $this->id]);
                 break;
@@ -99,23 +99,23 @@ class Field
                 if (!$this->prefs['list_id']) {
                     return '';
                 }
-                
+
                 $html .= '<select id="f' . $this->id . '" name="field' . $this->id . (isset($attrs['multiple']) ? '[]' : '') . '" ' . join_attrs($attrs);
                 $html .= tpl_disableif($lock) . '>';
                 $html .= tpl_options(array_merge($add_options, $proj->get_list($this->prefs, $task['f' . $this->id])),
                                      Req::val('field' . $this->id, $task['f' . $this->id]));
                 $html .= '</select>';
                 break;
-            
+
             case FIELD_DATE:
                 $attrs = array();
                 if ($lock) {
                     $attrs = array('readonly' => 'readonly');
                 }
-                
+
                 $html .= tpl_datepicker('field' . $this->id, '', Req::val('field' . $this->id, $task['f' . $this->id]), $attrs);
                 break;
-                
+
             case FIELD_TEXT:
                 $html .= '<input type="text" class="text" id="field' . $this->id . '" name="field' . $this->id . '" value="' .
                           Filters::noXSS($task['f' . $this->id]) . '" />';
@@ -123,6 +123,49 @@ class Field
         }
 
         return $html;
+    }
+
+    /**
+     * Returns a correct value for the field based on user input
+     * @access public
+     * @param string $input
+     * @return string
+     */
+    function read($input)
+    {
+        global $user, $db;
+
+        switch ($this->prefs['field_type'])
+        {
+            case FIELD_DATE:
+                $value = Flyspray::strtotime($input);
+                break;
+
+            case FIELD_TEXT:
+                $value = (string) $input;
+                break;
+
+            case FIELD_LIST:
+                if ($this->prefs['list_type'] == LIST_CATEGORY) {
+                    $check = $db->GetOne('SELECT count(*)
+                                            FROM {list_category}
+                                           WHERE list_id = ? AND category_id = ?',
+                                           array($this->prefs['list_id'], $input));
+                } else {
+                    $check = $db->GetOne('SELECT count(*)
+                                            FROM {list_items}
+                                           WHERE list_id = ? AND list_item_id = ?',
+                                           array($this->prefs['list_id'], $input));
+                }
+                $value = ($check) ? $input : 0;
+                break;
+        }
+
+        if (!$value || $this->prefs['force_default'] && !$user->perms('modify_all_tasks')) {
+            $value = $this->prefs['default_value'];
+        }
+
+        return $value;
     }
 }
 ?>

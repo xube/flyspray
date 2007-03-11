@@ -55,29 +55,22 @@ if (Get::val('getfile')) {
     list($proj_id, $orig_name, $file_name, $file_type) = $task;
 
     // Check if file exists, and user permission to access it!
-    if (!is_file(BASEDIR . "/attachments/$file_name")) {
+    if (!is_file(BASEDIR . "/attachments/$file_name") || !$user->can_view_task($task)) {
         header('HTTP/1.0 404 Not Found');
-        echo 'File does not exist anymore.';
+        echo 'File does not exist.';
         exit();
     }
 
-    if ($user->can_view_task($task))
-    {
-        output_reset_rewrite_vars();
-        $path = BASEDIR . "/attachments/$file_name";
+    output_reset_rewrite_vars();
+    $path = BASEDIR . "/attachments/$file_name";
 
-        header('Pragma: public');
-        header("Content-type: $file_type");
-        header('Content-Disposition: filename="'.$orig_name.'"');
-        header('Content-transfer-encoding: binary');
-        header('Content-length: ' . filesize($path));
+    header('Pragma: public');
+    header("Content-type: $file_type");
+    header('Content-Disposition: filename="'.$orig_name.'"');
+    header('Content-transfer-encoding: binary');
+    header('Content-length: ' . filesize($path));
 
-        readfile($path);
-        exit();
-    }
-    else {
-        Flyspray::show_error(1);
-    }
+    readfile($path);
     exit;
 }
 
@@ -113,15 +106,10 @@ if ($show_task = Get::val('show_task')) {
     }
 }
 
-if (Flyspray::requestDuplicated()) {
-    // Check that this page isn't being submitted twice
-    Flyspray::show_error(3);
-}
-
 if ($proj->id && $user->perms('manage_project')) {
     // Find out if there are any PM requests wanting attention
     $sql = $db->Execute(
-            "SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = '0'",
+            'SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = 0',
             array($proj->id));
     list($count) = $sql->FetchRow();
 
@@ -139,18 +127,20 @@ if ($user->isAnon() && !$fs->prefs['user_notify']) {
 
 // default title
 $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title']);
+$page->setTheme($proj->prefs['theme_style']);
 
 $page->assign('do', $do);
 $page->pushTpl('header.tpl');
+
+if (Flyspray::requestDuplicated()) {
+    // Check that this page isn't being submitted twice
+    FlysprayDo::error(array(ERROR_INPUT, L('error3')));
+}
 
 $class = 'FlysprayDo' . $do;
 $mode = new $class;
 $mode->show(Req::val('area'));
 
-$page->pushTpl('footer.tpl');
-$page->setTheme($proj->prefs['theme_style']);
-$page->render();
-
-unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
+$page->finish();
 
 ?>

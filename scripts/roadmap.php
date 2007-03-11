@@ -22,7 +22,7 @@ class FlysprayDoRoadmap extends FlysprayDo
         return (bool) $proj->id;
     }
 
-    function _show()
+    function show()
     {
         global $page, $db, $fs, $proj;
 

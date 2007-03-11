@@ -130,15 +130,9 @@ class FlysprayDoDetails extends FlysprayDo
                       Post::val('percent_complete'), $task['task_id']));
         // Now the custom fields
         foreach ($proj->fields as $field) {
-            if ($field->prefs['force_default'] && !$user->can_edit_task($task)) {
-                continue; // make sure that a user who is only correcting his task does not change certain fields
-            }
-            $field_value = Post::val('field' . $field->id);
-            if ($field->prefs['field_type'] == FIELD_DATE) {
-                $field_value = Flyspray::strtotime($field_value);
-            }
+            $field_value = $field->read(Post::val('field' . $field->id));
             $db->Replace('{field_values}',
-                         array('field_id'=> $field->id, 'task_id'=> $task['task_id'], 'field_value' => "'" . $field_value . "'"),
+                         array('field_id'=> $field->id, 'task_id'=> $task['task_id'], 'field_value' => $field_value),
                          array('field_id','task_id'), ADODB_AUTOQUOTE);
         }
 
@@ -493,7 +487,7 @@ class FlysprayDoDetails extends FlysprayDo
         return array($type, $msg, $url);
 	}
 
-    function _show()
+    function show()
     {
         global $page, $user, $fs, $proj, $db;
 

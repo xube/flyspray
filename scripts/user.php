@@ -20,7 +20,7 @@ class FlysprayDoUser extends FlysprayDo
         return !$this->user->isAnon();
     }
 
-    function _show()
+    function show()
     {
         global $db, $page, $fs;
 

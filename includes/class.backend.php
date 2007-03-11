@@ -367,7 +367,7 @@ class Backend
                 continue;
             }
 
-            
+
             $fname = substr($task_id . '_' . md5(uniqid(mt_rand(), true)), 0, 30);
             $path = BASEDIR .'/attachments/'. $fname ;
 
@@ -733,8 +733,7 @@ class Backend
         foreach ($proj->fields as $field) {
             if ($field->prefs['value_required'] && !array_get($args, 'field' . $field->id)
                 && !($field->prefs['force_default'] && !$user->perms('modify_all_tasks'))) {
-                Flyspray::show_error(L('missingrequired') . ' (' . $field->prefs['field_name'] . ')');
-                return 0;
+                return array(ERROR_RECOVER, L('missingrequired') . ' (' . $field->prefs['field_name'] . ')');
             }
         }
 
@@ -779,16 +778,7 @@ class Backend
 
         // Now the custom fields
         foreach ($proj->fields as $field) {
-            if ($field->prefs['field_type'] == FIELD_DATE) {
-                if ($value = array_get($args, 'field' . $field->id, 0)) {
-                    $value = Flyspray::strtotime($value);
-                }
-            } else {
-                $value = array_get($args, 'field' . $field->id, 0);
-            }
-            if ($field->prefs['force_default'] && !$user->perms('modify_all_tasks')) {
-                $value = $field->prefs['default_value'];
-            }
+            $value = $field->read(array_get($args, 'field' . $field->id, 0));
             $db->Execute('INSERT INTO {field_values} (task_id, field_id, field_value)
                              VALUES (?, ?, ?)', array($task_id, $field->id, $value));
         }

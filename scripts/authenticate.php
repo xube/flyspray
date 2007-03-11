@@ -94,7 +94,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
         }
     }
 
-	function _show($area = null)
+	function show($area = null)
 	{
         // we won't show anything
 		return;

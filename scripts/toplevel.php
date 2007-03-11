@@ -16,7 +16,7 @@ class FlysprayDoToplevel extends FlysprayDo
         return true;
     }
 
-    function _show()
+    function show()
     {
         global $page, $user, $proj, $db, $fs;
 

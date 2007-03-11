@@ -33,7 +33,7 @@ class FlysprayDoDepends extends FlysprayDo
                 && $user->can_view_task($task_details);
     }
 
-    function _show()
+    function show()
     {
         global $user, $page, $fs, $conf, $db, $proj, $baseurl;
 

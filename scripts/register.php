@@ -147,7 +147,7 @@ class FlysprayDoRegister extends FlysprayDo
         return $this->handle('action', Req::val('action'));
     }
 
-    function _show()
+    function show()
     {
         global $page, $db, $user, $fs;
 
@@ -163,7 +163,7 @@ class FlysprayDoRegister extends FlysprayDo
                                     array(Get::val('magic_url')));
 
                 if (!$sql) {
-                    Flyspray::show_error(18);
+                    FlysprayDo::error(array(ERROR_INPUT, L('error18')));
                 }
 
                 $page->pushTpl('register.magic.tpl');

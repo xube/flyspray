@@ -48,7 +48,7 @@
       <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>
       <?php endif; ?>
-      <input type="hidden" name="action" value="details.addcomment" />
+      <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{$task['task_id']}" />
       <?php if ($user->perms('create_attachments')): ?>
       <div id="uploadfilebox">

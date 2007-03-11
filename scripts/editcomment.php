@@ -28,7 +28,7 @@ class FlysprayDoEditcomment extends FlysprayDo
         return $user->can_edit_comment($this->comment);
     }
 
-    function _show()
+    function show()
     {
         global $page;
         $page->assign('comment', $this->comment);

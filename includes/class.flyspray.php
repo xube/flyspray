@@ -873,35 +873,6 @@ class Flyspray
     }
 
     /**
-     * Shows an error message
-     * @param string $error_message if it is an integer, an error message from the language file will be loaded
-     * @param bool $die enable/disable redirection (if outside the database modification script)
-     * @param string $advanced_info append a string to the error message
-     * @param string $url alternate redirection
-     * @access public static
-     * @return void
-     * @version 1.0
-     * @notes if a success and error happens on the same page, a mixed error message will be shown
-     */
-    function show_error($error_message, $die = true, $advanced_info = null, $url = null)
-    {
-        global $modes, $baseurl;
-
-        if (!is_int($error_message)) {
-            // in modify.inc.php
-            $_SESSION['ERROR'] = $error_message;
-        } else {
-            $_SESSION['ERROR'] = L('error#') . $error_message . ': ' . L('error' . $error_message);
-            if (!is_null($advanced_info)) {
-                $_SESSION['ERROR'] .= ' ' . $advanced_info;
-            }
-            if ($die) {
-                Flyspray::Redirect( (is_null($url) ? $baseurl : $url) );
-            }
-        }
-    }
-
-    /**
      * Returns the ID of a user with $name
      * @param string $name
      * @access public static

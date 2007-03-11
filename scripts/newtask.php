@@ -31,8 +31,9 @@ class FlysprayDoNewtask extends FlysprayDo
                 $url = '';
             }
             return array(SUBMIT_OK, L('newtaskadded'), $url);
+        } else {
+            return array($task_id, $token); // create_task will out error info there
         }
-        return array(ERROR_DB);
     }
 
     function is_accessible()
@@ -48,7 +49,7 @@ class FlysprayDoNewtask extends FlysprayDo
         return $this->handle('action', Post::val('action'));
     }
 
-    function _show()
+    function show()
     {
         global $page, $fs, $proj;
 

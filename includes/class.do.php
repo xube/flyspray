@@ -7,15 +7,8 @@ class FlysprayDo
 
     function show($area = null)
     {
-        list($type,) = $this->result;
-        if ($type < ERROR_PERMS) {
-            $this->_show($area);
-        }
+        return;
     }
-
-	function _show($area = null) {
-		return;
-	}
 
 	function _onsubmit($action = null) {
 		return array(NO_SUBMIT);
@@ -75,7 +68,6 @@ class FlysprayDo
 
 	function FlysprayDo()
 	{
-        global $page;
 		// check minimum permissions
 		if (!$this->is_accessible()) {
 			$this->result = array(ERROR_PERMS);
@@ -84,7 +76,14 @@ class FlysprayDo
 			$this->result = $this->_onsubmit();
 		}
 
-        list($type, $msg, $url) = array_pad($this->result, 3, '');
+        FlysprayDo::error($this->result);
+    }
+
+    function error($error)
+    {
+        global $page;
+
+        list($type, $msg, $url) = array_pad($error, 3, '');
 		switch ($type)
 		{
 			case ERROR_PERMS:
@@ -93,7 +92,8 @@ class FlysprayDo
                 $page->assign('type', $type);
                 $page->assign('message', $msg);
                 $page->pushTpl('error.tpl');
-				break;
+                $page->finish();
+                exit;
 			case ERROR_RECOVER:
                 if ($msg) {
                     $_SESSION['ERROR'] = $msg;
@@ -109,7 +109,6 @@ class FlysprayDo
 				break;
 		}
 	}
-
 }
 
 ?>

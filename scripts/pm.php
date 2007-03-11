@@ -107,7 +107,7 @@ class FlysprayDoPm extends FlysprayDo
     // End of action_ functions
     // **********************
 
-	function _show($area = null)
+	function show($area = null)
 	{
 		global $page, $fs, $db, $proj;
 

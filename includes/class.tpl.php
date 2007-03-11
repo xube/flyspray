@@ -151,6 +151,14 @@ class FSTpl extends Tpl
         return '';
     }
 
+    function finish()
+    {
+        $this->pushTpl('footer.tpl');
+        $this->render();
+
+        unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
+    }
+
 }
 
 // {{{ costful templating functions, TODO: optimize them
@@ -715,8 +723,8 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'myprofile':     $return = $url . '&area=' . $arg1; break;
             case 'edittask':  $return = $url . '&task_id=' . $arg1 . '&edit=yep'; break;
             case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
-            case 'user':      $return = $baseurl . '?do=user&area=users&id=' . $arg1; break;
-            case 'edituser':  $return = $baseurl . '?do=admin&area=users&user_id=' . $arg1; break;
+            case 'user':      $return = $baseurl . '?do=user&id=' . $arg1; break;
+            case 'edituser':  $return = $baseurl . '?do=admin&area=user&user_id=' . $arg1; break;
             case 'logout':    $return = $baseurl . '?do=authenticate&logout=1'; break;
 
             case 'details':

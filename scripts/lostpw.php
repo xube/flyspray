@@ -33,7 +33,7 @@ class FlysprayDoLostpw extends FlysprayDo
         }
     }
 
-    function _show()
+    function show()
     {
         global $page, $fs;
 

@@ -15,7 +15,7 @@ class FlysprayDoExport extends FlysprayDo
         return FlysprayDoIndex::is_accessible();
     }
 
-    function _show()
+    function show()
     {
         global $proj, $page, $fs;
         // Get the visibility state of all columns

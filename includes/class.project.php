@@ -21,10 +21,10 @@ class Project
 
         // Get custom fields
         $sql = $db->Execute('SELECT f.*, l.list_type
-                            FROM {fields} f
-                       LEFT JOIN {lists} l ON f.list_id = l.list_id
-                           WHERE f.project_id IN (0, ?) ORDER BY field_name',
-                          array($id));
+                              FROM {fields} f
+                         LEFT JOIN {lists} l ON f.list_id = l.list_id
+                             WHERE f.project_id IN (0, ?) ORDER BY field_name',
+                            array($id));
         while ($field = $sql->FetchRow()) {
             $this->fields[] = new Field($field);
         }

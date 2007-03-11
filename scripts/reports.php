@@ -19,7 +19,7 @@ class FlysprayDoReports extends FlysprayDo
         return $user->perms('view_reports');
     }
 
-    function _show()
+    function show()
     {
         global $page, $db, $user, $fs, $proj;
 

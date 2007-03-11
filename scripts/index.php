@@ -31,7 +31,7 @@ class FlysprayDoIndex extends FlysprayDo
         return FlysprayDoDetails::action_add_notification();
     }
 
-	function _show($area = null)
+	function show($area = null)
 	{
 		global $page, $fs, $db, $proj, $user, $conf;
 

@@ -50,7 +50,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
         $theuser = new User($id);
         if ($theuser->isAnon()) {
-            Flyspray::show_error(5);
+            FlysprayDo::error(array(ERROR_INPUT, L('error5')));
         }
         $page->assign('all_groups', Flyspray::listallGroups($theuser->id));
         $page->assign('groups', Flyspray::listGroups());
@@ -665,7 +665,7 @@ class FlysprayDoAdmin extends FlysprayDo
     // End of action_ functions
     // **********************
 
-	function _show($area = null)
+	function show($area = null)
 	{
 		global $page, $fs, $db, $proj;
 
