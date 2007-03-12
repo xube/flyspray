@@ -94,7 +94,9 @@ function event_description($history) {
                     $new_value = ($new_value) ? eL('private') : eL('public');
                     break;
                 case 'detailed_desc':
-                    $field = "<a href=\"javascript:getHistory('{$history['task_id']}', '$baseurl', 'history', '{$history['history_id']}');showTabById('history', true);\">" . eL('details') . '</a>';
+                    $field = sprintf("<a href=\"javascript:getHistory('%d', '%s', 'history', '%d');
+                                      showTabById('history', true);\">%s</a>", 
+                                    $history['task_id'], $baseurl, $history['history_id'], eL('details'));
                     if (!empty($details)) {
                         $details_previous = TextFormatter::render($old_value);
                         $details_new =  TextFormatter::render($new_value);
@@ -123,22 +125,32 @@ function event_description($history) {
             $return .= ')';
             break;
     case '4':      //Comment added
-            $return .= '<a href="' . Filters::noXSS(CreateUrl('details', $history['task_id'])) . '#comment'.$history['new_value'].'">' . eL('commentadded') . '</a>';
+            $return .= sprintf('<a href="%s#comment%d">%s</a>', 
+                                Filters::noXSS(CreateUrl('details', $history['task_id'])), 
+                                $history['new_value'], eL('commentadded'));
             break;
     case '5':      //Comment edited
-            $return .= "<a href=\"javascript:getHistory('{$history['task_id']}', '$baseurl', 'history', '{$history['history_id']}');\">".eL('commentedited')."</a>";
+
+            $return .= sprintf("<a href=\"javascript:getHistory('%d', '%s', 'history', '%d');\">%s</a>", 
+                                $history['task_id'], $baseurl, $history['history_id'], eL('commentedited'));
+
             if ($history['c_date_added']) {
-                 $return .= " (".eL('commentby').' ' . tpl_userlink($history['c_user_id']) . " - " . formatDate($history['c_date_added'], true) . ")";
+                 $return .= sprintf(' ("%s %s  - %s")', eL('commentby'), tpl_userlink($history['c_user_id']), formatDate($history['c_date_added'], true));
             }
+
+
             if ($details) {
                  $details_previous = TextFormatter::render($old_value);
                  $details_new      = TextFormatter::render($new_value);
             }
             break;
     case '6':     //Comment deleted
-            $return .= "<a href=\"javascript:getHistory('{$history['task_id']}', '$baseurl', 'history', '{$history['history_id']}');\">".eL('commentdeleted')."</a>";
-            if ($new_value != '' && $history['field_changed'] != '') {
-                 $return .= " (". eL('commentby'). ' ' . tpl_userlink($new_value) . " - " . formatDate($history['field_changed'], true) . ")";
+        
+            $return .= sprintf("<a href=\"javascript:getHistory('%d', '%s', 'history','%d');\">%s</a>", 
+                       $history['task_id'], $baseurl, $history['history_id'], eL('commentdeleted'));
+            
+            if (!empty($new_value)  && !empty($history['field_changed'])) {
+                $return .= sprintf('(%s %s - %s)', eL('commentby'), tpl_userlink($new_value), formatDate($history['field_changed'], true));
             }
             if (!empty($details)) {
                  $details_previous = TextFormatter::render($old_value);
@@ -148,7 +160,7 @@ function event_description($history) {
     case '7':    //Attachment added
             $return .= eL('attachmentadded');
             if ($history['orig_name']) {
-                 $return .= ": <a href=\"{$baseurl}?getfile=" . intval($new_value) . '">' . "{$history['orig_name']}</a>";
+                $return .= sprintf(': <a href="%s?getfile=%d">%s</a>', $baseurl, $new_value, $history['orig_name']);
             }
             break;
     case '8':    //Attachment deleted

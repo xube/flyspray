@@ -439,9 +439,12 @@ class Notifications
         if (!isset($notify_type_msg[$type]))  {
             $subject = L('notifyfromfs');
         } else if (isset($data['project']->prefs['notify_subject']) && $data['project']->prefs['notify_subject']) {
-            $subject = str_replace(array('%p','%s','%t', '%a'),
-                            array($data['project']->prefs['project_title'], $data['task']['item_summary'], $data['task_id'], $notify_type_msg[$type]),
-                            $data['project']->prefs['notify_subject']);
+
+            $subject = strtr($data['project']->prefs['notify_subject'], 
+                             array('%p'=> $data['project']->prefs['project_title'] ,
+                                   '%s'=> $data['task']['item_summary'],
+                                   '%t'=> $data['task_id'],
+                                   '%a'=> $notify_type_msg[$type]));
         } else {
             $subject = L('notifyfrom') . $data['project']->prefs['project_title'];
         }

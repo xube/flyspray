@@ -184,7 +184,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     }
 
     if (is_null($text)) {
-        $text = 'FS#'. (int) $task['task_id'] . ' - '. Filters::noXSS($summary);
+        $text = sprintf('FS#%d - %s', $task['task_id'], Filters::noXSS($summary));
     } elseif(is_string($text)) {
         $text = Filters::noXSS(utf8_substr($text, 0, 64));
     } else {
@@ -277,11 +277,10 @@ function tpl_userlink($uid)
     }
 
     if (isset($uname)) {
-        $cache[$uid] = '<a href="'.Filters::noXSS(CreateURL('user', $uid)).'">'
-                           . Filters::noXSS($rname).' ('
-                           . Filters::noXSS($uname).')</a>';
+        $args = array_map(array('Filters', 'noXSS'),array(CreateURL('user', $uid), $rname, $uname));
+        $cache[$uid] = vsprintf('<a href="%s">%s (%s)</a>', $args);
     } elseif (empty($cache[$uid])) {
-        $cache[$uid] = L('anonymous');
+        $cache[$uid] = eL('anonymous');
     }
 
     return $cache[$uid];
@@ -299,8 +298,7 @@ function join_attrs($attr = null) {
     if (is_array($attr) && count($attr)) {
         $arr = array();
         foreach ($attr as $key=>$val) {
-            $arr[] = Filters::noXSS($key) . '="'.
-                     Filters::noXSS($val).'"';
+            $arr[] = vsprintf('%s="%s"', array_map(array('Filters','noXSS'), array($key, $val)));
         }
         return ' '.join(' ', $arr);
     }
@@ -499,9 +497,8 @@ function tpl_img($src, $alt)
 {
     global $baseurl;
     if ($src && is_file(BASEDIR .'/'.$src)) {
-        return '<img src="'.$baseurl
-            .Filters::noXSS($src).'" alt="'
-            .Filters::noXSS($alt).'" />';
+        $args = array_map(array('Filters','noXSS'), array($baseurl . $src, $alt));
+        return vsprintf('<img src="%s" alt="%s"/>',$args);
     }
     return Filters::noXSS($alt);
 } // }}}

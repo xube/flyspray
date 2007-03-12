@@ -82,7 +82,11 @@ class FlysprayDo
     function error($error)
     {
         global $page;
-
+        
+        if(!is_array($error)) {
+            return;
+        }
+        
         list($type, $msg, $url) = array_pad($error, 3, '');
 		switch ($type)
 		{
