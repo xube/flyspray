@@ -95,6 +95,13 @@ if ($conf['general']['output_buffering'] == 'gzip' && extension_loaded('zlib'))
     ob_start();
 }
 
+// our own error handler, so that especially notices don't stay unnoticed
+if (version_compare(phpversion(), '5.0.0', '>=')) {
+    set_error_handler(array('FlysprayDo', 'error'), ini_get('error_reporting'));
+} else {
+    set_error_handler(array('FlysprayDo', 'error'));
+}
+
 $page = new FSTpl();
 
 if ($show_task = Get::val('show_task')) {

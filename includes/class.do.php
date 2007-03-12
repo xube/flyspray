@@ -123,6 +123,7 @@ class FlysprayDo
 			case ERROR_PERMS:
 			case ERROR_DB:
             case ERROR_INPUT:
+                @ob_clean(); // make sure that previous output is erased
                 $page->assign('type', $errno);
                 $page->assign('message', $errstr);
                 $page->pushTpl('error.tpl');
