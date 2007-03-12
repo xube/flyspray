@@ -28,6 +28,9 @@ require_once BASEDIR . '/includes/class.user.php';
 require_once BASEDIR . '/includes/class.tpl.php';
 require_once BASEDIR . '/includes/class.do.php';
 
+// our own error handler, so that especially notices don't stay unnoticed
+set_error_handler(array('FlysprayDo', 'error'));
+
 $db = NewDatabase($conf['database']);
 $fs = new Flyspray;
 

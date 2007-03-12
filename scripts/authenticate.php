@@ -94,12 +94,6 @@ class FlysprayDoAuthenticate extends FlysprayDo
         }
     }
 
-	function show($area = null)
-	{
-        // we won't show anything
-		return;
-	}
-
 	function _onsubmit()
 	{
         return $this->handle('action', $area = 'login');

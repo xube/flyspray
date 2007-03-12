@@ -95,12 +95,7 @@ function execute_upgrade_file($folder, $installed_version)
     new ConfUpdater(CONFIG_PATH, $upgrade_path);
 
     $upgrade_info = parse_ini_file($upgrade_path . '/upgrade.info', true);
-    // dev version upgrade?
-    if ($folder == Flyspray::base_version($installed_version)) {
-        $type = 'develupgrade';
-    } else {
-        $type = 'defaultupgrade';
-    }
+    $type = 'defaultupgrade';
 
     // global prefs update
     if (isset($upgrade_info['fsprefs'])) {
@@ -250,7 +245,7 @@ foreach ($checks as $check => $result) {
 }
 
 if (isset($upgrade_info['options'])) {
-    // piece of HTML which adds user input, quick and dirty*/
+    // piece of HTML which adds user input, quick and dirty
     $page->assign('upgrade_options', implode('', $upgrade_info['options']));
 }
 

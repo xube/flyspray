@@ -10,19 +10,16 @@
 8="flyspray-final.xml"
 9="add_data.php"
 
-[develupgrade]
-1="flyspray-final.xml"
-
 [options]
 
 1="<div><label><input name='replace_resolution' checked='checked' type='checkbox'/> Edit resolution list (strongly recommended for 0.9.8 to 0.9.9)</label></div>"
-   
+
 [fsprefs]
 fs_ver="0.9.7" ; doesn't matter which version
 jabber_server=""
 jabber_port="5222"
-jabber_username="" 
-jabber_password="" 
+jabber_username=""
+jabber_password=""
 anon_group="0"
 user_notify="1"
 admin_email="flyspray@example.com"
@@ -33,12 +30,12 @@ dateformat=""
 dateformat_extended=""
 anon_reg="1"
 page_title="Flyspray:: "
-notify_registration="0" 
+notify_registration="0"
 jabber_ssl="0"
 last_update_check="0"
 cache_feeds="1"
 global_theme="Bluey"
 visible_columns="id project tasktype severity summary status progress"
 smtp_server=""
-smtp_user="" 
-smtp_pass="" 
+smtp_user=""
+smtp_pass=""

@@ -8,9 +8,14 @@
   {L('permserror')}
   <?php elseif ($type == ERROR_DB): ?>
   {L('dberror')}
+  <?php elseif ($type == ERROR_INTERNAL): ?>
+  {L('internalerror')}
   <?php endif; ?>
   </p>
 
+  <?php if (isset($file)): ?>
+  <p>{L('location')}: {$line}@{$file}</p>
+  <?php endif; ?>
   <?php if ($message): ?>
   <p>{$message}</p>
   <?php endif; ?>

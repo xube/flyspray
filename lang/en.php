@@ -914,6 +914,8 @@ Regards,',
                               that you passed valid data, consider this as bug.',
 'permserror'              => 'You have insufficient permissions to view this page or perform this action.',
 'dberror'                 => 'A database error occured. For details check the information below.',
+'internalerror'           => 'An internal error occured. You can read the deails of the error below. The cause is either a bug or an improperly configured system.',
+'location'                => 'Location',
 );
 
 ?>

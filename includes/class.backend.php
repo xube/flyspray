@@ -367,16 +367,14 @@ class Backend
                 continue;
             }
 
-
-            $fname = substr($task_id . '_' . md5(uniqid(mt_rand(), true)), 0, 30);
+            $fname = $task_id . '_' . md5(uniqid(mt_rand(), true));
             $path = BASEDIR .'/attachments/'. $fname ;
 
             $tmp_name = $_FILES[$source]['tmp_name'][$key];
 
             // Then move the uploaded file and remove exe permissions
-            if(!@move_uploaded_file($tmp_name, $path)) {
-                //upload failed. continue
-                continue;
+            if (!move_uploaded_file($tmp_name, $path)) {
+                return false;
             }
 
             @chmod($path, 0644);

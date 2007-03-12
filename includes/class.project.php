@@ -123,7 +123,7 @@ class Project
         $field = array_merge($default, $field_prefs);
         $params =  array();
         $where = '';
-        $required = (!$field['value_required']) ? array(array(0 => 0, 1 => L('notspecified'))) : array();
+        $required = (!$field['value_required']) ? array(array(0 => '0', 1 => L('notspecified'))) : array();
 
         if ($field['list_type'] == LIST_CATEGORY) {
             return array_merge($required, $this->listCategories($field['list_id']));

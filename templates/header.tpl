@@ -45,9 +45,7 @@
     <?php endforeach; ?>
   </head>
   <body onload="perms = new Perms('permissions');<?php
-        if (isset($_SESSION['SUCCESS']) && isset($_SESSION['ERROR'])):
-        ?>window.setTimeout('Effect.Fade(\'mixedbar\', &lbrace;duration:.3&rbrace;)', 10000);<?php
-        elseif (isset($_SESSION['SUCCESS'])):
+        if (isset($_SESSION['SUCCESS'])):
         ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)', 8000);<?php
         elseif (isset($_SESSION['ERROR'])):
         ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)', 8000);<?php endif ?>">

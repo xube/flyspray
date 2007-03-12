@@ -79,7 +79,7 @@
     <field name="orig_name" type="C" size="100">
       <NOTNULL/>
     </field>
-    <field name="file_name" type="C" size="30">
+    <field name="file_name" type="C" size="60">
       <NOTNULL/>
     </field>
     <field name="file_type" type="C" size="50">

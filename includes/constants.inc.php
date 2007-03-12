@@ -78,6 +78,7 @@ define('LIST_CATEGORY',           3);
 define('MENU_GLOBAL',             1);
 define('MENU_PROJECT',            2);
 
+define('ERROR_INTERNAL',          7);
 define('ERROR_INPUT',             6);
 define('ERROR_DB',                5);
 define('ERROR_PERMS',             4);

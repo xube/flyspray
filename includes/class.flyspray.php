@@ -305,16 +305,16 @@ class Flyspray
             return false;
         }
 
-        $task = $db->Execute('  SELECT  t.*,
-                                      r.item_name AS resolution_name,
-                                      uo.real_name      AS opened_by_name,
-                                      ue.real_name      AS last_edited_by_name,
-                                      uc.real_name      AS closed_by_name
-                                FROM  {tasks}              t
-                           LEFT JOIN  {list_items}    r  ON t.resolution_reason = r.list_item_id
-                           LEFT JOIN  {users}              uo ON t.opened_by = uo.user_id
-                           LEFT JOIN  {users}              ue ON t.last_edited_by = ue.user_id
-                           LEFT JOIN  {users}              uc ON t.closed_by = uc.user_id
+        $task = $db->Execute('SELECT  t.*,
+                                      r.item_name   AS resolution_name,
+                                      uo.real_name  AS opened_by_name,
+                                      ue.real_name  AS last_edited_by_name,
+                                      uc.real_name  AS closed_by_name
+                                FROM  {tasks}       t
+                           LEFT JOIN  {list_items}  r  ON t.resolution_reason = r.list_item_id
+                           LEFT JOIN  {users}       uo ON t.opened_by = uo.user_id
+                           LEFT JOIN  {users}       ue ON t.last_edited_by = ue.user_id
+                           LEFT JOIN  {users}       uc ON t.closed_by = uc.user_id
                                WHERE  t.task_id = ?', array($task_id));
 
         if ($task = $task->FetchRow()) {
@@ -374,10 +374,10 @@ class Flyspray
      */
     function listThemes()
     {
-        if ($handle = opendir(dirname(dirname(__FILE__)) . '/themes/')) {
+        if ($handle = opendir(BASEDIR . '/themes/')) {
             $theme_array = array();
             while (false !== ($file = readdir($handle))) {
-                if ($file != '.' && $file != '..' && is_file("themes/$file/theme.css")) {
+                if ($file != '.' && $file != '..' && is_file(BASEDIR . "/themes/$file/theme.css")) {
                     $theme_array[] = $file;
                 }
             }

@@ -5,6 +5,19 @@ class FlysprayDo
     var $result = array();
     var $default_handler = null;
 
+	function FlysprayDo()
+	{
+		// check minimum permissions
+		if (!$this->is_accessible()) {
+			$this->result = array(ERROR_PERMS);
+		} else {
+			// check if data has been submitted and respond
+			$this->result = (array) $this->_onsubmit();
+		}
+
+        FlysprayDo::error($this->result);
+    }
+
     function show($area = null)
     {
         return;
@@ -19,7 +32,7 @@ class FlysprayDo
 	}
 
 	function menu_position() {
-		return array(MENU_GLOBAL, 1);
+		return array(MENU_GLOBAL, 1, 'Name');
 	}
 
 	/*
@@ -66,46 +79,63 @@ class FlysprayDo
         return array_pad( (array) $return, 3, '');
     }
 
-	function FlysprayDo()
-	{
-		// check minimum permissions
-		if (!$this->is_accessible()) {
-			$this->result = array(ERROR_PERMS);
-		} else {
-			// check if data has been submitted and respond
-			$this->result = $this->_onsubmit();
-		}
-
-        FlysprayDo::error($this->result);
-    }
-
-    function error($error)
+	/*
+	 * This function displays an error...nicely :)
+	 *
+	 * It will stop execution for all interal errors (PHP errors, warnings, notices)
+     * and ERROR_PERMS, ERROR_DB, ERROR_INPUT. For ERROR_RECOVER it will only display
+     * a failure bar at the bottom of the screen.
+	 *
+	 * @param mixed $errno this can either be array(ERROR_TYPE, opt message, opt url) or
+     *                     an error number when used as PHP error handler
+	 * @param string $errstr only used for PHP error handler
+     * @param string $errfile only used for PHP error handler
+     * @param integer $errline only used for PHP error handler
+	 */
+    function error($errno, $errstr = '', $errfile = '', $errline = 0)
     {
-        global $page;
-        
-        if(!is_array($error)) {
-            return;
+        global $db;
+
+        if (isset($db) && is_object($db)) {
+            $db->CompleteTrans(false); // if possible, undo database queries
         }
-        
-        list($type, $msg, $url) = array_pad($error, 3, '');
-		switch ($type)
+
+        $page = new FSTpl;
+        $page->pushTpl('header.tpl');
+        $page->assign('do', 'index');
+        $page->setTheme();
+
+        if (is_array($errno)) {
+            list($errno, $errstr, $url) = array_pad($errno, 3, '');
+        } else {
+            // ignore E_STRICT and @
+            if ($errno > E_ALL || !ini_get('error_reporting')) {
+                return;
+            }
+            $errno = ERROR_INTERNAL;
+        }
+
+		switch ($errno)
 		{
+            case ERROR_INTERNAL:
+                $page->assign('file', $errfile);
+                $page->assign('line', $errline);
 			case ERROR_PERMS:
 			case ERROR_DB:
             case ERROR_INPUT:
-                $page->assign('type', $type);
-                $page->assign('message', $msg);
+                $page->assign('type', $errno);
+                $page->assign('message', $errstr);
                 $page->pushTpl('error.tpl');
                 $page->finish();
                 exit;
 			case ERROR_RECOVER:
-                if ($msg) {
-                    $_SESSION['ERROR'] = $msg;
+                if ($errstr) {
+                    $_SESSION['ERROR'] = $errstr;
                 }
 				break;
 			case SUBMIT_OK:
-                if ($msg) {
-                    $_SESSION['SUCCESS'] = $msg;
+                if ($errstr) {
+                    $_SESSION['SUCCESS'] = $errstr;
                 }
                 if ($url) {
                     Flyspray::Redirect($url);

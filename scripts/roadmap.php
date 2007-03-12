@@ -10,16 +10,11 @@ if (!defined('IN_FS')) {
 
 class FlysprayDoRoadmap extends FlysprayDo
 {
-    function _onsubmit()
-    {
-        return;
-    }
-
     function is_accessible()
     {
-        global $proj;
+        global $proj, $user;
 
-        return (bool) $proj->id;
+        return (bool) $proj->id && $user->can_view_project($proj->id);
     }
 
     function show()

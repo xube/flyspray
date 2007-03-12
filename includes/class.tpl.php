@@ -31,7 +31,7 @@ class Tpl
         }
     }
 
-    function setTheme($theme)
+    function setTheme($theme = '')
     {
         // Check available themes
         $themes = Flyspray::listThemes();
@@ -401,9 +401,8 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
             $value = $label[0];
             $label = $label[1];
         }
-        $label = htmlspecialchars($label, ENT_QUOTES, 'utf-8');
-        $value = $labelIsValue ? $label
-                               : Filters::noXSS($value);
+        $label = Filters::noXSS($label);
+        $value = $labelIsValue ? $label : Filters::noXSS($value);
 
         if ($value === $remove) {
             continue;
