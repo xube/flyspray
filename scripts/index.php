@@ -107,7 +107,7 @@ class FlysprayDoIndex extends FlysprayDo
 
 // tpl function that  draws a cell {{{
 
-function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
+function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
     global $fs, $proj, $page;
 
     $indexes = array (
@@ -186,8 +186,8 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s'>%s</td>") {
             $value = Filters::noXSS($value);
             break;
     }
-
-    return sprintf($format, 'task_'.$colname, $value);
+    $wsvalue = str_replace(' ', '', $value);
+    return sprintf($format, 'task_'.$colname, (ctype_alnum($wsvalue) ? $colname.'_'.$wsvalue : ''), $value);
 }
 
 // } }}
