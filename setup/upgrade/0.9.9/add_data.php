@@ -24,7 +24,6 @@ $db->Execute("DELETE FROM {notifications} WHERE user_id = 0 OR task_id = 0");
 
 $db->Execute("UPDATE {tasks} SET closure_comment='' WHERE closure_comment='0'");
 $db->Execute("UPDATE {groups} SET `add_to_assignees` = '1' WHERE `assign_others_to_self` =1 ");
-$db->Execute("UPDATE {tasks} SET `due_date` = 0 WHERE `due_date` = ''");
 $db->Execute("UPDATE {groups} SET add_votes = 1 WHERE group_id = 2 OR group_id = 3 OR group_id = 6");
 $db->Execute("UPDATE {groups} SET `edit_assignments` = '1' WHERE `group_id` =2");
 $db->Execute("UPDATE {history} SET event_type = 3 WHERE event_type = 0");
