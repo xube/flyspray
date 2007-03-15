@@ -1057,7 +1057,7 @@ class Backend
                     $sql_params[] = Flyspray::strtotime($date);
                 }
             } else {
-                if (in_array('', array_get($args, 'field' . $field->id, array('')))) {
+                if (in_array('', (array) array_get($args, 'field' . $field->id, array('')))) {
                     continue;
                 }
 

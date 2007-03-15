@@ -53,7 +53,7 @@ class Project
         $this->prefs['lang_code']   = $fs->prefs['lang_code'];
         $this->prefs['others_view'] = 1;
         $this->prefs['intro_message'] = '';
-        $this->prefs['anon_open'] = 0;
+        $this->prefs['anon_open'] = $this->prefs['override_user_lang'] = 0;
         $this->prefs['feed_description']  = L('feedforall');
         $this->prefs['feed_img_url'] = '';
         $this->prefs['default_entry'] = 'index';

@@ -34,6 +34,10 @@
           </td>
         </tr>
         <tr>
+          <td><label for="override_user_lang">{L('overrideuserlang')}</label></td>
+          <td>{!tpl_checkbox('override_user_lang', Post::val('override_user_lang', $proj->prefs['override_user_lang']), 'override_user_lang')}</td>
+        </tr>
+        <tr>
           <td><label for="intromesg">{L('intromessage')}</label></td>
           <td>
             <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>

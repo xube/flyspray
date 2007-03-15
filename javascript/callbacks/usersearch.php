@@ -10,12 +10,6 @@ header('Content-type: text/html; charset=utf-8');
 
 require_once('../../header.php');
 
-// Initialise user
-if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
-    $user = new User(Cookie::val('flyspray_userid'));
-    $user->check_account_ok();
-}
-
 if (!$user->can_view_userlist()) {
     exit;
 }

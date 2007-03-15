@@ -12,12 +12,6 @@ require_once('../../header.php');
 require_once('../../includes/events.inc.php');
 $baseurl = dirname(dirname($baseurl)) .'/' ;
 
-// Initialise user
-if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
-    $user = new User(Cookie::val('flyspray_userid'));
-    $user->check_account_ok();
-}
-
 // Check permissions
 if (!$user->perms('view_history')) {
     die();

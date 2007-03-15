@@ -916,6 +916,8 @@ Regards,',
 'dberror'                 => 'A database error occured. For details check the information below.',
 'internalerror'           => 'An internal error occured. You can read the details of the error below. The cause is either a bug or an improperly configured system.',
 'location'                => 'Location',
+'overrideuserlang'        => 'Override a user\'s language',
+'preferredlanguage'       => 'Preferred language',
 );
 
 ?>

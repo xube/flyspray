@@ -656,6 +656,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="override_user_lang" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
   </table>
   <table name="registrations">
     <field name="reg_id" type="I" size="10">
@@ -927,6 +931,10 @@
       <DEFAULT value="asc"/>
     </field>
     <field name="notify_blacklist" type="C" size="50">
+      <DEFAULT value=""/>
+      <NOTNULL/>
+    </field>
+    <field name="lang_code" type="C" size="10">
       <DEFAULT value=""/>
       <NOTNULL/>
     </field>

@@ -76,6 +76,14 @@
         </td>
       </tr>
       <tr>
+        <td><label for="lang_code">{L('preferredlanguage')}</label></td>
+        <td>
+          <select name="lang_code" id="lang_code">
+            {!tpl_options(array_merge(array(0 => L('any')), Flyspray::listLangs()), Post::val('lang_code', $user->infos['lang_code']), true)}
+          </select>
+        </td>
+      </tr>
+      <tr>
         <td><label>{L('defaultsortcolumn')}</label></td>
         <td>
             <label class="left notable">{!tpl_checkbox('defaultorder', $theuser->infos['defaultorder'] == 'asc', null, 'asc', null, 'radio')} {L('asc')}</label>

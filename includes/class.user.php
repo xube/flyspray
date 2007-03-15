@@ -6,8 +6,8 @@ class User
     var $perms = array();
     var $infos = array();
     var $searches = array();
-    var $search_keys = array('string', 'type', 'sev', 'pri', 'due', 'dev', 'cat', 'status', 'order', 'sort', 'percent', 'changedfrom', 'closedfrom',
-                             'opened', 'closed', 'search_in_comments', 'search_for_all', 'reported', 'only_primary', 'only_watched', 'closedto',
+    var $search_keys = array('string', 'sev', 'dev', 'order', 'sort', 'percent', 'changedfrom', 'closedfrom',
+                             'opened', 'closed', 'search_in_comments', 'search_for_all', 'only_primary', 'only_watched', 'closedto',
                              'changedto', 'duedatefrom', 'duedateto', 'openedfrom', 'openedto', 'has_attachment');
 
     function User($uid = 0)
@@ -40,7 +40,7 @@ class User
      */
     function save_search($do = 'index')
     {
-        global $db;
+        global $db, $proj;
 
         if ($this->isAnon()) {
             return;
@@ -51,6 +51,9 @@ class User
             $arr = array();
             foreach ($this->search_keys as $key) {
                 $arr[$key] = Get::val($key);
+            }
+            foreach ($proj->fields as $field) {
+                $arr['field' . $field->id] = Get::val('field' . $field->id);
             }
 
             if (Get::val('search_name')) {
@@ -140,14 +143,14 @@ class User
                 }
             }
         }
-        
+
         // project list of $fs
 		$sql = $db->Execute(
 		        'SELECT  project_id, project_title, others_view,
 		                 upper(project_title) AS sort_names
 		           FROM  {projects}
 		       ORDER BY  sort_names');
-		
+
 		$fs->projects = array_filter($sql->GetArray(), array($this, 'can_view_project'));
     }
 
@@ -158,7 +161,7 @@ class User
         if ($this->isAnon()) {
             return;
         }
-        
+
         if (Cookie::val('flyspray_passhash') !=
                 crypt($this->infos['user_pass'], $conf['general']['cookiesalt'])
                 || !$this->infos['account_enabled']

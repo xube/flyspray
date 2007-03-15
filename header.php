@@ -57,6 +57,14 @@ if (!isset($project_id)) {
 $proj = new Project($project_id);
 $proj->setCookie();
 
+/* permission stuff */
+if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
+    $user = new User(Cookie::val('flyspray_userid'));
+    $user->check_account_ok();
+} else {
+    $user = new User(0);
+}
+
 // Load translations
 load_translations();
 

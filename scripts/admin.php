@@ -540,14 +540,14 @@ class FlysprayDoAdmin extends FlysprayDo
                               jabber_id = ?, notify_type = ?,
                               dateformat = ?, dateformat_extended = ?, defaultorder = ?,
                               tasks_perpage = ?, time_zone = ?, defaultsortcolumn = ?,
-                              notify_blacklist = ?
+                              notify_blacklist = ?, lang_code = ?
                        WHERE  user_id = ?',
                 array(Post::val('real_name'), Post::val('email_address'), Post::val('notify_own', 0),
                     Post::val('jabber_id', 0), Post::num('notify_type'),
                     Post::val('dateformat', 0), Post::val('dateformat_extended', 0),
                     Post::val('defaultorder', 'asc'), Post::val('tasks_perpage'), Post::val('time_zone'),
                     implode(' ', Post::val('defaultsortcolumn')), implode(' ', Post::val('notify_blacklist', array())),
-                    Post::val('user_id')));
+                    Post::val('lang_code', ''), Post::val('user_id')));
         if ($do == 'myprofile') {
             $user = new User($user->id);
         }
@@ -682,6 +682,7 @@ class FlysprayDoAdmin extends FlysprayDo
         global $fs, $db, $proj, $user;
 
         $proj = new Project(0);
+        $proj->setCookie();
 
         list($type, $msg, $url) = $this->handle('action', Post::val('action'));
         if ($type != NO_SUBMIT) {

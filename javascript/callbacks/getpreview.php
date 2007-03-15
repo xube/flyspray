@@ -11,12 +11,6 @@ header('Content-type: text/html; charset=utf-8');
 $webdir = dirname(dirname(dirname(Filters::noXSS($_SERVER['PHP_SELF']))));
 require_once('../../header.php');
 
-if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
-    $user = new User(Cookie::val('flyspray_userid'));
-    $user->check_account_ok();
-    $user->save_search();
-}
-
 echo TextFormatter::render(Post::val('text'));
 
 ?>

@@ -35,7 +35,7 @@ function eL($key)
 
 function load_translations()
 {
-    global $proj, $language;
+    global $proj, $language, $user;
     // Load translations
     // if no valid lang_code, return english
     // valid == a-z and "_" case insensitive
@@ -43,8 +43,13 @@ function load_translations()
         $proj->prefs['lang_code'] = 'en';
     }
 
-    $translation = BASEDIR . "/lang/{$proj->prefs['lang_code']}.php";
-    if ($proj->prefs['lang_code'] != 'en' && is_readable($translation)) {
+    $lang = $proj->prefs['lang_code'];
+    if (!$proj->prefs['override_user_lang'] && $user->infos['lang_code']) {
+        $lang = $user->infos['lang_code'];
+    }
+    $translation = BASEDIR . "/lang/{$lang}.php";
+
+    if ($lang != 'en' && is_readable($translation)) {
         include_once($translation);
         $language = array_merge($language, $translation);
     }

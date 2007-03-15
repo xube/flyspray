@@ -29,15 +29,7 @@ if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
     $do = 'index';
 }
 
-
-/* permission stuff */
-if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
-    $user = new User(Cookie::val('flyspray_userid'));
-    $user->check_account_ok();
-    $user->save_search($do);
-} else {
-    $user = new User(0);
-}
+$user->save_search($do);
 
 if (Get::val('logout')) {
     $user->logout();
