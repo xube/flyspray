@@ -26,6 +26,12 @@ class User
             $this->id = intval($uid);
         } else {
             $this->infos = array('real_name' => L('anonuser'), 'user_name' => '');
+            // Get a users default language, based on HTTP data
+            if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+                if (preg_match('/(\w+)/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $languages)) {
+                    $this->infos['lang_code'] = $languages[1];
+                }
+            }
         }
 
         $this->get_perms();

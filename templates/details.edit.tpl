@@ -2,7 +2,7 @@
   <form action="{CreateUrl('details', $task['task_id'])}" id="taskeditform" enctype="multipart/form-data" method="post">
 	 <div>
 		<h2 class="summary severity{Post::val('task_severity', $task['task_severity'])}">
-		  <a href="{CreateUrl('details', $task['task_id'])}">FS#{$task['task_id']}</a> &mdash;
+		  <a href="{CreateUrl('details', $task['task_id'])}">FS#{$task['task_id']}</a> -
 		  <input class="text severity{Post::val('task_severity', $task['task_severity'])}" type="text"
 			name="item_summary" size="80" maxlength="100"
 			value="{Post::val('item_summary', $task['item_summary'])}" />
@@ -13,7 +13,7 @@
 		<input type="hidden" name="edit_start_time" value="{Post::val('edit_start_time', time())}" />
 
 		<div id="fineprint">
-		  {L('attachedtoproject')} &mdash;
+		  {L('attachedtoproject')}:
 		  <select name="project_id">
 			{!tpl_options($fs->projects, Post::val('project_id', $proj->id))}
 		  </select>
