@@ -504,7 +504,7 @@ class FlysprayDoAdmin extends FlysprayDo
             }
         }
 
-        if (!Post::val('real_name') || (!Post::val('email_address') && !Post::val('jabber_id'))) {
+        if (!Post::val('real_name') || !Post::val('email_address')) {
             return array(ERROR_RECOVER, L('realandnotify'));
         }
 
@@ -533,6 +533,17 @@ class FlysprayDoAdmin extends FlysprayDo
                 Flyspray::setcookie('flyspray_passhash',
                         crypt($new_hash, $conf['general']['cookiesalt']), time()+3600*24*30);
             }
+        }
+
+        // Check for existing email / jabber ID
+        $taken = $db->GetOne("SELECT COUNT(*)
+                                FROM {users}
+                               WHERE (jabber_id = ? AND jabber_id != ''
+                                     OR email_address = ? AND email_address != '')
+                                     AND user_id != ?",
+                              array(Post::val('jabber_id'), Post::val('email_address'), Post::val('user_id')));
+        if ($taken) {
+            return array(ERROR_RECOVER, L('emailtaken'));
         }
 
         $db->Execute('UPDATE  {users}
