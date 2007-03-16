@@ -124,7 +124,7 @@ class Jabber
      * @access public
      * @return mixed either false for timeout or an array with the received data
      */
-    function listen($timeout = 10)
+    function listen($timeout = 10, $wait = false)
     {
         if (!$this->connected()) {
             return false;
@@ -137,7 +137,7 @@ class Jabber
         do {
             $read = trim(fread($this->connection, 4096));
             $data .= $read;
-        } while (time() <= $start + $timeout && ($data == '' || $read != ''
+        } while (time() <= $start + $timeout && ($wait || $data == '' || $read != ''
                                                  || (substr(rtrim($data), -1) != '>')));
 
         if ($data != '') {
@@ -561,9 +561,9 @@ class Jabber
         $data = explode(',', $data);
         $pairs = array();
         foreach ($data as $pair) {
-            $pair = explode('=', $pair);
-            if (count($pair) == 2) {
-                $pairs[$pair[0]] = trim($pair[1], '"');
+            $dd = strpos($pair, '=');
+            if ($dd) {
+                $pairs[substr($pair, 0, $dd)] = trim(substr($pair, $dd + 1), '"');
             }
         }
         return $pairs;

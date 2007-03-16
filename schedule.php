@@ -33,12 +33,12 @@ include_once BASEDIR . '/includes/class.notify.php';
 do {
     //we touch the file on every single iteration to avoid
     //the possible restart done by Startremiderdaemon method
-    //in class.flyspray.conf 
+    //in class.flyspray.conf
     touch(Flyspray::get_tmp_dir() . '/flysprayreminders.run');
-        
+
     $user = new User(0);
     $now = time();
-    
+
     ############ Task one: Send reminders ############
     $get_reminders = $db->Execute("SELECT  r.reminder_message AS message, r.*
                                    FROM  {reminders} r
@@ -52,16 +52,16 @@ do {
     while ($row = $get_reminders->FetchRow()) {
         if (Notifications::send_now($row['to_user_id'], ADDRESS_USER, NOTIFY_REMINDER, $row)) {
            // Update the database with the time sent
-           $db->Execute("UPDATE  {reminders}
-                          SET  last_sent = ?
-                        WHERE  reminder_id = ?",
-                       array(time(), $row['reminder_id']));
+           $db->Execute('UPDATE  {reminders}
+                            SET  last_sent = ?
+                          WHERE  reminder_id = ?',
+                         array(time(), $row['reminder_id']));
         }
     }
 
     ############ Task two: send stored notifications ############
     Notifications::send_stored();
-    
+
     ############ Task three: send project manager digests ############
     $sql = $db->Execute('SELECT project_id, project_title, last_digest
                          FROM {projects}
@@ -74,7 +74,7 @@ do {
                          LEFT JOIN {groups} g ON uig.group_id = g.group_id
                              WHERE g.project_id = ? AND g.manage_project = 1',
                              array($project['project_id']));
-        
+
         // Now generate the message, we are interested in opened/reopened, closed and assigned tasks
         $opened = $reopened = $closed = $assigned = array();
         $message = L('digestfor') . ' ' . $project['project_title'] . ":\n\n";
@@ -86,7 +86,7 @@ do {
                             WHERE t.project_id = ? AND event_type IN (1,2,13,19)
                                   AND event_date > ?',
                             array($project['project_id'], max($project['last_digest'], time() - 60*60*24*7)));
-                            
+
         while ($row = $sql->FetchRow()) {
             switch ($row['event_type'])
             {
@@ -114,14 +114,32 @@ do {
                 $message .= L($type . 'tasks') . ':' . "\n" . implode("\n", $$type) . "\n\n";
             }
         }
-        
+
         if (Notifications::send_now($pms, ADDRESS_USER, NOTIFY_DIGEST, array('message' => $message))) {
             $db->Execute('UPDATE {projects} SET last_digest = ? WHERE project_id = ?',
                         array(time(), $project['project_id']));
         }
     }
-    
-    
+
+    ############ Task four: Parse incoming messages ############
+    $jabber = new Jabber($fs->prefs['jabber_username'],
+                         $fs->prefs['jabber_password'],
+                         $fs->prefs['jabber_ssl'],
+                         $fs->prefs['jabber_port'],
+                         $fs->prefs['jabber_server']);
+    $jabber->login();
+    $jabber->presence('chat');
+    $jabber->response($jabber->listen(3, $wait = true)); // let's see if any messages fly in
+    if (isset($jabber->session['messages'])) {
+        foreach ($jabber->session['messages'] as $message) {
+            $message['from'] = substr($message['from'], 0, strpos($message['from'], '/'));
+            list($result, $msg) = Flyspray::execute_text_commands($message['body'], $message['from'], NOTIFY_JABBER);
+            if (!$result) {
+                $jabber->send_message($message['from'], 'Flyspray action failed', $msg);
+            }
+        }
+    }
+
     //wait 10 minutes for the next loop.
     sleep(600);
 
