@@ -118,7 +118,7 @@ class FlysprayDo
 		switch ($errno)
 		{
             case ERROR_INTERNAL:
-                $page->assign('file', $errfile);
+                $page->assign('file', str_replace(BASEDIR . DIRECTORY_SEPARATOR, '', $errfile));
                 $page->assign('line', $errline);
 			case ERROR_PERMS:
 			case ERROR_DB:
