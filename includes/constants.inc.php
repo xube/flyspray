@@ -92,6 +92,7 @@ define('GET_CONTENTS',         true);
 define('LOCK_FIELD',           true);
 define('USE_DEFAULT',          true);
 define('ADODB_AUTOQUOTE',      true);
+define('PLAINTEXT',            true);
 
 
 // developers or advanced users only

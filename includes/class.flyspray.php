@@ -293,12 +293,11 @@ class Flyspray
         global $db, $fs, $proj;
 
         static $cache = array();
+        $task_id = intval($task_id);
 
         if (isset($cache[$task_id]) && $cache_enabled) {
             return $cache[$task_id];
         }
-
-        $task_id = intval($task_id);
 
         $task = $db->Execute('SELECT  t.*,
                                       r.item_name   AS resolution_name,
@@ -328,12 +327,6 @@ class Flyspray
         while ($row = $sql->FetchRow()) {
             $task['f' . $row['field_id']] = $row['field_value'];
             $task['f' . $row['field_id'] . '_name'] = ($row['item_name'] ? $row['item_name'] : $row['category_name']);
-        }
-        // Add fields for tasks which have not all values set
-        foreach ($proj->fields as $field) {
-            if (!isset($task['f'. $field->id])) {
-                $task['f'. $field->id] = '';
-            }
         }
 
         $task['assigned_to'] = $task['assigned_to_name'] = array();
@@ -813,67 +806,6 @@ class Flyspray
 
         return $assignees;
     } /// }}}
-
-    /**
-     * This function parses and executes commands from emails and Jabber messages
-     * @param string $text
-     * @param string $from email or Jabber ID
-     * @param integer $type NOTIFY_EMAIL or NOTIFY_JABBER
-     * @access public static
-     * @return array array(bool, msg)
-     * @version 1.0
-     */
-    function execute_text_commands($text, $from, $type)
-    {
-        global $db, $user;
-        // First of all, let's get the user
-        // TODO: authentication
-        $uid = $db->GetOne('SELECT user_id
-                              FROM {users}
-                             WHERE email_address = ? AND ? = ?
-                                   OR
-                                   jabber_id = ? AND ? = ?',
-                            array($from, $type, NOTIFY_EMAIL, $from, $type, NOTIFY_JABBER));
-        if ($type == NOTIFY_JABBER) {
-            $user = new User($uid);
-        }
-
-        if ($user->isAnon()) {
-            return array(false, 'Your Jabber ID is not in use on this Flyspray installation.');
-        }
-
-        $parsed = array();
-
-        $text = explode("\n", $text);
-        foreach ($text as $line) {
-            $line = trim($line);
-            $dd = strpos($line, ':');
-            // consider the rest of the input as plain text as soon
-            // as no more commands are found
-            if (!$dd && isset($last)) {
-                $parsed[$last] .= $line . "\n";
-            } else if ($dd) {
-                $last = substr($line, 0, $dd);
-                $parsed[$last] = substr($line, $dd + 1) . "\n";
-            }
-        }
-
-        if (isset($parsed['task'])) {
-            $task = Flyspray::GetTaskDetails($parsed['task']);
-            if (!$task) {
-                return array(false, 'Selected task (' . trim($parsed['task']) . ') does not exist.');
-            }
-        }
-        // Now lets see what is to be done ...
-        // ... add comment
-        if (isset($task) && isset($parsed['comment'])) {
-            if (!Backend::add_comment($task, $parsed['comment'])) {
-                return array(false, 'Adding a comment failed.');
-            }
-        }
-
-        return array(true, '');
-    }
 
     // {{{
     /**

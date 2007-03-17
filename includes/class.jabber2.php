@@ -224,7 +224,7 @@ class Jabber
         $unavailable = ($unavailable) ? " type='unavailable'" : '';
         $message = ($message) ? '<status>' . Jabber::jspecialchars($message) .'</status>' : '';
 
-        $this->session['sent_presence'] = true;
+        $this->session['sent_presence'] = !$unavailable;
 
         return $this->send("<presence$unavailable>" .
                               $type .
@@ -490,6 +490,19 @@ class Jabber
                               <subject>" . Jabber::jspecialchars($subject) . "</subject>
                               <body>" . Jabber::jspecialchars($text) . "</body>
                             </message>");
+    }
+
+    function get_messages($waitfor = 3)
+    {
+        if (!isset($this->session['sent_presence']) || !$this->session['sent_presence']) {
+            $this->presence();
+        }
+
+        if ($waitfor > 0) {
+            $this->response($this->listen($waitfor, $wait = true)); // let's see if any messages fly in
+        }
+
+        return isset($this->session['messages']) ? $this->session['messages'] : array();
     }
 
     function connected()

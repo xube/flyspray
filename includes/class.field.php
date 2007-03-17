@@ -39,33 +39,34 @@ class Field
      * @param array $parents parents for a category item
      * @return string
      */
-    function view($task = array(), $parents = array())
+    function view($task = array(), $parents = array(), $plain = false)
     {
         if (!isset($task['f' . $this->id]) || !$task['f' . $this->id]) {
-            return '<span class="fade">' . eL('notspecified') . '</span>';
-        }
+            $html = '<span class="fade">' . eL('notspecified') . '</span>';
+        } else {
 
-        $html = '';
-        switch ($this->prefs['field_type'])
-        {
-            case FIELD_LIST:
-                if ($this->prefs['list_type'] == LIST_CATEGORY) {
-                    foreach ($parents[$this->id] as $cat) {
-                        $html .= Filters::noXSS($cat) . '&#8594;';
+            $html = '';
+            switch ($this->prefs['field_type'])
+            {
+                case FIELD_LIST:
+                    if ($this->prefs['list_type'] == LIST_CATEGORY && isset($parents[$this->id])) {
+                        foreach ($parents[$this->id] as $cat) {
+                            $html .= Filters::noXSS($cat) . '&#8594;';
+                        }
                     }
-                }
-                $html .= Filters::noXSS($task['f' . $this->id . '_name']);
-                break;
+                    $html .= Filters::noXSS($task['f' . $this->id . '_name']);
+                    break;
 
-            case FIELD_DATE:
-                $html .= formatDate($task['f' . $this->id]);
-                break;
+                case FIELD_DATE:
+                    $html .= formatDate($task['f' . $this->id]);
+                    break;
 
-            case FIELD_TEXT:
-                $html .= Filters::noXSS($task['f' . $this->id]);
-                break;
+                case FIELD_TEXT:
+                    $html .= Filters::noXSS($task['f' . $this->id]);
+                    break;
+            }
         }
-        return $html;
+        return ($plain ? strip_tags(html_entity_decode($html, ENT_QUOTES, 'utf-8')) : $html);
     }
 
     /**

@@ -9,8 +9,6 @@ class dokuwiki_TextFormatter
         $fs_conf = $conf;
         $conf = array();
 
-        // Dokuwiki generates some notices
-        error_reporting(E_ALL ^ E_NOTICE);
         if (!$instructions) {
             include_once(BASEDIR . '/plugins/dokuwiki/inc/parser/parser.php');
         }
@@ -22,7 +20,7 @@ class dokuwiki_TextFormatter
         $Renderer = & new Doku_Renderer_XHTML();
 
         if (!is_string($instructions) || strlen($instructions) < 1) {
-            $modes = p_get_parsermodes();
+            $modes = @p_get_parsermodes();
 
             $Parser = & new Doku_Parser();
 
@@ -31,9 +29,9 @@ class dokuwiki_TextFormatter
 
             // Add modes to parser
             foreach($modes as $mode){
-                $Parser->addMode($mode['mode'], $mode['obj']);
+                @$Parser->addMode($mode['mode'], $mode['obj']);
             }
-            $instructions = $Parser->parse($text);
+            $instructions = @$Parser->parse($text);
 
 
             // Cache the parsed text
@@ -60,7 +58,7 @@ class dokuwiki_TextFormatter
         // Loop through the instructions
         foreach ($instructions as $instruction) {
             // Execute the callback against the Renderer
-            call_user_func_array(array(&$Renderer, $instruction[0]), $instruction[1]);
+            @call_user_func_array(array(&$Renderer, $instruction[0]), $instruction[1]);
         }
 
         $return = $Renderer->doc;
@@ -82,7 +80,7 @@ class dokuwiki_TextFormatter
         $cols = intval($cols);
         $return = '<div id="dokuwiki_toolbar">'
         		. dokuwiki_TextFormatter::getDokuWikiToolbar( $attrs['id'] )
-        		. '</div>';
+        		. ' <a href="http://wiki.splitbrain.org/wiki:syntax"> ' . L('syntax') . '</a></div>';
 
         $return .= "<textarea name=\"{$name}\" cols=\"$cols\" rows=\"$rows\" ";
         if (is_array($attrs)) {

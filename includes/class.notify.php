@@ -440,7 +440,7 @@ class Notifications
             $subject = L('notifyfromfs');
         } else if (isset($data['project']->prefs['notify_subject']) && $data['project']->prefs['notify_subject']) {
 
-            $subject = strtr($data['project']->prefs['notify_subject'], 
+            $subject = strtr($data['project']->prefs['notify_subject'],
                              array('%p'=> $data['project']->prefs['project_title'] ,
                                    '%s'=> $data['task']['item_summary'],
                                    '%t'=> $data['task_id'],
@@ -487,18 +487,10 @@ class Notifications
                 $body .= L('summary') . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('assignedto') . ' - ' . implode(', ', $data['task']['assigned_to_name']) . "\r\n";
                 $body .= L('severity') . ' - ' . $data['task']['severity_name'] . "\r\n";
-                $body .= L('details') . ' - ' . $data['task']['detailed_desc'] . "\r\n\r\n";
                 foreach ($data['project']->fields as $field) {
-                    $body .= $field->prefs['field_name'] . ' - ';
-                    if ($data['task']['f' . $field->id . '_name']) {
-                        $body .= $data['task']['f' . $field->id . '_name'];
-                    } elseif ($field->prefs['field_type'] == FIELD_DATE && $data['task']['f' . $field->id]) {
-                        $body .= formatDate($data['task']['f' . $field->id]);
-                    } else {
-                        $body .= L('notspecified');
-                    }
-                    $body .= "\r\n\r\n";
+                    $body .= $field->prefs['field_name'] . ' - ' . $field->view($task, array(), PLAINTEXT) . "\r\n";
                 }
+                $body .= L('details') . " - \r\n" . $data['task']['detailed_desc'] . "\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
                 break;

@@ -29,6 +29,7 @@ ignore_user_abort(true);
 set_time_limit(0);
 
 include_once BASEDIR . '/includes/class.notify.php';
+include_once BASEDIR . '/includes/class.textcommands.php';
 
 do {
     //we touch the file on every single iteration to avoid
@@ -128,15 +129,11 @@ do {
                          $fs->prefs['jabber_port'],
                          $fs->prefs['jabber_server']);
     $jabber->login();
-    $jabber->presence('chat');
-    $jabber->response($jabber->listen(3, $wait = true)); // let's see if any messages fly in
-    if (isset($jabber->session['messages'])) {
-        foreach ($jabber->session['messages'] as $message) {
-            $message['from'] = substr($message['from'], 0, strpos($message['from'], '/'));
-            list($result, $msg) = Flyspray::execute_text_commands($message['body'], $message['from'], NOTIFY_JABBER);
-            if (!$result) {
-                $jabber->send_message($message['from'], 'Flyspray action failed', $msg);
-            }
+    foreach ($jabber->get_messages() as $message) {
+        $message['from'] = substr($message['from'], 0, strpos($message['from'], '/'));
+        $commands = new TextCommands($message['body'], $message['from'], NOTIFY_JABBER);
+        if ($commands->msg) {
+            $jabber->send_message($message['from'], $commands->msg, L('flysprayresponse'));
         }
     }
 

@@ -918,6 +918,8 @@ Regards,',
 'location'                => 'Location',
 'overrideuserlang'        => 'Override a user\'s language',
 'preferredlanguage'       => 'Preferred language',
+'flysprayresponse'        => 'Flyspray response',
+'syntax'                  => 'Syntax',
 );
 
 ?>
