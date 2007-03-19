@@ -97,7 +97,7 @@ class User
                 'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                 'view_comments', 'add_comments', 'edit_comments', 'edit_assignments',
                 'delete_comments', 'create_attachments', 'view_userlist',
-                'delete_attachments', 'view_history', 'close_own_tasks',
+                'delete_attachments', 'view_history', 'close_own_tasks', 'view_private',
                 'close_other_tasks', 'assign_to_self', 'assign_others_to_self',
                 'add_to_assignees', 'view_reports', 'add_votes', 'group_open');
 
@@ -215,7 +215,7 @@ class User
 
         if ($task['opened_by'] == $this->id && !$this->isAnon()
             || (!$task['mark_private'] && ($this->perms('view_tasks', $task['project_id']) || $this->perms('anon_view_tasks', $task['project_id'])))
-            || $this->perms('manage_project', $task['project_id'])) {
+            || $this->perms('manage_project', $task['project_id']) || $this->perms('view_private', $task['project_id'])) {
             return true;
         }
 

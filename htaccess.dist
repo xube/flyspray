@@ -69,7 +69,7 @@ RewriteRule ^admin/([a-zA-Z]+)$ index.php?do=admin&area=$1 [L,QSA]
 RewriteRule ^myprofile/([a-zA-Z]+)$ index.php?do=myprofile&area=$1 [L,QSA]
 RewriteRule ^pm/proj([0-9]+)/([a-zA-Z]+)$ index.php?do=pm&project=$1&area=$2 [L,QSA]
 
-RewriteRule ^admin/editgroup/([0-9]+)$ index.php?do=admin&area=editgroup&id=$1 [L,QSA]
+RewriteRule ^admin/editgroup/([0-9]+)$ index.php?do=admin&area=editgroup&group_id=$1 [L,QSA]
 RewriteRule ^pm/editgroup/([0-9]+)$ index.php?do=pm&area=editgroup&id=$1 [L,QSA]
 RewriteRule ^edituser/([0-9]+)$ index.php?do=admin&area=user&user_id=$1 [L,QSA]
 RewriteRule ^register$ index.php?do=register [L,QSA]

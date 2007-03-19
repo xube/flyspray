@@ -2,15 +2,15 @@
     <form action="{$_SERVER['SCRIPT_NAME']}" method="get">
         <div>
             <label for="selectgroup">{L('editgroup')}</label>
-            <select name="id" id="selectgroup">{!tpl_options(Flyspray::ListGroups($proj->id), Req::num('id'))}</select>
+            <select name="group_id" id="selectgroup">{!tpl_options(Flyspray::ListGroups($proj->id), Req::num('group_id'))}</select>
             <button type="submit">{L('edit')}</button>
             <input type="hidden" name="do" value="{Req::val('do')}" />
             <input type="hidden" name="area" value="editgroup" />
         </div>
     </form>
     <hr />
-  <?php $group = Flyspray::getGroupDetails(Req::num('id')); ?>
-  <form action="{CreateURL('editgroup', Req::num('id'), $do)}" method="post">
+  <?php $group = Flyspray::getGroupDetails(Req::num('group_id')); ?>
+  <form action="{CreateURL('editgroup', Req::num('group_id'), $do)}" method="post">
     <table class="box">
       <tr>
         <td>
@@ -115,6 +115,10 @@
         <td><label for="view_userlist">{L('viewuserlist')}</label></td>
         <td>{!tpl_checkbox('view_userlist', Req::val('view_userlist', !Req::val('action') && $group['view_userlist']), 'view_userlist')}</td>
       </tr>
+      <tr>
+        <td><label for="view_private">{L('viewprivate')}</label></td>
+        <td>{!tpl_checkbox('view_private', Req::val('view_private', !Req::val('action') && $group['view_private']), 'view_private')}</td>
+      </tr>
       <?php if (!$proj->id): ?>
       <tr>
         <td><label for="groupopen">{L('groupenabled')}</label></td>
@@ -143,7 +147,7 @@
           <input type="hidden" name="do" value="{$do}" />
           <input type="hidden" name="action" value="editgroup" />
           <input type="hidden" name="area" value="editgroup" />
-          <input type="hidden" name="group_id" value="{$group['group_id']}" />
+          <input type="hidden" name="group_id" value="{Req::num('group_id')}" />
           <button type="submit">{L('updatedetails')}</button>
         </td>
       </tr>

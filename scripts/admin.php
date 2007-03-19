@@ -652,7 +652,7 @@ class FlysprayDoAdmin extends FlysprayDo
         // Allow all groups to update permissions except for global Admin
         if (Post::val('group_id') != '1') {
             $cols = array_merge($cols,
-                                array('manage_project', 'view_tasks', 'edit_own_comments',
+                                array('manage_project', 'view_tasks', 'edit_own_comments', 'view_private',
                                   'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
                                   'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
                                   'create_attachments', 'delete_attachments', 'view_userlist',
@@ -662,6 +662,7 @@ class FlysprayDoAdmin extends FlysprayDo
         }
 
         $args = array_map('Post_to0', $cols);
+
         $args[] = Post::val('group_id');
         $args[] = $proj->id;
 

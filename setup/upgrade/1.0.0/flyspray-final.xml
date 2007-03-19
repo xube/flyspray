@@ -360,6 +360,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="view_private" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
     <field name="group_open" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>

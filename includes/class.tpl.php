@@ -733,7 +733,7 @@ function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
             case 'index':
             case 'newtask':   $return = $url . '&project=' . $arg1; break;
 
-            case 'editgroup': $return = $baseurl . '?do=' . $arg2 . '&area=editgroup&id=' . $arg1; break;
+            case 'editgroup': $return = $baseurl . '?do=' . $arg2 . '&area=editgroup&group_id=' . $arg1; break;
 
             case 'lostpw':
             case 'myprofile':

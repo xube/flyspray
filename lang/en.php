@@ -920,6 +920,7 @@ Regards,',
 'preferredlanguage'       => 'Preferred language',
 'flysprayresponse'        => 'Flyspray response',
 'syntax'                  => 'Syntax',
+'viewprivate'             => 'View private tasks',
 );
 
 ?>
