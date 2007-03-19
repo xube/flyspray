@@ -213,6 +213,7 @@ class Jabber
     {
         if (!isset($this->session['jid'])) {
             $this->log('Error: Cannot set presence at this point.');
+            return false;
         }
 
         if (in_array($type, array('dnd', 'away', 'chat', 'xa'))) {

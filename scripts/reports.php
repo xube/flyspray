@@ -77,25 +77,24 @@ class FlysprayDoReports extends FlysprayDo
             $params[] = $proj->id;
         }
 
-        if ( ($fromdate = Get::val('fromdate')) || Req::val('todate')) {
+        if ( ($fromdate = Req::val('fromdate')) || Req::val('todate')) {
                 $where .= ' AND ';
-                $ufromdate = Flyspray::strtotime($fromdate) + 0;
-                $todate = Get::val('todate');
-                $utodate   = Flyspray::strtotime($todate) + 86400;
+                $todate = Req::val('todate');
 
                 if ($fromdate) {
                     $where .= ' h.event_date > ?';
-                    $params[] = $ufromdate;
+                    $params[] = Flyspray::strtotime($fromdate) + 0;
                 }
                 if ($todate && $fromdate) {
                     $where .= ' AND h.event_date < ?';
-                    $params[] = $utodate;
+                    $params[] = Flyspray::strtotime($todate) + 86400;
                 } else if ($todate) {
                     $where .= ' h.event_date < ?';
-                    $params[] = $utodate;
+                    $params[] = Flyspray::strtotime($todate) + 86400;
                 }
         }
 
+        $histories = array();
         if (count(Get::val('events'))) {
             $histories = $db->SelectLimit("SELECT h.*, t.*
                                              FROM {history} h

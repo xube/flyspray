@@ -15,14 +15,10 @@ class FlysprayDoNewtask extends FlysprayDo
     {
         global $user;
 
-        if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
-            return array(ERROR_RECOVER, L('summaryanddetails'));
-        }
-
-        list($task_id, $token) = Backend::create_task($_POST);
+        list($task_id, $token, $ok) = Backend::create_task($_POST);
 
         // Status and redirect
-        if ($task_id) {
+        if ($ok) {
             $url = CreateURL('details', $task_id);
             if ($user->isAnon()) {
                 $url = CreateURL('details', $task_id, null, array('task_token' => $token));

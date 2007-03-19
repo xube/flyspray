@@ -27,7 +27,7 @@ class TextCommands
      */
     function TextCommands($text, $from, $type)
     {
-        global $db, $user;
+        global $db, $user, $proj;
         // First of all, let's get the user
         // TODO: authentication
         $uid = $db->GetOne('SELECT user_id
@@ -48,23 +48,24 @@ class TextCommands
 
         $text = explode("\n", $text);
         foreach ($text as $line) {
-            $line = trim($line);
             $dd = strpos($line, ':');
             // consider the rest of the input as plain text as soon
             // as no more commands are found
             if (!$dd && isset($last)) {
                 $parsed[$last] .= $line . "\n";
             } else if ($dd) {
-                $last = substr($line, 0, $dd);
+                $last = strtolower(substr($line, 0, $dd));
                 $parsed[$last] = substr($line, $dd + 1) . "\n";
             }
         }
+        $parsed = array_map('trim', $parsed);
 
         if (isset($parsed['task'])) {
             $task = Flyspray::GetTaskDetails($parsed['task']);
             if (!$task) {
                 return $this->done(false, 'Selected task (' . trim($parsed['task']) . ') does not exist.');
             }
+            $proj = new Project($task['project_id']);
         }
         // Now lets see what is to be done ...
         // ... add comment
@@ -78,6 +79,14 @@ class TextCommands
                 return $this->done(true, TextCommands::view_task($task));
             } else {
                 return $this->done(false, 'You have no permission to view this task.');
+            }
+        // ... new task
+        } else if (isset($parsed['summary'])) {
+            list($task_id, $msg, $ok) = TextCommands::create_task($parsed);
+            if ($ok) {
+                return $this->done(true, 'Task has been created, ID is: ' . $task_id);
+            } else {
+                return $this->done(false, $msg);
             }
         }
     }
@@ -97,7 +106,7 @@ class TextCommands
      */
     function view_task($task)
     {
-        $proj = new Project($task['project_id']);
+        global $proj;
 
         $body  = '=== FS#' . $task['task_id'] . " ===\r\n";
         $state = $task['is_closed'] ? L('closed') : ($task['closed_by'] ? L('reopened') : L('open'));
@@ -116,6 +125,78 @@ class TextCommands
         $body .= CreateURL('details', $task['task_id']) . "\r\n\r\n";
 
         return $body;
+    }
+
+    /**
+     * This function prepares the parsed data for Backend::create_task()
+     * @param array $parsed
+     * @access public static
+     * @return array
+     */
+    function create_task($parsed)
+    {
+        global $db, $fs;
+
+        $args = array();
+        // item summary
+        if (isset($parsed['summary'])) {
+            $args['item_summary'] = $parsed['summary'];
+        }
+        // and details
+        if (isset($parsed['details'])) {
+            $args['detailed_desc'] = $parsed['details'];
+        }
+        // private or not?
+        if (isset($parsed['private']) && ($parsed['private'] == '1' || strcasecmp($parsed['private'], L('yes')) == 0)) {
+            $args['mark_private'] = 1;
+        }
+        // project
+        if (isset($parsed['project'])) {
+            if (is_numeric($parsed['project'])) {
+                $args['project_id'] = $parsed['project'];
+            } else {
+                $pid = $db->GetOne('SELECT project_id FROM {projects} WHERE project_title LIKE ?',
+                                   array('%' . $parsed['project'] . '%'));
+                $args['project_id'] = $pid;
+            }
+            $proj = new Project($args['project_id']);
+        } else {
+            return array('', 'No project specified.', false);
+        }
+
+        // severity
+        if (isset($parsed['severity'])) {
+            if (is_numeric($parsed['severity'])) {
+                $args['task_severity'] = $parsed['severity'];
+            } else {
+                $args['task_severity'] = array_search(strtolower($parsed['severity']), array_map('strtolower', $fs->severities));
+            }
+        }
+        // assignees
+        if (isset($parsed['assigned'])) {
+            $assignees = explode(',', $parsed['assigned']);
+            $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
+            $args['assigned_to'] = implode(' ', $assignees);
+        }
+        // custom fields
+        foreach ($proj->fields as $field) {
+            if (isset($parsed[strtolower($field->prefs['field_name'])])) {
+                $value = $parsed[strtolower($field->prefs['field_name'])];
+                // you won't enter the ID of the item, so we have to find it first
+                if ($field->prefs['field_type'] == FIELD_LIST) {
+                    if ($field->prefs['list_type'] == LIST_CATEGORY) {
+                        $value = $db->GetOne('SELECT category_id FROM {list_category} WHERE category_name LIKE ?',
+                                             array($value));
+                    } else {
+                        $value = $db->GetOne('SELECT list_item_id FROM {list_items} WHERE item_name LIKE ?',
+                                             array($value));
+                    }
+                }
+                $args['field' . $field->id] = $value;
+            }
+        }
+
+        return Backend::create_task($args);
     }
 }
 

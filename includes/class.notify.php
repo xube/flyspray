@@ -488,7 +488,7 @@ class Notifications
                 $body .= L('assignedto') . ' - ' . implode(', ', $data['task']['assigned_to_name']) . "\r\n";
                 $body .= L('severity') . ' - ' . $data['task']['severity_name'] . "\r\n";
                 foreach ($data['project']->fields as $field) {
-                    $body .= $field->prefs['field_name'] . ' - ' . $field->view($task, array(), PLAINTEXT) . "\r\n";
+                    $body .= $field->prefs['field_name'] . ' - ' . $field->view($data['task'], array(), PLAINTEXT) . "\r\n";
                 }
                 $body .= L('details') . " - \r\n" . $data['task']['detailed_desc'] . "\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";

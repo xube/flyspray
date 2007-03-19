@@ -707,7 +707,7 @@ class Backend
      * Adds a new task
      * @param array $args array containing all task properties. unknown properties will be ignored
      * @access public
-     * @return integer the task ID on success
+     * @return array(error type, msg, false) or array(task ID, token, true)
      * @version 1.0
      * @notes $args is POST data, bad..bad user..
      */
@@ -720,18 +720,18 @@ class Backend
         }
 
         if (!$user->can_open_task($proj) || count($args) < 3) {
-            return 0;
+            return array(ERROR_RECOVER, L('missingrequired'), false);
         }
 
         // check required fields
         if (!(($item_summary = $args['item_summary']) && ($detailed_desc = $args['detailed_desc']))) {
-            return 0;
+            return array(ERROR_RECOVER, L('summaryanddetails'), false);
         }
 
         foreach ($proj->fields as $field) {
             if ($field->prefs['value_required'] && !array_get($args, 'field' . $field->id)
                 && !($field->prefs['force_default'] && !$user->perms('modify_all_tasks'))) {
-                return array(ERROR_RECOVER, L('missingrequired') . ' (' . $field->prefs['field_name'] . ')');
+                return array(ERROR_RECOVER, L('missingrequired') . ' (' . $field->prefs['field_name'] . ')', false);
             }
         }
 
@@ -858,7 +858,7 @@ class Backend
             Notifications::send($args['anon_email'], ADDRESS_EMAIL, NOTIFY_ANON_TASK, array('task_id' => $task_id, 'token' => $token));
         }
 
-        return array($task_id, $token);
+        return array($task_id, $token, true);
     }
 
     /**

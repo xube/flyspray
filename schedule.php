@@ -146,7 +146,7 @@ do {
 
 } else {
 
-    die("you are not authorized to start the remider daemon");
+    die('You are not authorized to start the remider daemon.');
 }
 
 ?>
