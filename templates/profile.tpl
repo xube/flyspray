@@ -8,19 +8,19 @@
     </td>
   </tr>
   <tr>
-  <?php if (!$user->isAnon()): ?>
+  <?php if (!$user->isAnon() && $user->infos['show_contact']): ?>
     <th>{L('emailaddress')}</th>
     <td>
       <a href="mailto:{$theuser->infos['email_address']}">{$theuser->infos['email_address']}</a>
     </td>
   </tr>
-  <?php endif; ?>
   <tr>
     <th>{L('jabberid')}</th>
     <td>
       {$theuser->infos['jabber_id']}
     </td>
   </tr>
+  <?php endif; ?>
   <tr>
     <th>{L('groups')}</th>
     <td>
@@ -34,21 +34,21 @@
     <td>
       {$tasks}
     </td>
-  </tr> 
+  </tr>
   <tr>
     <th>{L('comments')}</th>
     <td>
       {$comments}
     </td>
-  </tr> 
+  </tr>
   <?php if ($theuser->infos['register_date']): ?>
   <tr>
     <th>{L('regdate')}</th>
     <td>
       {formatDate($theuser->infos['register_date'])}
     </td>
-  </tr> 
+  </tr>
   <?php endif; ?>
 </table>
-    
+
 </fieldset>

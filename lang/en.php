@@ -921,6 +921,7 @@ Regards,',
 'flysprayresponse'        => 'Flyspray response',
 'syntax'                  => 'Syntax',
 'viewprivate'             => 'View private tasks',
+'showcontact'             => 'Show contact information',
 );
 
 ?>

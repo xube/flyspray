@@ -62,6 +62,10 @@
         </td>
       </tr>
       <tr>
+        <td><label for="show_contact">{L('showcontact')}</label></td>
+        <td>{!tpl_checkbox('show_contact', Req::val('show_contact', !Post::val('action') && $theuser->infos['show_contact']), 'show_contact')}</td>
+      </tr>
+      <tr>
         <td><label for="time_zone">{L('timezone')}</label></td>
         <td>
           <select id="time_zone" name="time_zone">
