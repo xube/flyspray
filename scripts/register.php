@@ -31,9 +31,9 @@ class FlysprayDoRegister extends FlysprayDo
         if ($reg_details['confirm_code'] != trim(Post::val('confirmation_code'))) {
             return array(ERROR_RECOVER, L('confirmwrong'));
         }
-
-        if (!Backend::create_user($reg_details['user_name'], Post::val('user_pass'), $reg_details['real_name'], $reg_details['jabber_id'],
-                                  $reg_details['email_address'], $reg_details['notify_type'], $reg_details['time_zone'], $fs->prefs['anon_group'])) {
+        $uid = Backend::create_user($reg_details['user_name'], Post::val('user_pass'), $reg_details['real_name'], $reg_details['jabber_id'],
+                                    $reg_details['email_address'], $reg_details['notify_type'], $reg_details['time_zone'], $fs->prefs['anon_group']);
+        if (!$uid) {
             return array(ERROR_RECOVER, L('usernametaken'));
         }
 

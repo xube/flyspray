@@ -70,7 +70,7 @@ class FlysprayDoPm extends FlysprayDo
         }
 
         $cols = array( 'project_title', 'theme_style', 'lang_code', 'default_task', 'default_entry',
-                'intro_message', 'others_view', 'anon_open', 'send_digest', 'anon_view_tasks',
+                'intro_message', 'others_view', 'anon_open', 'send_digest', 'anon_view_tasks', 'anon_group',
                 'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply', 'roadmap_field',
                 'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign', 'override_user_lang');
         $args = array_map('Post_to0', $cols);

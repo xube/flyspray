@@ -97,6 +97,15 @@
             </select>
           </td>
         </tr>
+        <tr>
+          <td><label for="anon_group">{L('anongroup')}</label></td>
+          <td>
+            <select id="anon_group" name="anon_group">
+              <option value="0">{L('none')}</option>
+              {!tpl_options(Flyspray::listGroups($proj->id), Post::val('anon_group', $proj->prefs['anon_group']))}
+            </select>
+          </td>
+        </tr>
       </table>
     </div>
 

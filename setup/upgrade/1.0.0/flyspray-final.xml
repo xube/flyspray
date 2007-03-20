@@ -664,6 +664,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="anon_group" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
   </table>
   <table name="registrations">
     <field name="reg_id" type="I" size="10">

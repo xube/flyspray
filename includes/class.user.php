@@ -268,12 +268,14 @@ class User
 
     function can_open_task($proj)
     {
-        return $proj->id && ($this->perms('manage_project') || $this->perms('open_new_tasks') || $this->perms('anon_open', $proj->id));
+        return $proj->id && ($this->perms('manage_project') || $this->perms('open_new_tasks')
+               || $this->perms('anon_open', $proj->id));
     }
 
     function can_change_private($task)
     {
-        return !$task['is_closed'] && ($this->perms('manage_project', $task['project_id']) || in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
+        return !$task['is_closed'] && ($this->perms('manage_project', $task['project_id'])
+                || in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
     }
 
     function can_view_userlist()

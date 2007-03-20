@@ -36,7 +36,7 @@
         <small>{$group['group_desc']}</small>
         <?php endif; ?>
         </td>
-        <td><a href="{CreateURL('pm', 'users', null, array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
+        <td><a href="{CreateURL('pm', 'users', $proj->id, array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
       </tr>
     <?php endforeach; ?>
     </table>

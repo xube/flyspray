@@ -473,7 +473,7 @@ class Backend
      * @param integer $time_zone
      * @param integer $group_in
      * @access public
-     * @return bool false if username is already taken
+     * @return mixed false if username is already taken, otherwise integer uid
      * @version 1.0
      * @notes This function does not have any permission checks (checked elsewhere)
      */
@@ -513,9 +513,16 @@ class Backend
 
         // Now, create a new record in the users_in_groups table
         $db->Execute('INSERT INTO  {users_in_groups} (user_id, group_id)
-                         VALUES  (?, ?)', array($uid, $group_in));
+                           VALUES  (?, ?)', array($uid, $group_in));
 
         Flyspray::logEvent(0, 30, serialize(Flyspray::getUserDetails($uid)));
+
+        // Add user to project groups
+        $sql = $db->Execute('SELECT anon_group FROM {projects} WHERE anon_group != 0');
+        while ($row = $sql->FetchRow()) {
+            $db->Execute('INSERT INTO  {users_in_groups} (user_id, group_id)
+                               VALUES  (?, ?)', array($uid, $row['anon_group']));
+        }
 
         $varnames = array('iwatch','atome','iopened');
 
@@ -576,7 +583,7 @@ class Backend
                           array($baseurl, $user_name, $real_name, $email, $jabber_id, $password, $auto));
         }
 
-        return true;
+        return $uid;
     }
 
     /**
