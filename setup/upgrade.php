@@ -146,7 +146,7 @@ function execute_upgrade_file($folder, $installed_version)
         }
     }
 
-    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(basename($upgrade_path), 'fs_ver'));
+    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($folder, 'fs_ver'));
     $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(serialize($done), 'upgrader_done'));
     $page->assign('done', true);
 }

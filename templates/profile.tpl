@@ -8,7 +8,7 @@
     </td>
   </tr>
   <tr>
-  <?php if (!$user->isAnon() && $user->infos['show_contact']): ?>
+  <?php if (!$user->isAnon() && $theuser->infos['show_contact'] || $user->perms('is_admin')): ?>
     <th>{L('emailaddress')}</th>
     <td>
       <a href="mailto:{$theuser->infos['email_address']}">{$theuser->infos['email_address']}</a>

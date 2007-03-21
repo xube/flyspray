@@ -152,7 +152,7 @@ class Notifications
             }
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
-            $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
+            $result = (@$swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
             //echo "<pre>";
             //$swift->log->dump();
             //echo "</pre>";

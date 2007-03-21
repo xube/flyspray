@@ -369,7 +369,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
     function action_newuser()
     {
-        global $fs, $db, $proj, $user;
+        global $fs, $db, $proj, $user, $page;
 
         if (!Post::val('user_name') || !Post::val('real_name')
             || !Post::val('email_address'))

@@ -6,10 +6,10 @@
     <tr>
       <td>
         <?php if ($do == 'admin'): ?>
-        <input type="hidden" name="action" value="newuser" />
         <input type="hidden" name="area" value="newuser" />
         <?php endif; ?>
-        <input type="hidden" name="do" value="admin" />
+        <input type="hidden" name="action" value="newuser" />
+        <input type="hidden" name="do" value="{$do}" />
         <label for="username">{L('username')}</label>
       </td>
       <td><input id="username" name="user_name" value="{Post::val('user_name')}" class="required text" type="text" size="32" maxlength="20" onblur="checkname(this.value);" />
