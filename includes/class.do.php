@@ -133,6 +133,9 @@ class FlysprayDo
                 if ($errstr) {
                     $_SESSION['ERROR'] = $errstr;
                 }
+                if ($url) {
+                    Flyspray::Redirect($url);
+                }
 				break;
 			case SUBMIT_OK:
                 if ($errstr) {

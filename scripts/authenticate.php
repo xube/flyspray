@@ -16,7 +16,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
         global $fs, $db, $proj, $user, $conf;
 
         if (Post::val('user_name') == '' || Post::val('password') == '') {
-            return array(ERROR_INPUT, L('error8'));
+            return array(ERROR_RECOVER, L('error8'), './');
         }
 
         // See if they provided the correct credentials...
@@ -65,9 +65,9 @@ class FlysprayDoAuthenticate extends FlysprayDo
 
             $_SESSION['failed_login'] = Post::val('user_name');
             if ($user_id == -1) {
-                return array(ERROR_INPUT, L('error23'));
+                return array(ERROR_RECOVER, L('error23'), './');
             } elseif ($user_id == 0) {
-                return array(ERROR_INPUT, L('error7'));
+                return array(ERROR_RECOVER, L('error7'), './');
             }
         }
 
