@@ -30,7 +30,7 @@
         <col style="width:10em;" />
       </colgroup>
       <thead>
-        <tr><th>{L('groupname')}</th><th>{L('users')}</th><th>{L('groupenabled')}</th></tr>
+        <tr><th>{L('groupname')}</th><th>{L('users')}</th><th>{L('groupopen')}</th></tr>
       </thead>
       <?php foreach ($groups as $group): ?>
       <tr>

@@ -27,101 +27,15 @@
         <td colspan="2">{L('notshownforadmin')}</td>
       </tr>
       <?php else: ?>
+      <?php foreach ($fs->perms as $perm): ?>
       <tr>
-        <td><label for="projectmanager">{L('projectmanager')}</label></td>
-        <td>{!tpl_checkbox('manage_project', Req::val('manage_project', !Req::val('action') && $group['manage_project']), 'projectmanager')}</td>
+        <td><label for="{$perm}">{L(str_replace('_', '', $perm))}</label></td>
+        <td>{!tpl_checkbox($perm, Req::val($perm, !Req::val('action') && $group[$perm]), $perm)}</td>
       </tr>
-      <tr>
-        <td><label for="viewtasks">{L('viewtasks')}</label></td>
-        <td>{!tpl_checkbox('view_tasks', Req::val('view_tasks', !Req::val('action') && $group['view_tasks']), 'viewtasks')}</td>
-      </tr>
-      <tr>
-        <td><label for="canopenjobs">{L('opennewtasks')}</label></td>
-        <td>{!tpl_checkbox('open_new_tasks', Req::val('open_new_tasks', !Req::val('action') && $group['open_new_tasks']), 'canopenjobs')}</td>
-      </tr>
-      <tr>
-        <td><label for="modifyowntasks">{L('modifyowntasks')}</label></td>
-        <td>{!tpl_checkbox('modify_own_tasks', Req::val('modify_own_tasks', !Req::val('action') && $group['modify_own_tasks']), 'modifyowntasks')}</td>
-      </tr>
-      <tr>
-        <td><label for="modifyalltasks">{L('modifyalltasks')}</label></td>
-        <td>{!tpl_checkbox('modify_all_tasks', Req::val('modify_all_tasks', !Req::val('action') && $group['modify_all_tasks']), 'modifyalltasks')}</td>
-      </tr>
-      <tr>
-        <td><label for="viewcomments">{L('viewcomments')}</label></td>
-        <td>{!tpl_checkbox('view_comments', Req::val('view_comments', !Req::val('action') && $group['view_comments']), 'viewcomments')}</td>
-      </tr>
-      <tr>
-        <td><label for="canaddcomments">{L('addcomments')}</label></td>
-        <td>{!tpl_checkbox('add_comments', Req::val('add_comments', !Req::val('action') && $group['add_comments']), 'canaddcomments')}</td>
-      </tr>
-      <tr>
-        <td><label for="editowncomments">{L('editowncomments')}</label></td>
-        <td>{!tpl_checkbox('edit_own_comments', Req::val('edit_own_comments', !Req::val('action') && $group['edit_own_comments']), 'editowncomments')}</td>
-      </tr>
-      <tr>
-        <td><label for="editcomments">{L('editcomments')}</label></td>
-        <td>{!tpl_checkbox('edit_comments', Req::val('edit_comments', !Req::val('action') && $group['edit_comments']), 'editcomments')}</td>
-      </tr>
-      <tr>
-        <td><label for="deletecomments">{L('deletecomments')}</label></td>
-        <td>{!tpl_checkbox('delete_comments', Req::val('delete_comments', !Req::val('action') && $group['delete_comments']), 'deletecomments')}</td>
-      </tr>
-      <tr>
-        <td><label for="createattachments">{L('createattachments')}</label></td>
-        <td>{!tpl_checkbox('create_attachments', Req::val('create_attachments', !Req::val('action') && $group['create_attachments']), 'createattachments')}</td>
-      </tr>
-      <tr>
-        <td><label for="deleteattachments">{L('deleteattachments')}</label></td>
-        <td>{!tpl_checkbox('delete_attachments', Req::val('delete_attachments', !Req::val('action') && $group['delete_attachments']), 'deleteattachments')}</td>
-      </tr>
-      <tr>
-        <td><label for="viewhistory">{L('viewhistory')}</label></td>
-        <td>{!tpl_checkbox('view_history', Req::val('view_history', !Req::val('action') && $group['view_history']), 'viewhistory')}</td>
-      </tr>
-      <tr>
-        <td><label for="closeowntasks">{L('closeowntasks')}</label></td>
-        <td>{!tpl_checkbox('close_own_tasks', Req::val('close_own_tasks', !Req::val('action') && $group['close_own_tasks']), 'closeowntasks')}</td>
-      </tr>
-      <tr>
-        <td><label for="closeothertasks">{L('closeothertasks')}</label></td>
-        <td>{!tpl_checkbox('close_other_tasks', Req::val('close_other_tasks', !Req::val('action') && $group['close_other_tasks']), 'closeothertasks')}</td>
-      </tr>
-      <tr>
-        <td><label for="assigntoself">{L('assigntoself')}</label></td>
-        <td>{!tpl_checkbox('assign_to_self', Req::val('assign_to_self', !Req::val('action') && $group['assign_to_self']), 'assigntoself')}</td>
-      </tr>
-       <tr>
-        <td><label for="assignotherstoself">{L('assignotherstoself')}</label></td>
-        <td>{!tpl_checkbox('assign_others_to_self', Req::val('assign_others_to_self', !Req::val('action') && $group['assign_others_to_self']), 'assignotherstoself')}</td>
-      </tr>
-      <tr>
-        <td><label for="addtoassignees">{L('addtoassignees')}</label></td>
-        <td>{!tpl_checkbox('add_to_assignees', Req::val('add_to_assignees', !Req::val('action') && $group['add_to_assignees']), 'addtoassignees')}</td>
-      </tr>
-      <tr>
-        <td><label for="viewreports">{L('viewreports')}</label></td>
-        <td>{!tpl_checkbox('view_reports', Req::val('view_reports', !Req::val('action') && $group['view_reports']), 'viewreports')}</td>
-      </tr>
-      <tr>
-        <td><label for="canvote">{L('canvote')}</label></td>
-        <td>{!tpl_checkbox('add_votes', Req::val('add_votes', !Req::val('action') && $group['add_votes']), 'canvote')}</td>
-      </tr>
-      <tr>
-        <td><label for="editassignments">{L('editassignments')}</label></td>
-        <td>{!tpl_checkbox('edit_assignments', Req::val('edit_assignments', !Req::val('action') && $group['edit_assignments']), 'editassignments')}</td>
-      </tr>
-      <tr>
-        <td><label for="view_userlist">{L('viewuserlist')}</label></td>
-        <td>{!tpl_checkbox('view_userlist', Req::val('view_userlist', !Req::val('action') && $group['view_userlist']), 'view_userlist')}</td>
-      </tr>
-      <tr>
-        <td><label for="view_private">{L('viewprivate')}</label></td>
-        <td>{!tpl_checkbox('view_private', Req::val('view_private', !Req::val('action') && $group['view_private']), 'view_private')}</td>
-      </tr>
+      <?php endforeach; ?>
       <?php if (!$proj->id): ?>
       <tr>
-        <td><label for="groupopen">{L('groupenabled')}</label></td>
+        <td><label for="groupopen">{L('groupopen')}</label></td>
         <td>{!tpl_checkbox('group_open', Req::val('group_open', !Req::val('action') && $group['group_open']), 'groupopen')}</td>
       </tr>
       <?php endif; ?>

@@ -419,22 +419,16 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('groupanddesc'));
         } else {
             // Check to see if the group name is available
-            $taken = $db->Execute("SELECT  COUNT(*)
-                                     FROM  {groups}
-                                    WHERE  group_name = ? AND project_id = ?",
-                                   array(Post::val('group_name'), $proj->id));
+            $taken = $db->GetOne("SELECT  COUNT(*)
+                                    FROM  {groups}
+                                   WHERE  group_name = ? AND project_id = ?",
+                                  array(Post::val('group_name'), $proj->id));
 
             if ($taken) {
                 return array(ERROR_RECOVER, L('groupnametaken'));
             }
 
-            $cols = array('group_name', 'group_desc', 'manage_project', 'edit_own_comments',
-                    'view_tasks', 'open_new_tasks', 'modify_own_tasks', 'add_votes',
-                    'modify_all_tasks', 'view_comments', 'add_comments', 'edit_assignments',
-                    'edit_comments', 'delete_comments', 'create_attachments',
-                    'delete_attachments', 'view_history', 'close_own_tasks',
-                    'close_other_tasks', 'assign_to_self', 'view_userlist',
-                    'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
+            $cols = array_merge(array('group_name', 'group_desc', 'group_open'), $fs->perms);
 
             $params = array_map('Post_to0', $cols);
             array_unshift($params, $proj->id);
@@ -471,21 +465,14 @@ class FlysprayDoAdmin extends FlysprayDo
 
         $pid = $db->GetOne('SELECT project_id FROM {projects} ORDER BY project_id DESC');
 
-        $cols = array( 'manage_project', 'view_tasks', 'open_new_tasks',
-                'modify_own_tasks', 'modify_all_tasks', 'view_comments',
-                'add_comments', 'edit_comments', 'delete_comments',
-                'create_attachments', 'delete_attachments', 'view_history', 'add_votes',
-                'close_own_tasks', 'close_other_tasks', 'assign_to_self', 'edit_own_comments',
-                'assign_others_to_self', 'add_to_assignees', 'view_reports', 'group_open');
-        $args = array_fill(0, count($cols), '1');
+        $args = array_fill(0, count($fs->perms), '1');
         array_unshift($args, 'Project Managers',
-                'Permission to do anything related to this project.',
-                intval($pid));
+                      'Permission to do anything related to this project.', 1, intval($pid));
 
         $db->Execute("INSERT INTO  {groups}
-                                 ( group_name, group_desc, project_id,
-                                   ".join(',', $cols).")
-                         VALUES  ( ". fill_placeholders($cols, 3) .")", $args);
+                                 ( group_name, group_desc, group_open, project_id,
+                                   ".join(',', $fs->perms).")
+                         VALUES  ( ". fill_placeholders($fs->perms, 3) .")", $args);
 
         return array(SUBMIT_OK, L('projectcreated'), CreateURL('pm', 'prefs', $pid));
     }
@@ -634,7 +621,7 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('groupanddesc'));
         }
 
-        $cols = array('group_name', 'group_desc');
+        $cols = array('group_name', 'group_desc', 'group_open');
 
         // Add a user to a group
         Backend::add_user_to_group(Post::val('uid'), Post::val('group_id'), $proj->id);
@@ -651,14 +638,7 @@ class FlysprayDoAdmin extends FlysprayDo
         }
         // Allow all groups to update permissions except for global Admin
         if (Post::val('group_id') != '1') {
-            $cols = array_merge($cols,
-                                array('manage_project', 'view_tasks', 'edit_own_comments', 'view_private',
-                                  'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
-                                  'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
-                                  'create_attachments', 'delete_attachments', 'view_userlist',
-                                  'view_history', 'close_own_tasks', 'close_other_tasks', 'edit_assignments',
-                                  'assign_to_self', 'assign_others_to_self', 'add_to_assignees', 'view_reports',
-                                  'add_votes', 'group_open'));
+            $cols = array_merge($fs->perms, $cols);
         }
 
         $args = array_map('Post_to0', $cols);
@@ -666,9 +646,9 @@ class FlysprayDoAdmin extends FlysprayDo
         $args[] = Post::val('group_id');
         $args[] = $proj->id;
 
-        $db->Execute("UPDATE  {groups}
-                       SET  ".join('=?,', $cols)."=?
-                     WHERE  group_id = ? AND project_id = ?", $args);
+        $db->Execute('UPDATE  {groups}
+                       SET  ' .join('=?,', $cols) . '=?
+                     WHERE  group_id = ? AND project_id = ?', $args);
 
         return array(SUBMIT_OK, L('groupupdated'));
     }

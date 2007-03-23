@@ -52,6 +52,19 @@ class Flyspray
      */
     var $severities = array();
 
+    /**
+     * List of all permissions to be used at various places
+     * @access public
+     * @var array
+     */
+    var $perms = array('manage_project', 'view_tasks', 'edit_own_comments', 'view_private',
+                       'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
+                       'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
+                       'create_attachments', 'delete_attachments', 'view_userlist',
+                       'view_history', 'close_own_tasks', 'close_other_tasks', 'edit_assignments',
+                       'assign_to_self', 'assign_others_to_self', 'add_to_assignees', 'view_reports',
+                       'add_votes');
+
     // Application-wide preferences {{{
     /**
      * Constructor, starts session, loads settings

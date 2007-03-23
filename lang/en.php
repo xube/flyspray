@@ -25,7 +25,7 @@ $language = array(
 'addcomments'             => 'Add comments',
 'attachfiles'             => 'Attach files',
 'vote'                    => 'Vote',
-'groupenabled'            => 'Members can login',
+'groupopen'               => 'Members can login',
 'tasktypelist'            => 'Task Types list',
 'categorylist'            => 'Categories list',
 'oslist'                  => 'Operating Systems list',
@@ -172,7 +172,7 @@ $language = array(
 'tasksperpage'            => 'Tasks per page of the task list',
 'addtoassignees'          => 'Add self to assignees',
 'taskstatuses'            => 'Task Statuses',
-'canvote'                 => 'Can Vote for tasks',
+'addvotes'                => 'Can Vote for tasks',
 'loginsuccessful'         => 'Login successful.',
 'youareloggedout'         => 'You have been logged out.',
 'waitwhiletransfer'       => 'Please wait while you are transferred...',
@@ -922,6 +922,7 @@ Regards,',
 'syntax'                  => 'Syntax',
 'viewprivate'             => 'View private tasks',
 'showcontact'             => 'Show contact information',
+'isadmin'                 => 'Is admin',
 );
 
 ?>

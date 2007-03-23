@@ -1133,7 +1133,7 @@ div.tab {
 }
 
 div#permissions {
-	width:18em;
+	width:25em;
 	visibility:hidden;
 	position:absolute;
 	top:25px !important;
@@ -1154,6 +1154,10 @@ div#permissions table td,div#permissions table th {
 	border:0;
 	text-align:left;
 	font-weight:400;
+}
+
+div#permissions table tbody td,div#permissions table tbody th {
+	border-top:dotted 1px gray;
 }
 
 div#permissions table thead th {

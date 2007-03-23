@@ -93,13 +93,7 @@ class User
     {
         global $db, $fs;
 
-        $fields = array('is_admin', 'manage_project', 'view_tasks', 'edit_own_comments',
-                'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
-                'view_comments', 'add_comments', 'edit_comments', 'edit_assignments',
-                'delete_comments', 'create_attachments', 'view_userlist',
-                'delete_attachments', 'view_history', 'close_own_tasks', 'view_private',
-                'close_other_tasks', 'assign_to_self', 'assign_others_to_self',
-                'add_to_assignees', 'view_reports', 'add_votes', 'group_open');
+        $fields = array_merge($fs->perms, array('is_admin', 'group_open'));
 
         $this->perms = array(0 => array());
         // Get project settings which are important for permissions

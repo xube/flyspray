@@ -614,7 +614,7 @@ function formatDate($timestamp, $extended = false, $default = '')
 // {{{ Draw permissions table
 function tpl_draw_perms($perms)
 {
-    global $proj;
+    global $proj, $fs;
 
     $yesno = array(
             '<td class="bad">' . eL('no') . '</td>',
@@ -627,10 +627,8 @@ function tpl_draw_perms($perms)
     $html .= '</th></tr></thead><tbody>';
 
     foreach ($perms[$proj->id] as $key => $val) {
-        if (!is_numeric($key) && !isset($proj->prefs[$key]) &&
-            !in_array($key, array('project_id', 'group_open', 'record_id', 'project_group', 'anon_view_tasks'))) {
-            $display_key = Filters::noXSS(str_replace( '_', ' ', $key));
-            $html .= '<tr><th>' . $display_key . '</th>';
+        if (in_array($key, array_merge(array('is_admin', 'group_open'), $fs->perms), true)) {
+            $html .= '<tr><th>' . eL(str_replace('_', '', $key)) . '</th>';
             $html .= $yesno[ ($val || $perms[0]['is_admin']) ].'</tr>';
         }
     }
