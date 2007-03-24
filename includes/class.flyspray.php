@@ -116,6 +116,15 @@ class Flyspray
         return substr($version, 0, strpos($version, ' '));
     }
 
+    function get_config_path()
+    {
+        $cfile = BASEDIR . '/flyspray.conf.php';
+        if (is_readable($hostconfig = BASEDIR . '/flyspray.' . $_SERVER['SERVER_NAME'] . '.conf.php')) {
+            $cfile = $hostconfig;
+        }
+        return $cfile;
+    }
+
     // {{{ Redirect to $url
     /**
      * Redirects the browser to the page in $url
