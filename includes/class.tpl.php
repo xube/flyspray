@@ -250,7 +250,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         $params['pagenum'] = Get::val('pagenum');
     }
 
-    $url = Filters::noXSS(CreateURL('details', $task['task_id'],  null, $params));
+    $url = Filters::noXSS(CreateURL(array('details', 'task' . $task['task_id']), $params));
     $title_text = Filters::noXSS($title_text);
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',$url, $title_text, join_attrs($attrs), $text);
 
@@ -277,7 +277,7 @@ function tpl_userlink($uid)
     }
 
     if (isset($uname)) {
-        $args = array_map(array('Filters', 'noXSS'),array(CreateURL('user', $uid), $rname, $uname));
+        $args = array_map(array('Filters', 'noXSS'),array(CreateURL(array('user'), array('uid' => $uid)), $rname, $uname));
         $cache[$uid] = vsprintf('<a href="%s">%s (%s)</a>', $args);
     } elseif (empty($cache[$uid])) {
         $cache[$uid] = eL('anonymous');
@@ -672,79 +672,34 @@ function tpl_disableif ($if)
 }
 // {{{ Url handling
 // Create an URL based upon address-rewriting preferences {{{
-function CreateURL($type, $arg1 = null, $arg2 = null, $arg3 = array())
+function CreateURL($type, $args = array())
 {
     global $baseurl, $conf;
 
-    $url = $baseurl;
+    $return = $baseurl;
+    if (!is_array($type)) {
+        $type = array($type);
+    }
 
     // If we do want address rewriting
     if ($conf['general']['address_rewriting'] == '1') {
-        switch ($type) {
-            case 'depends':   $return = $url . 'task/' .  $arg1 . '/' . $type; break;
-            case 'details':   $return = $url . 'task/' . $arg1; break;
-            case 'edittask':  $return = $url . 'task/' .  $arg1 . '/edit'; break;
-            case 'pm':        $return = $url . 'pm/proj' . $arg2 . '/' . $arg1; break;
-
-            case 'admin':
-            case 'edituser':
-            case 'myprofile':
-            case 'user':      $return = $url . $type . '/' . $arg1; break;
-
-            case 'project':   $return = $url . 'proj' . $arg1; break;
-
-            case 'toplevel':
-            case 'roadmap':
-            case 'index':
-            case 'newtask':   $return = $url . $type .  '/proj' . $arg1; break;
-
-            case 'editgroup': $return = $url . $arg2 . '/' . $type . '/' . $arg1; break;
-
-            case 'logout':
-            case 'lostpw':
-            case 'register':
-            case 'reports':  $return = $url . $type; break;
-        }
+        $return = $baseurl . implode('/', $type);
     } else {
-        if ($type == 'edittask') {
-            $url .= '?do=details';
-        } else {
-            $url .= '?do=' . $type;
-        }
+        // otherwise generate a usual URL
+        $args += array('do' => array_shift($type));
+        foreach ($type as $arg) {
+            if (preg_match('/proj([0-9]+)/', $arg, $matches)) {
+                $args += array('project' => $matches[1]);
 
-        switch ($type) {
-            case 'admin':     $return = $url . '&area=' . $arg1; break;
-            case 'myprofile':     $return = $url . '&area=' . $arg1; break;
-            case 'edittask':  $return = $url . '&task_id=' . $arg1 . '&edit=yep'; break;
-            case 'pm':        $return = $url . '&area=' . $arg1 . '&project=' . $arg2; break;
-            case 'user':      $return = $baseurl . '?do=user&id=' . $arg1; break;
-            case 'edituser':  $return = $baseurl . '?do=admin&area=user&user_id=' . $arg1; break;
-            case 'logout':    $return = $baseurl . '?do=authenticate&logout=1'; break;
-
-            case 'details':
-            case 'depends':   $return = $url . '&task_id=' . $arg1; break;
-
-            case 'project':   $return = $baseurl . '?project=' . $arg1; break;
-
-            case 'roadmap':
-            case 'toplevel':
-            case 'index':
-            case 'newtask':   $return = $url . '&project=' . $arg1; break;
-
-            case 'editgroup': $return = $baseurl . '?do=' . $arg2 . '&area=editgroup&group_id=' . $arg1; break;
-
-            case 'lostpw':
-            case 'myprofile':
-            case 'register':
-            case 'reports':   $return = $url; break;
+            } else if (preg_match('/task([0-9]+)/', $arg, $matches)) {
+                $args += array('task_id' => $matches[1]);
+            } else {
+                $args += array('area' => $arg);
+            }
         }
     }
 
-    $url = new Url($return);
-    if (count($arg3)) {
-        $url->addvars($arg3);
-    }
-    return $url->get();
+    return (count($args) ? $return . '?' . tpl_query_from_array($args) : $return);
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
@@ -769,10 +724,10 @@ function pagenums($pagenum, $perpage, $totalcount)
         $finish = min($start + 4, $pages);
 
         if ($start > 1)
-            $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => 1)))) . '">&lt;&lt;' . eL('first') . ' </a>';
+            $output .= '<a href="' . Filters::noXSS(CreateURL(array('index', 'proj' . $proj->id), array_merge($_GET, array('pagenum' => 1)))) . '">&lt;&lt;' . eL('first') . ' </a>';
 
         if ($pagenum > 1)
-            $output .= '<a id="previous" accesskey="p" href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum - 1)))) . '">&lt; ' . eL('previous') . '</a> - ';
+            $output .= '<a id="previous" accesskey="p" href="' . Filters::noXSS(CreateURL(array('index', 'proj' . $proj->id), array_merge($_GET, array('pagenum' => $pagenum - 1)))) . '">&lt; ' . eL('previous') . '</a> - ';
 
         for ($pagelink = $start; $pagelink <= $finish;  $pagelink++) {
             if ($pagelink != $start)
@@ -781,14 +736,14 @@ function pagenums($pagenum, $perpage, $totalcount)
             if ($pagelink == $pagenum) {
                 $output .= '<strong>' . $pagelink . '</strong>';
             } else {
-                $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagelink)))) . '">' . $pagelink . '</a>';
+                $output .= '<a href="' . Filters::noXSS(CreateURL(array('index', 'proj' . $proj->id), array_merge($_GET, array('pagenum' => $pagelink)))) . '">' . $pagelink . '</a>';
             }
         }
 
         if ($pagenum < $pages)
-            $output .= ' - <a id="next" accesskey="n" href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pagenum + 1)))) . '">' . eL('next') . ' &gt;</a>';
+            $output .= ' - <a id="next" accesskey="n" href="' . Filters::noXSS(CreateURL(array('index', 'proj' . $proj->id), array_merge($_GET, array('pagenum' => $pagenum + 1)))) . '">' . eL('next') . ' &gt;</a>';
         if ($finish < $pages)
-            $output .= '<a href="' . Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, array('pagenum' => $pages)))) . '"> ' . eL('last') . ' &gt;&gt;</a>';
+            $output .= '<a href="' . Filters::noXSS(CreateURL(array('index', 'proj' . $proj->id), array_merge($_GET, array('pagenum' => $pages)))) . '"> ' . eL('last') . ' &gt;&gt;</a>';
         $output .= '</span>';
     }
 
@@ -824,99 +779,23 @@ function tpl_list_heading($colname, $format = "<th%s>%s</th>")
 
     $new_order = array('order' => $colname, 'sort' => $sort1, 'order2' => $order2, 'sort2' => $sort2);
     $html = sprintf('<a title="%s" href="%s">%s</a>',
-            L('sortthiscolumn'), Filters::noXSS(CreateURL('index', $proj->id, null, array_merge($_GET, $new_order))), $html);
+            L('sortthiscolumn'), Filters::noXSS(CreateURL(array('index', 'proj' . $proj->id), array_merge($_GET, $new_order))), $html);
 
     return sprintf($format, $class, $html);
 }
 
-class Url {
-	var $url = '';
-	var $parsed;
-
-	function url($url = '') {
-		$this->url = $url;
-		$this->parsed = parse_url($this->url);
-	}
-
-	function seturl($url) {
-		$this->url = $url;
-		$this->parsed = parse_url($this->url);
-	}
-
-	function getinfo($type = null) {
-		if (is_null($type)) {
-			return $this->parsed;
-		} elseif (isset($this->parsed[$type])) {
-			return $this->parsed[$type];
-		} else {
-			return '';
-		}
-	}
-
-	function setinfo($type, $value) {
-		$this->parsed[$type] = $value;
-	}
-
-	function addfrom($method = 'get', $vars = array()) {
-		$append = '';
-		foreach($vars as $key) {
-			$append .= Url::query_from_array( (($method == 'get') ? Get::val($key) : Post::val($key)) ) . '&';
-        }
-        $append = substr($append, 0, -1);
-
-        if ($this->getinfo('query')) {
-        	$this->parsed['query'] .= '&' . $append;
-        } else {
-        	$this->parsed['query'] = $append;
-        }
-	}
-
-    function query_from_array($vars) {
-        $append = '';
-		foreach ($vars as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $valuei) {
-                    $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
-                }
-            } else {
-                $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
+function tpl_query_from_array($vars) {
+    $append = '';
+    foreach ($vars as $key => $value) {
+        if (is_array($value)) {
+            foreach ($value as $valuei) {
+                $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
             }
+        } else {
+            $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
         }
-        return substr($append, 0, -1);
     }
-
-	function addvars($vars = array()) {
-        $append = Url::query_from_array($vars);
-
-        if ($this->getinfo('query')) {
-        	$this->parsed['query'] .= '&' . $append;
-        } else {
-        	$this->parsed['query'] = $append;
-        }
-	}
-
-	function get($fullpath = true) {
-		$return = '';
-		if ($fullpath) {
-			$return .= $this->getinfo('scheme') . '://' . $this->getinfo('host');
-
-            if ($this->getinfo('port')) {
-                $return .= ':' . $this->getinfo('port');
-            }
-        }
-
-		$return .= $this->getinfo('path');
-
-		if ($this->getinfo('query')) {
-            $return .= '?' . $this->getinfo('query');
-		}
-
-		if ($this->getinfo('fragment')) {
-		 	$return .= '#' . $this->getinfo('fragment');
-		}
-
-		return $return;
-	}
+    return substr($append, 0, -1);
 }
 // }}}
 // }}}

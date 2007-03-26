@@ -1,5 +1,5 @@
 <fieldset><legend>{L('editcomment')}</legend>
-<form action="{CreateUrl('details', $comment['task_id'])}" enctype="multipart/form-data" method="post">
+<form action="{CreateUrl(array('details', 'task' . $comment['task_id']))}" enctype="multipart/form-data" method="post">
     <div>
     <p>{L('commentby')} {$comment['real_name']} - {formatDate($comment['date_added'], true)}</p>
     <?php

@@ -169,7 +169,7 @@ class User
         {
             Flyspray::setcookie('flyspray_userid',   '', time()-60);
             Flyspray::setcookie('flyspray_passhash', '', time()-60);
-            Flyspray::Redirect(CreateURL('logout', null));
+            Flyspray::Redirect(CreateURL('authenticate', array('logout' => 1)));
         }
     }
 

@@ -20,7 +20,7 @@ class FlysprayDoDepends extends FlysprayDo
         global $conf;
 
         if (Flyspray::function_disabled('shell_exec') && !array_get($conf['general'], 'dot_public')) {
-            return array(ERROR_INPUT, L('error24'), CreateUrl('details', $id));
+            return array(ERROR_INPUT, L('error24'), CreateUrl(array('details', 'task' . $id)));
         }
         return array(NO_SUBMIT);
     }
@@ -52,7 +52,7 @@ class FlysprayDoDepends extends FlysprayDo
         $page->assign('task_id', $id);
 
         $prunemode = Get::num('prune', 0);
-        $selfurl   = CreateURL('depends', $id);
+        $selfurl   = CreateURL(array('depends', 'task' . $id));
         $pmodes    = array(L('none'), L('pruneclosedlinks'), L('pruneclosedtasks'));
 
         foreach ($pmodes as $mode => $desc) {
@@ -200,7 +200,7 @@ class FlysprayDoDepends extends FlysprayDo
                 ($r['clsd'] ? 'color=black,' : '') .
                 ($r['clsd'] ? 'fillcolor=white,' : "fillcolor=\"$col\",") .
                 ($n == $id ? 'shape=box,' : '') .
-                "href=\"".CreateURL("details", $n)."\", ".
+                "href=\"".CreateURL(array('details', 'task' . $n))."\", ".
                 "tooltip=\"$tooltip\"];\n";
         }
         // Add edges

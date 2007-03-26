@@ -1,4 +1,4 @@
-<form action="{CreateURL($do, 'fields', $proj->id)}" method="post">
+<form action="{CreateURL(array($do, 'proj' . $proj->id, 'fields'))}" method="post">
   <table class="list" id="listTable">
    <thead>
      <tr>
@@ -68,7 +68,7 @@
   </table>
 </form>
 <hr />
-<form action="{CreateURL($do, 'fields', $proj->id)}" method="post">
+<form action="{CreateURL(array($do, 'proj' . $proj->id, 'fields'))}" method="post">
   <table class="list">
     <tr>
       <td>

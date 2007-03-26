@@ -1,7 +1,7 @@
 <div id="toolbox">
   <h3>{L('admintoolboxlong')} :: {L('preferences')}</h3>
 
-  <form action="{CreateURL('admin', 'prefs')}" method="post">
+  <form action="{CreateURL(array('admin', 'prefs'))}" method="post">
   <ul id="submenu">
    <li><a href="#general">{L('general')}</a></li>
    <li><a href="#userregistration">{L('userregistration')}</a></li>

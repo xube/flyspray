@@ -10,7 +10,7 @@
     </form>
     <hr />
   <?php $group = Flyspray::getGroupDetails(Req::num('group_id')); ?>
-  <form action="{CreateURL('editgroup', Req::num('group_id'), $do)}" method="post">
+  <form action="{CreateURL(array($do, 'proj' . $proj->id, 'editgroup'), array('group_id' => Req::num('group_id')))}" method="post">
     <table class="box">
       <tr>
         <td>
@@ -70,6 +70,6 @@
 
   <hr />
 
-  <h3><a href="{CreateURL($do, 'users', $proj->id, array('group_id[]' => $group['group_id']))}">{L('groupmembers')} ({$group['num_users']})</a></h3>
+  <h3><a href="{CreateURL(array($do, 'proj' . $proj->id, 'users'), array('group_id[]' => $group['group_id']))}">{L('groupmembers')} ({$group['num_users']})</a></h3>
 
 </fieldset>

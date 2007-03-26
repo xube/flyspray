@@ -16,7 +16,7 @@
     </form>
 
     <p>
-      <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{CreateURL('pm', 'newgroup', $proj->id)}">{L('newgroup')}</a>
+      <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{CreateURL(array('pm', 'proj' . $proj->id, 'newgroup'))}">{L('newgroup')}</a>
     </p>
 
     <table class="userlist">
@@ -30,13 +30,13 @@
       </thead>
       <?php foreach ($groups as $group): ?>
       <tr>
-        <td><a href="{CreateUrl('editgroup', $group['group_id'], 'pm')}">{$group['group_name']}</a>
+        <td><a href="{CreateUrl(array('pm', 'proj'. $proj->id, 'editgroup'), array('group_id' => $group['group_id']))}">{$group['group_name']}</a>
         <?php if ($group['group_desc'] != ''): ?>
         <br />
         <small>{$group['group_desc']}</small>
         <?php endif; ?>
         </td>
-        <td><a href="{CreateURL('pm', 'users', $proj->id, array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
+        <td><a href="{CreateURL(array('pm', 'proj' . $proj->id, 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
       </tr>
     <?php endforeach; ?>
     </table>

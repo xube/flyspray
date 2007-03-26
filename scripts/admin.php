@@ -474,7 +474,7 @@ class FlysprayDoAdmin extends FlysprayDo
                                    ".join(',', $fs->perms).")
                          VALUES  ( ". fill_placeholders($fs->perms, 3) .")", $args);
 
-        return array(SUBMIT_OK, L('projectcreated'), CreateURL('pm', 'prefs', $pid));
+        return array(SUBMIT_OK, L('projectcreated'), CreateURL(array('pm', 'proj' . $pid, 'prefs')));
     }
 
     function action_edituser()
@@ -485,7 +485,7 @@ class FlysprayDoAdmin extends FlysprayDo
             // check that he is not the last user
             if ($db->GetOne('SELECT count(*) FROM {users}') > 1) {
                 Backend::delete_user(Post::val('user_id'));
-                return array(SUBMIT_OK, L('userdeleted'), CreateURL('admin', 'groups'));
+                return array(SUBMIT_OK, L('userdeleted'), CreateURL(array('admin', 'groups')));
             } else {
                 return array(ERROR_RECOVER, L('lastuser'));
             }
@@ -634,7 +634,7 @@ class FlysprayDoAdmin extends FlysprayDo
                             array(Post::val('move_to'), Post::val('group_id')));
             }
 
-            return array(SUBMIT_OK, L('groupupdated'), CreateURL( (($proj->id) ? 'pm' : 'admin'), 'groups', $proj->id));
+            return array(SUBMIT_OK, L('groupupdated'), CreateURL( array((($proj->id) ? 'pm' : 'admin'), 'proj' . $proj->id, 'groups')));
         }
         // Allow all groups to update permissions except for global Admin
         if (Post::val('group_id') != '1') {

@@ -99,7 +99,7 @@ $page = new FSTpl();
 if ($show_task = Get::val('show_task')) {
     // If someone used the 'show task' form, redirect them
     if (is_numeric($show_task)) {
-        Flyspray::Redirect( CreateURL('details', $show_task) );
+        Flyspray::Redirect( CreateURL(array('details', 'task' . $show_task)) );
     } else {
         Flyspray::Redirect( $baseurl . '?string=' .  $show_task);
     }

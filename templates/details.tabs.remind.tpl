@@ -1,7 +1,7 @@
 <?php if (!$task['is_closed']): ?>
   <div id="remind" class="tab">
 
-  <form method="post" action="{CreateUrl('details', $task['task_id'])}#remind" >
+  <form method="post" action="{CreateUrl(array('details', 'task' . $task['task_id']))}#remind" >
     <table id="reminders" class="userlist">
     <tr>
       <th>
@@ -44,7 +44,7 @@
   </form>
 
   <fieldset><legend>{L('addreminder')}</legend>
-  <form action="{CreateUrl('details', $task['task_id'])}#remind" method="post" id="formaddreminder">
+  <form action="{CreateUrl(array('details', 'task' . $task['task_id']))}#remind" method="post" id="formaddreminder">
     <div>
       <input type="hidden" name="action" value="addreminder" />
       <input type="hidden" name="task_id" value="{$task['task_id']}" />
@@ -65,7 +65,7 @@
 
       <br />
       <textarea class="text" name="reminder_message"
-        rows="10" cols="72">{Post::val('reminder_message', L('defaultreminder') . "\n\n" . CreateURL('details', $task['task_id']))}</textarea>
+        rows="10" cols="72">{Post::val('reminder_message', L('defaultreminder') . "\n\n" . CreateURL(array('details', 'task' . $task['task_id'])))}</textarea>
       <br />
       <button type="submit">{L('addreminder')}</button>
     </div>

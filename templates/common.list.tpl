@@ -8,7 +8,7 @@
     </div>
 </div>
 <?php endif; ?>
-<form action="{CreateURL($do, 'list', $proj->id, array('list_id' => Req::val('list_id')))}" method="post">
+<form action="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
   <table class="list" id="listTable">
    <thead>
      <tr>
@@ -79,7 +79,7 @@
   <?php endif; ?>
 </form>
 <hr />
-<form action="{CreateURL($do, 'list', $proj->id, array('list_id' => Req::val('list_id')))}" method="post">
+<form action="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
   <table class="list">
     <tr>
       <td>

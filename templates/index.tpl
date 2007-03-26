@@ -31,7 +31,7 @@
         <?php endif; ?>
 
         <span id="searchstate" style="cursor:pointer">
-        <a onclick="toggleSearchBox('{$this->themeUrl()}');return false;" href="{CreateUrl('project', $proj->id, null, array_merge($_GET, array('toggleadvanced' => 1)))}"><span id="advancedsearchstate" class="showstate">
+        <a onclick="toggleSearchBox('{$this->themeUrl()}');return false;" href="{CreateUrl(array('proj' . $proj->id), array_merge($_GET, array('toggleadvanced' => 1)))}"><span id="advancedsearchstate" class="showstate">
         <img id="advancedsearchstateimg" src="<?php echo (Cookie::val('advancedsearch')) ? $this->get_image('edit_remove') : $this->get_image('edit_add'); ?>"
              alt="<?php echo (Cookie::val('advancedsearch')) ? '-' : '+'; ?>" width="16" height="16" />
         </span>{L('advanced')}</a>
@@ -198,12 +198,13 @@
               <option value="add_notification">{L('watchtasks')}</option>
               <option value="remove_notification">{L('stopwatchingtasks')}</option>
               <option value="takeownership">{L('assigntaskstome')}</option>
+              <option value="mass_edit">{L('massedit')}</option>
             </select>
             <input type="hidden" name="user_id" value="{$user->id}" />
             <button type="submit">{L('takeaction')}</button>
           </td>
           <td id="export">
-            <a href="{$baseurl}?{Url::query_from_array(array_merge($_GET, array('do' => 'export')))}">
+            <a href="{$baseurl}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export')))}">
               <img alt="{L('csvexport')}" title="{L('csvexport')}" src="{$this->get_image('csvexport')}" width="16" height="16" /> {L('csvexport')}
             </a>
           </td>

@@ -19,7 +19,7 @@
     </form>
 
     <p>
-      <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{CreateURL('admin', 'newgroup', $proj->id)}">{L('newgroup')}</a>
+      <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{CreateURL(array('admin', 'newgroup'))}">{L('newgroup')}</a>
     </p>
 
     <table class="userlist">
@@ -34,13 +34,13 @@
       </thead>
       <?php foreach ($groups as $group): ?>
       <tr>
-        <td><a href="{CreateUrl('editgroup', $group['group_id'], 'admin')}">{$group['group_name']}</a>
+        <td><a href="{CreateUrl(array('admin', 'editgroup'), array('group_id' => $group['group_id']))}">{$group['group_name']}</a>
         <?php if ($group['group_desc'] != ''): ?>
         <br />
         <small>{$group['group_desc']}</small>
         <?php endif; ?>
         </td>
-        <td><a href="{CreateURL('admin', 'users', null, array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
+        <td><a href="{CreateURL('admin', 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
         <?php if ($group['group_open']) : ?>
         <td class="imgcol"><img src="{$this->get_image('button_ok')}" alt="{L('yes')}" /></td>
         <?php else: ?>

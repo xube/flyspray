@@ -2,7 +2,7 @@
   <?php foreach($comments as $comment): ?>
   <em>
     <a name="comment{$comment['comment_id']}" id="comment{$comment['comment_id']}"
-      href="{CreateURL('details', $task['task_id'])}#comment{$comment['comment_id']}">
+      href="{CreateURL(array('details', 'task' . $task['task_id']))}#comment{$comment['comment_id']}">
       <img src="{$this->get_image('comment')}"
         title="{L('commentlink')}" alt="" />
     </a>
@@ -43,7 +43,7 @@
 
   <?php if ($user->perms('add_comments') && (!$task['is_closed'] || $proj->prefs['comment_closed'])): ?>
   <fieldset><legend>{L('addcomment')}</legend>
-  <form enctype="multipart/form-data" action="{CreateUrl('details', $task['task_id'])}" method="post">
+  <form enctype="multipart/form-data" action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post">
     <div>
       <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
       <div class="hide preview" id="preview"></div>

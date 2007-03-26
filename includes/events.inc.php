@@ -126,7 +126,7 @@ function event_description($history) {
             break;
     case '4':      //Comment added
             $return .= sprintf('<a href="%s#comment%d">%s</a>', 
-                                Filters::noXSS(CreateUrl('details', $history['task_id'])), 
+                                Filters::noXSS(CreateUrl(array('details', 'task' . $history['task_id']))),
                                 $history['new_value'], eL('commentadded'));
             break;
     case '5':      //Comment edited

@@ -492,7 +492,7 @@ class Notifications
                 }
                 $body .= L('details') . " - \r\n" . $data['task']['detailed_desc'] . "\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_TASK_CHANGED:
@@ -515,7 +515,7 @@ class Notifications
                 }
 
                 $body .= "\r\n" . L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_TASK_CLOSED:
@@ -529,7 +529,7 @@ class Notifications
                 }
 
                 $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_TASK_REOPENED:
@@ -537,7 +537,7 @@ class Notifications
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] .  ")\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_DEP_ADDED:
@@ -546,10 +546,10 @@ class Notifications
                 $body .=  L('newdep') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
                 $body .= L('newdepis') . ':' . "\r\n\r\n";
                 $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_DEP_REMOVED:
@@ -558,10 +558,10 @@ class Notifications
                 $body .= L('notify.depremoved') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
                 $body .= L('removeddepis') . ':' . "\r\n\r\n";
                 $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_COMMENT_ADDED:
@@ -580,7 +580,7 @@ class Notifications
                     $body .= L('fileaddedtoo') . "\r\n\r\n";
                 }
                 $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . '#comment' . $data['cid'] . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . '#comment' . $data['cid'] . "\r\n\r\n";
                 break;
 
             case NOTIFY_REL_ADDED:
@@ -589,17 +589,17 @@ class Notifications
                 $body .= L('notify.relatedadded') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
                 $body .= L('relatedis') . ':' . "\r\n\r\n";
                 $body .= 'FS#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\r\n";
-                $body .= CreateURL('details', $related_task['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $related_task['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_OWNERSHIP:
                 $body .= implode(', ', $data['task']['assigned_to_name']) . ' ' . L('takenownership') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_CONFIRMATION:
@@ -616,7 +616,7 @@ class Notifications
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_PM_DENY_REQUEST:
@@ -626,7 +626,7 @@ class Notifications
                 $body .= L('denialreason') . ':' . "\r\n";
                 $body .= $data['deny_reason'] . "\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_NEW_ASSIGNEE:
@@ -634,7 +634,7 @@ class Notifications
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
                 $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_REV_DEP:
@@ -643,10 +643,10 @@ class Notifications
                 $body .= L('taskwatching') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
                 $body .= L('isdepfor') . ':' . "\r\n\r\n";
                 $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_REV_DEP_REMOVED:
@@ -655,22 +655,22 @@ class Notifications
                 $body .= L('taskwatching') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
                 $body .= L('isnodepfor') . ':' . "\r\n\r\n";
                 $body .= 'FS#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL('details', $depend_task['task_id']) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_ADDED_ASSIGNEES:
                 $body .= L('useraddedtoassignees') . "\r\n\r\n";
                 $body .= 'FS#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
                 $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL('details', $data['task_id']) . "\r\n\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
                 break;
 
             case NOTIFY_ANON_TASK:
                 $body .= L('thankyouforbug') . "\r\n\r\n";
-                $body .= CreateURL('details', $data['task_id'], null, array('task_token' => $data['token'])) . "\r\n\r\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id']), array('task_token' => $data['token'])) . "\r\n\r\n";
                 break;
 
             case NOTIFY_PW_CHANGE:

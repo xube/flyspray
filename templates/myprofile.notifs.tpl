@@ -1,6 +1,6 @@
 <fieldset class="box"><legend>{L('mynotifications')}</legend>
 
-<form action="{CreateUrl('myprofile', 'notifs')}" method="get">
+<form action="{CreateUrl(array('myprofile', 'notifs'))}" method="get">
 <div>
   <label for="events_since">{L('showeventssince')}</label>
   <input type="text" class="text" name="events_since" value="{Get::val('events_since', '-1 week')}" />

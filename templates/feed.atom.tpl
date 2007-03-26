@@ -14,7 +14,7 @@
   <?php foreach ($task_details as $row): ?>
   <entry>
     <title>FS#{$row['task_id']}: {$row['item_summary']}</title>
-    <link href="{CreateURL('details', $row['task_id'])}" />    
+    <link href="{CreateURL(array('details', 'task' . $row['task_id']))}" />
     <updated>{date('Y-m-d\TH:i:s\Z',intval($row['last_edited_time']))}</updated>    
     <published>{date('Y-m-d\TH:i:s\Z',intval($row['date_opened']))}</published>
     <content type="xhtml" xml:lang="en" xml:base="http://diveintomark.org/">

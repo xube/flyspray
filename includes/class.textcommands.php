@@ -122,7 +122,7 @@ class TextCommands
         }
         $body .= L('details') . ": \r\n" . $task['detailed_desc'] . "\r\n\r\n";
         $body .= L('moreinfo') . "\r\n";
-        $body .= CreateURL('details', $task['task_id']) . "\r\n\r\n";
+        $body .= CreateURL(array('details', 'task' . $task['task_id'])) . "\r\n\r\n";
 
         return $body;
     }

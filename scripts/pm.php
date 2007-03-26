@@ -56,7 +56,7 @@ class FlysprayDoPm extends FlysprayDo
         global $proj, $db, $baseurl;
 
         if (Post::val('delete_project')) {
-            $url = (Post::val('move_to')) ? CreateURL('pm', 'prefs', Post::val('move_to')) : $baseurl;
+            $url = (Post::val('move_to')) ? CreateURL(array('pm', 'proj' . Post::num('move_to'), 'prefs')) : $baseurl;
 
             if (Backend::delete_project($proj->id, Post::val('move_to'))) {
                 return array(SUBMIT_OK, L('projectdeleted'), $url);

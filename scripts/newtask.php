@@ -19,9 +19,9 @@ class FlysprayDoNewtask extends FlysprayDo
 
         // Status and redirect
         if ($ok) {
-            $url = CreateURL('details', $task_id);
+            $url = CreateURL(array('details', 'task' . $task_id));
             if ($user->isAnon()) {
-                $url = CreateURL('details', $task_id, null, array('task_token' => $token));
+                $url = CreateURL(array('details', 'task' . $task_id), array('task_token' => $token));
             }
             if (Post::val('more_tasks')) {
                 $url = '';

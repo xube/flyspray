@@ -8,7 +8,7 @@
   <?php endforeach; ?>
 
   <?php if ($user->perms('manage_project')): ?>
-  <form action="{CreateUrl('details', $task['task_id'])}#notify" method="post">
+  <form action="{CreateUrl(array('details', 'task' . $task['task_id']))}#notify" method="post">
     <p>
         <label class="default multisel" for="notif_user_id">{L('addusertolist')}</label>
         {!tpl_userselect('user_id', Req::val('user_id'), 'notif_user_id')}

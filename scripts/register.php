@@ -37,7 +37,7 @@ class FlysprayDoRegister extends FlysprayDo
             return array(ERROR_RECOVER, L('usernametaken'));
         }
 
-        return array(SUBMIT_OK, L('accountcreated'), CreateUrl('register', null, null, array('regdone' => 1)));
+        return array(SUBMIT_OK, L('accountcreated'), CreateUrl('register', array('regdone' => 1)));
     }
 
     function action_sendcode()

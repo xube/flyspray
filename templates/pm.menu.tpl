@@ -1,8 +1,8 @@
 <div id="toolboxmenu">
-  <a id="projprefslink" href="{CreateURL('pm', 'prefs',      $proj->id)}">{L('preferences')}</a>
-  <a id="projuglink"    href="{CreateURL('pm', 'groups',     $proj->id)}">{L('groups')}</a>
-  <a id="projuglink"    href="{CreateURL('pm', 'users',     $proj->id)}">{L('users')}</a>
-  <a id="projuglink"    href="{CreateURL('pm', 'fields',     $proj->id)}">{L('fields')}</a>
-  <a id="projuglink"    href="{CreateURL('pm', 'lists',     $proj->id)}">{L('lists')}</a>
-  <a id="projreqlink"   href="{CreateURL('pm', 'pendingreq', $proj->id)}">{L('pendingrequests')}</a>
+  <a id="projprefslink" href="{CreateURL(array('pm', 'proj' . $proj->id, 'prefs'))}">{L('preferences')}</a>
+  <a id="projuglink"    href="{CreateURL(array('pm', 'proj' . $proj->id, 'groups'))}">{L('groups')}</a>
+  <a id="projuglink"    href="{CreateURL(array('pm', 'proj' . $proj->id, 'users'))}">{L('users')}</a>
+  <a id="projuglink"    href="{CreateURL(array('pm', 'proj' . $proj->id, 'fields'))}">{L('fields')}</a>
+  <a id="projuglink"    href="{CreateURL(array('pm', 'proj' . $proj->id, 'lists'))}">{L('lists')}</a>
+  <a id="projreqlink"   href="{CreateURL(array('pm', 'proj' . $proj->id, 'pendingreq'))}">{L('pendingrequests')}</a>
 </div>

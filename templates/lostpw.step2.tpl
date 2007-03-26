@@ -14,7 +14,7 @@
       </table>
       
       <div>
-        <input type="hidden" name="action" value="lostpw.chpass" />
+        <input type="hidden" name="action" value="chpass" />
         <input type="hidden" name="magic_url" value="{Req::val('magic_url')}" />
         <button type="submit">{L('savenewpass')}</button>
       </div>

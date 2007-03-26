@@ -1,5 +1,5 @@
 <?php if (count($lists)): ?>
-<form action="{CreateURL($do, 'lists', $proj->id)}" method="post">
+<form action="{CreateURL(array($do, 'proj' . $proj->id, 'lists'))}" method="post">
   <table class="list" id="listTable">
    <thead>
      <tr>
@@ -28,7 +28,7 @@
       <td title="{L('deletetip')}">
         <input type="checkbox" name="delete[{$list['list_id']}]" value="1" />
       </td>
-      <td><a href="{CreateURL($do, 'list', $proj->id, array('list_id' => $list['list_id']))}">{L('edit')}</a></td>
+      <td><a href="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => $list['list_id']))}">{L('edit')}</a></td>
     </tr>
     <?php endforeach; ?>
     </tbody>
@@ -44,7 +44,7 @@
 </form>
 <hr />
 <?php endif; ?>
-<form action="{CreateURL($do, 'lists', $proj->id)}" method="post">
+<form action="{CreateURL(array($do, 'proj' . $proj->id, 'lists'))}" method="post">
   <table class="list">
     <tr>
       <td>
