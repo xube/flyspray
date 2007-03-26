@@ -32,6 +32,7 @@
           </td>
         </tr>
         <?php endif; ?>
+        <tr>
           <td><label for="severity">{L('severity')}</label></td>
           <td>
             <select onchange="getElementById('edit_summary').className = 'summary severity' + this.value;

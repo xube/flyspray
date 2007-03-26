@@ -32,7 +32,7 @@ class Project
         // Extend the columns
         $this->columns = array_combine($this->columns, array_map('L', $this->columns));
         foreach ($this->fields as $field) {
-            $this->columns['f' . $field->id] = $field->prefs['field_name'];
+            $this->columns['field' . $field->id] = $field->prefs['field_name'];
         }
 
         if (is_numeric($id) && $id > 0) {

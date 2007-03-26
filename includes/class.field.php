@@ -41,7 +41,7 @@ class Field
      */
     function view($task = array(), $parents = array(), $plain = false)
     {
-        if (!isset($task['f' . $this->id]) || !$task['f' . $this->id]) {
+        if (!isset($task['field' . $this->id]) || !$task['field' . $this->id]) {
             $html = '<span class="fade">' . eL('notspecified') . '</span>';
         } else {
 
@@ -54,15 +54,15 @@ class Field
                             $html .= Filters::noXSS($cat) . '&#8594;';
                         }
                     }
-                    $html .= Filters::noXSS($task['f' . $this->id . '_name']);
+                    $html .= Filters::noXSS($task['field' . $this->id . '_name']);
                     break;
 
                 case FIELD_DATE:
-                    $html .= formatDate($task['f' . $this->id]);
+                    $html .= formatDate($task['field' . $this->id]);
                     break;
 
                 case FIELD_TEXT:
-                    $html .= Filters::noXSS($task['f' . $this->id]);
+                    $html .= Filters::noXSS($task['field' . $this->id]);
                     break;
             }
         }
@@ -84,9 +84,9 @@ class Field
         global $user, $proj;
 
         if ($use_default) {
-            $task['f' . $this->id] = $this->prefs['default_value'];
-        } else if (!isset($task['f' . $this->id])) {
-            $task['f' . $this->id] = '';
+            $task['field' . $this->id] = $this->prefs['default_value'];
+        } else if (!isset($task['field' . $this->id])) {
+            $task['field' . $this->id] = '';
         }
 
         // determine whether or not to lock inputs
@@ -103,8 +103,8 @@ class Field
 
                 $html .= '<select id="f' . $this->id . '" name="field' . $this->id . (isset($attrs['multiple']) ? '[]' : '') . '" ' . join_attrs($attrs);
                 $html .= tpl_disableif($lock) . '>';
-                $html .= tpl_options(array_merge($add_options, $proj->get_list($this->prefs, $task['f' . $this->id])),
-                                     Req::val('field' . $this->id, $task['f' . $this->id]));
+                $html .= tpl_options(array_merge($add_options, $proj->get_list($this->prefs, $task['field' . $this->id])),
+                                     Req::val('field' . $this->id, $task['field' . $this->id]));
                 $html .= '</select>';
                 break;
 
@@ -114,12 +114,12 @@ class Field
                     $attrs = array('readonly' => 'readonly');
                 }
 
-                $html .= tpl_datepicker('field' . $this->id, '', Req::val('field' . $this->id, $task['f' . $this->id]), $attrs);
+                $html .= tpl_datepicker('field' . $this->id, '', Req::val('field' . $this->id, $task['field' . $this->id]), $attrs);
                 break;
 
             case FIELD_TEXT:
                 $html .= '<input type="text" class="text" id="field' . $this->id . '" name="field' . $this->id . '" value="' .
-                          Filters::noXSS($task['f' . $this->id]) . '" />';
+                          Filters::noXSS($task['field' . $this->id]) . '" />';
                 break;
         }
 
@@ -139,7 +139,7 @@ class Field
         switch ($this->prefs['field_type'])
         {
             case FIELD_DATE:
-                $value = Flyspray::strtotime($input);
+                $value = $input ? Flyspray::strtotime($input) : '';
                 break;
 
             case FIELD_TEXT:

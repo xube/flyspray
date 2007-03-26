@@ -1,0 +1,70 @@
+<?php
+
+  /*************************************************************\
+  | Edits or closes multiple tasks at once                      |
+  | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                |
+  \*************************************************************/
+
+if (!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
+
+require_once(BASEDIR . '/includes/events.inc.php');
+
+class FlysprayDoEdit extends FlysprayDo
+{
+    // **********************
+    // Begin all action_ functions
+    // **********************
+
+    function action_edit()
+    {
+        foreach (Get::val('ids') as $task_id) {
+            // Edit or close?
+            if (Post::val('resolution_reason')) {
+                Backend::close_task($task_id, Post::val('resolution_reason'), Post::val('closure_comment'), Post::val('mark100'));
+            } elseif (count(Post::val('changes'))) {
+                $task = Flyspray::GetTaskDetails($task_id);
+                $args = $task; // import previous values
+                $args['assigned_to'] = implode(' ', $args['assigned_to']);
+                foreach (Post::val('changes') as $change) {
+                    $args[$change] = Post::val($change);
+                }
+                Backend::edit_task($task, $args);
+            }
+        }
+
+        return array(SUBMIT_OK, L('masseditsuccessful'));
+    }
+
+    // **********************
+    // End of all action_ functions
+    // **********************
+
+    function is_accessible()
+    {
+        global $user;
+        return !$user->isAnon();
+    }
+
+	function _onsubmit()
+	{
+        global $proj;
+        // only meant for global fields...
+        $proj = new Project(0);
+        $return = $this->handle('action', Req::val('action'));
+        $proj = new Project(0);
+        return $return;
+	}
+
+    function show()
+    {
+        global $page, $user, $fs, $proj, $db;
+        $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('massedit'));
+        $page->assign('userlist', array());
+        $page->assign('old_assigned', '');
+        $page->pushTpl('massedit.tpl');
+    }
+}
+
+?>

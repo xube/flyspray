@@ -15,9 +15,9 @@ ini_set('memory_limit', '32M');
 
 // define basic stuff first.
 define('IN_FS', 1);
-define('BASEDIR', dirname(dirname(__FILE__)));
-define('OBJECTS_PATH', BASEDIR . '/includes');
-define('TEMPLATE_FOLDER', BASEDIR . '/setup/templates/');
+define('BASEDIR', dirname(__FILE__));
+define('OBJECTS_PATH', BASEDIR . '/../includes');
+define('TEMPLATE_FOLDER', BASEDIR . '/../setup/templates/');
 
 $borked = str_replace( 'a', 'b', array( -1 => -1 ) );
 
@@ -32,12 +32,12 @@ require_once OBJECTS_PATH . '/class.database.php';
 require_once OBJECTS_PATH . '/class.flyspray.php';
 @require_once OBJECTS_PATH . '/class.tpl.php';
 
-define('CONFIG_PATH', Flyspray::get_config_path());
+define('CONFIG_PATH', Flyspray::get_config_path(BASEDIR . '/../'));
 $conf  = @parse_ini_file(CONFIG_PATH, true) or die('Cannot open config file at ' . CONFIG_PATH);
 
 // Initialise DB
-require_once BASEDIR . '/adodb/adodb.inc.php';
-require_once BASEDIR . '/adodb/adodb-xmlschema03.inc.php';
+require_once BASEDIR . '/../adodb/adodb.inc.php';
+require_once BASEDIR . '/../adodb/adodb-xmlschema03.inc.php';
 
 $db = NewDatabase($conf['database']);
 
@@ -61,7 +61,7 @@ $page->assign('short_version', UPGRADE_VERSION);
 // ---------------------------------------------------------------------
 
 // Find out which upgrades need to be run
-$folders = glob_compat(BASEDIR . '/setup/upgrade/[0-9]*');
+$folders = glob_compat(BASEDIR . '/upgrade/[0-9]*');
 usort($folders, 'version_compare'); // start with lowest version
 
 $upgrade_available = false;
@@ -91,7 +91,7 @@ function execute_upgrade_file($folder, $installed_version)
 {
     global $db, $page, $conf;
     // At first the config file
-    $upgrade_path = BASEDIR . '/setup/upgrade/' . $folder;
+    $upgrade_path = BASEDIR . '/upgrade/' . $folder;
     new ConfUpdater(CONFIG_PATH, $upgrade_path);
 
     $upgrade_info = parse_ini_file($upgrade_path . '/upgrade.info', true);

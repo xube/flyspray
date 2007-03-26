@@ -33,7 +33,7 @@ class FlysprayDoIndex extends FlysprayDo
 
     function action_mass_edit()
     {
-        Flyspray::Redirect(CreateUrl('edit', array('ids[]' => Req::val('ids'))));
+        Flyspray::Redirect(CreateUrl('edit', array('ids' => Req::val('ids'))));
     }
 
 	function show($area = null)

@@ -923,6 +923,12 @@ Regards,',
 'viewprivate'             => 'View private tasks',
 'showcontact'             => 'Show contact information',
 'isadmin'                 => 'Is admin',
+'massedit'                => 'Mass edit',
+'editnote'                => 'Note that you may not have sufficient permissions to change all properties of all tasks you selected. In this case
+                              they will be omitted.',
+'selectedtasks'           => 'Selected tasks',
+'applychanges'            => 'Apply changes',
+'masseditsuccessful'      => 'Mass edit successful!',
 );
 
 ?>

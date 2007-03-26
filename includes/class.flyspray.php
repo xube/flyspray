@@ -116,10 +116,10 @@ class Flyspray
         return substr($version, 0, strpos($version, ' '));
     }
 
-    function get_config_path()
+    function get_config_path($basedir = BASEDIR)
     {
-        $cfile = BASEDIR . '/flyspray.conf.php';
-        if (is_readable($hostconfig = BASEDIR . '/flyspray.' . $_SERVER['SERVER_NAME'] . '.conf.php')) {
+        $cfile = $basedir . '/flyspray.conf.php';
+        if (is_readable($hostconfig = $basedir . '/flyspray.' . $_SERVER['SERVER_NAME'] . '.conf.php')) {
             $cfile = $hostconfig;
         }
         return $cfile;
@@ -347,8 +347,8 @@ class Flyspray
                           LEFT JOIN {list_category} lc ON (f.list_id = lc.list_id AND field_value = lc.category_id)
                               WHERE task_id = ?', array($task['task_id']));
         while ($row = $sql->FetchRow()) {
-            $task['f' . $row['field_id']] = $row['field_value'];
-            $task['f' . $row['field_id'] . '_name'] = ($row['item_name'] ? $row['item_name'] : $row['category_name']);
+            $task['field' . $row['field_id']] = $row['field_value'];
+            $task['field' . $row['field_id'] . '_name'] = ($row['item_name'] ? $row['item_name'] : $row['category_name']);
         }
 
         $task['assigned_to'] = $task['assigned_to_name'] = array();
@@ -517,7 +517,7 @@ class Flyspray
 
         $query_params = array(intval($task_id), intval($user->id),
                              ((!is_numeric($time)) ? time() : $time),
-                              $type, $field, $oldvalue, $newvalue);
+                              $type, $field, (string) $oldvalue, $newvalue);
 
         if($db->Execute('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed,
                        old_value, new_value) VALUES (?, ?, ?, ?, ?, ?, ?)', $query_params)) {
@@ -784,7 +784,7 @@ class Flyspray
         }
 
         foreach ($proj->fields as $field) {
-            $key = 'f'. $field->id;
+            $key = 'field'. $field->id;
             if ($old[$key] != $new[$key]) {
                 if ($field->prefs['field_type'] == FIELD_DATE) {
                     $changes[] = array($key, formatDate($old[$key]), formatDate($new[$key]), $field->prefs['field_name'], $field->id);

@@ -98,96 +98,7 @@ class FlysprayDoDetails extends FlysprayDo
 
     function action_edit_task($task)
     {
-        global $user, $db, $fs, $proj;
-
-        if (!$user->can_edit_task($task) && !$user->can_correct_task($task)) {
-            return array(ERROR_PERMS);
-        }
-
-        // check missing fields
-        if (!Post::val('item_summary') || !Post::val('detailed_desc')) {
-            return array(ERROR_RECOVER, L('summaryanddetails'));
-        }
-
-        foreach ($proj->fields as $field) {
-            if ($field->prefs['value_required'] && !Post::val('field' . $field->id)
-                && !($field->prefs['force_default'] && !$user->perms('modify_all_tasks'))) {
-                return array(ERROR_RECOVER, L('missingrequired') . ' (' . $field->prefs['field_name'] . ')');
-            }
-        }
-
-        $time = time();
-
-        $db->Execute('UPDATE  {tasks}
-                       SET  project_id = ?, item_summary = ?,
-                            detailed_desc = ?, mark_private = ?,
-                            task_severity = ?, last_edited_by = ?,
-                            last_edited_time = ?, percent_complete = ?
-                     WHERE  task_id = ?',
-                array(Post::val('project_id'), Post::val('item_summary'),
-                      Post::val('detailed_desc'), intval($user->can_change_private($task) && Post::val('mark_private')),
-                      Post::val('task_severity'), intval($user->id), $time,
-                      Post::val('percent_complete'), $task['task_id']));
-        // Now the custom fields
-        foreach ($proj->fields as $field) {
-            $field_value = $field->read(Post::val('field' . $field->id));
-            $db->Replace('{field_values}',
-                         array('field_id'=> $field->id, 'task_id'=> $task['task_id'], 'field_value' => $field_value),
-                         array('field_id','task_id'), ADODB_AUTOQUOTE);
-        }
-
-        // Update the list of users assigned this task
-        if ($user->perms('edit_assignments') && Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
-
-            // Delete the current assignees for this task
-            $db->Execute('DELETE FROM {assigned}
-                              WHERE task_id = ?',
-                        array($task['task_id']));
-
-            // Convert assigned_to and store them in the 'assigned' table
-            foreach (Flyspray::int_explode(' ', trim(Post::val('assigned_to'))) as $key => $val)
-            {
-                $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task['task_id']), array('user_id','task_id'), ADODB_AUTOQUOTE);
-            }
-         }
-
-        // Get the details of the task we just updated
-        // To generate the changed-task message
-        $new_details_full = Flyspray::GetTaskDetails($task['task_id']);
-
-        $changes = Flyspray::compare_tasks($task, $new_details_full);
-        foreach ($changes as $change) {
-            if ($change[4] == 'assigned_to_name') {
-                continue;
-            }
-            Flyspray::logEvent($task['task_id'], 3, $change[2], $change[1], $change[4], $time);
-        }
-        if (count($changes) > 0) {
-            Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_CHANGED, array('changes' => $changes));
-        }
-
-        if (Post::val('old_assigned') != trim(Post::val('assigned_to')) ) {
-            // Log to task history
-            Flyspray::logEvent($task['task_id'], 14, trim(Post::val('assigned_to')), Post::val('old_assigned'), '', $time);
-
-            // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-            if (Post::val('assigned_to') != '') {
-                $new_assignees = array_diff(Flyspray::int_explode(' ', Post::val('assigned_to')), Flyspray::int_explode(' ', Post::val('old_assigned')));
-                // Remove current user from notification list
-                if (!$user->infos['notify_own']) {
-                    $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
-                }
-                if (count($new_assignees)) {
-                    Notifications::send($new_assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, array('task_id' => $task['task_id']));
-                }
-            }
-        }
-
-        Backend::add_comment($task, Post::val('comment_text'), $time);
-        Backend::delete_files(Post::val('delete_att'));
-        Backend::upload_files($task['task_id'], '0', 'usertaskfile');
-
-        return array(SUBMIT_OK, L('taskupdated'));
+        return Backend::edit_task($task, $_POST);
     }
 
     function action_close($task)
@@ -532,7 +443,7 @@ class FlysprayDoDetails extends FlysprayDo
                     continue;
                 }
                 $sql = $db->Execute('SELECT lft, rgt FROM {list_category} WHERE category_id = ?',
-                                  array($this->task['f' . $field->id]));
+                                  array($this->task['field' . $field->id]));
                 $cat = $sql->FetchRow();
 
                 $parent = $db->GetCol('SELECT  category_name
