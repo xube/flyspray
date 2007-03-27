@@ -13,11 +13,11 @@
 <div class="taskpercent roadmapp"><div style="width:{round($milestone['percent_complete']/10)*10}%"> </div></div>
 
 <p>{$milestone['percent_complete']}{L('of')}
-   <a href="{$_SERVER['SCRIPT_NAME']}?tasks=&amp;project={$proj->id}&amp;due={$milestone['id']}&amp;status[]=">
+   <a href="{CreateUrl(array('index', 'proj' . $proj->id), array('field' . $proj->prefs['roadmap_field'] => array($milestone['id']), 'status' => array('open', 'closed')))}">
      {count($milestone['all_tasks'])} {L('tasks')}
    </a> {L('completed')}
    <?php if(count($milestone['open_tasks'])): ?>
-   <a href="{$_SERVER['SCRIPT_NAME']}?tasks=&amp;project={$proj->id}&amp;due={$milestone['id']}">{count($milestone['open_tasks'])} {L('opentasks')}:</a>
+   <a href="{CreateUrl(array('index', 'proj' . $proj->id), array('field' . $proj->prefs['roadmap_field'] => array($milestone['id']), 'status[]' => 'open'))}">{count($milestone['open_tasks'])} {L('opentasks')}:</a>
    <?php endif; ?>
 </p>
 

@@ -37,6 +37,18 @@ function fill_placeholders($cols, $additional=0)
 }
 
 /**
+ * Shows a database error and exits. Since this should not happen usually, we don't need
+ * any fancy error message here. Also, we must make sure that database errors don't
+ * stay unnoticed during development.
+ */
+function show_dberror()
+{
+    echo 'A database error occured. Details below:' . "\n";
+    print_r(func_get_args());
+    exit;
+}
+
+/**
  * This function adds a table prefix to an SQL query
  * see $db->fnExecute
  *
@@ -49,7 +61,7 @@ function &_table_prefix(&$db, &$sql, $inputarray)
         die ('No table prefix set!');
     }
 
-    $sql = preg_replace('/{([\w\-]*?)}/', $db->nameQuote . DB_PREFIX . '\1' . $db->nameQuote, $sql);
+    $sql = preg_replace('/{([\w\-]+?)}/', $db->nameQuote . DB_PREFIX . '\1' . $db->nameQuote, $sql);
 
     $null = null;
     return $null;
@@ -96,6 +108,7 @@ function &NewDatabase($conf = array())
     $db->SetCharSet('utf8');
     $db->fnExecute = '_table_prefix';
     $db->fnCacheExecute = '_table_prefix';
+    $db->raiseErrorFn = 'show_dberror';
 
     //enable debug if constact DEBUG_SQL is defined.
     !defined('DEBUG_SQL') || $db->debug = true;
