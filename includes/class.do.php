@@ -64,15 +64,15 @@ class FlysprayDo
             $return = call_user_func(array(get_class($this), $type . '_' . $this->default_handler), $param);
         }
 
+        if ($db->HasFailedTrans()) {
+        	$errorno = $db->MetaError();
+        	$return = array(ERROR_DB, $db->ErrorMsg($errorno));  // MetaErrorMsg is not exactly precise
+        }
+
         $db->CompleteTrans();
 
         if (!isset($return) && $type == 'action') {
         	trigger_error($type . '_' . $area . '() did not return anything!', E_USER_ERROR);
-        }
-
-        if ($db->HasFailedTrans()) {
-        	$errorno = $db->MetaError();
-        	$return = array(ERROR_DB, $db->ErrorMsg($errorno));  // MetaErrorMsg is not exactly precise
         }
 
         // Fill optional URL and message

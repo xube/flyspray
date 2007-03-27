@@ -122,6 +122,45 @@ class FlysprayDoDetails extends FlysprayDo
         return array(SUBMIT_OK, L('taskclosedmsg'));
     }
 
+    function action_reopen($task)
+    {
+        global $db, $user;
+
+        if (!$user->can_close_task($task)) {
+            return array(ERROR_PERMS);
+        }
+
+        // Get last %
+        $old_percent = $db->Execute("SELECT old_value, new_value
+                                     FROM {history}
+                                    WHERE field_changed = 'percent_complete'
+                                          AND task_id = ? AND old_value != '100'
+                                 ORDER BY event_date DESC
+                                    LIMIT 1",
+                                  array($task['task_id']));
+        $old_percent = $old_percent->FetchRow();
+
+        $db->Execute("UPDATE  {tasks}
+                       SET  resolution_reason = 0, closure_comment = '', date_closed = 0,
+                            last_edited_time = ?, last_edited_by = ?, is_closed = 0, percent_complete = ?
+                     WHERE  task_id = ?",
+                    array(time(), $user->id, $old_percent['old_value'], $task['task_id']));
+
+        Flyspray::logEvent($task['task_id'], 3, $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
+
+        Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_REOPENED);
+
+        // If there's an admin request related to this, close it
+        $db->Execute('UPDATE  {admin_requests}
+                       SET  resolved_by = ?, time_resolved = ?
+                     WHERE  task_id = ? AND request_type = ?',
+                  array($user->id, time(), $task['task_id'], 2));
+
+        Flyspray::logEvent($task['task_id'], 13);
+
+        return array(SUBMIT_OK, L('taskreopenedmsg'));
+    }
+
     function action_addcomment($task)
     {
         global $user, $db, $fs, $proj;
