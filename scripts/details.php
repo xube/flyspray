@@ -22,6 +22,19 @@ class FlysprayDoDetails extends FlysprayDo
     // Begin all action_ functions
     // **********************
 
+    function action_takeownership()
+    {
+        return FlysprayDoIndex::action_takeownership();
+    }
+
+    function action_addtoassignees()
+    {
+        global $user;
+        Backend::add_to_assignees($user->id, Req::val('ids'));
+
+        return array(SUBMIT_OK, L('addedtoassignees'));
+    }
+
     function action_newdep($task)
     {
         global $user, $db, $fs, $proj;

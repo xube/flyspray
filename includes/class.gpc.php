@@ -171,7 +171,7 @@ class Filters {
         if (is_string($data)) {
             return htmlspecialchars($data, ENT_QUOTES, 'utf-8');
         } elseif (empty($data) || is_numeric($data)) {
-            return $data;
+            return (string) $data;
         }
         return '';
     }

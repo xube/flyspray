@@ -1,11 +1,11 @@
 <fieldset>
 <legend>{L('massedit')}</legend>
   <form action="{CreateUrl('edit', array('ids' => Get::val('ids')))}" method="post">
-    <input type="hidden" name="ids" value="{implode(' ', Get::val('ids'))}" />
+    <input type="hidden" name="ids" value="{implode(' ', Get::val('ids', array()))}" />
     <input type="hidden" name="action" value="edit" />
     <p>{L('editnote')}</p>
     <p>{L('selectedtasks')}:
-    <?php foreach (Get::val('ids') as $id): ?>
+    <?php foreach (Get::val('ids', array()) as $id): ?>
     {!tpl_tasklink($id, 'FS#' . $id)}
     <?php endforeach; ?>
     </p>

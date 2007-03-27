@@ -929,6 +929,7 @@ Regards,',
 'selectedtasks'           => 'Selected tasks',
 'applychanges'            => 'Apply changes',
 'masseditsuccessful'      => 'Mass edit successful!',
+'notasksselected'         => 'You didn\'t select any tasks.',
 );
 
 ?>

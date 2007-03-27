@@ -51,6 +51,9 @@ class FlysprayDoEdit extends FlysprayDo
 	{
         global $proj;
         // only meant for global fields...
+        if (!count(Get::val('ids', array()))) {
+            return array(ERROR_RECOVER, L('notasksselected'), CreateUrl('index'));
+        }
         $proj = new Project(0);
         $return = $this->handle('action', Req::val('action'));
         $proj = new Project(0);
