@@ -257,10 +257,15 @@ class FlysprayDoAdmin extends FlysprayDo
     {
     	global $fs, $db, $proj, $user;
 
-    	$db->Execute('INSERT INTO {lists} (list_name, list_type, project_id)
-                           VALUES (?, ?, ?)',
-                      array(Post::val('list_name'), Post::num('list_type'), $proj->id));
+    	$sql = $db->Execute('INSERT INTO {lists} (list_name, list_type, project_id)
+                                  VALUES (?, ?, ?)',
+                             array(Post::val('list_name'), Post::num('list_type'), $proj->id));
 
+        if (Post::num('list_type') == LIST_CATEGORY) {
+            $list_id = $db->GetOne('SELECT list_id FROM {lists} WHERE project_id = ? ORDER BY list_id DESC', array($proj->id));
+            $db->Execute('INSERT INTO {list_category} (list_id, lft, rgt, category_name)
+                               VALUES (?, ?, ?, ?)', array($list_id, 1, 2, 'root'));
+        }
         return array(SUBMIT_OK, L('listadded'));
     }
 
@@ -452,15 +457,14 @@ class FlysprayDoAdmin extends FlysprayDo
                     ? $fs->prefs['visible_columns']
                     : 'id severity summary progress';
 
-
         $db->Execute('INSERT INTO  {projects}
-                                 ( project_title, theme_style, intro_message,
-                                   others_view, anon_open,
+                                 ( project_title, theme_style, intro_message, notify_subject, default_task,
+                                   others_view, anon_open, notify_reply, feed_img_url, feed_description,
                                    visible_columns, lang_code, notify_email, notify_jabber)
-                         VALUES  (?, ?, ?, ?, ?, 1, ?, ?, ?, ?)',
+                         VALUES  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                   array(Post::val('project_title'), Post::val('theme_style'),
-                        Post::val('intro_message'), Post::val('others_view', 0),
-                        Post::val('anon_open', 0),  $viscols,
+                        Post::val('intro_message'), '', '', Post::val('others_view', 0),
+                        Post::val('anon_open', 0), '', '', '', $viscols,
                         Post::val('lang_code', 'en'), '', ''));
 
         $pid = $db->GetOne('SELECT project_id FROM {projects} ORDER BY project_id DESC');
@@ -472,7 +476,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $db->Execute("INSERT INTO  {groups}
                                  ( group_name, group_desc, group_open, project_id,
                                    ".join(',', $fs->perms).")
-                         VALUES  ( ". fill_placeholders($fs->perms, 3) .")", $args);
+                         VALUES  ( ". fill_placeholders($fs->perms, 4) .")", $args);
 
         return array(SUBMIT_OK, L('projectcreated'), CreateURL(array('pm', 'proj' . $pid, 'prefs')));
     }

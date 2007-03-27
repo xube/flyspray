@@ -40,7 +40,7 @@
         <small>{$group['group_desc']}</small>
         <?php endif; ?>
         </td>
-        <td><a href="{CreateURL('admin', 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
+        <td><a href="{CreateURL(array('admin', 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
         <?php if ($group['group_open']) : ?>
         <td class="imgcol"><img src="{$this->get_image('button_ok')}" alt="{L('yes')}" /></td>
         <?php else: ?>
