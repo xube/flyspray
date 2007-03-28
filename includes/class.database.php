@@ -44,7 +44,9 @@ function fill_placeholders($cols, $additional=0)
 function show_dberror()
 {
     echo 'A database error occured. Details below:' . "\n";
-    print_r(func_get_args());
+    $print = func_get_args();
+    array_pop($print); // do adodb object please
+    print_r($print);
     exit;
 }
 
