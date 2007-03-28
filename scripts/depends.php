@@ -200,7 +200,7 @@ class FlysprayDoDepends extends FlysprayDo
                 ($r['clsd'] ? 'color=black,' : '') .
                 ($r['clsd'] ? 'fillcolor=white,' : "fillcolor=\"$col\",") .
                 ($n == $id ? 'shape=box,' : '') .
-                "href=\"".CreateURL(array('details', 'task' . $n))."\", ".
+                "target=\"_top\", href=\"".CreateURL("details", $n)."\", ".
                 "tooltip=\"$tooltip\"];\n";
         }
         // Add edges

@@ -483,7 +483,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
     function action_edituser()
     {
-        global $fs, $db, $proj, $user, $do;
+        global $fs, $db, $proj, $user, $do, $conf;
 
         if (Post::val('delete_user')) {
             // check that he is not the last user
