@@ -47,7 +47,7 @@ function show_dberror()
     $print = func_get_args();
     array_pop($print); // do adodb object please
     print_r($print);
-    exit;
+    if (!defined('IN_UPGRADER')) exit;
 }
 
 /**

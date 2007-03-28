@@ -15,6 +15,7 @@ ini_set('memory_limit', '32M');
 
 // define basic stuff first.
 define('IN_FS', 1);
+define('IN_UPGRADER', 1);
 define('BASEDIR', dirname(__FILE__));
 define('OBJECTS_PATH', BASEDIR . '/../includes');
 define('TEMPLATE_FOLDER', BASEDIR . '/../setup/templates/');
