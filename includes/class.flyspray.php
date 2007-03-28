@@ -58,7 +58,7 @@ class Flyspray
      * @var array
      */
     var $perms = array('manage_project', 'view_tasks', 'edit_own_comments', 'view_private',
-                       'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks',
+                       'open_new_tasks', 'modify_own_tasks', 'modify_all_tasks', 'edit_private',
                        'view_comments', 'add_comments', 'edit_comments', 'delete_comments',
                        'create_attachments', 'delete_attachments', 'view_userlist',
                        'view_history', 'close_own_tasks', 'close_other_tasks', 'edit_assignments',

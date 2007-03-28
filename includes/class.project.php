@@ -59,6 +59,7 @@ class Project
         $this->prefs['feed_img_url'] = '';
         $this->prefs['default_entry'] = 'index';
         $this->prefs['notify_reply'] = '';
+        $fs->prefs['visible_columns'] = implode(' ', array_intersect(explode(' ', $fs->prefs['visible_columns']), array_keys($this->columns)));
 
         return;
     }

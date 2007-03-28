@@ -269,6 +269,7 @@ class User
     function can_change_private($task)
     {
         return !$task['is_closed'] && ($this->perms('manage_project', $task['project_id'])
+                || $this->perms('edit_private', $task['project_id'])
                 || in_array($this->id, Flyspray::GetAssignees($task['task_id'])));
     }
 
