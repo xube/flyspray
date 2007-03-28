@@ -138,7 +138,7 @@ $language = array(
 'applymember'             => 'Apply for Project membership',
 'forcurrentproj'          => 'For current project',
 'lostpw'                  => 'Lost password retrieval',
-'lostpwexplain'           => 'Enter your username to send a link to change your password.  This will be sent to the notification address in your profile.',
+'lostpwexplain'           => 'Enter your username or email address to send a link to change your password.',
 'sendlink'                => 'Send link',
 'savenewpass'             => 'Save new password',
 'anonreg'                 => 'Allow new user registrations',
@@ -930,6 +930,7 @@ Regards,',
 'applychanges'            => 'Apply changes',
 'masseditsuccessful'      => 'Mass edit successful!',
 'notasksselected'         => 'You didn\'t select any tasks.',
+'usernameoremail'         => 'Username or email address',
 );
 
 ?>

@@ -4,7 +4,7 @@
     <p>{L('lostpwexplain')}</p>
 
     <form action="{CreateUrl('lostpw')}" method="post">
-        <p><b>{L('username')}</b>
+        <p><b>{L('usernameoremail')}</b>
 
         <input type="hidden" name="action" value="sendmagic" />
         <input class="text" type="text" value="{Post::val('user_name')}" name="user_name" size="20" maxlength="20" />

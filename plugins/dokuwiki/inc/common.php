@@ -376,7 +376,7 @@ function ml($id='',$more='',$direct=true,$sep='&amp;'){
     if($conf['userewrite'] == 1){
       $script = '_detail';
     }else{
-      $script = 'lib/exe/detail.php';
+      $script = 'lib/exe/fetch.php';
     }
   }
 

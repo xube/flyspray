@@ -785,6 +785,8 @@ class Flyspray
 
         foreach ($proj->fields as $field) {
             $key = 'field'. $field->id;
+            $old[$key] = isset($old[$key]) ? $old[$key] : '';
+            $new[$key] = isset($new[$key]) ? $new[$key] : '';
             if ($old[$key] != $new[$key]) {
                 if ($field->prefs['field_type'] == FIELD_DATE) {
                     $changes[] = array($key, formatDate($old[$key]), formatDate($new[$key]), $field->prefs['field_name'], $field->id);

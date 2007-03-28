@@ -43,7 +43,12 @@ class FlysprayDoLostpw extends FlysprayDo
         global $db;
 
         // Check that the username exists
-        $user = Flyspray::getUserDetails(Flyspray::username_to_id(Post::val('user_name')));
+        if (strpos(Post::val('user_name'), '@') === false) {
+            $user = Flyspray::getUserDetails(Flyspray::username_to_id(Post::val('user_name')));
+        } else {
+            $user_id = $db->GetOne('SELECT user_id FROM {users} WHERE email_address = ?', array(Post::val('user_name')));
+            $user = Flyspray::getUserDetails($user_id);
+        }
 
         // If the username doesn't exist, throw an error
         if (!is_array($user) || !count($user)) {
@@ -71,19 +76,21 @@ class FlysprayDoLostpw extends FlysprayDo
 
     function show()
     {
-        global $page, $fs;
+        global $page, $fs, $db;
 
         $page->setTitle($fs->prefs['page_title'] . L('lostpw'));
 
-        if (!Get::has('magic_url')) {
+        if (!Req::has('magic_url')) {
             // Step One: user requests magic url
             $page->pushTpl('lostpw.step1.tpl');
         } else {
             // Step Two: user enters new password
-            $check_magic = $db->GetOne('SELECT user_id FROM {users} WHERE magic_url = ?',
-                                        array(Get::val('magic_url')));
+            $row = $db->SelectLimit('SELECT user_id, user_name FROM {users} WHERE magic_url = ?', 1, 0,
+                                        array(Req::val('magic_url')));
+            $check_magic = $row->FetchRow();
 
             if ($check_magic) {
+                $page->assign('userinfo', $check_magic);
                 $page->pushTpl('lostpw.step2.tpl');
             } else {
                 $page->pushTpl('lostpw.step1.tpl');
