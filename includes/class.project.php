@@ -26,7 +26,7 @@ class Project
                              WHERE f.project_id IN (0, ?) ORDER BY field_name',
                             array($id));
         while ($field = $sql->FetchRow()) {
-            $this->fields[] = new Field($field);
+            $this->fields['field' . $field['field_id']] = new Field($field);
         }
 
         // Extend the columns
@@ -42,6 +42,7 @@ class Project
                                 WHERE p.project_id = ?", array($id));
             if ($this->prefs = $sql->FetchRow()) {
                 $this->id    = (int) $this->prefs['project_id'];
+                $this->prefs['visible_columns'] = implode(' ', array_intersect(explode(' ', $this->prefs['visible_columns']), array_keys($this->columns)));
                 return;
             }
         }

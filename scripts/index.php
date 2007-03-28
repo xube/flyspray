@@ -185,6 +185,8 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
                 $value = $task[$indexes[$colname]];
             } elseif (isset($task[$colname . '_name'])) {
                 $value = $task[$colname . '_name'];
+            } else if (isset($proj->fields[$colname])) {
+                $value = $proj->fields[$colname]->view($task, array(), true);
             } else {
                 $value = $task[$colname];
             }

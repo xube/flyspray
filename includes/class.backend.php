@@ -1189,7 +1189,7 @@ class Backend
         }
         // now join custom fields used in columns
         foreach ($proj->columns as $col => $name) {
-            if (preg_match('/f(\d+)/', $col, $match) && in_array($col, $visible)) {
+            if (preg_match('/field(\d+)/', $col, $match) && in_array($col, $visible)) {
                 if (!in_array($match[1], $custom_fields_joined)) {
                     $from   .= " LEFT JOIN {field_values} $col ON t.task_id = $col.task_id AND $col.field_id = " . intval($match[1]);
                 }

@@ -43,11 +43,15 @@ function fill_placeholders($cols, $additional=0)
  */
 function show_dberror()
 {
+    // upgrader can handle that on its own
+    if (defined('IN_UPGRADER')) {
+        return;
+    }
     echo 'A database error occured. Details below:' . "\n";
     $print = func_get_args();
     array_pop($print); // do adodb object please
     print_r($print);
-    if (!defined('IN_UPGRADER')) exit;
+    exit;
 }
 
 /**
