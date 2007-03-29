@@ -4,6 +4,8 @@
  *
  * @notes be a real paranoid here.
  * @version $Id$
+ * @notes : do not modify this file, use constants.$_SERVER['SERVER_NAME'].php if you need 
+ * to alter some behaviuor.
  */
 
 define('BASEDIR', dirname(dirname(__FILE__)));
@@ -12,12 +14,11 @@ define('BASEDIR', dirname(dirname(__FILE__)));
 $conf = @parse_ini_file(Flyspray::get_config_path(), true);
 
 // $baseurl
-// htmlspecialchars because PHP_SELF is user submitted data, and can be used as an XSS vector.
 if (isset($conf['general']['force_baseurl']) && $conf['general']['force_baseurl'] != '') {
     $baseurl = $conf['general']['force_baseurl'];
 } else {
     if (!isset($webdir)) {
-        $webdir = dirname(htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'utf-8'));
+        $webdir = dirname($_SERVER['SCRIPT_NAME']);
         if (substr($webdir, -9) == 'index.php') {
             $webdir = dirname($webdir);
         }
@@ -94,7 +95,11 @@ define('USE_DEFAULT',          true);
 define('ADODB_AUTOQUOTE',      true);
 define('PLAINTEXT',            true);
 
-
+//local installation constants, this file must not exist in the svn repository.
+if(is_readable(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php')) {
+    include(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php');
+}
 // developers or advanced users only
 //define('DEBUG_SQL',          true);
+//define('FS_NO_EMAIL',   true);
 ?>

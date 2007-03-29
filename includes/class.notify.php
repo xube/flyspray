@@ -50,6 +50,10 @@ class Notifications
         $emails = array();
         $jids = array();
         $result = true;
+        
+        if(defined('FS_NO_MAIL')) {
+            return true;
+        }
 
         switch ($to_type)
         {
@@ -122,10 +126,16 @@ class Notifications
                     $connection->setPassword($fs->prefs['smtp_pass']);
                 }
                 $swift =& new Swift($connection);
-                $swift->log->enable();
             } else {
                 include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/NativeMail.php';
                 $swift =& new Swift(new Swift_Connection_NativeMail);
+            }
+
+            if(defined('FS_MAIL_DEBUG')) {
+                $swift->log->enable();
+                include_once  BASEDIR . '/includes/external/swift-mailer/Swift/Plugin/VerboseSending.php';
+                $view =& new Swift_Plugin_VerboseSending_DefaultView();
+                $swift->attachPlugin(new Swift_Plugin_VerboseSending($view), "verbose");
             }
 
             $message =& new Swift_Message($subject, $body);
@@ -153,9 +163,6 @@ class Notifications
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
             $result = (@$swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
-            //echo "<pre>";
-            //$swift->log->dump();
-            //echo "</pre>";
             $swift->disconnect();
         }
 
