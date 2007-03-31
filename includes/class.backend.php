@@ -962,7 +962,7 @@ class Backend
         Notifications::send($task_id, ADDRESS_TASK, NOTIFY_TASK_OPENED);
 
         // If the reporter wanted to be added to the notification list
-        if (isset($args['notifyme']) && $args['notifyme'] == '1' && $user->id != $owner) {
+        if (isset($args['notifyme']) && $args['notifyme'] == '1' && !in_array($user->id, $owners)) {
             Backend::add_notification($user->id, $task_id, true);
         }
 
