@@ -71,7 +71,7 @@ if ($fs->prefs['cache_feeds']) {
                                   FROM  {cache} p
                                  WHERE  type = ? AND topic = ? $sql_project
                                         AND max_items = ?  AND last_updated >= ?",
-                               array($feed_type, $orderby, $max_items, $most_recent));
+                               array($feed_type, $orderby . $user->id, $max_items, $most_recent));
         if ($content) {
             echo $content;
             exit;
@@ -123,7 +123,7 @@ if ($fs->prefs['cache_feeds'])
         *   an insert statement is generated and executed "
         */
 
-        $fields = array('content'=> $content , 'type'=> $feed_type , 'topic'=> $orderby ,
+        $fields = array('content'=> $content , 'type'=> $feed_type , 'topic'=> $orderby . $user->id ,
                         'project_id'=> $proj->id ,'max_items'=> $max_items , 'last_updated'=> time() );
 
         $keys = array('type','topic','project_id','max_items');
