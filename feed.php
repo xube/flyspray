@@ -81,7 +81,7 @@ if ($fs->prefs['cache_feeds']) {
 
 /* build a new feed if cache didn't work */
 $sql = $db->SelectLimit("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed,
-                           t.last_edited_time, t.opened_by, u.real_name, u.email_address, t.*
+                           t.last_edited_time, t.opened_by, u.real_name, u.email_address, u.show_contact, t.*
                      FROM  {tasks}    t
                INNER JOIN  {users}    u ON t.opened_by = u.user_id
                INNER JOIN  {projects} p ON t.project_id = p.project_id

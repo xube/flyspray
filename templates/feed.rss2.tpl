@@ -15,7 +15,7 @@
     foreach($task_details as $row):?>
     <item>
       <title>FS#{$row['task_id']}: {$row['item_summary']}</title>
-      <author>{$row['real_name'] . " <" . $row['email_address'] . ">"}</author>
+      <author>{$row['real_name']}<?php if ($row['show_contact']): ?> <{$row['email_address']}><?php endif; ?></author>
       <pubDate>{date('r',intval($row['date_opened']))}</pubDate>
       <description><![CDATA[{!str_replace(chr(13), "<br />", Filters::noXSS(strip_tags($row['detailed_desc'])))}]]></description>
       <link>{CreateURL(array('details', 'task' . $row['task_id']))}</link>
