@@ -158,7 +158,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $page->assign('lists', $sql->GetArray());
     }
 
-    function area_list(&$area)
+    function area_list()
     {
     	global $fs, $db, $proj, $user, $page;
 
@@ -170,8 +170,6 @@ class FlysprayDoAdmin extends FlysprayDo
 
         if ($list_type != LIST_CATEGORY) {
             $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));
-        } else {
-            $area = 'cat';
         }
         $page->assign('list_type', $list_type);
         $page->assign('list_name', $list_name);
