@@ -854,7 +854,7 @@ class Backend
         $sql_values[] = array_get($args, 'task_severity', 2); // low severity
 
         $sql_params[] = 'mark_private';
-        $sql_values[] = intval($user->perms('manage_project') && isset($args['mark_private']) && $args['mark_private'] == '1');
+        $sql_values[] = isset($args['mark_private']) && $args['mark_private'] == '1';
 
         $sql_params[] = 'closure_comment';
         $sql_values[] = '';

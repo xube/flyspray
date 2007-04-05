@@ -72,35 +72,67 @@ if ($sql && !$sql->FetchRow()) {
         $db->Execute('UPDATE {history} SET old_value = ? WHERE old_value = ? AND field_changed = ?', array($pri_ids[$key], $key, 'task_priority'));
     }
 
-    foreach (array('task_type' => 'Task Type',
-                   'item_status' => 'Status',
-                   'due_date' => 'Due date',
-                   'operating_system' => 'Operating System',
-                   'task_priority' => 'Priority',
-                   'closedby_version' => 'Due in Version',
-                   'product_version' => 'Reported version',
-                   'product_category' => 'Category') as $field => $name) {
-        $db->Execute('INSERT INTO {fields} (field_name, field_type, list_id, project_id) VALUES(?,?,?,0)',
-                   array($name, ($field == 'due_date' ? 2 : 1), ($field == 'task_priority' ? $pri_id : 1)));
-        $field_id = $db->GetOne('SELECT field_id FROM {fields} ORDER BY field_id DESC');
+	$all_project_id_sql = $db->Execute('SELECT DISTINCT project_id FROM {projects} ');
 
-        $db->Execute('UPDATE {history} SET field_changed = ? WHERE field_changed = ? AND event_type = 3', array($field_id, $field));
-        if ($field == 'closedby_version') {
-            $db->Execute('UPDATE {projects} SET roadmap_field = ?', array($field_id));
-        }
+	while ($my_project_id = $all_project_id_sql->FetchRow()) {
+	    foreach (array('task_type' => 'Task Type',
+			   'item_status' => 'Status',
+			   'due_date' => 'Due date',
+			   'task_priority' => 'Priority',
 
-        // Add values
-        $tasks = $db->Execute("SELECT {$field}, task_id FROM {tasks}");
-        if ($field != 'task_priority') {
-            while ($row = $tasks->FetchRow()) {
-                $db->Execute('INSERT INTO {field_values} (task_id, field_value, field_id) VALUES (?,?,?)', array($row['task_id'], $row[$field], $field_id));
-            }
-        } else {
-            while ($row = $tasks->FetchRow()) {
-                $db->Execute('INSERT INTO {field_values} (task_id, field_value, field_id) VALUES (?,?,?)', array($row['task_id'], @intval($pri_ids[$row[$field]]), $field_id));
-            }
-        }
-    }
+			   'operating_system' => 'Operating System',
+			   'closedby_version' => 'Due in Version',
+			   'product_version' => 'Reported version',
+			   'product_category' => 'Category') as $field => $name) {
+
+		if(($field != 'task_priority') && ($field != 'due_date'))
+		{
+			if($field == "task_type")
+				$my_name = "tasktype";
+			else if($field == "item_status")
+				$my_name = "status";
+			else if($field == "operating_system")
+				$my_name = "os";
+			else if($field == "closedby_version")
+				$my_name = "version";
+			else if($field == "product_version")
+				$my_name = "version";
+			else if($field == "product_category")
+				$my_name = "category";
+
+			$list_id =$db->getOne("select list_id from {lists} where list_name =? and (project_id = ? OR  project_id= 0 ) ORDER BY project_id DESC", array($my_name,$my_project_id['project_id']));
+			if(!isset($list_id))
+			{
+				 $list_id = 1;
+			}
+
+		}
+
+		$db->Execute('INSERT INTO {fields} (field_name, field_type, list_id, project_id) VALUES(?,?,?,?)',
+			   array($name, ($field == 'due_date' ? 2 : 1), ($field == 'task_priority' ? $pri_id : $list_id), $my_project_id['project_id']));
+		$field_array = $db->Execute("SELECT field_id FROM {fields} WHERE project_id=? AND field_name = ? ORDER BY field_id DESC", array($my_project_id['project_id'], $name));
+		$field_id = $field_array->FetchRow();
+
+		$db->Execute('UPDATE {history} SET field_changed = ? WHERE field_changed = ? AND event_type = 3', array($field_id['field_id'], $field));
+		if ($field == 'closedby_version') {
+		    $db->Execute('UPDATE {projects} SET roadmap_field = ?', array($field_id['field_id']));
+		}
+
+		// Add values
+		$tasks = $db->Execute("SELECT {$field}, task_id FROM {tasks} WHERE project_id=? ", array($my_project_id['project_id']));
+		if ($field != 'task_priority') {
+		    while ($row = $tasks->FetchRow()) {
+			$db->Execute('INSERT INTO {field_values} (task_id, field_value, field_id) VALUES (?,?,?)', array($row['task_id'], $row[$field], $field_id['field_id']));
+		    }
+		} else {
+		    while ($row = $tasks->FetchRow()) {
+			$db->Execute('INSERT INTO {field_values} (task_id, field_value, field_id) VALUES (?,?,?)', array($row['task_id'], @intval($pri_ids[$row[$field]]), $field_id['field_id']));
+		    }
+		}
+	    }
+	}
+
+
     // Clean columns
     $db->Execute('UPDATE {projects} SET visible_columns = ?', array('id severity summary progress'));
     $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array('id severity summary progress', 'visible_columns'));

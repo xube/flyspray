@@ -42,14 +42,12 @@
             </select>
           </td>
         </tr>
-        <?php if ($user->perms('manage_project')): ?>
-            <tr>
-              <td><label for="private">{L('private')}</label></td>
-              <td>
-                {!tpl_checkbox('mark_private', Req::val('mark_private', 0), 'private')}
-              </td>
-            </tr>
-        <?php endif; ?>
+        <tr>
+          <td><label for="private">{L('confidential')}</label></td>
+          <td>
+            {!tpl_checkbox('mark_private', Req::val('mark_private', 0), 'private')}
+          </td>
+        </tr>
       </table>
     </div>
 

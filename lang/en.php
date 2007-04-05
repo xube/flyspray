@@ -931,7 +931,8 @@ Regards,',
 'masseditsuccessful'      => 'Mass edit successful!',
 'notasksselected'         => 'You didn\'t select any tasks.',
 'usernameoremail'         => 'Username or email address',
-'editprivate'            => 'Edit privacy of tasks',
+'editprivate'             => 'Edit privacy of tasks',
+'confidential'            => 'Confidential',
 );
 
 ?>
