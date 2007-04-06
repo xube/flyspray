@@ -146,7 +146,7 @@ class User
 
         // project list of $fs
 		$sql = $db->Execute(
-		        'SELECT  project_id, project_title, others_view,
+		        'SELECT  project_id, project_title, others_view, project_prefix,
 		                 upper(project_title) AS sort_names
 		           FROM  {projects}
 		       ORDER BY  sort_names');

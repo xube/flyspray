@@ -15,6 +15,8 @@ if (!defined('IN_FS')) {
 
 class FlysprayDoDepends extends FlysprayDo
 {
+    var $task = array();
+      
     function _onsubmit()
     {
         global $conf;
@@ -29,8 +31,8 @@ class FlysprayDoDepends extends FlysprayDo
     {
         global $user;
 
-        return ($task_details = Flyspray::GetTaskDetails(Get::num('task_id')))
-                && $user->can_view_task($task_details);
+        return ($this->task = Flyspray::GetTaskDetails(Get::num('task_id')))
+                && $user->can_view_task($this->task);
     }
 
     function show()
@@ -48,7 +50,7 @@ class FlysprayDoDepends extends FlysprayDo
          * the file from dot happens later, and that should be the absolute path.
          */
 
-        $id = Get::num('task_id');
+        $id = $this->task['task_id'];
         $page->assign('task_id', $id);
 
         $prunemode = Get::num('prune', 0);
@@ -68,12 +70,12 @@ class FlysprayDoDepends extends FlysprayDo
 
         $starttime = microtime();
 
-        $sql= 'SELECT t1.task_id AS id1, t1.item_summary AS sum1,
+        $sql= 'SELECT t1.task_id AS id1, t1.prefix_id AS pxid1, p1.project_prefix AS ppx1, t1.item_summary AS sum1,
                      t1.percent_complete AS pct1, t1.is_closed AS clsd1,
                      t1.task_severity AS sev1,
                      t1.closure_comment AS com1, u1c.real_name AS clsdby1,
                      r1.item_name as res1,
-                     t2.task_id AS id2, t2.item_summary AS sum2,
+                     t2.task_id AS id2, t2.prefix_id AS pxid2, p2.project_prefix AS ppx2, t2.item_summary AS sum2,
                      t2.percent_complete AS pct2, t2.is_closed AS clsd2,
                      t2.task_severity AS sev2,
                      t2.closure_comment AS com2, u2c.real_name AS clsdby2,
@@ -81,9 +83,11 @@ class FlysprayDoDepends extends FlysprayDo
                FROM  {dependencies} AS d
                JOIN  {tasks} AS t1 ON d.task_id=t1.task_id
           LEFT JOIN  {users} AS u1c ON t1.closed_by=u1c.user_id
+          LEFT JOIN  {projects} AS p1 ON t1.project_id = p1.project_id
           LEFT JOIN  {list_items} AS r1 ON t1.resolution_reason=r1.list_item_id
                JOIN  {tasks} AS t2 ON d.dep_task_id=t2.task_id
           LEFT JOIN  {users} AS u2c ON t2.closed_by=u2c.user_id
+          LEFT JOIN  {projects} AS p2 ON t2.project_id = p2.project_id
           LEFT JOIN  {list_items} AS r2 ON t2.resolution_reason=r2.list_item_id
               WHERE  t1.project_id= ?
            ORDER BY  d.task_id, d.dep_task_id';
@@ -99,12 +103,12 @@ class FlysprayDoDepends extends FlysprayDo
             $rvrs_list[$id2][] = $id1;
             if (!isset($node_list[$id1])) {
                 $node_list[$id1] =
-              array('id'=>$id1, 'sum'=>$sum1, 'pct'=>$pct1, 'clsd'=>$clsd1,
+              array('id'=>$id1, 'sum'=>$sum1, 'pct'=>$pct1, 'clsd'=>$clsd1, 'ppx' => $ppx1, 'pxid' => $pxid1,
                  'sev'=>$sev1, 'com'=>$com1, 'clsdby'=>$clsdby1, 'res'=>$res1);
             }
             if (!isset($node_list[$id2])) {
                 $node_list[$id2] =
-              array('id'=>$id2, 'sum'=>$sum2, 'pct'=>$pct2, 'clsd'=>$clsd2,
+              array('id'=>$id2, 'sum'=>$sum2, 'pct'=>$pct2, 'clsd'=>$clsd2, 'ppx' => $ppx2, 'pxid' => $pxid2,
                 'sev'=>$sev2, 'com'=>$com2, 'clsdby'=>$clsdby2, 'res'=>$res2);
             }
         }
@@ -188,7 +192,7 @@ class FlysprayDoDepends extends FlysprayDo
             $x = dechex(255-($r['pct']+10));
             $col = "#$x$x$x";
             // Make sure label terminates in \n!
-            $label = "FS#$n \n". ((!$use_public) ? utf8_substr($r['sum'], 0, 15) . "\n" : '') .
+            $label = $r['ppx'] . '#' . $r['pxid'] . " \n". ((!$use_public) ? utf8_substr($r['sum'], 0, 15) . "\n" : '') .
                 ($r['clsd'] ? L('closed') :
                  "$r[pct]% ".L('complete'));
             $tooltip =
@@ -281,7 +285,7 @@ class FlysprayDoDepends extends FlysprayDo
         $diff = ($endsec - $startsec) + ($endusec - $startusec);
         $page->assign('time', round($diff, 2));
 
-        $page->setTitle('FS#' . $id . ': ' . L('dependencygraph'));
+        $page->setTitle($this->task['project_prefix'] . '#' . $this->task['prefix_id'] . ': ' . L('dependencygraph'));
         $page->pushTpl('depends.tpl');
     }
 }

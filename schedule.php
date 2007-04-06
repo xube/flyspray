@@ -64,7 +64,7 @@ do {
     Notifications::send_stored();
 
     ############ Task three: send project manager digests ############
-    $sql = $db->Execute('SELECT project_id, project_title, last_digest
+    $sql = $db->Execute('SELECT project_id, project_title, last_digest, project_prefix
                          FROM {projects}
                         WHERE send_digest = 1 AND last_digest < ?',
                         array(time() - 60*60*24*7));
@@ -79,33 +79,34 @@ do {
         // Now generate the message, we are interested in opened/reopened, closed and assigned tasks
         $opened = $reopened = $closed = $assigned = array();
         $message = L('digestfor') . ' ' . $project['project_title'] . ":\n\n";
-        $sql = $db->Execute('SELECT h.event_type, lr.item_name AS resolution_name, t.task_id, t.item_summary, u.user_name, u.real_name
-                             FROM {history} h
-                        LEFT JOIN {tasks} t ON h.task_id = t.task_id
-                        LEFT JOIN {users} u ON h.user_id = u.user_id
-                        LEFT JOIN {list_items} lr ON h.new_value = lr.list_item_id AND event_type = 2
-                            WHERE t.project_id = ? AND event_type IN (1,2,13,19)
-                                  AND event_date > ?',
-                            array($project['project_id'], max($project['last_digest'], time() - 60*60*24*7)));
+        $sql = $db->Execute('SELECT h.event_type, lr.item_name AS resolution_name, t.task_id,
+                                    t.item_summary, u.user_name, u.real_name, t.prefix_id
+                               FROM {history} h
+                          LEFT JOIN {tasks} t ON h.task_id = t.task_id
+                          LEFT JOIN {users} u ON h.user_id = u.user_id
+                          LEFT JOIN {list_items} lr ON h.new_value = lr.list_item_id AND event_type = 2
+                              WHERE t.project_id = ? AND event_type IN (1,2,13,19)
+                                    AND event_date > ?',
+                              array($project['project_id'], max($project['last_digest'], time() - 60*60*24*7)));
 
         while ($row = $sql->FetchRow()) {
             switch ($row['event_type'])
             {
                 case '1':
-                    $opened[] = sprintf("FS#%d: %s\n-> %s %s (%s)",
-                                         $row['task_id'], $row['item_summary'], L('openedby'), $row['real_name'], $row['user_name']);
+                    $opened[] = sprintf("%s#%d: %s\n-> %s %s (%s)",
+                                         $project['project_prefix'], $row['prefix_id'], $row['item_summary'], L('openedby'), $row['real_name'], $row['user_name']);
                     break;
                 case '2':
-                    $closed[] = sprintf("FS#%d: %s (%s)\n-> %s %s (%s)",
-                                         $row['task_id'], $row['item_summary'], $row['resolution_name'], L('openedby'), $row['real_name'], $row['user_name']);
+                    $closed[] = sprintf("%s#%d: %s (%s)\n-> %s %s (%s)",
+                                         $project['project_prefix'], $row['prefix_id'], $row['item_summary'], $row['resolution_name'], L('openedby'), $row['real_name'], $row['user_name']);
                     break;
                 case '13':
-                    $reopened[] = sprintf("FS#%d: %s\n-> %s %s (%s)",
-                                         $row['task_id'], $row['item_summary'], L('reopenedby'), $row['real_name'], $row['user_name']);
+                    $reopened[] = sprintf("%s#%d: %s\n-> %s %s (%s)",
+                                         $project['project_prefix'], $row['prefix_id'], $row['item_summary'], L('reopenedby'), $row['real_name'], $row['user_name']);
                     break;
                 case '19':
-                    $assigned[] = sprintf("FS#%d: %s\n-> %s %s (%s)",
-                                         $row['task_id'], $row['item_summary'], L('assignedto'), $row['real_name'], $row['user_name']);
+                    $assigned[] = sprintf("%s#%d: %s\n-> %s %s (%s)",
+                                         $project['project_prefix'], $row['prefix_id'], $row['item_summary'], L('assignedto'), $row['real_name'], $row['user_name']);
                     break;
             }
         }

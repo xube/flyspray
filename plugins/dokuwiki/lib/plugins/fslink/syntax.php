@@ -50,6 +50,10 @@ class syntax_plugin_fslink extends DokuWiki_Syntax_Plugin {
      
     function connectTo($mode) {
         // Word boundaries?
+        global $fs;
+        foreach ($fs->projects as $project) {
+                $this->Lexer->addSpecialPattern(preg_quote($project['project_prefix']) . '#' . '\d+',$mode,'plugin_fslink');
+        }
         $this->Lexer->addSpecialPattern('FS#\d+',$mode,'plugin_fslink');
         $this->Lexer->addSpecialPattern('bug \d+',$mode,'plugin_fslink');
     }
@@ -70,7 +74,7 @@ class syntax_plugin_fslink extends DokuWiki_Syntax_Plugin {
             if(count($fsid) < 2) {
                 $fsid = explode(' ', $data[0]);
             }
-            $renderer->doc .= tpl_tasklink($fsid[1], $data[0]);
+            $renderer->doc .= tpl_tasklink($fsid[0] . '#' . $fsid[1], $data[0]);
         }
         return true;
     }

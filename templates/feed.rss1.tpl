@@ -21,7 +21,7 @@
   </channel>
   <?php foreach($task_details as $row): ?>
   <item rdf:about="{CreateURL(array('details', 'task' . $row['task_id']))}">
-    <title>FS#{$row['task_id']}: {$row['item_summary']}</title>
+    <title>{$row['project_prefix']}#{$row['prefix_id']}: {$row['item_summary']}</title>
     <link>{CreateURL(array('details', 'task' . $row['task_id']))}</link>
     <dc:date>{date('Y-m-d\TH:i:s\Z',intval($row['last_edited_time']))}</dc:date>
     <dc:creator>{$row['real_name']}</dc:creator>

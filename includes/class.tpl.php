@@ -170,7 +170,12 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     $params = array();
 
     if (!is_array($task)) {
-        $task = Flyspray::GetTaskDetails($task, true);
+        if (ctype_digit($task)) {
+            $task = Flyspray::GetTaskDetails($task, true);
+        } else {
+            list($prefix, $task) = explode('#', $task);
+            $task = Flyspray::GetTaskDetails($task, true, $prefix);
+        }
     }
 
     if ($strict === true && (!is_object($user) || !$user->can_view_task($task))) {
@@ -184,7 +189,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     }
 
     if (is_null($text)) {
-        $text = sprintf('FS#%d - %s', $task['task_id'], Filters::noXSS($summary));
+        $text = sprintf('%s#%d - %s', $task['project_prefix'], $task['prefix_id'], Filters::noXSS($summary));
     } elseif(is_string($text)) {
         $text = Filters::noXSS(utf8_substr($text, 0, 64));
     } else {
@@ -288,7 +293,7 @@ function tpl_userlink($uid)
 
 function tpl_fast_tasklink($arr)
 {
-    return tpl_tasklink($arr[1], $arr[0]);
+    return tpl_tasklink($arr[1] . $arr[2], $arr[0]);
 }
 
 // }}}
@@ -537,7 +542,7 @@ class TextFormatter
 
     function render($text, $onyfs = false, $type = null, $id = null, $instructions = null)
     {
-        global $conf;
+        global $conf, $fs;
 
         if (@in_array('render', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter')) && !$onyfs) {
             return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'render'),
@@ -549,7 +554,12 @@ class TextFormatter
             if (!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
 
             // Change FS#123 into hyperlinks to tasks
-            return preg_replace_callback("/\b(?:FS#|bug )(\d+)\b/", 'tpl_fast_tasklink', $text);
+            $look = array('FS#', 'bug ');
+            foreach ($fs->projects as $project) {
+                $look[] = preg_quote($project['project_prefix'] . '#', '/');
+            }
+
+            return preg_replace_callback("/\b(" . implode('|', $look) . ")(\d+)\b/", 'tpl_fast_tasklink', $text);
         }
     }
 
@@ -752,12 +762,12 @@ function pagenums($pagenum, $perpage, $totalcount)
 
 // tpl function that Displays a header cell for report list {{{
 
-function tpl_list_heading($colname, $format = "<th%s>%s</th>")
+function tpl_list_heading($colname, $coldisplay, $format = "<th%s>%s</th>")
 {
     global $proj, $page;
     $imgbase = '<img src="%s" alt="%s" />';
     $class   = '';
-    $html    = $colname;
+    $html    = $coldisplay;
     $colname = strtolower($colname);
     if ($colname == 'comments' || $colname == 'attachments') {
         $html = sprintf($imgbase, $page->get_image(substr($colname, 0, -1)), $html);

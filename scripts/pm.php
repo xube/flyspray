@@ -76,6 +76,18 @@ class FlysprayDoPm extends FlysprayDo
         $args = array_map('Post_to0', $cols);
         $cols[] = 'notify_types';
         $args[] = implode(' ', Post::val('notify_types'));
+
+        // carefully check the project prefix...
+        $prefix = Post::val('project_prefix');
+        // already in use?
+        $use = $db->GetOne('SELECT project_id FROM {projects} WHERE project_prefix = ?', array($prefix));
+        if (ctype_alnum($prefix) && $prefix != 'FS' && !$use) {
+            $cols[] = 'project_prefix';
+            $args[] =  $prefix;
+        } else {
+            return array(ERROR_RECOVER, L('badprefix'));
+        }
+
         $cols[] = 'last_updated';
         $args[] = time();
         $cols[] = 'default_cat_owner';

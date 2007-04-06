@@ -18,7 +18,13 @@
               value="{Post::val('project_title', $proj->prefs['project_title'])}" />
           </td>
         </tr>
-
+        <tr>
+          <td><label for="project_prefix">{L('projectprefix')}</label></td>
+          <td>
+            <input id="project_prefix" name="project_prefix" class="text" type="text" size="20" maxlength="20"
+              value="{Post::val('project_prefix', $proj->prefs['project_prefix'])}" />
+          </td>
+        </tr>
         <tr>
           <td><label for="defaultcatowner">{L('defaultcatowner')}</label></td>
           <td>

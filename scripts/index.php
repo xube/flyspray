@@ -128,6 +128,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
             'votes'      => 'num_votes',
             'attachments'=> 'num_attachments',
             'dateclosed' => 'date_closed',
+            'projectlevelid' => 'prefix_id',
             'progress'   => '',
             'state'      => '',
         );
@@ -141,6 +142,9 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
     switch ($colname) {
         case 'id':
             $value = tpl_tasklink($task, $task['task_id']);
+            break;
+        case 'projectlevelid':
+            $value = tpl_tasklink($task, $task['project_prefix'] . '#' . $task['prefix_id']);
             break;
         case 'summary':
             $value = tpl_tasklink($task, utf8_substr($task['item_summary'], 0, 55), false, array(), array('state','age','percent_complete'));

@@ -20,11 +20,11 @@
         <td>
         <?php if ($req['request_type'] == 1) : ?>
         {L('closetask')} -
-        <a href="{CreateURL(array('details', 'task' . $req['task_id']))}">FS#{$req['task_id']} :
+        <a href="{CreateURL(array('details', 'task' . $req['task_id']))}">{$proj->prefs['project_prefix']}#{$req['task_id']} :
           {$req['item_summary']}</a>
         <?php elseif ($req['request_type'] == 2) : ?>
         {L('reopentask')} -
-        <a href="{CreateURL(array('details', 'task' . $req['task_id']))}">FS#{$req['task_id']} :
+        <a href="{CreateURL(array('details', 'task' . $req['task_id']))}">{$proj->prefs['project_prefix']}#{$req['task_id']} :
           {$req['item_summary']}</a>
         <?php endif; ?>
         </td>

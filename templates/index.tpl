@@ -155,7 +155,7 @@
             </th>
             <?php endif; ?>
             <?php foreach ($visible as $col): ?>
-            {!tpl_list_heading($proj->columns[$col])}
+            {!tpl_list_heading($col, L($col))}
             <?php endforeach; ?>
           </tr>
         </thead>

@@ -873,8 +873,7 @@ class Backend
         $sql_params = join(', ', $sql_params);
         $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
 
-        $task_id = $db->GetOne('SELECT  MAX(task_id)+1
-                                  FROM  {tasks}');
+        $task_id = $db->GetOne('SELECT  MAX(task_id)+1 FROM  {tasks}');
         $task_id = $task_id ? $task_id : 1;
         //now, $task_id is always the first element of $sql_values
         array_unshift($sql_values, $task_id);
@@ -885,6 +884,10 @@ class Backend
                                    detailed_desc, opened_by,
                                    percent_complete, $sql_params )
                          VALUES  (?, $sql_placeholder)", $sql_values);
+
+        // Per project task ID
+        $prefix_id = $db->GetOne('SELECT MAX(prefix_id)+1 FROM {tasks} WHERE project_id = ?', array($proj->id));
+        $db->Execute('UPDATE {tasks} SET prefix_id = ? WHERE task_id = ?', array($prefix_id, $task_id));
 
         // Now the custom fields
         foreach ($proj->fields as $field) {
@@ -1021,7 +1024,11 @@ class Backend
 
         // duplicate
         if ($reason == $fs->prefs['resolution_dupe']) {
-            preg_match("/\b(?:FS#|bug )(\d+)\b/", $comment, $dupe_of);
+            $look = array('FS#', 'bug ');
+            foreach ($fs->projects as $project) {
+                $look[] = preg_quote($project['project_prefix'] . '#', '/');
+            }
+            preg_match("/\b(" . implode('|', $look) . ")(\d+)\b/", $comment, $dupe_of);
             if (count($dupe_of) >= 2) {
                 $existing = $db->Execute('SELECT * FROM {related} WHERE this_task = ? AND related_task = ? AND is_duplicate = 1',
                                         array($task_id, $dupe_of[1]));
@@ -1118,6 +1125,7 @@ class Backend
                 'attachments'  => 'num_attachments',
                 'comments'     => 'num_comments',
                 'state'        => 'closed_by, is_closed',
+                'projectlevelid' => 'prefix_id',
         );
 
         // Default user sort column and order
@@ -1306,7 +1314,7 @@ class Backend
 
         $sql = $db->Execute("
                           SELECT   t.*, $select
-                                   p.project_title,
+                                   p.project_title, p.project_prefix,
                                    lr.item_name AS resolution_name
                           FROM     $from
                           $where

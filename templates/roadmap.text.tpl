@@ -12,7 +12,7 @@
 
     <?php foreach($milestone['open_tasks'] as $task):
           if(!$user->can_view_task($task)) continue; ?>
-    FS#{$task['task_id']} - {$task['item_summary']}
+    {$proj->prefs['project_prefix']}#{$task['prefix_id']} - {$task['item_summary']}
 
     <?php endforeach; ?>
 

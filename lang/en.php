@@ -933,6 +933,9 @@ Regards,',
 'usernameoremail'         => 'Username or email address',
 'editprivate'             => 'Edit privacy of tasks',
 'confidential'            => 'Confidential',
+'projectprefix'           => 'Project prefix',
+'projectlevelid'          => 'Project level ID',
+'badprefix'               => 'Invalid project prefix. Either already in use or not alphanumeric.',
 );
 
 ?>

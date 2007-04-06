@@ -469,6 +469,15 @@ class FlysprayDoAdmin extends FlysprayDo
 
         $pid = $db->GetOne('SELECT project_id FROM {projects} ORDER BY project_id DESC');
 
+        // now find an unused project prefix
+        $existing = $db->GetCol('SELECT project_prefix FROM {projects}');
+        $existing[] = 'FS';
+        $suggestion = 'PR' . $pid;
+        while (in_array($suggestion, $existing)) {
+            $suggestion = 'PR' . mt_rand();
+        }
+        $db->Execute('UPDATE {projects} SET project_prefix = ? WHERE project_id = ?', array($suggestion, $pid));
+
         $args = array_fill(0, count($fs->perms), '1');
         array_unshift($args, 'Project Managers',
                       'Permission to do anything related to this project.', 1, intval($pid));

@@ -6,7 +6,7 @@
     <p>{L('editnote')}</p>
     <p>{L('selectedtasks')}:
     <?php foreach (Get::val('ids', array()) as $id): ?>
-    {!tpl_tasklink($id, 'FS#' . $id)}
+    {!tpl_tasklink($id)}
     <?php endforeach; ?>
     </p>
 

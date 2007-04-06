@@ -3,8 +3,10 @@
 1="upgrade_lists.xml"
 2="upgrade_fields.xml"
 3="upgrade_lists.php"
-4="flyspray-final.xml"
-5="add_data.php"
+4="prefix.xml"
+5="upgrade_prefix.php"
+6="flyspray-final.xml"
+7="add_data.php"
 
 [fsprefs]
 fs_ver="0.9.9" ; doesn't matter which version

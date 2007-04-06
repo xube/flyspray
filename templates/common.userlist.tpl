@@ -64,13 +64,13 @@
           <img title="{L('toggleselected')}" alt="{L('toggleselected')}" src="{$this->get_image('kaboodleloop')}" width="16" height="16" />
         </a>
       </th>
-      {!tpl_list_heading('username')}
-      {!tpl_list_heading('realname')}
-      {!tpl_list_heading('email')}
-      {!tpl_list_heading('jabber')}
+      {!tpl_list_heading('username', L('username'))}
+      {!tpl_list_heading('realname', L('realname'))}
+      {!tpl_list_heading('email', L('email'))}
+      {!tpl_list_heading('jabber', L('jabber'))}
       <th>{L('groups')}</th>
-      {!tpl_list_heading('regdate')}
-      {!tpl_list_heading('status')}
+      {!tpl_list_heading('regdate', L('regdate'))}
+      {!tpl_list_heading('status', L('status'))}
     </tr>
   </thead>
   <?php
@@ -92,7 +92,7 @@
       // First let's make sure there are arrays (not necessarily the case)
       settype($user_groups[$usr['user_id']]['group_name'], 'array');
       settype($user_groups[$usr['user_id']]['project_id'], 'array');
-      foreach ( (array) $user_groups[$usr['user_id']]['group_id'] as $key => $group): ?>
+      foreach ( (array) array_get($user_groups[$usr['user_id']], 'group_id', array()) as $key => $group): ?>
         <?php
         // go through all projects and only show the groups if user has permission
         // to see the project

@@ -582,6 +582,7 @@
     <field name="project_title" type="C" size="100">
       <NOTNULL/>
     </field>
+    <field name="project_prefix" type="C" size="20" />
     <field name="theme_style" type="C" size="20">
       <NOTNULL/>
       <DEFAULT value="0"/>
@@ -674,6 +675,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <index name="project_prefixes">
+      <UNIQUE/>
+      <col>project_prefix</col>
+    </index>
   </table>
   <table name="registrations">
     <field name="reg_id" type="I" size="10">
@@ -797,6 +802,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="prefix_id" type="I" size="10">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
     <field name="date_opened" type="I" size="11">
       <NOTNULL/>
       <DEFAULT value="0"/>
@@ -878,6 +887,9 @@
     </index>
     <index name="due_date">
       <col>due_date</col>
+    </index>
+    <index name="tasks_prefix">
+      <col>prefix_id</col>
     </index>
   </table>
   <table name="users">

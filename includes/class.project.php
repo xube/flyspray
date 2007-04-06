@@ -30,6 +30,9 @@ class Project
         }
 
         // Extend the columns
+        if (is_numeric($id) && $id > 0) {
+            $this->columns[] = 'projectlevelid';
+        }
         $this->columns = array_combine($this->columns, array_map('L', $this->columns));
         foreach ($this->fields as $field) {
             $this->columns['field' . $field->id] = $field->prefs['field_name'];

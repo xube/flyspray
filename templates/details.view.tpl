@@ -11,7 +11,7 @@
 </span>
 
   <h2 class="summary severity{$task['task_severity']}">
-	 FS#{$task['task_id']} - {$task['item_summary']}
+	 {$task['project_prefix']}#{$task['prefix_id']} - {$task['item_summary']}
   </h2>
 
   <div id="fineprint">

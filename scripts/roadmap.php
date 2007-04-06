@@ -54,7 +54,8 @@ class FlysprayDoRoadmap extends FlysprayDo
             }
             $percent_complete = round($percent_complete/max(count($all_tasks), 1));
 
-            $tasks = $db->Execute('SELECT t.task_id, item_summary, detailed_desc, task_severity, mark_private, opened_by, content, task_token, t.project_id
+            $tasks = $db->Execute('SELECT t.task_id, item_summary, detailed_desc, task_severity, mark_private,
+                                          opened_by, content, task_token, t.project_id, prefix_id
                                    FROM {tasks} t
                               LEFT JOIN {cache} ca ON (t.task_id = ca.topic AND ca.type = ? AND t.last_edited_time <= ca.last_updated)
                               LEFT JOIN {field_values} f ON f.task_id = t.task_id

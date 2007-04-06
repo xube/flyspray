@@ -459,7 +459,7 @@ class FlysprayDoDetails extends FlysprayDo
         $page->assign('old_assigned', implode(' ', $this->task['assigned_to']));
         $page->assign('task', $this->task);
 
-        $page->setTitle('FS#' . $this->task['task_id'] . ': ' . $this->task['item_summary']);
+        $page->setTitle($this->task['project_prefix'] . '#' . $this->task['prefix_id'] . ': ' . $this->task['item_summary']);
 
         if ((Get::val('edit') || (Post::has('item_summary') && !isset($_SESSION['SUCCESS']))) && ($user->can_edit_task($this->task) || $user->can_correct_task($this->task))) {
             $result = $db->Execute('SELECT u.user_id, u.user_name, u.real_name, g.group_name
@@ -491,7 +491,7 @@ class FlysprayDoDetails extends FlysprayDo
             // Parent categories for each category field
             $parents = array();
             foreach ($proj->fields as $field) {
-                if ($field->prefs['list_type'] != LIST_CATEGORY) {
+                if ($field->prefs['list_type'] != LIST_CATEGORY || !isset($this->task['field' . $field->id])) {
                     continue;
                 }
                 $sql = $db->Execute('SELECT lft, rgt FROM {list_category} WHERE category_id = ?',
@@ -507,16 +507,18 @@ class FlysprayDoDetails extends FlysprayDo
             }
 
             // Check for task dependencies that block closing this task
-            $check_deps   = $db->Execute('SELECT  t.*, r.item_name AS resolution_name, d.depend_id
+            $check_deps   = $db->Execute('SELECT  t.*, r.item_name AS resolution_name, d.depend_id, p.project_prefix
                                           FROM  {dependencies} d
                                      LEFT JOIN  {tasks} t on d.dep_task_id = t.task_id
+                                     LEFT JOIN  {projects} p on t.project_id = p.project_id
                                      LEFT JOIN  {list_items} r ON t.resolution_reason = r.list_item_id
                                          WHERE  d.task_id = ?', array($this->task['task_id']));
 
             // Check for tasks that this task blocks
-            $check_blocks = $db->Execute('SELECT  t.*, r.item_name AS resolution_name
+            $check_blocks = $db->Execute('SELECT  t.*, r.item_name AS resolution_name, p.project_prefix
                                           FROM  {dependencies} d
                                      LEFT JOIN  {tasks} t on d.task_id = t.task_id
+                                     LEFT JOIN  {projects} p on t.project_id = p.project_id
                                      LEFT JOIN  {list_items} r ON t.resolution_reason = r.list_item_id
                                          WHERE  d.dep_task_id = ?', array($this->task['task_id']));
 
@@ -602,19 +604,21 @@ class FlysprayDoDetails extends FlysprayDo
             $page->assign('comment_attachments', $attachments);
 
             // Relations, notifications and reminders
-            $sql = $db->Execute('SELECT  t.*, r.*, res.item_name AS resolution_name
+            $sql = $db->Execute('SELECT  t.*, r.*, res.item_name AS resolution_name, p.project_prefix
                                  FROM  {related} r
                             LEFT JOIN  {tasks} t ON (r.related_task = t.task_id AND r.this_task = ? OR r.this_task = t.task_id AND r.related_task = ?)
                             LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id
+                            LEFT JOIN  {projects} p on t.project_id = p.project_id
                                 WHERE  t.task_id is NOT NULL AND is_duplicate = 0 AND ( t.mark_private = 0 OR ? = 1 )
                              ORDER BY  t.task_id ASC',
                     array($this->task['task_id'], $this->task['task_id'], $user->perms('manage_project')));
             $page->assign('related', $sql->GetArray());
 
-            $sql = $db->Execute('SELECT  t.*, r.*, res.item_name AS resolution_name
+            $sql = $db->Execute('SELECT  t.*, r.*, res.item_name AS resolution_name, p.project_prefix
                                  FROM  {related} r
                             LEFT JOIN  {tasks} t ON r.this_task = t.task_id
                             LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id
+                            LEFT JOIN  {projects} p on t.project_id = p.project_id
                                 WHERE  is_duplicate = 1 AND r.related_task = ?
                              ORDER BY  t.task_id ASC',
                               array($this->task['task_id']));

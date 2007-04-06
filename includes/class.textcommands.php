@@ -108,7 +108,7 @@ class TextCommands
     {
         global $proj;
 
-        $body  = '=== FS#' . $task['task_id'] . " ===\r\n";
+        $body  = '=== ' . $task['project_prefix'] . '#' . $task['prefix_id'] . " ===\r\n";
         $state = $task['is_closed'] ? L('closed') : ($task['closed_by'] ? L('reopened') : L('open'));
         $body .= L('state') . ': ' . $state . "\r\n";
         $body .= L('summary') . ': ' . $task['item_summary'] . "\r\n";

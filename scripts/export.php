@@ -49,12 +49,16 @@ function tpl_csv_cell($task, $colname) {
             'votes'      => 'num_votes',
             'attachments'=> 'num_attachments',
             'dateclosed' => 'date_closed',
+            'projectlevelid' => 'prefix_id',
             'progress'   => '',
     );
 
     switch ($colname) {
         case 'id':
             $value = $task['task_id'];
+            break;
+        case 'projectlevelid':
+            $value = $task['project_prefix'] . '#' . $task['prefix_id'];
             break;
         case 'summary':
             $value = $task['item_summary'];

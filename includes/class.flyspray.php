@@ -312,7 +312,7 @@ class Flyspray
      * @return mixed an array with all taskdetails or false on failure
      * @version 1.0
      */
-    function GetTaskDetails($task_id, $cache_enabled = false)
+    function GetTaskDetails($task_id, $cache_enabled = false, $prefix = null)
     {
         global $db, $fs, $proj;
 
@@ -322,8 +322,16 @@ class Flyspray
         if (isset($cache[$task_id]) && $cache_enabled) {
             return $cache[$task_id];
         }
+        
+        if (!is_null($prefix) && $prefix != 'FS' && $prefix != 'bug ') {
+            $where = 't.prefix_id = ? AND project_prefix = ?';
+            $params = array($task_id, $prefix);
+        } else {
+            $where = 't.task_id = ?';
+            $params = array($task_id);
+        }
 
-        $task = $db->Execute('SELECT  t.*,
+        $task = $db->Execute('SELECT  t.*, p.project_prefix,
                                       r.item_name   AS resolution_name,
                                       uo.real_name  AS opened_by_name,
                                       ue.real_name  AS last_edited_by_name,
@@ -333,7 +341,8 @@ class Flyspray
                            LEFT JOIN  {users}       uo ON t.opened_by = uo.user_id
                            LEFT JOIN  {users}       ue ON t.last_edited_by = ue.user_id
                            LEFT JOIN  {users}       uc ON t.closed_by = uc.user_id
-                               WHERE  t.task_id = ?', array($task_id));
+                           LEFT JOIN  {projects}    p  ON t.project_id = p.project_id
+                               WHERE  ' . $where, $params);
 
         if ($task = $task->FetchRow()) {
             $task += array('severity_name' => $fs->severities[$task['task_severity']]);
