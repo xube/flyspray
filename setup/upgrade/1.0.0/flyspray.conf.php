@@ -7,7 +7,7 @@
 ; a web browser, and editing header.php to point to wherever you put this file.
 
 
-         
+
 [general]
 cookiesalt = "f1s"            ; Randomisation value for cookie encoding
 output_buffering = "on"                       ; Available options: "off", "on" and "gzip"
@@ -20,9 +20,10 @@ update_check = "1"                               ; Boolean. 0 = off, 1 = on.
 dot_public = "http://public.research.att.com/~north/cgi-bin/webdot/webdot.cgi" ; URL to a public dot server
 dot_path = "" ; Path to the dot executable (for graphs either dot_public or dot_path must be set)
 dot_format = "png" ; "png" or "svg"
+force_baseurl=""
 
 [database]
-dbtype = "mysql"        ; Type of database ("mysql" or "pgsql" are currently supported) 
+dbtype = "mysql"        ; Type of database ("mysql" or "pgsql" are currently supported)
 dbhost = "localhost"        ; Name or IP of your database server
 dbname = "DBNAME"        ; The name of the database
 dbuser = "DBUSER"        ; The user to access the database
