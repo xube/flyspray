@@ -322,7 +322,7 @@ class Flyspray
         if (isset($cache[$task_id]) && $cache_enabled) {
             return $cache[$task_id];
         }
-        
+
         if (!is_null($prefix) && $prefix != 'FS' && $prefix != 'bug ') {
             $where = 't.prefix_id = ? AND project_prefix = ?';
             $params = array($task_id, $prefix);
@@ -804,7 +804,7 @@ class Flyspray
                 } else {
                     $old[$key . '_name'] = isset($old[$key . '_name']) ? $old[$key . '_name'] : $old[$key];
                     $new[$key . '_name'] = isset($new[$key . '_name']) ? $new[$key . '_name'] : $new[$key];
-                    $changes[] = array($key, $old[$key . '_name'], $new[$key . '_name'], $field->prefs['field_name'], $field->id);
+                    $changes[] = array($key, $old[$key . '_name'], $new[$key . '_name'], $field->prefs['field_name'], $field->id, $old[$key], $new[$key]);
                 }
             }
         }

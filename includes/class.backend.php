@@ -363,11 +363,12 @@ class Backend
         $new_details_full = Flyspray::GetTaskDetails($task['task_id']);
 
         $changes = Flyspray::compare_tasks($task, $new_details_full);
+
         foreach ($changes as $change) {
             if ($change[4] == 'assigned_to_name') {
                 continue;
             }
-            Flyspray::logEvent($task['task_id'], 3, $change[2], $change[1], $change[4], $time);
+            Flyspray::logEvent($task['task_id'], 3, $change[6], $change[5], $change[4], $time);
         }
         if (count($changes) > 0) {
             Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_CHANGED, array('changes' => $changes));

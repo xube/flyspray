@@ -19,7 +19,7 @@ function get_events($task_id, $where = '', $sort = 'ASC')
                       lfn.item_name AS old_value_l,
                       lcfn.category_name AS new_value_c,
                       lcfn.category_name AS old_value_c,
-                      f.field_name
+                      f.*, li.list_type
 
                 FROM  {history} h
 
@@ -29,6 +29,7 @@ function get_events($task_id, $where = '', $sort = 'ASC')
             LEFT JOIN {list_category} lcfn ON lcfn.category_id = h.new_value AND h.event_type = 3
             LEFT JOIN {list_category} lcfo ON lcfo.category_id = h.old_value AND h.event_type = 3
             LEFT JOIN {fields} f ON f.field_id = h.field_changed AND h.event_type = 3
+            LEFT JOIN {lists} li ON f.list_id = li.list_id
 
             LEFT JOIN {projects} p1 ON p1.project_id = h.old_value AND h.field_changed='project_id'
             LEFT JOIN {projects} p2 ON p2.project_id = h.new_value AND h.field_changed='project_id'
@@ -95,7 +96,7 @@ function event_description($history) {
                     break;
                 case 'detailed_desc':
                     $field = sprintf("<a href=\"javascript:getHistory('%d', '%s', 'history', '%d');
-                                      showTabById('history', true);\">%s</a>", 
+                                      showTabById('history', true);\">%s</a>",
                                     $history['task_id'], $baseurl, $history['history_id'], eL('details'));
                     if (!empty($details)) {
                         $details_previous = TextFormatter::render($old_value);
@@ -107,6 +108,12 @@ function event_description($history) {
             }
             if (is_numeric($field)) {
                 $field = $history['field_name'];
+                $f = new Field($history);
+                $t = ($history['list_type'] == LIST_CATEGORY) ? 'c' : 'l';
+                $new = array('field' . $f->id => $history['new_value_' . $t], 'field' . $f->id . '_name' =>  $history['new_value_' . $t]);
+                $old = array('field' . $f->id => $history['old_value_' . $t], 'field' . $f->id . '_name' =>  $history['old_value_' . $t]);
+                $new_value = $f->view($new);
+                $old_value = $f->view($old);
             }
             $return .= eL('fieldchanged').": {$field}";
             if ($old_value || $new_value) {
@@ -125,13 +132,13 @@ function event_description($history) {
             $return .= ')';
             break;
     case '4':      //Comment added
-            $return .= sprintf('<a href="%s#comment%d">%s</a>', 
+            $return .= sprintf('<a href="%s#comment%d">%s</a>',
                                 Filters::noXSS(CreateUrl(array('details', 'task' . $history['task_id']))),
                                 $history['new_value'], eL('commentadded'));
             break;
     case '5':      //Comment edited
 
-            $return .= sprintf("<a href=\"javascript:getHistory('%d', '%s', 'history', '%d');\">%s</a>", 
+            $return .= sprintf("<a href=\"javascript:getHistory('%d', '%s', 'history', '%d');\">%s</a>",
                                 $history['task_id'], $baseurl, $history['history_id'], eL('commentedited'));
 
             if ($history['c_date_added']) {
@@ -145,10 +152,10 @@ function event_description($history) {
             }
             break;
     case '6':     //Comment deleted
-        
-            $return .= sprintf("<a href=\"javascript:getHistory('%d', '%s', 'history','%d');\">%s</a>", 
+
+            $return .= sprintf("<a href=\"javascript:getHistory('%d', '%s', 'history','%d');\">%s</a>",
                        $history['task_id'], $baseurl, $history['history_id'], eL('commentdeleted'));
-            
+
             if (!empty($new_value)  && !empty($history['field_changed'])) {
                 $return .= sprintf('(%s %s - %s)', eL('commentby'), tpl_userlink($new_value), formatDate($history['field_changed'], true));
             }
