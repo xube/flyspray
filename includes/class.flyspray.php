@@ -643,6 +643,9 @@ class Flyspray
 
         $auth_details = $result->FetchRow();
 
+        if($auth_details === false) {
+            return -2;
+        }
         if(!$result || !count($auth_details)) {
             return 0;
         }

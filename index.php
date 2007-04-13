@@ -48,7 +48,7 @@ if (Get::val('getfile')) {
 
     // Check if file exists, and user permission to access it!
     if (!is_file(BASEDIR . "/attachments/$file_name") || !$user->can_view_task($task)) {
-        header('HTTP/1.0 404 Not Found');
+        header('HTTP/1.1 410 Gone');
         echo 'File does not exist.';
         exit();
     }

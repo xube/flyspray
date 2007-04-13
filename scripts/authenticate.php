@@ -64,7 +64,9 @@ class FlysprayDoAuthenticate extends FlysprayDo
             }
 
             $_SESSION['failed_login'] = Post::val('user_name');
-            if ($user_id == -1) {
+            if ($user_id === -2) {
+                return array(ERROR_RECOVER, L('usernotexist'), './');
+            } elseif ($user_id === -1) {
                 return array(ERROR_RECOVER, L('error23'), './');
             } elseif ($user_id == 0) {
                 return array(ERROR_RECOVER, L('error7'), './');
