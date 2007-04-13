@@ -354,7 +354,7 @@ $language = array(
 'tasklist'                => 'Tasklist',
 'dateclosed'              => 'Date closed',
 'advanced'                => 'Advanced',
-'searchcomments'          => 'Search in comments',
+'searchcomments'          => 'Search comments',
 'searchforall'            => 'Search for all words',
 'anonusers'               => 'Anonymous Users',
 'miscellaneous'           => 'Miscellaneous',
@@ -936,6 +936,7 @@ Regards,',
 'projectprefix'           => 'Project prefix',
 'projectlevelid'          => 'Project level ID',
 'badprefix'               => 'Invalid project prefix. Either already in use or not alphanumeric.',
+'searchindetails'         => 'Search details',
 );
 
 ?>
