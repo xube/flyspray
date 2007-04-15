@@ -16,7 +16,7 @@ if (!defined('IN_FS')) {
 class FlysprayDoDepends extends FlysprayDo
 {
     var $task = array();
-      
+
     function _onsubmit()
     {
         global $conf;
@@ -204,7 +204,7 @@ class FlysprayDoDepends extends FlysprayDo
                 ($r['clsd'] ? 'color=black,' : '') .
                 ($r['clsd'] ? 'fillcolor=white,' : "fillcolor=\"$col\",") .
                 ($n == $id ? 'shape=box,' : '') .
-                "target=\"_top\", href=\"".CreateURL("details", $n)."\", ".
+                "href=\"javascript:top.window.location.href='".CreateURL("details", $n)."'\", target=\"_top\" ".
                 "tooltip=\"$tooltip\"];\n";
         }
         // Add edges

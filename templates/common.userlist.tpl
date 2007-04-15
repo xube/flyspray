@@ -133,7 +133,7 @@
             <input type="hidden" name="project_id" value="{$proj->id}" />
             <input type="hidden" name="action" value="movetogroup" />
         </td>
-        <td id="numbers">{!pagenums(Get::num('pagenum'), 50, $user_count, $do, 'users')}</td>
+        <td id="numbers">{!pagenums(Get::num('pagenum', 1), 50, $user_count, $do, 'users')}</td>
         </tr>
       </table>
     </td>
