@@ -198,6 +198,27 @@ class FlysprayDoAdmin extends FlysprayDo
         return array(SUBMIT_OK, L('optionssaved'));
     }
 
+    function action_activate_user()
+    {
+    	global $fs, $db, $proj, $user;
+
+        if (!Post::val('user_pass')) {
+            return array(ERROR_RECOVER, L('formnotcomplete'));
+        }
+
+        $reg = $db->Execute('SELECT * FROM {registrations} WHERE user_name = ?',
+                             array(Post::val('user_name')));
+
+    	if ($details = $reg->FetchRow()) {
+            Backend::create_user($details['user_name'], Post::val('user_pass'), $details['real_name'], $details['jabber_id'],
+                                 $details['email_address'], $details['notify_type'], $details['time_zone'], $fs->prefs['anon_group']);
+        } else {
+            return array(ERROR_RECOVER, L('nounregistereduser'));
+        }
+
+        return array(SUBMIT_OK, L('useractivated'));
+    }
+
     function action_add_field()
     {
     	global $fs, $db, $proj, $user;

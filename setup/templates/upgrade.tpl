@@ -55,8 +55,10 @@
             <h2>Perform Upgrade</h2>
             <p>
               <input name="upgrade" id="upgradebutton" class="button" value="Perform Upgrade > >" type="submit" />
-              <?php if (isset($done)): ?>
+              <?php if (isset($done) && $done == true): ?>
               <span class="green"><strong>Done!</strong></span>
+              <?php elseif (isset($done) && $done == false): ?>
+              <div id="error"><h3 class="red"><strong>Failed!</strong></h3><p>Details about the error:</p><pre><code>{$errormsg}</code></pre></div>
               <?php else: ?>
               (this may take a while)
               <?php endif; ?>

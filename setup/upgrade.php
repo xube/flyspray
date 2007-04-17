@@ -64,17 +64,30 @@ $page->assign('short_version', UPGRADE_VERSION);
 // Find out which upgrades need to be run
 $folders = glob_compat(BASEDIR . '/upgrade/[0-9]*');
 usort($folders, 'version_compare'); // start with lowest version
+$done = true;
 
 $upgrade_available = false;
 if (Post::val('upgrade')) {
+    $db->StartTrans();
     foreach ($folders as $folder) {
         if (version_compare($installed_version, $folder, '<=')) {
             execute_upgrade_file($folder, $installed_version);
             $installed_version = $folder;
+
+            // did everything work?
+            if ($db->HasFailedTrans()) {
+                $done = false;
+                $page->assign('errormsg', $db->ErrorMsg($db->MetaError()));
+                break;
+            }
         }
     }
     // we should be done at this point
     $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+
+    $page->assign('done', $done);
+
+    $db->CompleteTrans();
     $installed_version = $fs->version;
 }
 foreach ($folders as $folder) {
@@ -149,7 +162,6 @@ function execute_upgrade_file($folder, $installed_version)
 
     $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($folder, 'fs_ver'));
     $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(serialize($done), 'upgrader_done'));
-    $page->assign('done', true);
 }
 
 class ConfUpdater

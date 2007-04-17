@@ -17,6 +17,6 @@
   <p>{L('location')}: {$line}@{$file}</p>
   <?php endif; ?>
   <?php if ($message): ?>
-  <p>{$message}</p>
+  <p><strong>{$message}</strong></p>
   <?php endif; ?>
 </fieldset>

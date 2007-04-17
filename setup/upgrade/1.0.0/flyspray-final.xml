@@ -972,6 +972,9 @@
       <UNIQUE/>
       <col>user_name</col>
     </index>
+    <index name="account_enabled ">
+      <col>user_name</col>
+    </index>
   </table>
   <table name="users_in_groups">
     <field name="record_id" type="I" size="5">

@@ -15,7 +15,7 @@
     foreach($task_details as $row):?>
     <item>
       <title>{$row['project_prefix']}#{$row['prefix_id']}: {$row['item_summary']}</title>
-      <author>{$row['real_name']}<?php if ($row['show_contact']): ?> &lt;{$row['email_address']}&gt;<?php endif; ?></author>
+      <author>{$row['real_name']}</author>
       <pubDate>{date('r',intval($row['date_opened']))}</pubDate>
       <description><![CDATA[{!str_replace(chr(13), "<br />", Filters::noXSS(strip_tags($row['detailed_desc'])))}]]></description>
       <link>{CreateURL(array('details', 'task' . $row['task_id']))}</link>

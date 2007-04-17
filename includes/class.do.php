@@ -8,8 +8,9 @@ class FlysprayDo
 	function FlysprayDo()
 	{
 		// check minimum permissions
-		if (!$this->is_accessible()) {
-			$this->result = array(ERROR_PERMS);
+        list($access, $msg) = array_pad((array) $this->is_accessible(), 2, '');
+		if (!$access) {
+			$this->result = array(ERROR_PERMS, $msg);
 		} else {
 			// check if data has been submitted and respond
 			$this->result = (array) $this->_onsubmit();

@@ -608,10 +608,10 @@ class Backend
         }
 
         $db->Execute("INSERT INTO  {users}
-                             ( user_name, user_pass, real_name, jabber_id,
-                               email_address, notify_type, account_enabled,
-                               tasks_perpage, register_date, time_zone)
-                     VALUES  ( ?, ?, ?, ?, ?, ?, 1, 25, ?, ?)",
+                             ( user_name, user_pass, real_name, jabber_id, dateformat,
+                               email_address, notify_type, account_enabled, dateformat_extended,
+                               tasks_perpage, register_date, time_zone, magic_url)
+                     VALUES  ( ?, ?, ?, ?, '', ?, ?, 1, '', 25, ?, ?, '')",
             array($user_name, Flyspray::cryptPassword($password), $real_name, $jabber_id, $email, $notify_type, time(), $time_zone));
 
         // Get this user's id for the record

@@ -3,6 +3,21 @@
   <p>
     <img src="{$this->get_image('personal')}" alt="" class="middle" /> <a href="{CreateURL(array($do, 'proj' . $proj->id, 'newuser'))}">{L('newuser')}</a>
   </p>
+  <?php if ($user->perms('is_admin')): ?>
+  <form action="{CreateUrl(array($do, 'proj' . $proj->id, 'users'))}" method="post">
+  <p>
+    <img src="{$this->get_image('button_ok')}" alt="" class="middle" />
+    <a href="{CreateURL(array($do, 'proj' . $proj->id, 'newuser'))}">{L('activateuser')}</a>
+    <input type="text" class="text" id="user_name" name="user_name" value="" />
+    <label>
+      {L('password')}
+      <input type="password" class="text" id="user_pass" name="user_pass" value="{Post::val('user_pass')}" />
+    </label>
+    <input type="hidden" name="action" value="activate_user" />
+    <button type="submit">{L('OK')}</button>
+  </p>
+  </form>
+  <?php endif; ?>
 
   <div id="search">
     <form action="{$_SERVER['SCRIPT_NAME']}" method="get">

@@ -437,7 +437,15 @@ class FlysprayDoDetails extends FlysprayDo
     {
         global $user;
         $this->task = Flyspray::GetTaskDetails(Req::num('task_id'));
-        return $this->task && $user->can_view_task($this->task);
+
+        $error = '';
+        if (!$this->task) {
+            $error = L('error10');
+        } else if (!$user->can_view_task($this->task)) {
+            $error = L('error' . ($user->isAnon() ? 102 : 101) );
+        }
+
+        return array($this->task && $user->can_view_task($this->task), $error);
     }
 
 	function _onsubmit()
