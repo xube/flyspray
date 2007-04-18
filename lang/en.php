@@ -942,6 +942,8 @@ Regards,',
 'activateuser'            => 'Activate unregistered user manually (by username)',
 'useractivated'           => 'User activated successfully.',
 'nounregistereduser'      => 'No unregistered user with this user name found.',
+'minpwsize'               => 'Minimum password size is 5 chars',
+'passwordtoosmall'        => 'Password size too small.',
 );
 
 ?>

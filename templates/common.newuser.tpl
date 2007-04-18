@@ -17,7 +17,7 @@
     </tr>
     <tr>
       <td><label for="userpass">{L('password')}</label></td>
-      <td><input id="userpass" class="password" name="user_pass" value="{Post::val('user_pass')}" type="password" size="20" maxlength="100" /></td>
+      <td><input id="userpass" class="password" name="user_pass" value="{Post::val('user_pass')}" type="password" size="20" maxlength="100" /> <em>{L('minpwsize')}</em></td>
     </tr>
     <tr>
       <td><label for="userpass2">{L('confirmpass')}</label></td>

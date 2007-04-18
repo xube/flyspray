@@ -408,6 +408,10 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('nomatchpass'));
         }
 
+        if (strlen(Post::val('user_pass')) < MIN_PW_LENGTH) {
+            return array(ERROR_RECOVER, L('passwordtoosmall'));
+        }
+
         if ($user->perms('is_admin')) {
             $group_in = Post::val('group_in');
         } else {
@@ -432,6 +436,8 @@ class FlysprayDoAdmin extends FlysprayDo
 
         if (!$user->perms('is_admin')) {
             $page->pushTpl('register.ok.tpl');
+            $page->finish();
+            exit;
         }
 
         return array(SUBMIT_OK, L('newusercreated'));

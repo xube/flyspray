@@ -4,7 +4,7 @@
  *
  * @notes be a real paranoid here.
  * @version $Id$
- * @notes : do not modify this file, use constants.$_SERVER['SERVER_NAME'].php if you need 
+ * @notes : do not modify this file, use constants.$_SERVER['SERVER_NAME'].php if you need
  * to alter some behaviuor.
  */
 
@@ -94,6 +94,9 @@ define('LOCK_FIELD',           true);
 define('USE_DEFAULT',          true);
 define('ADODB_AUTOQUOTE',      true);
 define('PLAINTEXT',            true);
+
+// Others
+define('MIN_PW_LENGTH', 5);
 
 //local installation constants, this file must not exist in the svn repository.
 if(is_readable(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php')) {

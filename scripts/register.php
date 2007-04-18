@@ -23,6 +23,10 @@ class FlysprayDoRegister extends FlysprayDo
             return array(ERROR_RECOVER, L('nomatchpass'));
         }
 
+        if (strlen(Post::val('user_pass')) <= MIN_PW_LENGTH) {
+            return array(ERROR_RECOVER, L('passwordtoosmall'));
+        }
+
         // Check that the user entered the right confirmation code
         $sql = $db->Execute('SELECT * FROM {registrations} WHERE magic_url = ?',
                              array(Post::val('magic_url')));
