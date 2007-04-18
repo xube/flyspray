@@ -50,7 +50,7 @@ class Notifications
         $emails = array();
         $jids = array();
         $result = true;
-        
+
         if(defined('FS_NO_MAIL')) {
             return true;
         }
@@ -109,7 +109,6 @@ class Notifications
 
         // Now we start sending
         if (count($emails)) {
-            $emails = array_unique($emails);
             // first choose method
             if ($fs->prefs['smtp_server']) {
                 include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/SMTP.php';
@@ -147,7 +146,7 @@ class Notifications
             // threaded messages
             if (isset($data['task_id'])) {
                 $hostdata = parse_url($GLOBALS['baseurl']);
-                $inreplyto = '<FS' . intval($data['task_id']) . '@' . $hostdata['host']. '>';
+                $inreplyto = sprintf('<FS%d@%s>', $task_id, $hostdata['host']);
                 $message->headers->set('In-Reply-To', $inreplyto);
                 $message->headers->set('References', $inreplyto);
             }

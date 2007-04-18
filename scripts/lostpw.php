@@ -56,7 +56,7 @@ class FlysprayDoLostpw extends FlysprayDo
         }
 
         //no microtime(), time,even with microseconds is predictable ;-)
-        $magic_url    = md5(uniqid(rand(), true));
+        $magic_url    = md5(uniqid(mt_rand(), true));
 
         // Insert the random "magic url" into the user's profile
         $db->Execute('UPDATE {users}

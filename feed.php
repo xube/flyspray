@@ -27,7 +27,7 @@ header ('Content-type: text/html; charset=utf-8');
 $max_items  = (Get::num('num', 10) == 10) ? 10 : 20;
 $sql_project = '';
 if ($proj->id) {
-    $sql_project = ' AND p.project_id = ' . $db->qstr($proj->id);
+    $sql_project = sprintf(' AND p.project_id = %d', $proj->id);
 }
 
 $feed_type  = Get::val('feed_type', 'rss2');
@@ -49,7 +49,7 @@ switch (Get::val('topic')) {
     break;
 }
 
-$filename = $feed_type.'-'.$orderby.'-'.$proj->id.'-'.$max_items;
+$filename = sprintf('%s-%s-%d-%d', $feed_type, $orderby, $proj->id, $max_items);
 
 // Get the time when a task has been changed last
 $sql = $db->Execute("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)

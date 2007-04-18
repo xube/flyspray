@@ -604,7 +604,7 @@ class Backend
         // Autogenerate a password
         if (!$password) {
             $auto = true;
-            $password = substr(md5(uniqid(rand(), true)), 0, mt_rand(7, 9));
+            $password = substr(md5(uniqid(mt_rand(), true)), 0, mt_rand(8, 12));
         }
 
         $db->Execute("INSERT INTO  {users}
@@ -863,7 +863,7 @@ class Backend
         // Token for anonymous users
         $token = '';
         if ($user->isAnon()) {
-            $token = md5(uniqid(rand(), true));
+            $token = md5(uniqid(mt_rand(), true));
             $sql_params[] = 'task_token';
             $sql_values[] = $token;
         }

@@ -41,6 +41,9 @@ class FlysprayDoRegister extends FlysprayDo
             return array(ERROR_RECOVER, L('usernametaken'));
         }
 
+        $db->Execute('DELETE FROM {registrations} WHERE magic_url = ? AND confirm_code = ?',
+                      array(Post::val('magic_url'), Post::val('confirmation_code')));
+
         return array(SUBMIT_OK, L('accountcreated'), CreateUrl('register', array('regdone' => 1)));
     }
 
@@ -103,8 +106,7 @@ class FlysprayDoRegister extends FlysprayDo
             $$genrandom = md5(uniqid(rand(), true));
         }
 
-        // Convert those numbers to a seemingly random string using crypt
-        $confirm_code = crypt($randval, $conf['general']['cookiesalt']);
+        $confirm_code = substr($randval, 0, 20);
 
         //send the email first.
         if (Notifications::send(Post::val('email_address'), ADDRESS_EMAIL, NOTIFY_CONFIRMATION, array($baseurl, $magic_url, $user_name, $confirm_code))) {
