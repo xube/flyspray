@@ -634,7 +634,8 @@ class Flyspray
     {
         global $db;
 
-        $result = $db->Execute("SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass
+        $result = $db->Execute("SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass,
+                                        lock_until, login_attempts
                                 FROM  {users_in_groups} uig
                            LEFT JOIN  {groups} g ON uig.group_id = g.group_id
                            LEFT JOIN  {users} u ON uig.user_id = u.user_id
@@ -643,14 +644,21 @@ class Flyspray
 
         $auth_details = $result->FetchRow();
 
-        if($auth_details === false) {
+        if ($auth_details === false) {
             return -2;
         }
-        if(!$result || !count($auth_details)) {
+        if (!$result || !count($auth_details)) {
             return 0;
         }
 
         $password = Flyspray::cryptPassword($password);
+
+        if ($auth_details['lock_until'] > 0 && $auth_details['lock_until'] < time()) {
+            $db->Execute('UPDATE {users} SET lock_until = 0, account_enabled = 1, login_attempts = 0
+                           WHERE user_id = ?', array($auth_details['user_id']));
+            $auth_details['account_enabled'] = 1;
+            $_SESSION['was_locked'] = true;
+        }
 
         // Compare the crypted password to the one in the database
         if ($password == $auth_details['user_pass']

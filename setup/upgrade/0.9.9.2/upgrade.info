@@ -1,16 +1,11 @@
 [defaultupgrade]
-0="clean_db.php"
-1="upgrade_lists.xml"
-2="upgrade_fields.xml"
-3="upgrade_lists.php"
-4="prefix.xml"
-5="upgrade_prefix.php"
-6="flyspray-final.xml"
-7="add_data.php"
+1="update_users.xml"
+
+[develupgrade]
+1="update_users.xml"
 
 [fsprefs]
-fs_ver="0.9.9" ; doesn't matter which version
-send_background="1"
+fs_ver="0.9.7" ; doesn't matter which version
 jabber_server=""
 jabber_port="5222"
 jabber_username=""
@@ -34,16 +29,4 @@ visible_columns="id project tasktype severity summary status progress"
 smtp_server=""
 smtp_user=""
 smtp_pass=""
-upgrader_done=""
-anon_userlist="1"
-ldap_enabled="0"
-ldap_server=""
-ldap_base_dn=""
-ldap_userkey="uid"
-ldap_user=""
-ldap_password=""
-email_ssl="0"
-email_tls="0"
-resolution_list="0"
-resolution_dupe="0"
 lock_for="5"

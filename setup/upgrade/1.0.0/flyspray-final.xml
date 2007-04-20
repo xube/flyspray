@@ -968,6 +968,14 @@
       <NOTNULL/>
       <DEFAULT value="1"/>
     </field>
+    <field name="login_attempts" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="lock_until" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
     <index name="user_name">
       <UNIQUE/>
       <col>user_name</col>

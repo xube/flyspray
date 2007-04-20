@@ -86,7 +86,7 @@
 		  </table>
 		</div>
 
-        </td><td>
+        </td><td style="width:100%">
 
 		<div id="taskdetailsfull">
           <h3 class="taskdesc">{L('details')}</h3>

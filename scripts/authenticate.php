@@ -24,7 +24,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
         $password = Post::val('password');
 
         // Run the username and password through the login checker
-        if (($user_id = Flyspray::checkLogin($username, $password)) < 1) {
+        if ( ($user_id = Flyspray::checkLogin($username, $password)) < 1) {
             if ($fs->prefs['ldap_enabled']) {
                 // Does user exist in LDAP server? If so, add to DB
                 $LDAP_CONNECT_OPTIONS = array(
@@ -69,7 +69,19 @@ class FlysprayDoAuthenticate extends FlysprayDo
             } elseif ($user_id === -1) {
                 return array(ERROR_RECOVER, L('error23'), './');
             } elseif ($user_id == 0) {
-                return array(ERROR_RECOVER, L('error7'), './');
+                // just some extra check here so that never ever an account can get locked when it's already disabled
+                // ... that would make it easy to get enabled
+                $db->Execute('UPDATE {users} SET login_attempts = login_attempts+1 WHERE account_enabled = 1 AND user_name = ?',
+                             array($username));
+                // Lock account if failed too often for a limited amount of time
+                $db->Execute('UPDATE {users} SET lock_until = ?, account_enabled = 0 WHERE login_attempts > ? AND user_name = ?',
+                             array(time() + 60 * $fs->prefs['lock_for'], LOGIN_ATTEMPTS, $username));
+
+                if ($db->Affected_Rows()) {
+                    return array(ERROR_RECOVER, sprintf(L('error71'), $fs->prefs['lock_for']), CreateUrl('index'));
+                } else {
+                    return array(ERROR_RECOVER, L('error7'), './');
+                }
             }
         }
 
@@ -91,7 +103,12 @@ class FlysprayDoAuthenticate extends FlysprayDo
             // If the user had previously requested a password change, remove the magic url
             $remove_magic = $db->Execute("UPDATE {users} SET magic_url = '' WHERE user_id = ?",
                                           array($user->id));
+            // Save for displaying
+            if ($user->infos['login_attempts'] > 0) {
+                $_SESSION['login_attempts'] = $user->infos['login_attempts'];
+            }
 
+            $db->Execute('UPDATE {users} SET login_attempts = 0 WHERE user_id = ?', array($user->id));
             return array(SUBMIT_OK, L('loginsuccessful'), Post::val('return_to'));
         }
     }
