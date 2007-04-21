@@ -40,7 +40,7 @@ class FlysprayDoLostpw extends FlysprayDo
 
     function action_sendmagic()
     {
-        global $db;
+        global $db, $baseurl;
 
         // Check that the username exists
         if (strpos(Post::val('user_name'), '@') === false) {
@@ -64,7 +64,7 @@ class FlysprayDoLostpw extends FlysprayDo
                        WHERE user_id = ?',
                      array($magic_url, $user['user_id']));
 
-        Notifications::send($user_details['user_id'], ADDRESS_USER, NOTIFY_PW_CHANGE, array($baseurl, $magic_url));
+        Notifications::send($user['user_id'], ADDRESS_USER, NOTIFY_PW_CHANGE, array($baseurl, $magic_url));
 
         return array(SUBMIT_OK, L('magicurlsent'));
     }

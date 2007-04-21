@@ -215,6 +215,8 @@ class Notifications
             list(,, $to) = Notifications::task_notifications($to, $type, ADDRESS_USER);
         } // otherwise we already have a list of users
 
+        $to = array($to);
+
         if (isset($data['task_id'])) {
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
             // we have project specific options
