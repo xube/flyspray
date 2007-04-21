@@ -23,7 +23,7 @@ class FlysprayDoRegister extends FlysprayDo
             return array(ERROR_RECOVER, L('nomatchpass'));
         }
 
-        if (strlen(Post::val('user_pass')) <= MIN_PW_LENGTH) {
+        if (strlen(Post::val('user_pass')) < MIN_PW_LENGTH) {
             return array(ERROR_RECOVER, L('passwordtoosmall'));
         }
 
@@ -163,7 +163,7 @@ class FlysprayDoRegister extends FlysprayDo
             $page->pushTpl('register.ok.tpl');
         } else if ($user->can_register()) {
             // 32 is the length of the magic_url
-            if (Get::has('magic_url') && strlen(Get::val('magic_url')) == 32) {
+            if (Req::has('magic_url') && strlen(Req::val('magic_url')) == 32) {
                 // If the user came here from their notification link
                 $sql = $db->GetOne('SELECT reg_id FROM {registrations} WHERE magic_url = ?',
                                     array(Get::val('magic_url')));
