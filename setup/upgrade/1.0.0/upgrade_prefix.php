@@ -1,6 +1,6 @@
 <?php
 
-$sql = $db->Execute('SELECT * FROM {projects} WHERE project_prefix = ?', array(''));
+$sql = $db->Execute('SELECT * FROM {projects} WHERE project_prefix = ? OR project_prefix IS NULL', array(''));
 
 $prcount = 1;
 while ($row = $sql->FetchRow()) {
