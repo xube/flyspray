@@ -801,7 +801,7 @@ class Flyspray
                         $old[$key] = $old[$key] ? L('private') : L('public');
                         break;
                 }
-                $changes[] = array($key, $old[$key], $new[$key], $translation[$key], (is_numeric($db)) ? $key : $db );
+                $changes[] = array($key, $old[$key], $new[$key], $translation[$key], (is_numeric($db)) ? $key : $db, $old[$key], $new[$key]);
             }
         }
 
@@ -811,7 +811,7 @@ class Flyspray
             $new[$key] = isset($new[$key]) ? $new[$key] : '';
             if ($old[$key] != $new[$key]) {
                 if ($field->prefs['field_type'] == FIELD_DATE) {
-                    $changes[] = array($key, formatDate($old[$key]), formatDate($new[$key]), $field->prefs['field_name'], $field->id);
+                    $changes[] = array($key, formatDate($old[$key]), formatDate($new[$key]), $field->prefs['field_name'], $field->id, $old[$key], $new[$key]);
                 } else {
                     $old[$key . '_name'] = isset($old[$key . '_name']) ? $old[$key . '_name'] : $old[$key];
                     $new[$key . '_name'] = isset($new[$key . '_name']) ? $new[$key . '_name'] : $new[$key];
