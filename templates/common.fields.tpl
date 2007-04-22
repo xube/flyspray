@@ -80,12 +80,12 @@
       </td>
       <td>
         <select name="field_type">
-          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date'), FIELD_TEXT => L('text')), $field->prefs['field_type'])}
+          {!tpl_options(array(FIELD_LIST => L('list'), FIELD_DATE => L('date'), FIELD_TEXT => L('text')), Post::val('field_type'))}
         </select>
       </td>
       <td>
         <select name="list_id">
-          {!tpl_options($lists, 0, false, null, null, 'project_id')}
+          {!tpl_options($lists, Post::val('list_id', 0), false, null, null, 'project_id')}
         </select>
       </td>
       <td class="buttons">

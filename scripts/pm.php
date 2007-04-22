@@ -80,7 +80,8 @@ class FlysprayDoPm extends FlysprayDo
         // carefully check the project prefix...
         $prefix = Post::val('project_prefix');
         // already in use?
-        $use = $db->GetOne('SELECT project_id FROM {projects} WHERE project_prefix = ?', array($prefix));
+        $use = $db->GetOne('SELECT project_id FROM {projects} WHERE project_prefix = ? AND project_id != ?',
+                            array($prefix, $proj->id));
         if (ctype_alnum($prefix) && $prefix != 'FS' && !$use) {
             $cols[] = 'project_prefix';
             $args[] =  $prefix;
