@@ -291,6 +291,47 @@ class FlysprayDoAdmin extends FlysprayDo
         return array(SUBMIT_OK, L('listadded'));
     }
 
+    function action_update_list()
+    {
+    	global $fs, $db, $proj, $user;
+
+        $listname     = Post::val('list_name');
+        $listposition = Post::val('list_position');
+        $listshow     = Post::val('show_in_list');
+        $listtense    = Post::val('version_tense');
+        $listdelete   = Post::val('delete');
+        $listid       = Post::val('id');
+
+        for ($i = 0; $i < count($listname); $i++) {
+            if ($listname[$i] != '') {
+                $params = array($listname[$i], intval($listposition[$i]), intval(array_get($listshow, $i, 0)), $listid[$i], $proj->id);
+                $version_tense = '';
+                if (is_array($listtense)) {
+                    $version_tense = 'version_tense = ?,';
+                    array_unshift($params, intval($listtense[$i]));
+                }
+
+                $db->Execute('UPDATE  {list_items} lb
+                           LEFT JOIN  {lists} l ON l.list_id = lb.list_id
+                                 SET  '. $version_tense .' item_name = ?, list_position = ?, show_in_list = ?
+                               WHERE  list_item_id = ? AND project_id = ?',
+                                 $params);
+            } else {
+                return array(ERROR_RECOVER, L('fieldsmissing'));
+            }
+        }
+
+        if (is_array($listdelete) && count($listdelete)) {
+            $deleteids = 'list_item_id = ' . join(' OR list_item_id =', array_map('intval', array_keys($listdelete)));
+            $db->Execute("DELETE lb FROM {list_items} lb
+                     LEFT JOIN {lists} l ON l.list_id = lb.list_id
+                         WHERE project_id = ? AND ($deleteids)",
+                        array($proj->id));
+        }
+
+        return array(SUBMIT_OK, L('listupdated'));
+    }
+
     function action_update_lists()
     {
     	global $fs, $db, $proj, $user;
@@ -299,7 +340,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $names = Post::val('list_name');
         $delete = Post::val('delete');
 
-        foreach (Post::val('id') as $id) {
+        foreach (Post::val('id', array()) as $id) {
             if (isset($delete[$id])) {
                 $db->Execute('DELETE FROM {lists} WHERE list_id = ? AND project_id = ?',
                            array($id, $proj->id));

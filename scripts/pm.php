@@ -109,7 +109,8 @@ class FlysprayDoPm extends FlysprayDo
     function action_update_fields()   { return FlysprayDoAdmin::action_update_fields(); }
     function action_add_list()        { return FlysprayDoAdmin::action_add_list(); }
     function action_update_lists()    { return FlysprayDoAdmin::action_update_lists(); }
-    function action_add_category()    { return FlysprayDoAdmin::action_update_lists(); }
+    function action_update_list()     { return FlysprayDoAdmin::action_update_list(); }
+    function action_add_category()    { return FlysprayDoAdmin::action_add_category(); }
     function action_update_category() { return FlysprayDoAdmin::action_update_category(); }
     function action_newgroup()        { return FlysprayDoAdmin::action_newgroup(); }
     function action_addusertogroup()  { return FlysprayDoAdmin::action_addusertogroup(); }

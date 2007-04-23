@@ -174,7 +174,7 @@ class Project
                              array($id, intval($row['lft']), intval($row['rgt'])));
 
         while ($row = $result->FetchRow()) {
-            if ($hide_hidden && !$row['show_in_list'] && !$row['lft'] == 1) {
+            if ($hide_hidden && !$row['show_in_list'] && $row['lft'] != 1) {
                 continue;
             }
 
