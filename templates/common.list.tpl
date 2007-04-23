@@ -83,7 +83,7 @@
   <table class="list">
     <tr>
       <td>
-        <input type="hidden" name="action" value="{$do}.add_to_list" />
+        <input type="hidden" name="action" value="add_to_list" />
         <input type="hidden" name="project_id" value="{$proj->id}" />
         <input type="hidden" name="area" value="list" />
         <input type="hidden" name="do" value="{$do}" />
