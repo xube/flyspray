@@ -446,6 +446,10 @@ ul#menu-list li.first, ul#pm-menu-list li.first {
 	background-image:url(menu/date.png);
 }
 
+#changeloglink {
+	background-image:url(menu/history.png);
+}
+
 #homelink {
 	background-image:url(menu/kmenuedit.png);
 }
@@ -1397,6 +1401,16 @@ dl.roadmap dt {
 	padding:0.1em 0.5em;
 	position:relative;
 }
+
+dl.changelog dt * {
+	text-decoration:none;
+}
+
+dl.changelog dt {
+	padding:0 0.2em;
+	margin:0.3em 0.5em;
+}
+
 
 h3.taskdesc {
 	top:-1.8em;

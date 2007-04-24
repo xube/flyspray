@@ -98,6 +98,10 @@
     <a id="roadmaplink"
         href="{CreateURL(array('roadmap', 'proj' . $proj->id))}">{L('roadmap')}</a>
     </li>
+    <li>
+    <a id="changeloglink"
+        href="{CreateURL(array('changelog', 'proj' . $proj->id))}">{L('changelog')}</a>
+    </li>
     <?php endif; ?>
 
     <?php if ($proj->id && $user->perms('manage_project')): ?>

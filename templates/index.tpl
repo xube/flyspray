@@ -158,7 +158,7 @@
             </th>
             <?php endif; ?>
             <?php foreach ($visible as $col): ?>
-            {!tpl_list_heading($col, L($col))}
+            {!tpl_list_heading($col, (isset($proj->fields[$col]) ? $proj->fields[$col]->prefs['field_name'] : L($col)))}
             <?php endforeach; ?>
           </tr>
         </thead>

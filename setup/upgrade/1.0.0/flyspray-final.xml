@@ -667,6 +667,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="changelog_reso" type="C" size="100">
+      <NOTNULL/>
+      <DEFAULT value=""/>
+    </field>
     <field name="override_user_lang" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>

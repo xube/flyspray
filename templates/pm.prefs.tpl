@@ -104,6 +104,14 @@
           </td>
         </tr>
         <tr>
+          <td><label for="changelog_reso">{L('changelogreso')}</label></td>
+          <td>
+            <select name="changelog_reso[]" multiple="multiple" size="4">
+            {!tpl_options($proj->get_list(array('list_id' => $fs->prefs['resolution_list'])), Flyspray::int_explode(' ', $proj->prefs['changelog_reso']), false)}
+            </select>
+          </td>
+        </tr>
+        <tr>
           <td><label for="anon_group">{L('anongroup')}</label></td>
           <td>
             <select id="anon_group" name="anon_group">

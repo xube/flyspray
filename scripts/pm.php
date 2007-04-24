@@ -76,6 +76,8 @@ class FlysprayDoPm extends FlysprayDo
         $args = array_map('Post_to0', $cols);
         $cols[] = 'notify_types';
         $args[] = implode(' ', Post::val('notify_types'));
+        $cols[] = 'changelog_reso';
+        $args[] = implode(' ', Post::val('changelog_reso'));
 
         // carefully check the project prefix...
         $prefix = Post::val('project_prefix');
