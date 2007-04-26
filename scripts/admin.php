@@ -32,7 +32,14 @@ class FlysprayDoAdmin extends FlysprayDo
 
     function area_editgroup()
     {
-    	global $db, $page;
+    	global $db, $page, $proj;
+
+        $group_details = Flyspray::getGroupDetails(Req::num('group_id'));
+        if (!$group_details || $group_details['project_id'] != $proj->id) {
+            FlysprayDo::error(array(ERROR_RECOVER, L('groupnotexist'), CreateURL(array('pm', 'proj' . $proj->id, 'groups' ))));
+        }
+
+        $page->assign('group_details', $group_details);
         $page->assign('groups', Flyspray::listGroups());
     }
 

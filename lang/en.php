@@ -950,6 +950,8 @@ Regards,',
 'changelogreso'           => 'Changelog resolutions',
 'changelog'               => 'Changelog',
 'changelogfor'            => 'Changelog for ',
+'nochangelog'             => 'No changelog data available. Make sure that you selected some resolution reasons in the project management area.',
+'groupnotexist'           => 'Selected group does not exist in this project.',
 );
 
 ?>
