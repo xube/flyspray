@@ -868,6 +868,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="close_after" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
     <index name="attached_to_project">
       <col>project_id</col>
     </index>

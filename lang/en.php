@@ -952,6 +952,11 @@ Regards,',
 'changelogfor'            => 'Changelog for ',
 'nochangelog'             => 'No changelog data available. Make sure that you selected some resolution reasons in the project management area.',
 'groupnotexist'           => 'Selected group does not exist in this project.',
+'inactivityclose'         => 'Inactivity-close after',
+'stopautoclose'           => 'Stop auto-closing',
+'autoclosingstopped'      => 'Auto-closing stopped successfully.',
+'taskautoclosedmsg'       => 'Task has been set to auto-close successfully.',
+'tasknotautoclosing'      => 'The task is currently not being closed automatically.',
 );
 
 ?>

@@ -47,7 +47,7 @@
 		  <td headers="state">
 			 <?php if ($task['is_closed']): ?>
 			 {L('closed')}
-			 <?php elseif ($task['closed_by']): ?>
+			 <?php elseif ($task['closed_by'] && !$task['close_after']): ?>
              <strong class="reopened">{L('reopened')}</strong>
              <?php else: ?>
              {L('open')}
@@ -246,7 +246,7 @@
 
 	 <?php else: ?>
 
-	 <?php if ($user->can_close_task($task) && !$d_open): ?>
+	 <?php if ($user->can_close_task($task) && !$d_open && !$task['close_after']): ?>
 	 <a href="{CreateUrl(array('details', 'task' . $task['task_id']), array('showclose' => !Get::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
 		{L('closetask')}</a>
      <div id="closeform" class="<?php if (Req::val('action') != 'close' && !Get::val('showclose')): ?>hide <?php endif; ?>popup">
@@ -261,13 +261,17 @@
 			 <button type="submit">{L('closetask')}</button>
 			 <label class="default text" for="closure_comment">{L('closurecomment')}</label>
 			 <textarea class="text" id="closure_comment" name="closure_comment" rows="3" cols="25">{Post::val('closure_comment')}</textarea>
-			 <?php if($task['percent_complete'] != '100'): ?>
+             <label>{L('inactivityclose')} <input type="text" class="text" size="5" name="close_after_num" /></label>
+             <select class="adminlist" name="close_after_type" onmouseup="Event.stop(event);">
+               {!tpl_options(array(3600 => L('hours'), 86400 => L('days'), 604800 => L('weeks')), Post::val('close_after_type'))}
+             </select>
+			 <?php if ($task['percent_complete'] != '100'): ?>
              <label>{!tpl_checkbox('mark100', Post::val('mark100', !(Req::val('action') == 'close')))}&nbsp;&nbsp;{L('mark100')}</label>
              <?php endif; ?>
 		  </div>
 		</form>
 	 </div>
-	 <?php elseif (!$d_open && !$user->isAnon() && !Flyspray::AdminRequestCheck(1, $task['task_id'])): ?>
+	 <?php elseif (!$d_open && !$user->isAnon() && !$task['close_after'] && !Flyspray::AdminRequestCheck(1, $task['task_id'])): ?>
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('requestclose')}</a>
 	 <div id="closeform" class="popup hide">
@@ -282,6 +286,10 @@
 		</form>
 	 </div>
 	 <?php endif; ?>
+     <?php if ($user->can_close_task($task) && $task['close_after']): ?>
+     <a href="{CreateUrl(array('details', 'task' . $task['task_id']), array('action' => 'stop_close'))}" class="button" accesskey="y">
+		{L('stopautoclose')} ({formatDate(max($lastcommentdate, $task['last_edited_time']) + $task['close_after'])})</a>
+     <?php endif; ?>
 
 	 <?php if ($user->can_take_ownership($task)): ?>
 	 <a id="own" class="button"

@@ -138,6 +138,18 @@ do {
         }
     }
 
+    ############ Task five: Close tasks ############
+    $tasks = $db->Execute('SELECT t.*, c.date_added, max(c.date_added) FROM {tasks} t
+                        LEFT JOIN {comments} c ON t.task_id = c.task_id
+                            WHERE is_closed = 0 AND close_after > 0
+                         GROUP BY t.task_id');
+    while ($row = $tasks->FetchRow()) {
+        if (max($row['date_added'], $row['last_edited_time']) + $row['close_after'] < time()) {
+            Backend::close_task($row['task_id'], $row['resolution_reason'], $row['closure_comment'], false);
+            $db->Execute('UPDATE {tasks} SET close_after = 0 WHERE task_id = ?', array($row['task_id']));
+        }
+    }
+
     //wait 10 minutes for the next loop.
     sleep(600);
 

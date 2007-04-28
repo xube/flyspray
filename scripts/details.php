@@ -130,9 +130,43 @@ class FlysprayDoDetails extends FlysprayDo
             return array(ERROR_RECOVER, L('noclosereason'));
         }
 
+        if (Post::num('close_after_num') && Post::num('close_after_type')) {
+            // prepare auto close
+            $db->Execute('UPDATE  {tasks}
+                             SET  closed_by = ?, closure_comment = ?,
+                                  resolution_reason = ?, last_edited_time = ?,
+                                  last_edited_by = ?, close_after = ?, percent_complete = ?
+                           WHERE  task_id = ?',
+                         array($user->id, Post::val('closure_comment', ''), Post::val('resolution_reason'), time(), $user->id,
+                               Post::num('close_after_num') * Post::num('close_after_type'), ((bool) Post::num('mark100')) * 100, $task['task_id']));
+            return array(SUBMIT_OK, L('taskautoclosedmsg'));
+        }
+
         Backend::close_task($task['task_id'], Post::val('resolution_reason'), Post::val('closure_comment', ''), Post::val('mark100', false));
 
         return array(SUBMIT_OK, L('taskclosedmsg'));
+    }
+
+    function action_stop_close($task)
+    {
+        global $user, $db, $fs, $proj;
+
+        if (!$user->can_close_task($task)) {
+            return array(ERROR_PERMS);
+        }
+
+        if (!$task['close_after']) {
+            return array(ERROR_RECOVER, L('tasknotautoclosing'));
+        }
+
+        $db->Execute('UPDATE  {tasks}
+                         SET  closed_by = ?, closure_comment = ?,
+                              resolution_reason = ?, last_edited_time = ?,
+                              last_edited_by = ?, close_after = ?
+                       WHERE  task_id = ?',
+                      array(0, '', 0, time(), $user->id, 0, $task['task_id']));
+
+        return array(SUBMIT_OK, L('autoclosingstopped'));
     }
 
     function action_reopen($task)
@@ -590,7 +624,10 @@ class FlysprayDoDetails extends FlysprayDo
                                  ORDER BY date_added ASC',
                                    array('comm', $this->task['task_id']));
 
-            $page->assign('comments', $sql->GetArray());
+            $comments = $sql->GetArray();
+            $last_comment = end($comments);
+            $page->assign('lastcommentdate', max($last_comment['date_added'], $last_comment['last_edited_time']));
+            $page->assign('comments', $comments);
 
             // Comment events
             $sql = get_events($this->task['task_id'], ' AND (event_type = 3 OR event_type = 14)');

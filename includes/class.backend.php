@@ -1003,14 +1003,11 @@ class Backend
         $db->Execute('UPDATE  {tasks}
                        SET  date_closed = ?, closed_by = ?, closure_comment = ?,
                             is_closed = 1, resolution_reason = ?, last_edited_time = ?,
-                            last_edited_by = ?
+                            last_edited_by = ?, percent_complete = ?
                      WHERE  task_id = ?',
-                    array(time(), $user->id, $comment, $reason, time(), $user->id, $task_id));
+                    array(time(), $user->id, $comment, $reason, time(), $user->id, ((bool) $mark100) * 100, $task_id));
 
         if ($mark100) {
-            $db->Execute('UPDATE {tasks} SET percent_complete = 100 WHERE task_id = ?',
-                       array($task_id));
-
             Flyspray::logEvent($task_id, 3, 100, $task['percent_complete'], 'percent_complete');
         }
 
