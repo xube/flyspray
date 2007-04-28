@@ -29,7 +29,7 @@ class FlysprayDoChangelog extends FlysprayDo
 
         $milestones = $db->Execute('SELECT list_item_id AS version_id, item_name AS version_name
                                     FROM {list_items} li
-                                   WHERE list_id = ? AND version_tense = 1 AND show_in_list = 1
+                                   WHERE list_id = ? AND (version_tense = 1 OR version_tense = 2) AND show_in_list = 1
                                 ORDER BY list_position ASC',
                                   array($list_id));
 

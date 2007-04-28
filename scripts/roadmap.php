@@ -29,7 +29,7 @@ class FlysprayDoRoadmap extends FlysprayDo
 
         $milestones = $db->Execute('SELECT list_item_id AS version_id, item_name AS version_name
                                     FROM {list_items} li
-                                   WHERE list_id = ? AND (version_tense = 3 OR version_tense = 2)
+                                   WHERE list_id = ? AND version_tense = 3
                                 ORDER BY list_position ASC',
                                   array($list_id));
 
