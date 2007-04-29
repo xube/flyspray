@@ -107,12 +107,7 @@ if ($fs->prefs['cache_feeds'])
         {
             die('Error when caching the feed: cache/ is not writeable.');
         }
-
-        // Remove old cached files
-        if($handle = fopen(BASEDIR . '/cache/'.$filename, 'w+b')) {
-            fwrite($handle, $content);
-            fclose($handle);
-        }
+            file_put_contents(sprintf('%s/cache/%s', BASEDIR, $filename), $content, LOCK_EX);
     }
     else {
        /**

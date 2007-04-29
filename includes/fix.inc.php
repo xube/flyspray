@@ -190,145 +190,21 @@ if (ini_get('magic_quotes_gpc')) {
 }
 
 /**
- * Replace array_intersect_key()
- *
- * @category    PHP
- * @package     PHP_Compat
- * @link        http://php.net/function.array_intersect_key
- * @author      Tom Buskens <ortega@php.net>
- * @version     $Revision: 1.8 $
- * @since       PHP 5.0.2
- * @require     PHP 4.0.0 (user_error)
- */
-function php_compat_array_intersect_key()
-{
-    $args = func_get_args();
-    $array_count = count($args);
-    if ($array_count < 2) {
-        user_error('Wrong parameter count for array_intersect_key()', E_USER_WARNING);
-        return;
-    }
-
-    // Check arrays
-    for ($i = $array_count; $i--;) {
-        if (!is_array($args[$i])) {
-            user_error('array_intersect_key() Argument #' .
-                ($i + 1) . ' is not an array', E_USER_WARNING);
-            return;
-        }
-    }
-
-    // Intersect keys
-    $arg_keys = array_map('array_keys', $args);
-    $result_keys = call_user_func_array('array_intersect', $arg_keys);
-
-    // Build return array
-    $result = array();
-    foreach($result_keys as $key) {
-        $result[$key] = $args[0][$key];
-    }
-    return $result;
-}
-
-// Define
-if (!function_exists('array_intersect_key')) {
-    function array_intersect_key()
-    {
-        $args = func_get_args();
-        return call_user_func_array('php_compat_array_intersect_key', $args);
-    }
-}
-
-/**
- * Replace array_combine()
- *
- * @category    PHP
- * @package     PHP_Compat
- * @link        http://php.net/function.array_combine
- * @author      Aidan Lister <aidan@php.net>
- * @version     $Revision: 1.22 $
- * @since       PHP 5
- * @require     PHP 4.0.0 (user_error)
- */
-function php_compat_array_combine($keys, $values)
-{
-    if (!is_array($keys)) {
-        user_error('array_combine() expects parameter 1 to be array, ' .
-            gettype($keys) . ' given', E_USER_WARNING);
-        return;
-    }
-
-    if (!is_array($values)) {
-        user_error('array_combine() expects parameter 2 to be array, ' .
-            gettype($values) . ' given', E_USER_WARNING);
-        return;
-    }
-
-    $key_count = count($keys);
-    $value_count = count($values);
-    if ($key_count !== $value_count) {
-        user_error('array_combine() Both parameters should have equal number of elements', E_USER_WARNING);
-        return false;
-    }
-
-    if ($key_count === 0 || $value_count === 0) {
-        user_error('array_combine() Both parameters should have number of elements at least 0', E_USER_WARNING);
-        return false;
-    }
-
-    $keys    = array_values($keys);
-    $values  = array_values($values);
-
-    $combined = array();
-    for ($i = 0; $i < $key_count; $i++) {
-        $combined[$keys[$i]] = $values[$i];
-    }
-
-    return $combined;
-}
-
-
-// Define
-if (!function_exists('array_combine')) {
-    function array_combine($keys, $values)
-    {
-        return php_compat_array_combine($keys, $values);
-    }
-}
-
-/**
  * Replace glob() since this function is apparently
  * disabled for no apparent reason ("security") on some systems
  *
  * @see glob()
- * @require     PHP 4.3.0 (fnmatch)
  */
+
 function glob_compat($pattern, $flags = 0) {
 
-    if (!function_exists('fnmatch')) {
-        function fnmatch($pattern, $string) {
-            return @preg_match('/^'.strtr(addcslashes($pattern, '\\.+^$(){}=!<>|'), array('*' => '.*', '?' => '.?')) . '$/i', $string);
-        }
-    }
+    if(in_array('glob', explode(',', ini_get('disable_functions')))) {
 
-    $split = explode('/', $pattern);
-    $match = array_pop($split);
-    $path = implode('/', $split);
-    if (($dir = opendir($path)) !== false) {
-        $glob = array();
-        while (($file = readdir($dir)) !== false) {
-            if (fnmatch($match, $file)) {
-                if (is_dir("$path/$file") || !($flags & GLOB_ONLYDIR)) {
-                    if ($flags & GLOB_MARK) $file .= '/';
-                    $glob[] = $file;
-                }
-            }
-        }
-        closedir($dir);
-        if (!($flags & GLOB_NOSORT)) sort($glob);
-        return $glob;
+        include dirname(__FILE__) . '/external/compat/glob.php';
+        
+        return php_compat_glob($pattern, $flags);
     }
-    return false;
+        return glob($pattern, $flags);
 }
 
 // now for all those borked PHP installations...
@@ -342,6 +218,11 @@ if (!function_exists('ctype_digit')) {
 		return preg_match('/^[0-9]+$/iD', $text);
 	}
 }
+
+//use require() as there is no possibilty to get this included more than "once"
+require dirname(__FILE__) . '/external/compat/array_combine.php';
+require dirname(__FILE__) . '/external/compat/file_put_contents.php';
+require dirname(__FILE__) . '/external/compat/array_intersect_key.php';
 
 //for reasons outside flsypray, the PHP core may throw Exceptions in PHP5
 // for a good example see this article

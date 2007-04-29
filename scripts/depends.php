@@ -228,14 +228,8 @@ class FlysprayDoDepends extends FlysprayDo
             // we are operating on the command line, avoid races.
             $tname = tempnam(Flyspray::get_tmp_dir(), md5(uniqid(mt_rand() , true)));
         }
-        //get our dot done..
-        if ($tmp = fopen($tname, 'wb')) {
-            if(flock($tmp, LOCK_EX)) {
-                fwrite($tmp, $dotgraph);
-                flock($tmp, LOCK_UN);
-            }
-            fclose($tmp);
-        }
+            //save our dot..
+            file_put_contents($tname, $dotgraph, LOCK_EX);
 
         // Now run dot on it:
         if ($use_public) {
@@ -245,13 +239,8 @@ class FlysprayDoDepends extends FlysprayDo
 
                 $data = Flyspray::remote_request($url, GET_CONTENTS);
 
-                if($f = fopen($absfilename, 'wb')) {
-                    if(flock($f, LOCK_EX)) {
-                        fwrite($f, $data);
-                        flock($f, LOCK_UN);
-                    }
-                    fclose($f);
-                }
+                file_put_contents($absfilename, $data, LOCK_EX);
+
             } else {
                 $data = file_get_contents($absfilename);
             }
