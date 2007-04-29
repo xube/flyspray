@@ -36,7 +36,9 @@
       <td>
         <?php if ($field->prefs['list_type'] == LIST_VERSION): ?>
         <select name="version_tense[{$field->id}]">
-          {!tpl_options(array(0 => L('any'), 1 => L('past'), 2 => L('present'), 3 => L('future')), $field->prefs['version_tense'])}
+          {!tpl_options(array(0 => L('any'), 1 => L('past'), 4 => L('pastpresent'),
+                              2 => L('present'), 5 => L('presentfuture'), 3 => L('future'), 6 => L('futurepast')),
+                              $field->prefs['version_tense'])}
         </select>
         <?php endif; ?>
       </td>

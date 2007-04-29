@@ -19,7 +19,7 @@ class FlysprayDoChangelog extends FlysprayDo
 
     function show()
     {
-        global $page, $db, $fs, $proj;
+        global $page, $db, $fs, $proj, $user;
 
         $page->setTitle($fs->prefs['page_title'] . L('changelog'));
 
@@ -46,7 +46,8 @@ class FlysprayDoChangelog extends FlysprayDo
                                         AND t.resolution_reason IN (' . $reasons . ')
                                ORDER BY t.resolution_reason DESC, t.task_severity DESC',
                                  array($row['version_id'], $proj->prefs['roadmap_field'], $proj->id));
-            $tasks = $tasks->GetArray();
+            $tasks = array_filter($tasks->GetArray(), array($user, 'can_view_task'));
+
             if (count($tasks)) {
                 $resolutions = array();
                 foreach ($tasks as $task) {

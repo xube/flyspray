@@ -134,8 +134,15 @@ class Project
             return array_merge($required, $this->listCategories($field['list_id']));
         } else if ($field['list_type'] == LIST_VERSION) {
             if ($field['version_tense'] > 0) {
-                $where = 'AND version_tense = ?';
-                $params[] = $field['version_tense'];
+                if ($field['version_tense'] <= 3) {
+                    $tense = intval($field['version_tense']);
+                } else {
+                    $tenses[4] = '1,2';
+                    $tenses[5] = '2,3';
+                    $tenses[6] = '1,3';
+                    $tense = $tenses[$field['version_tense']];
+                }
+                $where = 'AND version_tense IN (' . $tense . ')';
             }
 
             if (!is_null($selected)) {

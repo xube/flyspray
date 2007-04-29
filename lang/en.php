@@ -957,6 +957,9 @@ Regards,',
 'autoclosingstopped'      => 'Auto-closing stopped successfully.',
 'taskautoclosedmsg'       => 'Task has been set to auto-close successfully.',
 'tasknotautoclosing'      => 'The task is currently not being closed automatically.',
+'pastpresent'             => 'Past + Present',
+'futurepast'              => 'Future + Past',
+'presentfuture'           => 'Present + Future',
 );
 
 ?>

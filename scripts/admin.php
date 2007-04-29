@@ -266,7 +266,7 @@ class FlysprayDoAdmin extends FlysprayDo
             }
 
             $default[$id] = Post::val('field' . $id, 0);
-            if ($types[$id]['field_type'] == FIELD_DATE) {
+            if ($types[$id]['field_type'] == FIELD_DATE && $default[$id]) {
                 $default[$id] = Flyspray::strtotime($default[$id]);
             }
 
