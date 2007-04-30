@@ -63,6 +63,7 @@ $page->assign('short_version', UPGRADE_VERSION);
 
 // Find out which upgrades need to be run
 $folders = glob_compat(BASEDIR . '/upgrade/[0-9]*');
+$folders = array_map('basename', $folders);
 usort($folders, 'version_compare'); // start with lowest version
 $done = true;
 

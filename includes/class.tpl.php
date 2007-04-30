@@ -725,6 +725,7 @@ function pagenums($pagenum, $perpage, $totalcount)
         $perpage = $totalcount > 0 ? $totalcount : 1;
     }
     $pages  = ceil($totalcount / $perpage);
+    $pagenum = min($pagenum, $pages);
     $output = sprintf(eL('page'), $pagenum, $pages);
 
     if (!($totalcount / $perpage <= 1)) {

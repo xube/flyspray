@@ -960,6 +960,7 @@ Regards,',
 'pastpresent'             => 'Past + Present',
 'futurepast'              => 'Future + Past',
 'presentfuture'           => 'Present + Future',
+'bounceaddress'           => 'Bounce address',
 );
 
 ?>

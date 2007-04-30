@@ -83,15 +83,14 @@ class FlysprayDoAdmin extends FlysprayDo
     	global $fs, $db, $proj, $user, $page;
 
         // Prepare the sorting
-        // XXX: keep in sync with pm.php
         $order_keys = array('username' => 'user_name',
                             'realname' => 'real_name',
                             'email'    => 'email_address',
                             'jabber'   => 'jabber_id',
                             'regdate'  => 'register_date',
                             'status'   => 'account_enabled');
-        $order_column[0] = $order_keys[Filters::enum(Get::val('order', 'sev'), array_keys($order_keys))];
-        $order_column[1] = $order_keys[Filters::enum(Get::val('order2', 'sev'), array_keys($order_keys))];
+        $order_column[0] = $order_keys[Filters::enum(Get::val('order', 'username'), array_keys($order_keys))];
+        $order_column[1] = $order_keys[Filters::enum(Get::val('order2', 'username'), array_keys($order_keys))];
         $sortorder  = sprintf('%s %s, %s %s, u.user_id ASC',
                 $order_column[0], Filters::enum(Get::val('sort', 'desc'), array('asc', 'desc')),
                 $order_column[1], Filters::enum(Get::val('sort2', 'desc'), array('asc', 'desc')));
