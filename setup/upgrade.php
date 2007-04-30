@@ -230,10 +230,7 @@ class ConfUpdater
             }
             $new_config .= "\n";
         }
-
-        $fp = fopen($location, 'wb');
-        fwrite($fp, $new_config);
-        fclose($fp);
+            file_put_contents($location, $new_config, LOCK_EX);
     }
 }
 

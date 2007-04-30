@@ -133,7 +133,7 @@ class Setup extends Flyspray
       // In case it is flyspray.conf.php, the file does not exist
       // so we can't tell that it is writeable. So we attempt to create an empty one
       if ($path == 'flyspray.conf.php') {
-        $fp = @fopen($file, 'w');
+        $fp = @fopen($file, 'wb');
         @fclose($fp);
       }
       // Let's try at least...
