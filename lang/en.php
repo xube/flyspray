@@ -961,6 +961,10 @@ Regards,',
 'futurepast'              => 'Future + Past',
 'presentfuture'           => 'Present + Future',
 'bounceaddress'           => 'Bounce address',
+'select'                  => 'Select',
+'userselect'              => 'User selection',
+'defaultusers'            => 'Default users',
+
 );
 
 ?>

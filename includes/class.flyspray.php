@@ -916,7 +916,7 @@ class Flyspray
     function username_to_id($name)
     {
         global $db;
-
+        $name = trim($name);
         $uid = $db->GetOne('SELECT user_id FROM {users} WHERE ' .
                            (is_numeric($name) ? 'user_id' : 'user_name') . ' = ?',
                             array($name));

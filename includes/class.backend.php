@@ -343,6 +343,11 @@ class Backend
                          array('field_id','task_id'), ADODB_AUTOQUOTE);
         }
 
+        // Prepare assignee list
+        $assignees = explode(';', trim($args['assigned_to']));
+        $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
+        $assignees = array_filter($assignees, create_function('$x', 'return ($x > 0);'));
+
         // Update the list of users assigned this task
         if ($user->perms('edit_assignments') && array_get($args, 'old_assigned') != trim(array_get($args, 'assigned_to')) ) {
 
@@ -352,7 +357,7 @@ class Backend
                           array($task['task_id']));
 
             // Convert assigned_to and store them in the 'assigned' table
-            foreach (Flyspray::int_explode(' ', trim(array_get($args, 'assigned_to'))) as $key => $val)
+            foreach ($assignees as $val)
             {
                 $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task['task_id']), array('user_id','task_id'), ADODB_AUTOQUOTE);
             }
@@ -374,13 +379,13 @@ class Backend
             Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_CHANGED, array('changes' => $changes));
         }
 
-        if (array_get($args, 'old_assigned') != trim(array_get($args, 'assigned_to')) ) {
+        if (array_get($args, 'old_assigned') != implode(' ', $assignees)) {
             // Log to task history
-            Flyspray::logEvent($task['task_id'], 14, trim(array_get($args, 'assigned_to')), array_get($args, 'old_assigned'), '', $time);
+            Flyspray::logEvent($task['task_id'], 14, implode(' ', $assignees), array_get($args, 'old_assigned'), '', $time);
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
             if (array_get($args, 'assigned_to') != '') {
-                $new_assignees = array_diff(Flyspray::int_explode(' ', array_get($args, 'assigned_to')), Flyspray::int_explode(' ', array_get($args, 'old_assigned')));
+                $new_assignees = array_diff($assignees, Flyspray::int_explode(' ', array_get($args, 'old_assigned')));
                 // Remove current user from notification list
                 if (!$user->infos['notify_own']) {
                     $new_assignees = array_filter($new_assignees, create_function('$u', 'global $user; return $user->id != $u;'));
@@ -897,18 +902,23 @@ class Backend
                              VALUES (?, ?, ?)', array($task_id, $field->id, $value));
         }
 
+        // Prepare assignee list
+        $assignees = explode(';', trim($args['assigned_to']));
+        $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
+        $assignees = array_filter($assignees, create_function('$x', 'return ($x > 0);'));
+
         // Log the assignments and send notifications to the assignees
-        if (isset($args['assigned_to']) && trim($args['assigned_to'])) {
+        if (count($assignees)) {
             // Convert assigned_to and store them in the 'assigned' table
-            foreach (Flyspray::int_explode(' ', trim($args['assigned_to'])) as $key => $val)
+            foreach ($assignees as $val)
             {
                 $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task_id), array('user_id','task_id'), ADODB_AUTOQUOTE);
             }
 
-            Flyspray::logEvent($task_id, 14, trim($args['assigned_to']));
+            Flyspray::logEvent($task_id, 14, implode(' ', $assignees));
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-            Notifications::send(Flyspray::int_explode(' ', $args['assigned_to']), ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, array('task_id' => $task_id));
+            Notifications::send($assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, array('task_id' => $task_id));
         }
 
         // Log that the task was opened

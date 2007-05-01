@@ -504,20 +504,13 @@ class FlysprayDoDetails extends FlysprayDo
         $page->setTitle($this->task['project_prefix'] . '#' . $this->task['prefix_id'] . ': ' . $this->task['item_summary']);
 
         if ((Get::val('edit') || (Post::has('item_summary') && !isset($_SESSION['SUCCESS']))) && ($user->can_edit_task($this->task) || $user->can_correct_task($this->task))) {
-            $result = $db->Execute('SELECT u.user_id, u.user_name, u.real_name, g.group_name
+            $result = $db->Execute('SELECT u.user_name, u.user_id
                                       FROM {assigned} a, {users} u
-                                 LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
-                                 LEFT JOIN {groups} g ON g.group_id = uig.group_id
-                                     WHERE a.user_id = u.user_id AND task_id = ? AND (g.project_id = 0 OR g.project_id = ?)
-                                  ORDER BY g.project_id DESC',
-                                    array($this->task['task_id'], $proj->id));
-            $result = GroupBy($result, 'user_id');
-            $userlist = array();
-            foreach ($result as $row) {
-                $userlist[] = array(0 => $row['user_id'], 1 => "[{$row['group_name']}] {$row['user_name']} ({$row['real_name']})");
-            }
+                                     WHERE a.user_id = u.user_id AND task_id = ?
+                                  ORDER BY u.user_name DESC',
+                                    array($this->task['task_id']));
 
-            $page->assign('userlist', $userlist);
+            $page->assign('userlist', $result->GetArray());
             $page->pushTpl('details.edit.tpl');
         }
         else {
