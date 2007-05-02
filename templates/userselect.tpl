@@ -49,7 +49,7 @@ function adduser(username)
       <?php foreach ($groups as $group): ?>
         <a href="{CreateUrl('userselect', array('group_id' => $group['group_id']))}">{$group['group_name']} ({$group['num_users']})</a><br />
       <?php endforeach;?>
-      <p><strong><a href="{CreateUrl('userselect', array('group_id' => -1))}">{L('defaultusers')}</a></strong></p>
+      <br /><i><strong><a href="{CreateUrl('userselect', array('group_id' => -1))}">{L('defaultusers')}</a></i>
     </td>
   </tr>
 </table>

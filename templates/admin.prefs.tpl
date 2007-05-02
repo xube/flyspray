@@ -164,7 +164,7 @@
             <input id="adminemail" name="admin_email" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['admin_email']}" />
           </td>
         </tr>
-		  <tr>
+        <tr>
           <td><label for="bounceemail">{L('bounceaddress')}</label></td>
           <td>
             <input id="bounceemail" name="bounce_email" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['bounce_email']}" />

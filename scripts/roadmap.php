@@ -63,7 +63,7 @@ class FlysprayDoRoadmap extends FlysprayDo
                                       WHERE field_value = ? AND field_id = ? AND t.project_id = ? AND is_closed = 0',
                                      array('rota', $row['version_id'], $proj->prefs['roadmap_field'], $proj->id));
 
-                $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks, 'percent_complete' => $percent_complete,
+                $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks->GetArray(), 'percent_complete' => $percent_complete,
                                 'all_tasks' => $all_tasks, 'name' => $row['version_name']);
             }
         }

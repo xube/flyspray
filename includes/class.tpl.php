@@ -78,8 +78,8 @@ class Tpl
         }
 
         // theming part
-        if (is_readable(BASEDIR . '/themes/templates/' . $this->_theme.$_tpl)) {
-            $_tpl_data = file_get_contents(BASEDIR . '/themes/templates/' . $this->_theme.$_tpl);
+        if (is_readable(BASEDIR . '/themes/' . $this->_theme.'/templates/'.$_tpl)) {
+            $_tpl_data = file_get_contents(BASEDIR . '/themes/' . $this->_theme.'/templates/'.$_tpl);
         } else {
             $_tpl_data = file_get_contents(BASEDIR . '/templates/'.$_tpl);
         }
