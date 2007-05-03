@@ -101,7 +101,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $args = array();
         foreach ($search_keys as $key) {
             if (Get::val($key) != '') {
-                $where .= ' AND ' . $key . ' LIKE ? ';
+                $where .= sprintf(' AND %s LIKE ? ', $key);
                 $args[] = '%' . Get::val($key) . '%';
             }
         }
@@ -456,7 +456,7 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('nomatchpass'));
         }
 
-        if (strlen(Post::val('user_pass')) < MIN_PW_LENGTH) {
+        if (strlen(Post::val('user_pass')) && strlen(Post::val('user_pass')) < MIN_PW_LENGTH) {
             return array(ERROR_RECOVER, L('passwordtoosmall'));
         }
 
