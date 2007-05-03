@@ -223,7 +223,7 @@ if (!function_exists('ctype_digit')) {
 require dirname(__FILE__) . '/external/compat/array_combine.php';
 require dirname(__FILE__) . '/external/compat/file_put_contents.php';
 require dirname(__FILE__) . '/external/compat/array_intersect_key.php';
-
+require dirname(__FILE__) . '/external/compat/htmlspecialchars_decode.php';
 //for reasons outside flsypray, the PHP core may throw Exceptions in PHP5
 // for a good example see this article
 // http://ilia.ws/archives/107-Another-unserialize-abuse.html

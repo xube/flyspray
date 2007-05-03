@@ -946,7 +946,7 @@ class Flyspray
     function get_tmp_dir()
     {
         if (function_exists('sys_get_temp_dir')) {
-            $return = sys_get_temp_dir();
+            return sys_get_temp_dir();
 
         } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             if ($var = isset($_ENV['TEMP']) ? $_ENV['TEMP'] : getenv('TEMP')) {

@@ -75,7 +75,7 @@ function &_table_prefix(&$db, &$sql, $inputarray)
 
 // if set to false, we'll get errors
 $ADODB_COUNTRECS = true;
-$ADODB_CACHE_DIR = BASEDIR . '/cache';
+$ADODB_CACHE_DIR = FS_CACHE_DIR;
 
 /**
  * This function is a replacement for ADONewConnection, it does some

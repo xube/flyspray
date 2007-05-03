@@ -111,7 +111,7 @@ class Notifications
         if (count($emails)) {
             // first choose method
             if ($fs->prefs['smtp_server']) {
-                include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/SMTP.php';
+                Swift_ClassLoader::load('Swift_Connection_SMTP');
                 // connection... SSL, TLS or none
                 if ($fs->prefs['email_ssl']) {
                     $connection =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_SSL);
@@ -126,7 +126,7 @@ class Notifications
                 }
                 $swift =& new Swift($connection);
             } else {
-                include_once BASEDIR . '/includes/external/swift-mailer/Swift/Connection/NativeMail.php';
+                Swift_ClassLoader::load('Swift_Connection_NativeMail');
                 $swift =& new Swift(new Swift_Connection_NativeMail);
             }
 
@@ -143,10 +143,14 @@ class Notifications
                 $message->setReplyTo($data['project']->prefs['notify_reply']);
             }
 
+            if(isset($data['project']) && $data['project']->prefs['bounce_address']) {
+                $message->setReturnPath($data['project']->prefs['bounce_address']);
+            }
+
             // threaded messages
             if (isset($data['task_id'])) {
                 $hostdata = parse_url($GLOBALS['baseurl']);
-                $inreplyto = sprintf('<FS%d@%s>', $task_id, $hostdata['host']);
+                $inreplyto = sprintf('<FS%d@%s>', $data['task_id'], $hostdata['host']);
                 $message->headers->set('In-Reply-To', $inreplyto);
                 $message->headers->set('References', $inreplyto);
             }
@@ -157,11 +161,11 @@ class Notifications
             $recipients =& new Swift_RecipientList();
 
             foreach($emails as $email) {
-                $recipients->addTo($email);
+                $recipients->addTo(new Swift_Address($email));
             }
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
-            $result = (@$swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
+            $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
             $swift->disconnect();
         }
 

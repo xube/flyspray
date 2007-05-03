@@ -49,7 +49,8 @@ switch (Get::val('topic')) {
     break;
 }
 
-$filename = sprintf('%s-%s-%d-%d', $feed_type, $orderby, $proj->id, $max_items);
+$filename = md5(sprintf('%s-%s-%d-%d', $feed_type, $orderby, $proj->id, $max_items) . $conf['general']['cookiesalt']);
+$cachefile = sprintf('%s/%s', FS_CACHE_DIR, $filename);
 
 // Get the time when a task has been changed last
 $sql = $db->Execute("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
@@ -61,8 +62,8 @@ $most_recent = max($sql->fetchRow());
 
 if ($fs->prefs['cache_feeds']) {
     if ($fs->prefs['cache_feeds'] == '1') {
-        if (is_file(BASEDIR .'/cache/'.$filename) && $most_recent <= filemtime(BASEDIR . '/cache/'.$filename)) {
-            readfile(BASEDIR . '/cache/'.$filename);
+        if (!is_link($cachefile) && is_file($cachefile) && $most_recent <= filemtime($cachefile)) {
+            readfile($cachefile);
             exit;
         }
     }
@@ -103,11 +104,7 @@ $content = $page->fetch('feed.'.$feed_type.'.tpl');
 if ($fs->prefs['cache_feeds'])
 {
     if ($fs->prefs['cache_feeds'] == '1') {
-        if (!is_writeable(BASEDIR .'/cache') && !@chmod(BASEDIR . '/cache', 0700))
-        {
-            die('Error when caching the feed: cache/ is not writeable.');
-        }
-            file_put_contents(sprintf('%s/cache/%s', BASEDIR, $filename), $content, LOCK_EX);
+            file_put_contents($cachefile, $content, LOCK_EX);
     }
     else {
        /**

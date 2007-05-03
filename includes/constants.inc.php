@@ -98,7 +98,7 @@ define('PLAINTEXT',            true);
 // Others
 define('MIN_PW_LENGTH', 5);
 define('LOGIN_ATTEMPTS', 5);
-
+define('FS_CACHE_DIR', Flyspray::get_tmp_dir());
 //local installation constants, this file must not exist in the svn repository.
 if(is_readable(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php')) {
     include(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php');

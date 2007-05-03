@@ -42,7 +42,7 @@ class Field
     function view($task = array(), $parents = array(), $plain = false)
     {
         if (!isset($task['field' . $this->id]) || !$task['field' . $this->id]) {
-            $html = '<span class="fade">' . eL('notspecified') . '</span>';
+            $html = sprintf('<span class="fade">%s</span>', eL('notspecified'))
         } else {
 
             $html = '';
@@ -66,7 +66,7 @@ class Field
                     break;
             }
         }
-        return ($plain ? strip_tags(html_entity_decode($html, ENT_QUOTES, 'utf-8')) : $html);
+        return ($plain ? strip_tags(htmlspecialchars_decode($html, ENT_QUOTES)) : $html);
     }
 
     /**
@@ -101,7 +101,7 @@ class Field
                     return '';
                 }
 
-                $html .= '<select id="f' . $this->id . '" name="field' . $this->id . (isset($attrs['multiple']) ? '[]' : '') . '" ' . join_attrs($attrs);
+                $html .= sprintf('<select id="f%d" name="field%d%s" %s ', $this->id, $this->id, (isset($attrs['multiple']) ? '[]' : ''), join_attrs($attrs));
                 $html .= tpl_disableif($lock) . '>';
                 $html .= tpl_options(array_merge($add_options, $proj->get_list($this->prefs, $task['field' . $this->id])),
                                      Req::val('field' . $this->id, $task['field' . $this->id]));
@@ -118,8 +118,8 @@ class Field
                 break;
 
             case FIELD_TEXT:
-                $html .= '<input type="text" class="text" id="field' . $this->id . '" name="field' . $this->id . '" value="' .
-                          Filters::noXSS($task['field' . $this->id]) . '" />';
+                $html .= sprintf('<input type="text" class="text" id="field%d" name="field%d" value="%s"/>',  
+                                  $this->id, $this->id, Filters::noXSS($task['field' . $this->id])) ;
                 break;
         }
 
