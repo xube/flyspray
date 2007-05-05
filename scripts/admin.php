@@ -484,8 +484,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
         if (!$user->perms('is_admin')) {
             $page->pushTpl('register.ok.tpl');
-            $page->finish();
-            exit;
+            $page->finish('footer.tpl');
         }
 
         return array(SUBMIT_OK, L('newusercreated'));

@@ -151,14 +151,17 @@ class FSTpl extends Tpl
         return '';
     }
 
-    function finish()
+    function finish($tpl = '')
     {
-        $this->pushTpl('footer.tpl');
+        if ($tpl) {
+           $this->pushTpl($tpl);
+        }
+
         $this->render();
 
         unset($_SESSION['ERROR'], $_SESSION['SUCCESS']);
+        exit; // finish is finish, we should really be done here
     }
-
 }
 
 // {{{ costful templating functions, TODO: optimize them

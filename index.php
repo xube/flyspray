@@ -150,6 +150,6 @@ $class = 'FlysprayDo' . $do;
 $mode = new $class;
 $mode->show(Req::val('area'));
 
-$page->finish();
+$page->finish('footer.tpl');
 
 ?>

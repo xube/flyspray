@@ -128,8 +128,7 @@ class FlysprayDo
                 $page->assign('type', $errno);
                 $page->assign('message', $errstr);
                 $page->pushTpl('error.tpl');
-                $page->finish();
-                exit;
+                $page->finish('footer.tpl');
 			case ERROR_RECOVER:
                 if ($errstr) {
                     $_SESSION['ERROR'] = $errstr;

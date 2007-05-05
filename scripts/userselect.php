@@ -87,6 +87,7 @@ class FlysprayDoUserSelect extends FlysprayDo
         $page->assign('usercount', count($users));
         $page->setTitle($fs->prefs['page_title'] . L('userselect'));
         $page->pushTpl('userselect.tpl');
+        $page->finish();
     }
 }
 
