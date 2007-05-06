@@ -157,7 +157,7 @@ class Notifications
 
             $message->headers->setCharset('utf-8');
             $message->headers->set('Precedence', 'list');
-
+            $message->headers->set('X-Mailer', 'Flyspray');
             $recipients =& new Swift_RecipientList();
 
             foreach($emails as $email) {
