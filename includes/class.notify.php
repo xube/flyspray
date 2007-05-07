@@ -19,16 +19,19 @@ class NotificationsThread extends Swift_Events_Listener {
     }
     function beforeSendPerformed(&$e) {
 
-        $to = array_pop($e->getRecipients()->getTo());
+        $message = $e->getMessage();
+        $recipients = $e->getRecipients();
+        $to = $recipients->getTo();
+        $to = array_pop($to);
         $threadfile = sprintf('%s/%d_%s', Flyspray::get_tmp_dir(), $this->task_id, md5($to->getAddress()));
         $references = is_file($threafile) ? array_map('rtrim', file($threadfile)) : array();
             // if there is more than one then we have a conversation..
             if(count($references)) {
                 //"The last identifier in References identifies the parent"
-                $e->getMessage()->headers->set('References', implode(" ", array_reverse($references)));
+                $message->headers->set('References', implode(" ", array_reverse($references)));
             }
                    if($fh = @fopen($threadfile, 'ab')) {
-                     fwrite($fh, $e->getMessage()->generateId() ."\n");
+                     fwrite($fh, $message->generateId() ."\n");
                      fclose($fh);
            }
     }    
