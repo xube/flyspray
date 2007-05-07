@@ -17,6 +17,14 @@ class NotificationsThread extends Swift_Events_Listener {
     {
         $this->task_id = (int) $task_id;
     }
+    
+    /**
+     * beforeSendPerformed 
+     *  XXX: Use the database instead ? 
+     * @param object &$e 
+     * @access public
+     * @return void
+     */
     function beforeSendPerformed(&$e) {
 
         $message = $e->getMessage();
@@ -24,14 +32,14 @@ class NotificationsThread extends Swift_Events_Listener {
         $to = $recipients->getTo();
         $to = array_pop($to);
         $threadfile = sprintf('%s/%d_%s', Flyspray::get_tmp_dir(), $this->task_id, md5($to->getAddress()));
-        $references = is_file($threafile) ? array_map('rtrim', file($threadfile)) : array();
+        $references = is_file($threadfile) ? array_map('rtrim', file($threadfile)) : array();
             // if there is more than one then we have a conversation..
             if(count($references)) {
                 //"The last identifier in References identifies the parent"
                 $message->headers->set('References', implode(" ", array_reverse($references)));
             }
                    if($fh = @fopen($threadfile, 'ab')) {
-                     fwrite($fh, $message->generateId() ."\n");
+                     fwrite($fh, $message->generateId('flyspray') ."\n");
                      fclose($fh);
            }
     }    
@@ -159,11 +167,13 @@ class Notifications
                 $swift =& new Swift(new Swift_Connection_NativeMail);
             }
 
-            $swift->attachPlugin(new NotificationsThread($data['task_id']), "Thread");
+            if($data['task_id']) {
+                $swift->attachPlugin(new NotificationsThread($data['task_id']), "Thread");
+            }
 
             if(defined('FS_MAIL_DEBUG')) {
                 $swift->log->enable();
-                include_once  BASEDIR . '/includes/external/swift-mailer/Swift/Plugin/VerboseSending.php';
+                 Swift_ClassLoader::load('Swift_Plugin_VerboseSending');
                 $view =& new Swift_Plugin_VerboseSending_DefaultView();
                 $swift->attachPlugin(new Swift_Plugin_VerboseSending($view), "verbose");
             }
@@ -178,22 +188,12 @@ class Notifications
                 $message->setReturnPath($data['project']->prefs['bounce_address']);
             }
 
-            // threaded messages
-            if (isset($data['task_id'])) {
-                $hostdata = parse_url($GLOBALS['baseurl']);
-                $inreplyto = sprintf('<FS%d@%s>', $data['task_id'], $hostdata['host']);
-                $message->headers->set('In-Reply-To', $inreplyto);
-                $message->headers->set('References', $inreplyto);
-            }
-
             $message->headers->setCharset('utf-8');
             $message->headers->set('Precedence', 'list');
             $message->headers->set('X-Mailer', 'Flyspray');
             $recipients =& new Swift_RecipientList();
-
-            foreach($emails as $email) {
-                $recipients->addTo(new Swift_Address($email));
-            }
+            $recipients->addTo($emails);
+            
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
             $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
