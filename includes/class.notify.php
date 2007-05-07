@@ -8,6 +8,32 @@
 require_once(BASEDIR . '/includes/external/swift-mailer/Swift.php');
 require_once(BASEDIR . '/includes/class.jabber2.php');
 
+
+class NotificationsThread extends Swift_Events_Listener {
+
+    var $task_id = 0;
+
+    function NotificationsThread($task_id)
+    {
+        $this->task_id = (int) $task_id;
+    }
+    function beforeSendPerformed(&$e) {
+
+        $to = array_pop($e->getRecipients()->getTo());
+        $threadfile = sprintf('%s/%d_%s', Flyspray::get_tmp_dir(), $this->task_id, md5($to->getAddress()));
+        $references = is_file($threafile) ? array_map('rtrim', file($threadfile)) : array();
+            // if there is more than one then we have a conversation..
+            if(count($references)) {
+                //"The last identifier in References identifies the parent"
+                $e->getMessage()->headers->set('References', implode(" ", array_reverse($references)));
+            }
+                   if($fh = @fopen($threadfile, 'ab')) {
+                     fwrite($fh, $e->getMessage()->generateId() ."\n");
+                     fclose($fh);
+           }
+    }    
+}
+
 class Notifications
 {
     /**
@@ -130,6 +156,8 @@ class Notifications
                 $swift =& new Swift(new Swift_Connection_NativeMail);
             }
 
+            $swift->attachPlugin(new NotificationsThread($data['task_id']), "Thread");
+
             if(defined('FS_MAIL_DEBUG')) {
                 $swift->log->enable();
                 include_once  BASEDIR . '/includes/external/swift-mailer/Swift/Plugin/VerboseSending.php';
@@ -143,7 +171,7 @@ class Notifications
                 $message->setReplyTo($data['project']->prefs['notify_reply']);
             }
 
-            if(isset($data['project']) && $data['project']->prefs['bounce_address']) {
+            if(isset($data['project']) && isset($data['project']->prefs['bounce_address'])) {
                 $message->setReturnPath($data['project']->prefs['bounce_address']);
             }
 

@@ -42,7 +42,7 @@ class Field
     function view($task = array(), $parents = array(), $plain = false)
     {
         if (!isset($task['field' . $this->id]) || !$task['field' . $this->id]) {
-            $html = sprintf('<span class="fade">%s</span>', eL('notspecified'))
+            $html = sprintf('<span class="fade">%s</span>', eL('notspecified'));
         } else {
 
             $html = '';
