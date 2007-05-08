@@ -82,7 +82,7 @@
 
     <p>
         <?php if ($user->isAnon()): ?>
-        <label class="inline" for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30" /><br />
+        <label class="inline" for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" value="{Req::val('anon_email')}" size="30" /><br />
         <?php endif; ?>
         <input type="hidden" name="action" value="newtask" />
         <input type="hidden" name="project_id" value="{$proj->id}" />
