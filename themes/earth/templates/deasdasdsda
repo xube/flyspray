@@ -1,0 +1,18 @@
+<ul id="fineprint">
+	<li>
+		{L('attachedtoproject')}:<a href="{$_SERVER['SCRIPT_NAME']}?project={$task['project_id']}">{$proj->prefs['project_title']}</a>
+	</li>
+	<li>
+		{L('openedby')} {!tpl_userlink($task['opened_by'])}
+		<?php if ($task['anon_email'] && $user->perms('view_tasks')): ?>
+			({$task['anon_email']})
+		<?php endif; ?>
+		- {formatDate($task['date_opened'], true)}
+	</li>	
+	<?php if ($task['last_edited_by']): ?>
+		<li>
+		{L('editedby')}  {!tpl_userlink($task['last_edited_by'])}
+		- {formatDate($task['last_edited_time'], true)}
+		</li>
+	<?php endif; ?>
+</ul>

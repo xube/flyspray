@@ -1,0 +1,42 @@
+  <?php if ($user->perms('add_comments') && (!$task['is_closed'] || $proj->prefs['comment_closed'])): ?>
+  <fieldset><legend>{L('addcomment')}</legend>
+  <form enctype="multipart/form-data" action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post">
+    <div>
+      <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
+      <div class="hide preview" id="preview"></div>
+      <?php endif; ?>
+      <input type="hidden" name="action" value="addcomment" />
+      <input type="hidden" name="task_id" value="{$task['task_id']}" />
+      <?php if ($user->perms('create_attachments')): ?>
+      <div id="uploadfilebox">
+        <span style="display: none;"><?php // this span is shown/copied in javascript when adding files ?>
+          <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
+            <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
+        </span>
+        <noscript>
+          <span>
+            <input tabindex="5" class="file" type="file" size="55" name="userfile[]" />
+              <a href="javascript://" tabindex="6" onclick="removeUploadField(this);">{L('remove')}</a><br />
+          </span>
+        </noscript>
+      </div>
+      <button id="uploadfilebox_attachafile" tabindex="7" type="button" onclick="addUploadFields()">
+        {L('uploadafile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
+      </button>
+      <button id="uploadfilebox_attachanotherfile" tabindex="7" style="display: none" type="button" onclick="addUploadFields()">
+         {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
+      </button>
+      <?php endif; ?>
+      {!TextFormatter::textarea('comment_text', 10, 72, array('accesskey' => 'r', 'tabindex' => 8, 'id' => 'comment_text'))}
+
+      <button tabindex="9" type="submit">{L('addcomment')}</button>
+      <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
+      <button tabindex="9" type="button" onclick="showPreview('comment_text', '{$baseurl}', 'preview')">{L('preview')}</button>
+      <?php endif; ?>
+      <?php if (!$watched): ?>
+      {!tpl_checkbox('notifyme', Post::val('notifyme', !(Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
+      <?php endif; ?>
+    </div>
+  </form>
+  </fieldset>
+  <?php endif; ?>

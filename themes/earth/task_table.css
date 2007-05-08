@@ -1,0 +1,129 @@
+#tasklist_table {
+	width: 100%;
+	border-width: 0px;
+	border-collapse: collapse;
+	margin-bottom: 10px;
+}
+
+#tasklist_table th {
+	text-align:left;
+	border-bottom:1px solid #ccc;
+	padding:2px 1em 2px 2px;
+}
+
+#tasklist_table td {
+	border-bottom:1px solid #CCC;
+	padding:2px 1ex 2px 2px;
+	vertical-align:middle;
+}
+
+#tasklist_table tr input {
+	margin-top:-0.3em;
+}
+
+#tasklist_table td.taskdate {
+	text-align:left;
+	white-space:nowrap;
+}
+
+#tasklist_table td.progress {
+	text-align:center;
+}
+
+table#pagenumbers {
+	width:100%;
+}
+
+table#pagenumbers td#taskrange {
+	padding:0 0 0 5px;
+}
+
+table#pagenumbers td#numbers {
+	text-align:right;
+	padding:0 5px 0 0;
+}
+
+.table-main {
+	width: 100%;
+	border-width: 0px;
+	border-collapse: collapse;
+	margin-bottom: 10px;
+}
+
+.table-row-even {
+	background-color: #d6e4ed;
+	border-width: 0px 0px 1px 0px;
+	border-style: solid;
+	border-color: #94afc1;
+	color: #3c637c;
+}
+
+.table-row-odd {
+	background-color: #FFFFF;
+	border-width: 0px 0px 1px 0px;
+	border-style: solid;
+	border-color: #a7b7c1;
+	color: #3c637c;
+}
+
+.table-right {
+	text-align: right;
+}
+
+.table-row-odd td, .table-row-even td {
+	padding: 3px;
+}
+
+.table-row-odd  h5, .table-row-even  h5 {
+	margin: 2px;
+	padding: 0px;
+}
+
+.table-row-heading {
+	background-color: #FFFFFF;
+	border-width: 0px 0px 1px 0px;
+	border-style: solid;
+	border-color: #a7b7c1;
+	color: #000000;
+	font-weight: bold;
+	text-align: center;
+}
+
+.table-row-heading td {
+	padding: 8px 0px 1px 0px;
+	font-size: 11px;
+}
+
+/* Some generic classes; severity classes are used for colour
+indication of severities*/
+.severity1, .severity1 a  {	
+	font-weight: normal;
+}
+
+.severity2, .severity2 a {	
+	color: #707b29;
+	font-weight: normal;
+}
+
+.severity3, .severity3 a  {
+	color: #bab238;
+	font-weight: normal;
+}
+
+.severity4, .severity4 a  {
+	color: #da800c;
+	font-weight: normal;
+}
+
+.severity5, .severity5 a  {	
+	color: #da0c0c;
+	font-weight: normal;
+}
+
+.severity5, .severity4.severity3, .severity2, .severity5 {
+	margin: 2px;
+	padding: 2px;
+}
+.taskpercent {
+	background-color: #FF0000;
+}

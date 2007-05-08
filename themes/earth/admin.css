@@ -1,0 +1,21 @@
+#submenu {
+	background-color: #fbfdf2;
+	border-color: #c2d284;
+	border-width: 1px 1px 1px 5px;
+	border-style: solid;
+	color: #000000;
+	list-style-type: none;
+	padding: 2px 0px 2px 5px;
+	margin: 10px 0px 10px 0px;
+	overflow: auto;
+}
+
+#submenu li {
+	color: #000000;
+	float: left;
+	padding-right: 10px;
+}
+
+#submenu li a {
+	color: #000000;
+}

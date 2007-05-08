@@ -1,0 +1,48 @@
+/* @import url("../../javascript/jscalendar/calendar-system.css"); */
+@import url("template_style.css");
+@import url("input_style.css");
+@import url("task_table.css");
+@import url("task_details.css");
+@import url("admin.css");
+
+img {
+	border-width: 0px;
+}
+
+a {
+	color: #585a5e;
+	text-decoration: none;
+}
+
+h3 {
+	text-decoration: underline;
+	text-align: right;
+	margin: 2px;
+	padding: 0px;
+}
+
+/* Menus */
+#top-bar ul {
+	color: #262724;
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+#top-bar ul li {
+	float: left;
+	padding-right: 10px;
+}
+
+
+/* Forms/Fieldsets */
+fieldset {
+	border-color: #aaaaaa;
+	border-width: 1px;
+	border-style: solid;
+}
+
+legend {
+	color: #888888;
+	padding: 3px;
+}

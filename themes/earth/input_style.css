@@ -1,0 +1,13 @@
+input {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #999999;
+}
+
+label {
+	width: 5.2em;
+	float: left;
+	text-align: right;
+	margin-right: 0.6em;
+	display: block;
+}
