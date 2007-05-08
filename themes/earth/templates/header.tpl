@@ -1,13 +1,13 @@
 <?php $this->display('baseheader.tpl'); ?>
 	<!-- Logo -->
-	<div id="main-logo">
+	<h1 id="main-logo">
 		<img src="{$this->themeUrl()}tangocms-logo.png" alt="{$proj->prefs['project_title']}" />
-	</div>
+	</h1>
 
 	<!-- Project info -->
 	<div id="main-description">
 		<!-- Project Title -->
-		<h1>{$proj->prefs['project_title']}</h1>
+		<h2>{$proj->prefs['project_title']}</h2>
 		<?php
 			$show_message = array('details', 'index', 'newtask', 'reports', 'depends');
 			$actions = explode('.', Req::val('action'));
