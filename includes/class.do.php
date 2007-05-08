@@ -95,7 +95,7 @@ class FlysprayDo
 	 */
     function error($errno, $errstr = '', $errfile = '', $errline = 0)
     {
-        global $db;
+        global $db, $proj, $fs;
 
         if (isset($db) && is_object($db)) {
             $db->CompleteTrans(false); // if possible, undo database queries
@@ -104,7 +104,7 @@ class FlysprayDo
         $page = new FSTpl;
         $page->pushTpl('header.tpl');
         $page->assign('do', 'index');
-        $page->setTheme();
+        $page->setTheme( isset($proj) ? $proj->prefs['theme_style'] : $fs->prefs['global_theme']);
 
         if (is_array($errno)) {
             list($errno, $errstr, $url) = array_pad($errno, 3, '');

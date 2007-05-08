@@ -38,10 +38,7 @@
 				<?php
 					$i = 0;
 					foreach ($tasks as $task):
-						$class = 'table-row-odd';
-						if ( is_int( $i / 2 ) ) {
-							$class = 'table-row-even';
-						}
+						$class = 'table-row-' . ($i % 2);
 				?>
 				<tr id="task{!$task['task_id']}" class="<?php echo $class; ?> severity{$task['task_severity']}">
 					<td class="caret">

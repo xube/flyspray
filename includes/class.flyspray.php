@@ -290,11 +290,9 @@ class Flyspray
 
       if (count($_POST)) {
 
-        $requestarray = array_merge(array_keys($_POST), array_values($_POST));
-
         if (preg_match('/^newtask|addcomment$/', Post::val('action', '')))
         {
-            $currentrequest = md5(serialize($requestarray));
+            $currentrequest = md5(serialize($_POST));
             if (!empty($_SESSION['requests_hash'][$currentrequest])) {
                 return true;
             }

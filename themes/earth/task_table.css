@@ -50,7 +50,7 @@ table#pagenumbers td#numbers {
 	margin-bottom: 10px;
 }
 
-.table-row-even {
+.table-row-0 {
 	background-color: #d6e4ed;
 	border-width: 0px 0px 1px 0px;
 	border-style: solid;
@@ -58,7 +58,7 @@ table#pagenumbers td#numbers {
 	color: #3c637c;
 }
 
-.table-row-odd {
+.table-row-1 {
 	background-color: #FFFFF;
 	border-width: 0px 0px 1px 0px;
 	border-style: solid;
@@ -70,11 +70,11 @@ table#pagenumbers td#numbers {
 	text-align: right;
 }
 
-.table-row-odd td, .table-row-even td {
+.table-row-1 td, .table-row-0 td {
 	padding: 3px;
 }
 
-.table-row-odd  h5, .table-row-even  h5 {
+.table-row-1  h5, .table-row-0  h5 {
 	margin: 2px;
 	padding: 0px;
 }
