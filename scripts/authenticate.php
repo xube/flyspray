@@ -26,40 +26,17 @@ class FlysprayDoAuthenticate extends FlysprayDo
         // Run the username and password through the login checker
         if ( ($user_id = Flyspray::checkLogin($username, $password)) < 1) {
             if ($fs->prefs['ldap_enabled']) {
-                // Does user exist in LDAP server? If so, add to DB
-                $LDAP_CONNECT_OPTIONS = array(
-                    array('OPTION_NAME' => LDAP_OPT_DEREF, 'OPTION_VALUE' => 2),
-                    array('OPTION_NAME' => LDAP_OPT_SIZELIMIT,'OPTION_VALUE' => 100),
-                    array('OPTION_NAME' => LDAP_OPT_TIMELIMIT,'OPTION_VALUE' => 30),
-                    array('OPTION_NAME' => LDAP_OPT_PROTOCOL_VERSION,'OPTION_VALUE' => 3),
-                    array('OPTION_NAME' => LDAP_OPT_ERROR_NUMBER,'OPTION_VALUE' => 13),
-                    array('OPTION_NAME' => LDAP_OPT_REFERRALS,'OPTION_VALUE' => false),
-                    array('OPTION_NAME' => LDAP_OPT_RESTART,'OPTION_VALUE' => false)
-                );
 
-                $ldap = NewADOConnection('ldap');
-                $ldap->Connect($fs->prefs['ldap_server'], $fs->prefs['ldap_user'], $fs->prefs['ldap_password'], $fs->prefs['ldap_base_dn']);
-                $ldap->SetFetchMode(ADODB_FETCH_ASSOC);
+                // Does user exist in LDAP server?
+                $ldapconn = ldap_connect($fs->prefs['ldap_server']);
+                ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+                $ldapbind = @ldap_bind($ldapconn, $fs->prefs['ldap_userkey'] . '=' . $username, $password);
 
-                $filter = '(|(' . $fs->prefs['ldap_userkey'] . '=' . $username . '))';
-
-                $rs = $ldap->Execute($filter);
-                if ($rs && $arr = $rs->FetchRow()) {
-                    $compare_password = $password;
-                    if (substr($arr['userPassword'], 0 ,5) == '{SHA}') {
-                        $compare_password = base64_encode(pack('H*', sha1($compare_password)));
-                        echo $compare_password."<br />";
-                    } else if (substr($arr['userPassword'], 0 ,5) == '{MD5}') {
-                        $compare_password = base64_encode(pack('H*', md5($compare_password)));
-                    }
-
-                    // make sure that the user has to provide the correct password if stored in LDAP
-                    if (!isset($arr['userPassword']) || substr($arr['userPassword'], 5) == $compare_password) {
-                        Backend::create_user($username, $password, $username,
-                                             array_get($arr, 'jid', ''), array_get($arr, 'email', ''),
-                                             1, 0, $fs->prefs['anon_group']);
-                        $user_id = Flyspray::checkLogin($username, $password);
-                    }
+                // if all OK, ad user to flyspray DB
+                if ($ldapbind) {
+                    Backend::create_user($username, $password, $username,
+                                         '', '', 1, 0, $fs->prefs['anon_group']);
+                    $user_id = Flyspray::checkLogin($username, $password);
                 }
             }
 
