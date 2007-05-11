@@ -76,7 +76,7 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="orig_name" type="C" size="100">
+    <field name="orig_name" type="C" size="255">
       <NOTNULL/>
     </field>
     <field name="file_name" type="C" size="60">

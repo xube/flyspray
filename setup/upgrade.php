@@ -163,7 +163,7 @@ function execute_upgrade_file($folder, $installed_version)
             $schema = new adoSchema($db);
             $schema->SetPrefix($conf['database']['dbprefix']);
             $schema->ParseSchemaFile($upgrade_path . '/' . $file);
-            if ($schema->ExecuteSchema()) {
+            if ($schema->ExecuteSchema(null, true)) {
                 $done[$file] = $hash;
             }
         }
