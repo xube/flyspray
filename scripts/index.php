@@ -123,7 +123,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
             'dateopened' => 'date_opened',
             'openedby'   => 'opened_by_name',
             'assignedto' => 'assigned_to_name',
-            'lastedit'   => 'event_date',
+            'lastedit'   => '',
             'comments'   => 'num_comments',
             'votes'      => 'num_votes',
             'attachments'=> 'num_attachments',
@@ -157,9 +157,10 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
             $value = @$fs->severities[$task['task_severity']];
             break;
 
+        case 'lastedit':
+            $task[$indexes[$colname]] = max($task['la1'], $task['la2'], $task['la3'], $task['la4'], $task['la5']);
         case 'dateopened':
         case 'dateclosed':
-        case 'lastedit':
             $value = formatDate($task[$indexes[$colname]]);
             break;
 
