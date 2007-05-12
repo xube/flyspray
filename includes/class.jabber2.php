@@ -30,10 +30,10 @@ class Jabber
         }
            //bug in php 5.2.1 renders this stuff more or less useless.
         if(version_compare(phpversion(), '5.2.1', '>=')) {
-            $this->log('Error: PHP 5.2.1 is incompatible with jabber notifications, see http://bugs.php.net/41236');
+            $this->log('Error: PHP ' . phpversion() . ' is incompatible with jabber notifications, see http://bugs.php.net/41236');
             return false;
         }
-        
+
         if (!Jabber::check_jid($login)) {
             $this->log('Error: Jabber ID is not valid: ' . $login);
             return false;

@@ -17,11 +17,11 @@ class NotificationsThread extends Swift_Events_Listener {
     {
         $this->task_id = (int) $task_id;
     }
-    
+
     /**
-     * beforeSendPerformed 
-     *  XXX: Use the database instead ? 
-     * @param object &$e 
+     * beforeSendPerformed
+     *  XXX: Use the database instead ?
+     * @param object &$e
      * @access public
      * @return void
      */
@@ -42,7 +42,7 @@ class NotificationsThread extends Swift_Events_Listener {
                      fwrite($fh, $message->generateId('flyspray') ."\n");
                      fclose($fh);
            }
-    }    
+    }
 }
 
 class Notifications
@@ -193,7 +193,7 @@ class Notifications
             $message->headers->set('X-Mailer', 'Flyspray');
             $recipients =& new Swift_RecipientList();
             $recipients->addTo($emails);
-            
+
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
             $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
@@ -479,17 +479,17 @@ class Notifications
         );
 
         // Generate the nofication message
+        if (!isset($data['project']->prefs['notify_subject']) || !$data['project']->prefs['notify_subject']) {
+            $data['project']->prefs['notify_subject'] = '[%p][#%t] %s';
+        }
         if (!isset($notify_type_msg[$type]))  {
             $subject = L('notifyfromfs');
-        } else if (isset($data['project']->prefs['notify_subject']) && $data['project']->prefs['notify_subject']) {
-
+        } else {
             $subject = strtr($data['project']->prefs['notify_subject'],
                              array('%p'=> $data['project']->prefs['project_title'] ,
                                    '%s'=> $data['task']['item_summary'],
                                    '%t'=> $data['task_id'],
                                    '%a'=> $notify_type_msg[$type]));
-        } else {
-            $subject = L('notifyfrom') . $data['project']->prefs['project_title'];
         }
 
         $subject = strtr($subject, "\r\n", ' ');
