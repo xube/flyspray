@@ -44,7 +44,7 @@ function tpl_csv_cell($task, $colname) {
             'dateopened' => 'date_opened',
             'openedby'   => 'opened_by_name',
             'assignedto' => 'assigned_to_name',
-            'lastedit'   => 'event_date',
+            'lastedit'   => 'max_date',
             'comments'   => 'num_comments',
             'votes'      => 'num_votes',
             'attachments'=> 'num_attachments',
