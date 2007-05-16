@@ -198,7 +198,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
     	foreach (array_keys($fs->prefs) as $setting) {
     		$db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
-                          array(Post::val($setting, 0), $setting));
+                          array(Post::val($setting, $fs->prefs[$setting]), $setting));
         }
 
         return array(SUBMIT_OK, L('optionssaved'));
