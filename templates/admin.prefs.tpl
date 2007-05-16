@@ -118,6 +118,10 @@
           <td><label for="ldap_userkey">{L('ldapuserkey')}</label></td>
           <td><input id="ldap_userkey" name="ldap_userkey" class="text" type="text" size="40" value="{$fs->prefs['ldap_userkey']}" /></td>
         </tr>
+        <tr>
+          <td><label for="ldap_basedn">{L('ldapbasedn')}</label></td>
+          <td><input id="ldap_basedn" name="ldap_basedn" class="text" type="text" size="40" value="{$fs->prefs['ldap_basedn']}" /></td>
+        </tr>
       </table>
       <?php else: ?>
       </table>

@@ -29,8 +29,9 @@ class FlysprayDoAuthenticate extends FlysprayDo
 
                 // Does user exist in LDAP server?
                 $ldapconn = ldap_connect($fs->prefs['ldap_server']);
+
                 ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-                $ldapbind = @ldap_bind($ldapconn, $fs->prefs['ldap_userkey'] . '=' . $username, $password);
+                $ldapbind = @ldap_bind($ldapconn, $fs->prefs['ldap_userkey'] . '=' . $username . ',' . $fs->prefs['ldap_basedn'], $password);
 
                 // if all OK, ad user to flyspray DB
                 if ($ldapbind) {
