@@ -712,7 +712,7 @@ function CreateURL($type, $args = array())
         }
     }
 
-    return (count($args) ? $return . '?' . tpl_query_from_array($args) : $return);
+    return (count($args) ? $return . 'index.php?' . tpl_query_from_array($args) : $return);
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/

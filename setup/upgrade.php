@@ -35,11 +35,13 @@ if(substr(php_sapi_name(), 0, 3) == 'cgi' && !ini_get('cgi.fix_pathinfo')) {
 
 require_once OBJECTS_PATH . '/fix.inc.php';
 require_once OBJECTS_PATH . '/class.gpc.php';
-require_once OBJECTS_PATH . '/class.database.php';
 require_once OBJECTS_PATH . '/class.flyspray.php';
+require_once OBJECTS_PATH . '/constants.inc.php';
+require_once OBJECTS_PATH . '/class.database.php';
 @require_once OBJECTS_PATH . '/class.tpl.php';
 
 define('CONFIG_PATH', Flyspray::get_config_path(BASEDIR . '/../'));
+
 $conf  = @parse_ini_file(CONFIG_PATH, true) or die('Cannot open config file at ' . CONFIG_PATH);
 
 // Initialise DB

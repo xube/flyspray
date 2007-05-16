@@ -10,11 +10,11 @@ $check_sql = $db->Query("SELECT task_id, assigned_to
                            FROM {tasks}
                           WHERE assigned_to > '0'");
 
-while ($row = $db->FetchRow($check_sql))
+while ($row = $check_sql->FetchRow())
 {
-   $check = $db->Query('SELECT assigned_id FROM {assigned} WHERE task_id = ? AND user_id = ?',
-                       array($row['task_id'], $row['assigned_to']));
-   if ($db->FetchOne($check)) {
+   $check = $db->GetOne('SELECT assigned_id FROM {assigned} WHERE task_id = ? AND user_id = ?',
+                          array($row['task_id'], $row['assigned_to']));
+   if ($check) {
        continue;
    }
 

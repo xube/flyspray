@@ -8,7 +8,9 @@
  * to alter some behaviuor.
  */
 
-define('BASEDIR', dirname(dirname(__FILE__)));
+if (!defined('BASEDIR')) {
+    define('BASEDIR', dirname(dirname(__FILE__)));
+}
 
 // Change this line if you move flyspray.conf.php elsewhere
 $conf = @parse_ini_file(Flyspray::get_config_path(), true);
@@ -29,7 +31,7 @@ if (isset($conf['general']['force_baseurl']) && $conf['general']['force_baseurl'
 
 if(isset($conf['general']['syntax_plugin']) && preg_match('/^[a-z0-9_]+$/iD', $conf['general']['syntax_plugin'])) {
 
-$path_to_plugin = sprintf('%s/plugins/%s/%s_constants.inc.php', 
+$path_to_plugin = sprintf('%s/plugins/%s/%s_constants.inc.php',
                           BASEDIR, $conf['general']['syntax_plugin'], $conf['general']['syntax_plugin']);
 
     if (is_readable($path_to_plugin)) {
