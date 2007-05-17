@@ -602,6 +602,7 @@ div.taskpercent.roadmapp {
 div.taskpercent {
 	border:solid 1px #757F93;
 	height:8px;
+	color:white;
 	min-width:60px;
 }
 

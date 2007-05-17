@@ -36,10 +36,9 @@
   <tr>
     <th><strong>{L('progress')}</strong></th>
     <td>
-        {$stats[$project['project_id']]['average_done']}% {L('done')}
-        <img src="{$this->get_image('percent-' . round($stats[$project['project_id']]['average_done']/10)*10)}"
-                    title="{(round($stats[$project['project_id']]['average_done']/10)*10)}% {L('complete')}"
-                    alt="" width="100" height="10" />
+        <div class="taskpercent" style="height:1.2em;"><div style="width:{round($stats[$project['project_id']]['average_done'])}%">
+          {$stats[$project['project_id']]['average_done']}%&nbsp;{L('done')}
+        </div></div>
     </td>
   </tr>
   <?php if (isset($most_wanted[$project['project_id']])): ?>
