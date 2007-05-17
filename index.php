@@ -6,7 +6,7 @@
 */
 define('IN_FS', true);
 
-require_once(dirname(__FILE__).'/header.php');
+require dirname(__FILE__). '/header.php';
 
 // Background daemon that does scheduled reminders
 if ($conf['general']['reminder_daemon'] == '1') {
@@ -17,9 +17,6 @@ if ($conf['general']['reminder_daemon'] == '1') {
 $modes = str_replace('.php', '', array_map('basename', glob_compat(BASEDIR ."/scripts/*.php")));
 
 $do = Req::enum('do', $modes, $proj->prefs['default_entry']);
-foreach ($modes as $mode) {
-    require_once(BASEDIR . '/scripts/' . $mode . '.php');
-}
 
 if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
     $do = 'pm';
@@ -94,7 +91,7 @@ if (version_compare(phpversion(), '5.0.0', '>=')) {
     set_error_handler(array('FlysprayDo', 'error'));
 }
 
-$page = new FSTpl();
+$page =& new FSTpl();
 
 if ($show_task = Get::val('show_task')) {
     // If someone used the 'show task' form, redirect them
@@ -146,8 +143,22 @@ if (Flyspray::requestDuplicated()) {
     FlysprayDo::error(array(ERROR_INPUT, L('error3')));
 }
 
+
+/* XXX: this is a temporal workaround. 
+ * there is something fishy in the new design, users actions
+ * should never require the admin specific class.
+ */
+
+$require_admin = array('myprofile', 'pm', 'register');
+
+if(in_array($do, $require_admin)) {
+    include BASEDIR . '/scripts/admin.php';    
+}
+
+require BASEDIR . '/scripts/' . $do . '.php';
+
 $class = 'FlysprayDo' . $do;
-$mode = new $class;
+$mode =& new $class;
 $mode->show(Req::val('area'));
 
 $page->finish('footer.tpl');

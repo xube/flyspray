@@ -163,7 +163,7 @@ class User
         }
 
         if (Cookie::val('flyspray_passhash') !=
-                crypt($this->infos['user_pass'], $conf['general']['cookiesalt'])
+                md5($this->infos['user_pass'], $conf['general']['cookiesalt'])
                 || !$this->infos['account_enabled']
                 || !$this->perms('group_open', 0))
         {

@@ -12,8 +12,7 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-
-class FlysprayDoPm extends FlysprayDo
+class FlysprayDoPm extends FlysprayDoAdmin
 {
     var $default_handler = 'prefs';
 
@@ -35,14 +34,7 @@ class FlysprayDoPm extends FlysprayDo
         $page->assign('pendings', $sql->GetArray());
     }
 
-    function area_prefs()     {}
-    function area_editgroup() { return FlysprayDoAdmin::area_editgroup(); }
-    function area_groups()    { return FlysprayDoAdmin::area_groups(); }
-    function area_users()     { return FlysprayDoAdmin::area_users(); }
-    function area_fields()    { return FlysprayDoAdmin::area_fields(); }
-    function area_lists()     { return FlysprayDoAdmin::area_lists(); }
-    function area_list()      { return FlysprayDoAdmin::area_list(); }
-
+    function area_prefs(){}
     // **********************
     // End of area_ functions
     // **********************
@@ -107,18 +99,6 @@ class FlysprayDoPm extends FlysprayDo
         return array(SUBMIT_OK, L('projectupdated'));
     }
 
-    function action_add_field()       { return FlysprayDoAdmin::action_add_field(); }
-    function action_update_fields()   { return FlysprayDoAdmin::action_update_fields(); }
-    function action_add_list()        { return FlysprayDoAdmin::action_add_list(); }
-    function action_update_lists()    { return FlysprayDoAdmin::action_update_lists(); }
-    function action_update_list()     { return FlysprayDoAdmin::action_update_list(); }
-    function action_add_category()    { return FlysprayDoAdmin::action_add_category(); }
-    function action_update_category() { return FlysprayDoAdmin::action_update_category(); }
-    function action_newgroup()        { return FlysprayDoAdmin::action_newgroup(); }
-    function action_addusertogroup()  { return FlysprayDoAdmin::action_addusertogroup(); }
-    function action_add_to_list()     { return FlysprayDoAdmin::action_add_to_list(); }
-    function action_editgroup()       { return FlysprayDoAdmin::action_editgroup(); }
-
     // **********************
     // End of action_ functions
     // **********************
@@ -141,7 +121,7 @@ class FlysprayDoPm extends FlysprayDo
 
         list($type, $msg, $url) = $this->handle('action', Post::val('action'));
         if ($type != NO_SUBMIT) {
-        	$proj = new Project($proj->id);
+        	$proj =& new Project($proj->id);
         }
 
         return array($type, $msg, $url);

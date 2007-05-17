@@ -236,7 +236,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $db->Execute('INSERT INTO {fields} (field_name, field_type, list_id, project_id)
                            VALUES (?, ?, ?, ?)',
                       array(Post::val('field_name'), Post::num('field_type'), Post::num('list_id'), $proj->id));
-        $proj = new Project($proj->id);
+        $proj =& new Project($proj->id);
 
         return array(SUBMIT_OK, L('fieldadded'));
     }
@@ -276,7 +276,7 @@ class FlysprayDoAdmin extends FlysprayDo
                               array_get($tense, $id, 0), $default[$id],
                               array_get($force, $id, 0), $id, $proj->id));
         }
-        $proj = new Project($proj->id);
+        $proj =& new Project($proj->id);
 
         return array(SUBMIT_OK, L('fieldsupdated'));
     }
@@ -605,7 +605,7 @@ class FlysprayDoAdmin extends FlysprayDo
             // If the user is changing their password, better update their cookie hash
             if ($user->id == Post::val('user_id')) {
                 Flyspray::setcookie('flyspray_passhash',
-                        crypt($new_hash, $conf['general']['cookiesalt']), time()+3600*24*30);
+                        md5($new_hash, $conf['general']['cookiesalt']), time()+3600*24*30);
             }
         }
 
@@ -634,7 +634,7 @@ class FlysprayDoAdmin extends FlysprayDo
                     implode(' ', Post::val('defaultsortcolumn')), implode(' ', Post::val('notify_blacklist', array())),
                     Post::val('lang_code', ''), Post::val('user_id')));
         if ($do == 'myprofile') {
-            $user = new User($user->id);
+            $user =& new User($user->id);
         }
 
         if ($user->perms('is_admin')) {
@@ -765,7 +765,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
         list($type, $msg, $url) = $this->handle('action', Post::val('action'));
         if ($type != NO_SUBMIT) {
-        	$fs = new Flyspray;
+        	$fs =& new Flyspray;
         	$user->get_perms();
         }
 

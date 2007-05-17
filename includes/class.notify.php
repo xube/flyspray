@@ -5,9 +5,7 @@
    ---------------------------------------------------
 */
 
-require_once(BASEDIR . '/includes/external/swift-mailer/Swift.php');
-require_once(BASEDIR . '/includes/class.jabber2.php');
-
+require BASEDIR . '/includes/external/swift-mailer/Swift.php';
 
 class NotificationsThread extends Swift_Events_Listener {
 
@@ -38,10 +36,7 @@ class NotificationsThread extends Swift_Events_Listener {
                 //"The last identifier in References identifies the parent"
                 $message->headers->set('References', implode(" ", array_reverse($references)));
             }
-                   if($fh = @fopen($threadfile, 'ab')) {
-                     fwrite($fh, $message->generateId('flyspray') ."\n");
-                     fclose($fh);
-           }
+            file_put_contents($threadfile, $message->generateId('flyspray') . "\n" , FILE_APPEND|LOCK_EX);
     }
 }
 
@@ -60,7 +55,7 @@ class Notifications
     {
         global $fs;
 
-        $proj = new Project(0);
+        $proj =& new Project(0);
         $data['project'] = $proj;
         $data['notify_type'] = $type;
 
@@ -212,7 +207,9 @@ class Notifications
                 $fs->prefs['jabber_port'] = 5222;
             }
 
-            $jabber = new Jabber($fs->prefs['jabber_username'],
+            include  BASEDIR . '/includes/class.jabber2.php';
+            
+            $jabber =& new Jabber($fs->prefs['jabber_username'],
                                  $fs->prefs['jabber_password'],
                                  $fs->prefs['jabber_ssl'],
                                  $fs->prefs['jabber_port'],
@@ -256,7 +253,7 @@ class Notifications
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
             // we have project specific options
             $pid = $db->GetOne('SELECT project_id FROM {tasks} WHERE task_id = ?', array($data['task_id']));
-            $data['project'] = new Project($pid);
+            $data['project'] =& new Project($pid);
         }
 
         list($data['subject'], $data['body']) = Notifications::generate_message($type, $data);

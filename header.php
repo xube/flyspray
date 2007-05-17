@@ -5,10 +5,10 @@
 // move flyspray.conf.php to a directory where a browser can't access it.
 // (RECOMMENDED).
 
-require_once dirname(__FILE__) . '/includes/fix.inc.php';
-require_once dirname(__FILE__) . '/includes/class.flyspray.php';
-require_once dirname(__FILE__) . '/includes/constants.inc.php';
-require_once BASEDIR . '/includes/i18n.inc.php';
+require dirname(__FILE__) . '/includes/fix.inc.php';
+require dirname(__FILE__) . '/includes/class.flyspray.php';
+require dirname(__FILE__) . '/includes/constants.inc.php';
+require BASEDIR . '/includes/i18n.inc.php';
 
 // Get the translation for the wrapper page (this page)
 setlocale(LC_ALL, str_replace('-', '_', L('locale')) . '.utf8');
@@ -19,17 +19,17 @@ if (!$conf) {
     Flyspray::Redirect('setup/index.php');
 }
 
-require_once BASEDIR . '/includes/class.gpc.php';
-require_once BASEDIR . '/includes/utf8.inc.php';
-require_once BASEDIR . '/includes/class.database.php';
-require_once BASEDIR . '/includes/class.backend.php';
-require_once BASEDIR . '/includes/class.project.php';
-require_once BASEDIR . '/includes/class.user.php';
-require_once BASEDIR . '/includes/class.tpl.php';
-require_once BASEDIR . '/includes/class.do.php';
+require BASEDIR . '/includes/class.gpc.php';
+require BASEDIR . '/includes/utf8.inc.php';
+require BASEDIR . '/includes/class.database.php';
+require BASEDIR . '/includes/class.backend.php';
+require BASEDIR . '/includes/class.project.php';
+require BASEDIR . '/includes/class.user.php';
+require BASEDIR . '/includes/class.tpl.php';
+require BASEDIR . '/includes/class.do.php';
 
 $db = NewDatabase($conf['database']);
-$fs = new Flyspray;
+$fs =& new Flyspray;
 
 if (is_readable(BASEDIR . '/setup/index.php') && strpos($fs->version, 'dev') === false) {
     die('Please empty the folder "' . BASEDIR . DIRECTORY_SEPARATOR . "setup\"  before you start using Flyspray.\n".
@@ -54,15 +54,15 @@ if (!isset($project_id)) {
     $project_id = Req::val('project', Req::val('project_id', $project_id));
 }
 
-$proj = new Project($project_id);
+$proj =& new Project($project_id);
 $proj->setCookie();
 
 /* permission stuff */
 if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
-    $user = new User(Cookie::val('flyspray_userid'));
+    $user =& new User(Cookie::val('flyspray_userid'));
     $user->check_account_ok();
 } else {
-    $user = new User(0);
+    $user =& new User(0);
 }
 
 // Load translations

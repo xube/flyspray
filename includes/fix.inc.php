@@ -198,7 +198,7 @@ if (ini_get('magic_quotes_gpc')) {
 
 function glob_compat($pattern, $flags = 0) {
 
-    if(in_array('glob', explode(',', ini_get('disable_functions')))) {
+    if(in_array('glob', explode(',', ini_get('disable_functions'))) || !function_exists('glob')) {
 
         include dirname(__FILE__) . '/external/compat/glob.php';
         
