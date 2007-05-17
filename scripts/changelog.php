@@ -36,7 +36,7 @@ class FlysprayDoChangelog extends FlysprayDo
         $data = array();
         $reasons = implode(',', Flyspray::int_explode(' ', $proj->prefs['changelog_reso']));
 
-        while ($row = $milestones->FetchRow()) {
+        while ($row = $milestones->FetchRow() && $reasons) {
             $tasks = $db->Execute('SELECT t.task_id, percent_complete, item_summary, detailed_desc, task_severity, mark_private,
                                           opened_by, task_token, t.project_id, prefix_id, li.item_name AS res_name, li.list_item_id AS res_id
                                    FROM {tasks} t
