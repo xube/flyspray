@@ -302,8 +302,8 @@ class Backend
     function edit_task($task, $args)
     {
         global $user, $db, $fs, $proj;
-        if ($proj->id != $task['project_id']) {
-            $proj = new Project($task['project_id']);
+        if ($proj->id != Post::val('project_id', $task['project_id'])) {
+            $proj = new Project(Post::val('project_id', $task['project_id']));
         }
 
         if (!$user->can_edit_task($task) && !$user->can_correct_task($task)) {
