@@ -118,8 +118,8 @@ class Field
                 break;
 
             case FIELD_TEXT:
-                $html .= sprintf('<input type="text" class="text" id="field%d" name="field%d" value="%s"/>',  
-                                  $this->id, $this->id, Filters::noXSS($task['field' . $this->id])) ;
+                $html .= sprintf('<input type="text" class="text" id="field%d" name="field%d" value="%s"/>',
+                                  $this->id, $this->id, Filters::noXSS(Req::val('field' . $this->id, $task['field' . $this->id]))) ;
                 break;
         }
 

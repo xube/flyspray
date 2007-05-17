@@ -236,7 +236,8 @@ class FlysprayDoAdmin extends FlysprayDo
         $db->Execute('INSERT INTO {fields} (field_name, field_type, list_id, project_id)
                            VALUES (?, ?, ?, ?)',
                       array(Post::val('field_name'), Post::num('field_type'), Post::num('list_id'), $proj->id));
-        $proj =& new Project($proj->id);
+
+        $proj = new Project($proj->id);
 
         return array(SUBMIT_OK, L('fieldadded'));
     }
@@ -276,7 +277,7 @@ class FlysprayDoAdmin extends FlysprayDo
                               array_get($tense, $id, 0), $default[$id],
                               array_get($force, $id, 0), $id, $proj->id));
         }
-        $proj =& new Project($proj->id);
+        $proj = new Project($proj->id);
 
         return array(SUBMIT_OK, L('fieldsupdated'));
     }

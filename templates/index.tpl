@@ -61,6 +61,15 @@
 
         <fieldset><legend>{L('taskproperties')}</legend>
 
+        <?php if (!$proj->id): ?>
+        <div class="search_select">
+        <label class="default multisel" for="search_project">{L('project')}</label>
+        <select name="search_project[]" id="search_project" multiple="multiple" size="5">
+          {!tpl_options(array_merge(array('' => L('allprojects')), $fs->projects), Get::val('search_project', ''))}
+        </select>
+        </div>
+        <?php endif; ?>
+
         <?php foreach ($proj->fields as $field): ?>
         <?php if ($field->prefs['field_type'] != FIELD_LIST) continue; ?>
         <div class="search_select">
@@ -93,6 +102,15 @@
         </select>
         </div>
         <div class="clear"></div>
+
+        <?php foreach ($proj->fields as $field): ?>
+        <?php if ($field->prefs['field_type'] != FIELD_TEXT) continue; ?>
+        <div class="search_select">
+        <label class="default" for="field{$field->id}">{$field->prefs['field_name']}</label>
+        {!$field->edit(!USE_DEFAULT, !LOCK_FIELD)}
+        </div>
+        <?php endforeach; ?>
+
         </fieldset>
 
         <fieldset><legend>{L('users')}</legend>

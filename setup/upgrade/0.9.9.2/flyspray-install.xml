@@ -76,13 +76,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="orig_name" type="C" size="100">
+    <field name="orig_name" type="C" size="255">
       <NOTNULL/>
     </field>
     <field name="file_name" type="C" size="30">
-      <NOTNULL/>
-    </field>
-    <field name="file_desc" type="C" size="100">
       <NOTNULL/>
     </field>
     <field name="file_type" type="C" size="50">
@@ -935,6 +932,14 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="login_attempts" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="lock_until" type="I" size="11">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
     <index name="user_name">
       <UNIQUE/>
       <col>user_name</col>
@@ -1038,7 +1043,7 @@
     <query>INSERT INTO prefs VALUES (DEFAULT, 'cache_feeds', '1');</query>
     <query>INSERT INTO projects VALUES (DEFAULT, 'Default Project', 'Bluey', 0, 'Welcome to your first Flyspray project!  We hope that Flyspray provides you with many hours of increased productivity.  If you have any issues, go to http://flyspray.org/support.                   You can customise this message by clicking the **Manage Project** link in the menu above...', 1, 'id category tasktype severity summary status progress', 1, 0, '', '', NULL, '0', NULL, NULL, '', 'en', 0, 0, 0, NULL, 'index');</query>
     <query>INSERT INTO tasks VALUES (1, 1, 1, 1130024797, 1, 0, 0, 0, ' ', 'Sample Task', 'This isn''t a real task.  You should close it and start opening some real tasks.', 2, 1, 1, 1, 0, 1, 1, 2, 0, 0, 0, 0, 0, '', '0');</query>
-    <query>INSERT INTO users VALUES (DEFAULT, 'super', '1b3231655cebb7a1f783eddf27d254ca', 'Mr Super User', 'super@example.com', 'super@example.com', 0, 1, 1, '', '', 25, 0, 0, 0);</query>
+    <query>INSERT INTO users VALUES (DEFAULT, 'super', '1b3231655cebb7a1f783eddf27d254ca', 'Mr Super User', 'super@example.com', 'super@example.com', 0, 1, 1, '', '', 25, 0, 0, 0, 0, 0);</query>
     <query>INSERT INTO users_in_groups VALUES (DEFAULT, 1, 1);</query>
   </sql>
 </schema>

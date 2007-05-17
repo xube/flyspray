@@ -1170,7 +1170,7 @@ class Backend
         // search custom fields
         $custom_fields_joined = array();
         foreach ($proj->fields as $field) {
-            $ref = 'f' . $field->id;
+            $ref = 'field' . $field->id;
             if ($field->prefs['field_type'] == FIELD_DATE) {
                 if (!array_get($args, $field->id . 'from') && !array_get($args, $field->id . 'to')) {
                     continue;
@@ -1188,7 +1188,7 @@ class Backend
                     $where[]      = "({$ref}.field_value <= ? AND {$ref}.field_value > 0)";
                     $sql_params[] = Flyspray::strtotime($date);
                 }
-            } else {
+            } elseif ($field->prefs['field_type'] == FIELD_LIST) {
                 if (in_array('', (array) array_get($args, 'field' . $field->id, array('')))) {
                     continue;
                 }
@@ -1205,11 +1205,21 @@ class Backend
                 if (count($fwhere)) {
                     $where[] =  ' (' . implode(' OR ', $fwhere) . ') ';
                 }
+            } else {
+                if ( !($val = array_get($args, 'field' . $field->id)) ) {
+                    continue;
+                }
+
+                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = ? ";
+                $sql_params[] = $field->id;
+                $custom_fields_joined[] = $field->id;
+                $where[] = "({$ref}.field_value LIKE ?)";
+                $sql_params[] = $val;
             }
         }
         // now join custom fields used in columns
         foreach ($proj->columns as $col => $name) {
-            if (preg_match('/field(\d+)/', $col, $match) && in_array($col, $visible)) {
+            if (preg_match('/^field(\d+)$/', $col, $match) && in_array($col, $visible)) {
                 if (!in_array($match[1], $custom_fields_joined)) {
                     $from   .= " LEFT JOIN {field_values} $col ON t.task_id = $col.task_id AND $col.field_id = " . intval($match[1]);
                 }
@@ -1320,6 +1330,17 @@ class Backend
         if ($proj->id) {
             $where[]       = 't.project_id = ?';
             $sql_params[]  = $proj->id;
+        } else {
+            $tmpwhere = array();
+            foreach (array_get($args, 'search_project', array()) as $id) {
+                if ($id) {
+                    $tmpwhere[]       = 't.project_id = ?';
+                    $sql_params[]  = $id;
+                }
+            }
+            if (count($tmpwhere)) {
+                $where[] = '(' . implode(' OR ', $tmpwhere) . ')';
+            }
         }
 
         $where = (count($where)) ? 'WHERE '. join(' AND ', $where) : '';
