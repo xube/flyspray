@@ -317,13 +317,13 @@ class Flyspray
         static $cache = array();
         $task_id = intval($task_id);
 
-        if (isset($cache[$task_id]) && $cache_enabled) {
-            return $cache[$task_id];
+        if (isset($cache[$task_id . (string) $prefix]) && $cache_enabled) {
+            return $cache[$task_id . (string) $prefix];
         }
 
-        if (!is_null($prefix) && $prefix != 'FS' && $prefix != 'bug ') {
+        if (!is_null($prefix) && $prefix != 'FS' && trim($prefix) != 'bug') {
             $where = 't.prefix_id = ? AND project_prefix = ?';
-            $params = array($task_id, $prefix);
+            $params = array($task_id, trim($prefix));
         } else {
             $where = 't.task_id = ?';
             $params = array($task_id);
@@ -366,7 +366,7 @@ class Flyspray
             $task['assigned_to_name'] = $assignees[1];
         }
 
-        $cache[$task_id] = $task;
+        $cache[$task_id . (string) $prefix] = $task;
 
         return $task;
     } // }}}

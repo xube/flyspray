@@ -176,7 +176,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
         if (ctype_digit($task)) {
             $task = Flyspray::GetTaskDetails($task, true);
         } else {
-            list($prefix, $task) = explode('#', $task);
+            list($prefix, $task) = explode( (strpos($task, '#') !== false) ? '#' : ' ', $task);
             $task = Flyspray::GetTaskDetails($task, true, $prefix);
         }
     }
