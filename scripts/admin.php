@@ -592,21 +592,25 @@ class FlysprayDoAdmin extends FlysprayDo
                 return array(ERROR_RECOVER, L('passnomatch'));
             }
             if (Post::val('oldpass')) {
-                $sql = $db->Execute('SELECT user_pass FROM {users} WHERE user_id = ?', array(Post::val('user_id')));
+                $sql = $db->Execute('SELECT user_pass, password_salt FROM {users} WHERE user_id = ?', array(Post::val('user_id')));
                 $oldpass =  $sql->FetchRow();
 
-                if (Flyspray::cryptPassword(Post::val('oldpass')) != $oldpass['user_pass']) {
+                $oldsalt = $oldpass['password_salt'] ? $oldpass['password_salt'] : null;
+                
+                if (Flyspray::cryptPassword(Post::val('oldpass'), $oldsalt) != $oldpass['user_pass']) {
                     return array(ERROR_RECOVER, L('oldpasswrong'));
                 }
             }
-            $new_hash = Flyspray::cryptPassword(Post::val('changepass'));
-            $db->Execute('UPDATE {users} SET user_pass = ? WHERE user_id = ?',
-                            array($new_hash, Post::val('user_id')));
+
+            $new_salt = md5(uniqid(mt_rand(), true));
+            $new_hash = Flyspray::cryptPassword(Post::val('changepass'), $new_salt);
+            $db->Execute('UPDATE {users} SET user_pass = ?, password_salt = ? WHERE user_id = ?',
+                            array($new_hash, $new_salt, Post::val('user_id')));
 
             // If the user is changing their password, better update their cookie hash
             if ($user->id == Post::val('user_id')) {
                 Flyspray::setcookie('flyspray_passhash',
-                        md5($new_hash, $conf['general']['cookiesalt']), time()+3600*24*30);
+                        hash_hmac('md5', $new_hash, $conf['general']['cookiesalt']), time()+3600*24*30);
             }
         }
 

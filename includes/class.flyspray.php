@@ -615,9 +615,9 @@ class Flyspray
      * @return string
      * @version 1.0
      */
-    function cryptPassword($password)
+    function cryptPassword($password, $salt = null)
     {
-        return md5($password);
+            return is_null($salt) ? md5($password) : hash_hmac('md5', $password, $salt);
     } // }}}
     // {{{
     /**
@@ -632,7 +632,7 @@ class Flyspray
     {
         global $db;
 
-        $result = $db->Execute("SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass,
+        $result = $db->Execute("SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass, u.password_salt,
                                         lock_until, login_attempts
                                 FROM  {users_in_groups} uig
                            LEFT JOIN  {groups} g ON uig.group_id = g.group_id
@@ -648,8 +648,9 @@ class Flyspray
         if (!$result || !count($auth_details)) {
             return 0;
         }
-
-        $password = Flyspray::cryptPassword($password);
+        
+        $salt = $auth_details['password_salt'] ? $auth_details['password_salt'] : null;
+        $password = Flyspray::cryptPassword($password, $salt);
 
         if ($auth_details['lock_until'] > 0 && $auth_details['lock_until'] < time()) {
             $db->Execute('UPDATE {users} SET lock_until = 0, account_enabled = 1, login_attempts = 0

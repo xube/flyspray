@@ -218,6 +218,13 @@ if (!function_exists('ctype_digit')) {
 		return preg_match('/^[0-9]+$/iD', $text);
 	}
 }
+if (!function_exists('hash_hmac')) {
+    include dirname(__FILE__) . '/external/HMAC.php';
+    function hash_hmac($algo, $data, $key, $raw_output) {
+        $hashobj =& new Crypt_HMAC($key, $algo);
+        return $hashobj->hash($data);
+    }
+}
 
 //use require() as there is no possibilty to get this included more than "once"
 require dirname(__FILE__) . '/external/compat/array_combine.php';

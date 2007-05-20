@@ -29,11 +29,11 @@ class FlysprayDoLostpw extends FlysprayDo
         if (Post::val('pass1') != Post::val('pass2')) {
             return array(ERROR_RECOVER, L('passnomatch'));
         }
-
-        $new_pass_hash = Flyspray::cryptPassword(Post::val('pass1'));
-        $db->Execute("UPDATE  {users} SET user_pass = ?, magic_url = ''
+        $new_salt = md5(uniqid(mt_rand(), true));
+        $new_pass_hash = Flyspray::cryptPassword(Post::val('pass1'), $new_salt);
+        $db->Execute("UPDATE  {users} SET user_pass = ?, password_salt = ? , magic_url = ''
                        WHERE  magic_url = ?",
-                      array($new_pass_hash, Post::val('magic_url')));
+                      array($new_pass_hash, $new_salt, Post::val('magic_url')));
 
         return array(SUBMIT_OK, L('passchanged'), './');
     }

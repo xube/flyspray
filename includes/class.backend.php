@@ -478,7 +478,7 @@ class Backend
                 continue;
             }
 
-            $fname = $task_id . '_' . md5(uniqid(mt_rand(), true));
+            $fname = md5(uniqid(mt_rand(), true));
             $path = BASEDIR .'/attachments/'. $fname ;
 
             $tmp_name = $_FILES[$source]['tmp_name'][$key];
@@ -611,13 +611,15 @@ class Backend
             $auto = true;
             $password = substr(md5(uniqid(mt_rand(), true)), 0, mt_rand(8, 12));
         }
+        
+        $salt = md5(uniqid(mt_rand() , true));
 
         $db->Execute("INSERT INTO  {users}
-                             ( user_name, user_pass, real_name, jabber_id, dateformat,
+                             ( user_name, user_pass, password_salt, real_name, jabber_id, dateformat,
                                email_address, notify_type, account_enabled, dateformat_extended,
                                tasks_perpage, register_date, time_zone, magic_url)
-                     VALUES  ( ?, ?, ?, ?, '', ?, ?, 1, '', 25, ?, ?, '')",
-            array($user_name, Flyspray::cryptPassword($password), $real_name, $jabber_id, $email, $notify_type, time(), $time_zone));
+                     VALUES  ( ?, ?, ?, ?, ?, '', ?, ?, 1, '', 25, ?, ?, '')",
+            array($user_name, Flyspray::cryptPassword($password, $salt), $salt, $real_name, $jabber_id, $email, $notify_type, time(), $time_zone));
 
         // Get this user's id for the record
         $uid = Flyspray::username_to_id($user_name);
@@ -686,7 +688,7 @@ class Backend
 
         // Send a user his details (his username might be altered, password auto-generated)
         if ($fs->prefs['notify_registration']) {
-            $sql = $db->Execute('SELECT user_id
+            $sql = $db->Execute('SELECT u.user_id
                                  FROM {users} u
                             LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
                                 WHERE g.group_id = 1');

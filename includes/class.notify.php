@@ -162,7 +162,7 @@ class Notifications
                 $swift =& new Swift(new Swift_Connection_NativeMail);
             }
 
-            if($data['task_id']) {
+            if(isset($data['task_id'])) {
                 $swift->attachPlugin(new NotificationsThread($data['task_id']), "Thread");
             }
 
