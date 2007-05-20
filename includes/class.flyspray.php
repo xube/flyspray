@@ -648,9 +648,16 @@ class Flyspray
         if (!$result || !count($auth_details)) {
             return 0;
         }
-        
+
         $salt = $auth_details['password_salt'] ? $auth_details['password_salt'] : null;
-        $password = Flyspray::cryptPassword($password, $salt);
+        $pass_ok = ($auth_details['user_pass'] == Flyspray::cryptPassword($password, $salt));
+
+        // let's update the users password
+        if ($pass_ok && !$auth_details['password_salt']) {
+            $salt = md5(uniqid(mt_rand() , true));
+            $db->Execute('UPDATE {users} SET user_pass = ?, password_salt = ? WHERE user_id = ?',
+                         array(Flyspray::cryptPassword($password, $salt), $salt, $auth_details['user_id']));
+        }
 
         if ($auth_details['lock_until'] > 0 && $auth_details['lock_until'] < time()) {
             $db->Execute('UPDATE {users} SET lock_until = 0, account_enabled = 1, login_attempts = 0
@@ -660,9 +667,8 @@ class Flyspray
         }
 
         // Compare the crypted password to the one in the database
-        if ($password == $auth_details['user_pass']
-                && $auth_details['account_enabled'] == '1'
-                && $auth_details['group_open'] == '1')
+        if ($pass_ok && $auth_details['account_enabled'] == '1'
+            && $auth_details['group_open'] == '1')
         {
             return $auth_details['user_id'];
         }

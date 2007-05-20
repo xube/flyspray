@@ -45,8 +45,8 @@ define('CONFIG_PATH', Flyspray::get_config_path(BASEDIR . '/../'));
 $conf  = @parse_ini_file(CONFIG_PATH, true) or die('Cannot open config file at ' . CONFIG_PATH);
 
 // Initialise DB
-require_once BASEDIR . '/../adodb/adodb.inc.php';
-require_once BASEDIR . '/../adodb/adodb-xmlschema03.inc.php';
+require_once BASEDIR . '/../includes/external/adodb/adodb.inc.php';
+require_once BASEDIR . '/../includes/external/adodb/adodb-xmlschema03.inc.php';
 
 $db = NewDatabase($conf['database']);
 

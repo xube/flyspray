@@ -198,7 +198,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
     	foreach (array_keys($fs->prefs) as $setting) {
     		$db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
-                          array(Post::val($setting, $fs->prefs[$setting]), $setting));
+                          array(Post::val($setting, ($fs->prefs[$setting] == '1') ? null : $fs->prefs[$setting]), $setting));
         }
 
         return array(SUBMIT_OK, L('optionssaved'));
@@ -596,7 +596,7 @@ class FlysprayDoAdmin extends FlysprayDo
                 $oldpass =  $sql->FetchRow();
 
                 $oldsalt = $oldpass['password_salt'] ? $oldpass['password_salt'] : null;
-                
+
                 if (Flyspray::cryptPassword(Post::val('oldpass'), $oldsalt) != $oldpass['user_pass']) {
                     return array(ERROR_RECOVER, L('oldpasswrong'));
                 }
@@ -770,7 +770,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
         list($type, $msg, $url) = $this->handle('action', Post::val('action'));
         if ($type != NO_SUBMIT) {
-        	$fs =& new Flyspray;
+        	$fs = new Flyspray;
         	$user->get_perms();
         }
 

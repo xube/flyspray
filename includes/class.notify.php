@@ -208,7 +208,7 @@ class Notifications
             }
 
             include  BASEDIR . '/includes/class.jabber2.php';
-            
+
             $jabber =& new Jabber($fs->prefs['jabber_username'],
                                  $fs->prefs['jabber_password'],
                                  $fs->prefs['jabber_ssl'],
@@ -483,10 +483,11 @@ class Notifications
             $subject = L('notifyfromfs');
         } else {
             $subject = strtr($data['project']->prefs['notify_subject'],
-                             array('%p'=> $data['project']->prefs['project_title'] ,
-                                   '%s'=> $data['task']['item_summary'],
-                                   '%t'=> $data['task_id'],
-                                   '%a'=> $notify_type_msg[$type]));
+                             array('%p' => $data['project']->prefs['project_title'] ,
+                                   '%s' => $data['task']['item_summary'],
+                                   '%t' => $data['task_id'],
+                                   '%a' => $notify_type_msg[$type],
+                                   '%u' => $user->infos['user_name']));
         }
 
         $subject = strtr($subject, "\r\n", ' ');
