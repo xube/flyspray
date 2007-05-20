@@ -786,20 +786,24 @@ class Flyspray
         $changes = array();
         foreach ($comp as $db => $key)
         {
+            $replace_new = $new[$key];
+            $replace_old = $old[$key];
+
             if ($old[$key] != $new[$key]) {
                 switch ($key)
                 {
                     case 'percent_complete':
-                        $new[$key] .= '%';
-                        $old[$key] .= '%';
+                        $replace_new = $new[$key] . '%';
+                        $replace_old = $old[$key] . '%';
                         break;
 
                     case 'mark_private':
-                        $new[$key] = $new[$key] ? L('private') : L('public');
-                        $old[$key] = $old[$key] ? L('private') : L('public');
+                        $replace_new = $new[$key] ? L('private') : L('public');
+                        $replace_old = $old[$key] ? L('private') : L('public');
                         break;
                 }
-                $changes[] = array($key, $old[$key], $new[$key], $translation[$key], (is_numeric($db)) ? $key : $db, $old[$key], $new[$key]);
+                $raw = (is_numeric($db)) ? $key : $db;
+                $changes[] = array($key, $replace_old, $replace_new, $translation[$key], $raw, $old[$raw], $new[$raw]);
             }
         }
 

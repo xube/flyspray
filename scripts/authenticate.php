@@ -76,7 +76,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
 
             // Set a couple of cookies
             Flyspray::setcookie('flyspray_userid', $user->id, $cookie_time);
-            Flyspray::setcookie('flyspray_passhash', md5($user->infos['user_pass'], $conf['general']['cookiesalt']), $cookie_time);
+            Flyspray::setcookie('flyspray_passhash', md5($user->infos['user_pass'] . $conf['general']['cookiesalt']), $cookie_time);
 
             // If the user had previously requested a password change, remove the magic url
             $remove_magic = $db->Execute("UPDATE {users} SET magic_url = '' WHERE user_id = ?",

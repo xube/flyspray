@@ -34,9 +34,10 @@ class FlysprayDoMyprofile extends FlysprayDo
 
         require_once(BASEDIR . '/includes/events.inc.php');
         $events_since = strtotime(Get::val('events_since', '-1 week'));
-        $sql = $db->Execute('SELECT h.task_id, t.*
+        $sql = $db->Execute('SELECT h.task_id, t.*, p.project_prefix
                                FROM {history} h
                           LEFT JOIN {tasks} t ON h.task_id = t.task_id
+                          LEFT JOIN {projects} p ON t.project_id = p.project_id
                           LEFT JOIN {notifications} n ON t.task_id = n.task_id
                               WHERE h.event_date > ? AND h.task_id > 0 AND n.user_id = ?
                                     AND event_type NOT IN (9,10,5,6,8,17,18)
