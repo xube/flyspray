@@ -12,7 +12,11 @@ class FlysprayDoExport extends FlysprayDo
 {
     function is_accessible()
     {
-        return FlysprayDoIndex::is_accessible();
+        global $user, $proj;
+        if (!$user->can_view_project($proj->id)) {
+            $proj = new Project(0);
+        }
+        return true;
     }
 
     function show()

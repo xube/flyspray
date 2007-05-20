@@ -29,7 +29,7 @@ class NotificationsThread extends Swift_Events_Listener {
         $recipients = $e->getRecipients();
         $to = $recipients->getTo();
         $to = array_pop($to);
-        $threadfile = sprintf('%s/%d_%s', Flyspray::get_tmp_dir(), $this->task_id, md5($to->getAddress()));
+        $threadfile = sprintf('%s/%d_%s', FS_CACHE_DIR, $this->task_id, md5($to->getAddress()));
         $references = is_file($threadfile) ? array_map('rtrim', file($threadfile)) : array();
             // if there is more than one then we have a conversation..
             if(count($references)) {

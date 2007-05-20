@@ -4,7 +4,7 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-require_once BASEDIR . '/lang/en.php';
+require BASEDIR . '/lang/en.php';
 
 /**
  * get the language string $key
@@ -50,7 +50,7 @@ function load_translations()
     $translation = BASEDIR . "/lang/{$lang}.php";
 
     if ($lang != 'en' && is_readable($translation)) {
-        include_once($translation);
+        include($translation);
         $language = array_merge($language, $translation);
     }
 }

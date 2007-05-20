@@ -12,7 +12,7 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-require dirname(dirname(__FILE__)) . '/adodb/adodb.inc.php';
+require dirname(__FILE__) . '/external/adodb/adodb.inc.php';
 
 /**
  * fill_placeholders
