@@ -911,7 +911,7 @@
     <field name="user_pass" type="C" size="40">
       <NOTNULL/>
     </field>
-	<field name="user_pass" type="C" size="32">
+	<field name="password_salt" type="C" size="32">
       <NOTNULL/>
     </field>
 
