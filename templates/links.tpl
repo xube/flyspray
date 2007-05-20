@@ -52,7 +52,7 @@
         </select>
         <button type="submit" value="1" name="switch">{L('switch')}</button>
         <input type="hidden" name="do" value="{$do}" />
-        <?php $check = array('area', 'id');
+        <?php $check = array('area', 'id', 'user_id');
               if ($do == 'reports') {
                 $check = array_merge($check, array('open', 'close', 'edit', 'assign', 'repdate', 'comments', 'attachments',
                                 'related', 'notifications', 'reminders', 'within', 'duein', 'fromdate', 'todate'));

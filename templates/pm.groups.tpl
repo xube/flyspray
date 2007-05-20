@@ -30,7 +30,7 @@
       </thead>
       <?php foreach ($groups as $group): ?>
       <tr>
-        <td><a href="{CreateUrl(array('pm', 'proj'. $proj->id, 'editgroup'), array('group_id' => $group['group_id']))}">{$group['group_name']}</a>
+        <td><a href="{CreateUrl(array('pm', 'proj'. $proj->id, 'editgroup'), array('group_id[]' => $group['group_id']))}">{$group['group_name']}</a>
         <?php if ($group['group_desc'] != ''): ?>
         <br />
         <small>{$group['group_desc']}</small>

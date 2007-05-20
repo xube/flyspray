@@ -35,6 +35,12 @@ class FlysprayDoPm extends FlysprayDoAdmin
     }
 
     function area_prefs(){}
+
+    function area_user() {
+        global $proj;
+        FlysprayDo::error(array(ERROR_INPUT, L('error17'), CreateUrl(array('pm', 'proj' . $proj->id))));
+    }
+
     // **********************
     // End of area_ functions
     // **********************
