@@ -201,7 +201,7 @@ function glob_compat($pattern, $flags = 0) {
     if(in_array('glob', explode(',', ini_get('disable_functions'))) || !function_exists('glob')) {
 
         include dirname(__FILE__) . '/external/compat/glob.php';
-        
+
         return php_compat_glob($pattern, $flags);
     }
         return glob($pattern, $flags);
@@ -220,7 +220,7 @@ if (!function_exists('ctype_digit')) {
 }
 if (!function_exists('hash_hmac')) {
     include dirname(__FILE__) . '/external/HMAC.php';
-    function hash_hmac($algo, $data, $key, $raw_output) {
+    function hash_hmac($algo, $data, $key, $raw_output = false) {
         $hashobj =& new Crypt_HMAC($key, $algo);
         return $hashobj->hash($data);
     }
