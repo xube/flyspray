@@ -349,15 +349,16 @@ class Flyspray
         }
 
         // Now add custom fields
-        $sql = $db->Execute('SELECT field_value, field_name, f.field_id, li.item_name, lc.category_name
+        $sql = $db->Execute('SELECT field_value, field_name, f.field_id, li.item_name, lc.category_name, user_name
                                FROM {field_values} fv
                           LEFT JOIN {fields} f ON f.field_id = fv.field_id
                           LEFT JOIN {list_items} li ON (f.list_id = li.list_id AND field_value = li.list_item_id)
                           LEFT JOIN {list_category} lc ON (f.list_id = lc.list_id AND field_value = lc.category_id)
-                              WHERE task_id = ?', array($task['task_id']));
+                          LEFT JOIN {users} u ON (field_type = ? AND field_value = u.user_id)
+                              WHERE task_id = ?', array(FIELD_USER, $task['task_id']));
         while ($row = $sql->FetchRow()) {
             $task['field' . $row['field_id']] = $row['field_value'];
-            $task['field' . $row['field_id'] . '_name'] = ($row['item_name'] ? $row['item_name'] : $row['category_name']);
+            $task['field' . $row['field_id'] . '_name'] = ($row['user_name'] ? $row['user_name'] : ($row['item_name'] ? $row['item_name'] : $row['category_name']));
         }
 
         $task['assigned_to'] = $task['assigned_to_name'] = array();
@@ -926,12 +927,37 @@ class Flyspray
     {
         global $db;
         $name = trim($name);
+        if (!$name) {
+            return 0;
+        }
         $uid = $db->GetOne('SELECT user_id FROM {users} WHERE ' .
                            (is_numeric($name) ? 'user_id' : 'user_name') . ' = ?',
                             array($name));
 
         return intval($uid);
     }
+
+    /**
+     * Returns the user name with $id
+     * @param mixed $id string/integer can also get a user name, then checks for existence
+     * @access public static
+     * @return string '' if the user does not exist
+     * @version 1.0
+     */
+    function username_from_id($id)
+    {
+        global $db;
+        $id = trim($id);
+        if (!$id) {
+            return '';
+        }
+        $name = $db->GetOne('SELECT user_name FROM {users} WHERE ' .
+                           (is_numeric($id) ? 'user_id' : 'user_name') . ' = ?',
+                            array($id));
+
+        return ($name) ? $name : '';
+    }
+
     /**
      * check_email
      *  checks if an email is valid

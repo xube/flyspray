@@ -611,7 +611,7 @@ class Backend
             $auto = true;
             $password = substr(md5(uniqid(mt_rand(), true)), 0, mt_rand(8, 12));
         }
-        
+
         $salt = md5(uniqid(mt_rand() , true));
 
         $db->Execute("INSERT INTO  {users}
@@ -1216,7 +1216,7 @@ class Backend
                 $sql_params[] = $field->id;
                 $custom_fields_joined[] = $field->id;
                 $where[] = "({$ref}.field_value LIKE ?)";
-                $sql_params[] = $val;
+                $sql_params[] = ($field->prefs['field_type'] == FIELD_USER) ? Flyspray::username_to_id($val) : $val;
             }
         }
         // now join custom fields used in columns
@@ -1225,10 +1225,21 @@ class Backend
                 if (!in_array($match[1], $custom_fields_joined)) {
                     $from   .= " LEFT JOIN {field_values} $col ON t.task_id = $col.task_id AND $col.field_id = " . intval($match[1]);
                 }
-                $from .= " LEFT JOIN {fields} f$col ON f$col.field_id = $col.field_id
-                           LEFT JOIN {list_items} li$col ON (f$col.list_id = li$col.list_id AND $col.field_value = li$col.list_item_id)
-                           LEFT JOIN {list_category} lc$col ON (f$col.list_id = lc$col.list_id AND $col.field_value = lc$col.category_id) ";
-                $select .= "$col.field_value AS $col, li$col.item_name AS {$col}_name, "; // adding data to queries not nice, but otherwise sql_params and joins are not in sync
+                $from .= " LEFT JOIN {fields} f$col ON f$col.field_id = $col.field_id ";
+
+                // join special tables for certain fields
+                $field = new Field($match[1]);
+                if ($field->prefs['field_type'] == FIELD_LIST) {
+                    $from .= "LEFT JOIN {list_items} li$col ON (f$col.list_id = li$col.list_id AND $col.field_value = li$col.list_item_id)
+                              LEFT JOIN {list_category} lc$col ON (f$col.list_id = lc$col.list_id AND $col.field_value = lc$col.category_id) ";
+                    $select .= " li$col.item_name AS {$col}_name, ";
+
+                } else if ($field->prefs['field_type'] == FIELD_USER) {
+                    $from .= " LEFT JOIN {users} u$col ON $col.field_value = u$col.user_id ";
+                    $select .= " u$col.user_name AS {$col}_name, ";
+                }
+
+                $select .= "$col.field_value AS $col, "; // adding data to queries not nice, but otherwise sql_params and joins are not in sync
             }
         }
 
@@ -1241,9 +1252,11 @@ class Backend
         /// process search-conditions {{{
         $submits = array('sev' => 'task_severity',
                          'percent' => 'percent_complete',
-                         'dev' => array('a.user_id', 'us.user_name', 'us.real_name'),
-                         'opened' => array('opened_by', 'uo.user_name', 'uo.real_name'),
-                         'closed' => array('closed_by', 'uc.user_name', 'uc.real_name'));
+                         'dev' => array('a.user_id', 'us.user_name'),
+                         'opened' => array('opened_by', 'uo.user_name'),
+                         'closed' => array('closed_by', 'uc.user_name'));
+        // add custom user fields
+
         foreach ($submits as $key => $db_key) {
             $type = array_get($args, $key, '');
             settype($type, 'array');

@@ -123,6 +123,12 @@
         <label class="default multisel" for="closed">{L('closedby')}</label>
         {!tpl_userselect('closed', Get::val('closed'), 'closed')}
 
+        <?php foreach ($proj->fields as $field): ?>
+        <?php if ($field->prefs['field_type'] != FIELD_USER) continue; ?>
+        <label class="default multisel" for="field{$field->id}">{$field->prefs['field_name']}</label>
+        {!$field->edit(!USE_DEFAULT, !LOCK_FIELD)}
+        <?php endforeach; ?>
+
         </fieldset>
 
         <fieldset><legend>{L('dates')}</legend>

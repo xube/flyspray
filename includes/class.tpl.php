@@ -360,11 +360,11 @@ function tpl_datepicker($name, $label = '', $value = 0, $attrs = array()) {
 }
 // }}}
 // {{{ user selector
-function tpl_userselect($name, $value = null, $id = '', $attrs = array()) {
+function tpl_userselect($input_name, $value = null, $input_id = '', $attrs = array()) {
     global $db, $user;
 
-    if (!$id) {
-        $id = $name;
+    if (!$input_id) {
+        $input_id = $input_name;
     }
 
     if ($value && ctype_digit($value)) {
@@ -375,10 +375,9 @@ function tpl_userselect($name, $value = null, $id = '', $attrs = array()) {
         $value = '';
     }
 
-
     $page = new FSTpl;
-    $page->assign('name', $name);
-    $page->assign('id', $id);
+    $page->assign('name', $input_name);
+    $page->assign('id', $input_id);
     $page->assign('value', $value);
     $page->assign('attrs', $attrs);
     $page->display('common.userselect.tpl');

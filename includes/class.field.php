@@ -20,10 +20,15 @@ class Field
     /**
      * Initialise a field, uses an array based on SQL query
      * @access public
-     * @param array $field_array
+     * @param mixed $field_array int for field ID, array for "ready-to-use" field
      */
     function field($field_array)
     {
+        if (!is_array($field_array) || !count($field_array)) {
+            global $db;
+            $field_array = $db->GetRow('SELECT * FROM {fields} WHERE field_id = ?', array($field_array));
+        }
+
         if (!is_array($field_array) || !count($field_array)) {
             trigger_error('Invalid initialisation data for Fields()!', E_USER_ERROR);
         }
@@ -37,6 +42,7 @@ class Field
      * @access public
      * @param array $task task data
      * @param array $parents parents for a category item
+     * @param bool $plain this is **not** meant to be safe, but basically to display content where HTML tags are disturbing
      * @return string
      */
     function view($task = array(), $parents = array(), $plain = false)
@@ -63,6 +69,10 @@ class Field
 
                 case FIELD_TEXT:
                     $html .= Filters::noXSS($task['field' . $this->id]);
+                    break;
+
+                case FIELD_USER:
+                    $html .= Filters::noXSS($task['field' . $this->id . '_name']);
                     break;
             }
         }
@@ -121,6 +131,10 @@ class Field
                 $html .= sprintf('<input type="text" class="text" id="field%d" name="field%d" value="%s"/>',
                                   $this->id, $this->id, Filters::noXSS(Req::val('field' . $this->id, $task['field' . $this->id]))) ;
                 break;
+
+            case FIELD_USER:
+                $html .= tpl_userselect('field' . $this->id, Req::val('field' . $this->id, $task['field' . $this->id]));
+                break;
         }
 
         return $html;
@@ -159,6 +173,10 @@ class Field
                                            array($this->prefs['list_id'], $input));
                 }
                 $value = ($check) ? $input : 0;
+                break;
+
+            case FIELD_USER:
+                $value = Flyspray::username_to_id($input);
                 break;
         }
 

@@ -72,6 +72,7 @@ define('ADDRESS_DONE',            4);
 define('FIELD_LIST',              1);
 define('FIELD_DATE',              2);
 define('FIELD_TEXT',              3);
+define('FIELD_USER',              4);
 
 define('LIST_BASIC',              1);
 define('LIST_VERSION',            2);

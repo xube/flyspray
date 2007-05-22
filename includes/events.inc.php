@@ -112,8 +112,14 @@ function event_description($history) {
                 $t = ($history['list_type'] == LIST_CATEGORY) ? 'c' : 'l';
                 $new = array('field' . $f->id => $history['new_value_' . $t], 'field' . $f->id . '_name' =>  $history['new_value_' . $t]);
                 $old = array('field' . $f->id => $history['old_value_' . $t], 'field' . $f->id . '_name' =>  $history['old_value_' . $t]);
+
                 $new_value = $f->view($new);
                 $old_value = $f->view($old);
+
+                if ($f->prefs['field_type'] == FIELD_USER) {
+                    $new_value = tpl_userlink($history['new_value']);
+                    $old_value = tpl_userlink($history['old_value']);
+                }
             }
             $return .= eL('fieldchanged').": {$field}";
             if ($old_value || $new_value) {
