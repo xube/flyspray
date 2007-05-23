@@ -275,7 +275,9 @@ function tpl_userlink($uid)
     static $cache = array();
 
     if (is_array($uid)) {
-        list($uid, $uname, $rname) = $uid;
+        $uname = next($uid);
+        $rname = next($uid);
+        $uid = reset($uid);
     } elseif (empty($cache[$uid])) {
         $sql = $db->Execute('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
                            array(intval($uid)));
