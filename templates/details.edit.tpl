@@ -40,7 +40,7 @@
             </tr>
             <?php endforeach; ?>
 			<tr>
-			 <td><label>{L('assignedto')}</label></td>
+			 <td><label for="assigned_to">{L('assignedto')}</label></td>
 			 <td>
                 <?php if ($user->perms('edit_assignments')): ?>
 

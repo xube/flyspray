@@ -23,7 +23,7 @@
         <?php if ($user->perms('modify_all_tasks')): ?>
         <tr>
           <td>
-            <label>{L('assignedto')}</label>
+            <label for="assigned_to">{L('assignedto')}</label>
           </td>
           <td>
             <?php if ($user->perms('modify_all_tasks')): ?>

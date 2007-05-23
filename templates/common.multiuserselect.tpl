@@ -44,8 +44,8 @@
                         newwindow.location.href = url;
                     }
                     else {
-                        var boxl = findPos($('userselect'))[0];
-                        var boxr = boxl + $('userselect').offsetWidth;
+                        var boxl = findPos($('assigned_to'))[0];
+                        var boxr = boxl + $('assigned_to').offsetWidth;
                         var scrm = Math.floor(window.innerWidth/2);
                         var dif1 = boxl-scrm;
                         var dif2 = boxr-scrm;
