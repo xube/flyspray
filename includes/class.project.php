@@ -200,7 +200,6 @@ class Project
             foreach ($cats as $key => $cat) {
                 if ($cat['depth'] > 0) {
                     $cats[$key]['category_name'] = str_repeat('...', $cat['depth']) . $cat['category_name'];
-                    $cats[$key]['1'] = str_repeat('...', $cat['depth']) . $cat['1'];
                 }
             }
         }

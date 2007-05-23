@@ -280,7 +280,8 @@ function tpl_userlink($uid)
         $sql = $db->Execute('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
                            array(intval($uid)));
         if ($row = $sql->FetchRow()) {
-            list($uname, $rname) = $row;
+            $uname = reset($row);
+            $rname = next($row);
         }
     }
 
@@ -405,8 +406,8 @@ function tpl_options($options, $selected = null, $labelIsValue = false, $attr = 
             $label = $label->prefs;
         }
         if (is_array($label)) {
-            $value = $label[0];
-            $label = $label[1];
+            $value = reset($label);
+            $label = next($label);
         }
         $label = Filters::noXSS($label);
         $value = $labelIsValue ? $label : Filters::noXSS($value);
@@ -454,8 +455,8 @@ function tpl_double_select($name, $options, $selected = null, $labelIsValue = fa
     $opt1 = '';
     foreach ($options as $value => $label) {
         if (is_array($label) && count($label) >= 2) {
-            $value = $label[0];
-            $label = $label[1];
+            $value = reset($label);
+            $label = next($label);
         }
         if ($labelIsValue) {
             $value = $label;

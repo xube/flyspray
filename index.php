@@ -114,10 +114,9 @@ if ($show_task = Get::val('show_task')) {
 
 if ($proj->id && $user->perms('manage_project')) {
     // Find out if there are any PM requests wanting attention
-    $sql = $db->Execute(
+    $count = $db->GetOne(
             'SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = 0',
             array($proj->id));
-    list($count) = $sql->FetchRow();
 
     $page->assign('pm_pendingreq_num', $count);
 }
@@ -144,7 +143,7 @@ if (Flyspray::requestDuplicated()) {
 }
 
 
-/* XXX: this is a temporal workaround. 
+/* XXX: this is a temporal workaround.
  * there is something fishy in the new design, users actions
  * should never require the admin specific class.
  */
@@ -152,7 +151,7 @@ if (Flyspray::requestDuplicated()) {
 $require_admin = array('myprofile', 'pm', 'register');
 
 if(in_array($do, $require_admin)) {
-    include BASEDIR . '/scripts/admin.php';    
+    include BASEDIR . '/scripts/admin.php';
 }
 
 require BASEDIR . '/scripts/' . $do . '.php';

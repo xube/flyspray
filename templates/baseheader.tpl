@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="{$this->get_image('favicon')}" />
     <link rel="index" id="indexlink" type="text/html" href="{$baseurl}" />
     <?php foreach ($fs->projects as $project): ?>
-    <link rel="section" type="text/html" href="{$baseurl}?project={$project[0]}" />
+    <link rel="section" type="text/html" href="{$baseurl}?project={$project['project_id']}" />
     <?php endforeach; ?>
     <link media="screen" href="{$this->themeUrl()}theme.css" rel="stylesheet" type="text/css" />
     <link media="print"  href="{$this->themeUrl()}theme_print.css" rel="stylesheet" type="text/css" />

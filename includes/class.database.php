@@ -107,7 +107,7 @@ function &NewDatabase($conf = array())
             .'Check your settings in flyspray.conf.php');
     }
 
-    $db->SetFetchMode(ADODB_FETCH_BOTH);
+    $db->SetFetchMode(ADODB_FETCH_ASSOC);
     /*
      * this will work only in the following systems/PHP versions
      *

@@ -1228,13 +1228,12 @@ class Backend
                 $from .= " LEFT JOIN {fields} f$col ON f$col.field_id = $col.field_id ";
 
                 // join special tables for certain fields
-                $field = new Field($match[1]);
-                if ($field->prefs['field_type'] == FIELD_LIST) {
+                if ($proj->fields['field' . $match[1]]->prefs['field_type'] == FIELD_LIST) {
                     $from .= "LEFT JOIN {list_items} li$col ON (f$col.list_id = li$col.list_id AND $col.field_value = li$col.list_item_id)
                               LEFT JOIN {list_category} lc$col ON (f$col.list_id = lc$col.list_id AND $col.field_value = lc$col.category_id) ";
                     $select .= " li$col.item_name AS {$col}_name, ";
 
-                } else if ($field->prefs['field_type'] == FIELD_USER) {
+                } else if ($proj->fields['field' . $match[1]]->prefs['field_type'] == FIELD_USER) {
                     $from .= " LEFT JOIN {users} u$col ON $col.field_value = u$col.user_id ";
                     $select .= " u$col.user_name AS {$col}_name, ";
                 }
