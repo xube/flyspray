@@ -132,17 +132,17 @@ class FlysprayDoAdmin extends FlysprayDo
         // Get the user groups in a separate query because groups may be hidden
         // because of search options which are disregarded here
         if (count($user_list)) {
-            $in = implode(',', array_map(create_function('$x', 'return $x[0];'), $user_list));
+            $in = implode(',', array_map(create_function('$x', 'return reset($x);'), $user_list));
             $sql = $db->Execute('SELECT user_id, g.group_id, g.group_name, g.project_id
                                  FROM {groups} g
                             LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
                                 WHERE user_id IN ('. $in .')');
             $user_groups = GroupBy($sql, 'user_id', array('group_id', 'group_name', 'project_id'), !REINDEX);
+            $page->assign('user_groups', $user_groups);
         }
 
         $page->assign('all_groups', Flyspray::listallGroups());
         $page->assign('user_list', $user_list);
-        $page->assign('user_groups', $user_groups);
     }
 
     function area_fields()
@@ -171,8 +171,8 @@ class FlysprayDoAdmin extends FlysprayDo
         $sql = $db->Execute('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
                              array(Req::val('list_id')));
         $row = $sql->FetchRow();
-        $list_type = $row[0];
-        $list_name = $row[1];
+        $list_type = reset($row);
+        $list_name = next($row);
 
         if ($list_type != LIST_CATEGORY) {
             $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));

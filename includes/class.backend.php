@@ -344,7 +344,7 @@ class Backend
         }
 
         // Prepare assignee list
-        $assignees = explode(';', trim($args['assigned_to']));
+        $assignees = explode(';', trim(array_get($args, 'assigned_to'])));
         $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
         $assignees = array_filter($assignees, create_function('$x', 'return ($x > 0);'));
 

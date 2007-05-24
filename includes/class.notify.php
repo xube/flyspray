@@ -77,7 +77,7 @@ class Notifications
      */
     function send_now($to, $to_type, $type, $data = array())
     {
-        global $db, $fs;
+        global $db, $fs, $proj;
 
         $emails = array();
         $jids = array();
