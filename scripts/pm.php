@@ -127,7 +127,7 @@ class FlysprayDoPm extends FlysprayDoAdmin
 
         list($type, $msg, $url) = $this->handle('action', Post::val('action'));
         if ($type != NO_SUBMIT) {
-        	$proj =& new Project($proj->id);
+        	$proj = new Project($proj->id);
         }
 
         return array($type, $msg, $url);

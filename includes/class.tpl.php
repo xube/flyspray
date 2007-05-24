@@ -714,7 +714,7 @@ function CreateURL($type, $args = array())
         }
     }
 
-    return (count($args) ? $return . 'index.php?' . tpl_query_from_array($args) : $return);
+    return (count($args) ? $return . (($conf['general']['address_rewriting']) ? '?' : 'index.php?') . tpl_query_from_array($args) : $return);
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
