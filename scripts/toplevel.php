@@ -16,6 +16,10 @@ class FlysprayDoToplevel extends FlysprayDo
         return true;
     }
 
+    function is_projectlevel() {
+        return true;
+    }
+
     function show()
     {
         global $page, $user, $proj, $db, $fs;

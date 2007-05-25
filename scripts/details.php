@@ -18,6 +18,10 @@ class FlysprayDoDetails extends FlysprayDo
 {
     var $task = array();
 
+    function is_projectlevel() {
+        return true;
+    }
+
     // **********************
     // Begin all action_ functions
     // **********************

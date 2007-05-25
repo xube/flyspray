@@ -19,6 +19,10 @@ class FlysprayDoReports extends FlysprayDo
         return $user->perms('view_reports');
     }
 
+    function is_projectlevel() {
+        return true;
+    }
+
     function show()
     {
         global $page, $db, $user, $fs, $proj;

@@ -11,6 +11,10 @@ if (!defined('IN_FS')) {
 
 class FlysprayDoNewtask extends FlysprayDo
 {
+    function is_projectlevel() {
+        return true;
+    }
+
     function action_newtask()
     {
         global $user;

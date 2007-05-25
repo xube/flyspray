@@ -19,6 +19,10 @@ class FlysprayDoExport extends FlysprayDo
         return true;
     }
 
+    function is_projectlevel() {
+        return true;
+    }
+
     function show()
     {
         global $proj, $page, $fs;

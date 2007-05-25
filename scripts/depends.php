@@ -35,6 +35,10 @@ class FlysprayDoDepends extends FlysprayDo
                 && $user->can_view_task($this->task);
     }
 
+    function is_projectlevel() {
+        return true;
+    }
+
     function show()
     {
         global $user, $page, $fs, $conf, $db, $proj, $baseurl;

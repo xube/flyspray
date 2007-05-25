@@ -16,6 +16,10 @@ class FlysprayDoPm extends FlysprayDoAdmin
 {
     var $default_handler = 'prefs';
 
+    function is_projectlevel() {
+        return true;
+    }
+
     // **********************
     // Begin all area_ functions
     // **********************

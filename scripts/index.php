@@ -12,6 +12,10 @@ if (!defined('IN_FS')) {
 
 class FlysprayDoIndex extends FlysprayDo
 {
+    function is_projectlevel() {
+        return true;
+    }
+
     function action_remove_notification()
     {
         Backend::remove_notification(Req::val('user_id'), Req::val('ids'));

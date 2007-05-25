@@ -17,6 +17,10 @@ class FlysprayDoUserSelect extends FlysprayDo
         return $user->perms('view_userlist');
     }
 
+    function is_projectlevel() {
+        return true;
+    }
+
     function show()
     {
         global $db, $page, $fs, $proj, $do;

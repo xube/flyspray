@@ -94,7 +94,7 @@ Calendar._TT["ABOUT"] =
 "Distributed under GNU LGPL.  See http://gnu.org/licenses/lgpl.html for details." +
 "\n\n" +
 "Wybór daty:\n" +
-"- Użyj przycisków \xab, \xbb aby wybrać rok year\n" +
+"- Użyj przycisków \xab, \xbb aby wybrać rok \n" +
 "- Uzyj przycisków " + String.fromCharCode(0x2039) + ", " + String.fromCharCode(0x203a) + " aby wybrać miesiąc\n" +
 "- aby przyspieszyć wybór przytrzymaj wciśnięty przycisk myszy nad ww. przyciskami.";
 Calendar._TT["ABOUT_TIME"] = "\n\n" +

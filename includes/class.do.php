@@ -32,6 +32,10 @@ class FlysprayDo
 		return false;
 	}
 
+    function is_projectlevel() {
+        return false;
+    }
+
 	function menu_position() {
 		return array(MENU_GLOBAL, 1, 'Name');
 	}

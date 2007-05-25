@@ -15,6 +15,10 @@ class FlysprayDoEditcomment extends FlysprayDo
 {
     var $comment = array();
 
+    function is_projectlevel() {
+        return true;
+    }
+
     function is_accessible()
     {
         global $db, $page, $user;

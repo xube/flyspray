@@ -36,8 +36,20 @@ if (is_readable(BASEDIR . '/setup/index.php') && strpos($fs->version, 'dev') ===
         "If you are upgrading, please go to the setup directory and launch upgrade.php");
 }
 
+// Get available do-modes and include the classes
+$modes = str_replace('.php', '', array_map('basename', glob_compat(BASEDIR ."/scripts/*.php")));
+// yes, we need all of them for now
+foreach ($modes as $mode) {
+    require_once(BASEDIR . '/scripts/' . $mode . '.php');
+}
+$do = Req::enum('do', $modes);
+
+if (!call_user_func(array('FlysprayDo' . ucfirst($do), 'is_projectlevel'))) {
+    $project_id = 0;
+}
+
 // Any "do" mode that accepts a task_id or id field should be added here.
-if (in_array(Req::val('do'), array('details', 'depends'))) {
+if (in_array($do, array('details', 'depends')) || !Req::val('do')) {
     if (Req::num('task_id')) {
         $project_id = $db->GetOne('SELECT  project_id
                                      FROM  {tasks}
@@ -55,6 +67,8 @@ if (!isset($project_id)) {
 }
 
 $proj =& new Project($project_id);
+// reset do for default project level entry page
+$do = Req::enum('do', $modes, $proj->prefs['default_entry']);
 $proj->setCookie();
 
 /* permission stuff */

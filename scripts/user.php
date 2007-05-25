@@ -13,6 +13,10 @@ class FlysprayDoUser extends FlysprayDo
 {
     var $user = null;
 
+    function is_projectlevel() {
+        return true;
+    }
+
     function is_accessible()
     {
         $id = Flyspray::username_to_id(Get::val('id', Get::val('uid')));

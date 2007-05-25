@@ -17,6 +17,10 @@ class FlysprayDoRoadmap extends FlysprayDo
         return (bool) $proj->id && $user->can_view_project($proj->id);
     }
 
+    function is_projectlevel() {
+        return true;
+    }
+
     function show()
     {
         global $page, $db, $fs, $proj, $user;

@@ -13,11 +13,6 @@ if ($conf['general']['reminder_daemon'] == '1') {
     Flyspray::startReminderDaemon();
 }
 
-// Get available do-modes and include the classes
-$modes = str_replace('.php', '', array_map('basename', glob_compat(BASEDIR ."/scripts/*.php")));
-
-$do = Req::enum('do', $modes, $proj->prefs['default_entry']);
-
 if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
     $do = 'pm';
 } elseif ($do == 'pm' && Get::has('switch') && Get::val('project') == '0') {
@@ -143,18 +138,10 @@ if (Flyspray::requestDuplicated()) {
 }
 
 
-/* XXX: this is a temporal workaround.
+/* XXX:
  * there is something fishy in the new design, users actions
  * should never require the admin specific class.
  */
-
-$require_admin = array('myprofile', 'pm', 'register');
-
-if(in_array($do, $require_admin)) {
-    include BASEDIR . '/scripts/admin.php';
-}
-
-require BASEDIR . '/scripts/' . $do . '.php';
 
 $class = 'FlysprayDo' . $do;
 $mode =& new $class;
