@@ -500,11 +500,11 @@ class Backend
              $_FILES[$source]['type'][$key] = $type;
             }// we can try even more, however, far too much code is needed.
 
-            $db->Execute("INSERT INTO  {attachments}
+            $db->Execute('INSERT INTO  {attachments}
                                      ( task_id, comment_id, file_name,
                                        file_type, file_size, orig_name,
                                        added_by, date_added )
-                             VALUES  (?, ?, ?, ?, ?, ?, ?, ?)",
+                             VALUES  (?, ?, ?, ?, ?, ?, ?, ?)',
                     array($task_id, $comment_id, $fname,
                         $_FILES[$source]['type'][$key],
                         $_FILES[$source]['size'][$key],
@@ -517,7 +517,7 @@ class Backend
                                  WHERE  task_id = ?
                               ORDER BY  attachment_id DESC',
                                  array($task_id), 1);
-            Flyspray::logEvent($task_id, 7, $aid);
+            Flyspray::logEvent($task_id, 7, $aid, $_FILES[$source]['name'][$key]);
         }
 
         return $res;
@@ -926,8 +926,6 @@ class Backend
         // Log that the task was opened
         Flyspray::logEvent($task_id, 1);
 
-        Backend::upload_files($task_id);
-
         // find category owners
         $owners = array();
         foreach ($proj->fields as $field) {
@@ -975,7 +973,12 @@ class Backend
         }
 
         // Create the Notification
-        Notifications::send($task_id, ADDRESS_TASK, NOTIFY_TASK_OPENED);
+        if (Backend::upload_files($task_id)) {
+            Notifications::send($task_id, ADDRESS_TASK, NOTIFY_TASK_OPENED, array('files' => true));
+        } else {
+            Notifications::send($task_id, ADDRESS_TASK, NOTIFY_TASK_OPENED);
+        }
+
 
         // If the reporter wanted to be added to the notification list
         if (isset($args['notifyme']) && $args['notifyme'] == '1' && !in_array($user->id, $owners)) {

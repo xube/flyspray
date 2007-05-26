@@ -532,6 +532,12 @@ class Notifications
                     $body .= $field->prefs['field_name'] . ' - ' . $field->view($data['task'], array(), PLAINTEXT) . "\r\n";
                 }
                 $body .= L('details') . " - \r\n" . $data['task']['detailed_desc'] . "\r\n\r\n";
+
+                if (isset($data['files'])) {
+                    $body .= L('fileaddedtoo') . "\r\n\r\n";
+                    $subject .= ' (' . L('attachmentadded') . ')';
+                }
+
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
                 break;
@@ -619,6 +625,7 @@ class Notifications
 
                 if (isset($data['files'])) {
                     $body .= L('fileaddedtoo') . "\r\n\r\n";
+                    $subject .= ' (' . L('attachmentadded') . ')';
                 }
                 $body .= L('moreinfo') . "\r\n";
                 $body .= CreateURL(array('details', 'task' . $data['task_id'])) . '#comment' . $data['cid'] . "\r\n\r\n";

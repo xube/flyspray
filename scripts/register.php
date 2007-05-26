@@ -166,7 +166,7 @@ class FlysprayDoRegister extends FlysprayDo
             if (Req::has('magic_url') && strlen(Req::val('magic_url')) == 32) {
                 // If the user came here from their notification link
                 $sql = $db->GetOne('SELECT reg_id FROM {registrations} WHERE magic_url = ?',
-                                    array(Get::val('magic_url')));
+                                    array(Req::val('magic_url')));
 
                 if (!$sql) {
                     FlysprayDo::error(array(ERROR_INPUT, L('error18')));

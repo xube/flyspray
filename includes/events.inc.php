@@ -174,10 +174,12 @@ function event_description($history) {
             $return .= eL('attachmentadded');
             if ($history['orig_name']) {
                 $return .= sprintf(': <a href="%s?getfile=%d">%s</a>', $baseurl, $new_value, $history['orig_name']);
+            } else if ($history['old_value']) {
+                $return .= ': ' . $history['old_value'];
             }
             break;
     case '8':    //Attachment deleted
-            $return .= eL('attachmentdeleted') . ":" . Filters::noXSS($new_value);
+            $return .= eL('attachmentdeleted') . ': ' . Filters::noXSS($new_value);
             break;
     case '9':    //Notification added
             $return .= eL('notificationadded') . ': ' . tpl_userlink($new_value);
