@@ -163,8 +163,9 @@ function execute_upgrade_file($folder, $installed_version)
 
         if (substr($file, -4) == '.xml') {
             $schema = new adoSchema($db);
-            $schema->SetPrefix($conf['database']['dbprefix']);
-            $schema->ParseSchemaFile($upgrade_path . '/' . $file);
+            $xml = file_get_contents($upgrade_path . '/' . $file);
+            $xml = str_replace('<table name="', '<table name="' . $conf['database']['dbprefix'], $xml);
+            $schema->ParseSchemaString($xml);
             if ($schema->ExecuteSchema(null, true)) {
                 $done[$file] = $hash;
             }
