@@ -8,6 +8,10 @@
  * @author: Florian Schmitz (floele)
  */
 
+define('SECURITY_NONE', 0);
+define('SECURITY_SSL', 1);
+define('SECURITY_TLS', 2);
+
 class Jabber
 {
     var $connection = null;
@@ -20,7 +24,7 @@ class Jabber
     var $server = '';
     var $features = array();
 
-    function Jabber($login, $password, $ssl = false, $port = 5222, $host = '')
+    function Jabber($login, $password, $security = SECURITY_NONE, $port = 5222, $host = '')
     {
         // Can we use Jabber at all?
         // Note: Maybe replace with SimpleXML in the future
@@ -28,9 +32,10 @@ class Jabber
             $this->log('Error: No XML functions available, Jabber functions can not operate.');
             return false;
         }
-           //bug in php 5.2.1 renders this stuff more or less useless.
-        if(version_compare(phpversion(), '5.2.1', '>=')) {
-            $this->log('Error: PHP ' . phpversion() . ' is incompatible with jabber notifications, see http://bugs.php.net/41236');
+
+        //bug in php 5.2.1 renders this stuff more or less useless.
+        if (version_compare(phpversion(), '5.2.1', '>=') && $security != SECURITY_NONE) {
+            $this->log('Error: PHP ' . phpversion() . ' + SSL is incompatible with jabber, see http://bugs.php.net/41236');
             return false;
         }
 
@@ -42,18 +47,17 @@ class Jabber
         // Extract data from user@server.org
         list($username, $server) = explode('@', $login);
 
-        // Decide whether or not to use SSL
-        $ssl = ($ssl && Jabber::can_use_ssl());
-        $this->session['ssl'] = $ssl;
-        $this->server         = $server;
-        $this->user           = $username;
-        $this->password       = $password;
-        // Change port if we use SSL
-        if ($port == 5222 && $ssl) {
-            $port = 5223;
+        // Decide whether or not to use encryption
+        if ($security == SECURITY_SSL && !Jabber::can_use_ssl() || $security == SECURITY_TLS && !Jabber::can_use_tls()) {
+            $security = SECURITY_NONE;
         }
 
-        if ($this->open_socket( ($host != '') ? $host : $server, $port, $ssl)) {
+        $this->session['security'] = $security;
+        $this->server              = $server;
+        $this->user                = $username;
+        $this->password            = $password;
+
+        if ($this->open_socket( ($host != '') ? $host : $server, $port, $security == SECURITY_SSL)) {
             $this->send("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
 			$this->send("<stream:stream to='{$server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
         } else {
@@ -101,6 +105,10 @@ class Jabber
         }
 
         $server = $ssl ? 'ssl://' . $server : $server;
+
+        if ($ssl) {
+            $this->session['ssl'] = true;
+        }
 
         if ($this->connection = @fsockopen($server, $port, $errorno, $errorstr, $this->timeout)) {
             socket_set_blocking($this->connection, 0);
@@ -211,6 +219,7 @@ class Jabber
      * Sets account presence. No additional info required (default is "online" status)
      * @param $type dnd, away, chat, xa or nothing
      * @param $message
+     * @param $unavailable set this to true if you want to become unavailable
      * @access public
      * @return bool
      */
@@ -298,12 +307,13 @@ class Jabber
                     return $this->response($this->listen());
                 }
                 // Let's use TLS if SSL is not enabled and we can actually use it
-                if (!$this->session['ssl'] && Jabber::can_use_tls() && isset($xml['stream:features'][0]['#']['starttls'])) {
+                if ($this->session['security'] == SECURITY_TLS && isset($xml['stream:features'][0]['#']['starttls'])) {
                     $this->log('Switching to TLS.');
-                    $this->Send("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>\n");
+                    $this->send("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>\n");
                     return $this->response($this->listen());
                 }
                 // Does the server support SASL authentication?
+
                 // I hope so, because we do (and no other method).
                 if (isset($xml['stream:features'][0]['#']['mechanisms'][0]['@']['xmlns']) &&
                     $xml['stream:features'][0]['#']['mechanisms'][0]['@']['xmlns'] == 'urn:ietf:params:xml:ns:xmpp-sasl') {
@@ -317,10 +327,15 @@ class Jabber
                     if (in_array('DIGEST-MD5', $methods)) {
                         $this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>");
                     // we don't want to use this (neither does the server usually) if no encryption is in place
-                    } else if (in_array('PLAIN', $methods) && ($this->session['ssl'] || $this->session['tls'])) {
+                    # http://www.xmpp.org/extensions/attic/jep-0078-1.7.html
+                    # The plaintext mechanism SHOULD NOT be used unless the underlying stream is encrypted (using SSL or TLS)
+                    # and the client has verified that the server certificate is signed by a trusted certificate authority.
+                    } else if (in_array('PLAIN', $methods) && (isset($this->session['ssl']) || isset($this->session['tls']))) {
                         $this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
                                       . base64_encode(chr(0) . $this->user . '@' . $this->server . chr(0) . $this->password) .
                                     "</auth>");
+                    } else if (in_array('ANONYMOUS', $methods)) {
+                        $this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>");
                     // not good...
                     } else {
                         $this->log('Error: No authentication method supported.');
@@ -427,12 +442,6 @@ class Jabber
                         return true;
 
                     case 'reg_1':
-                        // more than instructions, username and password?
-                        if (count($xml['iq'][0]['#']['query'][0]['#']) > 3) {
-                            $this->log('Server requires too much data for registration.');
-                            return false;
-                        }
-
                         $this->send("<iq type='set' id='reg_2'>
                                        <query xmlns='jabber:iq:register'>
                                          <username>" . Jabber::jspecialchars($this->user) . "</username>

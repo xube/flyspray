@@ -211,7 +211,7 @@ class Notifications
 
             $jabber =& new Jabber($fs->prefs['jabber_username'],
                                  $fs->prefs['jabber_password'],
-                                 $fs->prefs['jabber_ssl'],
+                                 $fs->prefs['jabber_security'],
                                  $fs->prefs['jabber_port'],
                                  $fs->prefs['jabber_server']);
             $jabber->login();

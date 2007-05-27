@@ -196,7 +196,11 @@
           <td>
             <input id="jabberserver" class="text" type="text" name="jabber_server" size="25" maxlength="100" value="{$fs->prefs['jabber_server']}" />
 		<?php if (extension_loaded('openssl')) : ?>
-            {!tpl_checkbox('jabber_ssl', $fs->prefs['jabber_ssl'], 'jabber_ssl')} <label class="inline" for="jabber_ssl">{L('ssl')}</label>
+            {!tpl_checkbox('jabber_security', $fs->prefs['jabber_security'] == 0, 'jabber_security', 0, null, 'radio')} <label class="inline" for="jabber_security">{L('none')}</label>
+            {!tpl_checkbox('jabber_security', $fs->prefs['jabber_security'] == 1, 'jabber_security', 1, null, 'radio')} <label class="inline" for="jabber_security">{L('ssl')}</label>
+            <?php if (function_exists('stream_socket_enable_crypto')): ?>
+            {!tpl_checkbox('jabber_security', $fs->prefs['jabber_security'] == 2, 'jabber_security', 2, null, 'radio')} <label class="inline" for="jabber_security">{L('tls')}</label>
+            <?php endif; ?>
         <?php endif; ?>
 		</td>
         </tr>
