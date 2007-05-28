@@ -548,7 +548,7 @@
     </field>
     <field name="message_id" type="C" size="200">
     </field>
-    <field name="user_id" type="I" size="11">
+    <field name="task_id" type="I" size="11">
 	<KEY/>
       <NOTNULL/>
       <DEFAULT value="0"/>
