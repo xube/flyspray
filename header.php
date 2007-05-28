@@ -42,19 +42,27 @@ $modes = str_replace('.php', '', array_map('basename', glob_compat(BASEDIR ."/sc
 foreach ($modes as $mode) {
     require_once(BASEDIR . '/scripts/' . $mode . '.php');
 }
-$do = Req::enum('do', $modes);
-
-if (!call_user_func(array('FlysprayDo' . ucfirst($do), 'is_projectlevel'))) {
-    $project_id = 0;
-}
+$do = Req::val('do');
 
 // Any "do" mode that accepts a task_id or id field should be added here.
-if (in_array($do, array('details', 'depends')) || !Req::val('do')) {
-    if (Req::num('task_id')) {
-        $project_id = $db->GetOne('SELECT  project_id
-                                     FROM  {tasks}
-                                    WHERE task_id = ?',
-                                   array(Req::num('task_id')));
+if (Req::num('task_id')) {
+    $project_id = $db->GetOne('SELECT  project_id
+                                 FROM  {tasks}
+                                WHERE task_id = ?',
+                               array(Req::num('task_id')));
+    $do = Filters::enum($do, array('details', 'depends'));
+} else {
+    if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
+        $do = 'pm';
+    } elseif ($do == 'pm' && Get::has('switch') && Get::val('project') == '0') {
+        $do = 'admin';
+    } elseif (Get::has('switch') && ($do == 'details')) {
+        $do = 'index';
+    }
+
+    if ($do && class_exists('FlysprayDo' . ucfirst($do)) &&
+        !call_user_func(array('FlysprayDo' . ucfirst($do), 'is_projectlevel'))) {
+        $project_id = 0;
     }
 }
 
@@ -68,7 +76,10 @@ if (!isset($project_id)) {
 
 $proj =& new Project($project_id);
 // reset do for default project level entry page
-$do = Req::enum('do', $modes, $proj->prefs['default_entry']);
+if (!in_array($do, $modes)) {
+    $do = ($do) ? Req::enum('do', $modes, $proj->prefs['default_entry']) : $proj->prefs['default_entry'];
+}
+
 $proj->setCookie();
 
 /* permission stuff */

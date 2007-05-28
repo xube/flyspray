@@ -24,11 +24,6 @@
 
     <table class="userlist">
       <caption>{L('currentglobalgroups')} ({count($groups)})</caption>
-      <colgroup>
-        <col width="3*" />
-        <col width="*" />
-        <col style="width:10em;" />
-      </colgroup>
       <thead>
         <tr><th>{L('groupname')}</th><th>{L('users')}</th><th>{L('groupopen')}</th></tr>
       </thead>
@@ -41,11 +36,13 @@
         <?php endif; ?>
         </td>
         <td><a href="{CreateURL(array('admin', 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
-        <?php if ($group['group_open']) : ?>
-        <td class="imgcol"><img src="{$this->get_image('button_ok')}" alt="{L('yes')}" /></td>
-        <?php else: ?>
-        <td class="imgcol"><img src="{$this->get_image('button_cancel')}" alt="{L('no')}" /></td>
-        <?php endif; ?>
+        <td class="imgcol" style="width:10em;">
+          <?php if ($group['group_open']) : ?>
+          <img src="{$this->get_image('button_ok')}" alt="{L('yes')}" />
+          <?php else: ?>
+          <img src="{$this->get_image('button_cancel')}" alt="{L('no')}" />
+          <?php endif; ?>
+        </td>
       </tr>
     <?php endforeach; ?>
     </table>

@@ -21,10 +21,6 @@
 
     <table class="userlist">
       <caption>{L('currentgroups')} ({count($groups)})</caption>
-      <colgroup>
-        <col width="3*" />
-        <col width="*" />
-      </colgroup>
       <thead>
         <tr><th>{L('groupname')}</th><th>{L('users')}</th></tr>
       </thead>

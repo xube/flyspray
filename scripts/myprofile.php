@@ -21,7 +21,7 @@ class FlysprayDoMyprofile extends FlysprayDo
         global $page, $user, $fs;
 
         $page->assign('groups', Flyspray::ListGroups());
-        $page->assign('all_groups', Flyspray::listallGroups());
+        $page->assign('all_groups', Flyspray::listallGroups($user->id));
 
         $page->assign('theuser', $user);
 

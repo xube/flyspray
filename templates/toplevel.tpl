@@ -6,7 +6,7 @@
 
 <?php foreach ($projects as $project): ?>
 <div class="box">
-<h2><a href="{CreateUrl('proj' . $project['project_id'])}">{$project['project_title']}</a></h2>
+<h2><a href="{CreateUrl(array('', 'proj' . $project['project_id']))}">{$project['project_title']}</a></h2>
 <table class="toplevel">
   <?php if ($stats[$project['project_id']]['project_managers']): ?>
   <tr>

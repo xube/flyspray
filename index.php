@@ -13,14 +13,6 @@ if ($conf['general']['reminder_daemon'] == '1') {
     Flyspray::startReminderDaemon();
 }
 
-if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
-    $do = 'pm';
-} elseif ($do == 'pm' && Get::has('switch') && Get::val('project') == '0') {
-    $do = 'admin';
-} elseif (Get::has('show') || (Get::has('switch') && ($do == 'details'))) {
-    $do = 'index';
-}
-
 $user->save_search($do);
 
 if (Get::val('logout')) {
