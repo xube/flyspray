@@ -114,12 +114,12 @@
         $group_project_id = $user_groups[$usr['user_id']]['project_id'][$key];
         if ($group_project_id == '0'): ?>
         {L('global')}:
-        <a href="{CreateUrl(array($do, 'proj' . $proj->id, 'editgroup'), array('group_id' => $group))}">
+        <a href="{CreateUrl(array('admin', 'proj0', 'editgroup'), array('group_id' => $group))}">
           {$user_groups[$usr['user_id']]['group_name'][$key]}
         </a><br />
         <?php elseif (($title_key = Flyspray::array_find('project_id', $group_project_id, $fs->projects)) !== false): ?>
         {$fs->projects[$title_key]['project_title']}:
-        <a href="{CreateUrl(array($do, 'proj' . $proj->id, 'editgroup'), array('group_id' => $group))}">
+        <a href="{CreateUrl(array($do, 'proj' . $group_project_id, 'editgroup'), array('group_id' => $group))}">
           {$user_groups[$usr['user_id']]['group_name'][$key]}
         </a><br />
         <?php endif; ?>
@@ -139,14 +139,15 @@
         <tr>
         <td>
             <button type="submit">{L('moveuserstogroup')}</button>
-            <select class="adminlist" name="new_group">
+            <select class="adminlist" name="user_to_group">
             <?php if ($proj->id): ?>
             <option value="0">{L('nogroup')}</option>
             <?php endif; ?>
             {!tpl_options(Flyspray::listGroups($proj->id), null, false, null)}
             </select>
             <input type="hidden" name="project_id" value="{$proj->id}" />
-            <input type="hidden" name="action" value="movetogroup" />
+            <input type="hidden" name="action" value="addusertogroup" />
+            <input type="hidden" name="do" value="{$do}" />
         </td>
         <td id="numbers">{!pagenums(Get::num('pagenum', 1), 50, $user_count, $do, 'users')}</td>
         </tr>

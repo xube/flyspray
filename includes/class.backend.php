@@ -135,11 +135,14 @@ class Backend
         global $db, $user;
 
         $users = preg_split('/[\s,;]+/', $users, -1, PREG_SPLIT_NO_EMPTY);
+        $return = 9;
+
         foreach ($users as $uid) {
             $uid = Flyspray::username_to_id($uid);
 
             if (!$uid) {
-                return 0;
+                $return = min($return, 0);
+                continue;
             }
 
             // Delete from project?
@@ -148,14 +151,16 @@ class Backend
                          LEFT JOIN {groups} g ON uig.group_id = g.group_id
                              WHERE uig.user_id = ? AND g.project_id = ?',
                             array($uid, $proj_id));
-                return 1;
+                $return = min($return, 1);
+                continue;
             }
 
             // If user is already a member of one of the project's groups, **move** (not add) him to the new group
             $group_project = $db->GetOne('SELECT project_id FROM {groups} WHERE group_id = ?', array($group_id));
 
             if (!$user->perms('manage_project', $group_project)) {
-                return -1;
+                $return = min($return, -1);
+                continue;
             }
 
             $oldid = $db->GetOne('SELECT g.group_id
@@ -169,8 +174,10 @@ class Backend
                 $db->Execute('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
                             array($group_id, $uid));
             }
-            return 2;
+            $return = min($return, 2);
+            continue;
         }
+        return $return;
     }
 
     /**

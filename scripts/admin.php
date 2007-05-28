@@ -658,11 +658,16 @@ class FlysprayDoAdmin extends FlysprayDo
     {
         global $fs, $db, $proj, $user;
 
-        if (!($uid = Post::val('uid'))) {
-            return array(ERROR_INPUT, L('baduserinput'));
+        if (!$user->perms('manage_project')) {
+            return array(ERROR_PERMS);
         }
 
-        $result = Backend::add_user_to_group($uid, Post::num('user_to_group'), $proj->id);
+        $users = Post::val('uid', Post::val('users'));
+        if (is_array($users)) {
+            $users = implode(',', array_keys($users));
+        }
+
+        $result = Backend::add_user_to_group($users, Post::num('user_to_group'), $proj->id);
 
         switch ($result) {
             case -1: return array(ERROR_PERMS);
