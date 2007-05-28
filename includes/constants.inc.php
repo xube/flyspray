@@ -101,7 +101,7 @@ define('PLAINTEXT',            true);
 // Others
 define('MIN_PW_LENGTH', 5);
 define('LOGIN_ATTEMPTS', 5);
-define('FS_CACHE_DIR', Flyspray::get_tmp_dir() . DIRECTORY_SEPARATOR . md5($_SERVER['SERVER_NAME']  . (int)$_SERVER['SERVER_PORT']));
+define('FS_CACHE_DIR', Flyspray::get_tmp_dir() . DIRECTORY_SEPARATOR . md5($_SERVER['SERVER_NAME']  . BASEDIR));
 
 is_dir(FS_CACHE_DIR) || mkdir(FS_CACHE_DIR, 0700);
 //local installation constants, this file must not exist in the svn repository.
@@ -111,5 +111,6 @@ if(is_readable(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.ph
 }
 // developers or advanced users only
 //define('DEBUG_SQL',          true);
+//define('FS_MAIL_DEBUG', true);
 //define('FS_NO_EMAIL',   true);
 ?>

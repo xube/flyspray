@@ -542,7 +542,19 @@
       <col>message_id</col>
       <col>user_id</col>
     </index>
-  </table>
+</table>
+ <table name="notification_threads">
+    <field name="recipient_id" type="I" size="10">
+    </field>
+    <field name="message_id" type="C" size="200">
+    </field>
+    <field name="user_id" type="I" size="11">
+	<KEY/>
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+</table>
+
   <table name="notifications">
     <field name="notify_id" type="I" size="10">
       <KEY/>

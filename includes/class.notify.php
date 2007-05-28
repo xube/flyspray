@@ -10,15 +10,19 @@ require BASEDIR . '/includes/external/swift-mailer/Swift.php';
 class NotificationsThread extends Swift_Events_Listener {
 
     var $task_id = 0;
+    var $thread_info = array();
+    var $message_history = array();
 
-    function NotificationsThread($task_id)
+    function NotificationsThread($task_id, $db)
     {
-        $this->task_id = (int) $task_id;
+        $this->task_id = $task_id;
+        $this->message_history = $db->GetAll('SELECT recipient_id, message_id FROM 
+                                               {notification_threads} WHERE task_id = ?', array($task_id));
     }
 
     /**
      * beforeSendPerformed
-     *  XXX: Use the database instead ?
+     * do this beforeSendPerformed aint that clear ? ;) 
      * @param object &$e
      * @access public
      * @return void
@@ -29,14 +33,27 @@ class NotificationsThread extends Swift_Events_Listener {
         $recipients = $e->getRecipients();
         $to = $recipients->getTo();
         $to = array_pop($to);
-        $threadfile = sprintf('%s/%d_%s', FS_CACHE_DIR, $this->task_id, md5($to->getAddress()));
-        $references = is_file($threadfile) ? array_map('rtrim', file($threadfile)) : array();
+        $to = ezmlm_hash($to->getAddress());
+        $references = array();
+        
+        if(count($this->message_history)) {
+            
+            foreach($this->message_history as $history) {
+                
+                if($history['recipient_id'] != $to) {
+                    continue;
+                }
+
+                $references[] = $history['message_id'];
+            }
             // if there is more than one then we have a conversation..
             if(count($references)) {
                 //"The last identifier in References identifies the parent"
                 $message->headers->set('References', implode(" ", array_reverse($references)));
             }
-            file_put_contents($threadfile, $message->generateId('flyspray') . "\n" , FILE_APPEND|LOCK_EX);
+        }
+
+        $this->thread_info[] = array($this->task_id, $to, $message->generateId('flyspray'));
     }
 }
 
@@ -156,14 +173,17 @@ class Notifications
                     $connection->setUsername($fs->prefs['smtp_user']);
                     $connection->setPassword($fs->prefs['smtp_pass']);
                 }
-                $swift =& new Swift($connection);
+                if(defined('FS_SMTP_TIMEOUT')) {
+                    $swiftconn->setTimeout(FS_SMTP_TIMEOUT);
+                }
             } else {
                 Swift_ClassLoader::load('Swift_Connection_NativeMail');
-                $swift =& new Swift(new Swift_Connection_NativeMail);
+                $connection =& new Swift_Connection_NativeMail;
             }
+            $swift =& new Swift($connection);
 
             if(isset($data['task_id'])) {
-                $swift->attachPlugin(new NotificationsThread($data['task_id']), "Thread");
+                $swift->attachPlugin(new NotificationsThread($data['task_id'], $db), "MessageThread");
             }
 
             if(defined('FS_MAIL_DEBUG')) {
@@ -192,6 +212,15 @@ class Notifications
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
             $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
+            
+            if(isset($data['task_id'])) {
+
+                $plugin =& $swift->getPlugin("MessageThread");
+                
+                $db->Execute('INSERT INTO {notification_threads} (task_id, recipient_id, message_id) 
+                    VALUES (?, ?, ?)', $plugin->thread_info);
+            }
+
             $swift->disconnect();
         }
 
@@ -736,7 +765,9 @@ class Notifications
                     $body .= L('password') . ': ' . $data[5] . "\r\n";
                 }
                 $body .= L('emailaddress') . ': ' . $data[3] . "\r\n";
-                $body .= L('jabberid') . ':' . $data[4] . "\r\n\r\n";
+                if($data[4]) {
+                    $body .= L('jabberid') . ':' . $data[4] . "\r\n\r\n";
+                }
                 break;
 
             case NOTIFY_REMINDER:

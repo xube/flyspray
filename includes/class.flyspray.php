@@ -651,7 +651,7 @@ class Flyspray
         }
 
         $salt = $auth_details['password_salt'] ? $auth_details['password_salt'] : null;
-        $pass_ok = ($auth_details['user_pass'] == Flyspray::cryptPassword($password, $salt));
+        $pass_ok = ($auth_details['user_pass'] === Flyspray::cryptPassword($password, $salt));
 
         // let's update the users password
         if ($pass_ok && !$auth_details['password_salt']) {
@@ -980,9 +980,9 @@ class Flyspray
      */
     function get_tmp_dir()
     {
+        $return = '';
         if (function_exists('sys_get_temp_dir')) {
-            return sys_get_temp_dir();
-
+            $return = sys_get_temp_dir();
         } elseif (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             if ($var = isset($_ENV['TEMP']) ? $_ENV['TEMP'] : getenv('TEMP')) {
                 $return = $var;
@@ -1003,15 +1003,14 @@ class Flyspray
         }
         // Now, the final check
         if (is_dir($return) && is_writable($return)) {
-            return $return;
+            return rtrim($return, DIRECTORY_SEPARATOR);
         // we have a problem at this stage.
-        } elseif(is_writable(ini_get('upload_tmp_dir')) ) {
-            return ini_get('upload_tmp_dir');
+        } elseif(is_writable(ini_get('upload_tmp_dir'))) {
+            $return = ini_get('upload_tmp_dir');
         } elseif(is_writable(ini_get('session.save_path'))) {
-            return ini_get('session.save_path');
+            $return = ini_get('session.save_path');
         }
-        // we are dead and flyspray will not work at all as it does not have where to write sessions.
-        return '';
+        return rtrim($return, DIRECTORY_SEPARATOR);
     }
 
     /**
@@ -1035,7 +1034,7 @@ class Flyspray
 
         } elseif(function_exists('mime_content_type')) {
 
-            $type = mime_content_type($fname);
+            $type = @mime_content_type($fname);
         // I hope we don't have to...
         } elseif(!FlySpray::function_disabled('exec') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN'
                  && php_uname('s') !== 'SunOS') {

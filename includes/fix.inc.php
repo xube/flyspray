@@ -222,7 +222,7 @@ if (!function_exists('hash_hmac')) {
     include dirname(__FILE__) . '/external/HMAC.php';
     function hash_hmac($algo, $data, $key, $raw_output = false) {
         $hashobj =& new Crypt_HMAC($key, $algo);
-        return $hashobj->hash($data);
+        return $raw_output ? pack('H*', $hashobj->hash($data)) : $hashobj->hash($data);
     }
 }
 
