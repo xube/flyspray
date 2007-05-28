@@ -32,7 +32,7 @@ class FlysprayDoMyprofile extends FlysprayDo
     {
         global $user, $fs, $page, $db;
 
-        include BASEDIR . '/includes/events.inc.php';
+        require_once BASEDIR . '/includes/events.inc.php';
         $events_since = strtotime(Get::val('events_since', '-1 week'));
         $sql = $db->Execute('SELECT h.task_id, t.*, p.project_prefix
                                FROM {history} h

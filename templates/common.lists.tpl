@@ -26,7 +26,7 @@
         </select>
       </td>
       <td title="{L('deletetip')}">
-        <input type="checkbox" name="delete[{$list['list_id']}]" value="1" />
+        <input {tpl_disableif($list['in_use'])} type="checkbox" name="delete[{$list['list_id']}]" value="1" />
       </td>
       <td><a href="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => $list['list_id']))}">{L('edit')}</a></td>
     </tr>

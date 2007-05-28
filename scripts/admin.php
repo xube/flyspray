@@ -158,8 +158,11 @@ class FlysprayDoAdmin extends FlysprayDo
     {
     	global $db, $proj, $page;
 
-        $sql = $db->Execute('SELECT * FROM {lists}
-                              WHERE project_id = ?
+        $sql = $db->Execute('SELECT l.*, count(f.field_id) AS in_use
+                               FROM {lists} l
+                          LEFT JOIN {fields} f ON f.list_id = l.list_id
+                              WHERE l.project_id = ?
+                           GROUP BY l.list_id
                            ORDER BY list_type, list_name', array($proj->id));
         $page->assign('lists', $sql->GetArray());
     }
