@@ -50,7 +50,7 @@ if (Req::num('task_id')) {
                                  FROM  {tasks}
                                 WHERE task_id = ?',
                                array(Req::num('task_id')));
-    $do = Filters::enum($do, array('details', 'depends'));
+    $do = Filters::enum($do, array('details', 'depends', 'editcomment'));
 } else {
     if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {
         $do = 'pm';

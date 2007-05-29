@@ -342,7 +342,7 @@ class FlysprayDoDetails extends FlysprayDo
         return array(SUBMIT_OK, L('notifyremoved'));
     }
 
-    function action_deletecomment()
+    function action_deletecomment($task)
     {
         global $user, $db, $fs, $proj;
 
@@ -357,12 +357,12 @@ class FlysprayDoDetails extends FlysprayDo
         $comment = $result->FetchRow();
 
         // Check for files attached to this comment
-        $check_attachments = $db->GetOne('SELECT  count(*)
-                                            FROM  {attachments}
-                                           WHERE  comment_id = ?',
+        $check_attachments = $db->Execute('SELECT  attachment_id
+                                             FROM  {attachments}
+                                            WHERE  comment_id = ?',
                                           array(Req::val('comment_id')));
 
-        if ($check_attachments && !$user->perms('delete_attachments')) {
+        if ($check_attachments->NumRows() && !$user->perms('delete_attachments')) {
             return array(ERROR_PERMS, L('commentattachperms'));
         }
 
