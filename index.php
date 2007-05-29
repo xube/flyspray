@@ -28,7 +28,10 @@ if (Get::val('getfile')) {
                       INNER JOIN  {tasks}       t ON a.task_id = t.task_id
                            WHERE  attachment_id = ?", array(Get::val('getfile')));
     $task = $result->FetchRow();
-    list($proj_id, $orig_name, $file_name, $file_type) = $task;
+    $proj_id = $task['project_id'];
+    $orig_name = $task['orig_name'];
+    $file_name = $task['file_name'];
+    $file_type = $task['file_type'];
 
     // Check if file exists, and user permission to access it!
     if (!is_file(BASEDIR . "/attachments/$file_name") || !$user->can_view_task($task)) {
