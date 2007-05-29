@@ -378,7 +378,7 @@ class FlysprayDoDetails extends FlysprayDo
             $db->Execute("DELETE from {attachments} WHERE attachment_id = ?",
                     array($attachment['attachment_id']));
 
-            @unlink(BASEDIR .'/attachments/' . $attachment['file_name']);
+            @unlink(FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $attachment['file_name']);
 
             Flyspray::logEvent($attachment['task_id'], 8, $attachment['orig_name']);
         }

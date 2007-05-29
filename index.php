@@ -32,24 +32,22 @@ if (Get::val('getfile')) {
     $orig_name = $task['orig_name'];
     $file_name = $task['file_name'];
     $file_type = $task['file_type'];
-
+    $disk_filename = FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $file_name;
     // Check if file exists, and user permission to access it!
-    if (!is_file(BASEDIR . "/attachments/$file_name") || !$user->can_view_task($task)) {
+    if (!is_file($disk_filename) || !$user->can_view_task($task)) {
         header('HTTP/1.1 410 Gone');
         echo 'File does not exist.';
         exit();
     }
-
     output_reset_rewrite_vars();
-    $path = BASEDIR . "/attachments/$file_name";
-
+   
     header('Pragma: public');
     header("Content-type: $file_type");
     header('Content-Disposition: filename="'.$orig_name.'"');
     header('Content-transfer-encoding: binary');
-    header('Content-length: ' . filesize($path));
+    header('Content-length: ' . filesize($disk_filename));
 
-    readfile($path);
+    readfile($disk_filename);
     exit;
 }
 

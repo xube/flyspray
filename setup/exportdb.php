@@ -3,8 +3,8 @@
 error_reporting(E_ALL);
  
  
-require_once '../adodb/adodb.inc.php';
-require_once '../adodb/adodb-xmlschema03.inc.php';
+require_once '../includes/external/adodb/adodb.inc.php';
+require_once '../includes/external/adodb/adodb-xmlschema03.inc.php';
  
 $conf    = @parse_ini_file('../flyspray.conf.php', true) or die('Cannot open config file.');
  

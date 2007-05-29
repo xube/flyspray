@@ -109,6 +109,9 @@ is_dir(FS_CACHE_DIR) || mkdir(FS_CACHE_DIR, 0700);
 if(is_readable(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php')) {
     include(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php');
 }
+
+defined('FS_ATTACHMENTS_DIR') || define('FS_ATTACHMENTS_DIR', BASEDIR . DIRECTORY_SEPARATOR . 'attachments');
+
 // developers or advanced users only
 //define('DEBUG_SQL',          true);
 //define('FS_MAIL_DEBUG', true);

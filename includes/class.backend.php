@@ -486,7 +486,7 @@ class Backend
             }
 
             $fname = md5(uniqid(mt_rand(), true));
-            $path = BASEDIR .'/attachments/'. $fname ;
+            $path = FS_ATTACHMENTS_DIR. DIRECTORY_SEPARATOR.  $fname ;
 
             $tmp_name = $_FILES[$source]['tmp_name'][$key];
 
@@ -559,7 +559,7 @@ class Backend
 
             $db->Execute('DELETE FROM {attachments} WHERE attachment_id = ?',
                        array($task['attachment_id']));
-            @unlink(BASEDIR . '/attachments/' . $task['file_name']);
+            @unlink(FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $task['file_name']);
             Flyspray::logEvent($task['task_id'], 8, $task['orig_name']);
         }
     }
