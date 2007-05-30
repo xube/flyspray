@@ -26,10 +26,14 @@ class FlysprayDoEdit extends FlysprayDo
             } elseif (count(Post::val('changes'))) {
                 $task = Flyspray::GetTaskDetails($task_id);
                 $args = $task; // import previous values
-                $args['assigned_to'] = implode(' ', $args['assigned_to']);
                 foreach (Post::val('changes') as $change) {
                     $args[$change] = Post::val($change);
                 }
+
+                if (is_array($args['assigned_to'])) {
+                    $args['assigned_to'] = implode(';', $task['assigned_to']);
+                }
+
                 Backend::edit_task($task, $args);
             }
         }

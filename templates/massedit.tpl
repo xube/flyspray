@@ -4,11 +4,15 @@
     <input type="hidden" name="ids" value="{implode(' ', Get::val('ids', array()))}" />
     <input type="hidden" name="action" value="edit" />
     <p>{L('editnote')}</p>
-    <p>{L('selectedtasks')}:
+    <p><label>{L('selectedtasks')}:
+    <select name="showselected">
     <?php foreach (Get::val('ids', array()) as $id): ?>
-    {!tpl_tasklink($id)}
+    <option>{strip_tags(tpl_tasklink($id))}</option>
     <?php endforeach; ?>
+    </select></label>
     </p>
+
+    <hr />
 
     <table><tr><td id="taskfieldscell"><?php // small layout table ?>
 
@@ -33,7 +37,7 @@
           </td>
         </tr>
         <tr>
-          <td><input type="checkbox" name="changes[]" value="severity" /></td>
+          <td><input type="checkbox" name="changes[]" value="task_severity" /></td>
           <td><label for="severity">{L('severity')}</label></td>
           <td>
             <select id="severity" class="adminlist" name="task_severity">
