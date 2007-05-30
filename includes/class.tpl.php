@@ -545,18 +545,21 @@ class TextFormatter
         return $return;
     }
 
-    function render($text, $onyfs = false, $type = null, $id = null, $instructions = null)
+    function render($text, $onlyfs = false, $type = null, $id = null, $instructions = null)
     {
         global $conf, $fs;
 
-        if (@in_array('render', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter')) && !$onyfs) {
+        if (@in_array('render', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter')) && !$onlyfs) {
             return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'render'),
-                                  $text, $onyfs, $type, $id, $instructions);
+                                  $text, $onlyfs, $type, $id, $instructions);
         } else {
             $text = nl2br(Filters::noXSS($text));
 
             // Change URLs into hyperlinks
-            if (!$onyfs) $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
+            if (!$onlyfs) {
+                $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
+                $text = preg_replace('/[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]{2,5}/', '<a href="mailto:\0">\0</a>', $text);
+            }
 
             // Change FS#123 into hyperlinks to tasks
             $look = array('FS#', 'bug ');
