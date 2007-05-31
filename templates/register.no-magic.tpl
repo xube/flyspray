@@ -43,7 +43,8 @@
     </tr>
   </table>
 	<?php if($fs->prefs['use_recaptcha']) : ?>
-	 {!recaptcha_get_html($fs->prefs['recaptcha_public_key'], null)}
+	 {!recaptcha_get_html($fs->prefs['recaptcha_public_key'], null, 
+		!(empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off'))}
 	 <?php endif; ?>
  <div>
     <input type="hidden" name="action" value="sendcode" />

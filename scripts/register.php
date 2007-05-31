@@ -73,8 +73,8 @@ class FlysprayDoRegister extends FlysprayDo
             return array(ERROR_RECOVER, L('novalidjabber'));
         }
         
-        if($fs->prefs['use_recaptcha'] && Post::has('recaptcha_response_field')) {
-         $resp = recaptcha_check_answer($fs->prefs['recaptcha_private_key'], $_SERVER["REMOTE_ADDR"], 
+        if($fs->prefs['use_recaptcha']) {
+         $resp = recaptcha_check_answer($fs->prefs['recaptcha_private_key'], $_SERVER['REMOTE_ADDR'], 
                  Post::val('recaptcha_challenge_field'), Post::val('recaptcha_response_field'));
 
          if(!$resp->is_valid) {

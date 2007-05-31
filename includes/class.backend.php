@@ -840,7 +840,7 @@ class Backend
      */
     function create_task($args)
     {
-        global $db, $user, $proj;
+        global $db, $user, $proj, $fs;
 
         if ($proj->id !=  $args['project_id']) {
             $proj = new Project($args['project_id']);
@@ -859,6 +859,16 @@ class Backend
             if ($field->prefs['value_required'] && !array_get($args, 'field' . $field->id)
                 && !($field->prefs['force_default'] && !$user->perms('modify_all_tasks'))) {
                 return array(ERROR_RECOVER, L('missingrequired') . ' (' . $field->prefs['field_name'] . ')', false);
+            }
+        }
+        
+        if ($user->isAnon() && $fs->prefs['use_recaptcha']) {
+            include_once BASEDIR . '/includes/external/recaptchalib.php'; 
+            $resp = recaptcha_check_answer($fs->prefs['recaptcha_private_key'], $_SERVER['REMOTE_ADDR'],
+                 Post::val('recaptcha_challenge_field'), Post::val('recaptcha_response_field'));
+
+         if(!$resp->is_valid) {
+                return array(ERROR_RECOVER, $resp->error);
             }
         }
 
