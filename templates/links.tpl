@@ -94,10 +94,12 @@
     <?php endif; ?>
 
     <?php if ($proj->id): ?>
+    <?php if ($proj->prefs['roadmap_field']): ?>
     <li>
     <a id="roadmaplink"
         href="{CreateURL(array('roadmap', 'proj' . $proj->id))}">{L('roadmap')}</a>
     </li>
+    <?php endif; ?>
     <li>
     <a id="changeloglink"
         href="{CreateURL(array('changelog', 'proj' . $proj->id))}">{L('changelog')}</a>

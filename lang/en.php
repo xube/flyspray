@@ -966,6 +966,7 @@ Regards,',
 'userecaptcha'            => 'Use reCAPTCHA',
 'recaptchapublickey'      => 'reCAPTCHA public key',
 'recaptchaprivatekey'     => 'reCAPTCHA private key',
+'disabled'                => 'Disabled',
 );
 
 ?>

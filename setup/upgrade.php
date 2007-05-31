@@ -27,12 +27,6 @@ if(!isset($borked[-1])) {
         "or higher. ABORTING. (http://bugs.php.net/bug.php?id=34879 for details)\n");
 }
 
-if(substr(php_sapi_name(), 0, 3) == 'cgi' && !ini_get('cgi.fix_pathinfo')) {
-
-    die("You are using cgi or fastcgi and you have not set cgi.fix_pathinfo=1 in php.ini.
-         Flyspray cannot work properly without cgi.fix_pathinfo enabled, please update your configuration");
-}
-
 require_once OBJECTS_PATH . '/fix.inc.php';
 require_once OBJECTS_PATH . '/class.gpc.php';
 require_once OBJECTS_PATH . '/class.flyspray.php';
@@ -64,7 +58,7 @@ $page =& new Tpl;
 $page->assign('title', 'Upgrade ');
 $page->assign('short_version', UPGRADE_VERSION);
 
-//cleanup 
+//cleanup
 //the cache dir
 @rmdirr(sprintf('%s/cache/dokuwiki', APPLICATION_PATH));
 
@@ -196,12 +190,12 @@ function execute_upgrade_file($folder, $installed_version)
      if (!file_exists($dirname)) {
          return false;
      }
-  
+
      // Simple delete for a file
      if (is_file($dirname) || is_link($dirname)) {
          return unlink($dirname);
      }
-  
+
      // Loop through the folder
      $dir = dir($dirname);
      while (false !== $entry = $dir->read()) {
@@ -216,7 +210,7 @@ function execute_upgrade_file($folder, $installed_version)
      $dir->close();
      return rmdir($dirname);
  }
-  
+
 
 class ConfUpdater
 {

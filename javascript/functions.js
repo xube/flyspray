@@ -80,7 +80,7 @@ function setUpTasklistTable() {
 function tasklistTableClick(e) {
   var src = eventGetSrc(e);
   if (src.nodeName != 'TD') {
-    return false;
+    return;
   }
   if (src.hasChildNodes()) {
     var checkBoxes = src.getElementsByTagName('input');
@@ -91,7 +91,7 @@ function tasklistTableClick(e) {
       } else {
         checkBoxes[0].checked = true;
       }
-      return false;
+      return;
     }
   }
   var row = src.parentNode;
@@ -103,7 +103,7 @@ function tasklistTableClick(e) {
     // just use the good old way to get to the task
     window.location = '?do=details&task_id=' + row.id.substr(4);
   }
-  return false;
+  return;
 }
 
 function eventGetSrc(e) {

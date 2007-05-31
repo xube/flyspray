@@ -38,7 +38,13 @@ class FlysprayDoPm extends FlysprayDoAdmin
         $page->assign('pendings', $sql->GetArray());
     }
 
-    function area_prefs(){}
+    function area_prefs(){
+        global $proj, $page;
+
+        $roadmap_options = array_filter($proj->fields, create_function('$x', 'return ($x->prefs["list_type"] == LIST_VERSION);'));
+        $roadmap_options += array('0' => L('disabled'));
+        $page->assign('roadmap_options', $roadmap_options);
+    }
 
     function area_user() {
         global $proj;
