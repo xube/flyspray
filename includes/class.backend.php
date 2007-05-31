@@ -920,7 +920,7 @@ class Backend
             $db->Execute('INSERT INTO {field_values} (task_id, field_id, field_value)
                              VALUES (?, ?, ?)', array($task_id, $field->id, $value));
         }
-
+        if(isset($args['assigned_to'])) {
         // Prepare assignee list
         $assignees = explode(';', trim($args['assigned_to']));
         $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
@@ -929,16 +929,16 @@ class Backend
         // Log the assignments and send notifications to the assignees
         if (count($assignees)) {
             // Convert assigned_to and store them in the 'assigned' table
-            foreach ($assignees as $val)
-            {
+            foreach ($assignees as $val) {
                 $db->Replace('{assigned}', array('user_id'=> $val, 'task_id'=> $task_id), array('user_id','task_id'), ADODB_AUTOQUOTE);
             }
-
+            
             Flyspray::logEvent($task_id, 14, implode(' ', $assignees));
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
             Notifications::send($assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, array('task_id' => $task_id));
         }
+    }
 
         // Log that the task was opened
         Flyspray::logEvent($task_id, 1);
@@ -1001,8 +1001,8 @@ class Backend
         if (isset($args['notifyme']) && $args['notifyme'] == '1' && !in_array($user->id, $owners)) {
             Backend::add_notification($user->id, $task_id, true);
         }
-
-        if ($user->isAnon()) {
+        // this is relaxed, if the anonymous email is not valid, just dont bother..
+        if ($user->isAnon() && Flyspray::check_email($args['anon_email'])) {
             Notifications::send($args['anon_email'], ADDRESS_EMAIL, NOTIFY_ANON_TASK, array('task_id' => $task_id, 'token' => $token));
         }
 
