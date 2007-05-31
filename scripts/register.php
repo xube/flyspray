@@ -9,6 +9,8 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
+require_once BASEDIR . '/includes/external/recaptchalib.php';
+
 class FlysprayDoRegister extends FlysprayDo
 {
     function action_registeruser()
@@ -35,6 +37,7 @@ class FlysprayDoRegister extends FlysprayDo
         if ($reg_details['confirm_code'] != trim(Post::val('confirmation_code'))) {
             return array(ERROR_RECOVER, L('confirmwrong'));
         }
+
         $uid = Backend::create_user($reg_details['user_name'], Post::val('user_pass'), $reg_details['real_name'], $reg_details['jabber_id'],
                                     $reg_details['email_address'], $reg_details['notify_type'], $reg_details['time_zone'], $fs->prefs['anon_group']);
         if (!$uid) {
@@ -69,7 +72,15 @@ class FlysprayDoRegister extends FlysprayDo
         if ($jabber_id && !Jabber::check_jid($jabber_id)) {
             return array(ERROR_RECOVER, L('novalidjabber'));
         }
+        
+        if($fs->prefs['use_recaptcha'] && Post::has('recaptcha_response_field')) {
+         $resp = recaptcha_check_answer($fs->prefs['recaptcha_private_key'], $_SERVER["REMOTE_ADDR"], 
+                 Post::val('recaptcha_challenge_field'), Post::val('recaptcha_response_field'));
 
+         if(!$resp->is_valid) {
+                return array(ERROR_RECOVER, $resp->error);
+            }
+        }
         $user_name = Backend::clean_username(Post::val('user_name'));
 
         // Limit lengths

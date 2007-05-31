@@ -963,7 +963,9 @@ Regards,',
 'select'                  => 'Select',
 'userselect'              => 'User selection',
 'defaultusers'            => 'Default users',
-
+'userecaptcha'            => 'Use reCAPTCHA',
+'recaptchapublickey'      => 'reCAPTCHA public key',
+'recaptchaprivatekey'     => 'reCAPTCHA private key',
 );
 
 ?>

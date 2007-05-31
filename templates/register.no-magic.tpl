@@ -42,6 +42,9 @@
       </td>
     </tr>
   </table>
+	<?php if($fs->prefs['use_recaptcha']) : ?>
+	 {!recaptcha_get_html($fs->prefs['recaptcha_public_key'], null)}
+	 <?php endif; ?>
  <div>
     <input type="hidden" name="action" value="sendcode" />
     <input type="hidden" name="do" value="register" />

@@ -88,7 +88,17 @@
           <td><label for="spamproof">{L('spamproof')}</label></td>
           <td>{!tpl_checkbox('spam_proof', $fs->prefs['spam_proof'], 'spamproof')}</td>
         </tr>
+		<tr>
+		 <td> <label for="userecaptcha">{L('userecaptcha')}</label></td>
+		 <td> {!tpl_checkbox('use_recaptcha', $fs->prefs['use_recaptcha'], 'userecaptcha')}</td>
         <tr>
+		<td><label for="recaptcha_public_key">{L('recaptchapublickey')}</label></td>
+          <td><input id="recaptcha_public_key" name="recaptcha_public_key" class="text" type="text" size="40" value="{$fs->prefs['recaptcha_public_key']}" /></td>
+        </tr>
+        <tr>
+          <td><label for="recaptcha_private_key">{L('recaptchaprivatekey')}</label></td>
+          <td><input id="recaptcha_private_key" name="recaptcha_private_key" class="text" type="text" size="40" value="{$fs->prefs['recaptcha_private_key']}" /></td>
+		</tr>
           <td><label for="notify_registration">{L('notify_registration')}</label></td>
           <td>{!tpl_checkbox('notify_registration', $fs->prefs['notify_registration'], 'notify_registration')}</td>
         </tr>
