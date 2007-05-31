@@ -861,14 +861,14 @@ class Backend
                 return array(ERROR_RECOVER, L('missingrequired') . ' (' . $field->prefs['field_name'] . ')', false);
             }
         }
-        
+
         if ($user->isAnon() && $fs->prefs['use_recaptcha']) {
-            include_once BASEDIR . '/includes/external/recaptchalib.php'; 
+            include_once BASEDIR . '/includes/external/recaptchalib.php';
             $resp = recaptcha_check_answer($fs->prefs['recaptcha_private_key'], $_SERVER['REMOTE_ADDR'],
                  Post::val('recaptcha_challenge_field'), Post::val('recaptcha_response_field'));
 
          if(!$resp->is_valid) {
-                return array(ERROR_RECOVER, $resp->error);
+                return array(ERROR_RECOVER, $resp->error, false);
             }
         }
 

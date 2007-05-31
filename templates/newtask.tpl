@@ -97,8 +97,8 @@
           <input type="checkbox" id="notifyme" name="notifyme"
           value="1" checked="checked" />&nbsp;<label class="inline left" for="notifyme">{L('notifyme')}</label><br />
           {!tpl_checkbox('more_tasks', Req::val('more_tasks', 0), 'more_tasks')}<label class="inline left" for="more_tasks">
-          <?php endif; ?>
           {L('addmoretasks')}</label>
+          <?php endif; ?>
         </div>
     </p>
     </div>
