@@ -505,10 +505,10 @@ class Notifications
         );
 
         // Generate the nofication message
-        if (!isset($data['project']->prefs['notify_subject']) || !$data['project']->prefs['notify_subject']) {
+        if (isset($data['project']->prefs['notify_subject']) && !$data['project']->prefs['notify_subject']) {
             $data['project']->prefs['notify_subject'] = '[%p][#%t] %s';
         }
-        if (!isset($notify_type_msg[$type]))  {
+        if (!isset($data['project']->prefs['notify_subject']) || !isset($notify_type_msg[$type]))  {
             $subject = L('notifyfromfs');
         } else {
             $subject = strtr($data['project']->prefs['notify_subject'],
