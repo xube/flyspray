@@ -33,7 +33,7 @@ defined('RECAPTCHA_API_URL_KEY')       || define('RECAPTCHA_API_KEY_URL', 'http:
  *  Object representing a reCAPTCHA Challenge.
  *
  *  $captcha =& new reCAPTCHA_Challenge();
- *  $captcha->k = $public_key
+ *  $captcha->publickey = $public_key
  *  echo $captcha->getChallenge();
  *
  * @package Flyspray
@@ -146,6 +146,11 @@ class reCAPTCHA_Challenge
  *  $solution->remoteip = $_SERVER['REMOTE_ADDR'];
  *  $solution->challenge = $_POST['recaptcha_challenge_field'];
  *  $solution->response = $_POST['recaptcha_response_field'];
+ *  if($solution->isValid()) {
+ *    echo "you are a human"
+ *  } else {
+ *    printf('Error:%s', $solution->error_code);
+ *  }
  *
  * @package Flyspray
  * @version $Id$
@@ -205,8 +210,7 @@ class reCAPTCHA_Solution
     function isValid()
     {
         $server_response = '';
-        $data = '';
-
+        
         /* "If the value of "recaptcha_challenge_field" or "recaptcha_response_field" is not set, 
          * avoid sending a request" */
 
@@ -236,17 +240,18 @@ class reCAPTCHA_Solution
                 while (!feof($sh)) {
                         $server_response .= fgets($sh, 1160); // One TCP-IP packet
                 }
+
                 $pos = strpos($server_response , "\r\n\r\n");
 
                     if ($pos !== false) {
                         //strip the http headers.
-                        $data = substr($server_response, $pos + 2 * strlen("\r\n"));
+                        $server_response = substr($server_response, $pos + 2 * strlen("\r\n"));
                     }
                     /* "The response from verify is a series of strings separated by \n.
                      * To read the string, split the line and read each field.
                      * New lines may be added in the future. Implementations should ignore these lines"
                      */
-                    $server_response = array_map('trim', explode("\n", $data, 2));
+                    $server_response = array_map('trim', explode("\n", $server_response, 2));
            }
                 
                 fclose($sh);
