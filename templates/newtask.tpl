@@ -84,7 +84,14 @@
         <?php if ($user->isAnon()): ?>
         <label class="inline" for="anon_email">{L('youremail')}</label><input type="text" class="text" id="anon_email" name="anon_email" size="30"  value="{Req::val('anon_email')}" /><br />
 
-{!recaptcha_get_html($fs->prefs['recaptcha_public_key'], null, !(empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off'))}
+    <?php
+        if($fs->prefs['use_recaptcha']) {
+            $captcha =& new reCAPTCHA_Challenge();
+            $captcha->publickey = $fs->prefs['recaptcha_public_key'];
+            echo $captcha->getChallenge();
+         }
+    ?>
+
         <?php endif; ?>
         <input type="hidden" name="action" value="newtask" />
         <input type="hidden" name="project_id" value="{$proj->id}" />

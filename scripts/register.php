@@ -74,11 +74,15 @@ class FlysprayDoRegister extends FlysprayDo
         }
         
         if($fs->prefs['use_recaptcha']) {
-         $resp = recaptcha_check_answer($fs->prefs['recaptcha_private_key'], $_SERVER['REMOTE_ADDR'], 
-                 Post::val('recaptcha_challenge_field'), Post::val('recaptcha_response_field'));
 
-         if(!$resp->is_valid) {
-                return array(ERROR_RECOVER, $resp->error);
+            $solution =& new reCAPTCHA_Solution();
+            $solution->privatekey = $fs->prefs['recaptcha_private_key'];
+            $solution->challenge = Post::val('recaptcha_challenge_field');
+            $solution->response = Post::val('recaptcha_response_field');
+            $solution->remoteip = $_SERVER['REMOTE_ADDR'];
+
+         if(!$solution->isValid()) {
+                return array(ERROR_RECOVER, $solution->error_code);
             }
         }
         $user_name = Backend::clean_username(Post::val('user_name'));

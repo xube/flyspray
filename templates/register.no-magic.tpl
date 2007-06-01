@@ -42,10 +42,13 @@
       </td>
     </tr>
   </table>
-	<?php if($fs->prefs['use_recaptcha']) : ?>
-	 {!recaptcha_get_html($fs->prefs['recaptcha_public_key'], null, 
-		!(empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off'))}
-	 <?php endif; ?>
+	<?php 
+		if($fs->prefs['use_recaptcha']) {
+			$captcha =& new reCAPTCHA_Challenge();
+			$captcha->publickey = $fs->prefs['recaptcha_public_key'];
+	 		echo $captcha->getChallenge();
+	 	 }
+	?> 
  <div>
     <input type="hidden" name="action" value="sendcode" />
     <input type="hidden" name="do" value="register" />
