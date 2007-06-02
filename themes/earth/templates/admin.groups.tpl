@@ -1,6 +1,6 @@
  <h1>{L('admintoolboxlong')} | {L('usersandgroups')}</h1>
 
-<form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+<form action="{CreateURL(array('admin', 'groups'))}" method="post">
 	<p>
 		{L('addormoveusers')} {!tpl_userselect('uid')} {L('to')} <select name="user_to_group">
           <?php foreach ($group_list as $project => $project_groups): ?>

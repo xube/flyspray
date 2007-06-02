@@ -35,7 +35,7 @@ class FlysprayDoLostpw extends FlysprayDo
                        WHERE  magic_url = ?",
                       array($new_pass_hash, $new_salt, Post::val('magic_url')));
 
-        return array(SUBMIT_OK, L('passchanged'), './');
+        return array(SUBMIT_OK, L('passchanged'), $baseurl);
     }
 
     function action_sendmagic()

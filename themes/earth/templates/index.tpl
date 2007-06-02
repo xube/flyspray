@@ -14,7 +14,7 @@
 <?php endif; ?>
 
 
-<form action="{$_SERVER['SCRIPT_NAME']}" id="massops" method="post">
+<form action="{CreateURL(array('index', 'proj' . $proj->id))}" id="massops" method="post">
 	<table id="tasklist_table">
 			<thead>
 				<tr>

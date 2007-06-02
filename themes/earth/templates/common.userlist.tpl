@@ -20,7 +20,7 @@
   <?php endif; ?>
 
   <div id="search">
-    <form action="{$_SERVER['SCRIPT_NAME']}" method="get">
+    <form action="{$baseurl}index.php" method="get">
     <table id="search-user-form">
       <tr>
         <td>
@@ -60,7 +60,7 @@
     </form>
   </div>
 
-  <form method="post" action="{$_SERVER['REQUEST_URI']}">
+  <form method="post" action="{CreateURL(array($do, 'groups'))}">
   <table id="full_user_list" class="userlist">
   <colgroup>
     <col width="15" />

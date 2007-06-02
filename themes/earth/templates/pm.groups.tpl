@@ -2,7 +2,7 @@
   <h3>{L('pmtoolbox')} :: {L('usersandgroups')}</h3>
   <fieldset class="box">
     <legend>{L('usersandgroups')}</legend>
-    <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+    <form action="{CreateUrl(array('pm', 'groups'))}" method="post">
     <p>{L('addormoveusers')} {!tpl_userselect('uid')}
        {L('to')} <select name="user_to_group">
           {!tpl_options(Flyspray::listGroups($proj->id))}

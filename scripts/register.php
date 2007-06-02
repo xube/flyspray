@@ -138,7 +138,7 @@ class FlysprayDoRegister extends FlysprayDo
                                   VALUES ( " . fill_placeholders($reg_values) . ' )', $reg_values);
 
                 if ($query) {
-                    return array(SUBMIT_OK, L('codesent'), './');
+                    return array(SUBMIT_OK, L('codesent'), $baseurl);
                 }
 
         } else {

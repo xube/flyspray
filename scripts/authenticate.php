@@ -16,7 +16,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
         global $fs, $db, $proj, $user, $conf;
 
         if (Post::val('user_name') == '' || Post::val('password') == '') {
-            return array(ERROR_RECOVER, L('error8'), './');
+            return array(ERROR_RECOVER, L('error8'), $baseurl);
         }
 
         // See if they provided the correct credentials...
@@ -43,9 +43,9 @@ class FlysprayDoAuthenticate extends FlysprayDo
 
             $_SESSION['failed_login'] = Post::val('user_name');
             if ($user_id === -2) {
-                return array(ERROR_RECOVER, L('usernotexist'), './');
+                return array(ERROR_RECOVER, L('usernotexist'), $baseurl);
             } elseif ($user_id === -1) {
-                return array(ERROR_RECOVER, L('error23'), './');
+                return array(ERROR_RECOVER, L('error23'), $baseurl);
             } elseif ($user_id == 0) {
                 // just some extra check here so that never ever an account can get locked when it's already disabled
                 // ... that would make it easy to get enabled
@@ -58,7 +58,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
                 if ($db->Affected_Rows()) {
                     return array(ERROR_RECOVER, sprintf(L('error71'), $fs->prefs['lock_for']), CreateUrl('index'));
                 } else {
-                    return array(ERROR_RECOVER, L('error7'), './');
+                    return array(ERROR_RECOVER, L('error7'), $baseurl);
                 }
             }
         }

@@ -2,7 +2,7 @@
   <h3>{L('admintoolboxlong')} :: {L('usersandgroups')}</h3>
   <fieldset class="box">
     <legend>{L('usersandgroups')}</legend>
-    <form action="{$_SERVER['SCRIPT_NAME']}" method="post">
+    <form action="{CreateUrl(array('admin', 'groups'))}" method="post">
     <p>{L('addormoveusers')} {!tpl_userselect('uid')}
        {L('to')} <select name="user_to_group">
           <?php foreach ($group_list as $project => $project_groups): ?>

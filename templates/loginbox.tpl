@@ -1,5 +1,5 @@
 
-<form action="{$_SERVER['SCRIPT_NAME']}?do=authenticate" method="post">
+<form action="{$baseurl}index.php?do=authenticate" method="post">
 <div>
   <label for="lbl_user_name">{L('username')}</label>
   <input class="text" type="text" id="lbl_user_name" name="user_name" size="17" maxlength="30" />
@@ -9,7 +9,7 @@
 
   <label for="lbl_remember">{L('rememberme')}</label>
   <input type="checkbox" id="lbl_remember" name="remember_login" />
-  
+
   <input type="hidden" name="return_to" value="{$_SERVER['REQUEST_URI']}" />
 
   <button accesskey="l" type="submit">{L('login')}</button>
