@@ -210,7 +210,7 @@ class reCAPTCHA_Solution
     function isValid()
     {
         $server_response = '';
-        
+        $request = array(); 
         /* "If the value of "recaptcha_challenge_field" or "recaptcha_response_field" is not set, 
          * avoid sending a request" */
 
@@ -219,60 +219,65 @@ class reCAPTCHA_Solution
             return false;
         }
 
-        $reqdata = http_build_query(array('privatekey' => $this->privatekey,
+        $payload = http_build_query(array('privatekey' => $this->privatekey,
                                            'remoteip' => (empty($this->remoteip) ? $_SERVER['REMOTE_ADDR'] : $this->remoteip),
                                            'challenge' => $this->challenge,
                                            'response' => $this->response));
 
-        $request  = "POST /verify HTTP/1.0\r\n";
-        $request .= sprintf("Host: %s\r\n", RECAPTCHA_VERIFY_SERVER);
-        $request .= "Content-Type: application/x-www-form-urlencoded;\r\n";
-        $request .= "Content-Length: " . strlen($reqdata) . "\r\n";
-        $request .= "User-Agent: reCAPTCHA/PHP/Flyspray\r\n";
-        $request .= "\r\n";
-        $request .= $reqdata;
+        $request[] = 'POST /verify HTTP/1.0';
+        $request[] = sprintf('Host: %s', RECAPTCHA_VERIFY_SERVER);
+        $request[] = 'Content-Type: application/x-www-form-urlencoded';
+        $request[] = sprintf('Content-Length: %d', strlen($payload));
+        $request[] = 'User-Agent: reCAPTCHA/PHP/Flyspray';
+        $request[] = "\r\n";
+        $finalrequest = implode("\r\n", $request) . $payload . "\r\n\r\n";
 
         // RECAPTCHA_VERIFY_SERVER only listens on non-ssl ..
         if($sh = @fsockopen(RECAPTCHA_VERIFY_SERVER, 80, $errno, $errstr, 10)) {
                     
-            if(fwrite($sh, $request) !== false) {
+            if(fwrite($sh, $finalrequest) !== false) {
                 
                 while (!feof($sh)) {
-                        $server_response .= fgets($sh, 1160); // One TCP-IP packet
+                        $server_response .= fgets($sh);
                 }
+                
+                //have the data.. say good bye ASAP.
+                fclose($sh);
 
-                $pos = strpos($server_response , "\r\n\r\n");
+                if($server_response) {
 
+                    $pos = strpos($server_response, "\r\n\r\n");
+                    
                     if ($pos !== false) {
                         //strip the http headers.
                         $server_response = substr($server_response, $pos + 2 * strlen("\r\n"));
                     }
-                    /* "The response from verify is a series of strings separated by \n.
-                     * To read the string, split the line and read each field.
-                     * New lines may be added in the future. Implementations should ignore these lines"
-                     */
+                        /* "The response from verify is a series of strings separated by \n.
+                         * To read the string, split the line and read each field.
+                        * New lines may be added in the future. Implementations should ignore these lines"
+                        */
                     $server_response = array_map('trim', explode("\n", $server_response, 2));
-           }
-                
-                fclose($sh);
 
-                if($server_response[0] === 'false') {
-                    $this->error_code = $server_response[1];
-                    return false;
-                } elseif($server_response[0] === 'true') {
-                    return true;
+                    if(count($server_response)) {
+                        if($server_response[0] === 'false') {
+                            $this->error_code = isset($server_response[1]) ? $server_response[1] : 'unknown';
+                        } elseif($server_response[0] === 'true') {
+                            return true;
+                        }
+                    }
                 }
-
-            } else {
+            }
+        
+        } else {
                 /* "A plugin should manually return this code in the unlikely event that 
                  * it is unable to contact the reCAPTCHA verify server" */
                 $this->error_code = 'recaptcha-not-reachable';
-                return false;
-            }
+        }
 
             return false;
-    }
 
+    }
 }
+
 
 ?>

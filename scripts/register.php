@@ -10,6 +10,7 @@ if (!defined('IN_FS')) {
 }
 
 require_once BASEDIR . '/includes/external/recaptchalib.php';
+require_once BASEDIR . '/includes/class.jabber2.php';
 
 class FlysprayDoRegister extends FlysprayDo
 {
@@ -73,18 +74,6 @@ class FlysprayDoRegister extends FlysprayDo
             return array(ERROR_RECOVER, L('novalidjabber'));
         }
         
-        if($fs->prefs['use_recaptcha']) {
-
-            $solution =& new reCAPTCHA_Solution();
-            $solution->privatekey = $fs->prefs['recaptcha_private_key'];
-            $solution->challenge = Post::val('recaptcha_challenge_field');
-            $solution->response = Post::val('recaptcha_response_field');
-            $solution->remoteip = $_SERVER['REMOTE_ADDR'];
-
-         if(!$solution->isValid()) {
-                return array(ERROR_RECOVER, $solution->error_code);
-            }
-        }
         $user_name = Backend::clean_username(Post::val('user_name'));
 
         // Limit lengths
@@ -100,20 +89,33 @@ class FlysprayDoRegister extends FlysprayDo
         $yesterday = time() - 86400;
         $db->Execute('DELETE FROM {registrations} WHERE reg_time < ?', array($yesterday));
 
-        $taken = $db->GetOne('SELECT COUNT(*) FROM {users} u, {registrations} r
+        $taken = $db->Execute('SELECT * FROM {users} u, {registrations} r
                                WHERE u.user_name = ? OR r.user_name = ?',
                                array($user_name, $user_name));
-        if ($taken) {
+        if ($taken->RecordCount()) {
             return array(ERROR_RECOVER, L('usernametaken'));
         }
 
-        $taken = $db->GetOne("SELECT COUNT(*)
+        $taken = $db->Execute("SELECT *
                                 FROM {users}
                                WHERE jabber_id = ? AND jabber_id != ''
                                      OR email_address = ? AND email_address != ''",
                                 array($jabber_id, $email));
-        if ($taken) {
+        if ($taken->RecordCount()) {
             return array(ERROR_RECOVER, L('emailtaken'));
+        }
+
+        if($fs->prefs['use_recaptcha']) {
+
+            $solution =& new reCAPTCHA_Solution();
+            $solution->privatekey = $fs->prefs['recaptcha_private_key'];
+            $solution->challenge = Post::val('recaptcha_challenge_field');
+            $solution->response = Post::val('recaptcha_response_field');
+            $solution->remoteip = $_SERVER['REMOTE_ADDR'];
+
+            if(!$solution->isValid()) {
+                return array(ERROR_RECOVER, $solution->error_code);
+            }
         }
 
         // Generate a random bunch of numbers for the confirmation code and the confirmation url
