@@ -1148,6 +1148,7 @@ class Backend
             $where[] = 'att.attachment_id IS NOT null';
         }
 
+        // sortable default fields
         $order_keys = array (
                 'id'           => 't.task_id',
                 'project'      => 'project_title',
@@ -1165,6 +1166,10 @@ class Backend
                 'state'        => 'closed_by, is_closed',
                 'projectlevelid' => 'prefix_id',
         );
+        // custom sortable fields
+        foreach ($proj->fields as $field) {
+            $order_keys['field' . $field->id] = 'field' . $field->id;
+        }
 
         // Default user sort column and order
         if (!$user->isAnon()) {
