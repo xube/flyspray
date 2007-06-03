@@ -148,7 +148,7 @@ function event_description($history) {
                                 $history['task_id'], $baseurl, $history['history_id'], eL('commentedited'));
 
             if ($history['c_date_added']) {
-                 $return .= sprintf(' ("%s %s  - %s")', eL('commentby'), tpl_userlink($history['c_user_id']), formatDate($history['c_date_added'], true));
+                 $return .= sprintf(' (%s %s  - %s)', eL('commentby'), tpl_userlink($history['c_user_id']), formatDate($history['c_date_added'], true));
             }
 
 

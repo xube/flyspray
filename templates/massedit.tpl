@@ -18,6 +18,15 @@
 
     <div id="taskfields">
       <table>
+        <tr>
+          <td><input type="checkbox" name="changes[]" value="project_id"/></td>
+          <th id="project_id">{L('attachedtoproject')}</th>
+          <td headers="project_id">
+            <select name="project_id">
+			{!tpl_options($fs->projects, Post::val('project_id', $proj->id))}
+		    </select>
+          </td>
+        </tr>
         <?php foreach ($proj->fields as $field): ?>
         <tr>
           <td><input type="checkbox" name="changes[]" value="field{$field->id}"/></td>
