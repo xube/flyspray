@@ -29,10 +29,10 @@ class FlysprayDoReports extends FlysprayDo
 
         $page->setTitle($fs->prefs['page_title'] . L('reports'));
 
-        $events = array(1 => L('opened'),
-                        13 => L('reopened'),
-                        2 => L('closed'),
-                        3 => L('edited'),
+        $events = array(1 => L('taskopened'),
+                        13 => L('taskreopened'),
+                        2 => L('taskclosed'),
+                        3 => L('taskedited'),
                         14 => L('assignmentchanged'),
                         29 => L('events.useraddedtoassignees'),
                         4 => L('commentadded'),
