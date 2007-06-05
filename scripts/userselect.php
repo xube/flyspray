@@ -78,13 +78,13 @@ class FlysprayDoUserSelect extends FlysprayDo
         } else {
             // be tricky ^^: show most assigned users
             $sql = $db->SelectLimit('SELECT a.user_id, u.user_name, u.real_name, email_address,
-                                            count(a.user_id) AS a_count
+                                            count(a.user_id) AS a_count, CASE WHEN t.project_id = ? THEN 1 ELSE 0 END AS my_project
                                        FROM {assigned} a
                                   LEFT JOIN {users} u ON a.user_id = u.user_id
                                   LEFT JOIN {tasks} t ON a.task_id = t.task_id
-                                   WHERE t.project_id = ? AND ( ' . $where . ' )' . '
+                                   WHERE ( ' . $where . ' )' . '
                                    GROUP BY a.user_id
-                                   ORDER BY a_count DESC', 20, 0, array_merge(array($proj->id), $params));
+                                   ORDER BY my_project DESC, a_count DESC', 20, 0, array_merge(array($proj->id), $params));
             $page->assign('users', $users = $sql->GetArray());
         }
 

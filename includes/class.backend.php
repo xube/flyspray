@@ -984,7 +984,7 @@ class Backend
 
         if (count($owners)) {
             foreach ($owners as $owner) {
-                if ($proj->prefs['auto_assign']) {
+                if ($proj->prefs['auto_assign'] && !in_array($owner, $assignees)) {
                     Backend::add_to_assignees($owner, $task_id, true);
                 }
 
