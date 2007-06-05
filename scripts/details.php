@@ -186,9 +186,8 @@ class FlysprayDoDetails extends FlysprayDo
                                      FROM {history}
                                     WHERE field_changed = 'percent_complete'
                                           AND task_id = ? AND old_value != '100'
-                                 ORDER BY event_date DESC
-                                    LIMIT 1",
-                                  array($task['task_id']));
+                                 ORDER BY event_date DESC",
+                                  array($task['task_id']), 1);
         $old_percent = $old_percent->FetchRow();
 
         $db->Execute("UPDATE  {tasks}

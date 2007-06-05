@@ -470,12 +470,12 @@ class FlysprayDoAdmin extends FlysprayDo
             $group_in = $fs->prefs['anon_group'];
         }
 
-        $taken = $db->GetOne("SELECT COUNT(*)
+        $taken = $db->Execute("SELECT *
                                 FROM {users}
                                WHERE jabber_id = ? AND jabber_id != ''
                                      OR email_address = ? AND email_address != ''",
                               array(Post::val('jabber_id'), Post::val('email_address')));
-        if ($taken) {
+        if ($taken->RecordCount()) {
             return array(ERROR_RECOVER, L('emailtaken'));
         }
 
@@ -502,12 +502,12 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('groupanddesc'));
         } else {
             // Check to see if the group name is available
-            $taken = $db->GetOne("SELECT  COUNT(*)
+            $taken = $db->Execute("SELECT  *
                                     FROM  {groups}
                                    WHERE  group_name = ? AND project_id = ?",
                                   array(Post::val('group_name'), $proj->id));
 
-            if ($taken) {
+            if ($taken->RecordCount()) {
                 return array(ERROR_RECOVER, L('groupnametaken'));
             }
 
@@ -642,7 +642,7 @@ class FlysprayDoAdmin extends FlysprayDo
                     implode(' ', Post::val('defaultsortcolumn')), implode(' ', Post::val('notify_blacklist', array())),
                     Post::val('lang_code', ''), Post::val('user_id')));
         if ($do == 'myprofile') {
-            $user =& new User($user->id);
+            $user = new User($user->id);
         }
 
         if ($user->perms('is_admin')) {
