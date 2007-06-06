@@ -249,14 +249,8 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
 
     $title_text = implode(' | ', $title_text);
 
-    $params = array();
-
-    if (Get::val('string')) {
-        $params = array('histring' => Get::val('string'));
-    }
-    if (Get::val('pagenum')) {
-        $params['pagenum'] = Get::val('pagenum');
-    }
+    $params = $_GET;
+    unset($params['do'], $params['action'], $params['task_id']);
 
     $url = Filters::noXSS(CreateURL(array('details', 'task' . $task['task_id']), $params));
     $title_text = Filters::noXSS($title_text);
