@@ -17,7 +17,7 @@
  * this is only needed when running PHP4
  */
 
-require_once dirname(__FILE__) . '/compat/http_build_query.php';
+require dirname(__FILE__) . '/compat/http_build_query.php';
 
 /* reCAPTCHA Protocol: Servers */
 defined('RECAPTCHA_API_SERVER')        || define('RECAPTCHA_API_SERVER', 'http://api.recaptcha.net');
@@ -33,6 +33,7 @@ defined('RECAPTCHA_API_URL_KEY')       || define('RECAPTCHA_API_KEY_URL', 'http:
  *  Object representing a reCAPTCHA Challenge.
  *
  *  $captcha =& new reCAPTCHA_Challenge();
+ *  $captcha->setTheme('blackglass');
  *  $captcha->publickey = $public_key
  *  echo $captcha->getChallenge();
  *
@@ -68,6 +69,7 @@ class reCAPTCHA_Challenge
      * 'red' | 'white' | 'blackglass'
      * @var string
      * @access public
+     * @see SetTheme
      */
 
     var $theme = 'red';
@@ -117,23 +119,36 @@ class reCAPTCHA_Challenge
 
     function getChallenge()
     {
-        return sprintf('<script type="text/javascript" 
-                                src="%1$s/challenge?k=%2$s&error=%3$s">
+        return sprintf('<script type="text/javascript">
+                        var RecaptchaOptions = {
+                        theme : %4$s,
+                        tabindex : %5$d
+                        };
                         </script>
-                <script>
-                var RecaptchaOptions = {
-                theme : %4$s,
-                tabindex : %5$d
-                };
-                </script>
-               <noscript>
-               <iframe src="%1$s/noscript?k=%2$s&error=%3$s"
+                <script type="text/javascript" src="%1$s/challenge?k=%2$s&error=%3$s"> </script>
+                <noscript>
+                <iframe src="%1$s/noscript?k=%2$s&error=%3$s"
                 height="300" width="500" frameborder="0"></iframe><br>
                 <textarea name="recaptcha_challenge_field" rows="3" cols="40">
                 </textarea>
                 <input type="hidden" name="recaptcha_response_field" value="manual_challenge">
                 </noscript>', ($this->use_ssl ? RECAPTCHA_API_SERVER_SECURE : RECAPTCHA_API_SERVER) ,
-                 $this->publickey, $this->error, sprintf("'%s'", $this->theme), $this->tabindex);
+                               urlencode($this->publickey), urlencode($this->error), 
+                               sprintf("'%s'", $this->theme), $this->tabindex);
+    }
+
+    /**
+     * setTheme 
+     *  Set the captcha theme, if $theme not valid, the deafult skin will be used.
+     * @param string $theme 
+     * @access public
+     * @return void
+     */
+    function setTheme($theme)
+    {
+        if(in_array($theme, array('red', 'white', 'blackglass'))) {
+            $this->theme = $theme;
+        }
     }
 }
 
