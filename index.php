@@ -40,7 +40,7 @@ if (Get::val('getfile')) {
         exit();
     }
     output_reset_rewrite_vars();
-   
+
     header('Pragma: public');
     header("Content-type: $file_type");
     header('Content-Disposition: filename="'.$orig_name.'"');
@@ -80,6 +80,10 @@ if (version_compare(phpversion(), '5.0.0', '>=')) {
 }
 
 $page =& new FSTpl();
+
+if (Get::val('opensearch')) {
+    $page->finish('opensearch.tpl');
+}
 
 if ($show_task = Get::val('show_task')) {
     // If someone used the 'show task' form, redirect them

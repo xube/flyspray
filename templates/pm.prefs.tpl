@@ -6,7 +6,7 @@
    <li><a href="#general">{L('general')}</a></li>
    <li><a href="#lookandfeel">{L('lookandfeel')}</a></li>
    <li><a href="#notifications">{L('notifications')}</a></li>
-   <li><a href="#feeds">{L('feeds')}</a></li>
+   <li><a href="#feeds">{L('feedsandsvn')}</a></li>
   </ul>
 
   <div id="general" class="tab">
@@ -225,6 +225,25 @@
           <td><label for="feed_img_url">{L('feedimgurl')}</label></td>
           <td>
             <input id="feed_img_url" class="text" name="feed_img_url" type="text" value="{Post::val('feed_img_url', $proj->prefs['feed_img_url'])}" />
+          </td>
+        </tr>
+        <tr><td colspan="2"><hr /></td></tr>
+        <tr>
+          <td><label for="svn_url">{L('svnurl')}</label></td>
+          <td>
+            <input id="svn_url" name="svn_url" class="text" size="50" type="text" value="{Post::val('svn_url', $proj->prefs['svn_url'])}" />
+          </td>
+        </tr>
+        <tr>
+          <td><label for="svn_user">{L('svnuser')}</label></td>
+          <td>
+            <input id="svn_user" name="svn_user" class="text" type="text" value="{Post::val('svn_user', $proj->prefs['svn_user'])}" />
+          </td>
+        </tr>
+        <tr>
+          <td><label for="svn_password">{L('svnpassword')}</label></td>
+          <td>
+            <input id="svn_password" name="svn_password" class="text" type="password" value="{Post::val('svn_password', $proj->prefs['svn_password'])}" />
           </td>
         </tr>
       </table>

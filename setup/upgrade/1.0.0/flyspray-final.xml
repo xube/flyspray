@@ -683,6 +683,18 @@
       <NOTNULL/>
       <DEFAULT value=""/>
     </field>
+    <field name="svn_url" type="C" size="255">
+      <NOTNULL/>
+      <DEFAULT value=""/>
+    </field>
+    <field name="svn_user" type="C" size="255">
+      <NOTNULL/>
+      <DEFAULT value=""/>
+    </field>
+    <field name="svn_password" type="C" size="255">
+      <NOTNULL/>
+      <DEFAULT value=""/>
+    </field>
     <field name="override_user_lang" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>

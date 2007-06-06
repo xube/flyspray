@@ -967,6 +967,16 @@ Regards,',
 'recaptchapublickey'      => 'reCAPTCHA public key',
 'recaptchaprivatekey'     => 'reCAPTCHA private key',
 'disabled'                => 'Disabled',
+'author'                  => 'Author',
+'commitmessage'           => 'Commit message',
+'revision'                => 'Revision',
+'feedsandsvn'             => 'Feeds and SVN',
+'svnurl'                  => 'Repository location',
+'svnuser'                 => 'SVN username',
+'svnpassword'             => 'SVN password',
+'svnlog'                  => 'SVN commit log',
+'svnnoconnection'         => 'Flyspray was unable to connect to the SVN server.',
+'searchforbugs'           => 'Search for tasks',
 );
 
 ?>

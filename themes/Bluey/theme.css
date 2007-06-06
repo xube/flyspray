@@ -1459,6 +1459,26 @@ div#note_subject h3 {
 	margin: 0.3em;
 }
 
+div.svnlog {
+	padding:1em;
+}
+
+#svnlog {
+	border-collapse:collapse;
+	width:100%;
+}
+#svnlog td {
+	border:1px solid lightgray;
+	padding:0.2em 0.3em;
+}
+
+.rowstyle0 {
+	background:#F2F7FD;
+}
+.rowstyle1 {
+	background:#FBFDFF;
+}
+
 /* Dokuwiki {{{ */
 .code a {
 	text-decoration:none;

@@ -11,6 +11,7 @@
   <input type="checkbox" id="lbl_remember" name="remember_login" />
 
   <input type="hidden" name="return_to" value="{$_SERVER['REQUEST_URI']}" />
+  <input type="hidden" name="project_id" value="{$proj->id}" />
 
   <button accesskey="l" type="submit">{L('login')}</button>
 

@@ -13,7 +13,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
 {
     function action_login()
     {
-        global $fs, $db, $proj, $user, $conf;
+        global $fs, $db, $proj, $user, $conf, $baseurl;
 
         if (Post::val('user_name') == '' || Post::val('password') == '') {
             return array(ERROR_RECOVER, L('error8'), $baseurl);
@@ -87,6 +87,8 @@ class FlysprayDoAuthenticate extends FlysprayDo
             }
 
             $db->Execute('UPDATE {users} SET login_attempts = 0 WHERE user_id = ?', array($user->id));
+            // restore previous project cookie
+            Flyspray::setCookie('flyspray_project', Post::val('project_id'));
             return array(SUBMIT_OK, L('loginsuccessful'), Post::val('return_to'));
         }
     }
