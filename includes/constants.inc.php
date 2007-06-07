@@ -78,6 +78,10 @@ define('LIST_BASIC',              1);
 define('LIST_VERSION',            2);
 define('LIST_CATEGORY',           3);
 
+define('RELATED_TASK',            0);
+define('RELATED_DUPE',            1);
+define('RELATED_SVN',             2);
+
 // Do modes
 define('MENU_GLOBAL',             1);
 define('MENU_PROJECT',            2);

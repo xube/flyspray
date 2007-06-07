@@ -1063,11 +1063,11 @@ class Backend
             }
             preg_match("/\b(" . implode('|', $look) . ")(\d+)\b/", $comment, $dupe_of);
             if (count($dupe_of) >= 2) {
-                $existing = $db->Execute('SELECT * FROM {related} WHERE this_task = ? AND related_task = ? AND is_duplicate = 1',
+                $existing = $db->Execute('SELECT * FROM {related} WHERE this_task = ? AND related_task = ? AND related_type = 1',
                                         array($task_id, $dupe_of[1]));
 
                 if (!$existing->FetchRow()) {
-                    $db->Execute('INSERT INTO {related} (this_task, related_task, is_duplicate) VALUES(?, ?, 1)',
+                    $db->Execute('INSERT INTO {related} (this_task, related_task, related_type) VALUES(?, ?, 1)',
                                 array($task_id, $dupe_of[1]));
                 }
                 Backend::add_vote($task['opened_by'], $dupe_of[1]);

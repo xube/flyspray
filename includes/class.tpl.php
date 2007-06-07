@@ -272,6 +272,15 @@ function tpl_userlink($uid)
         $uname = $uid['user_name'];
         $rname = $uid['real_name'];
         $uid = $uid['user_id'];
+    } elseif (is_string($uid) && !is_numeric($uid)) {
+        // map username to ID
+        $userinfo = $db->Execute('SELECT user_id, user_name, real_name
+                                        FROM {users}
+                                       WHERE user_name = ?', array($uid));
+        $userinfo = $userinfo->FetchRow();
+        $uname = $userinfo['user_name'];
+        $rname = $userinfo['real_name'];
+        $uid = $userinfo['user_id'];
     } elseif (empty($cache[$uid])) {
         $sql = $db->Execute('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
                            array(intval($uid)));
@@ -285,7 +294,7 @@ function tpl_userlink($uid)
         $args = array_map(array('Filters', 'noXSS'),array(CreateURL(array('user'), array('uid' => $uid)), $rname, $uname));
         $cache[$uid] = vsprintf('<a href="%s">%s (%s)</a>', $args);
     } elseif (empty($cache[$uid])) {
-        $cache[$uid] = eL('anonymous');
+        $cache[$uid] = (!is_numeric($uid)) ? eL('anonymous') : $uid;
     }
 
     return $cache[$uid];

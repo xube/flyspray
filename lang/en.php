@@ -977,6 +977,15 @@ Regards,',
 'svnlog'                  => 'SVN commit log',
 'svnnoconnection'         => 'Flyspray was unable to connect to the SVN server.',
 'searchforbugs'           => 'Search for tasks',
+'relatedcommits'          => 'Related commits',
+'relateditems'            => 'Related items',
+'viewsvn'                 => 'View SVN commit messages',
+'variousperms'            => 'Various',
+'specialperms'            => 'Special permissions',
+'taskperms'               => 'Tasks',
+'assignmentperms'         => 'Assigments',
+'commentperms'            => 'Comments',
+'attachmentperms'         => 'Attachments',
 );
 
 ?>

@@ -16,7 +16,7 @@ class FlysprayDoSvnlog extends FlysprayDo
     {
         global $proj, $user;
 
-        return (bool) $proj->id && $user->can_view_project($proj->id);
+        return (bool) $proj->id && $user->can_view_project($proj->id) && $user->perms('view_svn');
     }
 
     function is_projectlevel() {
@@ -64,19 +64,10 @@ class FlysprayDoSvnlog extends FlysprayDo
 
         foreach ($svnlog as $key => $log) {
             // Make first line of summary bold
-            $svnlog[$key]['comment'] = TextFormatter::render($svnlog[$key]['comment'], true);
+            $svnlog[$key]['comment'] = TextFormatter::render(trim($svnlog[$key]['comment']), true);
             $svnlog[$key]['comment'] = explode("\n", $svnlog[$key]['comment']);
             $svnlog[$key]['comment'][0] = '<strong>' . $svnlog[$key]['comment'][0] . '</strong>';
             $svnlog[$key]['comment'] = implode("\n", $svnlog[$key]['comment']);
-            // Link to corresponding Flyspray author
-            $userinfo = $db->Execute('SELECT user_id, user_name, real_name
-                                        FROM {users}
-                                       WHERE user_name = ?', array($log['creator-displayname']));
-            if ($userinfo) {
-                $svnlog[$key]['creator-displayname'] = tpl_userlink($userinfo->FetchRow());
-            } else {
-                $svnlog[$key]['creator-displayname'] = Filters::noXXS($log['creator-displayname']);
-            }
         }
 
         $page->assign('svnlog', $svnlog);

@@ -657,12 +657,12 @@ div#taskdetails table th {
 }
 
 table#tasks_related {
-	width:30em;
+	width:100%;
 	margin-bottom:0.5em;
 }
 
 table#duplicate_tasks {
-	width:30em;
+	width:100%;
 	margin-bottom:0.5em;
 	margin-left:0.5em;
 }
@@ -1127,7 +1127,7 @@ html #submenu {
 
 div.tab {
 	margin:2px 1ex 10px 0;
-	padding:1ex 1ex 0;
+	padding:1ex;
 }
 
 /* flow */
@@ -1477,6 +1477,12 @@ div.svnlog {
 }
 .rowstyle1 {
 	background:#FBFDFF;
+}
+
+td.groupsep {
+	font-weight:bold;
+	font-size:1.2em;
+	border-bottom:1px solid gray;
 }
 
 /* Dokuwiki {{{ */

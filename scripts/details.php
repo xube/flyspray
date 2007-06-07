@@ -276,9 +276,10 @@ class FlysprayDoDetails extends FlysprayDo
 
         $rid = $db->GetOne("SELECT related_id
                               FROM {related}
-                             WHERE this_task = ? AND related_task = ?
+                             WHERE related_type IN (0,1) AND
+                                   (this_task = ? AND related_task = ?
                                    OR
-                                   related_task = ? AND this_task = ?",
+                                   related_task = ? AND this_task = ?)",
                             array($task['task_id'], Post::val('related_task'),
                                   $task['task_id'], Post::val('related_task')));
 
@@ -286,8 +287,8 @@ class FlysprayDoDetails extends FlysprayDo
             return array(ERROR_RECOVER, L('relatederror'));
         }
 
-        $db->Execute('INSERT INTO {related} (this_task, related_task) VALUES(?,?)',
-                        array($task['task_id'], Post::val('related_task')));
+        $db->Execute('INSERT INTO {related} (this_task, related_task, related_type) VALUES(?,?, ?)',
+                        array($task['task_id'], Post::val('related_task'), RELATED_TASK));
 
         Flyspray::logEvent($task['task_id'], 11, Post::val('related_task'));
         Flyspray::logEvent(Post::val('related_task'), 11, $task['task_id']);
@@ -308,10 +309,11 @@ class FlysprayDoDetails extends FlysprayDo
         foreach ( (array) Post::val('related_id') as $related) {
             $sql = $db->Execute('SELECT this_task, related_task FROM {related} WHERE related_id = ?',
                                  array($related));
+            $related_task = $sql->FetchRow();
+
             $db->Execute('DELETE FROM {related} WHERE related_id = ? AND (this_task = ? OR related_task = ?)',
                           array($related, $task['task_id'], $task['task_id']));
             if ($db->Affected_Rows()) {
-                $related_task = $sql->FetchRow();
                 $related_task = ($related_task['this_task'] == $task['task_id']) ? $related_task['related_task'] : $task['task_id'];
                 Flyspray::logEvent($task['task_id'], 12, $related_task);
                 Flyspray::logEvent($related_task, 12, $task['task_id']);
@@ -650,7 +652,7 @@ class FlysprayDoDetails extends FlysprayDo
                             LEFT JOIN  {tasks} t ON (r.related_task = t.task_id AND r.this_task = ? OR r.this_task = t.task_id AND r.related_task = ?)
                             LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id
                             LEFT JOIN  {projects} p on t.project_id = p.project_id
-                                WHERE  t.task_id is NOT NULL AND is_duplicate = 0 AND ( t.mark_private = 0 OR ? = 1 )
+                                WHERE  t.task_id is NOT NULL AND related_type = 0 AND ( t.mark_private = 0 OR ? = 1 )
                              ORDER BY  t.task_id ASC',
                     array($this->task['task_id'], $this->task['task_id'], $user->perms('manage_project')));
             $page->assign('related', $sql->GetArray());
@@ -660,10 +662,30 @@ class FlysprayDoDetails extends FlysprayDo
                             LEFT JOIN  {tasks} t ON r.this_task = t.task_id
                             LEFT JOIN  {list_items} res ON t.resolution_reason = res.list_item_id
                             LEFT JOIN  {projects} p on t.project_id = p.project_id
-                                WHERE  is_duplicate = 1 AND r.related_task = ?
+                                WHERE  related_type = 1 AND r.related_task = ?
                              ORDER BY  t.task_id ASC',
                               array($this->task['task_id']));
             $page->assign('duplicates', $sql->GetArray());
+
+            // SVN
+            if ($proj->prefs['svn_url'] && $user->perms('view_svn')) {
+                $svn = $db->SelectLimit('SELECT content FROM {cache} c
+                                      LEFT JOIN {related} r ON r.related_task = c.topic
+                                          WHERE type = ? AND project_id = ? AND r.this_task = ? AND r.related_type = ?
+                                       ORDER BY last_updated DESC',
+                                         30, 0, array('svn', $proj->id, $this->task['task_id'], RELATED_SVN));
+                $svnlog = $svn->GetArray();
+                for ($i = 0; $i < count($svnlog); ++$i) {
+                    $svnlog[$i] = unserialize($svnlog[$i]['content']);
+                    $svnlog[$i]['comment'] = TextFormatter::render(trim($svnlog[$i]['comment']), true);
+                    // Highlight occurences
+                    $find = array('FS#' . $this->task['task_id'],
+                                  'bug ' . $this->task['task_id'],
+                                  $proj->prefs['project_prefix'] . '#' . $this->task['task_id']);
+                    $svnlog[$i]['comment'] = str_replace($find, array_map(create_function('$x', 'return "<b>$x</b>";'), $find), $svnlog[$i]['comment']);
+                }
+                $page->assign('svnlog', $svnlog);
+            }
 
             $sql = $db->Execute('SELECT  *
                                  FROM  {notifications} n

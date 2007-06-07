@@ -10,11 +10,14 @@
       <td><label for="groupdesc">{L('description')}</label></td>
       <td><input id="groupdesc" class="text" type="text" value="{Req::val('group_desc')}" name="group_desc" size="50" maxlength="100" /></td>
     </tr>
-    <?php foreach ($fs->perms as $perm): ?>
-    <tr>
-      <td><label for="{$perm}">{L(str_replace('_', '', $perm))}</label></td>
-      <td>{!tpl_checkbox($perm, Req::val($perm), $perm)}</td>
-    </tr>
+    <?php foreach ($fs->permgroups as $pgroup): ?>
+      <tr><td class="groupsep" colspan="2">{L($pgroup[2])}</td></tr>
+      <?php for ($i = $pgroup[0]; $i <= $pgroup[1]; $i++): ?>
+      <tr>
+        <td><label for="{$fs->perms[$i]}">{L(str_replace('_', '', $fs->perms[$i]))}</label></td>
+      <td>{!tpl_checkbox($fs->perms[$i], Req::val($fs->perms[$i]), $fs->perms[$i])}</td>
+      </tr>
+      <?php endfor; ?>
     <?php endforeach; ?>
     <?php if (!$proj->id): ?>
     <tr>

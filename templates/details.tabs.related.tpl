@@ -1,5 +1,5 @@
 <div id="related" class="tab">
-  <table> <?php // table based layout, sorry. if anyone has the desire to face browser bugs, feel free to rewrite it with floats ?>
+  <table width="100%"> <?php // table based layout, sorry. if anyone has the desire to face browser bugs, feel free to rewrite it with floats ?>
    <tr><td>
     <form method="post" action="{CreateUrl(array('details', 'task' . $task['task_id']))}#related" >
         <table id="tasks_related" class="userlist">
@@ -52,5 +52,11 @@
       <button type="submit" onclick="return checkok('{$baseurl}javascript/callbacks/checkrelated.php?related_task=' + $('related_task_input').value + '&amp;project={$proj->id}', '{#L('relatedproject')}', 'formaddrelatedtask')">{L('add')}</button>
     </div>
   </form>
+  <?php endif; ?>
+
+  <?php if (isset($svnlog) && count($svnlog)): ?>
+  <hr />
+  <h3>{L('relatedcommits')}</h2>
+  <?php $this->display('svntable.tpl'); ?>
   <?php endif; ?>
 </div>

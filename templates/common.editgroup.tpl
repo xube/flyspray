@@ -27,11 +27,14 @@
         <td colspan="2">{L('notshownforadmin')}</td>
       </tr>
       <?php else: ?>
-      <?php foreach ($fs->perms as $perm): ?>
+      <?php foreach ($fs->permgroups as $pgroup): ?>
+      <tr><td class="groupsep" colspan="2">{L($pgroup[2])}</td></tr>
+      <?php for ($i = $pgroup[0]; $i <= $pgroup[1]; $i++): ?>
       <tr>
-        <td><label for="{$perm}">{L(str_replace('_', '', $perm))}</label></td>
-        <td>{!tpl_checkbox($perm, Req::val($perm, !Req::val('action') && $group[$perm]), $perm)}</td>
+        <td><label for="{$fs->perms[$i]}">{L(str_replace('_', '', $fs->perms[$i]))}</label></td>
+        <td>{!tpl_checkbox($fs->perms[$i], Req::val($fs->perms[$i], !Req::val('action') && $group[$fs->perms[$i]]), $fs->perms[$i])}</td>
       </tr>
+      <?php endfor; ?>
       <?php endforeach; ?>
       <?php if (!$proj->id): ?>
       <tr>

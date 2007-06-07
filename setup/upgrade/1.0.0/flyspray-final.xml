@@ -368,6 +368,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="view_svn" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
     <field name="group_open" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
@@ -757,7 +761,7 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="is_duplicate" type="I" size="1">
+    <field name="related_type" type="I" size="1">
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
