@@ -250,7 +250,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     $title_text = implode(' | ', $title_text);
 
     $params = $_GET;
-    unset($params['do'], $params['action'], $params['task_id']);
+    unset($params['do'], $params['action'], $params['task_id'], $params['switch']);
 
     $url = Filters::noXSS(CreateURL(array('details', 'task' . $task['task_id']), $params));
     $title_text = Filters::noXSS($title_text);
