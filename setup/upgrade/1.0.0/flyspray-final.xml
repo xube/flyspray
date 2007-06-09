@@ -560,6 +560,9 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <index name="task_id_threads">
+      <col>task_id</col>
+    </index>
 </table>
   <table name="notifications">
     <field name="notify_id" type="I" size="10">

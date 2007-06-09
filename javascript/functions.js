@@ -401,6 +401,14 @@ function checkname(value) {
     new Ajax.Request('javascript/callbacks/searchnames.php?name='+value, {onSuccess: function(t){ allow(t.responseText); } });
 }
 
+function updateTimezone(current) {
+    myDate = new Date();
+    timezone = -myDate.getTimezoneOffset()/60;
+    if (current != timezone) {
+        new Ajax.Request('javascript/callbacks/updatetimezone.php?timezone='+timezone);
+    }
+}
+
 function allow(booler){
     if(booler.indexOf('false') > -1) {
         $('username').style.color ='red';

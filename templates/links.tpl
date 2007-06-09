@@ -3,6 +3,7 @@
 <?php if ($user->isAnon()):
           $this->display('loginbox.tpl');
       else: ?>
+      <script type="text/javascript">updateTimezone({$user->infos['time_zone']});</script>
 <ul id="menu-list">
   <li class="first" onmouseover="perms.do_later('show')" onmouseout="perms.hide()">
 	<a id="profilelink" href="{CreateURL('myprofile')}" title="{L('editmydetails')}">
