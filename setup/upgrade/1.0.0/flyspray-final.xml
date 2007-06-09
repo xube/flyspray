@@ -548,17 +548,19 @@
     </index>
 </table>
  <table name="notification_threads">
+    <field name="entry_id" type="I" size="10">
+      <KEY/>
+      <NOTNULL/>
+    </field>
     <field name="recipient_id" type="I" size="10">
     </field>
     <field name="message_id" type="C" size="200">
     </field>
     <field name="task_id" type="I" size="11">
-	<KEY/>
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
 </table>
-
   <table name="notifications">
     <field name="notify_id" type="I" size="10">
       <KEY/>

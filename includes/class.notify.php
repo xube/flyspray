@@ -16,13 +16,13 @@ class NotificationsThread extends Swift_Events_Listener {
     function NotificationsThread($task_id, $db)
     {
         $this->task_id = $task_id;
-        $this->message_history = $db->GetAll('SELECT recipient_id, message_id FROM 
+        $this->message_history = $db->GetAll('SELECT recipient_id, message_id FROM
                                                {notification_threads} WHERE task_id = ?', array($task_id));
     }
 
     /**
      * beforeSendPerformed
-     * do this beforeSendPerformed aint that clear ? ;) 
+     * do this beforeSendPerformed aint that clear ? ;)
      * @param object &$e
      * @access public
      * @return void
@@ -35,11 +35,11 @@ class NotificationsThread extends Swift_Events_Listener {
         $to = array_pop($to);
         $to = ezmlm_hash($to->getAddress());
         $references = array();
-        
+
         if(count($this->message_history)) {
-            
+
             foreach($this->message_history as $history) {
-                
+
                 if($history['recipient_id'] != $to) {
                     continue;
                 }
@@ -182,11 +182,11 @@ class Notifications
             }
             $swift =& new Swift($connection);
 
-            if(isset($data['task_id'])) {
-                $swift->attachPlugin(new NotificationsThread($data['task_id'], $db), "MessageThread");
+            if (isset($data['task_id'])) {
+                $swift->attachPlugin(new NotificationsThread($data['task_id'], $db), 'MessageThread');
             }
 
-            if(defined('FS_MAIL_DEBUG')) {
+            if (defined('FS_MAIL_DEBUG')) {
                 $swift->log->enable();
                  Swift_ClassLoader::load('Swift_Plugin_VerboseSending');
                 $view =& new Swift_Plugin_VerboseSending_DefaultView();
@@ -199,7 +199,7 @@ class Notifications
                 $message->setReplyTo($data['project']->prefs['notify_reply']);
             }
 
-            if(isset($data['project']) && isset($data['project']->prefs['bounce_address'])) {
+            if (isset($data['project']) && isset($data['project']->prefs['bounce_address'])) {
                 $message->setReturnPath($data['project']->prefs['bounce_address']);
             }
 
@@ -212,13 +212,13 @@ class Notifications
             // && $result purpose: if this has been set to false before, it should never become true again
             // to indicate an error
             $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
-            
-            if(isset($data['task_id'])) {
 
-                $plugin =& $swift->getPlugin("MessageThread");
-                
-                $db->Execute('INSERT INTO {notification_threads} (task_id, recipient_id, message_id) 
-                    VALUES (?, ?, ?)', $plugin->thread_info);
+            if (isset($data['task_id'])) {
+
+                $plugin =& $swift->getPlugin('MessageThread');
+
+                $db->Execute('INSERT INTO {notification_threads} (task_id, recipient_id, message_id)
+                                   VALUES (?, ?, ?)', $plugin->thread_info);
             }
 
             $swift->disconnect();
