@@ -132,6 +132,21 @@
           <td><label for="ldap_basedn">{L('ldapbasedn')}</label></td>
           <td><input id="ldap_basedn" name="ldap_basedn" class="text" type="text" size="40" value="{$fs->prefs['ldap_basedn']}" /></td>
         </tr>
+        <tr>
+          <td><label for="ldap_bind_method">{L('ldapbindmethod')}</label></td>
+          <td><select id="ldap_bind_method" name="ldap_bind_method">
+            {!tpl_options(array('anonymous' => L('ldapanonymous'), 'bind_dn' => L('ldapbinddn'), 'direct' => L('ldapdirect')),
+                          $fs->prefs['ldap_bind_method'])}</select>
+          </td>
+        </tr>
+        <tr>
+          <td><label for="ldap_bind_dn">{L('ldapbinddn')}</label></td>
+          <td><input id="ldap_bind_dn" name="ldap_bind_dn" class="text" type="text" size="40" value="{$fs->prefs['ldap_bind_dn']}" /></td>
+        </tr>
+        <tr>
+          <td><label for="ldap_bind_pw">{L('ldapbindpw')}</label></td>
+          <td><input id="ldap_bind_pw" name="ldap_bind_pw" class="text" type="text" size="40" value="{$fs->prefs['ldap_bind_pw']}" /></td>
+        </tr>
       </table>
       <?php else: ?>
       </table>

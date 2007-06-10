@@ -31,13 +31,44 @@ class FlysprayDoAuthenticate extends FlysprayDo
                 $ldapconn = ldap_connect($fs->prefs['ldap_server']);
 
                 ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-                $ldapbind = @ldap_bind($ldapconn, $fs->prefs['ldap_userkey'] . '=' . $username . ',' . $fs->prefs['ldap_basedn'], $password);
+
+                if ($fs->prefs['ldap_bind_method'] == 'anonymous') {
+
+                    $ldapsearch = @ldap_search($ldapconn, $fs->prefs['ldap_basedn'], "{$fs->prefs['ldap_userkey']}={$username}");
+                    $ldapentries = @ldap_get_entries($ldapconn, $ldapsearch);
+
+                    foreach ($ldapentries as $ldapentry) {
+                        $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $poassword);
+                        if ($ldapbind) {
+                            break;
+                        }
+                    }
+
+
+                } elseif ($fs->prefs['ldap_bind_method'] == 'bind_dn') {
+
+                    $ldapbind = @ldap_bind($ldapconn, $fs->prefs['ldap_bind_dn'], $fs->prefs['ldap_bind_pw']);
+                    $ldapsearch = @ldap_search($ldapconn, $fs->prefs['ldap_basedn'], "{$fs->prefs['ldap_userkey']}={$username}");
+                    $ldapentries = @ldap_get_entries($ldapconn, $ldapsearch);
+
+                    foreach ($ldapentries as $ldapentry) {
+                        $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $poassword);
+                        if ($ldapbind) {
+                            break;
+                        }
+                    }
+
+                } elseif ($fs->prefs['ldap_bind_method'] == 'direct') {
+
+                    $ldapbind = @ldap_bind($ldapconn, $fs->prefs['ldap_userkey'] . '=' . $username . ',' . $fs->prefs['ldap_basedn'], $password);
+                }
 
                 // if all OK, ad user to flyspray DB
                 if ($ldapbind) {
                     Backend::create_user($username, $password, $username,
                                          '', '', 1, 0, $fs->prefs['anon_group']);
                     $user_id = Flyspray::checkLogin($username, $password);
+                    @ldap_close($ldapconn);
                 }
             }
 
@@ -49,7 +80,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
             } elseif ($user_id == 0) {
                 // just some extra check here so that never ever an account can get locked when it's already disabled
                 // ... that would make it easy to get enabled
-                $db->Execute('UPDATE {users} SET login_attempts = login_attempts+1 WHERE account_enabled = 1 AND user_name = ?',
+                $db->Execute('UPDATE {users} SET login_attempts = login_attempts1 WHERE account_enabled = 1 AND user_name = ?',
                              array($username));
                 // Lock account if failed too often for a limited amount of time
                 $db->Execute('UPDATE {users} SET lock_until = ?, account_enabled = 0 WHERE login_attempts > ? AND user_name = ?',

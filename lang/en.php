@@ -986,6 +986,12 @@ Regards,',
 'assignmentperms'         => 'Assigments',
 'commentperms'            => 'Comments',
 'attachmentperms'         => 'Attachments',
+'ldapbindmethod'          => 'LDAP bind method',
+'ldapbinddn'              => 'Bind DN',
+'ldapbindpw'              => 'Bind Password',
+'ldapanonymous'           => 'Anonymous',
+'ldapbinddn'              => 'Bind DN + rebind',
+'ldapdirect'              => 'Direct bind',
 );
 
 ?>
