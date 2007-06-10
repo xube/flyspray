@@ -712,6 +712,10 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <field name="mail_headers" type="C" size="255">
+      <NOTNULL/>
+      <DEFAULT value=""/>
+    </field>
     <index name="project_prefixes">
       <UNIQUE/>
       <col>project_prefix</col>

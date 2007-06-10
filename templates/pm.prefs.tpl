@@ -210,6 +210,12 @@
             {!tpl_checkbox('send_digest', Post::val('send_digest', $proj->prefs['send_digest']), 'send_digest')}
           </td>
         </tr>
+        <tr>
+          <td><label for="mail_headers">{L('mailheaders')}</label></td>
+          <td>
+            <textarea rows="5" name="mail_headers" cols="10">{Post::val('mail_headers', $proj->prefs['mail_headers'])}</textarea>
+          </td>
+        </tr>
       </table>
     </div>
 

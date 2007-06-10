@@ -206,6 +206,16 @@ class Notifications
             $message->headers->setCharset('utf-8');
             $message->headers->set('Precedence', 'list');
             $message->headers->set('X-Mailer', 'Flyspray');
+
+            // Add custom headers, possibly
+            if (isset($data['headers'])) {
+                $headers = array_map('trim', explode("\n", $data['headers']));
+                foreach ($headers as $header) {
+                    list($name, $value) = explode(':', $header);
+                    $message->headers->set($name, $value);
+                }
+            }
+
             $recipients =& new Swift_RecipientList();
             $recipients->addTo($emails);
 
@@ -476,11 +486,11 @@ class Notifications
     /**
      * Generates a message depending on the $type and using $data
      * @param integer $type
-     * @param array $data usually contains task_id => $id
+     * @param array $data usually contains task_id => $id ... using by-ref to add headers
      * @return array array($subject, $body)
      * @access public
      */
-    function generate_message($type, $data = array())
+    function generate_message($type, &$data = array())
     {
         global $db, $fs, $user;
 
@@ -511,12 +521,14 @@ class Notifications
         if (!isset($data['project']->prefs['notify_subject']) || !isset($notify_type_msg[$type]))  {
             $subject = L('notifyfromfs');
         } else {
-            $subject = strtr($data['project']->prefs['notify_subject'],
-                             array('%p' => $data['project']->prefs['project_title'] ,
-                                   '%s' => $data['task']['item_summary'],
-                                   '%t' => $data['task_id'],
-                                   '%a' => $notify_type_msg[$type],
-                                   '%u' => $user->infos['user_name']));
+            $replacement = array('%p' => $data['project']->prefs['project_title'] ,
+                                 '%s' => $data['task']['item_summary'],
+                                 '%t' => $data['task_id'],
+                                 '%a' => $notify_type_msg[$type],
+                                 '%u' => $user->infos['user_name'],
+                                 '%n' => $type);
+            $subject         = strtr($data['project']->prefs['notify_subject'], $replacement);
+            $data['headers'] = strtr($data['project']->prefs['mail_headers'], $replacement);
         }
 
         $subject = strtr($subject, "\r\n", ' ');

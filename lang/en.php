@@ -992,6 +992,7 @@ Regards,',
 'ldapanonymous'           => 'Anonymous',
 'ldapbinddn'              => 'Bind DN + rebind',
 'ldapdirect'              => 'Direct bind',
+'mailheaders'             => 'Mail headers',
 );
 
 ?>
