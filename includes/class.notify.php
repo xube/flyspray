@@ -13,11 +13,13 @@ class NotificationsThread extends Swift_Events_Listener {
     var $thread_info = array();
     var $message_history = array();
 
-    function NotificationsThread($task_id, $db)
+    function NotificationsThread($task_id, $recipients, $db)
     {
         $this->task_id = $task_id;
         $this->message_history = $db->GetAll('SELECT recipient_id, message_id FROM
-                                               {notification_threads} WHERE task_id = ?', array($task_id));
+                                              {notification_threads} WHERE task_id = ? AND 
+                                              recipient_id IN(' . join(',', array_map('ezmlm_hash', array_unique($recipients))) . ')'
+                                              , array($task_id));
     }
 
     /**
@@ -39,12 +41,10 @@ class NotificationsThread extends Swift_Events_Listener {
         if(count($this->message_history)) {
 
             foreach($this->message_history as $history) {
-
                 if($history['recipient_id'] != $to) {
                     continue;
                 }
-
-                $references[] = $history['message_id'];
+                array_push($references, $history['message_id']);
             }
             // if there is more than one then we have a conversation..
             if(count($references)) {
@@ -183,7 +183,7 @@ class Notifications
             $swift =& new Swift($connection);
 
             if (isset($data['task_id'])) {
-                $swift->attachPlugin(new NotificationsThread($data['task_id'], $db), 'MessageThread');
+                $swift->attachPlugin(new NotificationsThread($data['task_id'], $emails, $db), 'MessageThread');
             }
 
             if (defined('FS_MAIL_DEBUG')) {
@@ -212,7 +212,7 @@ class Notifications
                 $headers = array_map('trim', explode("\n", $data['headers']));
                 foreach ($headers as $header) {
                     list($name, $value) = explode(':', $header);
-                    $message->headers->set($name, $value);
+                    $message->headers->set(sprintf('X-Flyspray-%s', $name), $value);
                 }
             }
 
@@ -224,11 +224,13 @@ class Notifications
             $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
 
             if (isset($data['task_id'])) {
-
+                
                 $plugin =& $swift->getPlugin('MessageThread');
-
-                $db->Execute('INSERT INTO {notification_threads} (task_id, recipient_id, message_id)
-                                   VALUES (?, ?, ?)', $plugin->thread_info);
+                
+                if($plugin->thread_info) {
+                    $db->Execute('INSERT INTO {notification_threads} (task_id, recipient_id, message_id)
+                        VALUES (?, ?, ?)', $plugin->thread_info);
+                }
             }
 
             $swift->disconnect();
