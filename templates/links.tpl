@@ -57,6 +57,8 @@
               if ($do == 'reports') {
                 $check = array_merge($check, array('open', 'close', 'edit', 'assign', 'repdate', 'comments', 'attachments',
                                 'related', 'notifications', 'reminders', 'within', 'duein', 'fromdate', 'todate'));
+              } else if ($do == 'pm' || $do == 'admin') {
+                $check = array_merge($check, $fs->perms); // save a group's permission settings
               }
               foreach ($check as $key):
               if (Get::has($key)): ?>

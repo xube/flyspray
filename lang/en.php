@@ -993,6 +993,8 @@ Regards,',
 'ldapbinddn'              => 'Bind DN + rebind',
 'ldapdirect'              => 'Direct bind',
 'mailheaders'             => 'Mail headers',
+'createnewfromthis'       => 'Create new group from this one',
+'quicklinks'              => 'Quicklinks',
 );
 
 ?>
