@@ -80,7 +80,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
             } elseif ($user_id == 0) {
                 // just some extra check here so that never ever an account can get locked when it's already disabled
                 // ... that would make it easy to get enabled
-                $db->Execute('UPDATE {users} SET login_attempts = login_attempts1 WHERE account_enabled = 1 AND user_name = ?',
+                $db->Execute('UPDATE {users} SET login_attempts = login_attempts+1 WHERE account_enabled = 1 AND user_name = ?',
                              array($username));
                 // Lock account if failed too often for a limited amount of time
                 $db->Execute('UPDATE {users} SET lock_until = ?, account_enabled = 0 WHERE login_attempts > ? AND user_name = ?',
@@ -119,7 +119,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
 
             $db->Execute('UPDATE {users} SET login_attempts = 0 WHERE user_id = ?', array($user->id));
             // restore previous project cookie
-            Flyspray::setCookie('flyspray_project', Post::val('project_id'));
+            Flyspray::setCookie('flyspray_project', Post::num('project_id'));
             return array(SUBMIT_OK, L('loginsuccessful'), Post::val('return_to'));
         }
     }
