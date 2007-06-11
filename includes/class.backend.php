@@ -917,12 +917,16 @@ class Backend
         $prefix_id = $db->GetOne('SELECT MAX(prefix_id)+1 FROM {tasks} WHERE project_id = ?', array($proj->id));
         $db->Execute('UPDATE {tasks} SET prefix_id = ? WHERE task_id = ?', array($prefix_id, $task_id));
 
+        $values = array();
         // Now the custom fields
         foreach ($proj->fields as $field) {
-            $value = $field->read(array_get($args, 'field' . $field->id, 0));
-            $db->Execute('INSERT INTO {field_values} (task_id, field_id, field_value)
-                             VALUES (?, ?, ?)', array($task_id, $field->id, $value));
+            $values[] = array($task_id, $field->id, $field->read(array_get($args, 'field' . $field->id, 0)));
         }
+        if(count($values)) {
+            $db->Execute('INSERT INTO {field_values} (task_id, field_id, field_value)
+                          VALUES (?, ?, ?)', $values);
+        }
+
         if(isset($args['assigned_to'])) {
         // Prepare assignee list
         $assignees = explode(';', trim($args['assigned_to']));

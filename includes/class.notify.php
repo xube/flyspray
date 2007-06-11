@@ -210,9 +210,11 @@ class Notifications
             // Add custom headers, possibly
             if (isset($data['headers'])) {
                 $headers = array_map('trim', explode("\n", $data['headers']));
-                foreach ($headers as $header) {
-                    list($name, $value) = explode(':', $header);
-                    $message->headers->set(sprintf('X-Flyspray-%s', $name), $value);
+                if($headers = array_filter($headers)) {
+                    foreach ($headers as $header) {
+                        list($name, $value) = explode(':', $header);
+                        $message->headers->set(sprintf('X-Flyspray-%s', $name), $value);
+                    }
                 }
             }
 
@@ -533,7 +535,7 @@ class Notifications
             $data['headers'] = strtr($data['project']->prefs['mail_headers'], $replacement);
         }
 
-        $subject = strtr($subject, "\r\n", ' ');
+        $subject = strtr($subject, "\n", ' ');
 
 
         /* -------------------------------
@@ -560,35 +562,35 @@ class Notifications
         -------------------------------
         */
 
-        $body = L('donotreply') . "\r\n\r\n";
+        $body = L('donotreply') . "\n\n";
 
         switch ($type)
         {
             case NOTIFY_TASK_OPENED:
-                $body .=  L('newtaskopened') . "\r\n\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
-                $body .= L('attachedtoproject') . ' - ' .  $data['project']->prefs['project_title'] . "\r\n";
-                $body .= L('summary') . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('assignedto') . ' - ' . implode(', ', $data['task']['assigned_to_name']) . "\r\n";
-                $body .= L('severity') . ' - ' . $data['task']['severity_name'] . "\r\n";
+                $body .=  L('newtaskopened') . "\n\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+                $body .= L('attachedtoproject') . ' - ' .  $data['project']->prefs['project_title'] . "\n";
+                $body .= L('summary') . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('assignedto') . ' - ' . implode(', ', $data['task']['assigned_to_name']) . "\n";
+                $body .= L('severity') . ' - ' . $data['task']['severity_name'] . "\n";
                 foreach ($data['project']->fields as $field) {
-                    $body .= $field->prefs['field_name'] . ' - ' . $field->view($data['task'], array(), PLAINTEXT) . "\r\n";
+                    $body .= $field->prefs['field_name'] . ' - ' . $field->view($data['task'], array(), PLAINTEXT) . "\n";
                 }
-                $body .= L('details') . " - \r\n" . $data['task']['detailed_desc'] . "\r\n\r\n";
+                $body .= L('details') . " - \n" . $data['task']['detailed_desc'] . "\n\n";
 
                 if (isset($data['files'])) {
-                    $body .= L('fileaddedtoo') . "\r\n\r\n";
+                    $body .= L('fileaddedtoo') . "\n\n";
                     $subject .= ' (' . L('attachmentadded') . ')';
                 }
 
-                $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
+                $body .= L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_TASK_CHANGED:
-                $body .= L('taskchanged') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ': ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
+                $body .= L('taskchanged') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ': ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
 
                 foreach ($data['changes'] as $change)
                 {
@@ -598,60 +600,60 @@ class Notifications
                     }
 
                     if ($change[0] == 'detailed_desc') {
-                        $body .= $change[3] . ":\r\n-------\r\n" . $change[2] . "\r\n-------\r\n";
+                        $body .= $change[3] . ":\n-------\n" . $change[2] . "\n-------\n";
                     } else {
-                        $body .= $change[3] . ': ' . ( ($change[1]) ? $change[1] : '[-]' ) . ' -> ' . ( ($change[2]) ? $change[2] : '[-]' ) . "\r\n";
+                        $body .= $change[3] . ': ' . ( ($change[1]) ? $change[1] : '[-]' ) . ' -> ' . ( ($change[2]) ? $change[2] : '[-]' ) . "\n";
                     }
                 }
 
-                $body .= "\r\n" . L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
+                $body .= "\n" . L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_TASK_CLOSED:
-                $body .=  L('notify.taskclosed') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
-                $body .= L('reasonforclosing') . ' ' . $data['task']['resolution_name'] . "\r\n";
+                $body .=  L('notify.taskclosed') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+                $body .= L('reasonforclosing') . ' ' . $data['task']['resolution_name'] . "\n";
 
                 if (!empty($data['task']['closure_comment'])) {
-                    $body .= L('closurecomment') . ' ' . $data['task']['closure_comment'] . "\r\n\r\n";
+                    $body .= L('closurecomment') . ' ' . $data['task']['closure_comment'] . "\n\n";
                 }
 
-                $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
+                $body .= L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_TASK_REOPENED:
-                $body .=  L('notify.taskreopened') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] .  ")\r\n\r\n";
-                $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
+                $body .=  L('notify.taskreopened') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] .  ")\n\n";
+                $body .= L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_DEP_ADDED:
                 $depend_task = Flyspray::getTaskDetails($data['dep_task']);
 
-                $body .=  L('newdep') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
-                $body .= L('newdepis') . ':' . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\r\n\r\n";
+                $body .=  L('newdep') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n\n";
+                $body .= L('newdepis') . ':' . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
+                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_DEP_REMOVED:
                 $depend_task = Flyspray::getTaskDetails($data['dep_task']);
 
-                $body .= L('notify.depremoved') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
-                $body .= L('removeddepis') . ':' . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\r\n\r\n";
+                $body .= L('notify.depremoved') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n\n";
+                $body .= L('removeddepis') . ':' . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
+                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_COMMENT_ADDED:
@@ -659,134 +661,134 @@ class Notifications
                 $result = $db->Execute('SELECT comment_text FROM {comments} WHERE comment_id = ?', array($data['cid']));
                 $comment = $result->FetchRow();
 
-                $body .= L('notify.commentadded') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
-                $body .= "----------\r\n";
-                $body .= $comment['comment_text'] . "\r\n";
-                $body .= "----------\r\n\r\n";
+                $body .= L('notify.commentadded') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+                $body .= "----------\n";
+                $body .= $comment['comment_text'] . "\n";
+                $body .= "----------\n\n";
 
                 if (isset($data['files'])) {
-                    $body .= L('fileaddedtoo') . "\r\n\r\n";
+                    $body .= L('fileaddedtoo') . "\n\n";
                     $subject .= ' (' . L('attachmentadded') . ')';
                 }
-                $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . '#comment' . $data['cid'] . "\r\n\r\n";
+                $body .= L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . '#comment' . $data['cid'] . "\n\n";
                 break;
 
             case NOTIFY_REL_ADDED:
                 $related_task = Flyspray::getTaskDetails($data['rel_task']);
 
-                $body .= L('notify.relatedadded') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
-                $body .= L('relatedis') . ':' . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $related_task['task_id'])) . "\r\n\r\n";
+                $body .= L('notify.relatedadded') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n\n";
+                $body .= L('relatedis') . ':' . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $related_task['task_id'] . ' - ' . $related_task['item_summary'] . "\n";
+                $body .= CreateURL(array('details', 'task' . $related_task['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_OWNERSHIP:
-                $body .= implode(', ', $data['task']['assigned_to_name']) . ' ' . L('takenownership') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n\r\n";
-                $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
+                $body .= implode(', ', $data['task']['assigned_to_name']) . ' ' . L('takenownership') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n\n";
+                $body .= L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_CONFIRMATION:
-                $body .= L('noticefrom') . " {$data['project']->prefs['project_title']}\r\n\r\n";
-                $body .= L('addressused') . "\r\n\r\n";
-                $body .= "{$data[0]}index.php?do=register&magic_url={$data[1]}\r\n\r\n";
+                $body .= L('noticefrom') . " {$data['project']->prefs['project_title']}\n\n";
+                $body .= L('addressused') . "\n\n";
+                $body .= "{$data[0]}index.php?do=register&magic_url={$data[1]}\n\n";
                 // In case that spaces in the username have been removed
-                $body .= L('username') . ": $data[2] \r\n";
-                $body .= L('confirmcodeis') . " $data[3] \r\n\r\n";
+                $body .= L('username') . ": $data[2] \n";
+                $body .= L('confirmcodeis') . " $data[3] \n\n";
                 break;
 
             case NOTIFY_PM_REQUEST:
-                $body .= L('requiresaction') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
-                $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
+                $body .= L('requiresaction') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+                $body .= L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_PM_DENY_REQUEST:
-                $body .= L('pmdeny') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
-                $body .= L('denialreason') . ':' . "\r\n";
-                $body .= $data['deny_reason'] . "\r\n\r\n";
-                $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
+                $body .= L('pmdeny') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+                $body .= L('denialreason') . ':' . "\n";
+                $body .= $data['deny_reason'] . "\n\n";
+                $body .= L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_NEW_ASSIGNEE:
-                $body .= L('assignedtoyou') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n\r\n";
-                $body .= L('moreinfo') . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n";
+                $body .= L('assignedtoyou') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n\n";
+                $body .= L('moreinfo') . "\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_REV_DEP:
                 $depend_task = Flyspray::getTaskDetails($data['dep_task']);
 
-                $body .= L('taskwatching') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
-                $body .= L('isdepfor') . ':' . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\r\n\r\n";
+                $body .= L('taskwatching') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n\n";
+                $body .= L('isdepfor') . ':' . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
+                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_REV_DEP_REMOVED:
                 $depend_task = Flyspray::getTaskDetails($data['dep_task']);
 
-                $body .= L('taskwatching') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
-                $body .= L('isnodepfor') . ':' . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\r\n";
-                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\r\n\r\n";
+                $body .= L('taskwatching') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n\n";
+                $body .= L('isnodepfor') . ':' . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $depend_task['task_id'] . ' - ' .  $depend_task['item_summary'] . "\n";
+                $body .= CreateURL(array('details', 'task' . $depend_task['task_id'])) . "\n\n";
                 break;
 
             case NOTIFY_ADDED_ASSIGNEES:
-                $body .= L('useraddedtoassignees') . "\r\n\r\n";
-                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\r\n";
-                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\r\n\r\n\r\n";
+                $body .= L('useraddedtoassignees') . "\n\n";
+                $body .= $data['task']['project_prefix'] . '#' . $data['task_id'] . ' - ' . $data['task']['item_summary'] . "\n";
+                $body .= L('userwho') . ' - ' . $user->infos['real_name'] . ' (' . $user->infos['user_name'] . ")\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id'])) . "\n\n\n";
                 break;
 
             case NOTIFY_ANON_TASK:
-                $body .= L('thankyouforbug') . "\r\n\r\n";
-                $body .= CreateURL(array('details', 'task' . $data['task_id']), array('task_token' => $data['token'])) . "\r\n\r\n";
+                $body .= L('thankyouforbug') . "\n\n";
+                $body .= CreateURL(array('details', 'task' . $data['task_id']), array('task_token' => $data['token'])) . "\n\n";
                 break;
 
             case NOTIFY_PW_CHANGE:
-                $body = L('messagefrom'). $data[0] . "\r\n\r\n";
-                $body .= L('magicurlmessage')." \r\n";
-                $body .= "{$data[0]}index.php?do=lostpw&magic_url=$data[1]\r\n";
+                $body = L('messagefrom'). $data[0] . "\n\n";
+                $body .= L('magicurlmessage')." \n";
+                $body .= "{$data[0]}index.php?do=lostpw&magic_url=$data[1]\n";
                 break;
 
             case NOTIFY_NEW_USER:
-                $body = L('messagefrom'). $data[0] . "\r\n\r\n";
-                $body .= L('newuserregistered')." \r\n\r\n";
-                $body .= L('username') . ': ' . $data[1] . "\r\n";
-                $body .= L('realname') . ': ' . $data[2] . "\r\n";
+                $body = L('messagefrom'). $data[0] . "\n\n";
+                $body .= L('newuserregistered')." \n\n";
+                $body .= L('username') . ': ' . $data[1] . "\n";
+                $body .= L('realname') . ': ' . $data[2] . "\n";
                 if ($data[6]) {
-                    $body .= L('password') . ': ' . $data[5] . "\r\n";
+                    $body .= L('password') . ': ' . $data[5] . "\n";
                 }
-                $body .= L('emailaddress') . ': ' . $data[3] . "\r\n";
+                $body .= L('emailaddress') . ': ' . $data[3] . "\n";
                 if($data[4]) {
-                    $body .= L('jabberid') . ':' . $data[4] . "\r\n\r\n";
+                    $body .= L('jabberid') . ':' . $data[4] . "\n\n";
                 }
                 break;
 
             case NOTIFY_REMINDER:
             case NOTIFY_DIGEST:
-                $body = $data['message'] . "\r\n\r\n";
+                $body = $data['message'] . "\n\n";
                 break;
         }
 

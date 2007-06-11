@@ -467,8 +467,6 @@ class Validate
 
         return $e;
     }
-
-
     // {{{ protected function executeFullEmailValidation
     /**
      * Execute the validation
@@ -485,7 +483,7 @@ class Validate
     {
         $emailEnding = explode('.', $email);
         $emailEnding = $emailEnding[count($emailEnding)-1];
-
+        
         foreach ($arrayOfTLDs as $validator => $keys) {
             if (in_array($emailEnding, $keys)) {
                 return true;
@@ -522,12 +520,13 @@ class Validate
          * @todo Fix bug here.. even if it passes this, it won't be passing
          *       The regular expression below
          */
+
         $checkTLD = true;
         if (isset($fullTLDValidation)) {
             $valid = Validate::_fullTLDValidation($email, $fullTLDValidation);
 
-            if ($valid) {
-                $checkTLD = false;
+            if (!$valid) {
+                return false;
             }
         }
 
@@ -750,7 +749,7 @@ class Validate
                             if ($next == 'j') {
                                 $day = (int)Validate::_substr($date, 1, 2);
                             } else {
-                                $day = (int)Validate::_substr($date, 2);
+                                $day = (int)Validate::_substr($date, 0, 2);
                             }
                             if ($day < 1 || $day > 31) {
                                 return false;
@@ -759,7 +758,7 @@ class Validate
                         case 'm':
                         case 'n':
                             if ($next == 'm') {
-                                $month = (int)Validate::_substr($date, 2);
+                                $month = (int)Validate::_substr($date, 0, 2);
                             } else {
                                 $month = (int)Validate::_substr($date, 1, 2);
                             }

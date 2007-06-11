@@ -549,8 +549,8 @@
 </table>
  <table name="notification_threads">
     <field name="entry_id" type="I" size="10">
-      <KEY/>
-      <NOTNULL/>
+		<KEY/>
+		<AUTOINCREMENT/>
     </field>
     <field name="recipient_id" type="I" size="10">
     </field>
