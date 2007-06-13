@@ -210,6 +210,12 @@
             <input id="smtppass" name="smtp_pass" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['smtp_pass']}" />
           </td>
         </tr>
+        <tr>
+          <td><label for="global_email">{L('globalemail')}</label></td>
+          <td>
+            <input id="global_email" name="global_email" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['global_email']}" />
+          </td>
+        </tr>
         <?php if (extension_loaded('xml')) : ?>
         <tr>
           <th colspan="2"><hr />
@@ -245,6 +251,12 @@
           <td><label for="jabberpassword">{L('jabberpass')}</label></td>
           <td>
             <input id="jabberpassword" name="jabber_password" class="password" type="password" size="40" maxlength="100" value="{$fs->prefs['jabber_password']}" />
+          </td>
+        </tr>
+        <tr>
+          <td><label for="global_jabber">{L('globaljabber')}</label></td>
+          <td>
+            <input id="global_jabber" name="global_jabber" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['global_jabber']}" />
           </td>
         </tr>
         <?php else: ?>

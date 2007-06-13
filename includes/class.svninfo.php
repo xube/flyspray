@@ -100,7 +100,7 @@ class SVNInfo {
 
         // HTTP auth?
         if ($this->_reposUsername) {
-            $request[] = sprintf('Authorization: %s', base64_encode($this->_reposUsername . ':' . $this->_reposPassword));
+            $request[] = sprintf('Authorization: Basic %s', base64_encode($this->_reposUsername . ':' . $this->_reposPassword));
         }
 
         fwrite($fp, implode("\r\n", $request) . "\r\n\r\n" . $this->_RequestData);

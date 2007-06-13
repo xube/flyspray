@@ -152,6 +152,12 @@ class Notifications
                 $proj_jids   = preg_split('/[\s,;]+/', $proj->prefs['notify_jabber'], -1, PREG_SPLIT_NO_EMPTY);
 
                 $emails = array_merge($proj_emails, $emails);
+                if ($fs->prefs['global_email']) {
+                    $emails[] = $fs->prefs['global_email'];
+                }
+                if ($fs->prefs['global_jabber']) {
+                    $jids[] = $fs->prefs['global_jabber'];
+                }
                 $jids   = array_merge($proj_jids, $emails);
             }
         }

@@ -21,8 +21,7 @@ define('IN_FS', true);
 require_once 'header.php';
 
 
-if((isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] === '127.0.0.1') &&
-    (isset($conf['general']['reminder_daemon']) && $conf['general']['reminder_daemon'] == '1')) {
+if ($conf['general']['reminder_daemon'] && (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] === '127.0.0.1' || php_sapi_name() === 'cli')) {
 
 //keep going, execute the script in the background
 ignore_user_abort(true);
@@ -151,9 +150,11 @@ do {
     }
 
     //wait 10 minutes for the next loop.
-    sleep(600);
+    if (php_sapi_name() !== 'cli') {
+        sleep(600);
+    }
 
-} while(true); //forever ¡¡¡ ( oh well. a least will not stop unless killed or the server restarted)
+} while(php_sapi_name() !== 'cli'); //forever ¡¡¡ ( oh well. a least will not stop unless killed or the server restarted)
 
 @register_shutdown_function('unlink', Flyspray::get_tmp_dir() . '/flysprayreminders.run');
 

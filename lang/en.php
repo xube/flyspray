@@ -995,6 +995,8 @@ Regards,',
 'mailheaders'             => 'Mail headers',
 'createnewfromthis'       => 'Create new group from this one',
 'quicklinks'              => 'Quicklinks',
+'globalemail'             => 'E-mail for all notificatons',
+'globaljabber'            => 'JID for all notificatons',
 );
 
 ?>
