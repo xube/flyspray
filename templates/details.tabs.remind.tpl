@@ -49,7 +49,7 @@
       <input type="hidden" name="action" value="addreminder" />
       <input type="hidden" name="task_id" value="{$task['task_id']}" />
 
-        <label class="default multisel" for="to_user_id">{L('remindthisuser')}</label>
+        <label class="default" for="to_user_id">{L('remindthisuser')}</label>
         {!tpl_userselect('to_user_id', Post::val('to_user_id'), 'to_user_id')}
       <br />
 

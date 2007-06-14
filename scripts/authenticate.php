@@ -37,7 +37,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
                     $ldapsearch = @ldap_search($ldapconn, $fs->prefs['ldap_basedn'], "{$fs->prefs['ldap_userkey']}={$username}");
                     $ldapentries = @ldap_get_entries($ldapconn, $ldapsearch);
 
-                    foreach ($ldapentries as $ldapentry) {
+                    foreach ((array) $ldapentries as $ldapentry) {
                         $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $poassword);
                         if ($ldapbind) {
                             break;
@@ -51,7 +51,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
                     $ldapsearch = @ldap_search($ldapconn, $fs->prefs['ldap_basedn'], "{$fs->prefs['ldap_userkey']}={$username}");
                     $ldapentries = @ldap_get_entries($ldapconn, $ldapsearch);
 
-                    foreach ($ldapentries as $ldapentry) {
+                    foreach ((array) $ldapentries as $ldapentry) {
                         $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $poassword);
                         if ($ldapbind) {
                             break;

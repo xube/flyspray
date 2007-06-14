@@ -10,7 +10,7 @@
   <?php if ($user->perms('manage_project')): ?>
   <form action="{CreateUrl(array('details', 'task' . $task['task_id']))}#notify" method="post">
     <p>
-        <label class="default multisel" for="notif_user_id">{L('addusertolist')}</label>
+        <label class="default" for="notif_user_id">{L('addusertolist')}</label>
         {!tpl_userselect('user_id', Req::val('user_id'), 'notif_user_id')}
 
       <button type="submit">{L('add')}</button>
