@@ -18,7 +18,7 @@ class FlysprayDoRegister extends FlysprayDo
     {
         global $user, $db, $fs;
 
-        if (!Post::val('user_pass') || !Post::val('confirmation_code')) {
+        if (!Post::val('user_pass')) {
             return array(ERROR_RECOVER, L('formnotcomplete'));
         }
 
@@ -35,7 +35,7 @@ class FlysprayDoRegister extends FlysprayDo
                              array(Post::val('magic_url')));
         $reg_details = $sql->FetchRow();
 
-        if ($reg_details['confirm_code'] != trim(Post::val('confirmation_code'))) {
+        if (!$reg_details) {
             return array(ERROR_RECOVER, L('confirmwrong'));
         }
 
@@ -45,8 +45,8 @@ class FlysprayDoRegister extends FlysprayDo
             return array(ERROR_RECOVER, L('usernametaken'));
         }
 
-        $db->Execute('DELETE FROM {registrations} WHERE magic_url = ? AND confirm_code = ?',
-                      array(Post::val('magic_url'), Post::val('confirmation_code')));
+        $db->Execute('DELETE FROM {registrations} WHERE magic_url = ?',
+                      array(Post::val('magic_url')));
 
         return array(SUBMIT_OK, L('accountcreated'), CreateUrl('register', array('regdone' => 1)));
     }
@@ -73,7 +73,7 @@ class FlysprayDoRegister extends FlysprayDo
         if ($jabber_id && !Jabber::check_jid($jabber_id)) {
             return array(ERROR_RECOVER, L('novalidjabber'));
         }
-        
+
         $user_name = Backend::clean_username(Post::val('user_name'));
 
         // Limit lengths
@@ -161,8 +161,10 @@ class FlysprayDoRegister extends FlysprayDo
 
     function is_accessible()
     {
-        global $user;
-        return $user->can_register() || $user->can_self_register();
+        global $user, $baseurl;
+        if (!$user->can_register() && !$user->can_self_register()) {
+            Flyspray::Redirect($baseurl);
+        }
     }
 
     function _onsubmit()

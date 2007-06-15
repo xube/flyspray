@@ -38,7 +38,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
                     $ldapentries = @ldap_get_entries($ldapconn, $ldapsearch);
 
                     foreach ((array) $ldapentries as $ldapentry) {
-                        $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $poassword);
+                        $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $password);
                         if ($ldapbind) {
                             break;
                         }
@@ -52,7 +52,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
                     $ldapentries = @ldap_get_entries($ldapconn, $ldapsearch);
 
                     foreach ((array) $ldapentries as $ldapentry) {
-                        $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $poassword);
+                        $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $password);
                         if ($ldapbind) {
                             break;
                         }

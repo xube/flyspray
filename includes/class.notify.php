@@ -17,7 +17,7 @@ class NotificationsThread extends Swift_Events_Listener {
     {
         $this->task_id = $task_id;
         $this->message_history = $db->GetAll('SELECT recipient_id, message_id FROM
-                                              {notification_threads} WHERE task_id = ? AND 
+                                              {notification_threads} WHERE task_id = ? AND
                                               recipient_id IN(' . join(',', array_map('ezmlm_hash', array_unique($recipients))) . ')'
                                               , array($task_id));
     }
@@ -232,9 +232,9 @@ class Notifications
             $result = ($swift->batchSend($message, $recipients, $fs->prefs['admin_email']) === count($emails)) && $result;
 
             if (isset($data['task_id'])) {
-                
+
                 $plugin =& $swift->getPlugin('MessageThread');
-                
+
                 if($plugin->thread_info) {
                     $db->Execute('INSERT INTO {notification_threads} (task_id, recipient_id, message_id)
                         VALUES (?, ?, ?)', $plugin->thread_info);
@@ -706,8 +706,7 @@ class Notifications
                 $body .= L('addressused') . "\n\n";
                 $body .= "{$data[0]}index.php?do=register&magic_url={$data[1]}\n\n";
                 // In case that spaces in the username have been removed
-                $body .= L('username') . ": $data[2] \n";
-                $body .= L('confirmcodeis') . " $data[3] \n\n";
+                $body .= L('username') . ": $data[2] \n\n";
                 break;
 
             case NOTIFY_PM_REQUEST:
