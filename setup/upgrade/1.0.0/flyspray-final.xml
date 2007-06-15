@@ -39,6 +39,12 @@
     <field name="deny_reason" type="X">
       <NOTNULL/>
     </field>
+    <index name="reminders_taskid">
+      <col>task_id</col>
+    </index>
+    <index name="reminders_project">
+      <col>project_id</col>
+    </index>
   </table>
   <table name="assigned">
     <field name="assigned_id" type="I" size="10">
@@ -730,9 +736,6 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="confirm_code" type="C" size="20">
-      <NOTNULL/>
-    </field>
     <field name="user_name" type="C" size="32">
       <NOTNULL/>
     </field>
@@ -780,6 +783,12 @@
       <col>related_task</col>
       <col>is_duplicate</col>
     </index>
+    <index name="related_this">
+      <col>this_task</col>
+    </index>
+    <index name="related_other">
+      <col>related_task</col>
+    </index>
   </table>
   <table name="reminders">
     <field name="reminder_id" type="I" size="10">
@@ -813,6 +822,9 @@
     <field name="reminder_message" type="X">
       <NOTNULL/>
     </field>
+    <index name="reminders_taskid">
+      <col>task_id</col>
+    </index>
   </table>
   <table name="searches">
     <field name="id" type="I" size="11">
@@ -833,6 +845,9 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <index name="user_searches">
+      <col>user_id</col>
+    </index>
   </table>
   <table name="tasks">
     <field name="task_id" type="I" size="10">
@@ -1072,5 +1087,8 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
+    <index name="votes_task">
+      <col>task_id</col>
+    </index>
   </table>
 </schema>

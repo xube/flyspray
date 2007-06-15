@@ -118,23 +118,18 @@ class FlysprayDoRegister extends FlysprayDo
             }
         }
 
-        // Generate a random bunch of numbers for the confirmation code and the confirmation url
-        foreach(array('randval','magic_url') as $genrandom) {
-            $$genrandom = md5(uniqid(rand(), true));
-        }
-
-        $confirm_code = substr($randval, 0, 20);
+        $magic_url = substr(md5(uniqid(rand(), true)), 0, 20);
 
         //send the email first.
-        if (Notifications::send(Post::val('email_address'), ADDRESS_EMAIL, NOTIFY_CONFIRMATION, array($baseurl, $magic_url, $user_name, $confirm_code))) {
+        if (Notifications::send(Post::val('email_address'), ADDRESS_EMAIL, NOTIFY_CONFIRMATION, array($baseurl, $magic_url, $user_name))) {
 
             //email sent succefully, now update the database.
-            $reg_values = array(time(), $confirm_code, $user_name, $real_name,
+            $reg_values = array(time(), $user_name, $real_name,
                         Post::val('email_address'), Post::val('jabber_id'),
                         Post::num('notify_type'), $magic_url, Post::num('time_zone'));
             // Insert everything into the database
             $query = $db->Execute("INSERT INTO  {registrations}
-                                 ( reg_time, confirm_code, user_name, real_name,
+                                 ( reg_time, user_name, real_name,
                                    email_address, jabber_id, notify_type,
                                    magic_url, time_zone )
                                   VALUES ( " . fill_placeholders($reg_values) . ' )', $reg_values);
@@ -165,6 +160,7 @@ class FlysprayDoRegister extends FlysprayDo
         if (!$user->can_register() && !$user->can_self_register()) {
             Flyspray::Redirect($baseurl);
         }
+        return true;
     }
 
     function _onsubmit()
