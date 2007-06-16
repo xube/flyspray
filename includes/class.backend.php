@@ -386,7 +386,7 @@ class Backend
             Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_CHANGED, array('changes' => $changes));
         }
 
-        if (array_get($args, 'old_assigned') != implode(' ', $assignees)) {
+        if (trim(array_get($args, 'old_assigned')) != implode(' ', $assignees)) {
             // Log to task history
             Flyspray::logEvent($task['task_id'], 14, implode(' ', $assignees), array_get($args, 'old_assigned'), '', $time);
 
