@@ -500,7 +500,7 @@ class Notifications
      * @return array array($subject, $body)
      * @access public
      */
-    function generate_message($type, &$data = array())
+    function generate_message($type, &$data)
     {
         global $db, $fs, $user;
 
