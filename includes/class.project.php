@@ -56,7 +56,7 @@ class Project
         $this->prefs['intro_message'] = '';
         $this->prefs['anon_open'] = $this->prefs['override_user_lang'] = 0;
         $this->prefs['feed_img_url'] = '';
-        $this->prefs['default_entry'] = 'index';
+        $this->prefs['default_entry'] = $fs->prefs['default_entry'];
         $this->prefs['notify_reply'] = '';
         $fs->prefs['visible_columns'] = implode(' ', array_intersect(explode(' ', $fs->prefs['visible_columns']), array_keys($this->columns)));
 

@@ -262,8 +262,10 @@ class User
 
     function can_open_task($proj)
     {
-        return $proj->id && ($this->perms('manage_project') || $this->perms('open_new_tasks')
-               || $this->perms('anon_open', $proj->id));
+        $pid = (!is_object($proj)) ? $proj['project_id'] : $proj->id;
+        
+        return $pid && ($this->perms('manage_project', $pid) || $this->perms('open_new_tasks', $pid)
+                || $this->perms('anon_open', $pid));
     }
 
     function can_change_private($task)

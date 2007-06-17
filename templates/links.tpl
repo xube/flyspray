@@ -79,14 +79,15 @@
         href="{CreateURL(array('index', 'proj' . $proj->id))}">{L('tasklist')}</a>
     </li>
 
-    <?php if ($proj->id && $user->perms('open_new_tasks')): ?>
+    <?php if ($proj->id && ($user->perms('open_new_tasks') || $user->isAnon() && $proj->prefs['anon_open']) ): ?>
       <li>
-      <a id="newtasklink" href="{CreateURL(array('newtask', 'proj' . $proj->id))}"
-        accesskey="a">{L('addnewtask')}</a>
+        <a id="newtasklink" href="{CreateURL(array('newtask', 'proj' . $proj->id))}"
+           accesskey="a">{L('addnewtask')}</a>
       </li>
-    <?php elseif ($proj->id && $user->isAnon() && $proj->prefs['anon_open']): ?>
+    <?php elseif(!$proj->id && count(array_filter($fs->projects, array($user, 'can_open_task')))): ?>
       <li>
-        <a id="anonopen" href="?do=newtask&amp;project={$proj->id}">{L('opentaskanon')}</a>
+        <a id="newtasklink" href="{CreateURL(array('newtask', 'proj' . $fs->prefs['default_project']))}"
+           accesskey="a">{L('addnewtask')}</a>
       </li>
     <?php endif; ?>
 

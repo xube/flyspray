@@ -276,6 +276,14 @@
           </td>
         </tr>
         <tr>
+          <td><label for="default_entry">{L('defaultentry')}</label></td>
+          <td>
+            <select id="default_entry" name="default_entry">
+              {!tpl_options(array('index' => L('tasklist'), 'toplevel' => L('toplevel'), 'roadmap' => L('roadmap')), Post::val('default_entry', $fs->prefs['default_entry']))}
+            </select>
+          </td>
+        </tr>
+        <tr>
           <td><label id="viscollabel">{L('visiblecolumns')}</label></td>
           <td class="text">
             <?php // Set the selectable column names
