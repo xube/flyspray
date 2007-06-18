@@ -47,7 +47,6 @@ function tpl_csv_cell($task, $colname) {
     $indexes = array (
             'id'         => 'task_id',
             'project'    => 'project_title',
-            'severity'   => '',
             'summary'    => 'item_summary',
             'dateopened' => 'date_opened',
             'openedby'   => 'opened_by_name',
@@ -70,10 +69,6 @@ function tpl_csv_cell($task, $colname) {
             break;
         case 'summary':
             $value = $task['item_summary'];
-            break;
-
-        case 'severity':
-            $value = $fs->severities[$task['task_severity']];
             break;
 
         case 'dateopened':

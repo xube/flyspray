@@ -84,7 +84,7 @@
         <a id="newtasklink" href="{CreateURL(array('newtask', 'proj' . $proj->id))}"
            accesskey="a">{L('addnewtask')}</a>
       </li>
-    <?php elseif(!$proj->id && count(array_filter($fs->projects, array($user, 'can_open_task')))): ?>
+    <?php elseif(!$proj->id && $user->can_open_task($fs->prefs['default_project'])): ?>
       <li>
         <a id="newtasklink" href="{CreateURL(array('newtask', 'proj' . $fs->prefs['default_project']))}"
            accesskey="a">{L('addnewtask')}</a>

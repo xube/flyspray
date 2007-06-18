@@ -760,54 +760,11 @@ strong.reopened {
 
 /* Some generic classes; severity classes are used for colour
 indication of severities*/
-.severity1 {
-	background-color:#fff5dd !important;
-	color:#000;
+.task {
+	background:white;
 }
-
-.severity1:hover {
-	background-color:#ffe9b4 !important;
-	color:#000;
-}
-
-.severity2 {
-	background-color:#ecdbb7 !important;
-	color:#000;
-}
-
-.severity2:hover {
-	background-color:#efca80 !important;
-	color:#000;
-}
-
-.severity3 {
-	background-color:#f5d5c6 !important;
-	color:#000;
-}
-
-.severity3:hover {
-	background-color:#f7b390 !important;
-	color:#000;
-}
-
-.severity4 {
-	background-color:#ffd5d1 !important;
-	color:#000;
-}
-
-.severity4:hover {
-	background-color:#ffb2ac !important;
-	color:#000;
-}
-
-.severity5 {
-	background-color:#f3a29b !important;
-	color:#000;
-}
-
-.severity5:hover {
-	background-color:#f3867e !important;
-	color:#000;
+.task:hover {
+	background:lightgray;
 }
 
 #tasklist_table td {

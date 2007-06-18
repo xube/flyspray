@@ -539,7 +539,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
         $viscols =    $fs->prefs['visible_columns']
                     ? $fs->prefs['visible_columns']
-                    : 'id severity summary progress';
+                    : 'id summary progress';
 
         $db->Execute('INSERT INTO  {projects}
                                  ( project_title, theme_style, intro_message, notify_subject, default_task,

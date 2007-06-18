@@ -893,10 +893,6 @@
       <NOTNULL/>
       <DEFAULT value="1"/>
     </field>
-    <field name="task_severity" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
     <field name="last_edited_by" type="I" size="3">
       <NOTNULL/>
       <DEFAULT value="0"/>
@@ -926,9 +922,6 @@
     </field>
     <index name="attached_to_project">
       <col>project_id</col>
-    </index>
-    <index name="task_severity">
-      <col>task_severity</col>
     </index>
     <index name="task_type">
       <col>task_type</col>

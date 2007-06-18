@@ -11,7 +11,7 @@
   <?php endif; ?>
 </span>
 
-  <h2 class="summary severity{$task['task_severity']}">
+  <h2 class="summary task colorfield{$task['field' . $fs->prefs['color_field']]}">
 	 {$task['project_prefix']}#{$task['prefix_id']} - {$task['item_summary']}
   </h2>
 
@@ -67,10 +67,6 @@
 			 <?php endforeach;
 			 endif; ?>
 		  </td>
-		</tr>
-		<tr>
-		  <th id="severity">{L('severity')}</th>
-		  <td headers="severity">{$task['severity_name']}</td>
 		</tr>
 		<tr>
 		  <th id="percent">{L('percentcomplete')}</th>

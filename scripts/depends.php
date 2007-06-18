@@ -76,12 +76,10 @@ class FlysprayDoDepends extends FlysprayDo
 
         $sql= 'SELECT t1.task_id AS id1, t1.prefix_id AS pxid1, p1.project_prefix AS ppx1, t1.item_summary AS sum1,
                      t1.percent_complete AS pct1, t1.is_closed AS clsd1,
-                     t1.task_severity AS sev1,
                      t1.closure_comment AS com1, u1c.real_name AS clsdby1,
                      r1.item_name as res1,
                      t2.task_id AS id2, t2.prefix_id AS pxid2, p2.project_prefix AS ppx2, t2.item_summary AS sum2,
                      t2.percent_complete AS pct2, t2.is_closed AS clsd2,
-                     t2.task_severity AS sev2,
                      t2.closure_comment AS com2, u2c.real_name AS clsdby2,
                      r2.item_name as res2
                FROM  {dependencies} AS d
@@ -108,12 +106,12 @@ class FlysprayDoDepends extends FlysprayDo
             if (!isset($node_list[$id1])) {
                 $node_list[$id1] =
               array('id'=>$id1, 'sum'=>$sum1, 'pct'=>$pct1, 'clsd'=>$clsd1, 'ppx' => $ppx1, 'pxid' => $pxid1,
-                 'sev'=>$sev1, 'com'=>$com1, 'clsdby'=>$clsdby1, 'res'=>$res1);
+                 'com'=>$com1, 'clsdby'=>$clsdby1, 'res'=>$res1);
             }
             if (!isset($node_list[$id2])) {
                 $node_list[$id2] =
               array('id'=>$id2, 'sum'=>$sum2, 'pct'=>$pct2, 'clsd'=>$clsd2, 'ppx' => $ppx2, 'pxid' => $pxid2,
-                'sev'=>$sev2, 'com'=>$com2, 'clsdby'=>$clsdby2, 'res'=>$res2);
+                'com'=>$com2, 'clsdby'=>$clsdby2, 'res'=>$res2);
             }
         }
 
@@ -200,10 +198,10 @@ class FlysprayDoDepends extends FlysprayDo
                 ($r['clsd'] ? L('closed') :
                  "$r[pct]% ".L('complete'));
             $tooltip =
-              ($r['clsd'] ? L('closed') . ": $r[res]".
-               (!empty($r['clsdby']) ? " ($r[clsdby])" : '').
-               ($r['com']!='' ? ' - ' . str_replace(array("\r", "\n"), '', $r['com']) : '')
-               : $fs->severities[$r['sev']]. L('severity'));
+                ($r['clsd'] ? L('closed') . ": $r[res]".
+                    (!empty($r['clsdby']) ? " ($r[clsdby])" : '').
+                    ($r['com']!='' ? ' - ' . str_replace(array("\r", "\n"), '', $r['com']) : '')
+                    : $r['pct']);
             $dotgraph .= "FS$n [label=\"".str_replace("\n", "\\$lj", $label)."\", ".
                 ($r['clsd'] ? 'color=black,' : '') .
                 ($r['clsd'] ? 'fillcolor=white,' : "fillcolor=\"$col\",") .

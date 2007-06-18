@@ -262,8 +262,8 @@ class User
 
     function can_open_task($proj)
     {
-        $pid = (!is_object($proj)) ? $proj['project_id'] : $proj->id;
-        
+        $pid = (is_int($proj) ? $proj : (!is_object($proj) ? $proj['project_id'] : $proj->id));
+
         return $pid && ($this->perms('manage_project', $pid) || $this->perms('open_new_tasks', $pid)
                 || $this->perms('anon_open', $pid));
     }

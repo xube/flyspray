@@ -50,7 +50,7 @@ function event_description($history) {
     global $fs, $baseurl, $details;
 
     $translate = array('item_summary' => 'summary', 'project_id' => 'attachedtoproject',
-                       'task_severity' => 'severity', 'mark_private' => 'visibility');
+                       'mark_private' => 'visibility');
     // if soemthing gets double escaped, add it here.
     $noescape = array('new_value', 'old_value');
 
@@ -74,11 +74,7 @@ function event_description($history) {
             switch ($field) {
                 case 'item_summary':
                 case 'project_id':
-                case 'task_severity':
-                    if($field == 'task_severity') {
-                        $old_value = $fs->severities[$old_value];
-                        $new_value = $fs->severities[$new_value];
-                    } elseif($field != 'item_summary') {
+                    if($field != 'item_summary') {
                         $old_value = $history[$field . '1'];
                         $new_value = $history[$field . '2'];
                     }

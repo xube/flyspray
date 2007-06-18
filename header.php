@@ -93,8 +93,4 @@ if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
 // Load translations
 load_translations();
 
-for ($i = 5; $i >= 1; $i--) {
-    $fs->severities[$i] = L('severity' . $i);
-}
-
 ?>

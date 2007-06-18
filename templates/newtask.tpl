@@ -2,9 +2,9 @@
 
 <div id="taskdetails">
     <form enctype="multipart/form-data" action="{CreateUrl(array('newtask', 'proj' . $proj->id))}" method="post">
-    <h2 class="severity{Req::val('task_severity', 2)} summary" id="edit_summary">
+    <h2 class="task colorfield{Post::val('field' . $fs->prefs['color_field'])} summary" id="edit_summary">
       <label for="itemsummary">{L('summary')}</label>
-      <input id="itemsummary" class="text severity{Req::val('task_severity', 2)}" type="text" value="{Req::val('item_summary')}"
+      <input id="itemsummary" class="text task colorfield{Post::val('field' . $fs->prefs['color_field'])}" type="text" value="{Req::val('item_summary')}"
         name="item_summary" size="80" maxlength="100" />
     </h2>
 

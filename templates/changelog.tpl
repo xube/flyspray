@@ -12,7 +12,7 @@
 <dl class="roadmap changelog">
     <?php foreach($milestone['tasks'] as $task):
           if(!$user->can_view_task($task)) continue; ?>
-      <dt class="severity{$task['task_severity']}">
+      <dt class="task colorfield{$task['field' . $fs->prefs['color_field']]}">
         {!tpl_tasklink($task['task_id'])} <small>({$task['res_name']})</small>
       </dt>
       <dd id="dd{$task['task_id']}" ></dd>

@@ -1,9 +1,9 @@
 <div id="taskdetails">
   <form action="{CreateUrl(array('details', 'task' . $task['task_id']))}" id="taskeditform" enctype="multipart/form-data" method="post">
 	 <div>
-		<h2 class="summary severity{Post::val('task_severity', $task['task_severity'])}">
+		<h2 class="summary task colorfield{Post::val('f' . $fs->prefs['color_field'], $task['field' . $fs->prefs['color_field']])}">
 		  <a href="{CreateUrl(array('details', 'task' . $task['task_id']))}">{$task['project_prefix']}#{$task['prefix_id']}</a> -
-		  <input class="text severity{Post::val('task_severity', $task['task_severity'])}" type="text"
+		  <input class="text task colorfield{Post::val('f' . $fs->prefs['color_field'], $task['field' . $fs->prefs['color_field']])}" type="text"
 			name="item_summary" size="80" maxlength="100"
 			value="{Post::val('item_summary', $task['item_summary'])}" />
 		</h2>
@@ -56,14 +56,6 @@
                      <?php endforeach;
                      endif; ?>
                 <?php endif; ?>
-			 </td>
-			</tr>
-			<tr>
-			 <td><label for="severity">{L('severity')}</label></td>
-             <td>
-				<select id="severity" name="task_severity">
-				 {!tpl_options($fs->severities, Post::val('task_severity', $task['task_severity']))}
-				</select>
 			 </td>
 			</tr>
 			<tr>

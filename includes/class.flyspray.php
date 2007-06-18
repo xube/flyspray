@@ -351,9 +351,7 @@ class Flyspray
                            LEFT JOIN  {projects}    p  ON t.project_id = p.project_id
                                WHERE  ' . $where, $params);
 
-        if ($task = $task->FetchRow()) {
-            $task += array('severity_name' => $fs->severities[$task['task_severity']]);
-        } else {
+        if (!($task = $task->FetchRow())) {
             return false;
         }
 
@@ -791,11 +789,9 @@ class Flyspray
     function compare_tasks($old, $new)
     {
         global $proj;
-        $comp = array('task_severity' => 'severity_name',
-                      'assigned_to_name', 'percent_complete',
+        $comp = array('assigned_to_name', 'percent_complete',
                       'item_summary', 'detailed_desc', 'mark_private');
-        $translation = array('severity_name' => L('severity'),
-                             'assigned_to_name' => L('assignedto'),
+        $translation = array('assigned_to_name' => L('assignedto'),
                              'percent_complete' => L('percentcomplete'),
                              'mark_private' => L('visibility'),
                              'item_summary' => L('summary'),

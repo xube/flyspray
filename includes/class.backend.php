@@ -334,13 +334,12 @@ class Backend
         $db->Execute('UPDATE  {tasks}
                          SET  project_id = ?, item_summary = ?,
                               detailed_desc = ?, mark_private = ?,
-                              task_severity = ?, last_edited_by = ?,
+                              last_edited_by = ?,
                               last_edited_time = ?, percent_complete = ?
                        WHERE  task_id = ?',
                   array($proj->id, array_get($args, 'item_summary'),
                         array_get($args, 'detailed_desc'), intval($user->can_change_private($task) && array_get($args, 'mark_private')),
-                        array_get($args, 'task_severity'), intval($user->id), $time,
-                        array_get($args, 'percent_complete'), $task['task_id']));
+                        intval($user->id), $time, array_get($args, 'percent_complete'), $task['task_id']));
 
         // Now the custom fields
         foreach ($proj->fields as $field) {
@@ -879,9 +878,6 @@ class Backend
         $sql_values = array(time(), time(), $args['project_id'], $item_summary,
                             $detailed_desc, intval($user->id), 0);
 
-        $sql_params[] = 'task_severity';
-        $sql_values[] = array_get($args, 'task_severity', 2); // low severity
-
         $sql_params[] = 'mark_private';
         $sql_values[] = isset($args['mark_private']) && $args['mark_private'] == '1';
 
@@ -1095,7 +1091,7 @@ class Backend
      */
     function get_task_list(&$args, $visible, $offset = 0, $perpage = null)
     {
-        global $proj, $db, $user, $conf;
+        global $proj, $db, $user, $conf, $fs;
         /* build SQL statement {{{ */
         // Original SQL courtesy of Lance Conry http://www.rhinosw.com/
         $where  = $sql_params = array();
@@ -1160,7 +1156,6 @@ class Backend
                 'project'      => 'project_title',
                 'dateopened'   => 'date_opened',
                 'summary'      => 'item_summary',
-                'severity'     => 'task_severity',
                 'progress'     => 'percent_complete',
                 'lastedit'     => 'max_date',
                 'openedby'     => 'uo.real_name',
@@ -1194,11 +1189,11 @@ class Backend
             }
         }
 
-        // make sure that only columns can be sorted that are visible (and task severity, since it is always loaded)
-        $order_keys = array_intersect_key($order_keys, array_merge(array_flip($visible), array('severity' => 'task_severity')));
+        // make sure that only columns can be sorted that are visible
+        $order_keys = array_intersect_key($order_keys, array_flip($visible));
 
-        $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'severity'), array_keys($order_keys))];
-        $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'priority'), array_keys($order_keys))];
+        $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'id'), array_keys($order_keys))];
+        $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'project'), array_keys($order_keys))];
 
         $sortorder  = sprintf('%s %s, %s %s, t.task_id ASC',
                 $order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')),
@@ -1256,7 +1251,7 @@ class Backend
         }
         // now join custom fields used in columns
         foreach ($proj->columns as $col => $name) {
-            if (preg_match('/^field(\d+)$/', $col, $match) && in_array($col, $visible)) {
+            if (preg_match('/^field(\d+)$/', $col, $match) && (in_array($col, $visible) || $match[1] == $fs->prefs['color_field'])) {
                 if (!in_array($match[1], $custom_fields_joined)) {
                     $from   .= " LEFT JOIN {field_values} $col ON t.task_id = $col.task_id AND $col.field_id = " . intval($match[1]);
                 }
@@ -1288,8 +1283,7 @@ class Backend
         }
 
         /// process search-conditions {{{
-        $submits = array('sev' => 'task_severity',
-                         'percent' => 'percent_complete',
+        $submits = array('percent' => 'percent_complete',
                          'dev' => array('a.user_id', 'us.user_name'),
                          'opened' => array('opened_by', 'uo.user_name'),
                          'closed' => array('closed_by', 'uc.user_name'));

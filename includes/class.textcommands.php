@@ -115,7 +115,6 @@ class TextCommands
         $body .= L('openedby') . ': ' . $task['opened_by_name'] . "\r\n";
         $body .= L('attachedtoproject') . ': ' .  $proj->prefs['project_title'] . "\r\n";
         $body .= L('assignedto') . ': ' . implode(', ', $task['assigned_to_name']) . "\r\n";
-        $body .= L('severity') . ': ' . $task['severity_name'] . "\r\n";
         foreach ($proj->fields as $field) {
             $body .= $field->prefs['field_name'] . ': ';
             $body .= $field->view($task, array(), PLAINTEXT) . "\r\n";
@@ -164,14 +163,6 @@ class TextCommands
             return array('', 'No project specified.', false);
         }
 
-        // severity
-        if (isset($parsed['severity'])) {
-            if (is_numeric($parsed['severity'])) {
-                $args['task_severity'] = $parsed['severity'];
-            } else {
-                $args['task_severity'] = array_search(strtolower($parsed['severity']), array_map('strtolower', $fs->severities));
-            }
-        }
         // assignees
         if (isset($parsed['assigned'])) {
             $assignees = explode(',', $parsed['assigned']);

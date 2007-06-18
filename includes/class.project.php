@@ -11,7 +11,7 @@ class Project
      * @access public
      * @var array
      */
-    var $columns = array('id', 'project', 'severity', 'summary', 'dateopened', 'openedby',
+    var $columns = array('id', 'project', 'summary', 'dateopened', 'openedby',
                          'assignedto', 'lastedit', 'comments', 'attachments', 'progress',
                          'dateclosed', 'votes', 'state', 'projectlevelid');
 
@@ -26,9 +26,12 @@ class Project
                              WHERE f.project_id IN (0, ?) ORDER BY field_name',
                             array($id));
         while ($field = $sql->FetchRow()) {
-            $this->fields['field' . $field['field_id']] = new Field($field);
+            $this->fields['field' . $field['field_id']] = $f = new Field($field);
+            if ($f->id == $fs->prefs['color_field']) {
+                $f->values = $this->get_list($f->prefs, $f->id);
+            }
         }
-
+        
         $this->columns = array_combine($this->columns, array_map('L', $this->columns));
         foreach ($this->fields as $field) {
             $this->columns['field' . $field->id] = $field->prefs['field_name'];
@@ -124,7 +127,7 @@ class Project
         $field = array_merge($default, $field_prefs);
         $params =  array();
         $where = '';
-        $required = (!$field['value_required']) ? array(array(0 => '0', 1 => L('notspecified'))) : array();
+        $required = (!$field['value_required']) ? array(array('list_item_id' => '0', 'item_name' => L('notspecified'))) : array();
 
         if ($field['list_type'] == LIST_CATEGORY) {
             return array_merge($required, $this->listCategories($field['list_id']));

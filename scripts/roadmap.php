@@ -59,13 +59,14 @@ class FlysprayDoRoadmap extends FlysprayDo
             $percent_complete = round($percent_complete/max(count($all_tasks), 1));
 
             if (count($all_tasks)) {
-                $tasks = $db->Execute('SELECT t.task_id, item_summary, detailed_desc, task_severity, mark_private,
+                $tasks = $db->Execute('SELECT t.task_id, item_summary, detailed_desc, mark_private, fs.field_value AS field' . $fs->prefs['color_field'] . ',
                                               opened_by, content, task_token, t.project_id, prefix_id
                                        FROM {tasks} t
                                   LEFT JOIN {cache} ca ON (t.task_id = ca.topic AND ca.type = ? AND t.last_edited_time <= ca.last_updated)
                                   LEFT JOIN {field_values} f ON f.task_id = t.task_id
-                                      WHERE field_value = ? AND field_id = ? AND t.project_id = ? AND is_closed = 0',
-                                     array('rota', $row['version_id'], $proj->prefs['roadmap_field'], $proj->id));
+                                  LEFT JOIN {field_values} fs ON (fs.task_id = t.task_id AND fs.field_id = ?)
+                                      WHERE f.field_value = ? AND f.field_id = ? AND t.project_id = ? AND is_closed = 0',
+                                     array('rota', $fs->prefs['color_field'], $row['version_id'], $proj->prefs['roadmap_field'], $proj->id));
 
                 $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks->GetArray(), 'percent_complete' => $percent_complete,
                                 'all_tasks' => $all_tasks, 'name' => $row['version_name']);

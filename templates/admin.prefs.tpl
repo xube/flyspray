@@ -284,6 +284,14 @@
           </td>
         </tr>
         <tr>
+          <td><label for="color_field">{L('colorfield')}</label></td>
+          <td>
+            <select id="color_field" name="color_field">
+              {!tpl_options(array_filter($proj->fields, create_function('$x', 'return $x->prefs["field_type"] == FIELD_LIST;')), Post::val('color_field', $fs->prefs['color_field']))}
+            </select>
+          </td>
+        </tr>
+        <tr>
           <td><label id="viscollabel">{L('visiblecolumns')}</label></td>
           <td class="text">
             <?php // Set the selectable column names

@@ -122,7 +122,6 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
     $indexes = array (
             'id'         => 'task_id',
             'project'    => 'project_title',
-            'severity'   => '',
             'summary'    => 'item_summary',
             'dateopened' => 'date_opened',
             'openedby'   => 'opened_by_name',
@@ -155,10 +154,6 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
             if (utf8_strlen($task['item_summary']) > 55) {
                 $value .= '...';
             }
-            break;
-
-        case 'severity':
-            $value = @$fs->severities[$task['task_severity']];
             break;
 
         case 'lastedit':

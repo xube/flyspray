@@ -144,6 +144,14 @@ $class = 'FlysprayDo' . $do;
 $mode =& new $class;
 $mode->show(Req::val('area'));
 
+if (isset($_SESSION)) {
+    // remove dupe data on error, since no submission happened
+    if (isset($_SESSION['ERROR']) && isset($_SESSION['requests_hash'])) {
+        $currentrequest = md5(serialize($_POST));
+        unset($_SESSION['requests_hash'][$currentrequest]);
+    }
+}
+
 $page->finish('footer.tpl');
 
 ?>

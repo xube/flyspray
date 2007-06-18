@@ -79,13 +79,6 @@
         <?php endforeach; ?>
 
         <div class="search_select">
-        <label class="default multisel" for="sev">{L('severity')}</label>
-        <select name="sev[]" id="sev" multiple="multiple" size="5">
-          {!tpl_options(array('' => L('allseverities')) + $fs->severities, Get::val('sev', ''))}
-        </select>
-        </div>
-
-        <div class="search_select">
         <label class="default multisel" for="state">{L('state')}</label>
         <select name="status[]" id="state" multiple="multiple" size="2">
           {!tpl_options(array('open' => L('allopentasks')) +
@@ -188,7 +181,7 @@
         </thead>
         <tbody>
         <?php foreach ($tasks as $task):?>
-        <tr id="task{!$task['task_id']}" class="severity{$task['task_severity']}">
+        <tr id="task{!$task['task_id']}" class="task colorfield{$task['field' . $fs->prefs['color_field']]}">
           <td class="caret">
           </td>
           <?php if (!$user->isAnon()): ?>

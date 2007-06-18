@@ -20,6 +20,18 @@
     <link rel="alternate" type="application/rss+xml" title="Flyspray Feed - {L('taskedited')}" href="{$baseurl}feed.php?feed_type=rss1&amp;project={$proj->id}" />
     <link title="{$proj->prefs['project_title']} - Flyspray" type="application/opensearchdescription+xml" rel="search" href="{$baseurl}index.php?opensearch=1&amp;project_id={$proj->id}" />
 
+    <style type="text/css">
+    <?php
+    $colors = array('#fff5dd' => '#ffe9b4', '#ecdbb7' => '#efca80', '#f5d5c6' => '#f7b390',
+                    '#ffd5d1' => '#ffb2ac', '#f3a29b' => '#f3867e');
+    end($colors);
+    foreach ($proj->fields['field' . $fs->prefs['color_field']]->values as $key => $value):
+    if (!$value['list_item_id']) continue; ?>
+    .colorfield{$value['list_item_id']} { background-color:{key($colors)} !important; }
+    .colorfield{$value['list_item_id']}:hover { background-color:{current($colors)} !important; }    
+    <?php prev($colors); endforeach; ?>
+    </style>    
+     
     <script type="text/javascript" src="{$baseurl}javascript/prototype/prototype.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/script.aculo.us/builder.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/script.aculo.us/effects.js"></script>
