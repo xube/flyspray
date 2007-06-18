@@ -1266,7 +1266,11 @@ class Backend
                 if ($proj->fields['field' . $match[1]]->prefs['field_type'] == FIELD_LIST) {
                     $from .= "LEFT JOIN {list_items} li$col ON (f$col.list_id = li$col.list_id AND $col.field_value = li$col.list_item_id)
                               LEFT JOIN {list_category} lc$col ON (f$col.list_id = lc$col.list_id AND $col.field_value = lc$col.category_id) ";
-                    $select .= " li$col.item_name AS {$col}_name, ";
+                    if ($proj->fields['field' . $match[1]]->prefs['list_type'] != LIST_CATEGORY) {
+                        $select .= " li$col.item_name AS {$col}_name, ";
+                    } else {
+                        $select .= " lc$col.category_name AS {$col}_name, ";
+                    }
 
                 } else if ($proj->fields['field' . $match[1]]->prefs['field_type'] == FIELD_USER) {
                     $from .= " LEFT JOIN {users} u$col ON $col.field_value = u$col.user_id ";
