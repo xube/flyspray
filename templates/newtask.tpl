@@ -33,16 +33,6 @@
         </tr>
         <?php endif; ?>
         <tr>
-          <td><label for="severity">{L('severity')}</label></td>
-          <td>
-            <select onchange="getElementById('edit_summary').className = 'summary severity' + this.value;
-                              getElementById('itemsummary').className = 'text severity' + this.value;"
-                              id="severity" class="adminlist" name="task_severity">
-              {!tpl_options($fs->severities, Req::val('task_severity', 2))}
-            </select>
-          </td>
-        </tr>
-        <tr>
           <td><label for="private">{L('confidential')}</label></td>
           <td>
             {!tpl_checkbox('mark_private', Req::val('mark_private', 0), 'private')}
