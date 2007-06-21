@@ -16,6 +16,7 @@ class Jabber
 {
     var $connection = null;
     var $session = array();
+	var $resource = 'class.jabber2.php';
     var $log = array();
     var $log_enabled = true;
     var $timeout = 10;
@@ -66,6 +67,16 @@ class Jabber
         // Now we listen what the server has to say...and give appropriate responses
         $this->response($this->listen());
     }
+	
+	/**
+     * Sets the resource which is used. No validation is done here, only escaping.
+	 * @param string $$name
+     * @access public
+     */
+	function SetResource($name)
+	{
+		$this->resource = $name;
+	}
 
     /**
      * Send data to the Jabber server
@@ -299,10 +310,10 @@ class Jabber
                     // session required?
                     $this->session['sess_required'] = isset($xml['stream:features'][0]['#']['session']);
 
-                    $this->send("<iq type='set' id='bind_1'>
-                                    <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>
-                                        <resource>class.jabber2.php</resource>
-                                    </bind>
+					$this->send("<iq type='set' id='bind_1'>
+								   <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>
+							    	 <resource>" . Jabber::jspecialchars($this->resource) . "</resource>
+                                   </bind>
                                  </iq>");
                     return $this->response($this->listen());
                 }

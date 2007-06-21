@@ -263,6 +263,7 @@ class Notifications
                                  $fs->prefs['jabber_security'],
                                  $fs->prefs['jabber_port'],
                                  $fs->prefs['jabber_server']);
+			$jabber->SetResource('flyspray');
             $jabber->login();
 
             foreach ($jids as $jid) {
