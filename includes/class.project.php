@@ -26,10 +26,11 @@ class Project
                              WHERE f.project_id IN (0, ?) ORDER BY field_name',
                             array($id));
         while ($field = $sql->FetchRow()) {
-            $this->fields['field' . $field['field_id']] = $f = new Field($field);
+            $f = new Field($field);
             if ($f->id == $fs->prefs['color_field']) {
                 $f->values = $this->get_list($f->prefs, $f->id);
             }
+            $this->fields['field' . $field['field_id']] = $f;
         }
         
         $this->columns = array_combine($this->columns, array_map('L', $this->columns));
