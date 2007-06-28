@@ -467,6 +467,36 @@ class FlysprayDoDetails extends FlysprayDo
 
         return array(SUBMIT_OK, L('taskmadepublicmsg'));
     }
+    
+    function action_requestreopen($task) { return FlysprayDoDetails::action_requestclose($task); }
+    
+    function action_requestclose($task)
+    {
+        global $proj, $user, $db;
+        
+        if (Post::val('action') == 'requestclose') {
+            Flyspray::AdminRequest(1, $proj->id, $task['task_id'], $user->id, Post::val('reason_given'));
+            Flyspray::logEvent($task['task_id'], 20, Post::val('reason_given'));
+        } else /* requestreopen */ {
+            Flyspray::AdminRequest(2, $proj->id, $task['task_id'], $user->id, Post::val('reason_given'));
+            Flyspray::logEvent($task['task_id'], 21, Post::val('reason_given'));
+            Backend::add_notification($user->id, $task['task_id']);
+        }
+
+        // Now, get the project managers' details for this project
+        $pms = $db->GetCol("SELECT  u.user_id
+                              FROM  {users} u
+                         LEFT JOIN  {users_in_groups} uig ON u.user_id = uig.user_id
+                         LEFT JOIN  {groups} g ON uig.group_id = g.group_id
+                             WHERE  g.project_id = ? AND g.manage_project = '1'",
+                             array($proj->id));
+
+        if (count($pms)) {
+            Notifications::send($pms, ADDRESS_USER, NOTIFY_PM_REQUEST, array('task_id' => $task['task_id']));
+        }
+
+        return array(SUBMIT_OK, L('adminrequestmade'));
+    }
 
     // **********************
     // End of all action_ functions
