@@ -30,7 +30,7 @@
              ?>&lt;{rawurlencode(L('yourusername'))}&gt;<?php
              endif;
              ?>{rawurlencode(L('regards'))}">{L('lostpassword')}</a>
-    <script type="text/javascript">var link = document.getElementById('lostpwlink');link.href=link.href.replace(/#/g,"@");</script>
+    <script type="text/javascript">var link = document.getElementById('forgotlink');link.href=link.href.replace(/#/g,"@");</script>
     <?php endif; ?>
   </span>
 </div>

@@ -909,7 +909,7 @@ class Flyspray
      * @param string $value
      * @param array $array
      * @access public static
-     * @return integer
+     * @return mixed false if not found
      * @version 1.0
      */
     function array_find($key, $value, $array)
@@ -919,6 +919,7 @@ class Flyspray
                 return $num;
             }
         }
+        return false;
     }
 
     /**
