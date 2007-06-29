@@ -310,6 +310,41 @@ class Flyspray
       }
         return false;
     } // }}}
+    
+   /**
+     * Gets the global ID of a task
+     * @param string $task_id eg. FS#123, PR#12, 543 = FS#123, ...
+     * @access public static
+     * @return integer 0 on failure
+     */
+    function GetTaskId($task_id)
+    {
+        global $db;
+        
+        if (is_numeric($task_id)) {
+            // can only be global
+            return $task_id;
+        }
+        
+        @list($prefix, $task) = explode( (strpos($task_id, '#') !== false) ? '#' : ' ', $task_id);
+        if (!$task) {
+            // certainly no existing task
+            return 0;
+        }
+        
+        if ($prefix == 'FS' || trim($prefix) == 'bug') {
+            // global as well
+            return $task;
+        }
+        
+        // now try to get the global ID based on project level id
+        return (int) $db->GetOne('SELECT task_id
+                                    FROM {tasks} t
+                               LEFT JOIN {projects} p ON t.project_id = p.project_id
+                                   WHERE prefix_id = ? AND project_prefix = ?',
+                                    array($task, $prefix));
+    }
+     
     // Retrieve task details {{{
     /**
      * Gets all information about a task (and caches information if wanted)
@@ -317,7 +352,6 @@ class Flyspray
      * @param bool $cache_enabled
      * @access public static
      * @return mixed an array with all taskdetails or false on failure
-     * @version 1.0
      */
     function GetTaskDetails($task_id, $cache_enabled = false, $prefix = null)
     {

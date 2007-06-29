@@ -173,12 +173,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     $params = array();
 
     if (!is_array($task)) {
-        if (ctype_digit($task)) {
-            $task = Flyspray::GetTaskDetails($task, true);
-        } else {
-            list($prefix, $task) = explode( (strpos($task, '#') !== false) ? '#' : ' ', $task);
-            $task = Flyspray::GetTaskDetails($task, true, $prefix);
-        }
+        $task = Flyspray::GetTaskDetails(Flyspray::GetTaskId($task), true);
     }
 
     if ($strict === true && (!is_object($user) || !$user->can_view_task($task))) {

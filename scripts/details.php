@@ -47,41 +47,43 @@ class FlysprayDoDetails extends FlysprayDo
             return array(ERROR_PERMS);
         }
 
-        if (!Post::val('dep_task_id')) {
+        $task_id = Flyspray::GetTaskId(Post::val('dep_task_id'));
+        
+        if (!$task_id) {
             return array(ERROR_RECOVER, L('formnotcomplete'));
         }
 
         // First check that the user hasn't tried to add this twice
         $sql1 = $db->GetOne('SELECT  COUNT(*) FROM {dependencies}
                              WHERE  task_id = ? AND dep_task_id = ?',
-                             array($task['task_id'], Post::val('dep_task_id')));
+                             array($task['task_id'], $task_id));
 
         // or that they are trying to reverse-depend the same task, creating a mutual-block
         $sql2 = $db->GetOne('SELECT  COUNT(*) FROM {dependencies}
                              WHERE  task_id = ? AND dep_task_id = ?',
-                            array(Post::val('dep_task_id'), $task['task_id']));
+                            array($task_id, $task['task_id']));
 
         // Check that the dependency actually exists!
         $sql3 = $db->GetOne('SELECT COUNT(*) FROM {tasks} WHERE task_id = ?',
-                            array(Post::val('dep_task_id')));
+                            array($task_id));
 
         if ($sql1 || $sql2 || !$sql3
                 // Check that the user hasn't tried to add the same task as a dependency
-                || Post::val('task_id') == Post::val('dep_task_id'))
+                || Post::val('task_id') == $task_id)
         {
             return array(ERROR_RECOVER, L('dependaddfailed'));
         }
 
-        Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_DEP_ADDED, array('dep_task' => Post::val('dep_task_id')));
-        Notifications::send(Post::val('dep_task_id'), ADDRESS_TASK, NOTIFY_REV_DEP, array('dep_task' => $task['task_id']));
+        Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_DEP_ADDED, array('dep_task' => $task_id));
+        Notifications::send($task_id, ADDRESS_TASK, NOTIFY_REV_DEP, array('dep_task' => $task['task_id']));
 
         // Log this event to the task history, both ways
-        Flyspray::logEvent($task['task_id'], 22, Post::val('dep_task_id'));
-        Flyspray::logEvent(Post::val('dep_task_id'), 23, $task['task_id']);
+        Flyspray::logEvent($task['task_id'], 22, $task_id);
+        Flyspray::logEvent($task_id, 23, $task['task_id']);
 
         $db->Execute('INSERT INTO  {dependencies} (task_id, dep_task_id)
                          VALUES  (?,?)',
-                    array($task['task_id'], Post::val('dep_task_id')));
+                    array($task['task_id'], $task_id));
 
         return array(SUBMIT_OK, L('dependadded'));
     }
@@ -265,11 +267,13 @@ class FlysprayDoDetails extends FlysprayDo
         if (!$user->can_edit_task($task)) {
             return array(ERROR_PERMS);
         }
-
+        
+        $task_id = Flyspray::GetTaskId(Post::val('related_task'));
+        
         $pid = $db->GetOne('SELECT  project_id
                               FROM  {tasks}
                              WHERE  task_id = ?',
-                            array(Post::val('related_task')));
+                            array($task_id));
         if (!$pid) {
             return array(ERROR_RECOVER, L('relatedinvalid'));
         }
@@ -280,20 +284,20 @@ class FlysprayDoDetails extends FlysprayDo
                                    (this_task = ? AND related_task = ?
                                    OR
                                    related_task = ? AND this_task = ?)",
-                            array($task['task_id'], Post::val('related_task'),
-                                  $task['task_id'], Post::val('related_task')));
+                            array($task['task_id'], $task_id,
+                                  $task['task_id'], $task_id));
 
         if ($rid) {
             return array(ERROR_RECOVER, L('relatederror'));
         }
 
         $db->Execute('INSERT INTO {related} (this_task, related_task, related_type) VALUES(?,?, ?)',
-                        array($task['task_id'], Post::val('related_task'), RELATED_TASK));
+                        array($task['task_id'], $task_id, RELATED_TASK));
 
-        Flyspray::logEvent($task['task_id'], 11, Post::val('related_task'));
-        Flyspray::logEvent(Post::val('related_task'), 11, $task['task_id']);
+        Flyspray::logEvent($task['task_id'], 11, $task_id);
+        Flyspray::logEvent($task_id, 11, $task['task_id']);
 
-        Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_REL_ADDED, array('rel_task' => Post::val('related_task')));
+        Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_REL_ADDED, array('rel_task' => $task_id));
 
         return array(SUBMIT_OK, L('relatedaddedmsg'));
     }

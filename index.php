@@ -87,19 +87,10 @@ if (Get::val('opensearch')) {
 
 if ($show_task = Get::val('show_task')) {
     // If someone used the 'show task' form, redirect them
-    if (is_numeric($show_task)) {
-        Flyspray::Redirect( CreateURL(array('details', 'task' . $show_task)) );
+    $task_id = Flyspray::GetTaskId($show_task);
+    if ($task_id) {
+        Flyspray::Redirect( CreateURL(array('details', 'task' . $task_id)) );
     } else {
-        if (strpos($show_task, '#')) {
-            list($prefix, $prefix_id) = explode('#', $show_task);
-            $task_id = $db->GetOne('SELECT task_id
-                                      FROM {tasks} t
-                                 LEFT JOIN {projects} p ON t.project_id = p.project_id
-                                     WHERE prefix_id = ? AND project_prefix = ?', array($prefix_id, $prefix));
-            if ($task_id) {
-                Flyspray::Redirect( CreateURL(array('details', 'task' . $task_id)) );
-            }
-        }
         Flyspray::Redirect(Createurl('index', array('string' => $show_task)));
     }
 }
