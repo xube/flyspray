@@ -202,11 +202,19 @@ class FlysprayDoDetails extends FlysprayDo
 
         Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_REOPENED);
 
-        // If there's an admin request related to this, close it
+        // add comment of PM request to comment page if accepted
+        $sql = $db->Execute('SELECT * FROM {admin_requests} WHERE  task_id = ? AND request_type = ?',
+                             array($task['task_id'], 2));
+        $request = $sql->FetchRow();
+        $db->Execute('INSERT INTO  {comments}
+                                   (task_id, date_added, last_edited_time, user_id, comment_text)
+                           VALUES  ( ?, ?, ?, ?, ? )',
+                      array($task['task_id'], time(), time(), $request['submitted_by'], $request['reason_given']));
+        // delete existing PM request
         $db->Execute('UPDATE  {admin_requests}
-                       SET  resolved_by = ?, time_resolved = ?
-                     WHERE  task_id = ? AND request_type = ?',
-                  array($user->id, time(), $task['task_id'], 2));
+                         SET  resolved_by = ?, time_resolved = ?
+                       WHERE  request_id = ?',
+                      array($user->id, time(), $request['request_id']));
 
         Flyspray::logEvent($task['task_id'], 13);
 
