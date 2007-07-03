@@ -264,7 +264,7 @@
       <KEY/>
       <AUTOINCREMENT/>
     </field>
-    <field name="group_name" type="C" size="20">
+    <field name="group_name" type="C" size="40">
       <NOTNULL/>
     </field>
     <field name="group_desc" type="C" size="150">
@@ -474,7 +474,7 @@
       <DEFAULT value="1"/>
     </field>
     <field name="version_tense" type="I" size="1"/>
-    <field name="list_id" type="C" size="20">
+    <field name="list_id" type="I" size="11">
       <NOTNULL/>
     </field>
     <index name="lists_items_lid">
@@ -486,10 +486,10 @@
       <KEY/>
       <AUTOINCREMENT/>
     </field>
-    <field name="list_name" type="C" size="30">
+    <field name="list_name" type="C" size="40">
       <NOTNULL/>
     </field>
-    <field name="list_type" type="C" size="20">
+    <field name="list_type" type="I" size="1">
       <NOTNULL/>
     </field>
     <field name="project_id" type="I" size="11">
