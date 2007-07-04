@@ -58,7 +58,7 @@ var Caret = {
   nextRow: function () {
     var row = Caret.currentRow;
     while ((row = row.nextSibling)) {
-      if ('tr' == row.nodeName.toLowerCase()) {
+      if ('tr' == row.nodeName.toLowerCase() && !Element.hasClassName(row, 'expandedinfo')) {
         Caret.currentRow = row;
         return;
       }
@@ -73,7 +73,7 @@ var Caret = {
   previousRow: function () {
     var row = Caret.currentRow;
     while ((row = row.previousSibling)) {
-      if ('tr' == row.nodeName.toLowerCase()) {
+      if ('tr' == row.nodeName.toLowerCase() && !Element.hasClassName(row, 'expandedinfo')) {
         Caret.currentRow = row;
         return;
       }
@@ -88,4 +88,31 @@ var Caret = {
   }
 };
 
+function toggleExpand(id, caretrow)
+{
+    el = $('expa' + id);
 
+    if (Element.hasClassName(el, 'hide')) {
+        Element.removeClassName(el,'hide');
+        Element.addClassName(el, 'show');
+        Element.removeClassName(caretrow,'plus');
+        Element.addClassName(caretrow,'minus');
+    } else {
+        Element.removeClassName(el,'show');
+        Element.addClassName(el, 'hide');
+        Element.removeClassName(caretrow,'minus');
+        Element.addClassName(caretrow,'plus');
+    }
+}
+
+function toggleAllExpand()
+{
+    var details = document.getElementsByTagName('tr');
+    for (var i = 0; i < details.length; i++) {
+        if (Element.hasClassName(details[i], 'task')) {
+            var taskid = details[i].id.substring(4);
+            var tds = details[i].getElementsByClassName('caret');
+            toggleExpand(taskid, tds[0]);
+        }
+    }
+}

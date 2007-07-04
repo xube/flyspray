@@ -164,6 +164,9 @@
         <thead>
           <tr>
             <th class="caret">
+              <a href="javascript:toggleAllExpand()">
+              <img style="position:absolute;" alt="{L('toggleexpansion')}" title="{L('toggleexpansion')}" src="{$this->get_image('plusminus')}" width="11" height="16" />
+              </a>
             </th>
             <?php if (!$user->isAnon()): ?>
             <th class="ttcolumn">
@@ -182,7 +185,7 @@
         <tbody>
         <?php foreach ($tasks as $task):?>
         <tr id="task{!$task['task_id']}" class="task colorfield{$task['field' . $fs->prefs['color_field']]}">
-          <td class="caret">
+          <td class="caret plus" onclick="toggleExpand('{$task['task_id']}', this);">
           </td>
           <?php if (!$user->isAnon()): ?>
           <td class="ttcolumn">
@@ -193,6 +196,10 @@
           {!tpl_draw_cell($task, $col)}
           <?php endforeach; ?>
         </tr>
+        <tr class="expandedinfo hide" id="expa{$task['task_id']}">
+          <td colspan="2"></td>
+          <td colspan="{count($visible)}">{!nl2br(Filters::noXSS($task['detailed_desc']))}</td>
+         </tr>
         <?php endforeach; ?>
         </tbody>
       </table>

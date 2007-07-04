@@ -1315,8 +1315,24 @@ table.requests td {
 	padding:0.2em 0.5em;
 }
 
+tr.current_row td.caret, td.plus, td.minus {
+	background-repeat:no-repeat;
+	background-position:3px;
+}
 tr.current_row td.caret {
-	background:url(caret.gif) no-repeat 3px !important;
+	background-image:url(caret.gif);
+}
+tr.current_row td.caret.minus {
+	background-image:url(caretminus.gif);
+}
+tr.current_row td.caret.plus {
+	background-image:url(caretplus.gif);
+}
+td.plus {
+	background-image:url(plus.gif);
+}
+td.minus {
+	background-image:url(minus.gif);
 }
 
 td.caret {
@@ -1440,6 +1456,17 @@ td.groupsep {
 	font-weight:bold;
 	font-size:1.2em;
 	border-bottom:1px solid gray;
+}
+
+tr.expandedinfo.show {
+	display:auto;
+}
+tr.expandedinfo.hide {
+	display:none;
+}
+
+tr.expandedinfo td {
+	background:white;
 }
 
 /* Dokuwiki {{{ */

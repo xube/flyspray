@@ -990,6 +990,7 @@ Regards,',
 'globalemail'             => 'E-mail for all notificatons',
 'globaljabber'            => 'JID for all notificatons',
 'colorfield'              => 'Coloring is based on',
+'toggleexpansion'         => 'Toggle expansion of task details',
 );
 
 ?>

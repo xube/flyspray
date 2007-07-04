@@ -79,7 +79,7 @@ function setUpTasklistTable() {
 
 function tasklistTableClick(e) {
   var src = eventGetSrc(e);
-  if (src.nodeName != 'TD') {
+  if (src.nodeName != 'TD' || Element.hasClassName(src, 'caret') || Element.hasClassName(src, 'expandedinfo')) {
     return;
   }
   if (src.hasChildNodes()) {
