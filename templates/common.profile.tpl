@@ -83,7 +83,7 @@
         <td><label for="lang_code">{L('preferredlanguage')}</label></td>
         <td>
           <select name="lang_code" id="lang_code">
-            {!tpl_options(array_merge(array(0 => L('any')), Flyspray::listLangs()), Post::val('lang_code', $user->infos['lang_code']), true)}
+            {!tpl_options(array_merge(array(0 => L('any')), array_combine(Flyspray::listLangs(), Flyspray::listLangs())), Post::val('lang_code', $user->infos['lang_code']))}
           </select>
         </td>
       </tr>
