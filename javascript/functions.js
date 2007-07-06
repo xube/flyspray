@@ -222,14 +222,6 @@ function remove_0val(id) {
         }
     }
 }
-
-function fill_userselect(url, id) {
-    var users = $('v' + id).value.split(' ');
-    for (i = 0; i < users.length; i++) {
-        if(users[i]) adduserselect(url, users[i], id, '');
-    }
-}
-
 function dualSelect(from, to, id) {
     if (typeof(from) == 'string') {
 	from = $(from+id);
@@ -578,4 +570,48 @@ function stopBubble(e) {
 	if (!e) { e = window.event; }
 	e.cancelBubble = true;
 	if (e.stopPropagation) { e.stopPropagation(); }
+}
+function findPos(obj) {
+    var curleft = curtop = 0;
+    if (obj.offsetParent) {
+        curleft = obj.offsetLeft
+        curtop = obj.offsetTop
+        while (obj = obj.offsetParent) {
+            curleft += obj.offsetLeft
+            curtop += obj.offsetTop
+        }
+    }
+    return [curleft,curtop];
+}
+
+var newwindow = '';
+function closeme() { if (!newwindow.closed) newwindow.close() }
+function userspopup(url, targetfieldid) {
+    if (!newwindow.closed && newwindow.location) {
+        newwindow.location.href = url;
+    }
+    else {
+        var boxl = findPos($(targetfieldid))[0];
+        var boxr = boxl + $(targetfieldid).offsetWidth;
+        var scrm = Math.floor(window.innerWidth/2);
+        var dif1 = boxl-scrm;
+        var dif2 = boxr-scrm;
+        if ((dif1<=0 && dif2<=0) || (Math.abs(dif1) < Math.abs(dif2))) {
+          // box is completely on left half of screen or more left than right
+          var winleft = boxr+30;
+          var winwidth = window.innerWidth-winleft-30;
+          if (winwidth < 500) winleft -= (500-winwidth);
+        } else {
+          // box is completely on right half of screen or more right than left
+          var winleft = 30;
+          var winwidth = boxl-30;
+          if (winwidth < 500) winwidth += (500-winwidth);
+        }
+        newwindow=window.open(url,'name','height=' + Math.min(window.innerHeight, 650) + ',width=' + Math.min(winwidth, 550) + ',left=' + winleft);
+        if (!newwindow.opener) newwindow.opener = self;
+        newwindow.name = targetfieldid;
+    }
+    if (window.focus) { newwindow.focus(); }
+    this.onfocus  = closeme;
+    return false;
 }

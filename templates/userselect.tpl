@@ -11,7 +11,12 @@ Array.prototype.indexOf = function( v, b, s ) {
 
 function adduser(username)
 {
-    var el = opener.document.getElementById('assigned_to');
+    var el = opener.document.getElementById(name);
+    if (Element.hasClassName(el, 'singleuser')) {
+        el.value = username;
+        return;
+    }
+        
     // check if user is already added, then remove him
     el.value = el.value.replace(',', ';');
     var users = el.value.split(';');
