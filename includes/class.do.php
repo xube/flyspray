@@ -100,11 +100,7 @@ class FlysprayDo
     function error($errno, $errstr = '', $errfile = '', $errline = 0)
     {
         global $db, $proj, $fs;
-
-        if (isset($db) && is_object($db)) {
-            $db->CompleteTrans(false); // if possible, undo database queries
-        }
-
+        
         $page =& new FSTpl;
         $page->pushTpl('header.tpl');
         $page->assign('do', 'index');
@@ -118,6 +114,10 @@ class FlysprayDo
                 return;
             }
             $errno = ERROR_INTERNAL;
+        }
+        
+        if (isset($db) && is_object($db)) {
+            $db->CompleteTrans(false); // if possible, undo database queries
         }
 
 		switch ($errno)
