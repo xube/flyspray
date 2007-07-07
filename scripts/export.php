@@ -30,13 +30,25 @@ class FlysprayDoExport extends FlysprayDo
         $visible = explode(' ', trim($proj->id ? $proj->prefs['visible_columns'] : $fs->prefs['visible_columns']));
 
         list($tasks, $id_list) = Backend::get_task_list($_GET, $visible, 0);
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: filename="export.csv"');
         $page = new FSTpl;
         $page->assign('tasks', $tasks);
         $page->assign('visible', $visible);
-        $page->display('csvexport.tpl');
-        exit(); // no footer please
+        
+        if (Get::val('type') == 'iCal') {
+            $datecols = array(
+                'dateopened' => 'date_opened',
+                'lastedit'   => 'max_date',
+                'dateclosed' => 'date_closed',
+            );
+            header('Content-Type: text/calendar; charset=utf-8');
+            header('Content-Disposition: filename="export.ics"');
+            $page->assign('datecols', $datecols);
+            $page->finish('icalexport.tpl');
+        } else {
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: filename="export.csv"');
+            $page->finish('csvexport.tpl');
+        }
     }
 }
 

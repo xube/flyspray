@@ -231,8 +231,12 @@
             <button type="submit">{L('takeaction')}</button>
           </td>
           <td id="export">
+            {L('export')}
             <a href="{$baseurl}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export')))}">
-              <img alt="{L('csvexport')}" title="{L('csvexport')}" src="{$this->get_image('csvexport')}" width="16" height="16" /> {L('csvexport')}
+              <img alt="" title="{L('csvexport')}" src="{$this->get_image('csvexport')}" width="16" height="16" /> {L('csv')}
+            </a>
+            <a href="{$baseurl}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export', 'type' => 'iCal')))}">
+              <img alt="" title="{L('calendarexport')}" src="{$this->get_image('x-office-calendar')}" width="16" height="16" /> {L('iCal')}
             </a>
           </td>
         </tr>

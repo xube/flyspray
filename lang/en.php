@@ -992,6 +992,10 @@ Regards,',
 'colorfield'              => 'Coloring is based on',
 'toggleexpansion'         => 'Toggle expansion of task details',
 'noresultsshort'          => 'No results!',
+'export'                  => 'Export',
+'iCal'                    => 'iCal',
+'calendarexport'          => 'Export for calendars as iCal',
+'csv'                     => 'CSV',
 );
 
 ?>
