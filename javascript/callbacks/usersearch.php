@@ -14,25 +14,19 @@ if (!$user->can_view_userlist()) {
     exit;
 }
 
-$searchterm = '%' . reset($_POST) . '%';
+$searchterm = '%' . Get::val('user') . '%';
 
 // Get the list of users from the global groups above
-$get_users = $db->SelectLimit('SELECT u.real_name, u.user_name
+$get_users = $db->SelectLimit('SELECT u.user_id, u.real_name, u.user_name
                            FROM {users} u
-                          WHERE u.user_name LIKE ? OR u.real_name LIKE ?', 20, 0,
+                          WHERE u.user_name LIKE ? OR u.real_name LIKE ?', 300, 0,
                          array($searchterm, $searchterm));
 
-$html = '<ul class="autocomplete">';
-
-while ($row = $get_users->FetchRow())
-{
-   $data = array_map(array('Filters','noXSS'), $row);
-
-   $html .= '<li title="' . $data['real_name'] . '">' . $data['user_name'] . '<span class="informal"> (' . $data['real_name'] . ')</span></li>';
+header('Content-Type: text/xml');
+echo '<?xml version="1.0" encoding="utf-8" ?><results>';
+while ($row = $get_users->FetchRow()) {
+    $row = array_map(array('Filters', 'noXSS'), $row);
+    echo sprintf('<rs id="%s" info="%s">%s</rs>', $row['user_id'], $row['real_name'], $row['user_name']);
 }
-
-$html .= '</ul>';
-
-echo $html;
-
+echo '</results>';
 ?>

@@ -2,21 +2,26 @@
 
 /** Some helper's functions
  * Public domain or unknown author(s)
- * TODO : move it to another file
  **/
-function findPos(obj) {
-	var curleft = curtop = 0;
-	if (obj.offsetParent) {
-		curleft = obj.offsetLeft
-		curtop = obj.offsetTop
-		while (obj = obj.offsetParent) {
-			curleft += obj.offsetLeft
-			curtop += obj.offsetTop
-		}
-	}
-	return [curleft,curtop];
-}
+Event.observe(document,'keydown', itemkeypress);
 
+function itemkeypress(e)
+{
+    switch (e.keyCode) {
+        case  38:
+          TableControl.up('listTable');
+          break;
+        case 40:
+            TableControl.down('listTable');
+            break;
+        case 37:
+            TableControl.shallower('listTable');
+            break;
+        case 39:
+            TableControl.deeper('listTable');
+            break;
+    }
+}
 function getParent(element, parentTagName)
 {
 	if ( ! element )

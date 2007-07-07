@@ -11,10 +11,16 @@
                    ?>{Req::val('assigned_to')}<?php
                    endif;
                    ?></textarea>
-                   <span class="autocomplete hide" id="assigned_to_complete"></span>
                    <script type="text/javascript">
-                      showstuff('assigned_to_complete');
-                      new Ajax.Autocompleter('assigned_to', 'assigned_to_complete', '{$baseurl}javascript/callbacks/usersearch.php', {})
+                          var options = {
+                            script: "{$baseurl}javascript/callbacks/usersearch.php?",
+                            varname: "user",
+                            delay:50,
+                            timeout:5000,
+                            minchars:2,
+                            noresults:'{#L('noresults')}'
+                        };
+                        var as = new bsn.AutoSuggest('assigned_to', options);
                    </script>
 
                    <?php if (isset($old_assigned)): ?>

@@ -33,19 +33,16 @@
     </style>    
      
     <script type="text/javascript" src="{$baseurl}javascript/prototype/prototype.js"></script>
-    <script type="text/javascript" src="{$baseurl}javascript/script.aculo.us/builder.js"></script>
-    <script type="text/javascript" src="{$baseurl}javascript/script.aculo.us/effects.js"></script>
-    <script type="text/javascript" src="{$baseurl}javascript/script.aculo.us/controls.js"></script>
     <?php if ('index' == $do || 'details' == $do): ?>
         <script type="text/javascript" src="{$baseurl}javascript/{$do}.js"></script>
     <?php endif; ?>
     <?php if ( $do == 'pm' || $do == 'admin'): ?>
         <script type="text/javascript" src="{$baseurl}javascript/tablecontrol.js"></script>
     <?php endif; ?>
+    <script type="text/javascript" src="{$baseurl}javascript/bsn.AutoSuggest_2.1.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/tabs.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/functions.js"></script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar_stripped.js"></script>
-    <script type="text/javascript" src="{$baseurl}javascript/jscalendar/calendar-setup_stripped.js"> </script>
     <script type="text/javascript" src="{$baseurl}javascript/jscalendar/lang/calendar-{substr(L('locale'), 0, 2)}.js"></script>
     <!--[if IE]>
     <link media="screen" href="{$this->themeUrl()}ie.css" rel="stylesheet" type="text/css" />
@@ -56,8 +53,8 @@
   </head>
   <body onload="perms = new Perms('permissions');<?php
         if (isset($_SESSION['SUCCESS'])):
-        ?>window.setTimeout('Effect.Fade(\'successbar\', &lbrace;duration:.3&rbrace;)', 8000);<?php
+        ?>setTimeout('var fade = new _bsn.Fader($(&quot;successbar&quot;),1,0,500)', 6000);<?php
         elseif (isset($_SESSION['ERROR'])):
-        ?>window.setTimeout('Effect.Fade(\'errorbar\', &lbrace;duration:.3&rbrace;)', 8000);<?php endif ?>">
+        ?>setTimeout('var fade = new _bsn.Fader($(&quot;errorbar&quot;),1,0,500)', 15000);<?php endif ?>">
 
   <div id="container">

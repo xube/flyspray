@@ -31,7 +31,7 @@ $language = array(
 'oslist'                  => 'Operating Systems list',
 'resolutionlist'          => 'Resolutions list',
 'versionlist'             => 'Versions list',
-'listnote'                => 'Note:  Unchecking the "show" box may alter some tasks when in edit mode.  Changing the "Name" field will change all tasks with that name. Items that can not be deleted are either protected because they are needed for correct functioning or used in tasks.',
+'listnote'                => 'Note:  Unchecking the "show" box may alter some tasks when in edit mode.  Changing the "Name" field will change all tasks with that name. Items that can not be deleted are either protected because they are needed for correct functioning or used in tasks. Move items up and down by selecting an item (click) and pressing the up or down key.',
 'name'                    => 'Name',
 'order'                   => 'Order',
 'back'                    => 'Back',
@@ -991,6 +991,7 @@ Regards,',
 'globaljabber'            => 'JID for all notificatons',
 'colorfield'              => 'Coloring is based on',
 'toggleexpansion'         => 'Toggle expansion of task details',
+'noresultsshort'          => 'No results!',
 );
 
 ?>

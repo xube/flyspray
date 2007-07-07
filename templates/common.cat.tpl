@@ -4,20 +4,9 @@
   $categories = $proj->listCategories(Req::val('list_id'), false, false, false);
   $root = $categories[0];
   unset($categories[0]);
-
-  if (count($categories)) : ?>
-  <div id="controlBox">
-    <div class="grip"></div>
-    <div class="inner">
-        <a href="#" onclick="TableControl.up('catTable'); return false;"><img src="{$this->themeUrl()}/up.png" alt="Up" /></a>
-        <a href="#" onclick="TableControl.down('catTable'); return false;"><img src="{$this->themeUrl()}/down.png" alt="Down" /></a>
-        <a href="#" onclick="TableControl.shallower('catTable'); return false;"><img src="{$this->themeUrl()}/left.png" alt="Left" /></a>
-        <a href="#" onclick="TableControl.deeper('catTable'); return false;"><img src="{$this->themeUrl()}/right.png" alt="Right" /></a>
-    </div>
-  </div>
-  <?php endif; ?>
+  ?>
     <form action="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
-      <table class="list" id="catTable">
+      <table class="list" id="listTable">
          <thead>
          <tr>
            <th>{L('name')}</th>
@@ -54,6 +43,7 @@
         <?php endforeach; ?>
         </tbody>
         <?php if($countlines > -1): ?>
+        <tfoot>
         <tr>
           <td colspan="3"></td>
           <td class="buttons">
@@ -64,18 +54,16 @@
             <button type="submit">{L('update')}</button>
           </td>
         </tr>
+        </tfoot>
         <?php endif; ?>
       </table>
       <?php if (count($categories)): ?>
       <script type="text/javascript">
         <?php
-            echo 'TableControl.create("catTable",{
+            echo 'TableControl.create("listTable",{
                 controlBox: "controlBox",
                 tree: true,
                 spreadActiveClass: true
-            });';
-            echo 'new Draggable("controlBox",{
-                handle: "grip"
             });';
         ?>
       </script>

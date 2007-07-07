@@ -14,7 +14,7 @@ class FlysprayDoUserSelect extends FlysprayDo
     function is_accessible()
     {
         global $user;
-        return $user->perms('view_userlist');
+        return $user->can_view_userlist();
     }
 
     function is_projectlevel() {

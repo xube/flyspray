@@ -1,9 +1,17 @@
 <input class="users text singleuser" {!join_attrs($attrs)} type="text" name="{$name}" <?php if ($id): ?>id="{$id}"<?php endif; ?> value="{$value}" />
+<?php if ($user->can_view_userlist()): ?>
 <a href="#" onclick="userspopup('{CreateUrl('userselect')}', '{$id}')">
   <img src="{$this->get_image('kuser-small')}" width="16" height="16" />
 </a>
-<span class="autocomplete hide" id="{$name}_complete"></span>
+<?php endif; ?>
 <script type="text/javascript">
-    showstuff('{$name}_complete');
-    new Ajax.Autocompleter('{$id}', '{$name}_complete', '{$baseurl}javascript/callbacks/usersearch.php', {})
+    var options = {
+	script: "{$baseurl}javascript/callbacks/usersearch.php?",
+	varname: "user",
+    delay:50,
+    timeout:5000,
+    minchars:2,
+    noresults:'{#L('noresultsshort')}'
+};
+var as = new bsn.AutoSuggest('{$id}', options);
 </script>
