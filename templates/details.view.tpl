@@ -9,6 +9,7 @@
   <?php if ($next_id): ?>
   {!tpl_tasklink($next_id, L('nexttask'), false, array('id'=>'next', 'accesskey' => 'n'))}
   <?php endif; ?>
+  <span class="hide" id="task_id" title="{$task['task_id']}"></span>
 </span>
 
   <h2 class="summary task colorfield{$task['field' . $fs->prefs['color_field']]}">

@@ -12,6 +12,9 @@ function searchInit() {
 var Caret = {
   init: function () {
     var task = Cookie.getVar('current_task') || 'top';
+    if (task != 'top' && !$('task'+task)) {
+        task = 'top';
+    }
     if (task == 'bottom' || task == 'top') {
       var tab = $('tasklist_table');
       var rows = tab ? tab.getElementsByTagName('tbody')[0].getElementsByTagName('tr') : [];
@@ -60,6 +63,7 @@ var Caret = {
     while ((row = row.nextSibling)) {
       if ('tr' == row.nodeName.toLowerCase() && !Element.hasClassName(row, 'expandedinfo')) {
         Caret.currentRow = row;
+        Cookie.setVar('current_task', row.id.substring(4));
         return;
       }
     }
@@ -75,6 +79,7 @@ var Caret = {
     while ((row = row.previousSibling)) {
       if ('tr' == row.nodeName.toLowerCase() && !Element.hasClassName(row, 'expandedinfo')) {
         Caret.currentRow = row;
+        Cookie.setVar('current_task', row.id.substring(4));
         return;
       }
     }
