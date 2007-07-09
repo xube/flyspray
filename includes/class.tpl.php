@@ -551,11 +551,11 @@ class TextFormatter
             return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'render'),
                                   $text, $onlyfs, $type, $id, $instructions);
         } else {
-            $text = nl2br(Filters::noXSS($text));
+            $text = ' ' . nl2br(Filters::noXSS($text)) . ' ';
 
             // Change URLs into hyperlinks
             if (!$onlyfs) {
-                $text = preg_replace('|[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
+                $text = preg_replace('|[[:space:]]+[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
                 $text = preg_replace('/[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]{2,5}/', '<a href="mailto:\0">\0</a>', $text);
             }
 
@@ -565,7 +565,7 @@ class TextFormatter
                 $look[] = preg_quote($project['project_prefix'] . '#', '/');
             }
 
-            return preg_replace_callback("/\b(" . implode('|', $look) . ")(\d+)\b/", 'tpl_fast_tasklink', $text);
+            return preg_replace_callback("/\b(" . implode('|', $look) . ")(\d+)\b/", 'tpl_fast_tasklink', trim($text));
         }
     }
 
