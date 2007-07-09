@@ -444,10 +444,12 @@ class Notifications
             return array();
         }
 
+        $users = array_map('intval', $users);
+
         $sql = $db->Execute('SELECT *
-                             FROM {users}
-                            WHERE' . substr(str_repeat(' user_id = ? OR ', count($users)), 0, -3),
-                           array_values($users));
+                               FROM {users}
+                              WHERE user_id IN (' . implode(',', $users) . ')',
+                             array_values($users));
 
         while ($row = $sql->FetchRow())
         {
