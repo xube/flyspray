@@ -448,8 +448,7 @@ class Notifications
 
         $sql = $db->Execute('SELECT *
                                FROM {users}
-                              WHERE user_id IN (' . implode(',', $users) . ')',
-                             array_values($users));
+                              WHERE user_id IN (' . implode(',', $users) . ')');
 
         while ($row = $sql->FetchRow())
         {
