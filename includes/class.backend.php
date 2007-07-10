@@ -695,11 +695,10 @@ class Backend
 
         // Send a user his details (his username might be altered, password auto-generated)
         if ($fs->prefs['notify_registration']) {
-            $sql = $db->Execute('SELECT u.user_id
-                                 FROM {users} u
-                            LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
-                                WHERE g.group_id = 1');
-            Notifications::send($sql->GetArray(), ADDRESS_USER, NOTIFY_NEW_USER,
+            $admins = $db->GetCol('SELECT user_id
+                                     FROM {users_in_groups}
+                                    WHERE group_id = 1');
+            Notifications::send($admins, ADDRESS_USER, NOTIFY_NEW_USER,
                           array($baseurl, $user_name, $real_name, $email, $jabber_id, $password, $auto));
         }
 
@@ -730,11 +729,11 @@ class Backend
                 return false;
             }
         }
-        
+
         // for the unusual situuation that a user ID is re-used, make sure that the new user doesn't
         // get permissions for a task automatically
         $db->Execute('UPDATE {tasks} SET opened_by = 0 WHERE opened_by = ?', array($uid));
-        
+
         Flyspray::logEvent(0, 31, $user_data);
 
         return true;
