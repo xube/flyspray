@@ -412,9 +412,7 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <field name="field_changed" type="C" size="50">
-      <NOTNULL/>
-    </field>
+    <field name="field_changed" type="C" size="50" />
     <field name="old_value" type="X" />
     <field name="new_value" type="X">
       <NOTNULL/>
