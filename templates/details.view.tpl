@@ -1,5 +1,9 @@
 <div id="taskdetails">
-<span id="navigation"> <?php if ($prev_id): ?>
+<span id="navigation">
+  <a href="#" onclick="javascript:mailtask('{#L('mailtask')}', '{rawurlencode($task['item_summary'])}', '{rawurlencode($task['detailed_desc'])}')">
+    <small>email this task</small>
+  </a> |
+  <?php if ($prev_id): ?>
   {!tpl_tasklink($prev_id, L('previoustask'), false, array('id'=>'prev', 'accesskey' => 'p'))}
   <?php endif; ?>
   <?php if ($prev_id): ?> | <?php endif; ?>

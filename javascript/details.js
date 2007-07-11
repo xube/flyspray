@@ -38,3 +38,12 @@ function keyboardNavigation(e) {
   }
   return;
 }
+
+function mailtask(question, subject, body)
+{
+    var email = prompt(question);
+    if (email) {
+      location.href = "mailto:" + email + "?subject=" + subject + "&body=" + body;
+    }
+    return false;
+}
