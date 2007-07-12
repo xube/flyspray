@@ -16,19 +16,19 @@ if (Get::has('name')) {
 }
 
 // Get the list of users from the global groups above
-$get_users = $db->Execute('  SELECT  count(u.user_name) AS anz_u_user, 
+$get_users = $db->x->getRow('  SELECT  count(u.user_name) AS anz_u_user, 
                                    count(r.user_name) AS anz_r_user 
                              FROM  {users} u
                         LEFT JOIN  {registrations} r ON u.user_name = r.user_name
                             WHERE  Lower(u.user_name) = ? 
                                    OR
                                    Lower(r.user_name) = ?',
-                        array($searchterm,$searchterm));
+                          null, array($searchterm, $searchterm));
 
 
-while ($row = $get_users->FetchRow())
+if ($get_users)
 {
-    if ($row['anz_u_user'] > '0' || $row['anz_r_user'] > '0') {
+    if ($get_users['anz_u_user'] > '0' || $get_users['anz_r_user'] > '0') {
          $html = 'false|' . eL('usernametaken');
     } else {
          $html = 'true';

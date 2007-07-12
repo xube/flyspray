@@ -22,17 +22,13 @@ if (Get::val('logout')) {
 
 if (Get::val('getfile')) {
     // If a file was requested, deliver it
-    $result = $db->Execute("SELECT  t.project_id,
+    $task = $db->x->getRow("SELECT  t.project_id,
                                   a.orig_name, a.file_name, a.file_type, t.*
                             FROM  {attachments} a
                       INNER JOIN  {tasks}       t ON a.task_id = t.task_id
-                           WHERE  attachment_id = ?", array(Get::val('getfile')));
-    $task = $result->FetchRow();
-    $proj_id = $task['project_id'];
-    $orig_name = $task['orig_name'];
-    $file_name = $task['file_name'];
-    $file_type = $task['file_type'];
-    $disk_filename = FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $file_name;
+                           WHERE  attachment_id = ?", null, Get::val('getfile'));
+
+    $disk_filename = FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $task['file_name'];
     // Check if file exists, and user permission to access it!
     if (!is_file($disk_filename) || !$user->can_view_task($task)) {
         header('HTTP/1.1 410 Gone');
@@ -42,8 +38,8 @@ if (Get::val('getfile')) {
     output_reset_rewrite_vars();
 
     header('Pragma: public');
-    header("Content-type: $file_type");
-    header('Content-Disposition: filename="'.$orig_name.'"');
+    header("Content-type: {$task['file_type']}");
+    header('Content-Disposition: filename="'.$task['orig_name'].'"');
     header('Content-transfer-encoding: binary');
     header('Content-length: ' . filesize($disk_filename));
 
@@ -97,8 +93,8 @@ if ($show_task = Get::val('show_task')) {
 
 if ($proj->id && $user->perms('manage_project')) {
     // Find out if there are any PM requests wanting attention
-    $count = $db->GetOne(
-            'SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = 0',
+    $count = $db->x->GetOne(
+            'SELECT COUNT(*) FROM {admin_requests} WHERE project_id = ? AND resolved_by = 0', null,
             array($proj->id));
 
     $page->assign('pm_pendingreq_num', $count);
@@ -106,11 +102,11 @@ if ($proj->id && $user->perms('manage_project')) {
 
 // Get e-mail addresses of the admins
 if ($user->isAnon() && !$fs->prefs['user_notify']) {
-    $sql = $db->Execute('SELECT email_address
+    $amails = $db->x->getCol('SELECT email_address
                          FROM {users} u
                     LEFT JOIN {users_in_groups} g ON u.user_id = g.user_id
                         WHERE g.group_id = 1');
-    $page->assign('admin_emails', $sql->GetArray());
+    $page->assign('admin_emails', $amails);
 }
 
 // default title

@@ -100,15 +100,16 @@ class FlysprayDoReports extends FlysprayDo
 
         $histories = array();
         if (count(Get::val('events'))) {
-            $histories = $db->SelectLimit("SELECT h.*, t.*, p.project_prefix
+            if (Get::num('event_number') > 0) {
+                $db->setLimit(Get::num('event_number'));
+            }
+            $histories = $db->x->getAll("SELECT h.*, t.*, p.project_prefix
                                              FROM {history} h
                                         LEFT JOIN {tasks} t ON h.task_id = t.task_id
                                         LEFT JOIN {projects} p ON t.project_id = p.project_id
                                             WHERE $where
                                          ORDER BY $orderby",
-                                          Get::num('event_number', -1), 0, $params);
-
-            $histories = $histories->GetArray();
+                                          null, $params);
         }
 
         $page->assign('histories', $histories);

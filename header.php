@@ -46,10 +46,10 @@ $do = Req::val('do');
 
 // Any "do" mode that accepts a task_id or id field should be added here.
 if (Req::num('task_id')) {
-    $project_id = $db->GetOne('SELECT  project_id
+    $project_id = $db->x->GetOne('SELECT  project_id
                                  FROM  {tasks}
-                                WHERE task_id = ?',
-                               array(Req::num('task_id')));
+                                WHERE task_id = ?', null,
+                               Req::num('task_id'));
     $do = Filters::enum($do, array('details', 'depends', 'editcomment'));
 } else {
     if ($do == 'admin' && Get::has('switch') && Get::val('project') != '0') {

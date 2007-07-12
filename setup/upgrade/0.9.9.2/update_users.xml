@@ -1,70 +1,164 @@
-<?xml version="1.0"?>
-<schema version="0.3">
-  <table name="users">
-    <field name="user_id" type="I" size="3">
-      <KEY/>
-      <AUTOINCREMENT/>
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<database>
+
+ <name><variable>db_name</variable></name>
+ <create>true</create>
+ <overwrite>true</overwrite>
+
+ <table>
+
+  <name><variable>db_prefix</variable>users</name>
+
+  <declaration>
+
+   <field>
+    <name>user_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+    <autoincrement>1</autoincrement>
+   </field>
+
+   <field>
+    <name>user_name</name>
+    <type>text</type>
+    <length>32</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>user_pass</name>
+    <type>text</type>
+    <length>40</length>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>real_name</name>
+    <type>text</type>
+    <length>100</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>jabber_id</name>
+    <type>text</type>
+    <length>100</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>email_address</name>
+    <type>text</type>
+    <length>100</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>notify_type</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>notify_own</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>account_enabled</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>dateformat</name>
+    <type>text</type>
+    <length>30</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>dateformat_extended</name>
+    <type>text</type>
+    <length>30</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>magic_url</name>
+    <type>text</type>
+    <length>40</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>tasks_perpage</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>register_date</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>time_zone</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>login_attempts</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>lock_until</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <index>
+    <name><variable>db_prefix</variable>users_pKey</name>
+    <primary>true</primary>
+    <field>
+     <name>user_id</name>
+     <sorting>ascending</sorting>
     </field>
-    <field name="user_name" type="C" size="32">
-      <NOTNULL/>
-    </field>
-    <field name="user_pass" type="C" size="40"/>
-    <field name="real_name" type="C" size="100">
-      <NOTNULL/>
-    </field>
-    <field name="jabber_id" type="C" size="100">
-      <NOTNULL/>
-    </field>
-    <field name="email_address" type="C" size="100">
-      <NOTNULL/>
-    </field>
-    <field name="notify_type" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="notify_own" type="I" size="6">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="account_enabled" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="dateformat" type="C" size="30">
-      <NOTNULL/>
-      <DEFAULT value=""/>
-    </field>
-    <field name="dateformat_extended" type="C" size="30">
-      <NOTNULL/>
-      <DEFAULT value=""/>
-    </field>
-    <field name="magic_url" type="C" size="40">
-      <NOTNULL/>
-      <DEFAULT value=""/>
-    </field>
-    <field name="tasks_perpage" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="register_date" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="time_zone" type="I" size="6">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="login_attempts" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="lock_until" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <index name="user_name">
-      <UNIQUE/>
-      <col>user_name</col>
-    </index>
-  </table>
-</schema>
+   </index>
+
+  </declaration>
+
+ </table>
+
+</database>

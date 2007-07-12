@@ -243,12 +243,12 @@ function mediaFN($id){
   global $conf, $db, $user; // <- from Flyspray
   $id = cleanID($id);
   if (basename($id) == $id) {
-    $sql = $db->Execute('SELECT file_name, t.*
+    $sql = $db->x->getAll('SELECT file_name, t.*
                           FROM {attachments} att
                      LEFT JOIN {tasks} t ON att.task_id = t.task_id
-                         WHERE orig_name = ?', array($id));
+                         WHERE orig_name = ?', null, $id);
     $fn = $id; // if file is not shown show at least something
-    if ($row = $sql->FetchRow()) {
+    foreach ($sql as $row) {
         if ($user->can_view_task($row)) {
             $fn = BASEDIR . '/attachments/' . $row['file_name'];
         }

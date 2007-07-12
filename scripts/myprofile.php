@@ -34,7 +34,7 @@ class FlysprayDoMyprofile extends FlysprayDo
 
         require_once BASEDIR . '/includes/events.inc.php';
         $events_since = strtotime(Get::val('events_since', '-1 week'));
-        $sql = $db->Execute('SELECT h.task_id, t.*, p.project_prefix
+        $tasks = $db->x->getAll('SELECT h.task_id, t.*, p.project_prefix
                                FROM {history} h
                           LEFT JOIN {tasks} t ON h.task_id = t.task_id
                           LEFT JOIN {projects} p ON t.project_id = p.project_id
@@ -42,9 +42,8 @@ class FlysprayDoMyprofile extends FlysprayDo
                               WHERE h.event_date > ? AND h.task_id > 0 AND n.user_id = ?
                                     AND event_type NOT IN (9,10,5,6,8,17,18)
                            GROUP BY h.task_id
-                           ORDER BY h.event_date DESC',
+                           ORDER BY h.event_date DESC', null,
                           array($events_since, $user->id));
-        $tasks = $sql->GetArray();
 
         $task_events = array();
         foreach ($tasks as $task) {
@@ -61,16 +60,15 @@ class FlysprayDoMyprofile extends FlysprayDo
     {
         global $user, $fs, $page, $db;
 
-        $sql = $db->Execute('SELECT * FROM {notes} WHERE user_id = ?', array($user->id));
-        $page->assign('saved_notes', $sql->GetArray());
+        $page->assign('saved_notes', $db->x->getAll('SELECT * FROM {notes} WHERE user_id = ?', $user->id));
 
         if (Req::num('note_id') && Get::val('action') != 'deletenote') {
-            $sql = $db->Execute('SELECT note_id, message_subject, message_body, n.last_updated, content
+            $note = $db->x->getRow('SELECT note_id, message_subject, message_body, n.last_updated, content
                                    FROM {notes} n
                               LEFT JOIN {cache} c ON note_id = topic AND type = ? AND n.last_updated < c.last_updated
-                                  WHERE user_id = ? AND note_id = ?',
+                                  WHERE user_id = ? AND note_id = ?', null,
                                   array('note', $user->id, Req::num('note_id')));
-            $page->assign('show_note', $sql->FetchRow());
+            $page->assign('show_note', $note);
         }
     }
     // **********************
@@ -88,19 +86,19 @@ class FlysprayDoMyprofile extends FlysprayDo
     function action_addnote()
     {
         global $db, $user;
-        $db->Execute('INSERT INTO {notes} (message_subject, message_body, last_updated, user_id)
-                         VALUES (?, ?, ?, ?)',
-                    array(Post::val('message_subject'), Post::val('message_body'), time(), $user->id));
+        $db->x->execParam('INSERT INTO {notes} (message_subject, message_body, last_updated, user_id)
+                                VALUES (?, ?, ?, ?)',
+                           array(Post::val('message_subject'), Post::val('message_body'), time(), $user->id));
         return array(SUBMIT_OK, L('noteadded'));
     }
 
     function action_deletenote()
     {
         global $db, $user;
-        $sql = $db->Execute('DELETE FROM {notes} WHERE note_id = ? AND user_id = ?',
-                             array(Get::val('note_id'), $user->id));
+        $num = $db->x->execParam('DELETE FROM {notes} WHERE note_id = ? AND user_id = ?',
+                                 array(Get::val('note_id'), $user->id));
 
-        if ($db->Affected_Rows()) {
+        if ($num) {
             return array(SUBMIT_OK, L('notedeleted'));
         } else {
             return array(ERROR_RECOVER, L('notedoesnotexist'));
@@ -110,13 +108,13 @@ class FlysprayDoMyprofile extends FlysprayDo
     function action_updatenote()
     {
         global $db, $user;
-        $sql = $db->Execute('UPDATE {notes}
+        $num = $db->x->execParam('UPDATE {notes}
                               SET message_subject = ?, message_body = ?, last_updated = ?
                             WHERE note_id = ? AND user_id = ?',
                           array(Post::val('message_subject'), Post::val('message_body'), time(),
                                 Post::val('note_id'), $user->id));
 
-        if ($db->Affected_Rows()) {
+        if ($num) {
             return array(SUBMIT_OK, L('noteupdated'));
         } else {
             return array(ERROR_RECOVER, L('notedoesnotexist'));

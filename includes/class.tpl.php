@@ -269,19 +269,18 @@ function tpl_userlink($uid)
         $uid = $uid['user_id'];
     } elseif (is_string($uid) && !is_numeric($uid)) {
         // map username to ID
-        $userinfo = $db->Execute('SELECT user_id, user_name, real_name
+        $userinfo = $db->x->getRow('SELECT user_id, user_name, real_name
                                         FROM {users}
-                                       WHERE user_name = ?', array($uid));
-        $userinfo = $userinfo->FetchRow();
+                                       WHERE user_name = ?', null, $uid);
         $uname = $userinfo['user_name'];
         $rname = $userinfo['real_name'];
         $uid = $userinfo['user_id'];
     } elseif (empty($cache[$uid])) {
-        $sql = $db->Execute('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
-                           array(intval($uid)));
-        if ($row = $sql->FetchRow()) {
-            $uname = reset($row);
-            $rname = next($row);
+        $sql = $db->x->getRow('SELECT user_name, real_name FROM {users} WHERE user_id = ?',
+                                      null, intval($uid));
+        if ($sql) {
+            $uname = $sql['user_name'];
+            $rname = $sql['real_name'];
         }
     }
 
@@ -369,7 +368,7 @@ function tpl_userselect($input_name, $value = null, $input_id = '', $attrs = arr
     }
 
     if ($value && ctype_digit($value)) {
-        $value = $db->GetOne('SELECT user_name FROM {users} WHERE user_id = ?', array($value));
+        $value = $db->x->GetOne('SELECT user_name FROM {users} WHERE user_id = ?', null, $value);
     }
 
     if (!$value) {

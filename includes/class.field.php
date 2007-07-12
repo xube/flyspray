@@ -162,15 +162,15 @@ class Field
 
             case FIELD_LIST:
                 if ($this->prefs['list_type'] == LIST_CATEGORY) {
-                    $check = $db->GetOne('SELECT count(*)
+                    $check = $db->x->GetOne('SELECT count(*)
                                             FROM {list_category}
                                            WHERE list_id = ? AND category_id = ?',
-                                           array($this->prefs['list_id'], $input));
+                                           null, array($this->prefs['list_id'], $input));
                 } else {
-                    $check = $db->GetOne('SELECT count(*)
+                    $check = $db->x->GetOne('SELECT count(*)
                                             FROM {list_items}
                                            WHERE list_id = ? AND list_item_id = ?',
-                                           array($this->prefs['list_id'], $input));
+                                           null, array($this->prefs['list_id'], $input));
                 }
                 $value = ($check) ? $input : 0;
                 break;

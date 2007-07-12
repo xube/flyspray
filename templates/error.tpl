@@ -6,8 +6,6 @@
   {L('inputerror')}
   <?php elseif ($type == ERROR_PERMS): ?>
   {L('permserror')}
-  <?php elseif ($type == ERROR_DB): ?>
-  {L('dberror')}
   <?php elseif ($type == ERROR_INTERNAL): ?>
   {L('internalerror')}
   <?php endif; ?>

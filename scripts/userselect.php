@@ -36,11 +36,9 @@ class FlysprayDoUserSelect extends FlysprayDo
                               WHERE g.project_id = ?
                            GROUP BY g.group_id';
 
-        $sql = $db->Execute($query, array($proj->id));
-        $page->assign('groups', $sql->GetArray());
+        $page->assign('groups', $db->x->getAll($query, null, $proj->id));
 
-        $sql = $db->Execute($query, array(0));
-        $page->assign('globalgroups', $sql->GetArray());
+        $page->assign('globalgroups',  $db->x->getAll($query, null, 0));
 
         // Search conditions
         $where = array();
@@ -61,12 +59,11 @@ class FlysprayDoUserSelect extends FlysprayDo
             $sortorder  = sprintf('ORDER BY %s %s, u.user_id ASC',
                 $order_column, Filters::enum(Get::val('sort', 'desc'), array('asc', 'desc')));
 
-            $sql = $db->Execute('SELECT u.user_id, user_name, real_name, email_address
+            $users = $db->x->getAll('SELECT u.user_id, user_name, real_name, email_address
                                    FROM {users} u
                               LEFT JOIN {users_in_groups} uig ON uig.user_id = u.user_id
                                   WHERE uig.group_id = ? AND ( ' . $where . ' )' . $sortorder,
-                                  array_merge(array(Get::val('group_id')), $params));
-            $users = $sql->GetArray();
+                                  null, array_merge(array(Get::val('group_id')), $params));
 
             // Offset and limit
             $user_list = array();
@@ -77,15 +74,16 @@ class FlysprayDoUserSelect extends FlysprayDo
             $page->assign('users', $user_list);
         } else {
             // be tricky ^^: show most assigned users
-            $sql = $db->SelectLimit('SELECT a.user_id, u.user_name, u.real_name, email_address,
+            $db->setLimit(20);
+            $users = $db->x->getAll('SELECT a.user_id, u.user_name, u.real_name, email_address,
                                             count(a.user_id) AS a_count, CASE WHEN t.project_id = ? THEN 1 ELSE 0 END AS my_project
                                        FROM {assigned} a
                                   LEFT JOIN {users} u ON a.user_id = u.user_id
                                   LEFT JOIN {tasks} t ON a.task_id = t.task_id
                                    WHERE ( ' . $where . ' )' . '
                                    GROUP BY a.user_id
-                                   ORDER BY my_project DESC, a_count DESC', 20, 0, array_merge(array($proj->id), $params));
-            $page->assign('users', $users = $sql->GetArray());
+                                   ORDER BY my_project DESC, a_count DESC', null, array_merge(array($proj->id), $params));
+            $page->assign('users', $users);
         }
 
         $page->assign('usercount', count($users));

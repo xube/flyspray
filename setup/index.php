@@ -11,7 +11,6 @@ session_start();
 //do it fastest as possible.
 ini_set('memory_limit', '64M');
 
-
 if (is_readable ('../flyspray.conf.php') && count(parse_ini_file('../flyspray.conf.php')) > 0)
 {
    die('Flyspray already installed. Use the <a href="upgrade.php">upgrader</a> to upgrade your Flyspray, or delete flyspray.conf.php to run setup.
@@ -28,6 +27,7 @@ if (!isset($borked[-1])) {
 // define basic stuff first.
 
 define('IN_FS', 1 );
+define('IN_SETUP', true);
 define('APPLICATION_NAME', 'Flyspray');
 define('BASEDIR', dirname(__FILE__));
 define('APPLICATION_PATH', dirname(BASEDIR));
@@ -39,6 +39,9 @@ require_once OBJECTS_PATH . '/fix.inc.php';
 require_once OBJECTS_PATH . '/class.gpc.php';
 require_once OBJECTS_PATH . '/class.flyspray.php';
 require_once OBJECTS_PATH . '/class.tpl.php';
+require_once OBJECTS_PATH . '/constants.inc.php';
+require_once OBJECTS_PATH . '/class.database.php';
+@require_once OBJECTS_PATH . '/class.tpl.php';
 
 // ---------------------------------------------------------------------
 // Application Web locations
@@ -88,9 +91,8 @@ class Setup extends Flyspray
    function Setup()
    {
       // Look for ADOdb
-      $this->mAdodbPath         = APPLICATION_PATH . '/adodb/adodb.inc.php';
       $this->mProductName       = 'Flyspray';
-      $this->mMinPasswordLength	= 8;
+      $this->mMinPasswordLength	= 6;
 
       // Initialise flag for proceeding to next step.
       $this->mProceed				= false;
@@ -691,8 +693,9 @@ class Setup extends Flyspray
                );
             if ($data = $this->CheckPostedData($required_data, $message = 'Configuration Error'))
             {
+            
                // Process the database checks and install tables
-               if (@$this->ProcessDatabaseSetup($data))
+               if ($this->ProcessDatabaseSetup($data))
                {
                   // Proceed to Administration part
                   $this->DisplayAdministration();
@@ -819,25 +822,23 @@ class Setup extends Flyspray
 
 
       // Setting the database for the ADODB connection
-      require_once($this->mAdodbPath);
 
-      $this->mDbConnection =& NewADOConnection(strtolower($db_type));
-      $this->mDbConnection->Connect($db_hostname, $db_username, $db_password, $db_name);
-      $this->mDbConnection->SetCharSet('utf8');
+      $this->mDbConnection = NewDatabase(array('dbtype' => $db_type, 'dbhost' => $db_hostname, 'dbuser' => $db_username, 'dbpass' => $db_password, 'dbname' => $db_name));
 
       // Get the users table name.
       $users_table	= (isset($db_prefix) ? $db_prefix : '') . 'users';
 
-      $sql	= "SELECT * FROM $users_table WHERE user_id = '1'";
-
       // Check if we already have an Admin user.
-      $result = $this->mDbConnection->Execute($sql);
-      if ($result)
+      $result = $this->mDbConnection->x->getRow("SELECT * FROM $users_table WHERE user_id = 1");
+      if (!PEAR::isError($result))
       {
          // If the record exists, we update it.
-         $row = $result->FetchRow();
-         $this->mAdminUsername = $row['user_name'];
-         $this->mAdminPassword = $row['user_pass'];
+         $this->mAdminUsername = $result['user_name'];
+         $this->mAdminPassword = $result['user_pass'];
+      } else {
+         $_SESSION['page_heading'] = 'Failed to update Admin users details (#1).';
+         $_SESSION['page_message'][] = $result->getMessage();
+         return false;
       }
 
      $md5_password	= md5($admin_password);
@@ -853,13 +854,12 @@ class Setup extends Flyspray
 
      $update_params = array($admin_username, $md5_password, $admin_email);
 
-     $result = $this->mDbConnection->Execute($update_user, $update_params);
+     $result = $this->mDbConnection->x->execParam($update_user, $update_params);
 
-     if (!$result)
+     if (PEAR::isError($result))
      {
-        $errorno = $this->mDbConnection->MetaError();
-        $_SESSION['page_heading'] = 'Failed to update Admin users details.';
-        $_SESSION['page_message'][] = ucfirst($this->mDbConnection->MetaErrorMsg($errorno)) . ': '. $this->mDbConnection->ErrorMsg($errorno);
+        $_SESSION['page_heading'] = 'Failed to update Admin users details (#2).';
+        $_SESSION['page_message'][] = $result->getMessage();
         return false;
      }
      else
@@ -874,88 +874,58 @@ class Setup extends Flyspray
 
    function ProcessDatabaseSetup($data)
    {
-      require_once($this->mAdodbPath);
-
-      // Perform a number of fatality checks, then die gracefully
-      if (!defined('_ADODB_LAYER'))
-      {
-         trigger_error('ADODB Libraries missing or not correct version');
-      }
-
       // Setting the database type for the ADODB connection
-      $this->mDbConnection =& NewADOConnection(strtolower($data['db_type']));
+      
+      extract($data, EXTR_REFS|EXTR_SKIP);
+      
+      $this->mDbConnection = @NewDatabase(array('dbtype' => $db_type, 'dbhost' => $db_hostname, 'dbuser' => $db_username, 'dbpass' => $db_password, 'dbname' => $db_name));
+      $res = $this->mDbConnection->connect();
 
-      /* check hostname/username/password */
-
-      if (!$this->mDbConnection->Connect(array_get($data, 'db_hostname'), array_get($data, 'db_username'), array_get($data, 'db_password'), array_get($data, 'db_name')))
+      if (PEAR::isError($res))
       {
+         $info = $this->mDbConnection->errorInfo();
          $_SESSION['page_heading'] = 'Database Processing';
-         switch($error_number = $this->mDbConnection->MetaError())
+         switch($info[1])
          {
-            case '-1':
-            // We are using the unknown error code(-1) because ADOdb library may not have the error defined.
-            // It could be totally some weird error.
-            $_SESSION['page_message'][] = $this->mDbConnection->ErrorMsg();
-            return false;
-            break;
-
-            case '-24':
+            case 2005:
             // Could not connect to database with the hostname provided
-            $_SESSION['page_message'][] = ucfirst($this->mDbConnection->MetaErrorMsg($error_number)) . ': ' . ucfirst($this->mDbConnection->ErrorMsg($error_number));
+            $_SESSION['page_message'][] = $info[2];
             $_SESSION['page_message'][] = 'Usually the database host name is "localhost". In some occassions, it maybe an internal ip-address or another host name to your webserver.';
             $_SESSION['page_message'][] = 'Double check with your hosting provider or System Administrator.';
             return false;
             break;
 
-            case '-25':
+            case 1049:
             // Database does not exist, try to create one
-            $this->mDbConnection =& NewADOConnection(strtolower($data['db_type']));
-            $this->mDbConnection->Connect(array_get($data, 'db_hostname'), array_get($data, 'db_username'), array_get($data, 'db_password'));
-            $dict = NewDataDictionary($this->mDbConnection);
-            $sqlarray = $dict->CreateDatabase(array_get($data, 'db_name'));
-            if (!$dict->ExecuteSQLArray($sqlarray)) {
-                $_SESSION['page_message'][] = ucfirst($this->mDbConnection->MetaErrorMsg($error_number)) . ': ' . ucfirst($this->mDbConnection->ErrorMsg($error_number));
+            $this->mDbConnection->setDatabase('');
+            $res = $this->mDbConnection->manager->createDatabase($db_name);
+            if (PEAR::isError($res)) {
+                $_SESSION['page_message'][] = $res->getMessage();
                 $_SESSION['page_message'][] = 'Your database does not exist and could not be created. Either create the database yourself, choose an existing database or
                                                use a database user with sufficient permissions to create a database.';
                 return false;
             } else {
-                $this->mDbConnection->SelectDB(array_get($data, 'db_name'));
+                $this->mDbConnection->setDatabase($db_name);
                 unset($_SESSION['page_heading']);
                 break;
             }
 
-            case '-26':
+            case 1045:
             // Username passwords don't match for the hostname provided
-            $_SESSION['page_message'][] = ucfirst($this->mDbConnection->MetaErrorMsg($error_number)) . ': ' . ucfirst($this->mDbConnection->ErrorMsg($error_number));
+            $_SESSION['page_message'][] = $info[2];
             $_SESSION['page_message'][] = "Apparently you haven't set up the right permissions for the database hostname provided.";
             $_SESSION['page_message'][] = 'Double check the provided credentials or contact your System Administrator for further assistance.';
             return false;
             break;
 
             default:
-            $_SESSION['page_message'][] = "Please verify your username/password/database details (error=$error_number)" . $this->mDbConnection->MetaErrorMsg($error_number);
+            $_SESSION['page_message'][] = "Please verify your username/password/database details (error={$info[1]}): " . $info[2];
             return false;
             break;
          }
-      }
-
-       // Setting the Fetch mode of the database connection.
-      $this->mDbConnection->SetFetchMode(ADODB_FETCH_BOTH);
-      $this->mDbConnection->SetCharSet('utf8');
-        //creating the datadict object for further operations
-       $this->mDataDict = & NewDataDictionary($this->mDbConnection);
-
-       include_once dirname($this->mAdodbPath) . '/adodb-xmlschema03.inc.php';
-
-       $this->mXmlSchema =  new adoSchema($this->mDbConnection);
-
+     }
        // Populate the database with the new tables and return the result (boolean)
-       if (!$this->PopulateDb($data))
-       {
-          return false;
-       }
-
-      return true;
+       return $this->PopulateDb($data);
    }
 
    /**
@@ -970,56 +940,35 @@ class Setup extends Flyspray
       $folders = glob_compat(BASEDIR . '/upgrade/[0-9]*');
       usort($folders, 'version_compare'); // start with lowest version
       $folders = array_reverse($folders); // start with highest version
-      $sql_file	= APPLICATION_PATH . '/setup/upgrade/' . reset($folders) . '/flyspray-install.xml';
+      $sql_file	= APPLICATION_PATH . '/setup/upgrade/' . basename(reset($folders)) . '/flyspray-install.xml';
 
        // Check if the install/upgrade file exists
       if (!is_readable($sql_file)) {
-
-          $_SESSION['page_message'][] = 'SQL file required for importing structure and data is missing.';
+          $_SESSION['page_message'][] = "SQL file required for importing structure and data is missing ($sql_file).";
           return false;
       }
 
        // Extract the variables to local namespace
        extract($data);
 
-       if(is_numeric($db_prefix)) {
-           $_SESSION['page_message'][] = 'database prefix cannot be numeric only';
+       if (is_numeric($db_prefix)) {
+           $_SESSION['page_message'][] = 'Database prefix cannot be numeric only';
            return false;
        }
-
-        // Set the prefix for database objects ( before parsing)
-      $this->mXmlSchema->setPrefix( (isset($db_prefix) ? $db_prefix : ''), false);
-      $this->mXmlSchema->ParseSchema($sql_file);
-
-      $this->mXmlSchema->ExecuteSchema();
-      $this->mDbConnection->Execute("UPDATE {$db_prefix}prefs SET pref_value = ? WHERE pref_name = 'fs_ver'", array($this->version));
-
-      if (($error_no = $this->mDbConnection->MetaError()))
+      
+      // Set the prefix for database objects ( before parsing)
+      require('MDB2/Schema.php');
+      $this->mXmlSchema =& MDB2_Schema::factory($this->mDbConnection);
+      $def = $this->mXmlSchema->parseDatabaseDefinitionFile($sql_file, array('db_prefix' => $db_prefix, 'db_name' => $data['db_name']));
+      $op = $this->mXmlSchema->createDatabase($def);
+      $this->mDbConnection->x->execParam("UPDATE {$db_prefix}prefs SET pref_value = ? WHERE pref_name = 'fs_ver'", $this->version);
+      
+      if (PEAR::isError($op))
       {
          $_SESSION['page_heading'] = 'Database Processing';
-         switch ($error_no)
-         {
-            case '-5':
-            // If there are tables with the same name
-            $_SESSION['page_message'][] = 'Table ' .$this->mDbConnection->MetaErrorMsg($this->mDbConnection->MetaError());
-            $_SESSION['page_message'][] = 'There probably are tables in the database which have the same prefix you provided.';
-            $_SESSION['page_message'][] = 'It is advised to change the prefix provided or you can drop the existing tables if you don\'t need them. Make a backup if you are not certain.';
-            return false;
-            break;
-
-            case '-1':
-            // We are using the unknown error code(-1) because ADOdb library may not have the error defined.
-            $_SESSION['page_message'][] = $this->mDbConnection->ErrorMsg();
-            return false;
-            break;
-
-            default:
-            $_SESSION['page_message'][] = $this->mDbConnection->ErrorMsg() . ': ' . $this->mDbConnection->ErrorNo();
-            $_SESSION['page_message'][] = 'Unknown error, please notify Developer quoting the error number';
-            return false;
-            break;
-          }
-       }
+         $_SESSION['page_message'][] = $op->getMessage();
+         return false;
+      }
 
        return true;
    }

@@ -28,14 +28,14 @@ class FlysprayDoPm extends FlysprayDoAdmin
     {
         global $db, $page, $proj;
 
-        $sql = $db->Execute("SELECT  *
+        $pending = $db->x->getAll("SELECT  *
                              FROM  {admin_requests} ar
                         LEFT JOIN  {tasks} t ON ar.task_id = t.task_id
                         LEFT JOIN  {users} u ON ar.submitted_by = u.user_id
                             WHERE  ar.project_id = ? AND resolved_by = 0
-                         ORDER BY  ar.time_submitted ASC", array($proj->id));
+                         ORDER BY  ar.time_submitted ASC", null, $proj->id);
 
-        $page->assign('pendings', $sql->GetArray());
+        $page->assign('pendings', $pending);
     }
 
     function area_prefs(){
@@ -91,8 +91,8 @@ class FlysprayDoPm extends FlysprayDoAdmin
         // carefully check the project prefix...
         $prefix = Post::val('project_prefix');
         // already in use?
-        $use = $db->GetOne('SELECT project_id FROM {projects} WHERE project_prefix = ? AND project_id != ?',
-                            array($prefix, $proj->id));
+        $use = $db->x->GetOne('SELECT project_id FROM {projects} WHERE project_prefix = ? AND project_id != ?',
+                            null, array($prefix, $proj->id));
         if (ctype_alnum($prefix) && $prefix != 'FS' && !$use) {
             $cols[] = 'project_prefix';
             $args[] =  $prefix;
@@ -106,12 +106,12 @@ class FlysprayDoPm extends FlysprayDoAdmin
         $args[] =  Flyspray::username_to_id(Post::val('default_cat_owner'));
         $args[] = $proj->id;
 
-        $db->Execute("UPDATE  {projects}
+        $db->x->execParam("UPDATE  {projects}
                          SET  ".join('=?, ', $cols)."=?
                        WHERE  project_id = ?", $args);
 
-        $db->Execute('UPDATE {projects} SET visible_columns = ? WHERE project_id = ?',
-                      array(trim(Post::val('visible_columns')), $proj->id));
+        $db->x->execParam('UPDATE {projects} SET visible_columns = ? WHERE project_id = ?',
+                           array(trim(Post::val('visible_columns')), $proj->id));
 
         return array(SUBMIT_OK, L('projectupdated'));
     }

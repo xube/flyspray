@@ -1,208 +1,415 @@
-<?xml version="1.0"?>
-<schema version="0.3">
-<table name="projects">
-    <field name="project_id" type="I" size="3">
-      <KEY/>
-      <AUTOINCREMENT/>
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<database>
+
+ <name><variable>db_name</variable></name>
+ <create>true</create>
+ <overwrite>true</overwrite>
+
+ <table>
+
+  <name><variable>db_prefix</variable>projects</name>
+
+  <declaration>
+
+   <field>
+    <name>project_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+    <autoincrement>1</autoincrement>
+   </field>
+
+   <field>
+    <name>project_title</name>
+    <type>text</type>
+    <length>100</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>project_prefix</name>
+    <type>text</type>
+    <length>20</length>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>theme_style</name>
+    <type>text</type>
+    <length>20</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>default_cat_owner</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>intro_message</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>visible_columns</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>others_view</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>anon_open</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>anon_view_tasks</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>notify_email</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>notify_jabber</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>notify_reply</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>notify_types</name>
+    <type>text</type>
+    <length>100</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>feed_img_url</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>feed_description</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>notify_subject</name>
+    <type>text</type>
+    <length>100</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>lang_code</name>
+    <type>text</type>
+    <length>10</length>
+    <notnull>true</notnull>
+    <default>en</default>
+   </field>
+
+   <field>
+    <name>comment_closed</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>auto_assign</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>last_updated</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>default_task</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>default_entry</name>
+    <type>text</type>
+    <length>8</length>
+    <notnull>true</notnull>
+    <default>index</default>
+   </field>
+
+   <field>
+    <name>send_digest</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>last_digest</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>roadmap_field</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>override_user_lang</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>anon_group</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <index>
+    <name><variable>db_prefix</variable>projects_pKey</name>
+    <primary>true</primary>
+    <field>
+     <name>project_id</name>
+     <sorting>ascending</sorting>
     </field>
-    <field name="project_title" type="C" size="100">
-      <NOTNULL/>
+   </index>
+
+  </declaration>
+
+ </table>
+
+ <table>
+
+  <name><variable>db_prefix</variable>tasks</name>
+
+  <declaration>
+
+   <field>
+    <name>task_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+    <autoincrement>1</autoincrement>
+   </field>
+
+   <field>
+    <name>project_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>prefix_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>date_opened</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>opened_by</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>is_closed</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>date_closed</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>closed_by</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>closure_comment</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>item_summary</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>detailed_desc</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>resolution_reason</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>1</default>
+   </field>
+
+   <field>
+    <name>task_severity</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>last_edited_by</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>last_edited_time</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>percent_complete</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>mark_private</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>anon_email</name>
+    <type>text</type>
+    <length>100</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>task_token</name>
+    <type>text</type>
+    <length>32</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <index>
+    <name><variable>db_prefix</variable>tasks_pKey</name>
+    <primary>true</primary>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
     </field>
-    <field name="project_prefix" type="C" size="20" />
-    <field name="theme_style" type="C" size="20">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="default_cat_owner" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="intro_message" type="X">
-      <NOTNULL/>
-    </field>
-    <field name="visible_columns" type="C" size="255">
-      <NOTNULL/>
-    </field>
-    <field name="others_view" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="anon_open" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="anon_view_tasks" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="notify_email" type="X">
-      <NOTNULL/>
-    </field>
-    <field name="notify_jabber" type="X">
-      <NOTNULL/>
-    </field>
-    <field name="notify_reply" type="X">
-      <NOTNULL/>
-    </field>
-    <field name="notify_types" type="C" size="100">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="feed_img_url" type="X">
-      <NOTNULL/>
-    </field>
-    <field name="feed_description" type="X">
-      <NOTNULL/>
-    </field>
-    <field name="notify_subject" type="C" size="100">
-      <NOTNULL/>
-      <DEFAULT value=""/>
-    </field>
-    <field name="lang_code" type="C" size="10">
-      <NOTNULL/>
-      <DEFAULT value="en"/>
-    </field>
-    <field name="comment_closed" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="auto_assign" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="last_updated" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="default_task" type="X">
-      <NOTNULL/>
-    </field>
-    <field name="default_entry" type="C" size="8">
-      <NOTNULL/>
-      <DEFAULT value="index"/>
-    </field>
-    <field name="send_digest" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="last_digest" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="roadmap_field" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="override_user_lang" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="anon_group" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <index name="project_prefixes">
-      <UNIQUE/>
-      <col>project_prefix</col>
-    </index>
-  </table>
-<table name="tasks">
-    <field name="task_id" type="I" size="10">
-      <KEY/>
-      <AUTOINCREMENT/>
-    </field>
-    <field name="project_id" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="prefix_id" type="I" size="10">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="date_opened" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="opened_by" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="is_closed" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="date_closed" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="closed_by" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="closure_comment" type="X"/>
-    <field name="item_summary" type="C" size="255">
-      <NOTNULL/>
-    </field>
-    <field name="detailed_desc" type="X">
-      <NOTNULL/>
-    </field>
-    <field name="resolution_reason" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="1"/>
-    </field>
-    <field name="task_severity" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="last_edited_by" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="last_edited_time" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="percent_complete" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="mark_private" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="anon_email" type="C" size="100">
-      <NOTNULL/>
-    </field>
-    <field name="task_token" type="C" size="32">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <index name="attached_to_project">
-      <col>project_id</col>
-    </index>
-    <index name="task_severity">
-      <col>task_severity</col>
-    </index>
-    <index name="task_type">
-      <col>task_type</col>
-    </index>
-    <index name="product_category">
-      <col>product_category</col>
-    </index>
-    <index name="item_status">
-      <col>item_status</col>
-    </index>
-    <index name="is_closed">
-      <col>is_closed</col>
-    </index>
-    <index name="closedby_version">
-      <col>closedby_version</col>
-    </index>
-    <index name="due_date">
-      <col>due_date</col>
-    </index>
-    <index name="tasks_prefix">
-      <col>prefix_id</col>
-    </index>
-  </table>
-</schema>
+   </index>
+
+  </declaration>
+
+ </table>
+
+</database>

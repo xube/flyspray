@@ -12,7 +12,7 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-require dirname(__FILE__) . '/external/adodb/adodb.inc.php';
+require_once dirname(__FILE__) . '/external/mdb2/MDB2.php';
 
 /**
  * fill_placeholders
@@ -41,48 +41,47 @@ function fill_placeholders($cols, $additional=0)
  * any fancy error message here. Also, we must make sure that database errors don't
  * stay unnoticed during development.
  */
-function show_dberror()
+function show_dberror($error)
 {
-    // upgrader can handle that on its own
-    if (defined('IN_UPGRADER')) {
-        return;
+    @ob_clean();
+    global $db;
+
+    // error could happen anywhere, we might not have templates or anything else
+    // at our disposal yet => quick and dirty
+    echo '<fieldset><legend>Database error</legend>
+          <p>
+            A database error occured. Please <a href="http://forum.flyspray.org">report this problem</a> to the developers unless
+            the error message below indicates that it is a configuration issue or the like.
+          </p>
+          <pre>' . htmlspecialchars(wordwrap($error->userinfo), ENT_QUOTES, 'utf-8') . '</pre>
+          <hr /><table><caption>Debug trace</caption><tr><th>File</th><th>Line</th></tr>';
+    foreach ($error->backtrace as $trace) {
+        echo '<tr><td>' . htmlspecialchars($trace['file'], ENT_QUOTES, 'utf-8') . '</td><td>' . intval($trace['line']) . '</td></tr>';
     }
-    echo 'A database error occured. Details below:' . "\n";
-    $print = func_get_args();
-    array_pop($print); // do adodb object please
-    print_r($print);
+    echo '</table></fieldset>';
+    if ($db->inTransaction()) {
+        $db->rollback();
+    }
     exit;
 }
 
 /**
  * This function adds a table prefix to an SQL query
- * see $db->fnExecute
  *
  * @author Florian Schmitz
  * @author Cristian Rodriguez
  */
-function &_table_prefix(&$db, &$sql, $inputarray)
+function _table_prefix(&$db, $scope, $message, $is_manip = null)
 {
-    if (!defined('DB_PREFIX')) {
-        die ('No table prefix set!');
+    if ($scope === 'query') {
+        if (defined('DEBUG_SQL')) {
+            echo $message . '<hr />';
+        }
+        return preg_replace('/{([\w\-]+?)}/', DB_PREFIX . '\1', $message);
     }
-
-    $sql = preg_replace('/{([\w\-]+?)}/', $db->nameQuote . DB_PREFIX . '\1' . $db->nameQuote, $sql);
-
-    $null = null;
-    return $null;
+    
+    return $message;
 }
-
-// if set to false, we'll get errors
-
-$ADODB_COUNTRECS = true;
-$dbcachedir = sprintf('%s/dbcache', FS_CACHE_DIR);
-
-if(!is_dir($dbcachedir)) {
-    mkdir($dbcachedir, 0700);
-}
-
-$ADODB_CACHE_DIR = $dbcachedir;
 
 /**
  * This function is a replacement for ADONewConnection, it does some
@@ -99,15 +98,26 @@ function &NewDatabase($conf = array())
     }
 
     $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname";
-    $db =& ADONewConnection($dsn);
+    $db =& MDB2::factory($dsn);
+    
+    ini_set('include_path', dirname(__FILE__) .'/external/MDB2');
+    
+    $db->loadModule('Extended', 'x', false);
+    if (defined('IN_UPGRADER') || defined('IN_SETUP')) {
+        $db->loadModule('Manager');
+    }
+
+
     $dbprefix = isset($dbprefix) ? $dbprefix : '';
 
     if ($db === false || (!empty($dbprefix) && !preg_match('/^[a-z][a-z0-9_]+$/i', $dbprefix))) {
         die('Flyspray was unable to connect to the database. '
             .'Check your settings in flyspray.conf.php');
     }
+    define('DB_PREFIX', $dbprefix);
 
-    $db->SetFetchMode(ADODB_FETCH_ASSOC);
+    $db->setFetchMode(MDB2_FETCHMODE_ASSOC);
+
     /*
      * this will work only in the following systems/PHP versions
      *
@@ -118,14 +128,15 @@ function &NewDatabase($conf = array())
      * in the rest of the world, it will silently return FALSE.
      */
 
-    $db->SetCharSet('utf8');
-    $db->fnExecute = '_table_prefix';
-    $db->fnCacheExecute = '_table_prefix';
-    $db->raiseErrorFn = 'show_dberror';
+    //$db->setCharSet('utf8');
 
-    //enable debug if constact DEBUG_SQL is defined.
-    !defined('DEBUG_SQL') || $db->debug = true;
-    define('DB_PREFIX', $dbprefix);
+    $db->setOption('debug', true);
+    $db->setOption('debug_handler', '_table_prefix');
+    
+    // upgrader can handle that on its own
+    if (!defined('IN_UPGRADER') && !defined('IN_SETUP')) {
+        $db->setErrorHandling(PEAR_ERROR_CALLBACK, 'show_dberror');
+    }
 
     return $db;
 }
@@ -159,7 +170,7 @@ function GetColumnNames($table, $alt, $prefix)
  * This groups a result by a single column the way
  * MySQL would do it. Postgre doesn't like the queries MySQL needs.
  *
- * @param object $result
+ * @param array $result
  * @param string $column
  * @param array $collect_columns collect data.
  *  example: user tables with groups joined. collect group_id when grouping by user_id to
@@ -170,15 +181,13 @@ function GetColumnNames($table, $alt, $prefix)
 function GroupBy(&$result, $column, $collect_columns = array(), $reindex = true)
 {
     $rows = array();
-    while (!$result->EOF) {
+    foreach ($result as $row) {
         foreach ($collect_columns as $col) {
-            if (isset($rows[$result->fields[$column]][$col])) {
-                $result->fields[$col] = array_merge( (array) $rows[$result->fields[$column]][$col],
-                                                             array($result->fields[$col]));
+            if (isset($rows[$row[$column]][$col])) {
+                $row[$col] = array_merge( (array) $rows[$row[$column]][$col], array($row[$col]));
             }
         }
-        $rows[$result->fields[$column]] = $result->fields;
-        $result->MoveNext();
+        $rows[$row[$column]] = $row;
     }
     return ($reindex) ? array_values($rows) : $rows;
 }

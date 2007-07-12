@@ -1,29 +1,32 @@
 <?php
- 
+// This is just a developer's tool. Needs tables with flyspray_ prefix.
+
 error_reporting(E_ALL);
- 
- 
-require_once '../includes/external/adodb/adodb.inc.php';
-require_once '../includes/external/adodb/adodb-xmlschema03.inc.php';
+define('IN_FS', true);
+$file = 'exportdb.xml';
+
+require_once dirname(__FILE__) . '/../includes/class.database.php';
  
 $conf    = @parse_ini_file('../flyspray.conf.php', true) or die('Cannot open config file.');
  
-/* Start by creating a normal ADODB connection.
- */
+define('DEBUG_SQL', true);
+$db = NewDatabase($conf['database']);
+
+require_once dirname(__FILE__) . '/../includes/external/MDB2/MDB2/Schema.php';
  
-$db = ADONewConnection($conf['database']['dbtype']);
-$db->Connect( $conf['database']['dbhost'], $conf['database']['dbuser'],
-              $conf['database']['dbpass'], $conf['database']['dbname']) or die('Cannot connect to DB.');
-$db->debug= true;
- 
-/* Use the database connection to create a new adoSchema object.
- */
- 
-$schema = new adoSchema($db);
- 
-$data = $schema->ExtractSchema();
-$data = str_replace('flyspray_', '', $data);
- 
-file_put_contents('flyspray-schema.xml', $data);
- 
+// Now build schema object based on existing connection
+$schema =& MDB2_Schema::factory($db);
+
+$def = $schema->getDefinitionFromDatabase();
+$schema->dumpDatabase($def, array('output_mode' => 'file', 'output' => $file), MDB2_SCHEMA_DUMP_STRUCTURE);
+
+// Now make prefix a variable, so that it can be replaced during setup or upgrade
+$xml = file_get_contents($file);
+$xml = str_replace('flyspray_', '<variable>db_prefix</variable>', $xml);
+// empty default values might cause problems
+$xml = str_replace('<default></default>', '', $xml);
+// also make database name variable
+$xml = str_replace('<name>'.$conf['database']['dbname'].'</name>', '<name><variable>db_name</variable></name>', $xml);
+file_put_contents($file, $xml);
+
 ?>

@@ -29,13 +29,13 @@ class FlysprayDoUser extends FlysprayDo
         global $db, $page, $fs;
 
         // Some possibly interesting information about the user
-        $sql = $db->GetOne('SELECT count(*) FROM {comments} WHERE user_id = ?', array($this->user->id));
+        $sql = $db->x->GetOne('SELECT count(*) FROM {comments} WHERE user_id = ?', null, $this->user->id);
         $page->assign('comments', $sql);
 
-        $sql = $db->GetOne('SELECT count(*) FROM {tasks} WHERE opened_by = ?', array($this->user->id));
+        $sql = $db->x->GetOne('SELECT count(*) FROM {tasks} WHERE opened_by = ?', null, $this->user->id);
         $page->assign('tasks', $sql);
 
-        $sql = $db->GetOne('SELECT count(*) FROM {assigned} WHERE user_id = ?', array($this->user->id));
+        $sql = $db->x->GetOne('SELECT count(*) FROM {assigned} WHERE user_id = ?', null, $this->user->id);
         $page->assign('groups', Flyspray::listallGroups($this->user->id));
         $page->assign('assigned', $sql);
 

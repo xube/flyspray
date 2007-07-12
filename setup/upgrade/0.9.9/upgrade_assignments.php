@@ -6,24 +6,24 @@
    | to be run once to do the conversion.                      |
    \***********************************************************/
 
-$check_sql = $db->Query("SELECT task_id, assigned_to
+$check_sql = $db->query("SELECT task_id, assigned_to
                            FROM {tasks}
                           WHERE assigned_to > '0'");
 
 while ($row = $check_sql->FetchRow())
 {
-   $check = $db->GetOne('SELECT assigned_id FROM {assigned} WHERE task_id = ? AND user_id = ?',
-                          array($row['task_id'], $row['assigned_to']));
+   $check = $db->x->GetOne('SELECT assigned_id FROM {assigned} WHERE task_id = ? AND user_id = ?',
+                          null, array($row['task_id'], $row['assigned_to']));
    if ($check) {
        continue;
    }
 
-   $db->Query('INSERT INTO {assigned}
+   $db->x->execParam('INSERT INTO {assigned}
                            (task_id, user_id)
                     VALUES (?,?)',
                            array($row['task_id'], $row['assigned_to']));
 
-   $db->Query('UPDATE {tasks}
+   $db->x->execParam('UPDATE {tasks}
                   SET assigned_to = 0
                 WHERE task_id = ?',
                       array($row['task_id']));

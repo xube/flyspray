@@ -8,7 +8,8 @@ function get_events($task_id, $where = '', $sort = 'ASC')
 {
     global $db;
     $sort = Filters::enum($sort, array('ASC', 'DESC'));
-    return $db->Execute("SELECT h.*,
+    $task_id = intval($task_id);
+    return $db->query("SELECT h.*,
                       p1.project_title AS project_id1,
                       p2.project_title AS project_id2,
                       lr.item_name AS resolution_name,
@@ -38,8 +39,8 @@ function get_events($task_id, $where = '', $sort = 'ASC')
 
             LEFT JOIN {attachments} att ON att.attachment_id = h.new_value AND h.event_type = 7
 
-                WHERE h.task_id = ? $where
-             ORDER BY event_date $sort, event_type ASC", array($task_id));
+                WHERE h.task_id = $task_id $where
+             ORDER BY event_date $sort, event_type ASC");
 }
 
 /**

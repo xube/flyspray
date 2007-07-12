@@ -94,12 +94,12 @@ class FlysprayDoDepends extends FlysprayDo
               WHERE  t1.project_id= ?
            ORDER BY  d.task_id, d.dep_task_id';
 
-        $get_edges = $db->Execute($sql, array($proj->id));
+        $edges = $db->x->getAll($sql, $proj->id);
 
         $edge_list = array();
         $rvrs_list = array();
         $node_list = array();
-        while ($row = $get_edges->FetchRow()) {
+        foreach ($edges as $row) {
             extract($row, EXTR_REFS);
             $edge_list[$id1][] = $id2;
             $rvrs_list[$id2][] = $id1;

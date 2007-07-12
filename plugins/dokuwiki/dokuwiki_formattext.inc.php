@@ -36,12 +36,12 @@ class dokuwiki_TextFormatter
 
             // Cache the parsed text
             if (!is_null($type) && !is_null($id)) {
-                $fields = array('content'=> serialize($instructions), 'type'=> $type , 'topic'=> $id,
-                                'last_updated'=> time());
+                $fields = array('content'=> array('value' => serialize($instructions)),
+                                'type'=> array('value' => $type, 'key' => true),
+                                'topic'=> array('value' => $id, 'key' => true),
+                                'last_updated'=> array('value' => time()));
 
-                $keys = array('type','topic');
-                //autoquote is always true on db class
-                $db->Replace('{cache}', $fields, $keys, ADODB_AUTOQUOTE);
+                $db->Replace('{cache}', $fields);
             }
         } else {
             $instructions = unserialize($instructions);

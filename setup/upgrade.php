@@ -38,10 +38,6 @@ define('CONFIG_PATH', Flyspray::get_config_path(BASEDIR . '/../'));
 
 $conf  = @parse_ini_file(CONFIG_PATH, true) or die('Cannot open config file at ' . CONFIG_PATH);
 
-// Initialise DB
-require_once BASEDIR . '/../includes/external/adodb/adodb.inc.php';
-require_once BASEDIR . '/../includes/external/adodb/adodb-xmlschema03.inc.php';
-
 $db = NewDatabase($conf['database']);
 
 // ---------------------------------------------------------------------
@@ -52,7 +48,7 @@ $fs =& new Flyspray();
 define('APPLICATION_SETUP_INDEX', Flyspray::absoluteURI());
 define('UPGRADE_VERSION', Flyspray::base_version($fs->version));
 // Get installed version
-$installed_version = $db->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('fs_ver'));
+$installed_version = $db->x->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', null, 'fs_ver');
 
 $page =& new Tpl;
 $page->assign('title', 'Upgrade ');
@@ -74,28 +70,34 @@ $done = true;
 
 $upgrade_available = false;
 if (Post::val('upgrade')) {
-    $db->StartTrans();
+    $db->beginTransaction();
     foreach ($folders as $folder) {
         if (version_compare($installed_version, $folder, '<=')) {
-            execute_upgrade_file($folder, $installed_version);
+            // example: we upgrade from 0.9.9(final) to 1.0. In this case we want to start at 0.9.9.2 
+            if (version_compare($installed_version, $folder, 'eq') && Flyspray::base_version($installed_version) == $installed_version) {
+                continue;
+            }
+            $res = execute_upgrade_file($folder, $installed_version);
             $installed_version = $folder;
 
             // did everything work?
-            if ($db->HasFailedTrans() && $db->MetaError()) {
+            if (PEAR::isError($res)) {
                 $done = false;
-                $db->FailTrans();
+                if ($db->inTransaction()) {
+                    $db->rollback();
+                }
 
-                $page->assign('errormsg', $db->ErrorMsg($db->MetaError()));
+                $page->assign('errormsg', $res->getMessage() . ': ' . $res->userinfo);
                 break;
             }
         }
     }
     // we should be done at this point
-    $db->Query('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+    $db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
 
     $page->assign('done', $done);
 
-    $db->CompleteTrans();
+    $db->commit();
     $installed_version = $fs->version;
 }
 foreach ($folders as $folder) {
@@ -111,7 +113,7 @@ foreach ($folders as $folder) {
 
 function execute_upgrade_file($folder, $installed_version)
 {
-    global $db, $page, $conf;
+    global $db, $page, $conf, $fs;
     // At first the config file
     $upgrade_path = BASEDIR . '/upgrade/' . $folder;
     new ConfUpdater(CONFIG_PATH, $upgrade_path);
@@ -121,28 +123,28 @@ function execute_upgrade_file($folder, $installed_version)
 
     // global prefs update
     if (isset($upgrade_info['fsprefs'])) {
-        $existing = $db->GetCol('SELECT pref_name FROM {prefs}');
+        $existing = $db->x->GetCol('SELECT pref_name FROM {prefs}');
         // Add what is missing
         foreach ($upgrade_info['fsprefs'] as $name => $value) {
             if (!in_array($name, $existing)) {
-                $db->Execute('INSERT INTO {prefs} (pref_name, pref_value) VALUES (?, ?)', array($name, $value));
+                $db->x->execParam('INSERT INTO {prefs} (pref_name, pref_value) VALUES (?, ?)', array($name, ($value === '') ? '0' : $value ));
             }
         }
         // Delete what is too much
         foreach ($existing as $name) {
             if (!isset($upgrade_info['fsprefs'][$name])) {
-                $db->Execute('DELETE FROM {prefs} WHERE pref_name = ?', array($name));
+                $db->x->execParam('DELETE FROM {prefs} WHERE pref_name = ?', $name);
             }
         }
     }
-
+    
     // Now a mix of XML schema files and PHP upgrade scripts
     if (!isset($upgrade_info[$type])) {
         die('#1 Bad upgrade.info file.');
     }
 
     // files which are already done
-    $done = $db->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', array('upgrader_done'));
+    $done = $db->x->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', null, 'upgrader_done');
     $done = ($done) ? unserialize($done) : array();
 
     ksort($upgrade_info[$type]);
@@ -159,18 +161,24 @@ function execute_upgrade_file($folder, $installed_version)
         }
 
         if (substr($file, -4) == '.xml') {
-            $schema = new adoSchema($db);
-            $xml = file_get_contents($upgrade_path . '/' . $file);
-            $xml = str_replace('<table name="', '<table name="' . $conf['database']['dbprefix'], $xml);
-            $schema->ParseSchemaString($xml);
-            if ($schema->ExecuteSchema(null, true)) {
+            require_once 'MDB2/Schema.php';
+            $schema =& MDB2_Schema::factory($db);
+            $schema->setOption('force_defaults', false);
+            $previous_schema = $schema->getDefinitionFromDatabase();
+            $res = $schema->updateDatabase($upgrade_path . '/' . $file, $previous_schema,
+                                           array('db_prefix' => $conf['database']['dbprefix'], 'db_name' => $conf['database']['dbname']));
+      
+            if (!PEAR::isError($res)) {
                 $done[$file] = $hash;
+            } else {
+                return $res;
             }
         }
     }
 
-    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($folder, 'fs_ver'));
-    $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(serialize($done), 'upgrader_done'));
+    $db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($folder, 'fs_ver'));
+    $db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(serialize($done), 'upgrader_done'));
+    return true;
 }
 
  /**

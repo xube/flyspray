@@ -30,11 +30,11 @@ class TextCommands
         global $db, $user, $proj;
         // First of all, let's get the user
         // TODO: authentication
-        $uid = $db->GetOne('SELECT user_id
+        $uid = $db->x->GetOne('SELECT user_id
                               FROM {users}
                              WHERE email_address = ? AND ? = ?
                                    OR
-                                   jabber_id = ? AND ? = ?',
+                                   jabber_id = ? AND ? = ?', null,
                             array($from, $type, NOTIFY_EMAIL, $from, $type, NOTIFY_JABBER));
         if ($type == NOTIFY_JABBER) {
             $user = new User($uid);
@@ -154,8 +154,8 @@ class TextCommands
             if (is_numeric($parsed['project'])) {
                 $args['project_id'] = $parsed['project'];
             } else {
-                $pid = $db->GetOne('SELECT project_id FROM {projects} WHERE project_title LIKE ?',
-                                   array('%' . $parsed['project'] . '%'));
+                $pid = $db->x->GetOne('SELECT project_id FROM {projects} WHERE project_title LIKE ?',
+                                   null, '%' . $parsed['project'] . '%');
                 $args['project_id'] = $pid;
             }
             $proj = new Project($args['project_id']);
@@ -176,11 +176,11 @@ class TextCommands
                 // you won't enter the ID of the item, so we have to find it first
                 if ($field->prefs['field_type'] == FIELD_LIST) {
                     if ($field->prefs['list_type'] == LIST_CATEGORY) {
-                        $value = $db->GetOne('SELECT category_id FROM {list_category} WHERE category_name LIKE ?',
-                                             array($value));
+                        $value = $db->x->GetOne('SELECT category_id FROM {list_category} WHERE category_name LIKE ?',
+                                             null, $value);
                     } else {
-                        $value = $db->GetOne('SELECT list_item_id FROM {list_items} WHERE item_name LIKE ?',
-                                             array($value));
+                        $value = $db->x->GetOne('SELECT list_item_id FROM {list_items} WHERE item_name LIKE ?',
+                                             null, $value);
                     }
                 }
                 $args['field' . $field->id] = $value;

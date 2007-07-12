@@ -23,12 +23,11 @@ class FlysprayDoEditcomment extends FlysprayDo
     {
         global $db, $page, $user;
 
-        $sql = $db->Execute("SELECT  c.*, u.real_name
+        $this->comment = $db->x->getRow('SELECT  c.*, u.real_name
                              FROM  {comments} c
                        INNER JOIN  {users}    u ON c.user_id = u.user_id
-                            WHERE  comment_id = ? AND task_id = ?",
+                            WHERE  comment_id = ? AND task_id = ?', null,
                             array(Get::num('id', 0), Get::num('task_id', 0)));
-        $this->comment = $sql->FetchRow();
         return $user->can_edit_comment($this->comment);
     }
 

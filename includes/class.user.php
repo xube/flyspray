@@ -15,14 +15,15 @@ class User
         global $db;
 
         if ($uid > 0) {
-            $sql = $db->Execute('SELECT *, g.group_id AS global_group, uig.record_id AS global_record_id
+            $this->infos = $db->x->getRow(
+                              'SELECT *, g.group_id AS global_group, uig.record_id AS global_record_id
                                  FROM {users} u, {users_in_groups} uig, {groups} g
                                 WHERE u.user_id = ? AND uig.user_id = ? AND g.project_id = 0
-                                      AND uig.group_id = g.group_id',
+                                      AND uig.group_id = g.group_id', null,
                                 array($uid, $uid));
         }
 
-        if ($uid > 0 && $this->infos = $sql->FetchRow()) {
+        if ($uid > 0 && is_array($this->infos)) {
             $this->id = intval($uid);
         } else {
             $this->infos = array('real_name' => L('anonuser'), 'user_name' => '');
@@ -63,17 +64,16 @@ class User
             }
 
             if (Get::val('search_name')) {
-                $fields = array('search_string'=> serialize($arr), 'time'=> time(),
-                                'user_id'=> $this->id , 'name'=> Get::val('search_name'));
+                $fields = array('search_string'=> array('value' => serialize($arr)),
+                                'time'=> array('value' => time()),
+                                'user_id'=> array('value' => $this->id, 'key' => true),
+                                'name'=> array('value' => Get::val('search_name'), 'key' => true));
 
-                $keys = array('name','user_id');
-
-                $db->Replace('{searches}', $fields, $keys, ADODB_AUTOQUOTE);
+                $db->Replace('{searches}', $fields);
             }
         }
 
-        $sql = $db->Execute('SELECT * FROM {searches} WHERE user_id = ? ORDER BY name ASC', array($this->id));
-        $this->searches = $sql->GetArray();
+        $this->searches = $db->x->getAll('SELECT * FROM {searches} WHERE user_id = ? ORDER BY name ASC', null, array($this->id));
     }
 
     function perms($name, $project = null) {
@@ -97,10 +97,10 @@ class User
 
         $this->perms = array(0 => array());
         // Get project settings which are important for permissions
-        $sql = $db->Execute('SELECT project_id, others_view, anon_open, comment_closed,
+        $sql = $db->query('SELECT project_id, others_view, anon_open, comment_closed,
                                   anon_view_tasks
                              FROM {projects}');
-        while ($row = $sql->FetchRow()) {
+        while ($row = $sql->fetchRow()) {
             $this->perms[$row['project_id']] = $row;
         }
         // Fill permissions for global project
@@ -108,19 +108,19 @@ class User
 
         if (!$this->isAnon()) {
             // Get the global group permissions for the current user
-            $sql = $db->Execute("SELECT  ".join(', ', $fields).", g.project_id, uig.record_id,
+            $sql = $db->x->getAll("SELECT  ".join(', ', $fields).", g.project_id, uig.record_id,
                                        g.group_open, g.group_id AS project_group
                                  FROM  {groups} g
                             LEFT JOIN  {users_in_groups} uig ON g.group_id = uig.group_id
                             LEFT JOIN  {projects} p ON g.project_id = p.project_id
                                 WHERE  uig.user_id = ?
-                             ORDER BY  g.project_id, g.group_id ASC",
+                             ORDER BY  g.project_id, g.group_id ASC", null,
                                 array($this->id));
 
-            while ($row = $sql->FetchRow()) {
+            foreach ($sql as $row) {
                 if (!isset($this->perms[$row['project_id']])) {
                     // should not happen, so clean up the DB
-                    $db->Execute('DELETE FROM {users_in_groups} WHERE record_id = ?', array($row['record_id']));
+                    $db->x->execParam('DELETE FROM {users_in_groups} WHERE record_id = ?', array($row['record_id']));
                     continue;
                 }
 
@@ -145,13 +145,13 @@ class User
         }
 
         // project list of $fs
-		$sql = $db->Execute(
+		$projects = $db->x->getAll(
 		        'SELECT  project_id, project_title, others_view, project_prefix,
 		                 upper(project_title) AS sort_names
 		           FROM  {projects}
 		       ORDER BY  sort_names');
 
-		$fs->projects = array_filter($sql->GetArray(), array($this, 'can_view_project'));
+		$fs->projects = array_filter($projects, array($this, 'can_view_project'));
     }
 
     function check_account_ok()
@@ -290,19 +290,19 @@ class User
         }
 
         // Check that the user hasn't already voted this task
-        $check = $db->GetOne('SELECT vote_id
+        $check = $db->x->GetOne('SELECT vote_id
                                 FROM {votes}
                                WHERE user_id = ? AND task_id = ?',
-                             array($this->id, $task['task_id']));
+                              null, array($this->id, $task['task_id']));
         if ($check) {
             return -2;
         }
 
         // Check that the user hasn't voted more than twice this day
-        $check = $db->GetOne('SELECT count(*)
+        $check = $db->x->GetOne('SELECT count(*)
                                 FROM {votes}
                                WHERE user_id = ? AND date_time > ?',
-                              array($this->id, time() - 86400));
+                              null, array($this->id, time() - 86400));
         if ($check > 2) {
             return -3;
         }

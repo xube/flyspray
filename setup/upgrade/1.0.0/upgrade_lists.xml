@@ -1,84 +1,214 @@
-<?xml version="1.0"?>
-<schema version="0.3">
-  <table name="list_items">
-    <field name="list_item_id" type="I" size="11">
-      <KEY/>
-      <AUTOINCREMENT/>
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<database>
+
+ <name><variable>db_name</variable></name>
+ <create>true</create>
+ <overwrite>true</overwrite>
+
+ <table>
+
+  <name><variable>db_prefix</variable>list_category</name>
+
+  <declaration>
+
+   <field>
+    <name>category_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+    <autoincrement>1</autoincrement>
+   </field>
+
+   <field>
+    <name>category_name</name>
+    <type>text</type>
+    <length>30</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>project_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>show_in_list</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>category_owner</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>lft</name>
+    <type>integer</type>
+    <unsigned>true</unsigned>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>rgt</name>
+    <type>integer</type>
+    <unsigned>true</unsigned>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>list_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <index>
+    <name><variable>db_prefix</variable>list_category_pKey</name>
+    <primary>true</primary>
+    <field>
+     <name>category_id</name>
+     <sorting>ascending</sorting>
     </field>
-    <field name="item_name" type="C" size="30">
-      <NOTNULL/>
+   </index>
+
+  </declaration>
+
+ </table>
+
+ <table>
+
+  <name><variable>db_prefix</variable>list_items</name>
+
+  <declaration>
+
+   <field>
+    <name>list_item_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+    <autoincrement>1</autoincrement>
+   </field>
+
+   <field>
+    <name>item_name</name>
+    <type>text</type>
+    <length>30</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>list_position</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>show_in_list</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>1</default>
+   </field>
+
+   <field>
+    <name>version_tense</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>false</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>list_id</name>
+    <type>text</type>
+    <length>20</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <index>
+    <name><variable>db_prefix</variable>list_items_pKey</name>
+    <primary>true</primary>
+    <field>
+     <name>list_item_id</name>
+     <sorting>ascending</sorting>
     </field>
-    <field name="list_position" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
+   </index>
+
+  </declaration>
+
+ </table>
+
+ <table>
+
+  <name><variable>db_prefix</variable>lists</name>
+
+  <declaration>
+
+   <field>
+    <name>list_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+    <autoincrement>1</autoincrement>
+   </field>
+
+   <field>
+    <name>list_name</name>
+    <type>text</type>
+    <length>30</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>list_type</name>
+    <type>text</type>
+    <length>20</length>
+    <notnull>true</notnull>
+    <default></default>
+   </field>
+
+   <field>
+    <name>project_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <index>
+    <name><variable>db_prefix</variable>lists_pKey</name>
+    <primary>true</primary>
+    <field>
+     <name>list_id</name>
+     <sorting>ascending</sorting>
     </field>
-    <field name="show_in_list" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="1"/>
-    </field>
-    <field name="version_tense" type="I" size="1"/>
-    <field name="list_id" type="C" size="20">
-      <NOTNULL/>
-    </field>
-    <index name="lists_items_lid">
-      <col>list_id</col>
-    </index>
-  </table>
-  <table name="lists">
-    <field name="list_id" type="I" size="11">
-      <KEY/>
-      <AUTOINCREMENT/>
-    </field>
-    <field name="list_name" type="C" size="30">
-      <NOTNULL/>
-    </field>
-    <field name="list_type" type="C" size="20">
-      <NOTNULL/>
-    </field>
-    <field name="project_id" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <index name="lists_pr_id">
-      <col>project_id</col>
-    </index>
-  </table>
-  <table name="list_category">
-    <field name="category_id" type="I" size="3">
-      <KEY/>
-      <AUTOINCREMENT/>
-    </field>
-    <field name="category_name" type="C" size="30">
-      <NOTNULL/>
-    </field>
-    <field name="project_id" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="show_in_list" type="I" size="1">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="category_owner" type="I" size="3">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <field name="lft" type="I" size="10">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-      <UNSIGNED/>
-    </field>
-    <field name="rgt" type="I" size="10">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-      <UNSIGNED/>
-    </field>
-    <field name="list_id" type="I" size="11">
-      <NOTNULL/>
-      <DEFAULT value="0"/>
-    </field>
-    <index name="cat_list_id">
-      <col>list_id</col>
-    </index>
-  </table>
-</schema>
+   </index>
+
+  </declaration>
+
+ </table>
+
+</database>

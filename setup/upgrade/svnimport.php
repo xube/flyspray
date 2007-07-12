@@ -17,7 +17,7 @@ if (!$proj->prefs['svn_url']) {
     die('No URL to SVN repository entered in PM area.');
 }
 
-$project_prefixes = $db->GetCol('SELECT project_prefix FROM {projects}');
+$project_prefixes = $db->x->GetCol('SELECT project_prefix FROM {projects}');
 $look = array('FS#', 'bug ');
 foreach ($project_prefixes as $prefix) {
     $look[] = preg_quote($prefix . '#', '/');
@@ -27,11 +27,10 @@ $look = implode('|', $look);
 echo '<h2>'. $proj->prefs['project_title'] .'</h2>';
 
 // use backward-compatible column name
-$cols = $db->SelectLimit('SELECT * FROM {related}', 1, 0);
-$cols = $cols->FetchRow();
+$cols = $db->x->getRow('SELECT * FROM {related}');
 $col = isset($cols['is_duplicate']) ? 'is_duplicate' : 'related_type';
 
-$revisions = $db->GetCol('SELECT topic FROM {cache} WHERE project_id = ? AND type = ?', array($proj->id, 'svn'));
+$revisions = $db->x->GetCol('SELECT topic FROM {cache} WHERE project_id = ? AND type = ?', null, $proj->id, 'svn');
 
 $svninfo = new SVNinfo();
 $svninfo->setRepository($proj->prefs['svn_url'], $proj->prefs['svn_user'], $proj->prefs['svn_password']);
@@ -51,7 +50,7 @@ for ($i = 1; $i <= $currentRevision; $i += 50) {
         // fill related revisions
         preg_replace_callback("/\b(" . $look . ")(\d+)\b/", 'add_related', $log['comment']);
 
-        $db->Execute('INSERT INTO {cache} (type, content, topic, project_id, last_updated)
+        $db->x->execParam('INSERT INTO {cache} (type, content, topic, project_id, last_updated)
                            VALUES (?, ?, ?, ?, ?)',
                       array('svn', serialize($log), $log['version-name'], $proj->id, strtotime($log['date'])));
     }
@@ -73,7 +72,7 @@ function add_related($arr)
     echo sprintf('<p>&nbsp;&nbsp;&nbsp;Adding task %d for revision %d</p>', $task['task_id'], $log['version-name']); flush();
 
     $imported[$task['task_id'] . '-' . $log['version-name']] = true;
-    $db->Execute("INSERT INTO {related} (this_task, related_task, {$col}) VALUES (?,?,?)",
+    $db->x->execParam("INSERT INTO {related} (this_task, related_task, {$col}) VALUES (?,?,?)",
                   array($task['task_id'], $log['version-name'], RELATED_SVN));
 }
 ?>

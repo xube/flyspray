@@ -31,9 +31,8 @@ class FlysprayDoRegister extends FlysprayDo
         }
 
         // Check that the user entered the right confirmation code
-        $sql = $db->Execute('SELECT * FROM {registrations} WHERE magic_url = ?',
-                             array(Post::val('magic_url')));
-        $reg_details = $sql->FetchRow();
+        $reg_details = $db->x->getRow('SELECT * FROM {registrations} WHERE magic_url = ?',
+                                        array(Post::val('magic_url')));
 
         if (!$reg_details) {
             return array(ERROR_RECOVER, L('confirmwrong'));
@@ -45,8 +44,8 @@ class FlysprayDoRegister extends FlysprayDo
             return array(ERROR_RECOVER, L('usernametaken'));
         }
 
-        $db->Execute('DELETE FROM {registrations} WHERE magic_url = ?',
-                      array(Post::val('magic_url')));
+        $db->x->execParam('DELETE FROM {registrations} WHERE magic_url = ?',
+                           array(Post::val('magic_url')));
 
         return array(SUBMIT_OK, L('accountcreated'), CreateUrl('register', array('regdone' => 1)));
     }
@@ -87,21 +86,21 @@ class FlysprayDoRegister extends FlysprayDo
 
         // Delete registration codes older than 24 hours
         $yesterday = time() - 86400;
-        $db->Execute('DELETE FROM {registrations} WHERE reg_time < ?', array($yesterday));
+        $db->x->execParam('DELETE FROM {registrations} WHERE reg_time < ?', $yesterday);
 
-        $taken = $db->Execute('SELECT * FROM {users} u, {registrations} r
-                               WHERE u.user_name = ? OR r.user_name = ?',
-                               array($user_name, $user_name));
-        if ($taken->RecordCount()) {
+        $taken = $db->x->getRow('SELECT u.user_id FROM {users} u, {registrations} r
+                                  WHERE u.user_name = ? OR r.user_name = ?',
+                                 null, array($user_name, $user_name));
+        if ($taken) {
             return array(ERROR_RECOVER, L('usernametaken'));
         }
 
-        $taken = $db->Execute("SELECT *
-                                FROM {users}
-                               WHERE jabber_id = ? AND jabber_id != ''
-                                     OR email_address = ? AND email_address != ''",
-                                array($jabber_id, $email));
-        if ($taken->RecordCount()) {
+        $taken = $db->x->getRow("SELECT user_id
+                                   FROM {users}
+                                  WHERE jabber_id = ? AND jabber_id != ''
+                                        OR email_address = ? AND email_address != ''",
+                                   array($jabber_id, $email));
+        if ($taken) {
             return array(ERROR_RECOVER, L('emailtaken'));
         }
 
@@ -128,7 +127,7 @@ class FlysprayDoRegister extends FlysprayDo
                         Post::val('email_address'), Post::val('jabber_id'),
                         Post::num('notify_type'), $magic_url, Post::num('time_zone'));
             // Insert everything into the database
-            $query = $db->Execute("INSERT INTO  {registrations}
+            $query = $db->x->execParam("INSERT INTO  {registrations}
                                  ( reg_time, user_name, real_name,
                                    email_address, jabber_id, notify_type,
                                    magic_url, time_zone )
@@ -180,8 +179,8 @@ class FlysprayDoRegister extends FlysprayDo
             // 32 is the length of the magic_url
             if (Req::has('magic_url') && strlen(Req::val('magic_url')) == 32) {
                 // If the user came here from their notification link
-                $sql = $db->GetOne('SELECT reg_id FROM {registrations} WHERE magic_url = ?',
-                                    array(Req::val('magic_url')));
+                $sql = $db->x->GetOne('SELECT reg_id FROM {registrations} WHERE magic_url = ?',
+                                    null, Req::val('magic_url'));
 
                 if (!$sql) {
                     FlysprayDo::error(array(ERROR_INPUT, L('error18')));

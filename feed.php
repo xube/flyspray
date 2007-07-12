@@ -53,12 +53,11 @@ $filename = md5(sprintf('%s-%s-%d-%d', $feed_type, $orderby, $proj->id, $max_ite
 $cachefile = sprintf('%s/%s', FS_CACHE_DIR, $filename);
 
 // Get the time when a task has been changed last
-$sql = $db->Execute("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
-                     FROM  {tasks}    t
-               INNER JOIN  {projects} p ON t.project_id = p.project_id
-                    WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
-                           AND p.others_view = '1' ", array($closed));
-$most_recent = max($sql->fetchRow());
+$most_recent = max($db->x->getRow("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
+                                            FROM  {tasks}    t
+                                      INNER JOIN  {projects} p ON t.project_id = p.project_id
+                                           WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
+                                                  AND p.others_view = '1' ", null, array($closed)));
 
 if ($fs->prefs['cache_feeds']) {
     if ($fs->prefs['cache_feeds'] == '1') {
@@ -68,11 +67,11 @@ if ($fs->prefs['cache_feeds']) {
         }
     }
     else {
-        $content = $db->GetOne("SELECT  content
-                                  FROM  {cache} p
-                                 WHERE  type = ? AND topic = ? $sql_project
-                                        AND max_items = ?  AND last_updated >= ?",
-                               array($feed_type, $orderby . $user->id, $max_items, $most_recent));
+        $content = $db->x->GetOne("SELECT  content
+                                            FROM  {cache} p
+                                           WHERE  type = ? AND topic = ? $sql_project
+                                                  AND max_items = ?  AND last_updated >= ?", null,
+                                          array($feed_type, $orderby . $user->id, $max_items, $most_recent));
         if ($content) {
             echo $content;
             exit;
@@ -81,14 +80,16 @@ if ($fs->prefs['cache_feeds']) {
 }
 
 /* build a new feed if cache didn't work */
-$sql = $db->SelectLimit("SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed,
+$db->setLimit($max_items);
+$task_details = $db->x->getAll(
+                        "SELECT  t.task_id, t.item_summary, t.detailed_desc, t.date_opened, t.date_closed,
                                  t.last_edited_time, t.opened_by, u.real_name, u.email_address, u.show_contact, t.*, p.project_prefix
                            FROM  {tasks}    t
                      INNER JOIN  {users}    u ON t.opened_by = u.user_id
                      INNER JOIN  {projects} p ON t.project_id = p.project_id
-                       ORDER BY  $orderby DESC", $max_items, 0);
+                       ORDER BY  $orderby DESC");
 
-$task_details     = array_filter($sql->GetArray(), array($user, 'can_view_task'));
+$task_details     = array_filter($task_details, array($user, 'can_view_task'));
 $feed_description = $proj->prefs['feed_description'] ? $proj->prefs['feed_description'] : $fs->prefs['page_title'] . $proj->prefs['project_title'].': '.$title;
 $feed_image       = false;
 if ($proj->prefs['feed_img_url']
@@ -108,18 +109,18 @@ if ($fs->prefs['cache_feeds'])
     }
     else {
        /**
-        * See http://phplens.com/adodb/reference.functions.replace.html
-        *
         * " Try to update a record, and if the record is not found,
         *   an insert statement is generated and executed "
         */
 
-        $fields = array('content'=> $content , 'type'=> $feed_type , 'topic'=> $orderby . $user->id ,
-                        'project_id'=> $proj->id ,'max_items'=> $max_items , 'last_updated'=> time() );
+        $fields = array('content'=> array('value' => $content),
+                        'type'=> array('value' => $feed_type, 'key' => true),
+                        'topic'=> array('value' => $orderby . $user->id, 'key' => true),
+                        'project_id'=> array('value' => $proj->id, 'key' => true),
+                        'max_items'=> array('value' => $max_items, 'key' => true),
+                        'last_updated'=> array('value' => time()));
 
-        $keys = array('type','topic','project_id','max_items');
-
-        $db->Replace('{cache}', $fields, $keys, ADODB_AUTOQUOTE) or die ('error updating the database cache');
+        $db->Replace('{cache}', $fields);
     }
 }
 

@@ -31,9 +31,9 @@ class FlysprayDoLostpw extends FlysprayDo
         }
         $new_salt = md5(uniqid(mt_rand(), true));
         $new_pass_hash = Flyspray::cryptPassword(Post::val('pass1'), $new_salt);
-        $db->Execute("UPDATE  {users} SET user_pass = ?, password_salt = ? , magic_url = ''
-                       WHERE  magic_url = ?",
-                      array($new_pass_hash, $new_salt, Post::val('magic_url')));
+        $db->x->execParam("UPDATE  {users} SET user_pass = ?, password_salt = ? , magic_url = ''
+                            WHERE  magic_url = ?",
+                          array($new_pass_hash, $new_salt, Post::val('magic_url')));
 
         return array(SUBMIT_OK, L('passchanged'), $baseurl);
     }
@@ -46,7 +46,7 @@ class FlysprayDoLostpw extends FlysprayDo
         if (strpos(Post::val('user_name'), '@') === false) {
             $user = Flyspray::getUserDetails(Flyspray::username_to_id(Post::val('user_name')));
         } else {
-            $user_id = $db->GetOne('SELECT user_id FROM {users} WHERE email_address = ?', array(Post::val('user_name')));
+            $user_id = $db->x->GetOne('SELECT user_id FROM {users} WHERE email_address = ?', null, Post::val('user_name'));
             $user = Flyspray::getUserDetails($user_id);
         }
 
@@ -59,10 +59,10 @@ class FlysprayDoLostpw extends FlysprayDo
         $magic_url    = md5(uniqid(mt_rand(), true));
 
         // Insert the random "magic url" into the user's profile
-        $db->Execute('UPDATE {users}
-                         SET magic_url = ?
-                       WHERE user_id = ?',
-                     array($magic_url, $user['user_id']));
+        $db->x->execParam('UPDATE {users}
+                              SET magic_url = ?
+                            WHERE user_id = ?',
+                           array($magic_url, $user['user_id']));
 
         Notifications::send($user['user_id'], ADDRESS_USER, NOTIFY_PW_CHANGE, array($baseurl, $magic_url));
 
@@ -85,9 +85,8 @@ class FlysprayDoLostpw extends FlysprayDo
             $page->pushTpl('lostpw.step1.tpl');
         } else {
             // Step Two: user enters new password
-            $row = $db->SelectLimit('SELECT user_id, user_name FROM {users} WHERE magic_url = ?', 1, 0,
-                                        array(Req::val('magic_url')));
-            $check_magic = $row->FetchRow();
+            $check_magic = $db->x->getRow('SELECT user_id, user_name FROM {users} WHERE magic_url = ?',
+                                          null, array(Req::val('magic_url')));
 
             if ($check_magic) {
                 $page->assign('userinfo', $check_magic);

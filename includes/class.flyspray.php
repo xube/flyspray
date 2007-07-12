@@ -87,9 +87,9 @@ class Flyspray
 
         $this->startSession();
 
-        $res = $db->Execute('SELECT pref_name, pref_value FROM {prefs}');
+        $res = $db->query('SELECT pref_name, pref_value FROM {prefs}');
 
-        while ($row = $res->FetchRow()) {
+        while ($row = $res->fetchRow()) {
             $this->prefs[$row['pref_name']] = $row['pref_value'];
         }
 
@@ -310,7 +310,7 @@ class Flyspray
       }
         return false;
     } // }}}
-    
+
    /**
      * Gets the global ID of a task
      * @param string $task_id eg. FS#123, PR#12, 543 = FS#123, ...
@@ -320,31 +320,31 @@ class Flyspray
     function GetTaskId($task_id)
     {
         global $db;
-        
+
         if (is_numeric($task_id)) {
             // can only be global
             return $task_id;
         }
-        
+
         @list($prefix, $task) = explode( (strpos($task_id, '#') !== false) ? '#' : ' ', $task_id);
         if (!$task) {
             // certainly no existing task
             return 0;
         }
-        
+
         if ($prefix == 'FS' || trim($prefix) == 'bug') {
             // global as well
             return $task;
         }
-        
+
         // now try to get the global ID based on project level id
-        return (int) $db->GetOne('SELECT task_id
+        return (int) $db->x->GetOne('SELECT task_id
                                     FROM {tasks} t
                                LEFT JOIN {projects} p ON t.project_id = p.project_id
                                    WHERE prefix_id = ? AND project_prefix = ?',
-                                    array($task, $prefix));
+                                    null, array($task, $prefix));
     }
-     
+
     // Retrieve task details {{{
     /**
      * Gets all information about a task (and caches information if wanted)
@@ -372,7 +372,7 @@ class Flyspray
             $params = array($task_id);
         }
 
-        $task = $db->Execute('SELECT  t.*, p.project_prefix,
+        $task = $db->x->getRow('SELECT  t.*, p.project_prefix,
                                       r.item_name   AS resolution_name,
                                       uo.real_name  AS opened_by_name,
                                       ue.real_name  AS last_edited_by_name,
@@ -383,21 +383,21 @@ class Flyspray
                            LEFT JOIN  {users}       ue ON t.last_edited_by = ue.user_id
                            LEFT JOIN  {users}       uc ON t.closed_by = uc.user_id
                            LEFT JOIN  {projects}    p  ON t.project_id = p.project_id
-                               WHERE  ' . $where, $params);
+                               WHERE  ' . $where, null, $params);
 
-        if (!($task = $task->FetchRow())) {
+        if (!$task) {
             return false;
         }
 
         // Now add custom fields
-        $sql = $db->Execute('SELECT field_value, field_name, f.field_id, li.item_name, lc.category_name, user_name
+        $sql = $db->x->getAll('SELECT field_value, field_name, f.field_id, li.item_name, lc.category_name, user_name
                                FROM {field_values} fv
                           LEFT JOIN {fields} f ON f.field_id = fv.field_id
                           LEFT JOIN {list_items} li ON (f.list_id = li.list_id AND field_value = li.list_item_id)
                           LEFT JOIN {list_category} lc ON (f.list_id = lc.list_id AND field_value = lc.category_id)
                           LEFT JOIN {users} u ON (field_type = ? AND field_value = u.user_id)
-                              WHERE task_id = ?', array(FIELD_USER, $task['task_id']));
-        while ($row = $sql->FetchRow()) {
+                              WHERE task_id = ?', null, array(FIELD_USER, $task['task_id']));
+        foreach ($sql as $row) {
             $task['field' . $row['field_id']] = $row['field_value'];
             $task['field' . $row['field_id'] . '_name'] = ($row['user_name'] ? $row['user_name'] : ($row['item_name'] ? $row['item_name'] : $row['category_name']));
         }
@@ -423,8 +423,7 @@ class Flyspray
     {
         global $db;
 
-        $sql = $db->Execute('SELECT  project_id, project_title FROM {projects}');
-        return $sql->GetArray();
+        return $db->x->getAll('SELECT  project_id, project_title FROM {projects}');
     } // }}}
     // List themes {{{
     /**
@@ -459,11 +458,10 @@ class Flyspray
     function listGroups($proj_id = 0)
     {
         global $db;
-        $res = $db->Execute('SELECT  *
+        return $db->x->getAll('SELECT  *
                              FROM  {groups}
                             WHERE  project_id = ?
-                         ORDER BY  group_id ASC', array($proj_id));
-        return $res->GetArray();
+                         ORDER BY  group_id ASC', null, array($proj_id));
     }
     /**
      * Returns a list of all groups, sorted by project
@@ -488,9 +486,9 @@ class Flyspray
                             WHERE uig.user_id = ? ';
             $params[] = $user_id;
         }
-        $sql = $db->Execute($query, $params);
+        $sql = $db->getAll($query, null, $params);
 
-        while ($row = $sql->FetchRow()) {
+        foreach ($sql as $row) {
             // make sure that the user only sees projects he is allowed to
             if ($row['project_id'] != '0' && Flyspray::array_find('project_id', $row['project_id'], $fs->projects) === false) {
                 continue;
@@ -570,7 +568,7 @@ class Flyspray
                              ((!is_numeric($time)) ? time() : $time),
                               $type, $field, (string) $oldvalue, $newvalue);
 
-        if($db->Execute('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed,
+        if($db->x->execParam('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed,
                        old_value, new_value) VALUES (?, ?, ?, ?, ?, ?, ?)', $query_params)) {
             return true;
          }
@@ -592,7 +590,7 @@ class Flyspray
     function AdminRequest($type, $project_id, $task_id, $submitter, $reason)
     {
         global $db;
-        $db->Execute('INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
+        $db->x->execParam('INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
                          VALUES (?, ?, ?, ?, ?, ?)',
                     array($project_id, $task_id, $submitter, $type, $reason, time()));
     } // }}}
@@ -609,11 +607,11 @@ class Flyspray
     {
         global $db;
 
-        $check = $db->Execute('SELECT request_id
+        $check = $db->x->getOne('SELECT request_id
                                  FROM {admin_requests}
                                 WHERE request_type = ? AND task_id = ? AND resolved_by = 0',
-                               array($type, $task_id));
-        return (bool) $check->FetchRow();
+                               null, array($type, $task_id));
+        return (bool) $check;
     } // }}}
     // Get the current user's details {{{
     /**
@@ -627,8 +625,7 @@ class Flyspray
     {
         global $db;
 
-        $result = $db->Execute('SELECT * FROM {users} WHERE user_id = ?', array(intval($user_id)));
-        return $result->FetchRow();
+        return $db->x->getRow('SELECT * FROM {users} WHERE user_id = ?', null, intval($user_id));
     } // }}}
     // Get group details {{{
     /**
@@ -641,13 +638,12 @@ class Flyspray
     function getGroupDetails($group_id)
     {
         global $db;
-        $sql = $db->Execute('SELECT *, count(uig.user_id) AS num_users
+        return $db->x->getRow('SELECT *, count(uig.user_id) AS num_users
                              FROM {groups} g
                         LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
                             WHERE g.group_id = ?
                          GROUP BY g.group_id',
-                          array($group_id));
-        return $sql->FetchRow();
+                          null, $group_id);
     } // }}}
     //  {{{
     /**
@@ -674,48 +670,43 @@ class Flyspray
     {
         global $db;
 
-        $result = $db->Execute("SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass, u.password_salt,
+        $auth = $db->x->getRow('SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass, u.password_salt,
                                         lock_until, login_attempts
                                 FROM  {users_in_groups} uig
                            LEFT JOIN  {groups} g ON uig.group_id = g.group_id
                            LEFT JOIN  {users} u ON uig.user_id = u.user_id
                                WHERE  u.user_name = ? AND g.project_id = ?
-                            ORDER BY  g.group_id ASC", array($username, 0));
+                            ORDER BY  g.group_id ASC', null, array($username, 0));
 
-        $auth_details = $result->FetchRow();
-
-        if ($auth_details === false) {
+        if ($auth === null) {
             return -2;
         }
-        if (!$result || !count($auth_details)) {
-            return 0;
-        }
 
-        $salt = $auth_details['password_salt'] ? $auth_details['password_salt'] : null;
-        $pass_ok = ($auth_details['user_pass'] === Flyspray::cryptPassword($password, $salt));
+        $salt = $auth['password_salt'] ? $auth['password_salt'] : null;
+        $pass_ok = ($auth['user_pass'] === Flyspray::cryptPassword($password, $salt));
 
         // let's update the users password
-        if ($pass_ok && !$auth_details['password_salt']) {
+        if ($pass_ok && !$auth['password_salt']) {
             $salt = md5(uniqid(mt_rand() , true));
-            $db->Execute('UPDATE {users} SET user_pass = ?, password_salt = ? WHERE user_id = ?',
-                         array(Flyspray::cryptPassword($password, $salt), $salt, $auth_details['user_id']));
+            $db->x->execParam('UPDATE {users} SET user_pass = ?, password_salt = ? WHERE user_id = ?',
+                         array(Flyspray::cryptPassword($password, $salt), $salt, $auth['user_id']));
         }
 
-        if ($auth_details['lock_until'] > 0 && $auth_details['lock_until'] < time()) {
-            $db->Execute('UPDATE {users} SET lock_until = 0, account_enabled = 1, login_attempts = 0
-                           WHERE user_id = ?', array($auth_details['user_id']));
-            $auth_details['account_enabled'] = 1;
+        if ($auth['lock_until'] > 0 && $auth['lock_until'] < time()) {
+            $db->x->execParam('UPDATE {users} SET lock_until = 0, account_enabled = 1, login_attempts = 0
+                                       WHERE user_id = ?', $auth['user_id']);
+            $auth['account_enabled'] = 1;
             $_SESSION['was_locked'] = true;
         }
 
         // Compare the crypted password to the one in the database
-        if ($pass_ok && $auth_details['account_enabled'] == '1'
-            && $auth_details['group_open'] == '1')
+        if ($pass_ok && $auth['account_enabled'] == '1'
+            && $auth['group_open'] == '1')
         {
-            return $auth_details['user_id'];
+            return $auth['user_id'];
         }
 
-        return ($auth_details['account_enabled'] && $auth_details['group_open']) ? 0 : -1;
+        return ($auth['account_enabled'] && $auth['group_open']) ? 0 : -1;
     } // }}}
     // Set cookie {{{
     /**
@@ -884,13 +875,13 @@ class Flyspray
     {
         global $db;
 
-        $sql = $db->Execute('SELECT u.real_name, u.user_id
+        $sql = $db->x->getAll('SELECT u.real_name, u.user_id
                              FROM {users} u, {assigned} a
                             WHERE task_id = ? AND u.user_id = a.user_id',
-                              array($task_id));
+                              null, $task_id);
 
         $assignees = array();
-        while ($row = $sql->FetchRow()) {
+        foreach ($sql as $row) {
             if ($name) {
                 $assignees[0][] = $row['user_id'];
                 $assignees[1][] = $row['real_name'];
@@ -970,9 +961,9 @@ class Flyspray
         if (!$name) {
             return 0;
         }
-        $uid = $db->GetOne('SELECT user_id FROM {users} WHERE ' .
+        $uid = $db->x->GetOne('SELECT user_id FROM {users} WHERE ' .
                            (is_numeric($name) ? 'user_id' : 'user_name') . ' = ?',
-                            array($name));
+                            null, $name);
 
         return intval($uid);
     }
@@ -991,9 +982,9 @@ class Flyspray
         if (!$id) {
             return '';
         }
-        $name = $db->GetOne('SELECT user_name FROM {users} WHERE ' .
+        $name = $db->x->GetOne('SELECT user_name FROM {users} WHERE ' .
                            (is_numeric($id) ? 'user_id' : 'user_name') . ' = ?',
-                            array($id));
+                            null, $id);
 
         return ($name) ? $name : '';
     }

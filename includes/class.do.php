@@ -61,7 +61,7 @@ class FlysprayDo
             $area = $this->default_handler;
         }
     	// usually everything or nothing here...
-    	$db->StartTrans();
+    	$db->beginTransaction();
 
         if (method_exists($this, $type . '_' . $area)) {
             $return = call_user_func(array(get_class($this), $type . '_' . $area), $param);
@@ -69,12 +69,7 @@ class FlysprayDo
             $return = call_user_func(array(get_class($this), $type . '_' . $this->default_handler), $param);
         }
 
-        if ($db->HasFailedTrans()) {
-        	$errorno = $db->MetaError();
-        	$return = array(ERROR_DB, $db->ErrorMsg($errorno));  // MetaErrorMsg is not exactly precise
-        }
-
-        $db->CompleteTrans();
+        $db->commit();
 
         if (!isset($return) && $type == 'action') {
         	trigger_error($type . '_' . $area . '() did not return anything!', E_USER_ERROR);
@@ -88,7 +83,7 @@ class FlysprayDo
 	 * This function displays an error...nicely :)
 	 *
 	 * It will stop execution for all interal errors (PHP errors, warnings, notices)
-     * and ERROR_PERMS, ERROR_DB, ERROR_INPUT. For ERROR_RECOVER it will only display
+     * and ERROR_PERMS, ERROR_INPUT. For ERROR_RECOVER it will only display
      * a failure bar at the bottom of the screen.
 	 *
 	 * @param mixed $errno this can either be array(ERROR_TYPE, opt message, opt url) or
@@ -116,8 +111,8 @@ class FlysprayDo
             $errno = ERROR_INTERNAL;
         }
         
-        if (isset($db) && is_object($db)) {
-            $db->CompleteTrans(false); // if possible, undo database queries
+        if (isset($db) && is_object($db) && $db->inTransaction()) {
+            $db->rollback(); // if possible, undo database queries
         }
 
 		switch ($errno)
@@ -126,7 +121,6 @@ class FlysprayDo
                 $page->assign('file', str_replace(BASEDIR . DIRECTORY_SEPARATOR, '', $errfile));
                 $page->assign('line', $errline);
 			case ERROR_PERMS:
-			case ERROR_DB:
             case ERROR_INPUT:
                 @ob_clean(); // make sure that previous output is erased
                 $page->assign('type', $errno);

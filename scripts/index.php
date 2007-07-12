@@ -87,7 +87,7 @@ class FlysprayDoIndex extends FlysprayDo
                 $latest = Flyspray::remote_request('http://flyspray.org/version.txt', GET_CONTENTS);
                 //if for some silly reason we get and empty response, we use the actual version
                 $_SESSION['latest_version'] = empty($latest) ? $fs->version : $latest ;
-                $db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(time(), 'last_update_check'));
+                $db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array(time(), 'last_update_check'));
             }
         }
         if (isset($_SESSION['latest_version']) && version_compare($fs->version, $_SESSION['latest_version'] , '<') ) {

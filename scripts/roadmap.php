@@ -28,25 +28,25 @@ class FlysprayDoRoadmap extends FlysprayDo
         $page->setTitle($fs->prefs['page_title'] . L('roadmap'));
 
         // Get milestones
-        $list_id = $db->GetOne('SELECT list_id FROM {fields} WHERE field_id = ?',
-                                array($proj->prefs['roadmap_field']));
+        $list_id = $db->x->GetOne('SELECT list_id FROM {fields} WHERE field_id = ?',
+                                null, $proj->prefs['roadmap_field']);
 
-        $milestones = $db->Execute('SELECT list_item_id AS version_id, item_name AS version_name
+        $milestones = $db->x->getAll('SELECT list_item_id AS version_id, item_name AS version_name
                                     FROM {list_items} li
                                    WHERE list_id = ? AND version_tense = 3
                                 ORDER BY list_position ASC',
-                                  array($list_id));
+                                  null, array($list_id));
 
         $data = array();
 
-        while ($row = $milestones->FetchRow()) {
+        foreach ($milestones as $row) {
             // Get all tasks related to a milestone
-            $all_tasks = $db->Execute('SELECT  percent_complete, is_closed, t.*
+            $all_tasks = $db->x->getAll('SELECT  percent_complete, is_closed, t.*
                                        FROM  {tasks} t
                                   LEFT JOIN  {field_values} fv ON (fv.task_id = t.task_id AND field_id = ?)
                                       WHERE  field_value = ? AND project_id = ?',
                                      array($proj->prefs['roadmap_field'], $row['version_id'], $proj->id));
-            $all_tasks = array_filter($all_tasks->GetArray(), array($user, 'can_view_task'));
+            $all_tasks = array_filter($all_tasks, array($user, 'can_view_task'));
 
             $percent_complete = 0;
             foreach($all_tasks as $task) {
@@ -59,16 +59,16 @@ class FlysprayDoRoadmap extends FlysprayDo
             $percent_complete = round($percent_complete/max(count($all_tasks), 1));
 
             if (count($all_tasks)) {
-                $tasks = $db->Execute('SELECT t.task_id, item_summary, detailed_desc, mark_private, fs.field_value AS field' . $fs->prefs['color_field'] . ',
+                $tasks = $db->x->getAll('SELECT t.task_id, item_summary, detailed_desc, mark_private, fs.field_value AS field' . $fs->prefs['color_field'] . ',
                                               opened_by, content, task_token, t.project_id, prefix_id
                                        FROM {tasks} t
                                   LEFT JOIN {cache} ca ON (t.task_id = ca.topic AND ca.type = ? AND t.last_edited_time <= ca.last_updated)
                                   LEFT JOIN {field_values} f ON f.task_id = t.task_id
                                   LEFT JOIN {field_values} fs ON (fs.task_id = t.task_id AND fs.field_id = ?)
-                                      WHERE f.field_value = ? AND f.field_id = ? AND t.project_id = ? AND is_closed = 0',
+                                      WHERE f.field_value = ? AND f.field_id = ? AND t.project_id = ? AND is_closed = 0', null,
                                      array('rota', $fs->prefs['color_field'], $row['version_id'], $proj->prefs['roadmap_field'], $proj->id));
 
-                $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks->GetArray(), 'percent_complete' => $percent_complete,
+                $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks, 'percent_complete' => $percent_complete,
                                 'all_tasks' => $all_tasks, 'name' => $row['version_name']);
             }
         }

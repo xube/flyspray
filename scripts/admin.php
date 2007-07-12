@@ -24,10 +24,10 @@ class FlysprayDoAdmin extends FlysprayDo
     function area_prefs()
     {
     	global $db, $page;
-        $sql = $db->Execute('SELECT * FROM {lists}
-                              WHERE project_id = 0
-                           ORDER BY list_type, list_name');
-        $page->assign('lists', $sql->GetArray());
+        $prefs = $db->x->getAll('SELECT * FROM {lists}
+                                         WHERE project_id = 0
+                                      ORDER BY list_type, list_name');
+        $page->assign('lists', $prefs);
     }
 
     function area_editgroup()
@@ -75,13 +75,13 @@ class FlysprayDoAdmin extends FlysprayDo
     	global $db, $page, $proj;
 
         $page->assign('group_list', Flyspray::listallGroups());
-        $sql = $db->Execute('SELECT g.group_id, g.group_name, g.group_desc,
+        $groups = $db->x->getAll('SELECT g.group_id, g.group_name, g.group_desc,
                                     g.group_open, count(uig.user_id) AS num_users
                                FROM {groups} g
                           LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
                               WHERE g.project_id = ?
-                           GROUP BY g.group_id', array($proj->id));
-        $page->assign('groups', $sql->GetArray());
+                           GROUP BY g.group_id', null, $proj->id);
+        $page->assign('groups', $groups);
     }
 
     function area_users()
@@ -119,11 +119,11 @@ class FlysprayDoAdmin extends FlysprayDo
             $args = array_merge($args, $groups);
         }
 
-        $sql = $db->Execute('SELECT u.user_id, u.user_name, u.real_name, u.register_date,
+        $sql = $db->x->getAll('SELECT u.user_id, u.user_name, u.real_name, u.register_date,
                                   u.jabber_id, u.email_address, u.account_enabled
                              FROM {users} u '
                          . $where .
-                        'ORDER BY ' . $sortorder, $args);
+                        'ORDER BY ' . $sortorder, null, $args);
 
         $users = GroupBy($sql, 'user_id');
         $page->assign('user_count', count($users));
@@ -139,7 +139,7 @@ class FlysprayDoAdmin extends FlysprayDo
         // because of search options which are disregarded here
         if (count($user_list)) {
             $in = implode(',', array_map(create_function('$x', 'return reset($x);'), $user_list));
-            $sql = $db->Execute('SELECT user_id, g.group_id, g.group_name, g.project_id
+            $sql = $db->x->getAll('SELECT user_id, g.group_id, g.group_name, g.project_id
                                  FROM {groups} g
                             LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
                                 WHERE user_id IN ('. $in .')');
@@ -155,39 +155,35 @@ class FlysprayDoAdmin extends FlysprayDo
     {
     	global $fs, $db, $proj, $user, $page;
 
-        $sql = $db->Execute('SELECT * FROM {lists}
-                           ORDER BY project_id, list_type, list_name');
-        $page->assign('lists', $sql->GetArray());
+        $page->assign('lists', $db->x->getAll('SELECT * FROM {lists}
+                                    ORDER BY project_id, list_type, list_name'));
     }
 
     function area_lists()
     {
     	global $db, $proj, $page;
 
-        $sql = $db->Execute('SELECT l.*, count(f.field_id) AS in_use
+        $lists = $db->x->getAll('SELECT l.*, count(f.field_id) AS in_use
                                FROM {lists} l
                           LEFT JOIN {fields} f ON f.list_id = l.list_id
                               WHERE l.project_id = ?
                            GROUP BY l.list_id
-                           ORDER BY list_type, list_name', array($proj->id));
-        $page->assign('lists', $sql->GetArray());
+                           ORDER BY list_type, list_name', null, $proj->id);
+        $page->assign('lists', $lists);
     }
 
     function area_list()
     {
     	global $fs, $db, $proj, $user, $page;
 
-        $sql = $db->Execute('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
-                             array(Req::val('list_id')));
-        $row = $sql->FetchRow();
-        $list_type = reset($row);
-        $list_name = next($row);
+        $row = $db->x->getRow('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
+                                      null, Req::val('list_id'));
 
-        if ($list_type != LIST_CATEGORY) {
+        if ($row['list_type'] != LIST_CATEGORY) {
             $page->assign('rows', $proj->get_edit_list(Req::val('list_id')));
         }
-        $page->assign('list_type', $list_type);
-        $page->assign('list_name', $list_name);
+        $page->assign('list_type', $row['list_type']);
+        $page->assign('list_name', $row['list_name']);
     }
 
     function area_system() {}
@@ -206,7 +202,7 @@ class FlysprayDoAdmin extends FlysprayDo
     	global $fs, $db, $proj, $user;
 
     	foreach (array_keys($fs->prefs) as $setting) {
-    		$db->Execute('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
+    		$db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?',
                           array(Post::val($setting, ($fs->prefs[$setting] == '1') ? null : $fs->prefs[$setting]), $setting));
         }
 
@@ -221,10 +217,10 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('formnotcomplete'));
         }
 
-        $reg = $db->Execute('SELECT * FROM {registrations} WHERE user_name = ?',
-                             array(Post::val('user_name')));
+        $details = $db->x->getRow('SELECT * FROM {registrations} WHERE user_name = ?',
+                                        null, Post::val('user_name'));
 
-    	if ($details = $reg->FetchRow()) {
+    	if ($details) {
             Backend::create_user($details['user_name'], Post::val('user_pass'), $details['real_name'], $details['jabber_id'],
                                  $details['email_address'], $details['notify_type'], $details['time_zone'], $fs->prefs['anon_group']);
         } else {
@@ -242,9 +238,9 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('fieldsmissing'));
         }
 
-        $db->Execute('INSERT INTO {fields} (field_name, field_type, list_id, project_id)
-                           VALUES (?, ?, ?, ?)',
-                      array(Post::val('field_name'), Post::num('field_type'), Post::num('list_id'), $proj->id));
+        $db->x->execParam('INSERT INTO {fields} (field_name, field_type, list_id, project_id)
+                                       VALUES (?, ?, ?, ?)',
+                                array(Post::val('field_name'), Post::num('field_type'), Post::num('list_id'), $proj->id));
 
         $proj = new Project($proj->id);
 
@@ -265,11 +261,11 @@ class FlysprayDoAdmin extends FlysprayDo
 
         foreach (Post::val('id', array()) as $id) {
             if (isset($delete[$id])) {
-                $db->Execute('DELETE FROM {fields} WHERE field_id = ? AND project_id = ?',
-                            array($id, $proj->id));
+                $num = $db->x->execParam('DELETE FROM {fields} WHERE field_id = ? AND project_id = ?',
+                                                 array($id, $proj->id));
                 // sort of permission check (the query below does not check project_id)
-                if ($db->Affected_Rows()) {
-                    $db->Execute('DELETE FROM {field_values} WHERE field_id = ?', array($id));
+                if ($num) {
+                    $db->x->execParam('DELETE FROM {field_values} WHERE field_id = ?', $id);
                 }
                 continue;
             }
@@ -279,7 +275,7 @@ class FlysprayDoAdmin extends FlysprayDo
                 $default[$id] = Flyspray::strtotime($default[$id]);
             }
 
-            $db->Execute('UPDATE {fields} SET field_name = ?, field_type = ?, list_id = ?, value_required = ?,
+            $db->x->execParam('UPDATE {fields} SET field_name = ?, field_type = ?, list_id = ?, value_required = ?,
                                             version_tense = ?, default_value = ?, force_default = ?
                          WHERE field_id = ? AND project_id = ?',
                         array($names[$id], $types[$id], array_get($lists, $id, null), array_get($required, $id, 0),
@@ -295,14 +291,14 @@ class FlysprayDoAdmin extends FlysprayDo
     {
     	global $fs, $db, $proj, $user;
 
-    	$sql = $db->Execute('INSERT INTO {lists} (list_name, list_type, project_id)
-                                  VALUES (?, ?, ?)',
-                             array(Post::val('list_name'), Post::num('list_type'), $proj->id));
+    	$db->x->execParam('INSERT INTO {lists} (list_name, list_type, project_id)
+                                     VALUES (?, ?, ?)',
+                                array(Post::val('list_name'), Post::num('list_type'), $proj->id));
 
         if (Post::num('list_type') == LIST_CATEGORY) {
-            $list_id = $db->GetOne('SELECT list_id FROM {lists} WHERE project_id = ? ORDER BY list_id DESC', array($proj->id));
-            $db->Execute('INSERT INTO {list_category} (list_id, lft, rgt, category_name)
-                               VALUES (?, ?, ?, ?)', array($list_id, 1, 2, 'root'));
+            $list_id = $db->x->GetOne('SELECT list_id FROM {lists} WHERE project_id = ? ORDER BY list_id DESC', null, $proj->id);
+            $db->x->execParam('INSERT INTO {list_category} (list_id, lft, rgt, category_name)
+                                           VALUES (?, ?, ?, ?)', array($list_id, 1, 2, 'root'));
         }
         return array(SUBMIT_OK, L('listadded'));
     }
@@ -327,7 +323,7 @@ class FlysprayDoAdmin extends FlysprayDo
                     array_unshift($params, intval($listtense[$i]));
                 }
 
-                $db->Execute('UPDATE  {list_items} lb
+                $db->x->execParam('UPDATE  {list_items} lb
                            LEFT JOIN  {lists} l ON l.list_id = lb.list_id
                                  SET  '. $version_tense .' item_name = ?, list_position = ?, show_in_list = ?
                                WHERE  list_item_id = ? AND project_id = ?',
@@ -339,10 +335,9 @@ class FlysprayDoAdmin extends FlysprayDo
 
         if (is_array($listdelete) && count($listdelete)) {
             $deleteids = 'list_item_id = ' . join(' OR list_item_id =', array_map('intval', array_keys($listdelete)));
-            $db->Execute("DELETE lb FROM {list_items} lb
+            $db->x->execParam("DELETE lb FROM {list_items} lb
                      LEFT JOIN {lists} l ON l.list_id = lb.list_id
-                         WHERE project_id = ? AND ($deleteids)",
-                        array($proj->id));
+                         WHERE project_id = ? AND ($deleteids)", $proj->id);
         }
 
         return array(SUBMIT_OK, L('listupdated'));
@@ -358,12 +353,12 @@ class FlysprayDoAdmin extends FlysprayDo
 
         foreach (Post::val('id', array()) as $id) {
             if (isset($delete[$id])) {
-                $db->Execute('DELETE FROM {lists} WHERE list_id = ? AND project_id = ?',
-                           array($id, $proj->id));
+                $db->x->execParam('DELETE FROM {lists} WHERE list_id = ? AND project_id = ?',
+                                         array($id, $proj->id));
                 continue;
             }
-            $db->Execute('UPDATE {lists} SET list_name = ?, list_type = ? WHERE list_id = ? AND project_id = ?',
-                        array($names[$id], $types[$id], $id, $proj->id));
+            $db->x->execParam('UPDATE {lists} SET list_name = ?, list_type = ? WHERE list_id = ? AND project_id = ?',
+                                     array($names[$id], $types[$id], $id, $proj->id));
         }
 
         return array(SUBMIT_OK, L('listsupdated'));
@@ -378,21 +373,21 @@ class FlysprayDoAdmin extends FlysprayDo
         }
 
         // Get right value of last node
-        $right = intval($db->GetOne('SELECT rgt FROM {list_category} WHERE category_id = ?',
-                                     array(Post::val('parent_id', -1))));
+        $right = intval($db->x->GetOne('SELECT rgt FROM {list_category} WHERE category_id = ?',
+                                     null, Post::val('parent_id', -1)));
 
-        $db->Execute('UPDATE {list_category} lc
+        $db->x->execParam('UPDATE {list_category} lc
                  LEFT JOIN {lists} l ON lc.list_id = l.list_id
                        SET rgt=rgt+2
                      WHERE rgt >= ? AND project_id = ?',
                      array($right, $proj->id));
-        $db->Execute('UPDATE {list_category} lc
+        $db->x->execParam('UPDATE {list_category} lc
                  LEFT JOIN {lists} l ON lc.list_id = l.list_id
                        SET lft=lft+2
                      WHERE lft >= ? AND project_id = ?',
                      array($right, $proj->id));
 
-        $db->Execute("INSERT INTO  {list_category}
+        $db->x->execParam("INSERT INTO  {list_category}
                                    ( list_id, category_name, show_in_list, category_owner, lft, rgt )
                            VALUES  (?, ?, 1, ?, ?, ?)",
                 array(Post::val('list_id'), Post::val('list_name'),
@@ -420,7 +415,7 @@ class FlysprayDoAdmin extends FlysprayDo
                     $listshow[$i] = 0;
                 }
 
-                $db->Execute('UPDATE  {list_category} lc
+                $db->x->execParam('UPDATE  {list_category} lc
                            LEFT JOIN  {lists} l ON l.list_id = lc.list_id
                                  SET  category_name = ?,
                                       show_in_list = ?, category_owner = ?,
@@ -442,10 +437,9 @@ class FlysprayDoAdmin extends FlysprayDo
 
         if (is_array($listdelete) && count($listdelete)) {
             $deleteids = " category_id = " . join(" OR category_id =", array_map('intval', array_keys($listdelete)));
-            $db->Execute("DELETE lc FROM {list_category} lc
+            $db->x->execParam("DELETE lc FROM {list_category} lc
                        LEFT JOIN {lists} l ON lc.list_id = l.list_id
-                           WHERE project_id = ? AND ($deleteids)",
-                          array($proj->id));
+                           WHERE project_id = ? AND ($deleteids)", $proj->id);
         }
 
         return array(SUBMIT_OK + $missing, L('listupdated'));
@@ -476,15 +470,13 @@ class FlysprayDoAdmin extends FlysprayDo
             $group_in = $fs->prefs['anon_group'];
         }
 
-        if(!$user->perms('is_admin')) {
-
-            $taken = $db->Execute("SELECT *
-                                FROM {users}
-                               WHERE jabber_id = ? AND jabber_id != ''
-                                     OR email_address = ? AND email_address != ''",
-                              array(Post::val('jabber_id'), Post::val('email_address')));
-            
-            if ($taken->RecordCount()) {
+        if (!$user->perms('is_admin')) {
+            $taken = $db->x->getOne("SELECT count(*)
+                                      FROM {users}
+                                     WHERE jabber_id = ? AND jabber_id != ''
+                                           OR email_address = ? AND email_address != ''", null,
+                                     array(Post::val('jabber_id'), Post::val('email_address')));
+            if ($taken) {
                 return array(ERROR_RECOVER, L('emailtaken'));
             }
         }
@@ -512,12 +504,12 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('groupanddesc'));
         } else {
             // Check to see if the group name is available
-            $taken = $db->Execute("SELECT  *
+            $taken = $db->x->getOne("SELECT  count(*)
                                     FROM  {groups}
                                    WHERE  group_name = ? AND project_id = ?",
                                   array(Post::val('group_name'), $proj->id));
 
-            if ($taken->RecordCount()) {
+            if ($taken) {
                 return array(ERROR_RECOVER, L('groupnametaken'));
             }
 
@@ -526,8 +518,8 @@ class FlysprayDoAdmin extends FlysprayDo
             $params = array_map('Post_to0', $cols);
             array_unshift($params, $proj->id);
 
-            $db->Execute("INSERT INTO  {groups} (project_id, ". join(',', $cols).")
-                             VALUES  (". fill_placeholders($cols, 1) . ')', $params);
+            $db->x->execParam("INSERT INTO  {groups} (project_id, ". join(',', $cols).")
+                                           VALUES  (". fill_placeholders($cols, 1) . ')', $params);
 
             return array(SUBMIT_OK, L('newgroupadded'));
         }
@@ -545,7 +537,7 @@ class FlysprayDoAdmin extends FlysprayDo
                     ? $fs->prefs['visible_columns']
                     : 'id summary progress';
 
-        $db->Execute('INSERT INTO  {projects}
+        $db->x->execParam('INSERT INTO  {projects}
                                  ( project_title, theme_style, intro_message, notify_subject, default_task,
                                    others_view, anon_open, notify_reply, feed_img_url, feed_description,
                                    visible_columns, lang_code, notify_email, notify_jabber)
@@ -555,25 +547,25 @@ class FlysprayDoAdmin extends FlysprayDo
                         Post::val('anon_open', 0), '', '', '', $viscols,
                         Post::val('lang_code', 'en'), '', ''));
 
-        $pid = $db->GetOne('SELECT project_id FROM {projects} ORDER BY project_id DESC');
+        $pid = $db->x->GetOne('SELECT project_id FROM {projects} ORDER BY project_id DESC');
 
         // now find an unused project prefix
-        $existing = $db->GetCol('SELECT project_prefix FROM {projects}');
+        $existing = $db->x->GetCol('SELECT project_prefix FROM {projects}');
         $existing[] = 'FS';
         $suggestion = 'PR' . $pid;
         while (in_array($suggestion, $existing)) {
             $suggestion = 'PR' . mt_rand();
         }
-        $db->Execute('UPDATE {projects} SET project_prefix = ? WHERE project_id = ?', array($suggestion, $pid));
+        $db->x->execParam('UPDATE {projects} SET project_prefix = ? WHERE project_id = ?', array($suggestion, $pid));
 
         $args = array_fill(0, count($fs->perms), '1');
         array_unshift($args, 'Project Managers',
                       'Permission to do anything related to this project.', 1, intval($pid));
 
-        $db->Execute("INSERT INTO  {groups}
+        $db->x->execParam('INSERT INTO  {groups}
                                  ( group_name, group_desc, group_open, project_id,
-                                   ".join(',', $fs->perms).")
-                         VALUES  ( ". fill_placeholders($fs->perms, 4) .")", $args);
+                                   '. join(',', $fs->perms) .')
+                         VALUES  ( '. fill_placeholders($fs->perms, 4) .')', $args);
 
         return array(SUBMIT_OK, L('projectcreated'), CreateURL(array('pm', 'proj' . $pid, 'prefs')));
     }
@@ -584,7 +576,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
         if (Post::val('delete_user')) {
             // check that he is not the last user
-            if ($db->GetOne('SELECT count(*) FROM {users}') > 1) {
+            if ($db->x->GetOne('SELECT count(*) FROM {users}') > 1) {
                 Backend::delete_user(Post::val('user_id'));
                 return array(SUBMIT_OK, L('userdeleted'), CreateURL(array('admin', 'groups')));
             } else {
@@ -605,9 +597,7 @@ class FlysprayDoAdmin extends FlysprayDo
                 return array(ERROR_RECOVER, L('passnomatch'));
             }
             if (Post::val('oldpass')) {
-                $sql = $db->Execute('SELECT user_pass, password_salt FROM {users} WHERE user_id = ?', array(Post::val('user_id')));
-                $oldpass =  $sql->FetchRow();
-
+                $oldpass = $db->x->getRow('SELECT user_pass, password_salt FROM {users} WHERE user_id = ?', null, Post::val('user_id'));
                 $oldsalt = $oldpass['password_salt'] ? $oldpass['password_salt'] : null;
 
                 if (Flyspray::cryptPassword(Post::val('oldpass'), $oldsalt) != $oldpass['user_pass']) {
@@ -617,7 +607,7 @@ class FlysprayDoAdmin extends FlysprayDo
 
             $new_salt = md5(uniqid(mt_rand(), true));
             $new_hash = Flyspray::cryptPassword(Post::val('changepass'), $new_salt);
-            $db->Execute('UPDATE {users} SET user_pass = ?, password_salt = ? WHERE user_id = ?',
+            $db->x->execParam('UPDATE {users} SET user_pass = ?, password_salt = ? WHERE user_id = ?',
                             array($new_hash, $new_salt, Post::val('user_id')));
 
             // If the user is changing their password, better update their cookie hash
@@ -628,17 +618,17 @@ class FlysprayDoAdmin extends FlysprayDo
         }
 
         // Check for existing email / jabber ID
-        $taken = $db->GetOne("SELECT COUNT(*)
+        $taken = $db->x->GetOne("SELECT COUNT(*)
                                 FROM {users}
                                WHERE (jabber_id = ? AND jabber_id != ''
                                      OR email_address = ? AND email_address != '')
-                                     AND user_id != ?",
+                                     AND user_id != ?", null,
                               array(Post::val('jabber_id'), Post::val('email_address'), Post::val('user_id')));
         if ($taken) {
             return array(ERROR_RECOVER, L('emailtaken'));
         }
 
-        $db->Execute('UPDATE  {users}
+        $db->x->execParam('UPDATE  {users}
                          SET  real_name = ?, email_address = ?, notify_own = ?,
                               jabber_id = ?, notify_type = ?, show_contact = ?,
                               dateformat = ?, dateformat_extended = ?, defaultorder = ?,
@@ -656,10 +646,10 @@ class FlysprayDoAdmin extends FlysprayDo
         }
 
         if ($user->perms('is_admin')) {
-            $db->Execute('UPDATE {users} SET account_enabled = ?  WHERE user_id = ?',
+            $db->x->execParam('UPDATE {users} SET account_enabled = ?  WHERE user_id = ?',
                     array(Post::val('account_enabled', 0), Post::val('user_id')));
 
-            $db->Execute('UPDATE {users_in_groups} SET group_id = ?
+            $db->x->execParam('UPDATE {users_in_groups} SET group_id = ?
                          WHERE group_id = ? AND user_id = ?',
                     array(Post::val('group_in'), Post::val('old_global_id'), Post::val('user_id')));
         }
@@ -700,10 +690,10 @@ class FlysprayDoAdmin extends FlysprayDo
 
         $position = Post::num('list_position');
         if (!$position) {
-            $position = intval($db->GetOne('SELECT max(list_position)+1
+            $position = intval($db->x->GetOne('SELECT max(list_position)+1
                                               FROM {list_items}
-                                             WHERE list_id = ?',
-                                            array(Post::val('list_id'))));
+                                             WHERE list_id = ?', null,
+                                            Post::val('list_id')));
         }
 
         $cols = array('item_name', 'list_id');
@@ -715,10 +705,9 @@ class FlysprayDoAdmin extends FlysprayDo
         $params[] = $position;
         $params = array_merge($params, array_map('Post_to0', $cols));
 
-        $db->Execute('INSERT INTO  {list_items}
+        $db->x->execParam('INSERT INTO  {list_items}
                                    (list_position,'. implode(',', $cols) .', show_in_list)
-                           VALUES  (?,'. fill_placeholders($cols) .', 1)',
-                    $params);
+                                  VALUES  (?,'. fill_placeholders($cols) .', 1)', $params);
 
         return array(SUBMIT_OK, L('listitemadded'));
     }
@@ -737,10 +726,10 @@ class FlysprayDoAdmin extends FlysprayDo
         Backend::add_user_to_group(Post::val('uid'), Post::val('group_id'), $proj->id);
 
         if (Post::val('delete_group') && Post::val('group_id') != '1') {
-            $db->Execute('DELETE FROM {groups} WHERE group_id = ?', Post::val('group_id'));
+            $db->x->execParam('DELETE FROM {groups} WHERE group_id = ?', Post::val('group_id'));
 
             if (Post::val('move_to')) {
-                $db->Execute('UPDATE {users_in_groups} SET group_id = ? WHERE group_id = ?',
+                $db->x->execParam('UPDATE {users_in_groups} SET group_id = ? WHERE group_id = ?',
                             array(Post::val('move_to'), Post::val('group_id')));
             }
 
@@ -756,7 +745,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $args[] = Post::val('group_id');
         $args[] = $proj->id;
 
-        $db->Execute('UPDATE  {groups}
+        $db->x->execParam('UPDATE  {groups}
                        SET  ' .join('=?,', $cols) . '=?
                      WHERE  group_id = ? AND project_id = ?', $args);
 

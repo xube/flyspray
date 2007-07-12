@@ -30,11 +30,11 @@ class FlysprayDoSvnlog extends FlysprayDo
         $page->setTitle($fs->prefs['page_title'] . L('svnlog'));
 
         // check for last repo update
-        $svn = $db->SelectLimit('SELECT content, last_updated, topic FROM {cache}
+        $db->setLimit(30);
+        $logdb = $db->x->getAll('SELECT content, last_updated, topic FROM {cache}
                                   WHERE type = ? AND project_id = ?
                                ORDER BY last_updated DESC',
-                                 30, 0, array('svn', $proj->id));
-        $logdb = $svn->GetArray();
+                                 null, array('svn', $proj->id));
         $logsvn = array();
 
         // check if nothing is cached yet oder older than 1 day
@@ -49,9 +49,9 @@ class FlysprayDoSvnlog extends FlysprayDo
             // Get last 30 log entries
             $logsvn = $svninfo->getLog( (count($logdb) ? $logdb[0]['topic'] : $currentRevision - 30), $currentRevision);
             foreach ($logsvn as $log) {
-                $db->Execute('INSERT INTO {cache} (type, content, topic, project_id, last_updated)
-                                   VALUES (?, ?, ?, ?, ?)',
-                              array('svn', serialize($log), $log['version-name'], $proj->id, strtotime($log['date'])));
+                $db->x->execParam('INSERT INTO {cache} (type, content, topic, project_id, last_updated)
+                                        VALUES (?, ?, ?, ?, ?)',
+                                   array('svn', serialize($log), $log['version-name'], $proj->id, strtotime($log['date'])));
             }
             // server sends oldest entry first
             $logsvn = array_reverse($logsvn);

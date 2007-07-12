@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
   /********************************************************\
   | Scheduled Jobs (poor man's cron)                       |
@@ -40,21 +40,21 @@ do {
     $now = time();
 
     ############ Task one: Send reminders ############
-    $get_reminders = $db->Execute("SELECT  r.reminder_message AS message, r.*
+    $reminders = $db->x->getAll("SELECT  r.reminder_message AS message, r.*
                                    FROM  {reminders} r
                              INNER JOIN  {users}     u ON u.user_id = r.to_user_id
                              INNER JOIN  {tasks}     t ON r.task_id = t.task_id
                              INNER JOIN  {projects}  p ON t.project_id = p.project_id
                                   WHERE  t.is_closed = '0' AND r.start_time < ?
                                                            AND r.last_sent + r.how_often < ?
-                               ORDER BY  r.reminder_id", array(time(), time()));
+                               ORDER BY  r.reminder_id", null, array(time(), time()));
 
-    while ($row = $get_reminders->FetchRow()) {
+    foreach ($reminders as $row) {
         if (Notifications::send_now($row['to_user_id'], ADDRESS_USER, NOTIFY_REMINDER, $row)) {
            // Update the database with the time sent
-           $db->Execute('UPDATE  {reminders}
+           $db->x->execParam('UPDATE  {reminders}
                             SET  last_sent = ?
-                          WHERE  reminder_id = ?',
+                          WHERE  reminder_id = ?', null, 
                          array(time(), $row['reminder_id']));
         }
     }
@@ -63,32 +63,32 @@ do {
     Notifications::send_stored();
 
     ############ Task three: send project manager digests ############
-    $sql = $db->Execute('SELECT project_id, project_title, last_digest, project_prefix
+    $sql = $db->x->getAll('SELECT project_id, project_title, last_digest, project_prefix
                          FROM {projects}
                         WHERE send_digest = 1 AND last_digest < ?',
-                        array(time() - 60*60*24*7));
-    while ($project = $sql->FetchRow()) {
+                        null, time() - 60*60*24*7);
+    foreach ($sql as $project) {
         // find out all project managers
-        $pms = $db->GetCol('SELECT uig.user_id
+        $pms = $db->x->GetCol('SELECT uig.user_id
                               FROM {users_in_groups} uig
                          LEFT JOIN {groups} g ON uig.group_id = g.group_id
                              WHERE g.project_id = ? AND g.manage_project = 1',
-                             array($project['project_id']));
+                             null, $project['project_id']);
 
         // Now generate the message, we are interested in opened/reopened, closed and assigned tasks
         $opened = $reopened = $closed = $assigned = array();
         $message = L('digestfor') . ' ' . $project['project_title'] . ":\n\n";
-        $sql = $db->Execute('SELECT h.event_type, lr.item_name AS resolution_name, t.task_id,
+        $evt = $db->x->getAll('SELECT h.event_type, lr.item_name AS resolution_name, t.task_id,
                                     t.item_summary, u.user_name, u.real_name, t.prefix_id
                                FROM {history} h
                           LEFT JOIN {tasks} t ON h.task_id = t.task_id
                           LEFT JOIN {users} u ON h.user_id = u.user_id
                           LEFT JOIN {list_items} lr ON h.new_value = lr.list_item_id AND event_type = 2
                               WHERE t.project_id = ? AND event_type IN (1,2,13,19)
-                                    AND event_date > ?',
+                                    AND event_date > ?', null,
                               array($project['project_id'], max($project['last_digest'], time() - 60*60*24*7)));
 
-        while ($row = $sql->FetchRow()) {
+        foreach ($evt as $row) {
             switch ($row['event_type'])
             {
                 case '1':
@@ -117,7 +117,7 @@ do {
         }
 
         if (Notifications::send_now($pms, ADDRESS_USER, NOTIFY_DIGEST, array('message' => $message))) {
-            $db->Execute('UPDATE {projects} SET last_digest = ? WHERE project_id = ?',
+            $db->x->execParam('UPDATE {projects} SET last_digest = ? WHERE project_id = ?',
                         array(time(), $project['project_id']));
         }
     }
@@ -138,14 +138,14 @@ do {
     }
 
     ############ Task five: Close tasks ############
-    $tasks = $db->Execute('SELECT t.*, c.date_added, max(c.date_added) FROM {tasks} t
+    $tasks = $db->query('SELECT t.*, c.date_added, max(c.date_added) FROM {tasks} t
                         LEFT JOIN {comments} c ON t.task_id = c.task_id
                             WHERE is_closed = 0 AND close_after > 0
                          GROUP BY t.task_id');
     while ($row = $tasks->FetchRow()) {
         if (max($row['date_added'], $row['last_edited_time']) + $row['close_after'] < time()) {
             Backend::close_task($row['task_id'], $row['resolution_reason'], $row['closure_comment'], false);
-            $db->Execute('UPDATE {tasks} SET close_after = 0 WHERE task_id = ?', array($row['task_id']));
+            $db->x->execParam('UPDATE {tasks} SET close_after = 0 WHERE task_id = ?', $row['task_id']);
         }
     }
 
