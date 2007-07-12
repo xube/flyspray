@@ -476,13 +476,17 @@ class FlysprayDoAdmin extends FlysprayDo
             $group_in = $fs->prefs['anon_group'];
         }
 
-        $taken = $db->Execute("SELECT *
+        if(!$user->perms('is_admin')) {
+
+            $taken = $db->Execute("SELECT *
                                 FROM {users}
                                WHERE jabber_id = ? AND jabber_id != ''
                                      OR email_address = ? AND email_address != ''",
                               array(Post::val('jabber_id'), Post::val('email_address')));
-        if ($taken->RecordCount()) {
-            return array(ERROR_RECOVER, L('emailtaken'));
+            
+            if ($taken->RecordCount()) {
+                return array(ERROR_RECOVER, L('emailtaken'));
+            }
         }
 
         if (!Backend::create_user(Post::val('user_name'), Post::val('user_pass'),
