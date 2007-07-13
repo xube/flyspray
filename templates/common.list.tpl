@@ -20,6 +20,8 @@
     <tr>
       <td class="first">
         <input type="hidden" name="id[]" value="{$row['list_item_id']}" />
+        <img onclick="TableControl.up('listTable');" src="{$this->get_image('up')}" class="hide" alt="{L('moveup')}" width="16" height="16" />
+        <img onclick="TableControl.down('listTable');" src="{$this->get_image('down')}" class="hide" alt="{L('moveup')}" width="16" height="16" />
         <input id="listname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]"
           value="{$row['item_name']}" />
       </td>

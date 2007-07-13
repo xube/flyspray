@@ -313,21 +313,15 @@ var TableControl = {
 		else if ( options.controlBoxElt ) {
 			Element.addClassName(options.controlBoxElt, options.activeClassName);
 		}
-		// if clicking on the same row : no more active row
-		if ( active_row && active_row == row ) {
-			this.active_rows[row.table_id] = null;
-			Element.removeClassName(options.controlBoxElt, options.activeClassName);
-		}
+
 		// else activate the new selected row
-		else {
-			Element.addClassName(row, options.activeClassName);
-			if ( options.tree && options.spreadActiveClass ) {
-				this._forEachChilds(row, function(e) {
-					Element.addClassName(e, options.activeClassName);
-				});
-			}
-			this.active_rows[row.table_id] = row;
-		}
+        Element.addClassName(row, options.activeClassName);
+        if ( options.tree && options.spreadActiveClass ) {
+            this._forEachChilds(row, function(e) {
+                Element.addClassName(e, options.activeClassName);
+            });
+        }
+        this.active_rows[row.table_id] = row;
 		return;
 	},
 

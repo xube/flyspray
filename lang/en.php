@@ -997,6 +997,10 @@ Regards,',
 'calendarexport'          => 'Export for calendars as iCal',
 'csv'                     => 'CSV',
 'mailtask'                => 'To which email address to you want to send this task?',
+'moveup'                  => 'Move up',
+'movedown'                => 'Move down',
+'moveleft'                => 'Move left',
+'moveright'               => 'Move right',
 );
 
 ?>

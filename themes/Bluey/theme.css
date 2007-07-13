@@ -1802,6 +1802,11 @@ table.list tr.active {
 	background:url(active_border.png) repeat-y left white;
 }
 
+table.list tr.active img {
+	display:inline;
+	visibility:visible;
+}
+
 table.list tr.active td.first {
 	padding-left:0.5em;
 }

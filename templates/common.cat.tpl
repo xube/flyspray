@@ -25,6 +25,10 @@
             <input type="hidden" name="lft[]" value="{$row['lft']}" />
             <input type="hidden" name="rgt[]" value="{$row['rgt']}" />
             <input type="hidden" name="id[]" value="{$row['category_id']}" />
+            <img onclick="TableControl.up('listTable');" src="{$this->get_image('up')}" class="hide" alt="{L('moveup')}" width="16" height="16" />
+            <img onclick="TableControl.down('listTable');" src="{$this->get_image('down')}" class="hide" alt="{L('moveup')}" width="16" height="16" />
+            <img onclick="TableControl.shallower('listTable');" src="{$this->get_image('left')}" class="hide" alt="{L('moveleft')}" width="16" height="16" />
+            <img onclick="TableControl.deeper('listTable');" src="{$this->get_image('right')}" class="hide" alt="{L('moveright')}" width="16" height="16" />
             <span class="depthmark">{!str_repeat('&rarr;', intval($row['depth']))}</span>
             <input id="categoryname{$countlines}" class="text" type="text" size="15" maxlength="40" name="list_name[]"
               value="{$row['category_name']}" />
