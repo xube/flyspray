@@ -170,7 +170,8 @@ function execute_upgrade_file($folder, $installed_version)
       
             if (!PEAR::isError($res)) {
                 $done[$file] = $hash;
-            } else {
+                    // ignore double-renaming of fields, <was></was>
+            } else if ($res->code != -5) {
                 return $res;
             }
         }

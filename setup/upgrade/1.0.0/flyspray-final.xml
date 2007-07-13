@@ -1611,7 +1611,7 @@
     <name>changelog_reso</name>
     <type>text</type>
     <length>100</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -1619,7 +1619,7 @@
     <name>svn_url</name>
     <type>text</type>
     <length>255</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -1627,7 +1627,7 @@
     <name>svn_user</name>
     <type>text</type>
     <length>255</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -1635,7 +1635,7 @@
     <name>svn_password</name>
     <type>text</type>
     <length>255</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -1659,7 +1659,7 @@
     <name>mail_headers</name>
     <type>text</type>
     <length>255</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -2168,7 +2168,7 @@
     <name>password_salt</name>
     <type>text</type>
     <length>32</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -2184,7 +2184,7 @@
     <name>jabber_id</name>
     <type>text</type>
     <length>100</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -2192,7 +2192,7 @@
     <name>email_address</name>
     <type>text</type>
     <length>100</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -2272,7 +2272,7 @@
     <name>defaultsortcolumn</name>
     <type>text</type>
     <length>255</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
@@ -2288,7 +2288,7 @@
     <name>notify_blacklist</name>
     <type>text</type>
     <length>50</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
     
    </field>
 
