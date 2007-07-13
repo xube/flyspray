@@ -52,6 +52,15 @@ ini_set('session.auto_start',0);
 ini_set('session.cookie_httponly',1);
 
 
+ini_set('include_path', join( PATH_SEPARATOR, array(
+  dirname(__FILE__) ,
+  dirname(__FILE__) . '/external' ,
+  dirname(__FILE__) . '/external/MDB2',
+  dirname(__FILE__) . '/external/swift-mailer',
+  dirname(__FILE__) . '/external/compat',
+  ini_get( 'include_path'))));
+
+
 // we live is register_globals Off world forever..
 //This code was written By Stefan Esser from the hardened PHP project (sesser@php.net)
 // it's now part of the PHP manual
@@ -200,7 +209,7 @@ function glob_compat($pattern, $flags = 0) {
 
     if(in_array('glob', explode(',', ini_get('disable_functions'))) || !function_exists('glob')) {
 
-        include dirname(__FILE__) . '/external/compat/glob.php';
+        include 'glob.php';
 
         return php_compat_glob($pattern, $flags);
     }
@@ -219,18 +228,26 @@ if (!function_exists('ctype_digit')) {
 	}
 }
 if (!function_exists('hash_hmac')) {
-    include dirname(__FILE__) . '/external/HMAC.php';
+
     function hash_hmac($algo, $data, $key, $raw_output = false) {
+        
+        if(function_exists('mhash') && $algo == 'md5') {
+            return $raw_output ? mhash(MHASH_MD5, $data, $key) : bin2hex(mhash(MHASH_MD5, $data, $key)); 
+        }
+
+        include_once 'HMAC.php';
+
         $hashobj =& new Crypt_HMAC($key, $algo);
+        
         return $raw_output ? pack('H*', $hashobj->hash($data)) : $hashobj->hash($data);
     }
 }
 
 //use require() as there is no possibilty to get this included more than "once"
-require dirname(__FILE__) . '/external/compat/array_combine.php';
-require dirname(__FILE__) . '/external/compat/file_put_contents.php';
-require dirname(__FILE__) . '/external/compat/array_intersect_key.php';
-require dirname(__FILE__) . '/external/compat/htmlspecialchars_decode.php';
+require 'array_combine.php';
+require 'file_put_contents.php';
+require 'array_intersect_key.php';
+require 'htmlspecialchars_decode.php';
 //for reasons outside flsypray, the PHP core may throw Exceptions in PHP5
 // for a good example see this article
 // http://ilia.ws/archives/107-Another-unserialize-abuse.html

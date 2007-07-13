@@ -12,7 +12,7 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
-require_once dirname(__FILE__) . '/external/mdb2/MDB2.php';
+require_once 'MDB2.php';
 
 /**
  * fill_placeholders
