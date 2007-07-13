@@ -31,7 +31,7 @@ class FlysprayDoLostpw extends FlysprayDo
         }
         $new_salt = md5(uniqid(mt_rand(), true));
         $new_pass_hash = Flyspray::cryptPassword(Post::val('pass1'), $new_salt);
-        $db->x->execParam("UPDATE  {users} SET user_pass = ?, password_salt = ? , magic_url = ''
+        $db->x->execParam("UPDATE  {users} SET user_pass = ?, password_salt = ? , magic_url = NULL
                             WHERE  magic_url = ?",
                           array($new_pass_hash, $new_salt, Post::val('magic_url')));
 

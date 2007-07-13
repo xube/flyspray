@@ -28,12 +28,12 @@ class FlysprayDoPm extends FlysprayDoAdmin
     {
         global $db, $page, $proj;
 
-        $pending = $db->x->getAll("SELECT  *
+        $pending = $db->x->getAll('SELECT  *
                              FROM  {admin_requests} ar
                         LEFT JOIN  {tasks} t ON ar.task_id = t.task_id
                         LEFT JOIN  {users} u ON ar.submitted_by = u.user_id
                             WHERE  ar.project_id = ? AND resolved_by = 0
-                         ORDER BY  ar.time_submitted ASC", null, $proj->id);
+                         ORDER BY  ar.time_submitted ASC', null, $proj->id);
 
         $page->assign('pendings', $pending);
     }

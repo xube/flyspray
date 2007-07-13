@@ -110,7 +110,7 @@ class FlysprayDoAuthenticate extends FlysprayDo
             Flyspray::setcookie('flyspray_passhash', hash_hmac('md5', $user->infos['user_pass'], $conf['general']['cookiesalt']), $cookie_time);
 
             // If the user had previously requested a password change, remove the magic url
-            $db->x->execParam("UPDATE {users} SET magic_url = '' WHERE user_id = ?", $user->id);
+            $db->x->execParam('UPDATE {users} SET magic_url = NULL WHERE user_id = ?', $user->id);
             // Save for displaying
             if ($user->infos['login_attempts'] > 0) {
                 $_SESSION['login_attempts'] = $user->infos['login_attempts'];

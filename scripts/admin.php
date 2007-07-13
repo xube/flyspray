@@ -473,9 +473,10 @@ class FlysprayDoAdmin extends FlysprayDo
         if (!$user->perms('is_admin')) {
             $taken = $db->x->getOne("SELECT count(*)
                                       FROM {users}
-                                     WHERE jabber_id = ? AND jabber_id != ''
-                                           OR email_address = ? AND email_address != ''", null,
-                                     array(Post::val('jabber_id'), Post::val('email_address')));
+                                     WHERE jabber_id = ? AND ? != NULL
+                                           OR email_address = ? AND ? != NULL", null,
+                                     array(Post::val('jabber_id'), Post::val('jabber_id'),
+                                           Post::val('email_address'), Post::val('email_address')));
             if ($taken) {
                 return array(ERROR_RECOVER, L('emailtaken'));
             }
@@ -504,10 +505,10 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('groupanddesc'));
         } else {
             // Check to see if the group name is available
-            $taken = $db->x->getOne("SELECT  count(*)
+            $taken = $db->x->getOne('SELECT  count(*)
                                     FROM  {groups}
-                                   WHERE  group_name = ? AND project_id = ?",
-                                  array(Post::val('group_name'), $proj->id));
+                                   WHERE  group_name = ? AND project_id = ?',
+                                   null, array(Post::val('group_name'), $proj->id));
 
             if ($taken) {
                 return array(ERROR_RECOVER, L('groupnametaken'));
@@ -620,10 +621,11 @@ class FlysprayDoAdmin extends FlysprayDo
         // Check for existing email / jabber ID
         $taken = $db->x->GetOne("SELECT COUNT(*)
                                 FROM {users}
-                               WHERE (jabber_id = ? AND jabber_id != ''
-                                     OR email_address = ? AND email_address != '')
+                               WHERE (jabber_id = ? AND ? != NULL
+                                     OR email_address = ? AND ? != NULL)
                                      AND user_id != ?", null,
-                              array(Post::val('jabber_id'), Post::val('email_address'), Post::val('user_id')));
+                              array(Post::val('jabber_id'), Post::val('jabber_id'),
+                                    Post::val('email_address'), Post::val('email_address'), Post::val('user_id')));
         if ($taken) {
             return array(ERROR_RECOVER, L('emailtaken'));
         }

@@ -56,8 +56,8 @@ $cachefile = sprintf('%s/%s', FS_CACHE_DIR, $filename);
 $most_recent = max($db->x->getRow("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
                                             FROM  {tasks}    t
                                       INNER JOIN  {projects} p ON t.project_id = p.project_id
-                                           WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> '1'
-                                                  AND p.others_view = '1' ", null, array($closed)));
+                                           WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> 1
+                                                  AND p.others_view = 1 ", null, array($closed)));
 
 if ($fs->prefs['cache_feeds']) {
     if ($fs->prefs['cache_feeds'] == '1') {

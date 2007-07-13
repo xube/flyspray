@@ -151,7 +151,7 @@ class User
 		           FROM  {projects}
 		       ORDER BY  sort_names');
 
-		$fs->projects = array_filter($projects, array($this, 'can_view_project'));
+		$fs->projects = array_filter($projects, array(&$this, 'can_view_project'));
     }
 
     function check_account_ok()

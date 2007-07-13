@@ -190,7 +190,7 @@ class FlysprayDoDetails extends FlysprayDo
                                  ORDER BY event_date DESC", null, $task['task_id']);
 
         $db->x->execParam("UPDATE  {tasks}
-                       SET  resolution_reason = 0, closure_comment = '', date_closed = 0,
+                       SET  resolution_reason = 0, closure_comment = NULL, date_closed = 0,
                             last_edited_time = ?, last_edited_by = ?, is_closed = 0, percent_complete = ?
                      WHERE  task_id = ?",
                     array(time(), $user->id, $old_percent['old_value'], $task['task_id']));
@@ -283,12 +283,12 @@ class FlysprayDoDetails extends FlysprayDo
             return array(ERROR_RECOVER, L('relatedinvalid'));
         }
 
-        $rid = $db->x->GetOne("SELECT related_id
+        $rid = $db->x->GetOne('SELECT related_id
                               FROM {related}
                              WHERE related_type IN (0,1) AND
                                    (this_task = ? AND related_task = ?
                                    OR
-                                   related_task = ? AND this_task = ?)", null,
+                                   related_task = ? AND this_task = ?)', null,
                             array($task['task_id'], $task_id,
                                   $task['task_id'], $task_id));
 
