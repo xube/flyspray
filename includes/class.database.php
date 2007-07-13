@@ -55,8 +55,11 @@ function show_dberror($error)
           </p>
           <pre>' . htmlspecialchars(wordwrap($error->userinfo), ENT_QUOTES, 'utf-8') . '</pre>
           <hr /><table><caption>Debug trace</caption><tr><th>File</th><th>Line</th></tr>';
-    foreach ($error->backtrace as $trace) {
-        echo '<tr><td>' . htmlspecialchars($trace['file'], ENT_QUOTES, 'utf-8') . '</td><td>' . intval($trace['line']) . '</td></tr>';
+
+    if(count($error->backtrace)) {
+        foreach ($error->backtrace as $trace) {
+            echo '<tr><td>' . htmlspecialchars($trace['file'] , ENT_QUOTES, 'utf-8') . '</td><td>' . intval($trace['line']) . '</td></tr>';
+        }
     }
     echo '</table></fieldset>';
     if ($db->inTransaction()) {
@@ -99,8 +102,6 @@ function &NewDatabase($conf = array())
 
     $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname";
     $db =& MDB2::factory($dsn);
-    
-    ini_set('include_path', dirname(__FILE__) .'/external/MDB2');
     
     $db->loadModule('Extended', 'x', false);
     if (defined('IN_UPGRADER') || defined('IN_SETUP')) {

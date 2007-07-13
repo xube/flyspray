@@ -249,7 +249,9 @@ class reCAPTCHA_Solution
 
         // RECAPTCHA_VERIFY_SERVER only listens on non-ssl ..
         if($sh = @fsockopen(RECAPTCHA_VERIFY_SERVER, 80, $errno, $errstr, 10)) {
-                    
+
+            stream_set_blocking($sh, 0);        
+            
             if(fwrite($sh, $finalrequest) !== false) {
                 
                 while (!feof($sh)) {

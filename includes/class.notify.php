@@ -5,7 +5,7 @@
    ---------------------------------------------------
 */
 
-require BASEDIR . '/includes/external/swift-mailer/Swift.php';
+require 'Swift.php';
 
 class NotificationsThread extends Swift_Events_Listener {
 
@@ -256,7 +256,7 @@ class Notifications
                 $fs->prefs['jabber_port'] = 5222;
             }
 
-            include  BASEDIR . '/includes/class.jabber2.php';
+            include  'class.jabber2.php';
 
             $jabber =& new Jabber($fs->prefs['jabber_username'],
                                  $fs->prefs['jabber_password'],

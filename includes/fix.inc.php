@@ -60,7 +60,6 @@ ini_set('include_path', join( PATH_SEPARATOR, array(
   dirname(__FILE__) . '/external/compat',
   ini_get( 'include_path'))));
 
-
 // we live is register_globals Off world forever..
 //This code was written By Stefan Esser from the hardened PHP project (sesser@php.net)
 // it's now part of the PHP manual

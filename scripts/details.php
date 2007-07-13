@@ -700,7 +700,7 @@ class FlysprayDoDetails extends FlysprayDo
             $page->assign('duplicates', $sql);
 
             // SVN
-            if ($proj->prefs['svn_url'] && $user->perms('view_svn')) {
+            if (isset($proj->prefs['svn_url']) && $user->perms('view_svn')) {
                 $db->setLimit(30);
                 $svnlog = $db->x->getAll('SELECT content FROM {cache} c
                                       LEFT JOIN {related} r ON r.related_task = c.topic
