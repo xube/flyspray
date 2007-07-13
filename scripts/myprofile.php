@@ -60,7 +60,7 @@ class FlysprayDoMyprofile extends FlysprayDo
     {
         global $user, $fs, $page, $db;
 
-        $page->assign('saved_notes', $db->x->getAll('SELECT * FROM {notes} WHERE user_id = ?', $user->id));
+        $page->assign('saved_notes', $db->x->getAll('SELECT * FROM {notes} WHERE user_id = ?', null, $user->id));
 
         if (Req::num('note_id') && Get::val('action') != 'deletenote') {
             $note = $db->x->getRow('SELECT note_id, message_subject, message_body, n.last_updated, content

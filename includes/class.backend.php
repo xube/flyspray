@@ -44,8 +44,7 @@ class Backend
 
         $sql = $db->x->getAll(' SELECT *
                               FROM {tasks}
-                             WHERE IN(' . implode(',', array_map('intval', $tasks)) . ')',
-                             null, $tasks);
+                             WHERE task_id IN(' . implode(',', array_map('intval', $tasks)) . ')');
 
         foreach ($sql as $row) {
             // -> user adds himself
@@ -923,11 +922,9 @@ class Backend
         $values = array();
         // Now the custom fields
         foreach ($proj->fields as $field) {
-            $values[] = array($task_id, $field->id, $field->read(array_get($args, 'field' . $field->id, 0)));
-        }
-        if(count($values)) {
+            $values = array($task_id, $field->id, $field->read(array_get($args, 'field' . $field->id, 0)));
             $db->x->execParam('INSERT INTO {field_values} (task_id, field_id, field_value)
-                                           VALUES (?, ?, ?)', $values);
+                                    VALUES (?, ?, ?)', $values);
         }
 
         if(isset($args['assigned_to'])) {
