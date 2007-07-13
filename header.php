@@ -1,9 +1,9 @@
 <?php
 
 require dirname(__FILE__) . '/includes/fix.inc.php';
-require dirname(__FILE__) . '/includes/class.flyspray.php';
-require dirname(__FILE__) . '/includes/constants.inc.php';
-require BASEDIR . '/includes/i18n.inc.php';
+require 'class.flyspray.php';
+require 'constants.inc.php';
+require 'i18n.inc.php';
 
 // Get the translation for the wrapper page (this page)
 setlocale(LC_ALL, str_replace('-', '_', L('locale')) . '.utf8');
@@ -14,14 +14,14 @@ if (!$conf) {
     Flyspray::Redirect('setup/index.php');
 }
 
-require BASEDIR . '/includes/class.gpc.php';
-require BASEDIR . '/includes/utf8.inc.php';
-require BASEDIR . '/includes/class.database.php';
-require BASEDIR . '/includes/class.backend.php';
-require BASEDIR . '/includes/class.project.php';
-require BASEDIR . '/includes/class.user.php';
-require BASEDIR . '/includes/class.tpl.php';
-require BASEDIR . '/includes/class.do.php';
+require 'class.gpc.php';
+require 'utf8.inc.php';
+require 'class.database.php';
+require 'class.backend.php';
+require 'class.project.php';
+require 'class.user.php';
+require 'class.tpl.php';
+require 'class.do.php';
 
 $db = NewDatabase($conf['database']);
 $fs =& new Flyspray;

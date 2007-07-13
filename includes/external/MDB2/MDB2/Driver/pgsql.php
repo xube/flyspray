@@ -43,7 +43,7 @@
 // | Author: Paul Cooper <pgc@ucecom.com>                                 |
 // +----------------------------------------------------------------------+
 //
-// $Id: pgsql.php,v 1.170 2007/03/12 13:37:48 quipo Exp $
+// $Id: pgsql.php,v 1.177 2007/06/30 11:10:23 quipo Exp $
 
 /**
  * MDB2 PostGreSQL driver
@@ -674,7 +674,7 @@ class MDB2_Driver_pgsql extends MDB2_Driver_Common
     function _modifyQuery($query, $is_manip, $limit, $offset)
     {
         if ($limit > 0
-            && !preg_match('/LIMIT\s*\d(\s*(,|OFFSET)\s*\d+)?/i', $query)
+            && !preg_match('/LIMIT\s*\d(?:\s*(?:,|OFFSET)\s*\d+)?(?:[^\)]*)?$/i', $query)
         ) {
             $query = rtrim($query);
             if (substr($query, -1) == ';') {
@@ -900,7 +900,7 @@ class MDB2_Driver_pgsql extends MDB2_Driver_Common
             return $connection;
         }
 
-        $statement_name = sprintf($this->options['statement_format'], $this->phptype, md5(time() + rand()));
+        $statement_name = sprintf($this->options['statement_format'], $this->phptype, sha1(microtime() + mt_rand()));
         $statement_name = strtolower($statement_name);
         if ($pgtypes === false) {
             $result = @pg_prepare($connection, $statement_name, $query);
@@ -925,6 +925,50 @@ class MDB2_Driver_pgsql extends MDB2_Driver_Common
         $obj =& new $class_name($this, $statement_name, $positions, $query, $types, $result_types, $is_manip, $limit, $offset);
         $this->debug($query, __FUNCTION__, array('is_manip' => $is_manip, 'when' => 'post', 'result' => $obj));
         return $obj;
+    }
+
+    // }}}
+    // {{{ function getSequenceName($sqn)
+
+    /**
+     * adds sequence name formatting to a sequence name
+     *
+     * @param   string  name of the sequence
+     *
+     * @return  string  formatted sequence name
+     *
+     * @access  public
+     */
+    function getSequenceName($sqn)
+    {
+        if (strpos($sqn, '_') !== false) {
+            list($table, $field) = explode('_', $sqn);
+        }
+        $query = "SELECT substring((SELECT substring(pg_get_expr(d.adbin, d.adrelid) for 128)
+                	    FROM pg_attrdef d
+                	   WHERE d.adrelid = a.attrelid
+                	     AND d.adnum = a.attnum
+                	     AND a.atthasdef
+                	 ) FROM 'nextval[^\']*\'([^\']*)')
+                    FROM pg_attribute a
+                LEFT JOIN pg_class c ON c.oid = a.attrelid
+                LEFT JOIN pg_attrdef d ON d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef
+                   WHERE (c.relname = ".$this->quote($sqn, 'text');
+        if (!empty($field)) {
+            $query .= " OR (c.relname = ".$this->quote($table, 'text')." AND a.attname = ".$this->quote($field, 'text').")";
+        }
+        $query .= "      )
+                     AND NOT a.attisdropped
+                     AND a.attnum > 0
+                     AND pg_get_expr(d.adbin, d.adrelid) LIKE 'nextval%'
+                ORDER BY a.attnum";
+        $seqname = $this->queryOne($query);
+        if (!PEAR::isError($seqname) && !empty($seqname) && is_string($seqname)) {
+            return $seqname;
+        }
+
+        return sprintf($this->options['seqname_format'],
+            preg_replace('/[^\w\$.]/i', '_', $sqn));
     }
 
     // }}}
@@ -1309,7 +1353,7 @@ class MDB2_Statement_pgsql extends MDB2_Statement_Common
                 }
                 $value = $this->values[$parameter];
                 $type = array_key_exists($parameter, $this->types) ? $this->types[$parameter] : null;
-                if (is_resource($value) || $type == 'clob' || $type == 'blob') {
+                if (is_resource($value) || $type == 'clob' || $type == 'blob' || $this->db->options['lob_allow_url_include']) {
                     if (!is_resource($value) && preg_match('/^(\w+:\/\/)(.*)$/', $value, $match)) {
                         if ($match[1] == 'file://') {
                             $value = $match[2];
@@ -1328,7 +1372,11 @@ class MDB2_Statement_pgsql extends MDB2_Statement_Common
                         $value = $data;
                     }
                 }
-                $parameters[] = $this->db->quote($value, $type, $query);
+                $quoted = $this->db->quote($value, $type, $query);
+                if (PEAR::isError($quoted)) {
+                    return $quoted;
+                }
+                $parameters[] = $quoted;
             }
             if ($query) {
                 $query.= ' ('.implode(', ', $parameters).')';

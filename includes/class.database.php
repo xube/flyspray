@@ -58,7 +58,11 @@ function show_dberror($error)
 
     if(count($error->backtrace)) {
         foreach ($error->backtrace as $trace) {
-            echo '<tr><td>' . htmlspecialchars($trace['file'] , ENT_QUOTES, 'utf-8') . '</td><td>' . intval($trace['line']) . '</td></tr>';
+            
+            if(!isset($trace['file']) || !isset($trace['line'])) {
+                    continue;
+              }
+            echo '<tr><td>' . htmlspecialchars(str_replace(BASEDIR . DIRECTORY_SEPARATOR, '',  $trace['file']) , ENT_QUOTES, 'utf-8') . '</td><td>' . intval($trace['line']) . '</td></tr>';
         }
     }
     echo '</table></fieldset>';
@@ -100,7 +104,7 @@ function &NewDatabase($conf = array())
             .'Check your settings in flyspray.conf.php');
     }
 
-    $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname";
+    $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname?charset=utf8";
     $db =& MDB2::factory($dsn);
     
     $db->loadModule('Extended', 'x', false);
@@ -128,8 +132,6 @@ function &NewDatabase($conf = array())
      *
      * in the rest of the world, it will silently return FALSE.
      */
-
-    //$db->setCharSet('utf8');
 
     $db->setOption('debug', true);
     $db->setOption('debug_handler', '_table_prefix');
