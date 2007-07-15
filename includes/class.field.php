@@ -26,7 +26,7 @@ class Field
     {
         if (!is_array($field_array) || !count($field_array)) {
             global $db;
-            $field_array = $db->GetRow('SELECT * FROM {fields} WHERE field_id = ?', null, array($field_array));
+            $field_array = $db->x->GetRow('SELECT * FROM {fields} WHERE field_id = ?', null, array($field_array));
         }
 
         if (!is_array($field_array) || !count($field_array)) {
