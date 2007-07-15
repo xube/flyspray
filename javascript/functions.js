@@ -72,49 +72,57 @@ function setUpTasklistTable() {
     // No tasklist on the page
     return false;
   }
-  var table = $('tasklist_table');
-  addEvent(table,'click',tasklistTableClick);
+  addEvent($('tasklist_table'), 'click',tasklistTableClick);
   return false;
 }
 
 function tasklistTableClick(e) {
   var src = eventGetSrc(e);
-  if (src.nodeName == 'DIV' && src.nodeName != 'BUTTON') {
-    src = src.parentNode;
+  if (src.nodeName == "DIV" || src.nodeName == "SPAN") {
+      while (src.nodeName != 'TD' && src.parentNode) {
+        src = src.parentNode;
+      }
   }
+
   if (src.nodeName != 'TD' || Element.hasClassName(src, 'caret') || Element.hasClassName(src, 'expandedinfo')) {
     return;
   }
   
   // quick edit 
   if (e.shiftKey) {
-    var taskid = src.parentNode.id.substr(4);
+    if ($('tasklist_table')) {
+        var taskid = src.parentNode.id.substr(4);
+    } else {
+        var taskid = $('task_id').title;
+    }
     new Ajax.Updater( { success: src }, $('baseurl').href + 'javascript/callbacks/editfield.php',
                       { evalScripts: true, parameters: {classname : src.className, task_id: taskid} });
     
     return;
   }
   
-  if (src.hasChildNodes()) {
-    var checkBoxes = src.getElementsByTagName('input');
-    if (checkBoxes.length > 0) {
-      // User clicked the cell where the task select checkbox is
-      if (checkBoxes[0].checked) {
-        checkBoxes[0].checked = false;
-      } else {
-        checkBoxes[0].checked = true;
+  if ($('tasklist_table')) {
+      if (src.hasChildNodes()) {
+        var checkBoxes = src.getElementsByTagName('input');
+        if (checkBoxes.length > 0) {
+          // User clicked the cell where the task select checkbox is
+          if (checkBoxes[0].checked) {
+            checkBoxes[0].checked = false;
+          } else {
+            checkBoxes[0].checked = true;
+          }
+          return;
+        }
       }
-      return;
-    }
-  }
-  var row = src.parentNode;
-  var aElements = row.getElementsByTagName('A');
-  if (aElements.length > 0) {
-    window.location = aElements[0].href;
-  } else {
-    // If both the task id and the task summary columns are non-visible
-    // just use the good old way to get to the task
-    window.location = '?do=details&task_id=' + row.id.substr(4);
+      var row = src.parentNode;
+      var aElements = row.getElementsByTagName('A');
+      if (aElements.length > 0) {
+        window.location = aElements[0].href;
+      } else {
+        // If both the task id and the task summary columns are non-visible
+        // just use the good old way to get to the task
+        window.location = '?do=details&task_id=' + row.id.substr(4);
+      }
   }
   return;
 }
@@ -599,5 +607,20 @@ function userspopup(url, targetfieldid) {
     }
     if (window.focus) { newwindow.focus(); }
     this.onfocus  = closeme;
+    return false;
+}
+
+function savequickedit(task_id, field_name)
+{
+    realfield = field_name;
+    if (field_name.substring(0, 2) == 'qe') {
+        realfield = field_name.substring(2);
+    }
+    new Ajax.Request($('baseurl').href + 'javascript/callbacks/savequickedit.php', {
+      parameters: {task_id: task_id, field: realfield, value: $(field_name).value},
+      onSuccess: function(t) {
+        $(field_name).parentNode.update(t.responseText);
+      }
+    });
     return false;
 }

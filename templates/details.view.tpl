@@ -43,7 +43,7 @@
         <?php foreach ($proj->fields as $field): ?>
         <tr>
 		  <th id="f{$field->id}">{$field->prefs['field_name']}</th>
-		  <td headers="f{$field->id}">
+		  <td class="task_field{$field->id}" headers="f{$field->id}">
             {!$field->view($task, $parents)}
           </td>
 		</tr>
@@ -75,7 +75,7 @@
 		</tr>
 		<tr>
 		  <th id="percent">{L('percentcomplete')}</th>
-		  <td headers="percent" class="middle">
+		  <td headers="percent" class="middle task_progress">
             <div class="taskpercent"><div style="width:{$task['percent_complete']}%"> </div></div>
 		  </td>
 		</tr>

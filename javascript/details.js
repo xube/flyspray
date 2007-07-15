@@ -7,6 +7,7 @@ function detailsInit() {
     // make sure the page is not in edit mode
     Event.observe(document, 'keydown', keyboardNavigation);
   }
+  Event.observe($('taskfieldscell'), 'click',tasklistTableClick);
 }
 function keyboardNavigation(e) {
   var src = Event.element(e);
