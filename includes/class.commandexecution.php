@@ -123,7 +123,7 @@ class CommandExecution {
        }
 
        if(!empty($stderr)) {
-           trigger_error(sprintf('Command %s failed : %s', $this->command, trim($stderr)));
+           trigger_error(sprintf('Command %s failed : %s', htmlspecialchars($this->command), htmlspecialchars($stderr)));
            return false;
        }
 

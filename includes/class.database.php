@@ -62,7 +62,7 @@ function show_dberror($error)
             if(!isset($trace['file']) || !isset($trace['line'])) {
                     continue;
               }
-            echo '<tr><td>' . htmlspecialchars(str_replace(BASEDIR . DIRECTORY_SEPARATOR, '',  $trace['file']) , ENT_QUOTES, 'utf-8') . '</td><td>' . intval($trace['line']) . '</td></tr>';
+            echo '<tr><td>' . htmlspecialchars(str_replace(BASEDIR . DIRECTORY_SEPARATOR, '@',  $trace['file']) , ENT_QUOTES, 'utf-8') . '</td><td>' . intval($trace['line']) . '</td></tr>';
         }
     }
     echo '</table></fieldset>';
