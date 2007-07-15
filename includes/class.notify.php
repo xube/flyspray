@@ -16,7 +16,7 @@ class NotificationsThread extends Swift_Events_Listener {
     function NotificationsThread($task_id, $recipients, $db)
     {
         $this->task_id = $task_id;
-        $this->message_history = $db->GetAll('SELECT recipient_id, message_id FROM
+        $this->message_history = $db->x->GetAll('SELECT recipient_id, message_id FROM
                                               {notification_threads} WHERE task_id = ? AND
                                               recipient_id IN(' . join(',', array_map('ezmlm_hash', array_unique($recipients))) . ')'
                                               , array($task_id));
@@ -234,8 +234,9 @@ class Notifications
             if (isset($data['task_id'])) {
 
                 $plugin =& $swift->getPlugin('MessageThread');
-
+            
                 if($plugin->thread_info) {
+
                     $db->x->execParam('INSERT INTO {notification_threads} (task_id, recipient_id, message_id)
                                                    VALUES (?, ?, ?)', $plugin->thread_info);
                 }
