@@ -372,7 +372,7 @@ class Flyspray
             $params = array($task_id);
         }
 
-        $task = $db->x->getRow('SELECT  t.*, p.project_prefix,
+        $task = $db->x->getRow('SELECT  t.*, p.project_prefix, p.project_title,
                                       r.item_name   AS resolution_name,
                                       uo.real_name  AS opened_by_name,
                                       ue.real_name  AS last_edited_by_name,

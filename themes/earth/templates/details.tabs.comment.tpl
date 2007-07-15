@@ -71,7 +71,7 @@
 
 			<button tabindex="9" type="submit">{L('addcomment')}</button>
 			<?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-				<button tabindex="9" type="button" onclick="showPreview('comment_text', '{$baseurl}', 'preview')">{L('preview')}</button>
+				<button tabindex="9" type="button" onclick="showPreview('comment_text', 'preview')">{L('preview')}</button>
 			<?php endif; ?>
 			<?php if (!$watched): ?>
 				{!tpl_checkbox('notifyme', Post::val('notifyme', !(Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>

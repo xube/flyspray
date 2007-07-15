@@ -3,7 +3,6 @@
   <head>
     <title>{$this->_title}</title>
 
-    <meta name="description" content="Flyspray, a Bug Tracking System written in PHP." />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Script-Type" content="text/javascript" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -19,7 +18,8 @@
     <link rel="alternate" type="application/rss+xml" title="Flyspray Feed - {L('taskclosed')}" href="{$baseurl}feed.php?feed_type=rss1&amp;project={$proj->id}" />
     <link rel="alternate" type="application/rss+xml" title="Flyspray Feed - {L('taskedited')}" href="{$baseurl}feed.php?feed_type=rss1&amp;project={$proj->id}" />
     <link title="{$proj->prefs['project_title']} - Flyspray" type="application/opensearchdescription+xml" rel="search" href="{$baseurl}index.php?opensearch=1&amp;project_id={$proj->id}" />
-
+    <base href="{$baseurl}" id="baseurl" />
+    
     <style type="text/css">
     <?php
     $colors = array('#fff5dd' => '#ffe9b4', '#ecdbb7' => '#efca80', '#f5d5c6' => '#f7b390',

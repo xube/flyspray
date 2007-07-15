@@ -26,11 +26,13 @@ class Field
     {
         if (!is_array($field_array) || !count($field_array)) {
             global $db;
-            $field_array = $db->x->GetRow('SELECT * FROM {fields} WHERE field_id = ?', null, array($field_array));
+            $field_array = $db->x->GetRow('SELECT * FROM {fields} f
+                                        LEFT JOIN {lists} l ON f.list_id = l.list_id
+                                            WHERE field_id = ?', null, array($field_array));
         }
 
         if (!is_array($field_array) || !count($field_array)) {
-            trigger_error('Invalid initialisation data for Fields()!', E_USER_ERROR);
+            return;
         }
 
         $this->prefs = $field_array;
@@ -89,7 +91,7 @@ class Field
      * @param array $attrs add attributes to the select
      * @return string
      */
-    function edit($use_default = true, $lock = false, $task = array(), $add_options = array(), $attrs = array())
+    function edit($use_default = true, $lock = false, $task = array(), $add_options = array(), $attrs = array(), $prefix = '')
     {
         global $user, $proj;
 
@@ -111,7 +113,8 @@ class Field
                     return '';
                 }
 
-                $html .= sprintf('<select id="f%d" name="field%d%s" %s ', $this->id, $this->id, (isset($attrs['multiple']) ? '[]' : ''), join_attrs($attrs));
+                $html .= sprintf('<select id="%sfield%d" name="%sfield%d%s" %s ',
+                                 $prefix, $this->id, $prefix, $this->id, (isset($attrs['multiple']) ? '[]' : ''), join_attrs($attrs));
                 $html .= tpl_disableif($lock) . '>';
                 $html .= tpl_options(array_merge($add_options, $proj->get_list($this->prefs, $task['field' . $this->id])),
                                      Req::val('field' . $this->id, $task['field' . $this->id]));
@@ -124,16 +127,16 @@ class Field
                     $attrs = array('readonly' => 'readonly');
                 }
 
-                $html .= tpl_datepicker('field' . $this->id, '', Req::val('field' . $this->id, $task['field' . $this->id]), $attrs);
+                $html .= tpl_datepicker($prefix . 'field' . $this->id, '', Req::val('field' . $this->id, $task['field' . $this->id]), $attrs);
                 break;
 
             case FIELD_TEXT:
-                $html .= sprintf('<input type="text" class="text" id="field%d" name="field%d" value="%s"/>',
-                                  $this->id, $this->id, Filters::noXSS(Req::val('field' . $this->id, $task['field' . $this->id]))) ;
+                $html .= sprintf('<input type="text" class="text" id="%sfield%d" name="%sfield%d" value="%s"/>',
+                                  $prefix, $this->id, $prefix, $this->id, Filters::noXSS(Req::val('field' . $this->id, $task['field' . $this->id]))) ;
                 break;
 
             case FIELD_USER:
-                $html .= tpl_userselect('field' . $this->id, Req::val('field' . $this->id, $task['field' . $this->id]));
+                $html .= tpl_userselect($prefix . 'field' . $this->id, Req::val('field' . $this->id, $task['field' . $this->id]));
                 break;
         }
 

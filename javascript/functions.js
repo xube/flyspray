@@ -79,9 +79,22 @@ function setUpTasklistTable() {
 
 function tasklistTableClick(e) {
   var src = eventGetSrc(e);
+  if (src.nodeName == 'DIV' && src.nodeName != 'BUTTON') {
+    src = src.parentNode;
+  }
   if (src.nodeName != 'TD' || Element.hasClassName(src, 'caret') || Element.hasClassName(src, 'expandedinfo')) {
     return;
   }
+  
+  // quick edit 
+  if (e.shiftKey) {
+    var taskid = src.parentNode.id.substr(4);
+    new Ajax.Updater( { success: src }, $('baseurl').href + 'javascript/callbacks/editfield.php',
+                      { evalScripts: true, parameters: {classname : src.className, task_id: taskid} });
+    
+    return;
+  }
+  
   if (src.hasChildNodes()) {
     var checkBoxes = src.getElementsByTagName('input');
     if (checkBoxes.length > 0) {
@@ -145,33 +158,6 @@ function addUploadFields(id) {
     newBox.getElementsByTagName('input')[0].value = '';
     el.appendChild(newBox);
   }
-}
-
-function adduserselect(url, user, selectid, error) {
-    var myAjax = new Ajax.Request(url, {method: 'post', parameters: 'id=' + user, onComplete:function(originalRequest)
-	{
-        if(originalRequest.responseText) {
-            var user_info = originalRequest.responseText.split('|');
-            // Check if user does not yet exist
-            for (i = 0; i < $('r' + selectid).options.length; i++) {
-                if ($('r' + selectid).options[i].value == user_info[1]) {
-                    return false;
-                }
-            }
-
-            opt = new Option(user_info[0], user_info[1]);
-            try {
-                $('r' + selectid).options[$('r' + selectid).options.length]=opt;
-                updateDualSelectValue(selectid);
-            } catch(ex) {
-                return false;
-            }
-        } else {
-            alert(error);
-        }
-        return false;
-	}});
-	return false;
 }
 
 function checkok(url, message, form) {
@@ -315,9 +301,9 @@ function toggleSearchBox(themeurl) {
   }
 }
 
-function deletesearch(id, url) {
-    var img = $('rs' + id).getElementsByTagName('img')[0].src = url + 'themes/Bluey/ajax_load.gif';
-    url = url + 'javascript/callbacks/deletesearches.php';
+function deletesearch(id) {
+    var img = $('rs' + id).getElementsByTagName('img')[0].src = $('baseurl').href + 'themes/Bluey/ajax_load.gif';
+    url = $('baseurl').href + 'javascript/callbacks/deletesearches.php';
     var myAjax = new Ajax.Request(url, {method: 'get', parameters: 'id=' + id,
                      onSuccess:function()
                      {
@@ -333,8 +319,8 @@ function deletesearch(id, url) {
                 });
 }
 
-function savesearch(query, baseurl, savetext) {
-    url = baseurl + 'javascript/callbacks/savesearches.php?' + query + '&search_name=' + encodeURIComponent($('save_search').value);
+function savesearch(query, savetext) {
+    url = $('baseurl').href + 'javascript/callbacks/savesearches.php?' + query + '&search_name=' + encodeURIComponent($('save_search').value);
     if($('save_search').value != '') {
         var old_text = $('lblsaveas').firstChild.nodeValue;
         $('lblsaveas').firstChild.nodeValue = savetext;
@@ -342,7 +328,7 @@ function savesearch(query, baseurl, savetext) {
                      onComplete:function()
                      {
                         $('lblsaveas').firstChild.nodeValue=old_text;
-                        var myAjax2 = new Ajax.Updater('mysearches', baseurl + 'javascript/callbacks/getsearches.php', { method: 'get'});
+                        var myAjax2 = new Ajax.Updater('mysearches', $('baseurl').href + 'javascript/callbacks/getsearches.php', { method: 'get'});
                      }
                      });
     }
@@ -367,19 +353,19 @@ function emptyElement(el) {
     }
 }
 
-function showPreview(textfield, baseurl, field) {
+function showPreview(textfield, field) {
     var preview = $(field);
     emptyElement(preview);
 
     var img = document.createElement('img');
-    img.src = baseurl + 'themes/Bluey/ajax_load.gif';
+    img.src = $('baseurl').href + 'themes/Bluey/ajax_load.gif';
     img.id = 'temp_img';
     img.alt = 'Loading...';
     preview.appendChild(img);
 
     var text = $(textfield).value;
     text = encodeURIComponent(text);
-    var url = baseurl + 'javascript/callbacks/getpreview.php';
+    var url = $('baseurl').href + 'javascript/callbacks/getpreview.php';
     var myAjax = new Ajax.Updater(field, url, {parameters:'text=' + text, method: 'post'});
 
     if (text == '') {

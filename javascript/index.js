@@ -121,3 +121,18 @@ function toggleAllExpand()
         }
     }
 }
+
+function savequickedit(task_id, field_name)
+{
+    realfield = field_name;
+    if (field_name.substring(0, 2) == 'qe') {
+        realfield = field_name.substring(2);
+    }
+    new Ajax.Request($('baseurl').href + 'javascript/callbacks/savequickedit.php', {
+      parameters: {task_id: task_id, field: realfield, value: $(field_name).value},
+      onSuccess: function(t) {
+        $(field_name).parentNode.update(t.responseText);
+      }
+    });
+    return false;
+}

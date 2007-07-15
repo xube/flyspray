@@ -37,7 +37,7 @@
             {!TextFormatter::textarea('intro_message', 8, 70, array('tabindex' => 8, 'id' => 'intromesg'), Post::val('intro_message', $proj->prefs['intro_message']))}
             <br />
             <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-            <button tabindex="9" type="button" onclick="showPreview('intromesg', '{$baseurl}', 'preview')">{L('preview')}</button>
+            <button tabindex="9" type="button" onclick="showPreview('intromesg', 'preview')">{L('preview')}</button>
             <?php endif; ?>
           </td>
         </tr>

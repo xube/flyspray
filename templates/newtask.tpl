@@ -88,7 +88,7 @@
         <input type="hidden" name="project_id" value="{$proj->id}" />
         <button accesskey="s" type="submit">{L('addthistask')}</button>
         <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-        <button tabindex="9" type="button" onclick="showPreview('details', '{$baseurl}', 'preview')">{L('preview')}</button>
+        <button tabindex="9" type="button" onclick="showPreview('details', 'preview')">{L('preview')}</button>
         <?php endif; ?>
         <div>
           <?php if (!$user->isAnon()): ?>

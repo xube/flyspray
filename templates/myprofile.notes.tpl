@@ -49,7 +49,7 @@
   {!TextFormatter::textarea('message_body', 10, 70, array('id' => 'note_text'), (isset($show_note) ? $show_note['message_body'] : Post::val('message_body')))}
   <button type="submit">{(isset($show_note) ? L('updatenote') : L('addnote'))}</button>
   <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-    <button tabindex="9" type="button" onclick="showPreview('note_text', '{$baseurl}', 'preview')">{L('preview')}</button>
+    <button tabindex="9" type="button" onclick="showPreview('note_text', 'preview')">{L('preview')}</button>
   <?php endif; ?>
 
   <?php if (isset($show_note)): ?>
