@@ -157,6 +157,10 @@ class Field
         {
             case FIELD_DATE:
                 $value = $input ? Flyspray::strtotime($input) : '';
+                // this would be a unix timestamp
+                if (ctype_digit($input)) {
+                    $value = $input;
+                }
                 break;
 
             case FIELD_TEXT:

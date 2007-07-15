@@ -16,7 +16,7 @@ function get_events($task_id, $where = '', $sort = 'ASC')
                       c.user_id AS c_user_id,
                       att.orig_name,
                       lfn.item_name AS new_value_l,
-                      lfn.item_name AS old_value_l,
+                      lfo.item_name AS old_value_l,
                       lcfn.category_name AS new_value_c,
                       lcfn.category_name AS old_value_c,
                       f.*, li.list_type
@@ -72,12 +72,10 @@ function event_description($history) {
 
             $field = $history['field_changed'];
             switch ($field) {
-                case 'item_summary':
                 case 'project_id':
-                    if($field != 'item_summary') {
-                        $old_value = $history[$field . '1'];
-                        $new_value = $history[$field . '2'];
-                    }
+                    $old_value = $history[$field . '1'];
+                    $new_value = $history[$field . '2'];
+                case 'item_summary': // fall through
                     $field = eL($translate[$field]);
                     break;
                 case 'percent_complete':
@@ -103,21 +101,23 @@ function event_description($history) {
                     break;
             }
             if (is_numeric($field)) {
-                $field = $history['field_name'];
                 $f = new Field($history);
-                $t = ($history['list_type'] == LIST_CATEGORY) ? 'c' : 'l';
-                $new = array('field' . $f->id => $history['new_value_' . $t], 'field' . $f->id . '_name' =>  $history['new_value_' . $t]);
-                $old = array('field' . $f->id => $history['old_value_' . $t], 'field' . $f->id . '_name' =>  $history['old_value_' . $t]);
+                if ($f->prefs['field_type'] == FIELD_LIST) {
+                    $t = ($history['list_type'] == LIST_CATEGORY) ? 'c' : 'l';
+                    $new = array('field' . $f->id => $history['new_value_' . $t], 'field' . $f->id . '_name' =>  $history['new_value_' . $t]);
+                    $old = array('field' . $f->id => $history['old_value_' . $t], 'field' . $f->id . '_name' =>  $history['old_value_' . $t]);
 
-                $new_value = $f->view($new);
-                $old_value = $f->view($old);
-
-                if ($f->prefs['field_type'] == FIELD_USER) {
+                    $new_value = $f->view($new);
+                    $old_value = $f->view($old);
+                } else if ($f->prefs['field_type'] == FIELD_USER) {
                     $new_value = tpl_userlink($history['new_value']);
                     $old_value = tpl_userlink($history['old_value']);
+                } else if ($f->prefs['field_type'] == FIELD_DATE) {
+                    $new_value = $f->view(array('field' . $f->id => $history['new_value']));
+                    $old_value = $f->view(array('field' . $f->id => $history['old_value']));
                 }
             }
-            $return .= eL('fieldchanged').": {$field}";
+            $return .= eL('fieldchanged').": {$history['field_name']}";
             if ($old_value || $new_value) {
                  $return .= " ({$old_value} &rarr; {$new_value})";
             }
