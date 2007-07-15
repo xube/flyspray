@@ -90,11 +90,7 @@ function tasklistTableClick(e) {
   
   // quick edit 
   if (e.shiftKey) {
-    if ($('tasklist_table')) {
-        var taskid = src.parentNode.id.substr(4);
-    } else {
-        var taskid = $('task_id').title;
-    }
+    var taskid = ($('tasklist_table')) ? src.parentNode.id.substr(4) : $('task_id').title;
     new Ajax.Updater( { success: src }, $('baseurl').href + 'javascript/callbacks/editfield.php',
                       { evalScripts: true, parameters: {classname : src.className, task_id: taskid} });
     
@@ -116,13 +112,13 @@ function tasklistTableClick(e) {
       }
       var row = src.parentNode;
       var aElements = row.getElementsByTagName('A');
-      if (aElements.length > 0) {
-        window.location = aElements[0].href;
-      } else {
-        // If both the task id and the task summary columns are non-visible
-        // just use the good old way to get to the task
-        window.location = '?do=details&task_id=' + row.id.substr(4);
+      // If both the task id and the task summary columns are non-visible
+      // just use the good old way to get to the task
+      var url = (aElements.length > 0) ? aElements[0].href : '?do=details&task_id=' + row.id.substr(4);
+      if (e.altKey) {
+        url += (url.include('?') ? '&' : '?') + 'edit=1';
       }
+      window.location = url;
   }
   return;
 }
