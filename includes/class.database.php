@@ -58,7 +58,7 @@ function show_dberror($error)
 
     if(count($error->backtrace)) {
         foreach ($error->backtrace as $trace) {
-            
+
             if(!isset($trace['file']) || !isset($trace['line'])) {
                     continue;
               }
@@ -80,13 +80,14 @@ function show_dberror($error)
  */
 function _table_prefix(&$db, $scope, $message, $is_manip = null)
 {
-    if ($scope === 'query') {
+
+    if (strpos($message, 'SET') !== 0 && ($scope === 'query' || $scope === 'prepare')) {
         if (defined('DEBUG_SQL')) {
             echo $message . '<hr />';
         }
         return preg_replace('/{([\w\-]+?)}/', DB_PREFIX . '\1', $message);
     }
-    
+
     return $message;
 }
 
@@ -106,7 +107,7 @@ function &NewDatabase($conf = array())
 
     $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname?charset=utf8";
     $db =& MDB2::factory($dsn);
-    
+
     $db->loadModule('Extended', 'x', false);
     if (defined('IN_UPGRADER') || defined('IN_SETUP')) {
         $db->loadModule('Manager');
@@ -135,7 +136,7 @@ function &NewDatabase($conf = array())
 
     $db->setOption('debug', true);
     $db->setOption('debug_handler', '_table_prefix');
-    
+
     // upgrader can handle that on its own
     if (!defined('IN_UPGRADER') && !defined('IN_SETUP')) {
         $db->setErrorHandling(PEAR_ERROR_CALLBACK, 'show_dberror');
