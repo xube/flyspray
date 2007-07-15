@@ -662,7 +662,7 @@ class FlysprayDoDetails extends FlysprayDo
             // Comment events
             $sql = get_events($this->task['task_id'], ' AND (event_type = 3 OR event_type = 14)');
             $comment_changes = array();
-            while ($row = $sql->FetchRow()) {
+            foreach ($sql as $row) {
                 $comment_changes[$row['event_date']][] = $row;
             }
             $page->assign('comment_changes', $comment_changes);

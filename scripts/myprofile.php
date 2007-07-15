@@ -47,8 +47,7 @@ class FlysprayDoMyprofile extends FlysprayDo
 
         $task_events = array();
         foreach ($tasks as $task) {
-            $sql = get_events($task['task_id'], 'AND event_type NOT IN (9,10,5,6,8,17,18) AND h.event_date > ' . $events_since, 'DESC');
-            $task_events[$task['task_id']] = $sql->GetArray();
+            $task_events[$task['task_id']] = get_events($task['task_id'], 'AND event_type NOT IN (9,10,5,6,8,17,18) AND h.event_date > ' . $events_since, 'DESC');
         }
 
         $page->assign('task_events', $task_events);
