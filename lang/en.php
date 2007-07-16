@@ -1001,6 +1001,8 @@ Regards,',
 'movedown'                => 'Move down',
 'moveleft'                => 'Move left',
 'moveright'               => 'Move right',
+'linktotask'              => 'link to this task',
+'emailtask'               => 'email this task',
 );
 
 ?>

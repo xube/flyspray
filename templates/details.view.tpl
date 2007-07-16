@@ -1,7 +1,10 @@
 <div id="taskdetails">
 <span id="navigation">
-  <a href="#" onclick="javascript:mailtask('{#L('mailtask')}', '{rawurlencode($task['item_summary'])}', '{rawurlencode($task['detailed_desc'])}')">
-    <small>email this task</small>
+  <a href="{CreateURL(array('details', 'task' . $task['task_id']))}">
+    <small>{L('linktotask')}</small>
+  </a> |
+  <a href="#" onclick="return mailtask('{#L('mailtask')}', '{rawurlencode($task['item_summary'])}', '{rawurlencode($task['detailed_desc'])}');">
+    <small>{L('emailtask')}</small>
   </a> |
   <?php if ($prev_id): ?>
   {!tpl_tasklink($prev_id, L('previoustask'), false, array('id'=>'prev', 'accesskey' => 'p'))}
