@@ -27,7 +27,7 @@ header ('Content-type: text/html; charset=utf-8');
 $max_items  = (Get::num('num', 10) == 10) ? 10 : 20;
 $sql_project = '';
 if ($proj->id) {
-    $sql_project = sprintf(' AND p.project_id = %d', $proj->id);
+    $sql_project = sprintf(' p.project_id = %d', $proj->id);
 }
 
 $feed_type  = Get::val('feed_type', 'rss2');
@@ -36,15 +36,15 @@ if ($feed_type != 'rss1' && $feed_type != 'rss2') {
 }
 
 switch (Get::val('topic')) {
-    case 'clo': $orderby = 'date_closed'; $closed = 0;
+    case 'clo': $orderby = 'date_closed'; $closed = 't.is_closed = 1 AND';
                 $title   = 'Recently closed tasks';
     break;
 
-    case 'edit':$orderby = 'last_edited_time'; $closed = 1;
+    case 'edit':$orderby = 'last_edited_time'; $closed = '';
                 $title   = 'Recently edited tasks';
     break;
 
-    default:    $orderby = 'date_opened'; $closed = 1;
+    default:    $orderby = 'date_opened'; $closed = '';
                 $title   = 'Recently opened tasks';
     break;
 }
@@ -56,8 +56,8 @@ $cachefile = sprintf('%s/%s', FS_CACHE_DIR, $filename);
 $most_recent = max($db->x->getRow("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
                                             FROM  {tasks}    t
                                       INNER JOIN  {projects} p ON t.project_id = p.project_id
-                                           WHERE  t.is_closed <> ? $sql_project AND t.mark_private <> 1
-                                                  AND p.others_view = 1 ", null, array($closed)));
+                                           WHERE  $closed $sql_project AND t.mark_private <> 1
+                                                  AND p.others_view = 1 "));
 
 if ($fs->prefs['cache_feeds']) {
     if ($fs->prefs['cache_feeds'] == '1') {
@@ -87,6 +87,7 @@ $task_details = $db->x->getAll(
                            FROM  {tasks}    t
                      INNER JOIN  {users}    u ON t.opened_by = u.user_id
                      INNER JOIN  {projects} p ON t.project_id = p.project_id
+                          WHERE  $closed $sql_project
                        ORDER BY  $orderby DESC");
 
 $task_details     = array_filter($task_details, array($user, 'can_view_task'));
