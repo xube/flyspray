@@ -73,54 +73,98 @@ function setUpTasklistTable() {
     return false;
   }
   addEvent($('tasklist_table'), 'click',tasklistTableClick);
+  addEvent($('tasklist_table'), 'dblclick',tasklistTableClick);
   return false;
 }
 
+// doube click vars
+var dcTime = 250;
+var dcDelay = 100;
+var dcAt = 0;
+var savEvent = null;
+var savEvtTime = 0;
+var savTO = null;
+ 
+function hadDoubleClick() {
+	var d = new Date();
+	var now = d.getTime();
+	if ((now - dcAt) < dcDelay) {
+		return true;
+	}
+	return false;
+}
+
+function doDoubleClick(which, src) {
+	var d = new Date();
+	dcAt = d.getTime();
+	if (savTO != null) {
+		clearTimeout( savTO ); // Clear pending Click  
+		savTO = null;
+	}
+	var taskid = ($('tasklist_table')) ? src.parentNode.id.substr(4) : $('task_id').title;
+	new Ajax.Updater( { success: src }, $('baseurl').href + 'javascript/callbacks/editfield.php',
+					  { evalScripts: true, parameters: {classname : src.className, task_id: taskid} });
+}
+ 
+  
+function doClick(src, alt) {
+	// preempt if DC occurred after original click.
+	if (savEvtTime - dcAt <= 0) {
+	 return false;
+	}
+	if ($('tasklist_table')) {
+	  if (src.hasChildNodes()) {
+		var checkBoxes = src.getElementsByTagName('input');
+		if (checkBoxes.length > 0) {
+		  // User clicked the cell where the task select checkbox is
+		  if (checkBoxes[0].checked) {
+			checkBoxes[0].checked = false;
+		  } else {
+			checkBoxes[0].checked = true;
+		  }
+		  return;
+		}
+	  }
+	  var row = src.parentNode;
+	  var aElements = row.getElementsByTagName('A');
+	  // If both the task id and the task summary columns are non-visible
+	  // just use the good old way to get to the task
+	  var url = (aElements.length > 0) ? aElements[0].href : '?do=details&task_id=' + row.id.substr(4);
+	  if (alt) {
+		url += (url.include('?') ? '&' : '?') + 'edit=1';
+	  }
+	  window.location = url;
+	}
+}
+ 
 function tasklistTableClick(e) {
-  var src = eventGetSrc(e);
-  if (src.nodeName == "DIV" || src.nodeName == "SPAN") {
+	var src = eventGetSrc(e);
+	if (src.nodeName == "DIV" || src.nodeName == "SPAN") {
       while (src.nodeName != 'TD' && src.parentNode) {
         src = src.parentNode;
-      }
-  }
+	  }
+	}
 
-  if (src.nodeName != 'TD' || Element.hasClassName(src, 'caret') || Element.hasClassName(src, 'expandedinfo')) {
-    return;
-  }
-  
-  // quick edit 
-  if (e.shiftKey) {
-    var taskid = ($('tasklist_table')) ? src.parentNode.id.substr(4) : $('task_id').title;
-    new Ajax.Updater( { success: src }, $('baseurl').href + 'javascript/callbacks/editfield.php',
-                      { evalScripts: true, parameters: {classname : src.className, task_id: taskid} });
-    
-    return;
-  }
-  
-  if ($('tasklist_table')) {
-      if (src.hasChildNodes()) {
-        var checkBoxes = src.getElementsByTagName('input');
-        if (checkBoxes.length > 0) {
-          // User clicked the cell where the task select checkbox is
-          if (checkBoxes[0].checked) {
-            checkBoxes[0].checked = false;
-          } else {
-            checkBoxes[0].checked = true;
-          }
-          return;
-        }
-      }
-      var row = src.parentNode;
-      var aElements = row.getElementsByTagName('A');
-      // If both the task id and the task summary columns are non-visible
-      // just use the good old way to get to the task
-      var url = (aElements.length > 0) ? aElements[0].href : '?do=details&task_id=' + row.id.substr(4);
-      if (e.altKey) {
-        url += (url.include('?') ? '&' : '?') + 'edit=1';
-      }
-      window.location = url;
-  }
-  return;
+	if (src.nodeName != 'TD' || Element.hasClassName(src, 'caret') || Element.hasClassName(src, 'expandedinfo')) {
+		return;
+	}
+	switch (e.type) {
+	 case "click": 
+	   // If we've just had a doubleclick then ignore it
+	   if (hadDoubleClick()) return false;
+		 
+	   // Otherwise set timer to act.  It may be preempted by a doubleclick.
+	   savEvent = src;
+	   d = new Date();
+	   savEvtTime = d.getTime();
+	   savTO = setTimeout("doClick(savEvent, " + ((e.altKey) ? 1 : 0) + ")", dcTime);
+	   break;
+	 case "dblclick":
+	   doDoubleClick(e.type, src);
+	   break;
+	 default:
+	}
+	return;
 }
 
 function eventGetSrc(e) {

@@ -25,6 +25,7 @@
 		  {L('editedby')}  {!tpl_userlink($task['last_edited_by'])}
 		  - {formatDate($task['last_edited_time'], true)}
 		  <?php endif; ?>
+          <span class="hide" id="task_id" title="{$task['task_id']}"></span>
 		</div>
 
         <table><tr><td id="taskfieldscell"><?php // small layout table ?>
@@ -41,7 +42,7 @@
             <?php endforeach; ?>
 			<tr>
 			 <td><label for="assigned_to">{L('assignedto')}</label></td>
-			 <td>
+			 <td class="assigned_>
                 <?php if ($user->perms('edit_assignments')): ?>
 
                 <?php $this->display('common.multiuserselect.tpl'); ?>

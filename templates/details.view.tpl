@@ -65,7 +65,7 @@
 		</tr>
 		<tr>
 		  <th id="assignedto">{L('assignedto')}</th>
-		  <td headers="assignedto">
+		  <td class="task_assignedto" headers="assignedto">
 			 <?php if (empty($assigned_users)): ?>
 			 {L('noone')}
 			 <?php else:
