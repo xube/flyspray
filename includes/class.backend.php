@@ -353,9 +353,10 @@ class Backend
         $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
         $assignees = array_filter($assignees, create_function('$x', 'return ($x > 0);'));
 
+        $assignees_changed = false;
         // Update the list of users assigned this task
-        if ($user->perms('edit_assignments') && array_get($args, 'old_assigned') != trim(array_get($args, 'assigned_to')) ) {
-
+        if ($user->perms('edit_assignments') && implode(' ', $task['assigned_to']) != implode(' ', $assignees)) {
+            $assignees_changed = true;
             // Delete the current assignees for this task
             $db->x->execParam('DELETE FROM {assigned}
                                 WHERE task_id = ?', $task['task_id']);
@@ -385,9 +386,9 @@ class Backend
             Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_CHANGED, array('changes' => $changes));
         }
 
-        if (trim(array_get($args, 'old_assigned')) != implode(' ', $assignees)) {
+        if ($assignees_changed) {
             // Log to task history
-            Flyspray::logEvent($task['task_id'], 14, implode(' ', $assignees), array_get($args, 'old_assigned'), '', $time);
+            Flyspray::logEvent($task['task_id'], 14, implode(' ', $assignees), implode(' ', $task['assigned_to']), '', $time);
 
             // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
             if (array_get($args, 'assigned_to') != '') {

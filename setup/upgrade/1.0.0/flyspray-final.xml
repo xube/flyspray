@@ -91,6 +91,22 @@
    </field>
 
    <index>
+    <name>reminders_taskid</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>reminders_project</name>
+    <field>
+     <name>project_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>admin_requests_pKey</name>
     <primary>true</primary>
     <field>
@@ -135,10 +151,35 @@
    </field>
 
    <index>
+    <name>task_id_assigned</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>user_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>assigned_pKey</name>
     <primary>true</primary>
     <field>
      <name>assigned_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>task_user</name>
+    <unique>true</unique>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>user_id</name>
      <sorting>ascending</sorting>
     </field>
    </index>
@@ -227,6 +268,18 @@
    </field>
 
    <index>
+    <name>task_id_attachments</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>comment_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>attachments_pKey</name>
     <primary>true</primary>
     <field>
@@ -302,10 +355,43 @@
    </field>
 
    <index>
+    <name>cache_type_id</name>
+    <field>
+     <name>type</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>topic</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>cache_pKey</name>
     <primary>true</primary>
     <field>
      <name>id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>cache_type</name>
+    <unique>true</unique>
+    <field>
+     <name>type</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>topic</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>project_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>max_items</name>
      <sorting>ascending</sorting>
     </field>
    </index>
@@ -369,6 +455,14 @@
    </field>
 
    <index>
+    <name>task_id_comments</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>comments_pKey</name>
     <primary>true</primary>
     <field>
@@ -421,6 +515,27 @@
     </field>
    </index>
 
+   <index>
+    <name>deps_task_id</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+   
+   <index>
+    <name>task_id_deps</name>
+    <unique>true</unique>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>dep_task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
   </declaration>
 
  </table>
@@ -464,10 +579,39 @@
    </field>
 
    <index>
+    <name>field_values_task</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>field_values_field</name>
+    <field>
+     <name>field_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>field_values_pKey</name>
     <primary>true</primary>
     <field>
      <name>record_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>field_values_unique</name>
+    <unique>true</unique>
+    <field>
+     <name>field_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>task_id</name>
      <sorting>ascending</sorting>
     </field>
    </index>
@@ -531,14 +675,6 @@
    </field>
 
    <field>
-    <name>value_required</name>
-    <type>integer</type>
-    <length>4</length>
-    <notnull>true</notnull>
-    <default>0</default>
-   </field>
-
-   <field>
     <name>list_id</name>
     <type>integer</type>
     <length>4</length>
@@ -553,6 +689,38 @@
     <notnull>true</notnull>
     <default>0</default>
    </field>
+
+   <field>
+    <name>value_required</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <index>
+    <name>fields_project</name>
+    <field>
+     <name>project_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>fields_listid</name>
+    <field>
+     <name>list_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>fields_type</name>
+    <field>
+     <name>field_type</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>fields_pKey</name>
@@ -783,6 +951,14 @@
    </field>
 
    <field>
+    <name>group_open</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
     <name>view_userlist</name>
     <type>integer</type>
     <length>4</length>
@@ -814,19 +990,32 @@
     <default>0</default>
    </field>
 
-   <field>
-    <name>group_open</name>
-    <type>integer</type>
-    <length>4</length>
-    <notnull>true</notnull>
-    <default>0</default>
-   </field>
+   <index>
+    <name>belongs_to_project</name>
+    <field>
+     <name>project_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>groups_pKey</name>
     <primary>true</primary>
     <field>
      <name>group_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>group_name</name>
+    <unique>true</unique>
+    <field>
+     <name>group_name</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>project_id</name>
      <sorting>ascending</sorting>
     </field>
    </index>
@@ -886,7 +1075,7 @@
     <name>field_changed</name>
     <type>text</type>
     <length>50</length>
-    <notnull>false</notnull>
+    <notnull>true</notnull>
     
    </field>
 
@@ -903,6 +1092,14 @@
     <notnull>false</notnull>
     
    </field>
+
+   <index>
+    <name>idx_task_id</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>history_pKey</name>
@@ -983,6 +1180,14 @@
    </field>
 
    <index>
+    <name>cat_list_id</name>
+    <field>
+     <name>list_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>list_category_pKey</name>
     <primary>true</primary>
     <field>
@@ -1051,6 +1256,14 @@
    </field>
 
    <index>
+    <name>lists_items_lid</name>
+    <field>
+     <name>list_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>list_items_pKey</name>
     <primary>true</primary>
     <field>
@@ -1101,6 +1314,14 @@
     <notnull>true</notnull>
     <default>0</default>
    </field>
+
+   <index>
+    <name>lists_pr_id</name>
+    <field>
+     <name>project_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>lists_pKey</name>
@@ -1160,6 +1381,14 @@
     <notnull>true</notnull>
     <default>0</default>
    </field>
+
+   <index>
+    <name>notes_user</name>
+    <field>
+     <name>user_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>notes_pKey</name>
@@ -1257,6 +1486,19 @@
     </field>
    </index>
 
+   <index>
+    <name>msg_user</name>
+    <unique>true</unique>
+    <field>
+     <name>message_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>user_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
   </declaration>
 
  </table>
@@ -1299,6 +1541,14 @@
     <notnull>true</notnull>
     <default>0</default>
    </field>
+
+   <index>
+    <name>task_id_threads</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>notification_threads_pKey</name>
@@ -1353,6 +1603,19 @@
     </field>
    </index>
 
+   <index>
+    <name>task_id_notifs</name>
+    <unique>true</unique>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>user_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
   </declaration>
 
  </table>
@@ -1384,6 +1647,7 @@
     <name>pref_value</name>
     <type>text</type>
     <notnull>false</notnull>
+    
    </field>
 
    <index>
@@ -1419,14 +1683,6 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    
-   </field>
-
-   <field>
-    <name>project_prefix</name>
-    <type>text</type>
-    <length>20</length>
-    <notnull>false</notnull>
     
    </field>
 
@@ -1471,14 +1727,6 @@
 
    <field>
     <name>anon_open</name>
-    <type>integer</type>
-    <length>4</length>
-    <notnull>true</notnull>
-    <default>0</default>
-   </field>
-
-   <field>
-    <name>anon_view_tasks</name>
     <type>integer</type>
     <length>4</length>
     <notnull>true</notnull>
@@ -1541,7 +1789,7 @@
     <type>text</type>
     <length>10</length>
     <notnull>true</notnull>
-    <default>en</default>
+    
    </field>
 
    <field>
@@ -1584,6 +1832,14 @@
    </field>
 
    <field>
+    <name>anon_view_tasks</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
     <name>send_digest</name>
     <type>integer</type>
     <length>4</length>
@@ -1601,6 +1857,30 @@
 
    <field>
     <name>roadmap_field</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>project_prefix</name>
+    <type>text</type>
+    <length>20</length>
+    <notnull>false</notnull>
+    
+   </field>
+
+   <field>
+    <name>override_user_lang</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>anon_group</name>
     <type>integer</type>
     <length>4</length>
     <notnull>true</notnull>
@@ -1640,22 +1920,6 @@
    </field>
 
    <field>
-    <name>override_user_lang</name>
-    <type>integer</type>
-    <length>4</length>
-    <notnull>true</notnull>
-    <default>0</default>
-   </field>
-
-   <field>
-    <name>anon_group</name>
-    <type>integer</type>
-    <length>4</length>
-    <notnull>true</notnull>
-    <default>0</default>
-   </field>
-
-   <field>
     <name>mail_headers</name>
     <type>text</type>
     <length>255</length>
@@ -1668,6 +1932,15 @@
     <primary>true</primary>
     <field>
      <name>project_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>project_prefixes</name>
+    <unique>true</unique>
+    <field>
+     <name>project_prefix</name>
      <sorting>ascending</sorting>
     </field>
    </index>
@@ -1801,7 +2074,6 @@
 
    <field>
     <name>related_type</name>
-    <was>is_duplicate</was>
     <type>integer</type>
     <length>4</length>
     <notnull>true</notnull>
@@ -1809,10 +2081,39 @@
    </field>
 
    <index>
+    <name>related_this</name>
+    <field>
+     <name>this_task</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>related_other</name>
+    <field>
+     <name>related_task</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>related_pKey</name>
     <primary>true</primary>
     <field>
      <name>related_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>this_task</name>
+    <unique>true</unique>
+    <field>
+     <name>this_task</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>related_task</name>
      <sorting>ascending</sorting>
     </field>
    </index>
@@ -1892,6 +2193,14 @@
    </field>
 
    <index>
+    <name>reminders_taskid</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>reminders_pKey</name>
     <primary>true</primary>
     <field>
@@ -1951,6 +2260,14 @@
    </field>
 
    <index>
+    <name>user_searches</name>
+    <field>
+     <name>user_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>searches_pKey</name>
     <primary>true</primary>
     <field>
@@ -1980,14 +2297,6 @@
 
    <field>
     <name>project_id</name>
-    <type>integer</type>
-    <length>4</length>
-    <notnull>true</notnull>
-    <default>0</default>
-   </field>
-
-   <field>
-    <name>prefix_id</name>
     <type>integer</type>
     <length>4</length>
     <notnull>true</notnull>
@@ -2113,12 +2422,44 @@
    </field>
 
    <field>
+    <name>prefix_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
     <name>close_after</name>
     <type>integer</type>
     <length>4</length>
     <notnull>true</notnull>
     <default>0</default>
    </field>
+
+   <index>
+    <name>attached_to_project</name>
+    <field>
+     <name>project_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>is_closed</name>
+    <field>
+     <name>is_closed</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>tasks_prefix</name>
+    <field>
+     <name>prefix_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>tasks_pKey</name>
@@ -2160,14 +2501,6 @@
     <name>user_pass</name>
     <type>text</type>
     <length>40</length>
-    <notnull>true</notnull>
-    
-   </field>
-
-   <field>
-    <name>password_salt</name>
-    <type>text</type>
-    <length>32</length>
     <notnull>false</notnull>
     
    </field>
@@ -2269,6 +2602,30 @@
    </field>
 
    <field>
+    <name>login_attempts</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>lock_until</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>password_salt</name>
+    <type>text</type>
+    <length>32</length>
+    <notnull>false</notnull>
+    
+   </field>
+
+   <field>
     <name>defaultsortcolumn</name>
     <type>text</type>
     <length>255</length>
@@ -2308,27 +2665,28 @@
     <default>1</default>
    </field>
 
-   <field>
-    <name>login_attempts</name>
-    <type>integer</type>
-    <length>4</length>
-    <notnull>true</notnull>
-    <default>0</default>
-   </field>
-
-   <field>
-    <name>lock_until</name>
-    <type>integer</type>
-    <length>4</length>
-    <notnull>true</notnull>
-    <default>0</default>
-   </field>
+   <index>
+    <name>account_enabled</name>
+    <field>
+     <name>user_name</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>users_pKey</name>
     <primary>true</primary>
     <field>
      <name>user_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>user_name</name>
+    <unique>true</unique>
+    <field>
+     <name>user_name</name>
      <sorting>ascending</sorting>
     </field>
    </index>
@@ -2369,10 +2727,31 @@
    </field>
 
    <index>
+    <name>user_id_uig</name>
+    <field>
+     <name>user_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
     <name><variable>db_prefix</variable>users_in_groups_pKey</name>
     <primary>true</primary>
     <field>
      <name>record_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+   <index>
+    <name>group_id_uig</name>
+    <unique>true</unique>
+    <field>
+     <name>group_id</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
+     <name>user_id</name>
      <sorting>ascending</sorting>
     </field>
    </index>
@@ -2419,6 +2798,14 @@
     <notnull>true</notnull>
     <default>0</default>
    </field>
+
+   <index>
+    <name>votes_task</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
 
    <index>
     <name><variable>db_prefix</variable>votes_pKey</name>

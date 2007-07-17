@@ -31,6 +31,10 @@ switch (Post::val('field')) {
     case 'progress':
         $args['percent_complete'] = Post::num('value');
         break;
+    
+    case 'assignedto':
+        $args['assigned_to'] = Post::val('value');
+        break;
         
     default:
         // now all the custom fields
@@ -44,5 +48,8 @@ switch (Post::val('field')) {
 Backend::edit_task($task, $args);
 
 // let's get the updated value
-echo tpl_draw_cell(Flyspray::GetTaskDetails(Post::val('task_id')), Post::val('field'), '<span class="%s %s">%s</span>');
+$task = Flyspray::GetTaskDetails(Post::val('task_id'));
+$task['num_assigned'] = count($task['assigned_to']);
+$task['assigned_to_name'] = reset($task['assigned_to_name']);
+echo tpl_draw_cell($task, Post::val('field'), '<span class="%s %s">%s</span>');
 ?>

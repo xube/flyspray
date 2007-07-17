@@ -101,6 +101,7 @@ function event_description($history) {
                     break;
             }
             if (is_numeric($field)) {
+                $field = $history['field_name'];
                 $f = new Field($history);
                 if ($f->prefs['field_type'] == FIELD_LIST) {
                     $t = ($history['list_type'] == LIST_CATEGORY) ? 'c' : 'l';
@@ -117,7 +118,7 @@ function event_description($history) {
                     $old_value = $f->view(array('field' . $f->id => $history['old_value']));
                 }
             }
-            $return .= eL('fieldchanged').": {$history['field_name']}";
+            $return .= eL('fieldchanged').": {$field}";
             if ($old_value || $new_value) {
                  $return .= " ({$old_value} &rarr; {$new_value})";
             }

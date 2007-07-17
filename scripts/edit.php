@@ -69,7 +69,6 @@ class FlysprayDoEdit extends FlysprayDo
         global $page, $user, $fs, $proj, $db;
         $page->setTitle($fs->prefs['page_title'] . $proj->prefs['project_title'] . ': ' . L('massedit'));
         $page->assign('userlist', array());
-        $page->assign('old_assigned', '');
         $page->pushTpl('massedit.tpl');
     }
 }

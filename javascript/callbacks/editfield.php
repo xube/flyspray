@@ -30,6 +30,8 @@ if (!$user->can_edit_task($task)) {
 }
 
 // pre build some HTML
+$task['num_assigned'] = count($task['assigned_to']);
+$task['assigned_to_name'] = reset($task['assigned_to_name']);
 $prev = Filters::noXSS(str_replace("'", "\'", tpl_draw_cell($task, $field, '<span class="%s %s">%s</span>')));
 $id = sprintf('id="%s" name="%s"', $field, $field);
 
@@ -52,6 +54,24 @@ switch ($field)
               </select>';
         break;
     
+    case 'assignedto':
+        // additional permission check is needed
+        if (!$user->perms('edit_assignments')) {
+            header('HTTP/1.1 400 Bad Request');
+            exit;
+        }
+        $field = 'assigned_to';
+        $page = new FSTpl();
+        $list = $db->x->getCol('SELECT u.user_name
+                                  FROM {assigned} a, {users} u
+                                 WHERE a.user_id = u.user_id AND task_id = ?
+                                 ORDER BY u.user_name DESC',
+                                null, $task['task_id']);
+
+        $page->assign('userlist', $list);
+        $page->display('common.multiuserselect.tpl');
+        break;
+        
     default:
         // consider custom fields
         $field_id = substr($field, 5);

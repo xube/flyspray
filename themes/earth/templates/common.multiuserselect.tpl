@@ -11,12 +11,6 @@
                    ?>{Req::val('assigned_to')}<?php
                    endif; ?>
                    </textarea>
-
-                   <?php if (isset($old_assigned)): ?>
-                   <input type="hidden" name="old_assigned" value="<?php
-                   foreach ($userlist as $usr):
-                   ?>{$usr['user_id']} <?php
-                   endforeach; endif; ?>" />
 				</div>
                 <script type="text/javascript">
                 function findPos(obj) {

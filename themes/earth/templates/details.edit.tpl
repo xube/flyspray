@@ -44,7 +44,6 @@
 			 <td>
                 <?php if ($user->perms('edit_assignments')): ?>
 
-				<input type="hidden" name="old_assigned" value="{$old_assigned}" />
                 <?php $this->display('common.multiuserselect.tpl'); ?>
                 <?php else: ?>
                     <?php if (empty($assigned_users)): ?>

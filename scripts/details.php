@@ -538,13 +538,12 @@ class FlysprayDoDetails extends FlysprayDo
 
         // Send user variables to the template
         $page->assign('assigned_users', $this->task['assigned_to']);
-        $page->assign('old_assigned', implode(' ', $this->task['assigned_to']));
         $page->assign('task', $this->task);
 
         $page->setTitle($this->task['project_prefix'] . '#' . $this->task['prefix_id'] . ': ' . $this->task['item_summary']);
 
         if ((Get::val('edit') || (Post::has('item_summary') && !isset($_SESSION['SUCCESS']))) && ($user->can_edit_task($this->task) || $user->can_correct_task($this->task))) {
-            $list = $db->x->getAll('SELECT u.user_name, u.user_id
+            $list = $db->x->getCol('SELECT u.user_name
                                       FROM {assigned} a, {users} u
                                      WHERE a.user_id = u.user_id AND task_id = ?
                                   ORDER BY u.user_name DESC',
