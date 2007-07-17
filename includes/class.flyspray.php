@@ -893,27 +893,6 @@ class Flyspray
         return $assignees;
     } /// }}}
 
-    // {{{
-    /**
-     * Explode string to the array of integers
-     * @param string $separator
-     * @param string $string
-     * @access public static
-     * @return array
-     * @version 1.0
-     */
-    function int_explode($separator, $string)
-    {
-    	$ret = array();
-    	foreach (explode($separator, $string) as $v)
-    	{
-            if (ctype_digit($v)) {// $v is always string, this func returns false if $v == ''
-    			$ret[] = intval($v); // convert to int
-            }
-    	}
-    	return $ret;
-    } /// }} }
-
     /**
      * Checks if a function is disabled
      * @param string $func_name

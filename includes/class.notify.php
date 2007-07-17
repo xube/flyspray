@@ -146,7 +146,7 @@ class Notifications
             // Now, we add the project contact addresses,
             // but only if the task is public
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
-            if ($data['task']['mark_private'] != '1' && in_array($type, Flyspray::int_explode(' ', $data['project']->prefs['notify_types'])))
+            if ($data['task']['mark_private'] != '1' && in_array($type, explode(' ', $data['project']->prefs['notify_types'])))
             {
                 $proj_emails = preg_split('/[\s,;]+/', $proj->prefs['notify_email'], -1, PREG_SPLIT_NO_EMPTY);
                 $proj_jids   = preg_split('/[\s,;]+/', $proj->prefs['notify_jabber'], -1, PREG_SPLIT_NO_EMPTY);
@@ -478,7 +478,7 @@ class Notifications
     {
         global $fs;
 
-        if ($notify_type && in_array($notify_type, Flyspray::int_explode(' ', $row['notify_blacklist']))) {
+        if ($notify_type && in_array($notify_type, explode(' ', $row['notify_blacklist']))) {
             return;
         }
 

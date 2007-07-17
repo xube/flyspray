@@ -42,7 +42,7 @@
             <?php endforeach; ?>
 			<tr>
 			 <td><label for="assigned_to">{L('assignedto')}</label></td>
-			 <td class="assigned_>
+			 <td>
                 <?php if ($user->perms('edit_assignments')): ?>
 
                 <?php $this->display('common.multiuserselect.tpl'); ?>
