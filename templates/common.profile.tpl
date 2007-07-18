@@ -92,7 +92,7 @@
         <td>
             <label class="left notable">{!tpl_checkbox('defaultorder', $theuser->infos['defaultorder'] == 'asc', null, 'asc', null, 'radio')} {L('asc')}</label>
             <label class="left notable">{!tpl_checkbox('defaultorder', $theuser->infos['defaultorder'] == 'desc', null, 'desc', null, 'radio')} {L('desc')}</label>
-            {!tpl_double_select('defaultsortcolumn[]', $proj->columns, explode(' ', $theuser->infos['defaultsortcolumn']), true)}
+            {!tpl_double_select('defaultsortcolumn[]', $proj->columns, explode(' ', $theuser->infos['defaultsortcolumn']))}
         </td>
       </tr>
       <tr>
@@ -115,7 +115,7 @@
                                 NOTIFY_REV_DEP         => L('revdepadded'),
                                 NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
                                 NOTIFY_ADDED_ASSIGNEES => L('assigneeadded')),
-                                Post::val('notify_types', Flyspray::int_explode(' ', $user->infos['notify_blacklist'])))}
+                                Post::val('notify_types', explode(' ', $user->infos['notify_blacklist'])))}
             </select>
         </td>
       </tr>

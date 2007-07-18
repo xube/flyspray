@@ -37,7 +37,7 @@ class FlysprayDoChangelog extends FlysprayDo
                                 ORDER BY list_position ASC', null, $list_id);
 
         $data = array();
-        $reasons = implode(',', Flyspray::int_explode(' ', $proj->prefs['changelog_reso']));
+        $reasons = implode(',', explode(' ', $proj->prefs['changelog_reso']));
 
         while ((list(, $row) = each($milestones)) && $reasons) {
             $tasks = $db->x->getAll('SELECT t.task_id, percent_complete, item_summary, detailed_desc, mark_private, fs.field_value AS field' . $fs->prefs['color_field'] . ',

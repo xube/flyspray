@@ -107,7 +107,7 @@
           <td><label for="changelog_reso">{L('changelogreso')}</label></td>
           <td>
             <select name="changelog_reso[]" multiple="multiple" size="4">
-            {!tpl_options($proj->get_list(array('list_id' => $fs->prefs['resolution_list'])), Flyspray::int_explode(' ', $proj->prefs['changelog_reso']), false)}
+            {!tpl_options($proj->get_list(array('list_id' => $fs->prefs['resolution_list'])), explode(' ', $proj->prefs['changelog_reso']), false)}
             </select>
           </td>
         </tr>
@@ -200,7 +200,7 @@
                                 NOTIFY_REV_DEP         => L('revdepadded'),
                                 NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
                                 NOTIFY_ADDED_ASSIGNEES => L('assigneeadded')),
-                                Post::val('notify_types', Flyspray::int_explode(' ', $proj->prefs['notify_types'])))}
+                                Post::val('notify_types', explode(' ', $proj->prefs['notify_types'])))}
             </select>
           </td>
         </tr>

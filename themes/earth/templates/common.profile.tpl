@@ -127,7 +127,7 @@
 										NOTIFY_REV_DEP         => L('revdepadded'),
 										NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
 										NOTIFY_ADDED_ASSIGNEES => L('assigneeadded')),
-										Post::val('notify_types', Flyspray::int_explode(' ', $user->infos['notify_blacklist'])))}
+										Post::val('notify_types', explode(' ', $user->infos['notify_blacklist'])))}
 					</select>
 				</td>
 		  </tr>
