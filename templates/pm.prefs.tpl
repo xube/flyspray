@@ -249,7 +249,7 @@
         <tr>
           <td><label for="svn_password">{L('svnpassword')}</label></td>
           <td>
-            <input id="svn_password" name="svn_password" class="text" type="password" value="{Post::val('svn_password', $proj->prefs['svn_password'])}" />
+            <input id="svn_password" name="svn_password" class="text" type="text" value="{Post::val('svn_password', $proj->prefs['svn_password'])}" />
           </td>
         </tr>
       </table>

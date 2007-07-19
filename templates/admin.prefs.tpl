@@ -97,7 +97,7 @@
         </tr>
         <tr>
           <td><label for="recaptcha_private_key">{L('recaptchaprivatekey')}</label></td>
-          <td><input id="recaptcha_private_key" name="recaptcha_private_key" class="text" type="password" size="40" value="{$fs->prefs['recaptcha_private_key']}" /></td>
+          <td><input id="recaptcha_private_key" name="recaptcha_private_key" class="text" type="text" size="40" value="{$fs->prefs['recaptcha_private_key']}" /></td>
 		</tr>
           <td><label for="notify_registration">{L('notify_registration')}</label></td>
           <td>{!tpl_checkbox('notify_registration', $fs->prefs['notify_registration'], 'notify_registration')}</td>
@@ -250,7 +250,7 @@
         <tr>
           <td><label for="jabberpassword">{L('jabberpass')}</label></td>
           <td>
-            <input id="jabberpassword" name="jabber_password" class="password" type="password" size="40" maxlength="100" value="{$fs->prefs['jabber_password']}" />
+            <input id="jabberpassword" name="jabber_password" class="text" type="text" size="40" maxlength="100" value="{$fs->prefs['jabber_password']}" />
           </td>
         </tr>
         <tr>
