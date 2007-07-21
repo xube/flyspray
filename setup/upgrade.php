@@ -162,18 +162,18 @@ function execute_upgrade_file($folder, $installed_version)
 
         if (substr($file, -4) == '.xml') {
             require_once 'MDB2/Schema.php';
+            $db->setOption('idxname_format', '%s');
             $schema =& MDB2_Schema::factory($db);
             $schema->setOption('force_defaults', false);
             $previous_schema = $schema->getDefinitionFromDatabase();
             $res = $schema->updateDatabase($upgrade_path . '/' . $file, $previous_schema,
                                            array('db_prefix' => $conf['database']['dbprefix'], 'db_name' => $conf['database']['dbname']));
       
-            if (!PEAR::isError($res)) {
-                $done[$file] = $hash;
-                    // ignore double-renaming of fields, <was></was>
-            } else if ($res->code != -5) {
+            // ignore double-renaming of fields, <was></was>
+            if (PEAR::isError($res)) {
                 return $res;
             }
+            $done[$file] = $hash;
         }
     }
 
