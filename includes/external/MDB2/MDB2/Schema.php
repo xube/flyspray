@@ -42,7 +42,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: Schema.php,v 1.108 2007/03/10 15:34:17 ifeghali Exp $
+// $Id: Schema.php,v 1.111 2007/07/15 19:51:26 ifeghali Exp $
 //
 
 require_once 'MDB2.php';
@@ -533,7 +533,10 @@ class MDB2_Schema extends PEAR
     /**
      * A method to create indexes for an existing table
      *
-     * @param string  Name of the table     * @param array   An array of indexes to be created     * @param boolean If the table/index should be overwritten if it already exists     * @return mixed  MDB2_Error if there is an error creating an index, MDB2_OK otherwise
+     * @param string  Name of the table
+     * @param array   An array of indexes to be created
+     * @param boolean If the table/index should be overwritten if it already exists
+     * @return mixed  MDB2_Error if there is an error creating an index, MDB2_OK otherwise
      * @access public
      */
     function createTableIndexes($table_name, $indexes, $overwrite = false)
@@ -566,13 +569,20 @@ class MDB2_Schema extends PEAR
                 } else {
                     $this->db->debug('Preparing to overwrite index: '.$index_name, __FUNCTION__);
 
-                    if (!empty($index['primary']) || !empty($index['unique'])) {                        $result = $this->db->manager->dropConstraint($table_name, $index_name);                    } else {                        $result = $this->db->manager->dropIndex($table_name, $index_name);                    }
+                    if (!empty($index['primary']) || !empty($index['unique'])) {
+                        $result = $this->db->manager->dropConstraint($table_name, $index_name);
+                    } else {
+                        $result = $this->db->manager->dropIndex($table_name, $index_name);
+                    }
 
-                    if (PEAR::isError($result)) {                        return $result;                    }
+                    if (PEAR::isError($result)) {
+                        return $result;
+                    }
                 }
             }
 
-            // Check if primary is being used and if it's supported            if (!empty($index['primary']) && !$this->db->supports('primary_key')) {
+            // Check if primary is being used and if it's supported
+            if (!empty($index['primary']) && !$this->db->supports('primary_key')) {
 
                 // Primary not supported so we fallback to UNIQUE and making the field NOT NULL
                 $index['unique'] = true;
@@ -593,7 +603,16 @@ class MDB2_Schema extends PEAR
                 }
             }
 
-            // Should the index be created?            if ($create_index) {                if (!empty($index['primary']) || !empty($index['unique'])) {                    $result = $this->db->manager->createConstraint($table_name, $index_name, $index);                } else {                    $result = $this->db->manager->createIndex($table_name, $index_name, $index);                }                if (PEAR::isError($result)) {                    return $result;                }
+            // Should the index be created?
+            if ($create_index) {
+                if (!empty($index['primary']) || !empty($index['unique'])) {
+                    $result = $this->db->manager->createConstraint($table_name, $index_name, $index);
+                } else {
+                    $result = $this->db->manager->createIndex($table_name, $index_name, $index);
+                }
+                if (PEAR::isError($result)) {
+                    return $result;
+                }
             }
         }
         return MDB2_OK;
@@ -609,7 +628,8 @@ class MDB2_Schema extends PEAR
      * @param array  multi dimensional array that contains the
      *               structure and optional data of the table
      * @param bool   if the table/index should be overwritten if it already exists
-     * @param array  an array of options to be passed to the database specific driver     *               version of MDB2_Driver_Manager_Common::createTable().
+     * @param array  an array of options to be passed to the database specific driver
+     *               version of MDB2_Driver_Manager_Common::createTable().
      * @return bool|MDB2_Error MDB2_OK or error object
      * @access public
      */
@@ -676,6 +696,7 @@ class MDB2_Schema extends PEAR
     function initializeTable($table_name, $table)
     {
         $query_insert = 'INSERT INTO %s (%s) VALUES (%s)';
+        $query_insertselect = 'INSERT INTO %s (%s) (SELECT %s FROM %s %s)';
         $query_update = 'UPDATE %s SET %s %s';
         $query_delete = 'DELETE FROM %s %s';
 
@@ -687,17 +708,29 @@ class MDB2_Schema extends PEAR
             $query = '';
             switch ($instruction['type']) {
             case 'insert':
-                $data = $this->getInstructionFields($instruction, $table['fields']);
-                if (!empty($data)) {
-                    $fields = implode(', ', array_keys($data));
-                    $values = implode(', ', array_values($data));
+                if (!isset($instruction['data']['select'])) {
+                    $data = $this->getInstructionFields($instruction['data'], $table['fields']);
+                    if (!empty($data)) {
+                        $fields = implode(', ', array_keys($data));
+                        $values = implode(', ', array_values($data));
 
-                    $query = sprintf($query_insert, $table_name, $fields, $values);
+                        $query = sprintf($query_insert, $table_name, $fields, $values);
+                    }
+                } else {
+                    $data = $this->getInstructionFields($instruction['data']['select'], $table['fields']);
+                    $where = $this->getInstructionWhere($instruction['data']['select'], $table['fields']);
+                    $select_table_name = $this->db->quoteIdentifier($instruction['data']['select']['table'], true);
+                    if (!empty($data)) {
+                        $fields = implode(', ', array_keys($data));
+                        $values = implode(', ', array_values($data));
+
+                        $query = sprintf($query_insertselect, $table_name, $fields, $values, $select_table_name, $where);
+                    }
                 }
                 break;
             case 'update':
-                $data = $this->getInstructionFields($instruction, $table['fields']);
-                $where = $this->getInstructionWhere($instruction, $table['fields']);
+                $data = $this->getInstructionFields($instruction['data'], $table['fields']);
+                $where = $this->getInstructionWhere($instruction['data'], $table['fields']);
                 if (!empty($data)) {
                     array_walk($data, array($this, 'buildFieldValue'));
                     $fields_values = implode(', ', $data);
@@ -706,7 +739,7 @@ class MDB2_Schema extends PEAR
                 }
                 break;
             case 'delete':
-                $where = $this->getInstructionWhere($instruction, $table['fields']);
+                $where = $this->getInstructionWhere($instruction['data'], $table['fields']);
                 $query = sprintf($query_delete, $table_name, $where);
                 break;
             }
@@ -878,8 +911,8 @@ class MDB2_Schema extends PEAR
     function getInstructionFields($instruction, $fields_definition = array())
     {
         $fields = array();
-        if (!empty($instruction['data']['field']) && is_array($instruction['data']['field'])) {
-            foreach ($instruction['data']['field'] as $field) {
+        if (!empty($instruction['field']) && is_array($instruction['field'])) {
+            foreach ($instruction['field'] as $field) {
                 $fields[$field['name']] = $this->getExpression($field['group'], $fields_definition);
             }
         }
@@ -907,8 +940,8 @@ class MDB2_Schema extends PEAR
     function getInstructionWhere($instruction, $fields_definition = array())
     {
         $where = '';
-        if (!empty($instruction['data']['where'])) {
-            $where = 'WHERE '.$this->getExpression($instruction['data']['where'], $fields_definition);
+        if (!empty($instruction['where'])) {
+            $where = 'WHERE '.$this->getExpression($instruction['where'], $fields_definition);
         }
         return $where;
     }
@@ -1211,8 +1244,11 @@ class MDB2_Schema extends PEAR
             foreach ($current_definition as $field_name => $field) {
                 $was_field_name = $field['was'];
                 if (!empty($previous_definition[$field_name])
-                    && isset($previous_definition[$field_name]['was'])
-                    && $previous_definition[$field_name]['was'] == $was_field_name
+                    && (
+                        (isset($previous_definition[$field_name]['was'])
+                         && $previous_definition[$field_name]['was'] == $was_field_name)
+                        || !isset($previous_definition[$was_field_name])
+                       )
                 ) {
                     $was_field_name = $field_name;
                 }
@@ -1602,7 +1638,7 @@ class MDB2_Schema extends PEAR
                     $result = $this->db->manager->dropIndex($table_name, $index_name);
                 }
                 if (PEAR::isError($result)) {
-                    return $result;
+                    //return $result;
                 }
                 $alterations++;
             }
@@ -1661,14 +1697,15 @@ class MDB2_Schema extends PEAR
      */
     function alterDatabaseTables($current_definition, $previous_definition, $changes)
     {
+        /* FIXME: tables marked to be added are initialized by createTable(), others don't */
         $alterations = 0;
         if (empty($changes)) {
             return $alterations;
         }
 
-        if (!empty($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $table_name => $table) {
-                $result = $this->db->manager->dropTable($table_name);
+        if (!empty($changes['add']) && is_array($changes['add'])) {
+            foreach ($changes['add'] as $table_name => $table) {
+                $result = $this->createTable($table_name, $current_definition[$table_name]);
                 if (PEAR::isError($result)) {
                     return $result;
                 }
@@ -1676,9 +1713,9 @@ class MDB2_Schema extends PEAR
             }
         }
 
-        if (!empty($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $table_name => $table) {
-                $result = $this->createTable($table_name, $current_definition[$table_name]);
+        if (!empty($changes['remove']) && is_array($changes['remove'])) {
+            foreach ($changes['remove'] as $table_name => $table) {
+                $result = $this->db->manager->dropTable($table_name);
                 if (PEAR::isError($result)) {
                     return $result;
                 }
@@ -2192,7 +2229,7 @@ class MDB2_Schema extends PEAR
      * @access public
      */
     function updateDatabase($current_schema, $previous_schema = false
-        , $variables = array(), $disable_query = false)
+        , $variables = array(), $disable_query = false, $overwrite_old_schema_file = false)
     {
         $current_definition = $this->parseDatabaseDefinition(
             $current_schema, false, $variables, $this->options['fail_on_invalid_names']
@@ -2256,7 +2293,8 @@ class MDB2_Schema extends PEAR
             }
         }
 
-        if (!$disable_query
+        if ($overwrite_old_schema_file
+            && !$disable_query
             && is_string($previous_schema) && is_string($current_schema)
             && !copy($current_schema, $previous_schema)
         ) {
