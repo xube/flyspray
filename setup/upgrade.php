@@ -169,7 +169,6 @@ function execute_upgrade_file($folder, $installed_version)
             $res = $schema->updateDatabase($upgrade_path . '/' . $file, $previous_schema,
                                            array('db_prefix' => $conf['database']['dbprefix'], 'db_name' => $conf['database']['dbname']));
       
-            // ignore double-renaming of fields, <was></was>
             if (PEAR::isError($res)) {
                 return $res;
             }

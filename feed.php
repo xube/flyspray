@@ -27,7 +27,7 @@ header ('Content-type: text/html; charset=utf-8');
 $max_items  = (Get::num('num', 10) == 10) ? 10 : 20;
 $sql_project = '';
 if ($proj->id) {
-    $sql_project = sprintf(' p.project_id = %d', $proj->id);
+    $sql_project = sprintf(' t.project_id = %d', $proj->id);
 }
 
 $feed_type  = Get::val('feed_type', 'rss2');
@@ -53,11 +53,15 @@ $filename = md5(sprintf('%s-%s-%d-%d', $feed_type, $orderby, $proj->id, $max_ite
 $cachefile = sprintf('%s/%s', FS_CACHE_DIR, $filename);
 
 // Get the time when a task has been changed last
-$most_recent = max($db->x->getRow("SELECT  MAX(t.date_opened), MAX(t.date_closed), MAX(t.last_edited_time)
-                                            FROM  {tasks}    t
-                                      INNER JOIN  {projects} p ON t.project_id = p.project_id
-                                           WHERE  $closed $sql_project AND t.mark_private <> 1
-                                                  AND p.others_view = 1 "));
+$db->setLimit($max_items);
+$sql = $db->query("SELECT  t.date_opened, t.date_closed, t.last_edited_time
+                     FROM  {tasks}    t
+                    WHERE  $closed $sql_project
+                 ORDER BY  $orderby DESC");
+$most_recent = 0;
+while ($row = $sql->fetchRow()) {
+    $most_recent = max($most_recent, $row['date_opened'], $row['date_closed'], $row['last_edited_time']); 
+}
 
 if ($fs->prefs['cache_feeds']) {
     if ($fs->prefs['cache_feeds'] == '1') {
@@ -68,7 +72,7 @@ if ($fs->prefs['cache_feeds']) {
     }
     else {
         $content = $db->x->GetOne("SELECT  content
-                                            FROM  {cache} p
+                                            FROM  {cache} t
                                            WHERE  type = ? AND topic = ? $sql_project
                                                   AND max_items = ?  AND last_updated >= ?", null,
                                           array($feed_type, $orderby . $user->id, $max_items, $most_recent));
