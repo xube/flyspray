@@ -1,5 +1,5 @@
 <?php
-//  {{{ class  Req
+//  {{{ class  Req 
 /**
  * Flyspray
  *
@@ -50,7 +50,7 @@ class Req
 }
 
  // }}}
-// {{{ class Post
+// {{{ class Post 
 
 class Post
 {
@@ -86,7 +86,7 @@ class Post
 }
 
 // }}}
-// {{{ class Get
+// {{{ class Get 
 
 class Get
 {
@@ -120,7 +120,7 @@ class Get
 }
 
 // }}}
-//{{{ class  Cookie
+//{{{ class Cookie
 
 class Cookie
 {
@@ -181,17 +181,10 @@ class Filters {
      * @param string $data string value to check
      * @return bool
      * @access public static
-     * @notes unfortunately due to a bug in PHP < 5.1
-     * http://bugs.php.net/bug.php?id=30945 ctype_alnum
-     * returned true on empty string, that's the reason why
-     * we have to use strlen too.
-     *
-     * Be aware: $data MUST be an string, integers or any other
-     * type is evaluated to FALSE
      */
     function isAlnum($data)
     {
-        return ctype_alnum($data) && strlen($data);
+        return (bool) preg_match('/^[a-z0-9]+$/iD', $data); 
     }
 
     /**

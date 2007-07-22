@@ -164,29 +164,36 @@ class Notifications
 
         // Now we start sending
         if (count($emails)) {
+            Swift_ClassLoader::load('Swift_Connection_Multi');
+            Swift_ClassLoader::load('Swift_Connection_SMTP');
+
+                $pool =& new Swift_Connection_Multi();
             // first choose method
             if ($fs->prefs['smtp_server']) {
-                Swift_ClassLoader::load('Swift_Connection_SMTP');
                 // connection... SSL, TLS or none
                 if ($fs->prefs['email_ssl']) {
-                    $connection =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_SSL);
+                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_SSL);
                 } else if ($fs->prefs['email_tls']) {
-                    $connection =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_TLS);
+                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_TLS);
                 } else {
-                    $connection =& new Swift_Connection_SMTP($fs->prefs['smtp_server']);
+                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server']);
                 }
                 if ($fs->prefs['smtp_user']) {
-                    $connection->setUsername($fs->prefs['smtp_user']);
-                    $connection->setPassword($fs->prefs['smtp_pass']);
+                    $smtp->setUsername($fs->prefs['smtp_user']);
+                    $smtp->setPassword($fs->prefs['smtp_pass']);
                 }
                 if(defined('FS_SMTP_TIMEOUT')) {
-                    $swiftconn->setTimeout(FS_SMTP_TIMEOUT);
+                    $smtp->setTimeout(FS_SMTP_TIMEOUT);
                 }
+                $pool->addConnection($smtp);
             } else {
                 Swift_ClassLoader::load('Swift_Connection_NativeMail');
-                $connection =& new Swift_Connection_NativeMail;
+                // a connection to localhost smtp server as fallback, discarded if there is no such thing available.
+                $pool->addConnection(new Swift_Connection_SMTP());
+                $pool->addConnection(new Swift_Connection_NativeMail());
             }
-            $swift =& new Swift($connection);
+
+            $swift =& new Swift($pool);
 
             if (isset($data['task_id'])) {
                 $swift->attachPlugin(new NotificationsThread($data['task_id'], $emails, $db), 'MessageThread');

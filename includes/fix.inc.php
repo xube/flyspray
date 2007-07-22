@@ -216,16 +216,7 @@ function glob_compat($pattern, $flags = 0) {
 }
 
 // now for all those borked PHP installations...
-if (!function_exists('ctype_alnum')) {
-	function ctype_alnum($text) {
-		return is_string($text) && preg_match('/^[a-z0-9]+$/iD', $text);
-	}
-}
-if (!function_exists('ctype_digit')) {
-	function ctype_digit($text) {
-		return is_string($text) && preg_match('/^[0-9]+$/iD', $text);
-	}
-}
+//
 if (!function_exists('hash_hmac')) {
 
     function hash_hmac($algo, $data, $key, $raw_output = false) {

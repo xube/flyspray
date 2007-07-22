@@ -93,7 +93,7 @@ class FlysprayDoPm extends FlysprayDoAdmin
         // already in use?
         $use = $db->x->GetOne('SELECT project_id FROM {projects} WHERE project_prefix = ? AND project_id != ?',
                             null, array($prefix, $proj->id));
-        if (ctype_alnum($prefix) && $prefix != 'FS' && !$use) {
+        if (Filters::isAlnum($prefix) && $prefix != 'FS' && !$use) {
             $cols[] = 'project_prefix';
             $args[] =  $prefix;
         } else {

@@ -367,7 +367,7 @@ function tpl_userselect($input_name, $value = null, $input_id = '', $attrs = arr
         $input_id = $input_name;
     }
 
-    if ($value && ctype_digit($value)) {
+    if ($value && is_numeric($value)) {
         $value = $db->x->GetOne('SELECT user_name FROM {users} WHERE user_id = ?', null, $value);
     }
 

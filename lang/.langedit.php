@@ -118,7 +118,7 @@ chdir("../lang");
 
 $lang = @$_GET['lang'];
 $fail = '';
-if(!$lang || !ctype_alnum($lang))
+if(!$lang || !Filters::isAlnum($lang))
   $fail .= "Language code not supplied correctly<br>\n";
 if(!file_exists('en.php'))
   $fail .= "The english language file <code>en.php</code> is missing. Make sure this script is run from the same directory as the language files <code>.../flyspray/lang/</code><br>\n";

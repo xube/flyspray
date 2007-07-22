@@ -159,7 +159,7 @@ function GetColumnNames($table, $alt, $prefix)
 {
     global $conf, $db;
 
-    if (strcasecmp($conf['database']['dbtype'], 'pgsql') || !ctype_alnum($prefix)) {
+    if (strcasecmp($conf['database']['dbtype'], 'pgsql') || !Filters::isAlnum($prefix)) {
         return $alt;
     }
 

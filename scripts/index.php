@@ -197,7 +197,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
             break;
     }
     $wsvalue = str_replace(' ', '', $value);
-    return sprintf($format, 'task_'.$colname, (ctype_alnum($wsvalue) ? $colname.'_'.$wsvalue : ''), $value);
+    return sprintf($format, 'task_'.$colname, (Filters::isAlnum($wsvalue) ? $colname.'_'.$wsvalue : ''), $value);
 }
 
 // } }}
