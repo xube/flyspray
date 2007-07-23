@@ -24,6 +24,8 @@ $schema->dumpDatabase($def, array('output_mode' => 'file', 'output' => $file), M
 // Now make prefix a variable, so that it can be replaced during setup or upgrade
 $xml = file_get_contents($file);
 $xml = str_replace('flyspray_', '<variable>db_prefix</variable>', $xml);
+// workaround for quotes bug
+$xml = str_replace('&quot;', '"', $xml);
 // empty default values might cause problems
 $xml = str_replace("<notnull>true</notnull>\n    <default></default>", '<notnull>true</notnull>', $xml);
 // also make database name variable
