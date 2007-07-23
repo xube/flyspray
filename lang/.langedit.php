@@ -35,6 +35,7 @@
 //die("I am in line " . __LINE__ . ",remove me to use this tool");
 
 require_once dirname(dirname(__FILE__)) . '/includes/fix.inc.php';
+require_once dirname(dirname(__FILE__)) . '/includes/class.gpc.php';
 
 /**
  * Replace fprintf()
