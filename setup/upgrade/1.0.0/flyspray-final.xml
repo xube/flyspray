@@ -91,7 +91,7 @@
    </field>
 
    <index>
-    <name>reminders_taskid</name>
+    <name>adminrequests_taskid</name>
     <field>
      <name>task_id</name>
      <sorting>ascending</sorting>
@@ -99,7 +99,7 @@
    </index>
 
    <index>
-    <name>reminders_project</name>
+    <name>adminrequests_project</name>
     <field>
      <name>project_id</name>
      <sorting>ascending</sorting>
@@ -1075,8 +1075,8 @@
     <name>field_changed</name>
     <type>text</type>
     <length>50</length>
-    <notnull>true</notnull>
-    
+    <notnull>false</notnull>
+    <default></default>
    </field>
 
    <field>

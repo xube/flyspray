@@ -105,7 +105,11 @@ function &NewDatabase($conf = array())
             .'Check your settings in flyspray.conf.php');
     }
 
-    $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname?charset=utf8";
+    if ($dbtype == 'sqlite') {
+        $dsn = "$dbtype:///$dbname?mode=0666";
+    } else {
+        $dsn = "$dbtype://$dbuser:$dbpass@$dbhost/$dbname?charset=utf8";
+    }
     $db =& MDB2::factory($dsn);
 
     $db->loadModule('Extended', 'x', false);

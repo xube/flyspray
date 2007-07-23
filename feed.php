@@ -30,10 +30,7 @@ if ($proj->id) {
     $sql_project = sprintf(' t.project_id = %d', $proj->id);
 }
 
-$feed_type  = Get::val('feed_type', 'rss2');
-if ($feed_type != 'rss1' && $feed_type != 'rss2') {
-    $feed_type = 'atom';
-}
+$feed_type  = Get::enum('feed_type', array('rss1', 'rss2', 'atom'), 'rss2');
 
 switch (Get::val('topic')) {
     case 'clo': $orderby = 'date_closed'; $closed = 't.is_closed = 1 AND';

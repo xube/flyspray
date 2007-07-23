@@ -286,7 +286,7 @@ class ConfUpdater
         foreach ($this->new_config as $group => $settings) {
             $new_config .= "[{$group}]\n";
             foreach ($settings as $key => $value) {
-                $new_config .= sprintf('%s="%s"', $key, addslashes($value)). "\n";
+                $new_config .= sprintf('%s="%s"', $key, str_replace('"', '\"', $value)). "\n";
             }
             $new_config .= "\n";
         }

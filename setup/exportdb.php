@@ -25,7 +25,7 @@ $schema->dumpDatabase($def, array('output_mode' => 'file', 'output' => $file), M
 $xml = file_get_contents($file);
 $xml = str_replace('flyspray_', '<variable>db_prefix</variable>', $xml);
 // empty default values might cause problems
-$xml = str_replace('<default></default>', '', $xml);
+$xml = str_replace("<notnull>true</notnull>\n    <default></default>", '<notnull>true</notnull>', $xml);
 // also make database name variable
 $xml = str_replace('<name>'.$conf['database']['dbname'].'</name>', '<name><variable>db_name</variable></name>', $xml);
 file_put_contents($file, $xml);

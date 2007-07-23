@@ -87,7 +87,7 @@ switch ($field)
 }
 
 $args = sprintf("%s, '%s'", $task['task_id'], $field);
-echo '<button type="button" onclick="savequickedit(' . $args . ')">'.eL('OK').'</button>
+echo '<button type="button" onclick="savequickedit(' . $args . ');this.onclick=function(){}">'.eL('OK').'</button>
       <button type="button" onclick="this.parentNode.update(\''. $prev .'\')">X</button>';
 echo "<script type='text/javascript'>$('{$field}').focus();</script>";
 ?>
