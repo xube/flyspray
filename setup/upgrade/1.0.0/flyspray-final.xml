@@ -56,7 +56,7 @@
     <name>reason_given</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -87,7 +87,7 @@
     <name>deny_reason</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <index>
@@ -224,7 +224,7 @@
     <type>text</type>
     <length>255</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -232,7 +232,7 @@
     <type>text</type>
     <length>60</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -240,7 +240,7 @@
     <type>text</type>
     <length>50</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -312,14 +312,14 @@
     <type>text</type>
     <length>4</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
     <name>content</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -327,7 +327,7 @@
     <type>text</type>
     <length>30</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -443,7 +443,7 @@
     <name>comment_text</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -522,7 +522,7 @@
      <sorting>ascending</sorting>
     </field>
    </index>
-   
+
    <index>
     <name>task_id_deps</name>
     <unique>true</unique>
@@ -575,7 +575,7 @@
     <name>field_value</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <index>
@@ -640,7 +640,7 @@
     <type>text</type>
     <length>50</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -663,7 +663,7 @@
     <name>default_value</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -679,7 +679,7 @@
     <type>integer</type>
     <length>4</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -755,7 +755,7 @@
     <type>text</type>
     <length>40</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -763,7 +763,7 @@
     <type>text</type>
     <length>150</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1083,14 +1083,14 @@
     <name>old_value</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
     <name>new_value</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <index>
@@ -1134,7 +1134,7 @@
     <type>text</type>
     <length>40</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1220,7 +1220,7 @@
     <type>text</type>
     <length>40</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1244,7 +1244,7 @@
     <type>integer</type>
     <length>4</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1296,7 +1296,7 @@
     <type>text</type>
     <length>40</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1364,14 +1364,14 @@
     <type>text</type>
     <length>200</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
     <name>message_body</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1430,7 +1430,7 @@
     <name>message_data</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <index>
@@ -1523,7 +1523,7 @@
     <type>integer</type>
     <length>4</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1531,7 +1531,7 @@
     <type>text</type>
     <length>200</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1640,14 +1640,14 @@
     <type>text</type>
     <length>30</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
     <name>pref_value</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <index>
@@ -1683,7 +1683,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1706,7 +1706,7 @@
     <name>intro_message</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1714,7 +1714,7 @@
     <type>text</type>
     <length>255</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1737,21 +1737,21 @@
     <name>notify_email</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
     <name>notify_jabber</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
     <name>notify_reply</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1766,14 +1766,14 @@
     <name>feed_img_url</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
     <name>feed_description</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1781,7 +1781,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1789,7 +1789,7 @@
     <type>text</type>
     <length>10</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1820,7 +1820,7 @@
     <name>default_task</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1868,7 +1868,7 @@
     <type>text</type>
     <length>20</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1892,7 +1892,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1900,7 +1900,7 @@
     <type>text</type>
     <length>255</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1908,7 +1908,7 @@
     <type>text</type>
     <length>255</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1916,7 +1916,7 @@
     <type>text</type>
     <length>255</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -1924,7 +1924,7 @@
     <type>text</type>
     <length>255</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <index>
@@ -1977,7 +1977,7 @@
     <type>text</type>
     <length>32</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1985,7 +1985,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -1993,7 +1993,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -2001,7 +2001,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -2017,7 +2017,7 @@
     <type>text</type>
     <length>40</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -2113,6 +2113,10 @@
      <sorting>ascending</sorting>
     </field>
     <field>
+     <name>related_type</name>
+     <sorting>ascending</sorting>
+    </field>
+    <field>
      <name>related_task</name>
      <sorting>ascending</sorting>
     </field>
@@ -2189,7 +2193,7 @@
     <name>reminder_message</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <index>
@@ -2241,14 +2245,14 @@
     <type>text</type>
     <length>50</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
     <name>search_string</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2347,7 +2351,7 @@
     <name>closure_comment</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2355,14 +2359,14 @@
     <type>text</type>
     <length>255</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
     <name>detailed_desc</name>
     <type>text</type>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2410,7 +2414,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2494,7 +2498,7 @@
     <type>text</type>
     <length>32</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -2502,7 +2506,7 @@
     <type>text</type>
     <length>40</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2510,7 +2514,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    
+
    </field>
 
    <field>
@@ -2518,7 +2522,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2526,7 +2530,7 @@
     <type>text</type>
     <length>100</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2558,7 +2562,7 @@
     <type>text</type>
     <length>30</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2566,7 +2570,7 @@
     <type>text</type>
     <length>30</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2574,7 +2578,7 @@
     <type>text</type>
     <length>40</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2622,7 +2626,7 @@
     <type>text</type>
     <length>32</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2630,7 +2634,7 @@
     <type>text</type>
     <length>255</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>
@@ -2646,7 +2650,7 @@
     <type>text</type>
     <length>50</length>
     <notnull>false</notnull>
-    
+
    </field>
 
    <field>

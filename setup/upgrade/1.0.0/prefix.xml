@@ -25,7 +25,6 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    <default></default>
    </field>
 
    <field>
@@ -95,21 +94,18 @@
     <name>notify_email</name>
     <type>text</type>
     <notnull>false</notnull>
-    <default></default>
    </field>
 
    <field>
     <name>notify_jabber</name>
     <type>text</type>
     <notnull>false</notnull>
-    <default></default>
    </field>
 
    <field>
     <name>notify_reply</name>
     <type>text</type>
     <notnull>false</notnull>
-    <default></default>
    </field>
 
    <field>
@@ -124,14 +120,12 @@
     <name>feed_img_url</name>
     <type>text</type>
     <notnull>false</notnull>
-    <default></default>
    </field>
 
    <field>
     <name>feed_description</name>
     <type>text</type>
     <notnull>false</notnull>
-    <default></default>
    </field>
 
    <field>
@@ -139,7 +133,6 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    <default></default>
    </field>
 
    <field>
@@ -178,7 +171,6 @@
     <name>default_task</name>
     <type>text</type>
     <notnull>false</notnull>
-    <default></default>
    </field>
 
    <field>
@@ -317,7 +309,6 @@
     <name>closure_comment</name>
     <type>text</type>
     <notnull>false</notnull>
-    <default></default>
    </field>
 
    <field>
@@ -325,14 +316,12 @@
     <type>text</type>
     <length>255</length>
     <notnull>true</notnull>
-    <default></default>
    </field>
 
    <field>
     <name>detailed_desc</name>
     <type>text</type>
     <notnull>false</notnull>
-    <default></default>
    </field>
 
    <field>
@@ -388,7 +377,6 @@
     <type>text</type>
     <length>100</length>
     <notnull>true</notnull>
-    <default></default>
    </field>
 
    <field>
