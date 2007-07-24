@@ -35,7 +35,7 @@ class FlysprayDoRoadmap extends FlysprayDo
                                     FROM {list_items} li
                                    WHERE list_id = ? AND version_tense = 3
                                 ORDER BY list_position ASC',
-                                  null, array($list_id));
+                                  null, $list_id);
 
         $data = array();
 

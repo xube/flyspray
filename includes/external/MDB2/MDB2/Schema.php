@@ -42,7 +42,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: Schema.php,v 1.111 2007/07/15 19:51:26 ifeghali Exp $
+// $Id: Schema.php,v 1.113 2007/07/23 23:04:48 ifeghali Exp $
 //
 
 require_once 'MDB2.php';
@@ -87,6 +87,7 @@ class MDB2_Schema extends PEAR
         'force_defaults' => true,
         'parser' => 'MDB2_Schema_Parser',
         'writer' => 'MDB2_Schema_Writer',
+        'validate' => 'MDB2_Schema_Validate'
     );
 
     // }}}
@@ -225,9 +226,9 @@ class MDB2_Schema extends PEAR
     function &factory(&$db, $options = array())
     {
         $obj =& new MDB2_Schema();
-        $err = $obj->connect($db, $options);
-        if (PEAR::isError($err)) {
-            return $err;
+        $result = $obj->connect($db, $options);
+        if (PEAR::isError($result)) {
+            return $result;
         }
         return $obj;
     }
@@ -255,9 +256,9 @@ class MDB2_Schema extends PEAR
         if (is_array($options)) {
             foreach ($options as $option => $value) {
                 if (array_key_exists($option, $this->options)) {
-                    $err = $this->setOption($option, $value);
-                    if (PEAR::isError($err)) {
-                        return $err;
+                    $result = $this->setOption($option, $value);
+                    if (PEAR::isError($result)) {
+                        return $result;
                     }
                 } else {
                     $db_options[$option] = $value;
@@ -406,6 +407,14 @@ class MDB2_Schema extends PEAR
                 'it was not specified a valid database name');
         }
 
+        $class_name = $this->options['validate'];
+        $result = MDB2::loadClass($class_name, $this->db->getOption('debug'));
+        if (PEAR::isError($result)) {
+            return $result;
+        }
+
+        $val =& new $class_name($this->options['fail_on_invalid_names'], $this->options['valid_types'], $this->options['force_defaults']);
+
         $database_definition = array(
             'name' => $database,
             'create' => true,
@@ -449,6 +458,15 @@ class MDB2_Schema extends PEAR
                     }
                     $this->warnings[] = $warning;
                 }
+
+                /**
+                 * The first parameter is used to verify if there are duplicated
+                 * fields which we can guarantee that won't happen at this point
+                 */
+                $result = $val->validateField(array(), $table_definition['fields'][$field_name], $field_name);
+                if (PEAR::isError($result)) {
+                    return $result;
+                }
             }
             $index_definitions = array();
             $indexes = $this->db->manager->listTableIndexes($table_name);
@@ -467,7 +485,17 @@ class MDB2_Schema extends PEAR
                         }
                         return $definition;
                     }
-                   $index_definitions[$index_name] = $definition;
+
+                    /**
+                     * The first parameter is used to verify if there are duplicated
+                     * indexes which we can guarantee that won't happen at this point
+                     */
+                    $result = $val->validateIndex(array(), $definition, $index_name);
+                    if (PEAR::isError($result)) {
+                        return $result;
+                    }
+
+                    $index_definitions[$index_name] = $definition;
                 }
             }
 
@@ -487,12 +515,32 @@ class MDB2_Schema extends PEAR
                         }
                         return $definition;
                     }
+
+                    /**
+                     * The first parameter is used to verify if there are duplicated
+                     * indexes which we can guarantee that won't happen at this point
+                     */
+                    $result = $val->validateIndex(array(), $definition, $index_name);
+                    if (PEAR::isError($result)) {
+                        return $result;
+                    }
+
                     $index_definitions[$index_name] = $definition;
                 }
             }
             if (!empty($index_definitions)) {
                 $table_definition['indexes'] = $index_definitions;
             }
+
+            /**
+             * The first parameter is used to verify if there are duplicated
+             * tables which we can guarantee that won't happen at this point
+             */
+            $result = $val->validateTable(array(), $table_definition, $table_name);
+            if (PEAR::isError($result)) {
+                return $result;
+            }
+            
         }
 
         $sequences = $this->db->manager->listSequences();
@@ -521,9 +569,25 @@ class MDB2_Schema extends PEAR
                         }
                     }
                 }
+
+                /**
+                 * The first parameter is used to verify if there are duplicated
+                 * sequences which we can guarantee that won't happen at this point
+                 */
+                $result = $val->validateSequence(array(), $definition, $sequence_name);
+                if (PEAR::isError($result)) {
+                    return $result;
+                }
+
                 $database_definition['sequences'][$sequence_name] = $definition;
             }
         }
+
+        $result = $val->validateDatabase($database_definition);
+        if (PEAR::isError($result)) {
+            return $result;
+        }
+
         return $database_definition;
     }
 
@@ -1379,7 +1443,7 @@ class MDB2_Schema extends PEAR
         }
         foreach ($previous_definition as $index_previous_name => $index_previous) {
             if (empty($defined_indexes[$index_previous_name])) {
-                $changes['remove'][$index_previous_name] = true;
+                $changes['remove'][$index_previous_name] = $index_previous;
             }
         }
         return $changes;
@@ -1638,7 +1702,7 @@ class MDB2_Schema extends PEAR
                     $result = $this->db->manager->dropIndex($table_name, $index_name);
                 }
                 if (PEAR::isError($result)) {
-                    //return $result;
+                    return $result;
                 }
                 $alterations++;
             }

@@ -43,7 +43,7 @@
 // | Author: Igor Feghali <ifeghali@php.net>                              |
 // +----------------------------------------------------------------------+
 //
-// $Id: Validate.php,v 1.31 2007/03/28 18:36:37 ifeghali Exp $
+// $Id: Validate.php,v 1.33 2007/07/23 23:04:48 ifeghali Exp $
 //
 
 /**
@@ -67,10 +67,14 @@ class MDB2_Schema_Validate
 
     function __construct($fail_on_invalid_names = true, $valid_types = array(), $force_defaults = true)
     {
+        if (empty($GLOBALS['_MDB2_Schema_Reserved'])) {
+            $GLOBALS['_MDB2_Schema_Reserved'] = array();
+        }
+
         if (is_array($fail_on_invalid_names)) {
             $this->fail_on_invalid_names
                 = array_intersect($fail_on_invalid_names, array_keys($GLOBALS['_MDB2_Schema_Reserved']));
-        } elseif ($this->fail_on_invalid_names === true) {
+        } elseif ($fail_on_invalid_names === true) {
             $this->fail_on_invalid_names = array_keys($GLOBALS['_MDB2_Schema_Reserved']);
         } else {
             $this->fail_on_invalid_names = array();
@@ -209,9 +213,9 @@ class MDB2_Schema_Validate
 
         /*
          * Checking Indexes
-         * this have to be done here as we can't
+         * this have to be done here otherwise we can't
          * guarantee that all table fields were already
-         * defined in the moment we are parssing indexes
+         * defined in the moment we are parsing indexes
          */
         if (!empty($table['indexes']) && is_array($table['indexes'])) {
             foreach ($table['indexes'] as $name => $index) {
@@ -567,8 +571,8 @@ class MDB2_Schema_Validate
         }
 
         /*
-         * This have to be done here as we can't guarantee that all tables
-         * were already defined in the moment we are parsing indexes
+         * This have to be done here otherwise we can't guarantee that all
+         * tables were already defined in the moment we are parsing sequences
          */
         if (isset($database['sequences'])) {
             foreach ($database['sequences'] as $seq_name => $seq) {

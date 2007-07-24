@@ -42,15 +42,11 @@
 // | Author: Igor Feghali <ifeghali@php.net>                              |
 // +----------------------------------------------------------------------+
 //
-// $Id: Parser2.php,v 1.1 2007/02/07 19:03:01 ifeghali Exp $
+// $Id: Parser2.php,v 1.2 2007/07/23 23:04:48 ifeghali Exp $
 //
 
 require_once 'XML/Unserializer.php';
 require_once 'MDB2/Schema/Validate.php';
-
-if (empty($GLOBALS['_MDB2_Schema_Reserved'])) {
-    $GLOBALS['_MDB2_Schema_Reserved'] = array();
-}
 
 /**
  * Parses an XML schema file
