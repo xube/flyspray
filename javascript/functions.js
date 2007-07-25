@@ -641,7 +641,7 @@ function userspopup(url, targetfieldid) {
           var winwidth = boxl-30;
           if (winwidth < 500) winwidth += (500-winwidth);
         }
-        newwindow=window.open(url,'name','height=' + Math.min(window.innerHeight, 650) + ',width=' + Math.min(winwidth, 550) + ',left=' + winleft);
+        newwindow=window.open(url,'name','height=' + Math.min(window.innerHeight, 650) + ',width=550,left=' + winleft);
         if (!newwindow.opener) newwindow.opener = self;
         newwindow.name = targetfieldid;
     }

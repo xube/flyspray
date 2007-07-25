@@ -1153,24 +1153,29 @@ class Backend
 
         // sortable default fields
         $order_keys = array (
-                'id'           => 't.task_id',
-                'project'      => 'project_title',
-                'dateopened'   => 'date_opened',
-                'summary'      => 'item_summary',
-                'progress'     => 'percent_complete',
-                'lastedit'     => 'max_date',
-                'openedby'     => 'uo.real_name',
-                'assignedto'   => 'u.real_name',
-                'dateclosed'   => 't.date_closed',
-                'votes'        => 'num_votes',
-                'attachments'  => 'num_attachments',
-                'comments'     => 'num_comments',
-                'state'        => 'closed_by, is_closed',
-                'projectlevelid' => 'prefix_id',
+                'id'           => 't.task_id %s',
+                'project'      => 'project_title %s',
+                'dateopened'   => 'date_opened %s',
+                'summary'      => 'item_summary %s',
+                'progress'     => 'percent_complete %s',
+                'lastedit'     => 'max_date %s',
+                'openedby'     => 'uo.real_name %s',
+                'assignedto'   => 'u.real_name %s',
+                'dateclosed'   => 't.date_closed %s',
+                'votes'        => 'num_votes %s',
+                'attachments'  => 'num_attachments %s',
+                'comments'     => 'num_comments %s',
+                'state'        => 'closed_by %1$s, is_closed %1$s',
+                'projectlevelid' => 'prefix_id %s',
         );
         // custom sortable fields
         foreach ($proj->fields as $field) {
-            $order_keys['field' . $field->id] = 'field' . $field->id;
+            if ($field->prefs['list_type'] == LIST_CATEGORY) {
+                // consider hierarchical structure of categories
+                $order_keys['field' . $field->id] = 'lcfield'. $field->id .'.lft %1$s, field' . $field->id . ' %1$s';
+            } else {
+                $order_keys['field' . $field->id] = 'field' . $field->id . ' %s';
+            }
         }
 
         // Default user sort column and order
@@ -1195,10 +1200,10 @@ class Backend
 
         $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'id'), array_keys($order_keys))];
         $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'project'), array_keys($order_keys))];
-
-        $sortorder  = sprintf('%s %s, %s %s, t.task_id ASC',
-                $order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')),
-                $order_column[1], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));
+        $order_column[0] = sprintf($order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')));
+        $order_column[1] = sprintf($order_column[1], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));
+        
+        $sortorder  = sprintf('%s, %s, t.task_id ASC', $order_column[0], $order_column[1]);
 
         // search custom fields
         $custom_fields_joined = array();
