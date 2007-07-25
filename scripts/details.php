@@ -626,10 +626,10 @@ class FlysprayDoDetails extends FlysprayDo
                                     ORDER BY v.date_time DESC',
                                     null, $this->task['task_id']);
 
-            if ($this->task['last_edited_time'] > $cached['last_updated'] || !defined('FLYSPRAY_USE_CACHE')) {
-                $task_text = TextFormatter::render($this->task['detailed_desc'], false, 'task', $this->task['task_id']);
+            if ($this->task['last_edited_time'] > $cached['last_updated']) {
+                $task_text = $page->text->render($this->task['detailed_desc'], false, 'task', $this->task['task_id']);
             } else {
-                $task_text = TextFormatter::render($this->task['detailed_desc'], false, 'task', $this->task['task_id'], $cached['content']);
+                $task_text = $page->text->render($this->task['detailed_desc'], false, 'task', $this->task['task_id'], $cached['content']);
             }
 
             $page->assign('prev_id',   $prev_id);
@@ -709,7 +709,7 @@ class FlysprayDoDetails extends FlysprayDo
                 
                 for ($i = 0; $i < count($svnlog); ++$i) {
                     $svnlog[$i] = unserialize($svnlog[$i]['content']);
-                    $svnlog[$i]['comment'] = TextFormatter::render(trim($svnlog[$i]['comment']), true);
+                    $svnlog[$i]['comment'] = $page->text->render(trim($svnlog[$i]['comment']), true);
                     // Highlight occurences
                     $find = array('FS#' . $this->task['task_id'],
                                   'bug ' . $this->task['task_id'],

@@ -27,7 +27,7 @@
 				</ul>
 			<?php endif; ?>
 			<p class="commenttext">
-				{!TextFormatter::render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'])}
+				{!$this->text->render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'])}
 			</p>
 		</div>
 		<?php 
@@ -41,10 +41,6 @@
 	<fieldset>
 		<legend>{L('addcomment')}</legend>
 		<form enctype="multipart/form-data" action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post">
-			
-			<?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-			<div class="hide preview" id="preview"></div>
-			<?php endif; ?>	  
 			  
 			<?php if ($user->perms('create_attachments')): ?>
 				<div id="uploadfilebox">
@@ -67,12 +63,9 @@
 				</button>
 			<?php endif; ?>
 			  
-			{!TextFormatter::textarea('comment_text', 10, 72, array('accesskey' => 'r', 'tabindex' => 8, 'id' => 'comment_text'))}
+			{!$this->text->textarea('comment_text', 10, 72, array('accesskey' => 'r', 'tabindex' => 8))}
 
 			<button tabindex="9" type="submit">{L('addcomment')}</button>
-			<?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-				<button tabindex="9" type="button" onclick="showPreview('comment_text', 'preview')">{L('preview')}</button>
-			<?php endif; ?>
 			<?php if (!$watched): ?>
 				{!tpl_checkbox('notifyme', Post::val('notifyme', !(Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
 			<?php endif; ?>

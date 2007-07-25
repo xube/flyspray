@@ -64,7 +64,7 @@ class FlysprayDoSvnlog extends FlysprayDo
 
         foreach ($svnlog as $key => $log) {
             // Make first line of summary bold
-            $svnlog[$key]['comment'] = TextFormatter::render(trim($svnlog[$key]['comment']), true);
+            $svnlog[$key]['comment'] = $page->text->render(trim($svnlog[$key]['comment']), true);
             $svnlog[$key]['comment'] = explode("\n", $svnlog[$key]['comment']);
             $svnlog[$key]['comment'][0] = '<strong>' . $svnlog[$key]['comment'][0] . '</strong>';
             $svnlog[$key]['comment'] = implode("\n", $svnlog[$key]['comment']);

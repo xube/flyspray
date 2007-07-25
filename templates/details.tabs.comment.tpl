@@ -32,7 +32,7 @@
   <?php endforeach; ?>
   </ul>
   <?php endif; ?>
-  <div class="commenttext">{!TextFormatter::render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'])}</div></div>
+  <div class="commenttext">{!$this->text->render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'])}</div></div>
 
   <?php if (isset($comment_attachments[$comment['comment_id']])) {
             $this->display('common.attachments.tpl', 'attachments', $comment_attachments[$comment['comment_id']]);
@@ -45,9 +45,6 @@
   <fieldset><legend>{L('addcomment')}</legend>
   <form enctype="multipart/form-data" action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post">
     <div>
-      <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-      <div class="hide preview" id="preview"></div>
-      <?php endif; ?>
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{$task['task_id']}" />
       <?php if ($user->perms('create_attachments')): ?>
@@ -70,12 +67,9 @@
          {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
       </button>
       <?php endif; ?>
-      {!TextFormatter::textarea('comment_text', 10, 72, array('accesskey' => 'r', 'tabindex' => 8, 'id' => 'comment_text'))}
+      {!$this->text->textarea('comment_text', 10, 72, array('accesskey' => 'r', 'tabindex' => 8))}
 
       <button tabindex="9" type="submit">{L('addcomment')}</button>
-      <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-      <button tabindex="9" type="button" onclick="showPreview('comment_text', 'preview')">{L('preview')}</button>
-      <?php endif; ?>
       <?php if (!$watched): ?>
       {!tpl_checkbox('notifyme', Post::val('notifyme', !(Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
       <?php endif; ?>

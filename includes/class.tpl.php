@@ -5,6 +5,7 @@ if (!defined('IN_FS')) {
 }
 
 require_once('class.field.php');
+require_once('class.textformatter.php');
 
 class Tpl
 {
@@ -130,6 +131,12 @@ class Tpl
 class FSTpl extends Tpl
 {
     var $_uses = array('fs', 'conf', 'baseurl', 'proj', 'user');
+    var $text = null;
+
+    function FSTpl()
+    {
+        $this->text = new TextFormatter();
+    }
 
     function get_image($name, $base = true)
 	{
@@ -504,96 +511,10 @@ function tpl_img($src, $alt)
     global $baseurl;
     if ($src && is_file(BASEDIR .'/'.$src)) {
         $args = array_map(array('Filters','noXSS'), array($baseurl . $src, $alt));
-        return vsprintf('<img src="%s" alt="%s"/>',$args);
+        return vsprintf('<img src="%s" alt="%s"/>', $args);
     }
     return Filters::noXSS($alt);
 } // }}}
-// {{{ Text formatting
-//format has been already checked in constants.inc.php
-if(isset($conf['general']['syntax_plugin'])) {
-
-    $path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'] . '/' . $conf['general']['syntax_plugin'] . '_formattext.inc.php';
-
-    if (is_readable($path_to_plugin)) {
-        include($path_to_plugin);
-    }
-}
-
-class TextFormatter
-{
-    function get_javascript()
-    {
-        global $conf;
-
-        $path_to_plugin = BASEDIR . '/plugins/' . $conf['general']['syntax_plugin'];
-         $return = array();
-
-        if (!is_readable($path_to_plugin)) {
-            return $return;
-        }
-
-        $d = dir($path_to_plugin);
-        while (false !== ($entry = $d->read())) {
-           if (substr($entry, -3) == '.js') {
-                $return[] = $conf['general']['syntax_plugin'] . '/' . $entry;
-            }
-        }
-
-        return $return;
-    }
-
-    function render($text, $onlyfs = false, $type = null, $id = null, $instructions = null)
-    {
-        global $conf, $fs;
-
-        if (@in_array('render', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter')) && !$onlyfs) {
-            return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'render'),
-                                  $text, $onlyfs, $type, $id, $instructions);
-        } else {
-            $text = ' ' . nl2br(Filters::noXSS($text)) . ' ';
-
-            // Change URLs into hyperlinks
-            if (!$onlyfs) {
-                $text = preg_replace('|[[:space:]]+[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $text);
-                $text = preg_replace('/[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]{2,5}/', '<a href="mailto:\0">\0</a>', $text);
-            }
-
-            // Change FS#123 into hyperlinks to tasks
-            $look = array('FS#', 'bug ');
-            foreach ($fs->projects as $project) {
-                $look[] = preg_quote($project['project_prefix'] . '#', '/');
-            }
-
-            return preg_replace_callback("/\b(" . implode('|', $look) . ")(\d+)\b/", 'tpl_fast_tasklink', trim($text));
-        }
-    }
-
-    function textarea($name, $rows, $cols, $attrs = null, $content = null)
-    {
-        global $conf;
-
-        if (@in_array('textarea', get_class_methods($conf['general']['syntax_plugin'] . '_TextFormatter'))) {
-            return call_user_func(array($conf['general']['syntax_plugin'] . '_TextFormatter', 'textarea'),
-                                  $name, $rows, $cols, $attrs, $content);
-        }
-
-        $name = Filters::noXSS($name);
-        $rows = intval($rows);
-        $cols = intval($cols);
-
-        $return = "<textarea name=\"{$name}\" cols=\"$cols\" rows=\"$rows\" ";
-        if (is_array($attrs) && count($attrs)) {
-            $return .= join_attrs($attrs);
-        }
-        $return .= '>';
-        if (is_string($content) && strlen($content)) {
-            $return .= Filters::noXSS($content);
-        }
-        $return .= '</textarea>';
-        return $return;
-    }
-}
-// }}}
 // Format Date {{{
 function formatDate($timestamp, $extended = false, $default = '')
 {
@@ -623,7 +544,7 @@ function formatDate($timestamp, $extended = false, $default = '')
 
     $zone = L('GMT') . (($st == 0) ? ' ' : (($st > 0) ? '+' . $st : $st));
     $dateformat = str_replace('%GMT', $zone, $dateformat);
-    //it returned utf-8 encoded by the system
+    // it's returned utf-8 encoded by the system
     return strftime(Filters::noXSS($dateformat), (int) $timestamp);
 } /// }}}
 // {{{ Draw permissions table

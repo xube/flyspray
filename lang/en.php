@@ -1003,6 +1003,7 @@ Regards,',
 'moveright'               => 'Move right',
 'linktotask'              => 'link to this task',
 'emailtask'               => 'email this task',
+'syntaxplugins'           => 'Syntax plugins',
 );
 
 ?>

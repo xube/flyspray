@@ -46,27 +46,13 @@
         <tr>
           <td><label for="intromesg">{L('intromessage')}</label></td>
           <td>
-            <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-            <div class="hide preview" id="preview"></div>
-            <?php endif; ?>
-            {!TextFormatter::textarea('intro_message', 8, 70, array('tabindex' => 8, 'id' => 'intromesg'), Post::val('intro_message', $proj->prefs['intro_message']))}
-            <br />
-            <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-            <button tabindex="9" type="button" onclick="showPreview('intromesg', 'preview')">{L('preview')}</button>
-            <?php endif; ?>
+            {!$this->text->textarea('intro_message', 8, 70, array('tabindex' => 8), Post::val('intro_message', $proj->prefs['intro_message']))}
           </td>
         </tr>
         <tr>
           <td><label for="default_task">{L('defaulttask')}</label></td>
           <td>
-            <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-            <div class="hide preview" id="preview_taskdesc"></div>
-            <?php endif; ?>
-            {!TextFormatter::textarea('default_task', 8, 70, array('tabindex' => 8, 'id' => 'default_task'), Post::val('default_task', $proj->prefs['default_task']))}
-            <br />
-            <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-            <button tabindex="9" type="button" onclick="showPreview('default_task', 'preview_taskdesc')">{L('preview')}</button>
-            <?php endif; ?>
+            {!$this->text->textarea('default_task', 8, 70, array('tabindex' => 8), Post::val('default_task', $proj->prefs['default_task']))}
           </td>
         </tr>
         <tr>
@@ -138,6 +124,14 @@
           <td>
             <select id="default_entry" name="default_entry">
               {!tpl_options(array('index' => L('tasklist'), 'toplevel' => L('toplevel'), 'roadmap' => L('roadmap')), Post::val('default_entry', $proj->prefs['default_entry']))}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td><label for="syntax_plugins">{L('syntaxplugins')}</label></td>
+          <td>
+            <select id="syntax_plugins" name="syntax_plugins[]" multiple="multiple" size="4">
+              {!tpl_options($this->text->classnames, explode(' ', $proj->prefs['syntax_plugins']), true)}
             </select>
           </td>
         </tr>

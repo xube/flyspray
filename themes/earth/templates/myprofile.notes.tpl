@@ -36,21 +36,16 @@
   </h3>
   <div class="fade" id="note_updated">{formatDate($show_note['last_updated'], true)}</div>
 </div>
-{!TextFormatter::render($show_note['message_body'], false, 'note', $show_note['note_id'], $show_note['content'])}
+{!$this->text->render($show_note['message_body'], false, 'note', $show_note['note_id'], $show_note['content'])}
 </div>
 <?php else: ?>
 <form method="post" action="{CreateUrl(array('myprofile', 'notes'))}">
 <div>
   <label for="message_subject">{L('notesubject')}</label>
   <input id="message_subject" size="50" type="text" name="message_subject" class="text" value="{(isset($show_note) ? $show_note['message_subject'] : Post::val('message_subject'))}" />
-  <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-    <div class="hide preview" id="preview"></div>
-  <?php endif; ?>
-  {!TextFormatter::textarea('message_body', 10, 70, array('id' => 'note_text'), (isset($show_note) ? $show_note['message_body'] : Post::val('message_body')))}
+
+  {!$this->text->textarea('message_body', 10, 70, array(), (isset($show_note) ? $show_note['message_body'] : Post::val('message_body')))}
   <button type="submit">{(isset($show_note) ? L('updatenote') : L('addnote'))}</button>
-  <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-    <button tabindex="9" type="button" onclick="showPreview('note_text', 'preview')">{L('preview')}</button>
-  <?php endif; ?>
 
   <?php if (isset($show_note)): ?>
   <input type="hidden" name="action" value="updatenote" />

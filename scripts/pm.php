@@ -83,10 +83,16 @@ class FlysprayDoPm extends FlysprayDoAdmin
                 'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign', 'override_user_lang',
                 'svn_user', 'svn_url', 'svn_password', 'mail_headers');
         $args = array_map('Post_to0', $cols);
-        $cols[] = 'notify_types';
-        $args[] = implode(' ', (array) Post::val('notify_types'));
-        $cols[] = 'changelog_reso';
-        $args[] = implode(' ', (array) Post::val('changelog_reso'));
+
+        foreach (array('notify_types', 'changelog_reso', 'syntax_plugins') as $name) {
+            $cols[] = $name;
+            $args[] = implode(' ', (array) Post::val($name));
+        }
+
+        // invalidate the cache if necessary
+        if (implode(' ', (array) Post::val('syntax_plugins')) != $proj->prefs['syntax_plugins']) {
+            $db->execParam('DELETE FROM {cache} WHERE project_id = ?', $proj->id);
+        }
 
         // carefully check the project prefix...
         $prefix = Post::val('project_prefix');

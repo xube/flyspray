@@ -37,10 +37,6 @@
     <!--[if IE]>
     <link media="screen" href="{$this->themeUrl()}ie.css" rel="stylesheet" type="text/css" />
     <![endif]-->
-    <?php foreach(TextFormatter::get_javascript() as $file): ?>
-        <script type="text/javascript" src="{$baseurl}plugins/{$file}"></script>
-    <?php endforeach; ?>
-
 </head>
 
 <body onload="perms = new Perms('permissions');<?php

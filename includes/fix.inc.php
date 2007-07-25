@@ -55,7 +55,6 @@ ini_set('session.cookie_httponly',1);
 ini_set('include_path', join( PATH_SEPARATOR, array(
   dirname(__FILE__) ,
   dirname(__FILE__) . '/external' ,
-  dirname(__FILE__) . '/external/MDB2',
   dirname(__FILE__) . '/external/swift-mailer',
   dirname(__FILE__) . '/external/compat',
   ini_get( 'include_path'))));
@@ -216,29 +215,29 @@ function glob_compat($pattern, $flags = 0) {
 }
 
 // now for all those borked PHP installations...
-//
 if (!function_exists('hash_hmac')) {
 
     function hash_hmac($algo, $data, $key, $raw_output = false) {
-        
+
         if(function_exists('mhash') && $algo == 'md5') {
-            return $raw_output ? mhash(MHASH_MD5, $data, $key) : bin2hex(mhash(MHASH_MD5, $data, $key)); 
+            return $raw_output ? mhash(MHASH_MD5, $data, $key) : bin2hex(mhash(MHASH_MD5, $data, $key));
         }
 
         include_once 'HMAC.php';
 
         $hashobj =& new Crypt_HMAC($key, $algo);
-        
+
         return $raw_output ? pack('H*', $hashobj->hash($data)) : $hashobj->hash($data);
     }
 }
 
-//use require() as there is no possibilty to get this included more than "once"
+// use require() as there is no possibilty to get this included more than "once"
 require 'array_combine.php';
 require 'file_put_contents.php';
 require 'array_intersect_key.php';
 require 'htmlspecialchars_decode.php';
-//for reasons outside flsypray, the PHP core may throw Exceptions in PHP5
+
+// for reasons outside flsypray, the PHP core may throw Exceptions in PHP5
 // for a good example see this article
 // http://ilia.ws/archives/107-Another-unserialize-abuse.html
 

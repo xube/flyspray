@@ -57,7 +57,7 @@ $sql = $db->query("SELECT  t.date_opened, t.date_closed, t.last_edited_time
                  ORDER BY  $orderby DESC");
 $most_recent = 0;
 while ($row = $sql->fetchRow()) {
-    $most_recent = max($most_recent, $row['date_opened'], $row['date_closed'], $row['last_edited_time']); 
+    $most_recent = max($most_recent, $row['date_opened'], $row['date_closed'], $row['last_edited_time']);
 }
 
 if ($fs->prefs['cache_feeds']) {
@@ -69,10 +69,10 @@ if ($fs->prefs['cache_feeds']) {
     }
     else {
         $content = $db->x->GetOne("SELECT  content
-                                            FROM  {cache} t
-                                           WHERE  type = ? AND topic = ? $sql_project
-                                                  AND max_items = ?  AND last_updated >= ?", null,
-                                          array($feed_type, $orderby . $user->id, $max_items, $most_recent));
+                                     FROM  {cache} t
+                                    WHERE  type = ? AND topic = ? $sql_project
+                                           AND max_items = ?  AND last_updated >= ?", null,
+                                   array($feed_type, $orderby . $user->id, $max_items, $most_recent));
         if ($content) {
             echo $content;
             exit;

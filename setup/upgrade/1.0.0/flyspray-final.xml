@@ -301,7 +301,7 @@
    <field>
     <name>id</name>
     <type>integer</type>
-    <length>4</length>
+    <length>11</length>
     <notnull>true</notnull>
     <default>0</default>
     <autoincrement>1</autoincrement>
@@ -352,6 +352,13 @@
     <length>4</length>
     <notnull>true</notnull>
     <default>0</default>
+   </field>
+
+  <field>
+    <name>syntax_plugins</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <length>255</length>
    </field>
 
    <index>
@@ -1922,9 +1929,14 @@
    <field>
     <name>mail_headers</name>
     <type>text</type>
-    <length>255</length>
     <notnull>false</notnull>
+   </field>
 
+   <field>
+    <name>syntax_plugins</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <length>255</length>
    </field>
 
    <index>

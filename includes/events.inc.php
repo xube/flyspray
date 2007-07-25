@@ -47,7 +47,7 @@ function get_events($task_id, $where = '', $sort = 'ASC')
  */
 function event_description($history) {
     $return = '';
-    global $fs, $baseurl, $details;
+    global $fs, $baseurl, $details, $page;
 
     $translate = array('item_summary' => 'summary', 'project_id' => 'attachedtoproject',
                        'mark_private' => 'visibility');
@@ -93,8 +93,8 @@ function event_description($history) {
                                       showTabById('history', true);\">%s</a>",
                                     $history['task_id'], $baseurl, $history['history_id'], eL('details'));
                     if (!empty($details)) {
-                        $details_previous = TextFormatter::render($old_value);
-                        $details_new =  TextFormatter::render($new_value);
+                        $details_previous = $page->text->render($old_value);
+                        $details_new =  $page->text->render($new_value);
                     }
                     $old_value = '';
                     $new_value = '';
@@ -130,7 +130,7 @@ function event_description($history) {
             $return .= eL('taskclosed');
             $return .= " ({$history['resolution_name']}";
             if (!empty($old_value)) {
-                 $return .= ': ' . TextFormatter::render($old_value, true);
+                 $return .= ': ' . $page->text->render($old_value, true);
             }
             $return .= ')';
             break;
@@ -150,8 +150,8 @@ function event_description($history) {
 
 
             if ($details) {
-                 $details_previous = TextFormatter::render($old_value);
-                 $details_new      = TextFormatter::render($new_value);
+                 $details_previous = $page->text->render($old_value);
+                 $details_new      = $page->text->render($new_value);
             }
             break;
     case '6':     //Comment deleted
@@ -163,7 +163,7 @@ function event_description($history) {
                 $return .= sprintf('(%s %s - %s)', eL('commentby'), tpl_userlink($new_value), formatDate($history['field_changed'], true));
             }
             if (!empty($details)) {
-                 $details_previous = TextFormatter::render($old_value);
+                 $details_previous = $page->text->render($old_value);
                  $details_new = '';
             }
             break;

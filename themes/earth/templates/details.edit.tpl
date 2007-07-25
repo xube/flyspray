@@ -112,10 +112,7 @@
              {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
           </button>
           <?php endif; ?>
-          <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-          <div class="hide preview" id="preview"></div>
-          <?php endif; ?>
-          {!TextFormatter::textarea('detailed_desc', 15, 80, array('id' => 'details'), Post::val('detailed_desc', $task['detailed_desc']))}
+          {!$this->text->textarea('detailed_desc', 15, 80, array(), Post::val('detailed_desc', $task['detailed_desc']))}
           <br />
           <?php if ($user->perms('add_comments') && (!$task['is_closed'] || $proj->prefs['comment_closed'])): ?>
               <button type="button" onclick="showstuff('edit_add_comment');this.style.display='none';">{L('addcomment')}</button>
@@ -142,9 +139,6 @@
           <?php endif; ?>
 		  <p class="buttons">
               <button type="submit" accesskey="s" onclick="return checkok('{$baseurl}javascript/callbacks/checksave.php?time={time()}&amp;taskid={$task['task_id']}', '{#L('alreadyedited')}', 'taskeditform')">{L('savedetails')}</button>
-              <?php if (defined('FLYSPRAY_HAS_PREVIEW')): ?>
-              <button tabindex="9" type="button" onclick="showPreview('details', 'preview')">{L('preview')}</button>
-              <?php endif; ?>
               <button type="reset">{L('reset')}</button>
           </p>
 		</div>

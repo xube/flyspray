@@ -12,6 +12,7 @@ $webdir = dirname(dirname(dirname(htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUO
 
 require_once('../../header.php');
 
-echo TextFormatter::render(Post::val('text'));
+$page = new FSTpl();
+echo $page->text->render(Post::val('text'));
 
 ?>
