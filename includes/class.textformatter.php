@@ -31,7 +31,8 @@ class TextFormatter
             $class = substr(basename($plugin), 6, -4);
             $this->classnames[] = $class;
             // if wanted, exclude some plugins
-            if ($proj->prefs['syntax_plugins'] && strpos($proj->prefs['syntax_plugins'], $class) === false) {
+            if (isset($proj->prefs['syntax_plugins']) &&$proj->prefs['syntax_plugins']
+                && strpos($proj->prefs['syntax_plugins'], $class) === false) {
                 continue;
             }
             $class = new $class;
