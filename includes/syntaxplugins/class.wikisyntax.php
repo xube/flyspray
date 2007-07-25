@@ -21,7 +21,7 @@ class WikiSyntax extends SyntaxPlugin
         global $conf;
         // code highlighting
         require_once 'geshi/geshi.php';
-        require_once 'Text/wiki.php';
+        require_once 'Text/Wiki.php';
 
         // transform it a little to save it from evil wiki parser ^^
         $input = preg_replace('#<code (\w+)>(.*)</code>#Uuism', '<code>' . "\n" . '\1' . "\n" . '\2</code>', $input) . ' ';
