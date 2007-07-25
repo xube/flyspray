@@ -1047,10 +1047,15 @@ class Flyspray
             $type = @mime_content_type($fname);
         // I hope we don't have to...
         } elseif(!FlySpray::function_disabled('exec') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN'
-                 && php_uname('s') !== 'SunOS') {
+            && php_uname('s') !== 'SunOS') {
+                
+                include_once 'class.commandexecution.php';
 
-               $type = @exec(sprintf('file -bi %s', escapeshellarg($fname)));
-
+                $file =& new CommandExecution();
+                $file->setCommand('file');
+                $file->bi = $fname;
+                
+                $type = $file->getCmdResult();
         }
         // if wasn't possible to determine , return empty string so
         // we can use the browser reported mime-type (probably fake)

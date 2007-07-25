@@ -30,6 +30,12 @@ class FlysprayDoAdmin extends FlysprayDo
         $page->assign('lists', $prefs);
     }
 
+    /**
+     * area_editgroup 
+     * 
+     * @access public
+     * @return void
+     */
     function area_editgroup()
     {
     	global $db, $page, $proj, $fs;
@@ -49,12 +55,24 @@ class FlysprayDoAdmin extends FlysprayDo
         $page->assign('groups', Flyspray::listGroups());
     }
 
+    /**
+     * area_newuser 
+     * 
+     * @access public
+     * @return void
+     */
     function area_newuser()
     {
     	global $db, $page;
         $page->assign('groups', Flyspray::listGroups());
     }
 
+    /**
+     * area_user 
+     * 
+     * @access public
+     * @return void
+     */
     function area_user()
     {
     	global $db, $page;
@@ -70,6 +88,12 @@ class FlysprayDoAdmin extends FlysprayDo
         $page->assign('theuser', $theuser);
     }
 
+    /**
+     * area_groups 
+     * 
+     * @access public
+     * @return void
+     */
     function area_groups()
     {
     	global $db, $page, $proj;
@@ -84,6 +108,12 @@ class FlysprayDoAdmin extends FlysprayDo
         $page->assign('groups', $groups);
     }
 
+    /**
+     * area_users 
+     * 
+     * @access public
+     * @return void
+     */
     function area_users()
     {
     	global $fs, $db, $proj, $user, $page;
@@ -151,6 +181,12 @@ class FlysprayDoAdmin extends FlysprayDo
         $page->assign('user_list', $user_list);
     }
 
+    /**
+     * area_fields 
+     * 
+     * @access public
+     * @return void
+     */
     function area_fields()
     {
     	global $fs, $db, $proj, $user, $page;
@@ -159,6 +195,12 @@ class FlysprayDoAdmin extends FlysprayDo
                                     ORDER BY project_id, list_type, list_name'));
     }
 
+    /**
+     * area_lists 
+     * 
+     * @access public
+     * @return void
+     */
     function area_lists()
     {
     	global $db, $proj, $page;
@@ -172,6 +214,12 @@ class FlysprayDoAdmin extends FlysprayDo
         $page->assign('lists', $lists);
     }
 
+    /**
+     * area_list 
+     * 
+     * @access public
+     * @return void
+     */
     function area_list()
     {
     	global $fs, $db, $proj, $user, $page;
