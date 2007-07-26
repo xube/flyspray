@@ -72,7 +72,7 @@
     </div><!-- End of content -->
     <div id="footer">
       <p>
-        Flyspray {$fs->version} [Fly Flapper]<br />
+        Flyspray {$fs->version} [Funiculì, Funiculà]<br />
         Copyright 2004-{date('Y')} &copy; Tony Collins and the Flyspray team.  All rights reserved.
       </p>
     </div><!-- End of footer -->

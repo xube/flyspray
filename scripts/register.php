@@ -123,17 +123,14 @@ class FlysprayDoRegister extends FlysprayDo
         if (Notifications::send(Post::val('email_address'), ADDRESS_EMAIL, NOTIFY_CONFIRMATION, array($baseurl, $magic_url, $user_name))) {
 
             //email sent succefully, now update the database.
-            $reg_values = array(time(), $user_name, $real_name,
-                        Post::val('email_address'), Post::val('jabber_id'),
-                        Post::num('notify_type'), $magic_url, Post::num('time_zone'));
+            $reg_values = array('reg_time' => time(), 'user_name'=> $user_name, 
+                                'real_name' => $real_name, 'email_address' => Post::val('email_address'), 
+                                'jabber_id' => Post::val('jabber_id'), 'notify_type' => Post::num('notify_type'), 
+                                'magic_url' => $magic_url, 'time_zone' => Post::num('time_zone'));
             // Insert everything into the database
-            $query = $db->x->execParam("INSERT INTO  {registrations}
-                                 ( reg_time, user_name, real_name,
-                                   email_address, jabber_id, notify_type,
-                                   magic_url, time_zone )
-                                  VALUES ( " . fill_placeholders($reg_values) . ' )', $reg_values);
+            $query = $db->x->autoExecute('{registrations}', $reg_values);
 
-                if ($query) {
+             if ($query) {
                     return array(SUBMIT_OK, L('codesent'), $baseurl);
                 }
 

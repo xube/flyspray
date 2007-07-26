@@ -9,7 +9,7 @@
  *
  * @license http://opensource.org/licenses/lgpl-license.php Lesser GNU Public License
  * @package flyspray
- * @author Tony Collins, Florian Schmitz
+ * @author Tony Collins, Florian Schmitz, Cristian Rodriguez
  */
 
 if (!defined('IN_FS')) {
@@ -65,8 +65,7 @@ class Backend
                                   array($row['task_id'], $user_id));
 
             if (!$notif) {
-                $db->x->execParam('INSERT INTO {notifications} (task_id, user_id)
-                                     VALUES  (?,?)', array($row['task_id'], $user_id));
+                $db->x->autoExecute('{notifications}', array('task_id'=> $row['task_id'], 'user_id'=> $user_id));
                 Flyspray::logEvent($row['task_id'], 9, $user_id);
             }
         }
@@ -169,8 +168,7 @@ class Backend
                 $db->x->execParam('UPDATE {users_in_groups} SET group_id = ? WHERE user_id = ? AND group_id = ?',
                             array($group_id, $uid, $oldid));
             } else {
-                $db->x->execParam('INSERT INTO {users_in_groups} (group_id, user_id) VALUES(?, ?)',
-                            array($group_id, $uid));
+                $db->x->autoExecute('{users_in_groups}', array('group_id' => $group_id, 'user_id' => $uid));
             }
             $return = min($return, 2);
             continue;
@@ -213,10 +211,7 @@ class Backend
                               WHERE task_id = ?',
                             $row['task_id']);
 
-            $db->x->execParam('INSERT INTO {assigned}
-                                    (task_id, user_id)
-                             VALUES (?,?)',
-                            array($row['task_id'], $user->id));
+            $db->x->autoExecute('{assigned}', array('task_id'=> $row['task_id'], 'user_id'=>$user->id));
 
             if ($num) {
                 Flyspray::logEvent($row['task_id'], 19, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
@@ -289,8 +284,7 @@ class Backend
 
         if ($user->can_vote($task) > 0) {
 
-            if($db->x->execParam('INSERT INTO {votes} (user_id, task_id, date_time)
-                                    VALUES (?,?,?)', array($user->id, $task_id, time()))) {
+            if($db->x->autoExecute('{votes}', array('user_id' => $user->id, 'task_id' => $task_id, 'date_time' => time()))) {
                 return true;
             }
         }
@@ -429,10 +423,8 @@ class Backend
 
         $time =  !is_numeric($time) ? time() : $time ;
 
-        $db->x->execParam('INSERT INTO  {comments}
-                                 (task_id, date_added, last_edited_time, user_id, comment_text)
-                         VALUES  ( ?, ?, ?, ?, ? )',
-                    array($task['task_id'], $time, $time, $user->id, $comment_text));
+        $db->x->autoExecute('{comments}', array('task_id' => $task['task_id'], 'date_added'=> $time, 'last_edited_time'=> $time, 
+                                                'user_id' => $user->id, 'comment_text' => $comment_text));
 
         $cid = $db->x->GetOne('SELECT  comment_id
                               FROM  {comments}
@@ -504,16 +496,10 @@ class Backend
              $_FILES[$source]['type'][$key] = $type;
             }// we can try even more, however, far too much code is needed.
 
-            $db->x->execParam('INSERT INTO  {attachments}
-                                     ( task_id, comment_id, file_name,
-                                       file_type, file_size, orig_name,
-                                       added_by, date_added )
-                                      VALUES  (?, ?, ?, ?, ?, ?, ?, ?)',
-                    array($task_id, $comment_id, $fname,
-                        $_FILES[$source]['type'][$key],
-                        $_FILES[$source]['size'][$key],
-                        $_FILES[$source]['name'][$key],
-                        $user->id, time()));
+            $db->x->autoExecute('{attachments}', array('task_id' => $task_id, 'comment_id' => $comment_id, 
+                                                    'file_name' => $fname, 'file_type' => $_FILES[$source]['type'][$key],
+                                                    'file_size'=> $_FILES[$source]['size'][$key], 'orig_name' => $_FILES[$source]['name'][$key],
+                                                    'added_by' => $user->id, 'date_added' => time()));
 
             // Fetch the attachment id for the history log
             $aid = $db->x->GetOne('SELECT  attachment_id
@@ -628,16 +614,19 @@ class Backend
         $uid = Flyspray::username_to_id($user_name);
 
         // Now, create a new record in the users_in_groups table
-        $db->x->execParam('INSERT INTO  {users_in_groups} (user_id, group_id)
-                                       VALUES  (?, ?)', array($uid, $group_in));
+        $db->x->autoExecute('{users_in_groups}', array('user_id'=> $uid, 'group_id'=> $group_in));
 
         Flyspray::logEvent(0, 30, serialize(Flyspray::getUserDetails($uid)));
 
         // Add user to project groups
-        $sql = $db->query('SELECT anon_group FROM {projects} WHERE anon_group != 0');
-        while ($row = $sql->FetchRow()) {
-            $db->x->execParam('INSERT INTO  {users_in_groups} (user_id, group_id)
-                                           VALUES  (?, ?)', array($uid, $row['anon_group']));
+        $sql = $db->x->getAll('SELECT anon_group FROM {projects} WHERE anon_group != 0');
+
+        if(count($sql)) {
+            $stmt = $db->x->autoPrepare('{users_in_groups}', array('user_id', 'group_id'));
+            foreach($sql as $row) {
+                $stmt->execute(array($uid, $row['anon_group']));
+            }
+            $stmt->free();
         }
 
         $varnames = array('iwatch','atome','iopened');
@@ -677,17 +666,18 @@ class Backend
 
             $$tmpname = $tmparr + $toserialize;
         }
-
+        
         // Now give him his default searches
-        $db->x->execParam('INSERT INTO {searches} (user_id, name, search_string, time)
-                         VALUES (?, ?, ?, ?)',
-                    array($uid, L('taskswatched'), serialize($iwatch), time()));
-        $db->x->execParam('INSERT INTO {searches} (user_id, name, search_string, time)
-                         VALUES (?, ?, ?, ?)',
-                    array($uid, L('assignedtome'), serialize($atome), time()));
-        $db->x->execParam('INSERT INTO {searches} (user_id, name, search_string, time)
-                         VALUES (?, ?, ?, ?)',
-                    array($uid, L('tasksireported'), serialize($iopened), time()));
+        $stmt = $db->x->autoPrepare('{searches}', array('user_id', 'name', 'search_string', 'time'));
+        
+        $params = array( 
+                        array($uid, L('taskswatched'), serialize($iwatch), time()),
+                        array($uid, L('assignedtome'), serialize($atome), time()), 
+                        array($uid, L('tasksireported'), serialize($iopened), time()),
+                       );
+
+        $db->x->executeMultiple($stmt, $params);
+        $stmt->free();
 
         // Send a user his details (his username might be altered, password auto-generated)
         if ($fs->prefs['notify_registration']) {
@@ -772,9 +762,15 @@ class Backend
         // that the destination project already has all kinds
         // of groups which are also used by the old project)
         $sql = $db->x->getAll('SELECT group_id FROM {groups} WHERE project_id = ?', null, array($pid));
-        foreach ($sql as $row) {
-            $db->x->execParam('DELETE FROM {users_in_groups} WHERE group_id = ?', $row['group_id']);
+
+        if(count($sql)) {
+            $stmt = $db->prepare('DELETE FROM {users_in_groups} WHERE group_id = ?', array('integer'), MDB2_PREPARE_MANIP);
+            foreach ($sql as $row) {
+                $stmt->execute($row['group_id']);
+            }
+            $stmt->free();
         }
+
         $db->x->execParam('DELETE FROM {groups} WHERE project_id = ?', $pid);
 
         //we have enough reasons ..  the process is OK.
@@ -916,12 +912,13 @@ class Backend
         $prefix_id = $db->x->GetOne('SELECT MAX(prefix_id)+1 FROM {tasks} WHERE project_id = ?', null, $proj->id);
         $db->x->execParam('UPDATE {tasks} SET prefix_id = ? WHERE task_id = ?', array($prefix_id, $task_id));
 
-        $values = array();
         // Now the custom fields
-        foreach ($proj->fields as $field) {
-            $values = array($task_id, $field->id, $field->read(array_get($args, 'field' . $field->id, 0)));
-            $db->x->execParam('INSERT INTO {field_values} (task_id, field_id, field_value)
-                                    VALUES (?, ?, ?)', $values);
+        if(count($proj->fields)) {
+            $stmt = $db->x->autoPrepare('{field_values}', array('task_id', 'field_id', 'field_value'));
+            foreach ($proj->fields as $field) {
+                $stmt->execute(array($task_id, $field->id, $field->read(array_get($args, 'field' . $field->id, 0))));
+            }
+            $stmt->free();
         }
 
         if(isset($args['assigned_to'])) {
@@ -1069,8 +1066,7 @@ class Backend
                                         null, array($task_id, $dupe_of[1]));
 
                 if (!$existing) {
-                    $db->x->execParam('INSERT INTO {related} (this_task, related_task, related_type) VALUES(?, ?, 1)',
-                                array($task_id, $dupe_of[1]));
+                    $db->x->autoExecute('{related}', array('this_task'=> $task_id, 'related_task'=> $dupe_of[1], 'related_type' => 1));
                 }
                 Backend::add_vote($task['opened_by'], $dupe_of[1]);
             }

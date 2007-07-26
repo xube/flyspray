@@ -242,7 +242,7 @@ class Notifications
 
                 $plugin =& $swift->getPlugin('MessageThread');
             
-                if($plugin->thread_info) {
+                if(count($plugin->thread_info)) {
 
                     $stmt = $db->x->autoPrepare('{notification_threads}', array('task_id', 'recipient_id', 'message_id'));
                     $db->x->executeMultiple($stmt, $plugin->thread_info);
@@ -319,10 +319,7 @@ class Notifications
         $time = time(); // on a sidenote: never do strange things like $date = time() or $time = date('U');
 
         // just in case
-        if (!$db->x->execParam('INSERT INTO {notification_messages}
-                                                   (message_data, time_created)
-                                            VALUES (?, ?)',
-                                       array(serialize($data), $time))) {
+        if (!$db->x->autoExecute('{notification_messages}', array('message_data' => serialize($data), 'time_created' => $time))){
             return false;
         }
 
@@ -331,16 +328,21 @@ class Notifications
                                      FROM {notification_messages}
                                     WHERE time_created = ?
                                  ORDER BY message_id DESC',
-                                    null, $time);
+                                 null, $time);
 
-        foreach ($to as $user_id) {
-            if ($user_id == $user->id && !$user->infos['notify_own']) {
-                continue;
+        if(count($to)) {
+            
+            $stmt = $db->x->autoPrepare('{notification_recipients}', array('message_id', 'user_id'));
+            
+            foreach ($to as $user_id) {
+                
+                if ($user_id == $user->id && !$user->infos['notify_own']) {
+                    continue;
+                }
+                    $stmt->execute(array($message_id, $user_id));
             }
 
-            $db->x->execParam('INSERT INTO {notification_recipients}
-                                    (message_id, user_id)
-                             VALUES (?, ?)', array($message_id, $user_id));
+            $stmt->free();
         }
 
         return true;

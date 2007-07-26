@@ -85,9 +85,11 @@ class FlysprayDoMyprofile extends FlysprayDo
     function action_addnote()
     {
         global $db, $user;
-        $db->x->execParam('INSERT INTO {notes} (message_subject, message_body, last_updated, user_id)
-                                VALUES (?, ?, ?, ?)',
-                           array(Post::val('message_subject'), Post::val('message_body'), time(), $user->id));
+        $db->x->autoExecute('{notes}', array('message_subject'=> Post::val('message_subject'), 
+                                             'message_body' => Post::val('message_body'), 
+                                             'last_updated' => time(), 
+                                             'user_id' => $user->id));
+
         return array(SUBMIT_OK, L('noteadded'));
     }
 
