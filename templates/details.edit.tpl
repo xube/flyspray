@@ -105,7 +105,7 @@
              {L('attachanotherfile')} ({L('max')} {$fs->max_file_size} {L('MiB')})
           </button>
           <?php endif; ?>
-          {!$this->text->textarea('detailed_desc', 15, 80, array(), Post::val('detailed_desc', $task['detailed_desc']))}
+          {!$this->text->textarea('detailed_desc', 15, 80, array(), Post::val('detailed_desc', $task['detailed_desc']), explode(' ', $task['syntax_plugins']))}
           <br />
           <?php if ($user->perms('add_comments') && (!$task['is_closed'] || $proj->prefs['comment_closed'])): ?>
               <button type="button" onclick="showstuff('edit_add_comment');this.style.display='none';">{L('addcomment')}</button>

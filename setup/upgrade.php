@@ -54,10 +54,6 @@ $page =& new Tpl;
 $page->assign('title', 'Upgrade ');
 $page->assign('short_version', UPGRADE_VERSION);
 
-//cleanup
-//the cache dir
-@rmdirr(sprintf('%s/cache/dokuwiki', APPLICATION_PATH));
-
 // ---------------------------------------------------------------------
 // Now the hard work
 // ---------------------------------------------------------------------
@@ -70,7 +66,8 @@ $done = true;
 
 $upgrade_available = false;
 if (Post::val('upgrade')) {
-    $db->beginTransaction();
+    $db->supports('transactions') && $db->beginTransaction();
+    
     foreach ($folders as $folder) {
         if (version_compare($installed_version, $folder, '<=')) {
             // example: we upgrade from 0.9.9(final) to 1.0. In this case we want to start at 0.9.9.2 
@@ -92,13 +89,16 @@ if (Post::val('upgrade')) {
             }
         }
     }
-    // we should be done at this point
-    $db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
+    
+    if ($done) {
+        // we should be done at this point
+        $db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
 
-    $page->assign('done', $done);
+        $page->assign('done', $done);
 
-    $db->commit();
-    $installed_version = $fs->version;
+        $db->inTransaction() && $db->commit();
+        $installed_version = $fs->version;
+    }
 }
 foreach ($folders as $folder) {
     if (version_compare($installed_version, $folder, '<')) {

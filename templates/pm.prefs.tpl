@@ -131,7 +131,7 @@
           <td><label for="syntax_plugins">{L('syntaxplugins')}</label></td>
           <td>
             <select id="syntax_plugins" name="syntax_plugins[]" multiple="multiple" size="4">
-              {!tpl_options($this->text->classnames, explode(' ', $proj->prefs['syntax_plugins']), true)}
+              {!tpl_options($this->text->allclasses, explode(' ', $proj->prefs['syntax_plugins']), true)}
             </select>
           </td>
         </tr>

@@ -1004,6 +1004,8 @@ Regards,',
 'linktotask'              => 'link to this task',
 'emailtask'               => 'email this task',
 'syntaxplugins'           => 'Syntax plugins',
+'cannotedittaskglobally'  => 'A task cannot be moved to the global project. You shouldn\'t actually have gotten this opportunity.',
+'options'                 => 'Options',
 );
 
 ?>

@@ -390,31 +390,17 @@ function activelink(id) {
     }
 }
 
-var useAltForKeyboardNavigation = false;  // Set this to true if you don't want to kill
-                                         // Firefox's find as you type
-
-function emptyElement(el) {
-    while(el.firstChild) {
-        emptyElement(el.firstChild);
-        var oNodeToRemove = el.firstChild;
-        oNodeToRemove.parentNode.removeChild(oNodeToRemove);
-    }
-}
+var useAltForKeyboardNavigation = false;  // Set this to true if you don't want to kill Firefox's find as you type
 
 function showPreview(textfield, field) {
     var preview = $(field);
-    emptyElement(preview);
 
-    var img = document.createElement('img');
-    img.src = $('baseurl').href + 'themes/Bluey/ajax_load.gif';
-    img.id = 'temp_img';
-    img.alt = 'Loading...';
-    preview.appendChild(img);
+    var src = $('baseurl').href + 'themes/Bluey/ajax_load.gif';
+    preview.update('<img src="'+ src +'" alt="Loading" width="16" height="16" />');
 
     var text = $(textfield).value;
-    text = encodeURIComponent(text);
     var url = $('baseurl').href + 'javascript/callbacks/getpreview.php';
-    var myAjax = new Ajax.Updater(field, url, {parameters:'text=' + text, method: 'post'});
+    var myAjax = new Ajax.Updater(field, url, {parameters: {'text':  text, 'plugins[]': $(textfield + '_syntax_plugins[]').getValue()}, method: 'post'});
 
     if (text == '') {
         hidestuff(field);

@@ -19,8 +19,11 @@ $db->x->execParam('INSERT INTO {fields} (field_name, field_type, list_id, projec
               array('Severity', FIELD_LIST, $sev_id, 0, 2, 1));
 $field_id = $db->x->GetOne("SELECT field_id FROM {fields} WHERE project_id=? AND field_name = ? ORDER BY field_id DESC", null, array(0, 'Severity'));
 
-$tasks = $db->query("SELECT task_severity, task_id FROM {tasks}");
+$tasks = $db->query("SELECT * FROM {tasks}");
 while ($row = $tasks->FetchRow()) {
+    if (!isset($row['task_severity'])) {
+        continue;
+    }
     $db->x->execParam('INSERT INTO {field_values} (task_id, field_value, field_id) VALUES (?,?,?)', array($row['task_id'], $sev_ids[$row['task_severity']], $field_id));
 
 }

@@ -10,7 +10,7 @@ class TextFormatter
     /*
      * Contains all available class names
      */
-    var $classnames = array();
+    var $allclasses = array();
 
     /*
      * Holds HTML which is added before and after the text area
@@ -29,14 +29,17 @@ class TextFormatter
         foreach ($plugins as $plugin) {
             require_once($plugin);
             $class = substr(basename($plugin), 6, -4);
-            $this->classnames[] = $class;
+            $this->allclasses[] = ucfirst(substr($class, 0, -6)) . 'Syntax';
             // if wanted, exclude some plugins
-            if (isset($proj->prefs['syntax_plugins']) &&$proj->prefs['syntax_plugins']
-                && strpos($proj->prefs['syntax_plugins'], $class) === false) {
+            if (isset($proj->prefs['syntax_plugins']) && $proj->prefs['syntax_plugins']
+                && strpos($proj->prefs['syntax_plugins'], stristr( $proj->prefs['syntax_plugins'], $class )) === false) {
                 continue;
             }
             $class = new $class;
             $this->classes[$class->getOrder()] = $class;
+        }
+        // needs to be seperated for templating
+        foreach ($this->classes as $class) {
             $this->htmlbefore .= $class->getHtmlBefore();
             $this->htmlafter  .= $class->getHtmlAfter();
         }
@@ -51,25 +54,37 @@ class TextFormatter
      * @param string $type needed when saving to cache (rota, comm, task etc)
      * @param int $id needed when saving to cache (a task or comment id for example)
      * @param string $instructions data from cache if available
+     * @param array $plugins syntax plugins. empty = project default plugins
      * @return string
      */
-    function render($text, $onlyfs = false, $type = null, $id = null, $instructions = null)
+    function render($text, $onlyfs = false, $type = null, $id = null, $instructions = null, $plugins = array())
     {
-        global $conf, $fs, $db, $proj;
-
+        global $fs, $db, $proj;
+        
+        $classes = $this->classes;
+        
+        // remove deselected syntax plugins
+        if (count($plugins)) {
+            foreach ($classes as $key => $class) {
+                if (!in_array(strtolower(get_class($class)), array_map('strtolower', $plugins))) {
+                    unset($classes[$key]);
+                }
+            }
+        }
+        
         // get from cache or save
         if (is_string($instructions) && strlen($instructions) > 0) {
             $text = $instructions;
         } else {
             // parse...
-            foreach ($this->classes as $class) {
+            foreach ($classes as $class) {
                 if (!$onlyfs || $class->isBasic()) {
-                    $class->beforeCache($text);
+                    $class->beforeCache($text, array_map('get_class', $classes));
                 }
             }
             // ...and save
             if (!is_null($type) && !is_null($id)) {
-                $classnames = array_map('get_class', $this->classes);
+                $classnames = array_map('get_class', $classes);
                 $fields = array('content'=> array('value' => $text),
                                 'project_id'=> array('value' => $proj->id),
                                 'type'=> array('value' => $type, 'key' => true) ,
@@ -82,18 +97,18 @@ class TextFormatter
         }
 
         // after cache:
-        foreach ($this->classes as $class) {
+        foreach ($classes as $class) {
             if (!$onlyfs || $class->isBasic()) {
-                $class->afterCache($text);
+                $class->afterCache($text, array_map('get_class', $classes));
             }
         }
 
         return $text;
     }
 
-    function textarea($name, $rows, $cols, $attrs = null, $content = null)
+    function textarea($name, $rows, $cols, $attrs = null, $content = null, $plugins = array())
     {
-        global $conf;
+        global $page, $proj, $user;
 
         $name = Filters::noXSS($name);
 
@@ -106,7 +121,19 @@ class TextFormatter
             $return .= Filters::noXSS($content);
         }
         $return .= '</textarea>';
-        return str_replace('%id', $name, $this->htmlbefore) . $return . str_replace('%id', $name, $this->htmlafter);
+        
+        // does the user have any personal preference?
+        if (!count($plugins)) {
+            $plugins = explode(' ', $user->infos['syntax_plugins']);
+        }
+        // [BC] if no plugins are set, we assume a project's default plugins
+        if (!count($plugins)) {
+            $plugins = explode(' ', $proj->prefs['syntax_plugins']);
+        }
+        
+        return str_replace('%id', $name, $this->htmlbefore . $page->fetch('pluginoptions.tpl', 'plugins', $plugins))
+                . $return  .
+               str_replace('%id', $name, $this->htmlafter);
     }
 }
 // }}}

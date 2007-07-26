@@ -218,7 +218,7 @@ class FlysprayDoDetails extends FlysprayDo
     {
         global $user, $db, $fs, $proj;
 
-        if (!Backend::add_comment($task, Post::val('comment_text'))) {
+        if (!Backend::add_comment($task, Post::val('comment_text'), null, Post::val('comment_text_syntax_plugins'))) {
             return array(ERROR_RECOVER, L('nocommententered'));
         }
 
@@ -240,7 +240,7 @@ class FlysprayDoDetails extends FlysprayDo
 
         $where = '';
 
-        $params = array(Post::val('comment_text'), time(),
+        $params = array(Post::val('comment_text'), time(), implode(' ', (array) Post::val('comment_text_syntax_plugins')),
                         Post::val('comment_id'), $task['task_id']);
 
         if ($user->perms('edit_own_comments') && !$user->perms('edit_comments')) {
@@ -249,7 +249,7 @@ class FlysprayDoDetails extends FlysprayDo
         }
 
         $db->x->execParam("UPDATE  {comments}
-                         SET  comment_text = ?, last_edited_time = ?
+                         SET  comment_text = ?, last_edited_time = ?, syntax_plugins = ?
                        WHERE  comment_id = ? AND task_id = ? $where", $params);
 
         Flyspray::logEvent($task['task_id'], 5, Post::val('comment_text'),
@@ -621,11 +621,11 @@ class FlysprayDoDetails extends FlysprayDo
                                        WHERE v.task_id = ?
                                     ORDER BY v.date_time DESC',
                                     null, $this->task['task_id']);
-
+            $plugins = explode(' ', $this->task['syntax_plugins']);
             if ($this->task['last_edited_time'] > $cached['last_updated']) {
-                $task_text = $page->text->render($this->task['detailed_desc'], false, 'task', $this->task['task_id']);
+                $task_text = $page->text->render($this->task['detailed_desc'], false, 'task', $this->task['task_id'], null, $plugins);
             } else {
-                $task_text = $page->text->render($this->task['detailed_desc'], false, 'task', $this->task['task_id'], $cached['content']);
+                $task_text = $page->text->render($this->task['detailed_desc'], false, 'task', $this->task['task_id'], $cached['content'], $plugins);
             }
 
             $page->assign('prev_id',   $prev_id);
@@ -644,7 +644,7 @@ class FlysprayDoDetails extends FlysprayDo
             // tabbed area
 
             // Comments + cache
-            $comments = $db->x->getAll('  SELECT * FROM {comments} c
+            $comments = $db->x->getAll('  SELECT c.*, ca.content FROM {comments} c
                                 LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = ? AND c.last_edited_time <= ca.last_updated)
                                     WHERE task_id = ?
                                  ORDER BY date_added ASC',

@@ -32,7 +32,7 @@
   <?php endforeach; ?>
   </ul>
   <?php endif; ?>
-  <div class="commenttext">{!$this->text->render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'])}</div></div>
+  <div class="commenttext">{!$this->text->render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'], explode(' ', $comment['syntax_plugins']))}</div></div>
 
   <?php if (isset($comment_attachments[$comment['comment_id']])) {
             $this->display('common.attachments.tpl', 'attachments', $comment_attachments[$comment['comment_id']]);
@@ -71,7 +71,7 @@
 
       <button tabindex="9" type="submit">{L('addcomment')}</button>
       <?php if (!$watched): ?>
-      {!tpl_checkbox('notifyme', Post::val('notifyme', !(Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
+      {!tpl_checkbox('notifyme', Post::val('notifyme', (Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
       <?php endif; ?>
     </div>
   </form>

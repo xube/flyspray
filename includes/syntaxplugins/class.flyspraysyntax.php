@@ -10,9 +10,12 @@ class FlyspraySyntax extends SyntaxPlugin
         return true;
     }
 
-    function beforeCache(&$input) {
+    function beforeCache(&$input, $plugins) {
         $input = preg_replace('|[[:space:]]+[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]|', '<a href="\0">\0</a>', $input);
         $input = preg_replace('/[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]{2,5}/', '<a href="mailto:\0">\0</a>', $input);
+        if (!in_array('WikiSyntax', $plugins)) {
+            $input = nl2br($input);
+        }
     }
 
     function afterCache(&$input) {

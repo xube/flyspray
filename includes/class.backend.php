@@ -304,6 +304,9 @@ class Backend
         if ($proj->id != Post::val('project_id', $task['project_id'])) {
             $proj = new Project(Post::val('project_id', $task['project_id']));
         }
+        if (!$proj->id) {
+            return array(ERROR_INPUT, L('cannotedittaskglobally'));
+        }
 
         if (!$user->can_edit_task($task) && !$user->can_correct_task($task)) {
             return array(ERROR_PERMS);
@@ -326,12 +329,13 @@ class Backend
         $db->x->execParam('UPDATE  {tasks}
                          SET  project_id = ?, item_summary = ?,
                               detailed_desc = ?, mark_private = ?,
-                              last_edited_by = ?,
+                              last_edited_by = ?, syntax_plugins = ?,
                               last_edited_time = ?, percent_complete = ?
                        WHERE  task_id = ?',
-                  array($proj->id, array_get($args, 'item_summary'),
-                        array_get($args, 'detailed_desc'), intval($user->can_change_private($task) && array_get($args, 'mark_private')),
-                        intval($user->id), $time, array_get($args, 'percent_complete'), $task['task_id']));
+                  array($proj->id, array_get($args, 'item_summary'), array_get($args, 'detailed_desc'),
+                        intval($user->can_change_private($task) && array_get($args, 'mark_private')),
+                        intval($user->id), implode(' ', array_get($args, 'detailed_desc_syntax_plugins', array())),
+                        $time, array_get($args, 'percent_complete'), $task['task_id']));
 
         // Now the custom fields
         foreach ($proj->fields as $field) {
@@ -405,13 +409,14 @@ class Backend
      * @param array $task
      * @param string $comment_text
      * @param integer $time for synchronisation with other functions
+     * @param array array of used syntax plugins
      * @access public
      * @return bool
      * @version 1.0
      */
-    function add_comment($task, $comment_text, $time = null)
+    function add_comment($task, $comment_text, $time = null, $syntax_plugins = array())
     {
-        global $db, $user;
+        global $db, $user, $proj;
 
         if (!($user->perms('add_comments', $task['project_id']) && (!$task['is_closed'] || $user->perms('comment_closed', $task['project_id'])))) {
             return false;
@@ -424,7 +429,7 @@ class Backend
         $time =  !is_numeric($time) ? time() : $time ;
 
         $db->x->autoExecute('{comments}', array('task_id' => $task['task_id'], 'date_added'=> $time, 'last_edited_time'=> $time, 
-                                                'user_id' => $user->id, 'comment_text' => $comment_text));
+                                                'user_id' => $user->id, 'comment_text' => $comment_text, 'syntax_plugins' => implode(' ', $syntax_plugins)));
 
         $cid = $db->x->GetOne('SELECT  comment_id
                               FROM  {comments}
@@ -888,6 +893,9 @@ class Backend
 
         $sql_params[] = 'closure_comment';
         $sql_values[] = '';
+        
+        $sql_params[] = 'syntax_plugins';
+        $sql_values[] = implode(' ', array_get($args, 'detailed_desc_syntax_plugins', array()));
 
         // Token for anonymous users
         $token = '';

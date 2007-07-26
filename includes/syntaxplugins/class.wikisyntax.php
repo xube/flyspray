@@ -52,11 +52,9 @@ class WikiSyntax extends SyntaxPlugin
     /**
 	 * Displays a toolbar for formatting text in the DokuWiki Syntax
 	 * Uses Javascript. Beware: Ugly code right ahead.
-	 *
-	 * @param string $textareaId
 	 */
 	function getHtmlBefore() {
-		global $baseurl;
+		global $baseurl, $proj;
 
 		return '<div class="hide preview" id="%id_preview"></div><div>
         <a href="javascript:void(0);" onclick="surroundText(\'**\', \'**\', \'%id\'); return false;">
@@ -106,7 +104,8 @@ class WikiSyntax extends SyntaxPlugin
 			<a href="javascript:void(0);" onclick="surroundText(\'<code>\', \'</code>\', \'%id\'); return false;">
 			<img src="'.$baseurl.'includes/syntaxplugins/img/source.png" align="bottom" alt="Insert Code" title="Insert Code" border="0" /></a>
 			<a href="javascript:void(0);" onclick="surroundText(\'<code php>\', \'</code>\', \'%id\'); return false;">
-			<img src="'.$baseurl.'includes/syntaxplugins/img/source_php.png" align="bottom" alt="Insert Code" title="Insert PHP Code" border="0" /></a></div>
+			<img src="'.$baseurl.'includes/syntaxplugins/img/source_php.png" align="bottom" alt="Insert Code" title="Insert PHP Code" border="0" /></a>
+            <a href="http://wiki.splitbrain.org/wiki:syntax">'. eL('syntax') .'</a>
 		';
 	}
 }

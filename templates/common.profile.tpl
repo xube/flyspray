@@ -115,8 +115,16 @@
                                 NOTIFY_REV_DEP         => L('revdepadded'),
                                 NOTIFY_REV_DEP_REMOVED => L('revdepaddedremoved'),
                                 NOTIFY_ADDED_ASSIGNEES => L('assigneeadded')),
-                                Post::val('notify_types', explode(' ', $user->infos['notify_blacklist'])))}
+                                Post::val('notify_types', explode(' ', $theuser->infos['notify_blacklist'])))}
             </select>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="syntax_plugins">{L('syntaxplugins')}</label></td>
+        <td>
+          <select id="syntax_plugins" name="syntax_plugins[]" multiple="multiple" size="4">
+            {!tpl_options($this->text->allclasses, explode(' ', $theuser->infos['syntax_plugins']), true)}
+          </select>
         </td>
       </tr>
       <tr>

@@ -1,7 +1,6 @@
 <?php
 /*
-    This script is the AJAX callback that performs a search
-    for users, and returns them in an ordered list.
+    This script renders a given text for preview purposes
 */
 
 define('IN_FS', true);
@@ -13,6 +12,6 @@ $webdir = dirname(dirname(dirname(htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUO
 require_once('../../header.php');
 
 $page = new FSTpl();
-echo $page->text->render(Post::val('text'));
+echo $page->text->render(Post::val('text'), false, null, null, null, Post::val('plugins'))
 
 ?>

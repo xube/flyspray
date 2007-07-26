@@ -8,6 +8,7 @@ function detailsInit() {
     Event.observe(document, 'keydown', keyboardNavigation);
   }
   Event.observe($('taskfieldscell'), 'click',tasklistTableClick);
+  addEvent($('taskfieldscell'), 'dblclick',tasklistTableClick);
 }
 function keyboardNavigation(e) {
   var src = Event.element(e);

@@ -130,7 +130,7 @@ class Tpl
 
 class FSTpl extends Tpl
 {
-    var $_uses = array('fs', 'conf', 'baseurl', 'proj', 'user');
+    var $_uses = array('fs', 'conf', 'baseurl', 'proj', 'user', 'do');
     var $text = null;
 
     function FSTpl()

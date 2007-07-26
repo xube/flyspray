@@ -98,7 +98,6 @@ define('REINDEX',              true);
 define('GET_CONTENTS',         true);
 define('LOCK_FIELD',           true);
 define('USE_DEFAULT',          true);
-define('ADODB_AUTOQUOTE',      true);
 define('PLAINTEXT',            true);
 
 // Others
@@ -107,8 +106,8 @@ define('LOGIN_ATTEMPTS', 5);
 define('FS_CACHE_DIR', Flyspray::get_tmp_dir() . DIRECTORY_SEPARATOR . md5($_SERVER['SERVER_NAME']  . BASEDIR));
 
 is_dir(FS_CACHE_DIR) || mkdir(FS_CACHE_DIR, 0700);
-//local installation constants, this file must not exist in the svn repository.
 
+// local installation constants, this file must not exist in the svn repository.
 if(is_readable(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php')) {
     include(BASEDIR . '/includes/constants.' . $_SERVER['SERVER_NAME'] . '.php');
 }

@@ -34,8 +34,9 @@ class SyntaxPlugin
      * cache.
      *
      * @param string $input by reference, manipulate its contents
+     * @param array $plugins contains a list of other plugins that will be used
      */
-    function beforeCache(&$input) { }
+    function beforeCache(&$input, $plugins) { }
 
     /*
      * Rules that need to be applied after
@@ -44,12 +45,13 @@ class SyntaxPlugin
      *
      * @param string $input by reference, manipulate its contents
      */
-    function afterCache(&$input) { }
+    function afterCache(&$input, $plugins) { }
 
     /*
      * Allows to add some HTML before the actual text area (toolbars etc)
      *
      * @return string %id in the output string is replaced with the textarea id
+     * @param array $plugins contains a list of other plugins that will be used
      */
     function getHtmlBefore() { return ''; }
 
