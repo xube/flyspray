@@ -38,6 +38,9 @@ $svninfo->setRepository($proj->prefs['svn_url'], $proj->prefs['svn_user'], $proj
 $currentRevision = $svninfo->getCurrentRevision();
 
 // retrieve stuff in small portions
+
+$stmt = $db->x->autoPrepare('{cache}', array('type', 'content', 'topic', 'project_id', 'last_updated'));
+
 for ($i = 1; $i <= $currentRevision; $i += 50) {
     echo sprintf('<p>Importing revisions %d to %d...', $i, $i + 49); flush();
 
@@ -46,15 +49,14 @@ for ($i = 1; $i <= $currentRevision; $i += 50) {
         if (in_array($log['version-name'], $revisions)) {
             continue;
         }
-
         // fill related revisions
         preg_replace_callback("/\b(" . $look . ")(\d+)\b/", 'add_related', $log['comment']);
 
-        $db->x->execParam('INSERT INTO {cache} (type, content, topic, project_id, last_updated)
-                           VALUES (?, ?, ?, ?, ?)',
-                      array('svn', serialize($log), $log['version-name'], $proj->id, strtotime($log['date'])));
+        $stmt->execute(array('svn', serialize($log), $log['version-name'], $proj->id, strtotime($log['date'])));
     }
 }
+
+$stmt->free();
 
 function add_related($arr)
 {
