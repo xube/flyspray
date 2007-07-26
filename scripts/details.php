@@ -81,9 +81,7 @@ class FlysprayDoDetails extends FlysprayDo
         Flyspray::logEvent($task['task_id'], 22, $task_id);
         Flyspray::logEvent($task_id, 23, $task['task_id']);
 
-        $db->x->execParam('INSERT INTO  {dependencies} (task_id, dep_task_id)
-                                VALUES  (?,?)',
-                            array($task['task_id'], $task_id));
+        $db->x->autoExecute('{dependencies}', array('task_id'=> $task['task_id'], 'dep_task_id'=> $task_id));
 
         return array(SUBMIT_OK, L('dependadded'));
     }
@@ -203,10 +201,8 @@ class FlysprayDoDetails extends FlysprayDo
         $request = $db->x->getRow('SELECT * FROM {admin_requests} WHERE  task_id = ? AND request_type = ?',
                                    array($task['task_id'], 2));
 
-        $db->x->execParam('INSERT INTO  {comments}
-                                   (task_id, date_added, last_edited_time, user_id, comment_text)
-                           VALUES  ( ?, ?, ?, ?, ? )',
-                      array($task['task_id'], time(), time(), $request['submitted_by'], $request['reason_given']));
+        $db->x->autoExecute('{comments}', array('task_id'=> $task['task_id'], 'date_added'=> time(), 
+                                              'last_edited_time'=> time(), 'user_id' => $request['submitted_by'], 'comment_text'=> $request['reason_given']));
         // delete existing PM request
         $db->x->execParam('UPDATE  {admin_requests}
                          SET  resolved_by = ?, time_resolved = ?
@@ -296,8 +292,7 @@ class FlysprayDoDetails extends FlysprayDo
             return array(ERROR_RECOVER, L('relatederror'));
         }
 
-        $db->x->execParam('INSERT INTO {related} (this_task, related_task, related_type) VALUES(?,?, ?)',
-                           array($task['task_id'], $task_id, RELATED_TASK));
+        $db->x->autoExecute('{related}', array('this_task'=> $task['task_id'], 'related_task'=> $task_id, 'related_type'=> RELATED_TASK));
 
         Flyspray::logEvent($task['task_id'], 11, $task_id);
         Flyspray::logEvent($task_id, 11, $task['task_id']);
@@ -381,14 +376,15 @@ class FlysprayDoDetails extends FlysprayDo
                                $comment['comment_text'], $comment['date_added']);
         }
 
+        $stmt = $db->prepare('DELETE from {attachments} WHERE attachment_id = ?', array('integer'), MDB2_PREPARE_MANIP);
         foreach ($attachments as $attachment) {
-            $db->x->execParam('DELETE from {attachments} WHERE attachment_id = ?', $attachment['attachment_id']);
-
-            @unlink(FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $attachment['file_name']);
-
-            Flyspray::logEvent($attachment['task_id'], 8, $attachment['orig_name']);
+            
+            if($stmt->execute($attachment['attachment_id'])) {
+                @unlink(FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $attachment['file_name']);
+                Flyspray::logEvent($attachment['task_id'], 8, $attachment['orig_name']);
+            }
         }
-
+        $stmt->free();
         return array(SUBMIT_OK, L('commentdeletedmsg'));
     }
 

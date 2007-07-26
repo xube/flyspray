@@ -566,9 +566,9 @@ class FlysprayDoAdmin extends FlysprayDo
 
             $params = array_map('Post_to0', $cols);
             array_unshift($params, $proj->id);
+            array_unshift($cols, 'project_id');
 
-            $db->x->execParam("INSERT INTO  {groups} (project_id, ". join(',', $cols).")
-                                           VALUES  (". fill_placeholders($cols, 1) . ')', $params);
+            $db->x->autoExecute('{groups}', array_combine($cols, $params));
 
             return array(SUBMIT_OK, L('newgroupadded'));
         }
@@ -611,10 +611,9 @@ class FlysprayDoAdmin extends FlysprayDo
         array_unshift($args, 'Project Managers',
                       'Permission to do anything related to this project.', 1, intval($pid));
 
-        $db->x->execParam('INSERT INTO  {groups}
-                                 ( group_name, group_desc, group_open, project_id,
-                                   '. join(',', $fs->perms) .')
-                         VALUES  ( '. fill_placeholders($fs->perms, 4) .')', $args);
+        $cols = array_merge(array('group_name', 'group_desc', 'group_open', 'project_id'), $fs->perms);
+
+        $db->x->autoExecute('{groups}', array_combine($cols, $args));
 
         return array(SUBMIT_OK, L('projectcreated'), CreateURL(array('pm', 'proj' . $pid, 'prefs')));
     }
@@ -754,10 +753,10 @@ class FlysprayDoAdmin extends FlysprayDo
         $params = array();
         $params[] = $position;
         $params = array_merge($params, array_map('Post_to0', $cols));
+        array_unshift($cols, 'list_position');
+        array_push($cols, 'show_in_list');
 
-        $db->x->execParam('INSERT INTO  {list_items}
-                                   (list_position,'. implode(',', $cols) .', show_in_list)
-                                  VALUES  (?,'. fill_placeholders($cols) .', 1)', $params);
+        $db->x->autoExecute('{list_items}', array_combine($cols, $params));
 
         return array(SUBMIT_OK, L('listitemadded'));
     }

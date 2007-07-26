@@ -14,27 +14,6 @@ if (!defined('IN_FS')) {
 
 require_once 'MDB2.php';
 
-/**
- * fill_placeholders
- *  a convenience function to fill sql query placeholders
- *  according to the number of columns to be used.
- * @param array $cols
- * @param integer $additional generate N additional placeholders
- * @access public
- * @return string comma separated "?" placeholders
- * @static
- */
-function fill_placeholders($cols, $additional=0)
-{
-    if (is_array($cols) && count($cols) && is_int($additional)) {
-
-        return join(',', array_fill(0, (count($cols) + $additional), '?'));
-
-    } else {
-        //this is not an user error, is a programmer error.
-        trigger_error("incorrect data passed to fill_placeholders", E_USER_ERROR);
-    }
-}
 
 /**
  * Shows a database error and exits. Since this should not happen usually, we don't need

@@ -48,11 +48,14 @@ class FlysprayDoSvnlog extends FlysprayDo
             }
             // Get last 30 log entries
             $logsvn = $svninfo->getLog( (count($logdb) ? $logdb[0]['topic'] : $currentRevision - 30), $currentRevision);
+
+            $stmt = $db->x->autoPrepare('{cache}', array('type','content', 'topic', 'project_id', 'last_updated'));
+
             foreach ($logsvn as $log) {
-                $db->x->execParam('INSERT INTO {cache} (type, content, topic, project_id, last_updated)
-                                        VALUES (?, ?, ?, ?, ?)',
-                                   array('svn', serialize($log), $log['version-name'], $proj->id, strtotime($log['date'])));
+                $stmt->execute(array('svn', serialize($log), $log['version-name'], $proj->id, strtotime($log['date'])));
             }
+
+            $stmt->free();
             // server sends oldest entry first
             $logsvn = array_reverse($logsvn);
         }
