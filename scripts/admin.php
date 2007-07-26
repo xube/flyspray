@@ -286,9 +286,10 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('fieldsmissing'));
         }
 
-        $db->x->execParam('INSERT INTO {fields} (field_name, field_type, list_id, project_id)
-                                       VALUES (?, ?, ?, ?)',
-                                array(Post::val('field_name'), Post::num('field_type'), Post::num('list_id'), $proj->id));
+        $db->x->autoExecute('{fields}', array('field_name'=> Post::val('field_name'), 
+                                              'field_type'=> Post::num('field_type'), 
+                                              'list_id'=> Post::num('list_id'), 
+                                              'project_id'=> $proj->id));
 
         $proj = new Project($proj->id);
 
@@ -339,14 +340,16 @@ class FlysprayDoAdmin extends FlysprayDo
     {
     	global $fs, $db, $proj, $user;
 
-    	$db->x->execParam('INSERT INTO {lists} (list_name, list_type, project_id)
-                                     VALUES (?, ?, ?)',
-                                array(Post::val('list_name'), Post::num('list_type'), $proj->id));
+        $db->x->autoExecute('{lists}', array('list_name'=> Post::val('list_name'), 
+                                             'list_type'=> Post::num('list_type'), 
+                                             'project_id'=> $proj->id));
 
         if (Post::num('list_type') == LIST_CATEGORY) {
             $list_id = $db->x->GetOne('SELECT list_id FROM {lists} WHERE project_id = ? ORDER BY list_id DESC', null, $proj->id);
-            $db->x->execParam('INSERT INTO {list_category} (list_id, lft, rgt, category_name)
-                                           VALUES (?, ?, ?, ?)', array($list_id, 1, 2, 'root'));
+            $db->x->autoExecute('{list_category}', array('list_id'=> $list_id, 
+                                                         'lft'=> 1, 
+                                                         'rgt'=> 2, 
+                                                         'category_name'=>'root'));
         }
         return array(SUBMIT_OK, L('listadded'));
     }
@@ -435,12 +438,12 @@ class FlysprayDoAdmin extends FlysprayDo
                      WHERE lft >= ? AND project_id = ?',
                      array($right, $proj->id));
 
-        $db->x->execParam("INSERT INTO  {list_category}
-                                   ( list_id, category_name, show_in_list, category_owner, lft, rgt )
-                           VALUES  (?, ?, 1, ?, ?, ?)",
-                array(Post::val('list_id'), Post::val('list_name'),
-                      Post::val('category_owner', 0) == '' ? '0' : Flyspray::username_to_id(Post::val('category_owner', 0)),
-                      $right, $right+1));
+        $db->x->autoExecute('{list_category}', array('list_id'=> Post::val('list_id'), 
+                                                   'category_name'=> Post::val('list_name'), 
+                                                   'show_in_list'=> 1,
+                                                   'category_owner'=> (Post::val('category_owner', 0) == '' ? '0' : Flyspray::username_to_id(Post::val('category_owner', 0))),
+                                                   'lft'=> $right, 
+                                                   'rgt'=>($right+1)));
 
         return array(SUBMIT_OK, L('listitemadded'));
     }
@@ -585,16 +588,17 @@ class FlysprayDoAdmin extends FlysprayDo
         $viscols =    $fs->prefs['visible_columns']
                     ? $fs->prefs['visible_columns']
                     : 'id summary progress';
+        
+        $prjinfo = array('project_title'=> Post::val('project_title'),
+                         'theme_style' => Post::val('theme_style'),
+                         'intro_message'=> Post::val( 'intro_message'),
+                         'others_view'=> Post::val('others_view', 0),
+                         'anon_open'=> Post::val('anon_open', 0),
+                         'visible_columns'=> $viscols,
+                         'lang_code'=> Post::val('lang_code', 'en'),
+                     );
 
-        $db->x->execParam('INSERT INTO  {projects}
-                                 ( project_title, theme_style, intro_message, notify_subject, default_task,
-                                   others_view, anon_open, notify_reply, feed_img_url, feed_description,
-                                   visible_columns, lang_code, notify_email, notify_jabber)
-                         VALUES  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                  array(Post::val('project_title'), Post::val('theme_style'),
-                        Post::val('intro_message'), '', '', Post::val('others_view', 0),
-                        Post::val('anon_open', 0), '', '', '', $viscols,
-                        Post::val('lang_code', 'en'), '', ''));
+        $db->x->autoExecute('{projects}', $prjinfo);
 
         $pid = $db->x->GetOne('SELECT project_id FROM {projects} ORDER BY project_id DESC');
 

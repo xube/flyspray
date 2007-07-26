@@ -603,12 +603,19 @@ class Backend
 
         $salt = md5(uniqid(mt_rand() , true));
 
-        $db->x->execParam("INSERT INTO  {users}
-                             ( user_name, user_pass, password_salt, real_name, jabber_id, dateformat,
-                               email_address, notify_type, account_enabled, dateformat_extended,
-                               tasks_perpage, register_date, time_zone, magic_url)
-                     VALUES  ( ?, ?, ?, ?, ?, NULL, ?, ?, 1, NULL, 25, ?, ?, NULL)",
-            array($user_name, Flyspray::cryptPassword($password, $salt), $salt, $real_name, $jabber_id, $email, $notify_type, time(), $time_zone));
+        $userdata = array('user_name'=> $user_name,
+                          'user_pass'=> Flyspray::cryptPassword($password, $salt),
+                          'password_salt'=> $salt,
+                          'real_name'=> $real_name,
+                          'jabber_id'=> $jabber_id,
+                          'email_address'=> $email,
+                          'notify_type'=> $notify_type,
+                          'time_zone'=> $time_zone,
+                          'register_date'=> time(),
+                          'account_enabled'=> 1,
+                        );
+
+        $db->x->autoExecute('{users}', $userdata);
 
         // Get this user's id for the record
         $uid = Flyspray::username_to_id($user_name);
@@ -893,20 +900,15 @@ class Backend
         $sql_params[] = 'anon_email';
         $sql_values[] = array_get($args, 'anon_email', '');
 
-        $sql_params = join(', ', $sql_params);
-        $sql_placeholder = join(', ', array_fill(1, count($sql_values), '?'));
+        $sql_cols = array_merge(array('task_id', 'date_opened', 'last_edited_time', 'project_id',
+                                      'item_summary', 'detailed_desc', 'opened_by', 'percent_complete'), $sql_params);
 
-        $task_id = $db->x->GetOne('SELECT  MAX(task_id)+1 FROM  {tasks}');
+        $task_id = $db->x->GetOne('SELECT  MAX(task_id)+1 FROM {tasks}');
         $task_id = $task_id ? $task_id : 1;
         //now, $task_id is always the first element of $sql_values
         array_unshift($sql_values, $task_id);
 
-        $db->x->execParam("INSERT INTO  {tasks}
-                                 ( task_id, date_opened, last_edited_time,
-                                   project_id, item_summary,
-                                   detailed_desc, opened_by,
-                                   percent_complete, $sql_params )
-                                 VALUES  (?, $sql_placeholder)", $sql_values);
+        $db->x->autoExecute('{tasks}', array_combine($sql_cols, $sql_values));
 
         // Per project task ID
         $prefix_id = $db->x->GetOne('SELECT MAX(prefix_id)+1 FROM {tasks} WHERE project_id = ?', null, $proj->id);

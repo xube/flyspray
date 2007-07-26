@@ -564,12 +564,15 @@ class Flyspray
         // 30: New user registration
         // 31: User deletion
 
-        $query_params = array(intval($task_id), intval($user->id),
-                             ((!is_numeric($time)) ? time() : $time),
-                              $type, $field, (string) $oldvalue, $newvalue);
+        $query_params = array('task_id'=> intval($task_id), 
+                              'user_id'=> intval($user->id),
+                              'event_date'=> ((!is_numeric($time)) ? time() : $time),
+                              'event_type'=> $type, 
+                              'field_changed'=> $field, 
+                              'old_value'=> (string) $oldvalue, 
+                              'new_value'=> $newvalue);
 
-        if($db->x->execParam('INSERT INTO {history} (task_id, user_id, event_date, event_type, field_changed,
-                       old_value, new_value) VALUES (?, ?, ?, ?, ?, ?, ?)', $query_params)) {
+        if($db->x->autoExecute('{history}', $query_params)) {
             return true;
          }
 
@@ -590,9 +593,12 @@ class Flyspray
     function AdminRequest($type, $project_id, $task_id, $submitter, $reason)
     {
         global $db;
-        $db->x->execParam('INSERT INTO {admin_requests} (project_id, task_id, submitted_by, request_type, reason_given, time_submitted)
-                         VALUES (?, ?, ?, ?, ?, ?)',
-                    array($project_id, $task_id, $submitter, $type, $reason, time()));
+        $db->x->autoExecute('{admin_requests}', array('project_id'=> $project_id, 
+                                                      'task_id'=> $task_id, 
+                                                      'submitted_by'=> $submitter, 
+                                                      'request_type'=> $type, 
+                                                      'reason_given'=> $reason, 
+                                                      'time_submitted'=> time()));
     } // }}}
     // Check for an existing admin request for a task and event type {{{;
     /**
