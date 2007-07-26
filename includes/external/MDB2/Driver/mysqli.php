@@ -43,7 +43,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: mysqli.php,v 1.167 2007/06/30 11:12:08 quipo Exp $
+// $Id: mysqli.php,v 1.169 2007/07/22 13:59:22 quipo Exp $
 //
 
 /**
@@ -56,6 +56,7 @@
 class MDB2_Driver_mysqli extends MDB2_Driver_Common
 {
     // {{{ properties
+
     var $string_quoting = array('start' => "'", 'end' => "'", 'escape' => '\\', 'escape_pattern' => '\\');
 
     var $identifier_quoting = array('start' => '`', 'end' => '`', 'escape' => '`');
@@ -66,9 +67,12 @@ class MDB2_Driver_mysqli extends MDB2_Driver_Common
         array('start' => '/*', 'end' => '*/', 'escape' => false),
     );
 
+    var $server_capabilities_checked = false;
+
     var $start_transaction = false;
 
     var $varchar_max_length = 255;
+
     // }}}
     // {{{ constructor
 
@@ -786,9 +790,8 @@ class MDB2_Driver_mysqli extends MDB2_Driver_Common
      */
     function _getServerCapabilities()
     {
-        static $already_checked = false;
-        if (!$already_checked) {
-            $already_checked = true;
+        if (!$this->server_capabilities_checked) {
+            $this->server_capabilities_checked = true;
 
             //set defaults
             $this->supported['sub_selects'] = 'emulated';
@@ -957,7 +960,8 @@ class MDB2_Driver_mysqli extends MDB2_Driver_Common
         }
 
         if (!$is_manip) {
-            $statement_name = sprintf($this->options['statement_format'], $this->phptype, sha1(microtime() + mt_rand()));
+            static $prep_statement_counter = 1;
+            $statement_name = sprintf($this->options['statement_format'], $this->phptype, sha1(microtime() + mt_rand())) . $prep_statement_counter++;
             $query = "PREPARE $statement_name FROM ".$this->quote($query, 'text');
 
             $statement =& $this->_doQuery($query, true, $connection);
@@ -1517,7 +1521,7 @@ class MDB2_Statement_mysqli extends MDB2_Statement_Common
                 $value = $this->values[$parameter];
                 $type = array_key_exists($parameter, $this->types) ? $this->types[$parameter] : null;
                 if (!is_object($this->statement)) {
-                    if (is_resource($value) || $type == 'clob' || $type == 'blob' && $this->options['lob_allow_url_include']) {
+                    if (is_resource($value) || $type == 'clob' || $type == 'blob' && $this->db->options['lob_allow_url_include']) {
                         if (!is_resource($value) && preg_match('/^(\w+:\/\/)(.*)$/', $value, $match)) {
                             if ($match[1] == 'file://') {
                                 $value = $match[2];

@@ -43,7 +43,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: MDB2.php,v 1.292 2007/04/25 09:31:01 quipo Exp $
+// $Id: MDB2.php,v 1.295 2007/06/02 15:43:58 quipo Exp $
 //
 
 /**
@@ -539,7 +539,7 @@ class MDB2
      */
     function apiVersion()
     {
-        return '2.4.1';
+        return '@package_version@';
     }
 
     // }}}
@@ -1156,6 +1156,7 @@ class MDB2_Driver_Common extends PEAR
         'datatype_map' => array(),
         'datatype_map_callback' => array(),
         'nativetype_map_callback' => array(),
+        'lob_allow_url_include' => false,
     );
 
     /**
@@ -3962,8 +3963,14 @@ class MDB2_Statement_Common
         $types = is_array($types) ? array_values($types) : array_fill(0, count($values), null);
         $parameters = array_keys($values);
         foreach ($parameters as $key => $parameter) {
+            $this->db->expectError(MDB2_ERROR_NOT_FOUND);
             $err = $this->bindValue($parameter, $values[$parameter], $types[$key]);
+            $this->db->popExpect();
             if (PEAR::isError($err)) {
+                if ($err->getCode() == MDB2_ERROR_NOT_FOUND) {
+                    //ignore (extra value for missing placeholder)
+                    continue;
+                }
                 return $err;
             }
         }

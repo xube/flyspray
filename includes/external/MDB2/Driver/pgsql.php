@@ -43,7 +43,7 @@
 // | Author: Paul Cooper <pgc@ucecom.com>                                 |
 // +----------------------------------------------------------------------+
 //
-// $Id: pgsql.php,v 1.177 2007/06/30 11:10:23 quipo Exp $
+// $Id: pgsql.php,v 1.180 2007/07/21 13:35:49 quipo Exp $
 
 /**
  * MDB2 PostGreSQL driver
@@ -822,6 +822,11 @@ class MDB2_Driver_pgsql extends MDB2_Driver_Common
         while ($position < strlen($query)) {
             $q_position = strpos($query, $question, $position);
             $c_position = strpos($query, $colon, $position);
+            //skip "::type" cast ("select id::varchar(20) from sometable where name=?")
+            $doublecolon_position = strpos($query, '::', $position);
+            if ($doublecolon_position !== false && $doublecolon_position == $c_position) {
+                $c_position = strpos($query, $colon, $position+2);
+            }
             if ($q_position && $c_position) {
                 $p_position = min($q_position, $c_position);
             } elseif ($q_position) {
@@ -899,8 +904,8 @@ class MDB2_Driver_pgsql extends MDB2_Driver_Common
         if (PEAR::isError($connection)) {
             return $connection;
         }
-
-        $statement_name = sprintf($this->options['statement_format'], $this->phptype, sha1(microtime() + mt_rand()));
+        static $prep_statement_counter = 1;
+        $statement_name = sprintf($this->options['statement_format'], $this->phptype, sha1(microtime() + mt_rand())) . $prep_statement_counter++;
         $statement_name = strtolower($statement_name);
         if ($pgtypes === false) {
             $result = @pg_prepare($connection, $statement_name, $query);
@@ -942,8 +947,23 @@ class MDB2_Driver_pgsql extends MDB2_Driver_Common
     function getSequenceName($sqn)
     {
         if (strpos($sqn, '_') !== false) {
-            list($table, $field) = explode('_', $sqn);
+            list($table, $field) = explode('_', $sqn, 2);
         }
+        $schema_list = $this->queryOne("SELECT array_to_string(current_schemas(false), ',')");
+        if (PEAR::isError($schema_list) || empty($schema_list) || count($schema_list) < 2) {
+            $order_by = ' a.attnum';
+            $schema_clause = ' AND n.nspname=current_schema()';
+        } else {
+            $schemas = explode(',', $schema_list);
+            $schema_clause = ' AND n.nspname IN ('.$schema_list.')';
+            $counter = 1;
+            $order_by = ' CASE ';
+            foreach ($schemas as $schema) {
+                $order_by .= ' WHEN n.nspname='.$schema.' THEN '.$counter++;
+            }
+            $order_by .= ' ELSE '.$counter.' END, a.attnum';
+        }
+
         $query = "SELECT substring((SELECT substring(pg_get_expr(d.adbin, d.adrelid) for 128)
                 	    FROM pg_attrdef d
                 	   WHERE d.adrelid = a.attrelid
@@ -953,15 +973,17 @@ class MDB2_Driver_pgsql extends MDB2_Driver_Common
                     FROM pg_attribute a
                 LEFT JOIN pg_class c ON c.oid = a.attrelid
                 LEFT JOIN pg_attrdef d ON d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef
+                LEFT JOIN pg_namespace n ON c.relnamespace = n.oid
                    WHERE (c.relname = ".$this->quote($sqn, 'text');
         if (!empty($field)) {
             $query .= " OR (c.relname = ".$this->quote($table, 'text')." AND a.attname = ".$this->quote($field, 'text').")";
         }
-        $query .= "      )
+        $query .= "      )"
+                     .$schema_clause."
                      AND NOT a.attisdropped
                      AND a.attnum > 0
                      AND pg_get_expr(d.adbin, d.adrelid) LIKE 'nextval%'
-                ORDER BY a.attnum";
+                ORDER BY ".$order_by;
         $seqname = $this->queryOne($query);
         if (!PEAR::isError($seqname) && !empty($seqname) && is_string($seqname)) {
             return $seqname;
