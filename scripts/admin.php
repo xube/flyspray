@@ -599,8 +599,7 @@ class FlysprayDoAdmin extends FlysprayDo
                      );
 
         $db->x->autoExecute('{projects}', $prjinfo);
-
-        $pid = $db->x->GetOne('SELECT project_id FROM {projects} ORDER BY project_id DESC');
+        $pid = $db->lastInsertID();
 
         // now find an unused project prefix
         $existing = $db->x->GetCol('SELECT project_prefix FROM {projects}');

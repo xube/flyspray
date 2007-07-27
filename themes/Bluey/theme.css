@@ -1393,7 +1393,7 @@ h3.taskdesc {
 }
 
 div.comment {
-	padding:0.5em;
+	padding:0 0.5em;
 }
 
 fieldset#events div#tasklist {

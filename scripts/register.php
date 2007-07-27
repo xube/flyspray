@@ -134,7 +134,7 @@ class FlysprayDoRegister extends FlysprayDo
             // Insert everything into the database
             $query = $db->x->autoExecute('{registrations}', $reg_values);
 
-             if ($query) {
+             if (!PEAR::isError($query)) {
                     return array(SUBMIT_OK, L('codesent'), $baseurl);
                 }
 

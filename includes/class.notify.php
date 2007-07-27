@@ -241,7 +241,7 @@ class Notifications
             if (isset($data['task_id'])) {
 
                 $plugin =& $swift->getPlugin('MessageThread');
-            
+
                 if(count($plugin->thread_info)) {
 
                     $stmt = $db->x->autoPrepare('{notification_threads}', array('task_id', 'recipient_id', 'message_id'));
@@ -319,27 +319,21 @@ class Notifications
         $time = time(); // on a sidenote: never do strange things like $date = time() or $time = date('U');
 
         // just in case
-        if (!$db->x->autoExecute('{notification_messages}', array('message_data' => serialize($data), 'time_created' => $time))){
+        $res = $db->x->autoExecute('{notification_messages}', array('message_data' => serialize($data), 'time_created' => $time));
+        if (PEAR::isError($res)) {
             return false;
         }
+        $message_id = $db->lastInsertID();
 
-        // ugly but postgre doesn't give us a choice?
-        $message_id = $db->x->GetOne('SELECT message_id
-                                     FROM {notification_messages}
-                                    WHERE time_created = ?
-                                 ORDER BY message_id DESC',
-                                 null, $time);
-
-        if(count($to)) {
-            
+        if (count($to)) {
             $stmt = $db->x->autoPrepare('{notification_recipients}', array('message_id', 'user_id'));
-            
+
             foreach ($to as $user_id) {
-                
+
                 if ($user_id == $user->id && !$user->infos['notify_own']) {
                     continue;
                 }
-                    $stmt->execute(array($message_id, $user_id));
+                $stmt->execute(array($message_id, $user_id));
             }
 
             $stmt->free();

@@ -1,4 +1,4 @@
-<?php if ($do == 'details' || $do == 'editcomment' || $do == 'newtask'): ?>
+<?php if ($do == 'details' || $do == 'editcomment' || $do == 'newtask' || $do == 'myprofile'): ?>
 <span style="position:relative;">
   <a href="javascript:showhidestuff('%id_plugins');">{L('options')}</a>
   <span class="hide popup plugins" id="%id_plugins">

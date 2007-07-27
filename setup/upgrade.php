@@ -63,20 +63,19 @@ $folders = glob_compat(BASEDIR . '/upgrade/[0-9]*');
 $folders = array_map('basename', $folders);
 usort($folders, 'version_compare'); // start with lowest version
 $done = true;
-
 $upgrade_available = false;
+
 if (Post::val('upgrade')) {
     $db->supports('transactions') && $db->beginTransaction();
-    
+
     foreach ($folders as $folder) {
         if (version_compare($installed_version, $folder, '<=')) {
-            // example: we upgrade from 0.9.9(final) to 1.0. In this case we want to start at 0.9.9.2 
+            // example: we upgrade from 0.9.9(final) to 1.0. In this case we want to start at 0.9.9.2
             if (version_compare($installed_version, $folder, 'eq') && Flyspray::base_version($installed_version) == $installed_version) {
                 continue;
             }
-            $res = execute_upgrade_file($folder, $installed_version);
-            $installed_version = $folder;
 
+            $res = execute_upgrade_file($folder, $installed_version);
             // did everything work?
             if (PEAR::isError($res)) {
                 $done = false;
@@ -84,21 +83,21 @@ if (Post::val('upgrade')) {
                     $db->rollback();
                 }
 
-                $page->assign('errormsg', $res->getMessage() . ': ' . $res->userinfo);
+                $page->assign('errormsg', $res->getMessage() . ": \n" . wordwrap($res->userinfo, 80));
                 break;
             }
+            $installed_version = $folder;
         }
     }
-    
     if ($done) {
         // we should be done at this point
         $db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($fs->version, 'fs_ver'));
-
-        $page->assign('done', $done);
-
-        $db->inTransaction() && $db->commit();
         $installed_version = $fs->version;
     }
+
+    $page->assign('done', $done);
+
+    $db->inTransaction() && $db->commit();
 }
 foreach ($folders as $folder) {
     if (version_compare($installed_version, $folder, '<')) {
@@ -137,7 +136,7 @@ function execute_upgrade_file($folder, $installed_version)
             }
         }
     }
-    
+
     // Now a mix of XML schema files and PHP upgrade scripts
     if (!isset($upgrade_info[$type])) {
         die('#1 Bad upgrade.info file.');
@@ -145,7 +144,10 @@ function execute_upgrade_file($folder, $installed_version)
 
     // files which are already done
     $done = $db->x->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', null, 'upgrader_done');
-    $done = ($done) ? unserialize($done) : array();
+    $done = ($done) ? @unserialize($done) : array();
+    if (!is_array($done)) {
+        $done = array();
+    }
 
     ksort($upgrade_info[$type]);
     foreach ($upgrade_info[$type] as $file) {
@@ -166,9 +168,12 @@ function execute_upgrade_file($folder, $installed_version)
             $schema =& MDB2_Schema::factory($db);
             $schema->setOption('force_defaults', false);
             $previous_schema = $schema->getDefinitionFromDatabase();
+            if (PEAR::isError($previous_schema)) {
+                return $previous_schema;
+            }
             $res = $schema->updateDatabase($upgrade_path . '/' . $file, $previous_schema,
                                            array('db_prefix' => $conf['database']['dbprefix'], 'db_name' => $conf['database']['dbname']));
-      
+
             if (PEAR::isError($res)) {
                 return $res;
             }

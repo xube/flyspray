@@ -32,7 +32,9 @@
   <?php endforeach; ?>
   </ul>
   <?php endif; ?>
-  <div class="commenttext">{!$this->text->render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'], explode(' ', $comment['syntax_plugins']))}</div></div>
+  <div class="commenttext">
+    {!$this->text->render($comment['comment_text'], false, 'comm', $comment['comment_id'], $comment['content'], explode(' ', $comment['syntax_plugins']))}
+  </div></div>
 
   <?php if (isset($comment_attachments[$comment['comment_id']])) {
             $this->display('common.attachments.tpl', 'attachments', $comment_attachments[$comment['comment_id']]);

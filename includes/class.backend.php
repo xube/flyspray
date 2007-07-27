@@ -251,7 +251,7 @@ class Backend
             if (!$user->can_add_to_assignees($row) && !$do) {
                 continue;
             }
-            
+
             $fields = array('user_id'=> array('value' => $user->id, 'key' => true),
                             'task_id'=> array('value' => $row['task_id']), 'key' => true);
             $db->Replace('{assigned}', $fields);
@@ -325,14 +325,19 @@ class Backend
         }
 
         $time = time();
+        $plugins = trim(implode(' ', array_get($args, 'detailed_desc_syntax_plugins', array())));
+        if (!$plugins) {
+            $plugins = $proj->prefs['syntax_plugins'];
+        }
 
-        $db->x->autoExecute('{tasks}',array('project_id'=> $proj->id, 
-                                           'item_summary'=> array_get($args, 'item_summary'),
-                                           'detailed_desc'=> array_get($args, 'detailed_desc'), 
-                                           'mark_private' => intval($user->can_change_private($task) && array_get($args, 'mark_private')),
-                                           'last_edited_by'=> intval($user->id), 
-                                           'last_edited_time'=> $time, 
-                                           'percent_complete'=> array_get($args, 'percent_complete')), 
+        $db->x->autoExecute('{tasks}', array('project_id'     => $proj->id,
+                                           'item_summary'     => array_get($args, 'item_summary'),
+                                           'detailed_desc'    => array_get($args, 'detailed_desc'),
+                                           'mark_private'     => intval($user->can_change_private($task) && array_get($args, 'mark_private')),
+                                           'last_edited_by'   => intval($user->id),
+                                           'last_edited_time' => $time,
+                                           'syntax_plugins'   => $plugins,
+                                           'percent_complete' => array_get($args, 'percent_complete')),
                                            MDB2_AUTOQUERY_UPDATE, sprintf('task_id = %d', $task['task_id']));
         // Now the custom fields
         foreach ($proj->fields as $field) {
@@ -361,7 +366,7 @@ class Backend
                                 'task_id'=> array('value' => $task['task_id'], 'key' => true));
                 $db->Replace('{assigned}', $fields);
             }
-            
+
             // Log to task history
             Flyspray::logEvent($task['task_id'], 14, implode(' ', $assignees), implode(' ', $task['assigned_to']), '', $time);
 
@@ -425,14 +430,13 @@ class Backend
 
         $time =  !is_numeric($time) ? time() : $time ;
 
-        $db->x->autoExecute('{comments}', array('task_id' => $task['task_id'], 'date_added'=> $time, 'last_edited_time'=> $time, 
-                                                'user_id' => $user->id, 'comment_text' => $comment_text, 'syntax_plugins' => implode(' ', $syntax_plugins)));
+        if (!count($syntax_plugins)) {
+            $syntax_plugins = explode(' ', $proj->prefs['syntax_plugins']);
+        }
 
-        $cid = $db->x->GetOne('SELECT  comment_id
-                              FROM  {comments}
-                             WHERE  task_id = ?
-                          ORDER BY  comment_id DESC',
-                            null, $task['task_id']);
+        $db->x->autoExecute('{comments}', array('task_id' => $task['task_id'], 'date_added'=> $time, 'last_edited_time'=> $time,
+                                                'user_id' => $user->id, 'comment_text' => $comment_text, 'syntax_plugins' => implode(' ', $syntax_plugins)));
+        $cid = $db->lastInsertID();
 
         Flyspray::logEvent($task['task_id'], 4, $cid);
 
@@ -498,17 +502,12 @@ class Backend
              $_FILES[$source]['type'][$key] = $type;
             }// we can try even more, however, far too much code is needed.
 
-            $db->x->autoExecute('{attachments}', array('task_id' => $task_id, 'comment_id' => $comment_id, 
+            $db->x->autoExecute('{attachments}', array('task_id' => $task_id, 'comment_id' => $comment_id,
                                                     'file_name' => $fname, 'file_type' => $_FILES[$source]['type'][$key],
                                                     'file_size'=> $_FILES[$source]['size'][$key], 'orig_name' => $_FILES[$source]['name'][$key],
                                                     'added_by' => $user->id, 'date_added' => time()));
-
             // Fetch the attachment id for the history log
-            $aid = $db->x->GetOne('SELECT  attachment_id
-                                  FROM  {attachments}
-                                 WHERE  task_id = ?
-                              ORDER BY  attachment_id DESC',
-                                 null, $task_id);
+            $aid = $db->lastInsertID();
             Flyspray::logEvent($task_id, 7, $aid, $_FILES[$source]['name'][$key]);
         }
 
@@ -630,7 +629,7 @@ class Backend
         // Add user to project groups
         $sql = $db->x->getAll('SELECT anon_group FROM {projects} WHERE anon_group != 0');
 
-        if(count($sql)) {
+        if (count($sql)) {
             $stmt = $db->x->autoPrepare('{users_in_groups}', array('user_id', 'group_id'));
             foreach($sql as $row) {
                 $stmt->execute(array($uid, $row['anon_group']));
@@ -658,9 +657,9 @@ class Backend
                         'only_watched' => null);
 
 
-        foreach($varnames as $tmpname) {
+        foreach ($varnames as $tmpname) {
 
-            if($tmpname == 'iwatch') {
+            if ($tmpname == 'iwatch') {
 
                 $tmparr = array('only_watched' => '1');
 
@@ -668,22 +667,20 @@ class Backend
 
                 $tmparr = array('dev'=> $uid);
 
-            } elseif($tmpname == 'iopened') {
+            } elseif ($tmpname == 'iopened') {
 
                 $tmparr = array('opened'=> $uid);
             }
 
             $$tmpname = $tmparr + $toserialize;
         }
-        
+
         // Now give him his default searches
         $stmt = $db->x->autoPrepare('{searches}', array('user_id', 'name', 'search_string', 'time'));
-        
-        $params = array( 
-                        array($uid, L('taskswatched'), serialize($iwatch), time()),
-                        array($uid, L('assignedtome'), serialize($atome), time()), 
-                        array($uid, L('tasksireported'), serialize($iopened), time()),
-                       );
+
+        $params = array(array($uid, L('taskswatched'), serialize($iwatch), time()),
+                        array($uid, L('assignedtome'), serialize($atome), time()),
+                        array($uid, L('tasksireported'), serialize($iopened), time()));
 
         $db->x->executeMultiple($stmt, $params);
         $stmt->free();
@@ -824,7 +821,7 @@ class Backend
                             'how_often' => array('value' => $how_often, 'key' => true),
                             'reminder_message' => array('value' => $message, 'key' => true));
             $sql = $db->Replace('{reminders}', $fields);
-            
+
             if(!$sql) {
                 // query has failed :(
                 return false;
@@ -890,9 +887,13 @@ class Backend
 
         $sql_params[] = 'closure_comment';
         $sql_values[] = '';
-        
+
         $sql_params[] = 'syntax_plugins';
-        $sql_values[] = implode(' ', array_get($args, 'detailed_desc_syntax_plugins', array()));
+        $plugins = trim(implode(' ', array_get($args, 'detailed_desc_syntax_plugins', array())));
+        if (!$plugins) {
+            $plugins = $proj->prefs['syntax_plugins'];
+        }
+        $sql_values[] = $plugins;
 
         // Token for anonymous users
         $token = '';
@@ -905,15 +906,11 @@ class Backend
         $sql_params[] = 'anon_email';
         $sql_values[] = array_get($args, 'anon_email', '');
 
-        $sql_cols = array_merge(array('task_id', 'date_opened', 'last_edited_time', 'project_id',
+        $sql_cols = array_merge(array('date_opened', 'last_edited_time', 'project_id',
                                       'item_summary', 'detailed_desc', 'opened_by', 'percent_complete'), $sql_params);
 
-        $task_id = $db->x->GetOne('SELECT  MAX(task_id)+1 FROM {tasks}');
-        $task_id = $task_id ? $task_id : 1;
-        //now, $task_id is always the first element of $sql_values
-        array_unshift($sql_values, $task_id);
-
         $db->x->autoExecute('{tasks}', array_combine($sql_cols, $sql_values));
+        $task_id = $db->lastInsertID();
 
         // Per project task ID
         $prefix_id = $db->x->GetOne('SELECT MAX(prefix_id)+1 FROM {tasks} WHERE project_id = ?', null, $proj->id);
@@ -1041,14 +1038,14 @@ class Backend
             return false;
         }
 
-        $db->x->autoExecute('{tasks}',array('date_closed'=> time(), 
-                                           'closed_by'=> $user->id, 
-                                           'closure_comment'=> $comment, 
+        $db->x->autoExecute('{tasks}',array('date_closed'=> time(),
+                                           'closed_by'=> $user->id,
+                                           'closure_comment'=> $comment,
                                            'is_closed'=> 1,
-                                           'resolution_reason'=> $reason, 
-                                           'last_edited_time'=> time(), 
-                                           'last_edited_by'=> $user->id, 
-                                           'percent_complete'=> ((bool) $mark100) * 100), 
+                                           'resolution_reason'=> $reason,
+                                           'last_edited_time'=> time(),
+                                           'last_edited_by'=> $user->id,
+                                           'percent_complete'=> ((bool) $mark100) * 100),
                            MDB2_AUTOQUERY_UPDATE, sprintf('task_id = %d', $task_id));
 
         if ($mark100) {
@@ -1059,7 +1056,7 @@ class Backend
         Flyspray::logEvent($task_id, 2, $reason, $comment);
 
         // If there's an admin request related to this, close it
-        $db->x->autoExecute('{admin_requests}', array('resolved_by'=> $user->id, 'time_resolved'=> time()), 
+        $db->x->autoExecute('{admin_requests}', array('resolved_by'=> $user->id, 'time_resolved'=> time()),
                             MDB2_AUTOQUERY_UPDATE, sprintf('task_id = %d AND request_type = 1', $task_id));
 
         // duplicate
@@ -1206,7 +1203,7 @@ class Backend
         $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'project'), array_keys($order_keys))];
         $order_column[0] = sprintf($order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')));
         $order_column[1] = sprintf($order_column[1], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));
-        
+
         $sortorder  = sprintf('%s, %s, t.task_id ASC', $order_column[0], $order_column[1]);
 
         // search custom fields

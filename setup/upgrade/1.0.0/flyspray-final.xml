@@ -1397,6 +1397,13 @@
     <default>0</default>
    </field>
 
+   <field>
+    <name>syntax_plugins</name>
+    <type>text</type>
+    <notnull>false</notnull>
+    <length>255</length>
+   </field>
+
    <index>
     <name>notes_user</name>
     <field>
@@ -2381,7 +2388,7 @@
     <notnull>true</notnull>
 
    </field>
-   
+
    <field>
     <name>syntax_plugins</name>
     <type>text</type>
@@ -2696,7 +2703,7 @@
     <notnull>true</notnull>
     <default>1</default>
    </field>
-   
+
   <field>
     <name>syntax_plugins</name>
     <type>text</type>

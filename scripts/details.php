@@ -48,7 +48,7 @@ class FlysprayDoDetails extends FlysprayDo
         }
 
         $task_id = Flyspray::GetTaskId(Post::val('dep_task_id'));
-        
+
         if (!$task_id) {
             return array(ERROR_RECOVER, L('formnotcomplete'));
         }
@@ -201,7 +201,7 @@ class FlysprayDoDetails extends FlysprayDo
         $request = $db->x->getRow('SELECT * FROM {admin_requests} WHERE  task_id = ? AND request_type = ?',
                                    array($task['task_id'], 2));
 
-        $db->x->autoExecute('{comments}', array('task_id'=> $task['task_id'], 'date_added'=> time(), 
+        $db->x->autoExecute('{comments}', array('task_id'=> $task['task_id'], 'date_added'=> time(),
                                               'last_edited_time'=> time(), 'user_id' => $request['submitted_by'], 'comment_text'=> $request['reason_given']));
         // delete existing PM request
         $db->x->execParam('UPDATE  {admin_requests}
@@ -239,8 +239,12 @@ class FlysprayDoDetails extends FlysprayDo
         }
 
         $where = '';
+        $plugins = (array) Post::val('comment_text_syntax_plugins');
+        if (!count($plugins)) {
+            $plugins = explode(' ', $proj->prefs['syntax_plugins']);
+        }
 
-        $params = array(Post::val('comment_text'), time(), implode(' ', (array) Post::val('comment_text_syntax_plugins')),
+        $params = array(Post::val('comment_text'), time(), implode(' ', $plugins),
                         Post::val('comment_id'), $task['task_id']);
 
         if ($user->perms('edit_own_comments') && !$user->perms('edit_comments')) {
@@ -268,9 +272,9 @@ class FlysprayDoDetails extends FlysprayDo
         if (!$user->can_edit_task($task)) {
             return array(ERROR_PERMS);
         }
-        
+
         $task_id = Flyspray::GetTaskId(Post::val('related_task'));
-        
+
         $pid = $db->x->GetOne('SELECT  project_id
                               FROM  {tasks}
                              WHERE  task_id = ?',
@@ -378,7 +382,7 @@ class FlysprayDoDetails extends FlysprayDo
 
         $stmt = $db->prepare('DELETE from {attachments} WHERE attachment_id = ?', array('integer'), MDB2_PREPARE_MANIP);
         foreach ($attachments as $attachment) {
-            
+
             if($stmt->execute($attachment['attachment_id'])) {
                 @unlink(FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $attachment['file_name']);
                 Flyspray::logEvent($attachment['task_id'], 8, $attachment['orig_name']);
@@ -468,13 +472,13 @@ class FlysprayDoDetails extends FlysprayDo
 
         return array(SUBMIT_OK, L('taskmadepublicmsg'));
     }
-    
+
     function action_requestreopen($task) { return FlysprayDoDetails::action_requestclose($task); }
-    
+
     function action_requestclose($task)
     {
         global $proj, $user, $db;
-        
+
         if (Post::val('action') == 'requestclose') {
             Flyspray::AdminRequest(1, $proj->id, $task['task_id'], $user->id, Post::val('reason_given'));
             Flyspray::logEvent($task['task_id'], 20, Post::val('reason_given'));
@@ -570,7 +574,7 @@ class FlysprayDoDetails extends FlysprayDo
                 $parent = $db->x->GetCol('SELECT  category_name
                                          FROM  {list_category}
                                         WHERE  lft < ? AND rgt > ? AND list_id  = ? AND lft <> 1
-                                     ORDER BY  lft ASC', null, 
+                                     ORDER BY  lft ASC', null,
                                      array($cat['lft'], $cat['rgt'], $field->prefs['list_id']));
                 $parents[$field->id] = $parent;
             }
@@ -605,7 +609,7 @@ class FlysprayDoDetails extends FlysprayDo
 
             $watching     =  $db->x->GetOne('SELECT  COUNT(*)
                                             FROM  {notifications}
-                                           WHERE  task_id = ?  AND user_id = ?', null, 
+                                           WHERE  task_id = ?  AND user_id = ?', null,
                                           array($this->task['task_id'], $user->id));
 
             // Check for cached version
@@ -702,7 +706,7 @@ class FlysprayDoDetails extends FlysprayDo
                                           WHERE type = ? AND project_id = ? AND r.this_task = ? AND r.related_type = ?
                                        ORDER BY last_updated DESC',
                                          null, array('svn', $proj->id, $this->task['task_id'], RELATED_SVN));
-                
+
                 for ($i = 0; $i < count($svnlog); ++$i) {
                     $svnlog[$i] = unserialize($svnlog[$i]['content']);
                     $svnlog[$i]['comment'] = $page->text->render(trim($svnlog[$i]['comment']), true);

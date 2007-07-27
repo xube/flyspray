@@ -572,7 +572,7 @@ class Flyspray
                               'old_value'=> (string) $oldvalue, 
                               'new_value'=> $newvalue);
 
-        if($db->x->autoExecute('{history}', $query_params)) {
+        if (!Pear::isError($db->x->autoExecute('{history}', $query_params))) {
             return true;
          }
 

@@ -60,9 +60,13 @@ class TextFormatter
     function render($text, $onlyfs = false, $type = null, $id = null, $instructions = null, $plugins = array())
     {
         global $fs, $db, $proj;
-        
+
         $classes = $this->classes;
-        
+
+        // [BC] no plugins = project default
+        if (!count($plugins)) {
+            $plugins = explode(' ', $proj->prefs['syntax_plugins']);
+        }
         // remove deselected syntax plugins
         if (count($plugins)) {
             foreach ($classes as $key => $class) {
@@ -71,7 +75,11 @@ class TextFormatter
                 }
             }
         }
-        
+        // hrm...no plugins being used? that would also result in *zero* escaping
+        if (!count($classes)) {
+            return Filters::noXSS($text);
+        }
+
         // get from cache or save
         if (is_string($instructions) && strlen($instructions) > 0) {
             $text = $instructions;
@@ -121,7 +129,7 @@ class TextFormatter
             $return .= Filters::noXSS($content);
         }
         $return .= '</textarea>';
-        
+
         // does the user have any personal preference?
         if (!count($plugins)) {
             $plugins = explode(' ', $user->infos['syntax_plugins']);
@@ -130,7 +138,7 @@ class TextFormatter
         if (!count($plugins)) {
             $plugins = explode(' ', $proj->prefs['syntax_plugins']);
         }
-        
+
         return str_replace('%id', $name, $this->htmlbefore . $page->fetch('pluginoptions.tpl', 'plugins', $plugins))
                 . $return  .
                str_replace('%id', $name, $this->htmlafter);

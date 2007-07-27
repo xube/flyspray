@@ -62,7 +62,7 @@ class FlysprayDoMyprofile extends FlysprayDo
         $page->assign('saved_notes', $db->x->getAll('SELECT * FROM {notes} WHERE user_id = ?', null, $user->id));
 
         if (Req::num('note_id') && Get::val('action') != 'deletenote') {
-            $note = $db->x->getRow('SELECT note_id, message_subject, message_body, n.last_updated, content
+            $note = $db->x->getRow('SELECT note_id, message_subject, message_body, n.last_updated, content, n.syntax_plugins
                                    FROM {notes} n
                               LEFT JOIN {cache} c ON note_id = topic AND type = ? AND n.last_updated < c.last_updated
                                   WHERE user_id = ? AND note_id = ?', null,
@@ -85,10 +85,14 @@ class FlysprayDoMyprofile extends FlysprayDo
     function action_addnote()
     {
         global $db, $user;
-        $db->x->autoExecute('{notes}', array('message_subject'=> Post::val('message_subject'), 
-                                             'message_body' => Post::val('message_body'), 
-                                             'last_updated' => time(), 
-                                             'user_id' => $user->id));
+        if (!Post::val('message_subject')) {
+            return array(ERROR_RECOVER, L('enternotesubject'));
+        }
+        $db->x->autoExecute('{notes}', array('message_subject'=> Post::val('message_subject'),
+                                             'message_body' => Post::val('message_body'),
+                                             'last_updated' => time(),
+                                             'user_id' => $user->id,
+                                             'syntax_plugins' => implode(' ', (array) Post::val('message_body_syntax_plugins'))));
 
         return array(SUBMIT_OK, L('noteadded'));
     }
@@ -109,15 +113,20 @@ class FlysprayDoMyprofile extends FlysprayDo
     function action_updatenote()
     {
         global $db, $user;
-        $num = $db->x->autoExecute('{notes}', array('message_subject'=> Post::val('message_subject'), 
-                                                  'message_body'=> Post::val('message_body'), 
-                                                  'last_updated'=> time()), 
-                                   MDB2_AUTOQUERY_UPDATE, sprintf('note_id = %d AND user_id = %d', Post::val('note_id'), $user->id));
+        if (!Post::val('message_subject')) {
+            return array(ERROR_RECOVER, L('enternotesubject'));
+        }
+
+        $num = $db->x->autoExecute('{notes}', array('message_subject'=> Post::val('message_subject'),
+                                                    'message_body'=> Post::val('message_body'),
+                                                    'last_updated'=> time(),
+                                                    'syntax_plugins' => implode(' ', Post::val('message_body_syntax_plugins'))),
+                                   MDB2_AUTOQUERY_UPDATE, sprintf('note_id = %d AND user_id = %d', Post::num('note_id'), $user->id));
 
         if ($num) {
-            return array(SUBMIT_OK, L('noteupdated'));
+            return array(SUBMIT_OK, L('noteupdated'), CreateUrl(array('myprofile', 'notes'), array('note_id' => Post::val('note_id'))));
         } else {
-            return array(ERROR_RECOVER, L('notedoesnotexist'));
+            return array(ERROR_INPUT, L('notedoesnotexist'));
         }
     }
 

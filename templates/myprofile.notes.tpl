@@ -8,11 +8,7 @@
   <td>{formatDate($note['last_updated'])}</td>
   <td>
     <a href="{CreateUrl(array('myprofile', 'notes'), array('note_id' => $note['note_id']))}">
-      <?php if ($note['message_subject'] == ''): ?>
-      {L('nosubject')}
-      <?php else: ?>
       {$note['message_subject']}
-      <?php endif; ?>
     </a>
   </td>
   <td><a href="{CreateUrl(array('myprofile', 'notes'), array('note_id' => $note['note_id']))}">View</a>
@@ -24,30 +20,27 @@
 </table>
 <?php endif; ?>
 
-<?php if (isset($show_note) && !Get::val('edit')): ?>
+<?php if (isset($show_note) && !Req::val('edit')): ?>
 <div id="mynote">
 <div id="note_subject">
   <h3>
-    <?php if ($show_note['message_subject'] == ''): ?>
-    {L('nosubject')}
-    <?php else: ?>
     {$show_note['message_subject']}
-    <?php endif; ?>
   </h3>
   <div class="fade" id="note_updated">{formatDate($show_note['last_updated'], true)}</div>
 </div>
-{!$this->text->render($show_note['message_body'], false, 'note', $show_note['note_id'], $show_note['content'])}
+{!$this->text->render($show_note['message_body'], false, 'note', $show_note['note_id'], $show_note['content'], explode(' ', $show_note['syntax_plugins']))}
 </div>
 <?php else: ?>
 <form method="post" action="{CreateUrl(array('myprofile', 'notes'))}">
 <div>
   <label for="message_subject">{L('notesubject')}</label>
   <input id="message_subject" size="50" type="text" name="message_subject" class="text" value="{(isset($show_note) ? $show_note['message_subject'] : Post::val('message_subject'))}" />
-  {!$this->text->textarea('message_body', 10, 70, array(), (isset($show_note) ? $show_note['message_body'] : Post::val('message_body')))}
+  {!$this->text->textarea('message_body', 10, 70, array(), (isset($show_note) ? $show_note['message_body'] : Post::val('message_body')), (isset($show_note) ? explode(' ', $show_note['syntax_plugins']) : array()))}
   <button type="submit">{(isset($show_note) ? L('updatenote') : L('addnote'))}</button>
 
   <?php if (isset($show_note)): ?>
   <input type="hidden" name="action" value="updatenote" />
+  <input type="hidden" name="edit" value="1" />
   <input type="hidden" name="note_id" value="{$show_note['note_id']}" />
   <?php else: ?>
   <input type="hidden" name="action" value="addnote" />
