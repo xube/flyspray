@@ -200,14 +200,15 @@ class FlysprayDoDetails extends FlysprayDo
         // add comment of PM request to comment page if accepted
         $request = $db->x->getRow('SELECT * FROM {admin_requests} WHERE  task_id = ? AND request_type = ?',
                                    array($task['task_id'], 2));
-
-        $db->x->autoExecute('{comments}', array('task_id'=> $task['task_id'], 'date_added'=> time(),
-                                              'last_edited_time'=> time(), 'user_id' => $request['submitted_by'], 'comment_text'=> $request['reason_given']));
-        // delete existing PM request
-        $db->x->execParam('UPDATE  {admin_requests}
-                         SET  resolved_by = ?, time_resolved = ?
-                       WHERE  request_id = ?',
-                      array($user->id, time(), $request['request_id']));
+        if ($request) {
+            $db->x->autoExecute('{comments}', array('task_id'=> $task['task_id'], 'date_added'=> time(),
+                                             'last_edited_time'=> time(), 'user_id' => $request['submitted_by'], 'comment_text'=> $request['reason_given']));
+            // delete existing PM request
+            $db->x->execParam('UPDATE  {admin_requests}
+                             SET  resolved_by = ?, time_resolved = ?
+                           WHERE  request_id = ?',
+                          array($user->id, time(), $request['request_id']));
+        }
 
         Flyspray::logEvent($task['task_id'], 13);
 
