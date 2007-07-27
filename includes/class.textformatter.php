@@ -64,11 +64,11 @@ class TextFormatter
         $classes = $this->classes;
 
         // [BC] no plugins = project default
-        if (!count($plugins)) {
+        if (!count($plugins) || !$plugins[0]) {
             $plugins = explode(' ', $proj->prefs['syntax_plugins']);
         }
         // remove deselected syntax plugins
-        if (count($plugins)) {
+        if (count($plugins) && $plugins[0]) {
             foreach ($classes as $key => $class) {
                 if (!in_array(strtolower(get_class($class)), array_map('strtolower', $plugins))) {
                     unset($classes[$key]);

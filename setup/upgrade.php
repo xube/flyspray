@@ -186,45 +186,6 @@ function execute_upgrade_file($folder, $installed_version)
     return true;
 }
 
- /**
-  * Delete a file, or a folder and its contents
-  *
-  * @author      Aidan Lister <aidan@php.net>
-  * @version     1.0.3
-  * @link        http://aidanlister.com/repos/v/function.rmdirr.php
-  * @param       string   $dirname    Directory to delete
-  * @return      bool     Returns TRUE on success, FALSE on failure
-  * @license     Public Domain.
-  */
-
- function rmdirr($dirname)
- {
-     // Sanity check
-     if (!file_exists($dirname)) {
-         return false;
-     }
-
-     // Simple delete for a file
-     if (is_file($dirname) || is_link($dirname)) {
-         return unlink($dirname);
-     }
-
-     // Loop through the folder
-     $dir = dir($dirname);
-     while (false !== $entry = $dir->read()) {
-         // Skip pointers
-         if ($entry == '.' || $entry == '..') {
-             continue;
-         }
-           // Recurse
-        rmdirr($dirname . DIRECTORY_SEPARATOR . $entry);
-     }
-     // Clean up
-     $dir->close();
-     return rmdir($dirname);
- }
-
-
 class ConfUpdater
 {
     var $old_config = array();

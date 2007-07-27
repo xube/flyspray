@@ -23,6 +23,9 @@ class FlysprayDoAuthenticate extends FlysprayDo
         $username = Backend::clean_username(Post::val('user_name'));
         $password = Post::val('password');
 
+        // restore previous project cookie
+        Flyspray::setCookie('flyspray_project', Post::num('project_id'));
+
         // Run the username and password through the login checker
         if ( ($user_id = Flyspray::checkLogin($username, $password)) < 1) {
             if ($fs->prefs['ldap_enabled']) {
@@ -74,9 +77,9 @@ class FlysprayDoAuthenticate extends FlysprayDo
 
             $_SESSION['failed_login'] = Post::val('user_name');
             if ($user_id === -2) {
-                return array(ERROR_RECOVER, L('usernotexist'), $baseurl);
+                return array(ERROR_RECOVER, L('usernotexist'), Post::val('return_to'));
             } elseif ($user_id === -1) {
-                return array(ERROR_RECOVER, L('error23'), $baseurl);
+                return array(ERROR_RECOVER, L('error23'), Post::val('return_to'));
             } elseif ($user_id == 0) {
                 // just some extra check here so that never ever an account can get locked when it's already disabled
                 // ... that would make it easy to get enabled
@@ -87,9 +90,9 @@ class FlysprayDoAuthenticate extends FlysprayDo
                                    array(time() + 60 * $fs->prefs['lock_for'], LOGIN_ATTEMPTS, $username));
 
                 if ($num) {
-                    return array(ERROR_RECOVER, sprintf(L('error71'), $fs->prefs['lock_for']), CreateUrl('index'));
+                    return array(ERROR_RECOVER, sprintf(L('error71'), $fs->prefs['lock_for']), Post::val('return_to'));
                 } else {
-                    return array(ERROR_RECOVER, L('error7'), $baseurl);
+                    return array(ERROR_RECOVER, L('error7'), Post::val('return_to'));
                 }
             }
         }
@@ -117,8 +120,6 @@ class FlysprayDoAuthenticate extends FlysprayDo
             }
 
             $db->x->execParam('UPDATE {users} SET login_attempts = 0 WHERE user_id = ?', $user->id);
-            // restore previous project cookie
-            Flyspray::setCookie('flyspray_project', Post::num('project_id'));
             return array(SUBMIT_OK, L('loginsuccessful'), Post::val('return_to'));
         }
     }
