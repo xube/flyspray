@@ -17,6 +17,12 @@ class FlysprayDoDepends extends FlysprayDo
 {
     var $task = array();
 
+    /**
+     * _onsubmit 
+     * 
+     * @access protected
+     * @return array
+     */
     function _onsubmit()
     {
         global $conf;
@@ -27,6 +33,12 @@ class FlysprayDoDepends extends FlysprayDo
         return array(NO_SUBMIT);
     }
 
+    /**
+     * is_accessible 
+     * 
+     * @access public
+     * @return bool
+     */
     function is_accessible()
     {
         global $user;
@@ -35,10 +47,22 @@ class FlysprayDoDepends extends FlysprayDo
                 && $user->can_view_task($this->task);
     }
 
+    /**
+     * is_projectlevel 
+     * 
+     * @access public
+     * @return void
+     */
     function is_projectlevel() {
         return true;
     }
 
+    /**
+     * show 
+     * 
+     * @access public
+     * @return void
+     */
     function show()
     {
         global $user, $page, $fs, $conf, $db, $proj, $baseurl;

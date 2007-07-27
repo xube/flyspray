@@ -9,14 +9,36 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
+/**
+ * FlysprayDoLostpw 
+ * 
+ * @uses FlysprayDo
+ * @package Flyspray 
+ * @version $Id$
+ * @copyright 2007
+ * @author Florian Schmitz <floele@flyspray.org> 
+ */
+
 class FlysprayDoLostpw extends FlysprayDo
 {
+    /**
+     * is_accessible 
+     * 
+     * @access public
+     * @return void
+     */
     function is_accessible()
     {
         global $user;
         return $user->isAnon();
     }
 
+    /**
+     * action_chpass 
+     * 
+     * @access public
+     * @return array
+     */
     function action_chpass()
     {
         global $db;
@@ -38,6 +60,12 @@ class FlysprayDoLostpw extends FlysprayDo
         return array(SUBMIT_OK, L('passchanged'), $baseurl);
     }
 
+    /**
+     * action_sendmagic 
+     * 
+     * @access public
+     * @return array
+     */
     function action_sendmagic()
     {
         global $db, $baseurl;
@@ -55,8 +83,7 @@ class FlysprayDoLostpw extends FlysprayDo
             return array(ERROR_RECOVER, L('usernotexist'));
         }
 
-        //no microtime(), time,even with microseconds is predictable ;-)
-        $magic_url    = md5(uniqid(mt_rand(), true));
+        $magic_url = md5(uniqid(mt_rand(), true));
 
         // Insert the random "magic url" into the user's profile
         $db->x->execParam('UPDATE {users}
@@ -69,11 +96,23 @@ class FlysprayDoLostpw extends FlysprayDo
         return array(SUBMIT_OK, L('magicurlsent'));
     }
 
+    /**
+     * _onsubmit 
+     * 
+     * @access protected
+     * @return array
+     */
     function _onsubmit()
     {
         return $this->handle('action', Post::val('action'));
     }
 
+    /**
+     * show 
+     * 
+     * @access public
+     * @return void
+     */
     function show()
     {
         global $page, $fs, $db;

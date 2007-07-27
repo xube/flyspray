@@ -109,11 +109,10 @@ class FlysprayDoMyprofile extends FlysprayDo
     function action_updatenote()
     {
         global $db, $user;
-        $num = $db->x->execParam('UPDATE {notes}
-                              SET message_subject = ?, message_body = ?, last_updated = ?
-                            WHERE note_id = ? AND user_id = ?',
-                          array(Post::val('message_subject'), Post::val('message_body'), time(),
-                                Post::val('note_id'), $user->id));
+        $num = $db->x->autoExecute('{notes}', array('message_subject'=> Post::val('message_subject'), 
+                                                  'message_body'=> Post::val('message_body'), 
+                                                  'last_updated'=> time()), 
+                                   MDB2_AUTOQUERY_UPDATE, sprintf('note_id = %d AND user_id = %d', Post::val('note_id'), $user->id));
 
         if ($num) {
             return array(SUBMIT_OK, L('noteupdated'));

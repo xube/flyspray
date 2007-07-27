@@ -110,11 +110,9 @@ class FlysprayDoPm extends FlysprayDoAdmin
         $args[] = time();
         $cols[] = 'default_cat_owner';
         $args[] =  Flyspray::username_to_id(Post::val('default_cat_owner'));
-        $args[] = $proj->id;
 
-        $db->x->execParam("UPDATE  {projects}
-                         SET  ".join('=?, ', $cols)."=?
-                       WHERE  project_id = ?", $args);
+        $db->x->autoExecute('{projects}', array_combine($cols, $args), MDB2_AUTOQUERY_UPDATE, sprintf('project_id = %d', $proj->id));
+                        
 
         $db->x->execParam('UPDATE {projects} SET visible_columns = ? WHERE project_id = ?',
                            array(trim(Post::val('visible_columns')), $proj->id));

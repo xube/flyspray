@@ -107,19 +107,10 @@ function &NewDatabase($conf = array())
 
     $db->setFetchMode(MDB2_FETCHMODE_ASSOC);
 
-    /*
-     * this will work only in the following systems/PHP versions
-     *
-     * PHP4 and 5 with postgresql
-     * PHP5 with "mysqli" or "pdo_mysql" driver (not "mysql" driver)
-     * using mysql 4.1.11 or later and mysql 5.0.6 or later.
-     *
-     * in the rest of the world, it will silently return FALSE.
-     */
 
     $db->setOption('debug', true);
     $db->setOption('debug_handler', '_table_prefix');
-
+    $db->setOption('quote_identifier', true);
     // upgrader can handle that on its own
     if (!defined('IN_UPGRADER') && !defined('IN_SETUP')) {
         $db->setErrorHandling(PEAR_ERROR_CALLBACK, 'show_dberror');

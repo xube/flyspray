@@ -8,8 +8,24 @@ if (!defined('IN_FS')) {
     die('Do not access this file directly.');
 }
 
+/**
+ * FlysprayDoExport 
+ * 
+ * @uses FlysprayDo
+ * @package 
+ * @version $Id$
+ * @copyright 2007
+ * @author Florian Schmitz <floele@flyspray.org> 
+ */
+
 class FlysprayDoExport extends FlysprayDo
 {
+    /**
+     * is_accessible 
+     * 
+     * @access public
+     * @return bool
+     */
     function is_accessible()
     {
         global $user, $proj;
@@ -19,10 +35,22 @@ class FlysprayDoExport extends FlysprayDo
         return true;
     }
 
+    /**
+     * is_projectlevel 
+     * 
+     * @access public
+     * @return void
+     */
     function is_projectlevel() {
         return true;
     }
 
+    /**
+     * show 
+     * 
+     * @access public
+     * @return void
+     */
     function show()
     {
         global $proj, $page, $fs;

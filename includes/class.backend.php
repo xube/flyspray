@@ -326,17 +326,14 @@ class Backend
 
         $time = time();
 
-        $db->x->execParam('UPDATE  {tasks}
-                         SET  project_id = ?, item_summary = ?,
-                              detailed_desc = ?, mark_private = ?,
-                              last_edited_by = ?, syntax_plugins = ?,
-                              last_edited_time = ?, percent_complete = ?
-                       WHERE  task_id = ?',
-                  array($proj->id, array_get($args, 'item_summary'), array_get($args, 'detailed_desc'),
-                        intval($user->can_change_private($task) && array_get($args, 'mark_private')),
-                        intval($user->id), implode(' ', array_get($args, 'detailed_desc_syntax_plugins', array())),
-                        $time, array_get($args, 'percent_complete'), $task['task_id']));
-
+        $db->x->autoExecute('{tasks}',array('project_id'=> $proj->id, 
+                                           'item_summary'=> array_get($args, 'item_summary'),
+                                           'detailed_desc'=> array_get($args, 'detailed_desc'), 
+                                           'mark_private' => intval($user->can_change_private($task) && array_get($args, 'mark_private')),
+                                           'last_edited_by'=> intval($user->id), 
+                                           'last_edited_time'=> $time, 
+                                           'percent_complete'=> array_get($args, 'percent_complete')), 
+                                           MDB2_AUTOQUERY_UPDATE, sprintf('task_id = %d', $task['task_id']));
         // Now the custom fields
         foreach ($proj->fields as $field) {
             $field_value = $field->read(array_get($args, 'field' . $field->id));
@@ -1044,12 +1041,15 @@ class Backend
             return false;
         }
 
-        $db->x->execParam('UPDATE  {tasks}
-                       SET  date_closed = ?, closed_by = ?, closure_comment = ?,
-                            is_closed = 1, resolution_reason = ?, last_edited_time = ?,
-                            last_edited_by = ?, percent_complete = ?
-                     WHERE  task_id = ?',
-                    array(time(), $user->id, $comment, $reason, time(), $user->id, ((bool) $mark100) * 100, $task_id));
+        $db->x->autoExecute('{tasks}',array('date_closed'=> time(), 
+                                           'closed_by'=> $user->id, 
+                                           'closure_comment'=> $comment, 
+                                           'is_closed'=> 1,
+                                           'resolution_reason'=> $reason, 
+                                           'last_edited_time'=> time(), 
+                                           'last_edited_by'=> $user->id, 
+                                           'percent_complete'=> ((bool) $mark100) * 100), 
+                           MDB2_AUTOQUERY_UPDATE, sprintf('task_id = %d', $task_id));
 
         if ($mark100) {
             Flyspray::logEvent($task_id, 3, 100, $task['percent_complete'], 'percent_complete');
@@ -1059,10 +1059,8 @@ class Backend
         Flyspray::logEvent($task_id, 2, $reason, $comment);
 
         // If there's an admin request related to this, close it
-        $db->x->execParam('UPDATE  {admin_requests}
-                       SET  resolved_by = ?, time_resolved = ?
-                     WHERE  task_id = ? AND request_type = ?',
-                    array($user->id, time(), $task_id, 1));
+        $db->x->autoExecute('{admin_requests}', array('resolved_by'=> $user->id, 'time_resolved'=> time()), 
+                            MDB2_AUTOQUERY_UPDATE, sprintf('task_id = %d AND request_type = 1', $task_id));
 
         // duplicate
         if ($reason == $fs->prefs['resolution_dupe']) {
