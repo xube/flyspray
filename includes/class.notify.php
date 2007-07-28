@@ -355,25 +355,33 @@ class Notifications
         $jids = array();
 
         // First we get the messages in chronological order...
-        $sql = $db->query('SELECT message_id, message_data FROM {notification_messages} ORDER BY time_created DESC');
-        while ($row = $sql->FetchRow())
-        {
-            $data = unserialize($row['message_data']);
-            // ...and after that the corresponding recipients
-            $rec = $db->getAll('SELECT nr.user_id, u.notify_type, u.notify_own, u.email_address,
+        $sql = $db->x->getAll('SELECT message_id, message_data FROM {notification_messages} ORDER BY time_created DESC');
+
+        if(count($sql)) {
+            $stmt_rec = $db->prepare('SELECT nr.user_id, u.notify_type, u.notify_own, u.email_address,
                                       u.jabber_id, u.notify_blacklist
                                  FROM {notification_recipients} nr
                             LEFT JOIN {users} u ON nr.user_id = u.user_id
                                 WHERE message_id = ?',
-                                null, $row['message_id']);
+                                array('integer'), MDB2_PREPARE_RESULT);
 
-            foreach ($rec as $msg) {
-                Notifications::add_to_list($emails, $jids, $msg, $data['notify_type']);
+            $stmt_del_rec = $db->x->autoPrepare('{notification_recipients}',null, MDB2_AUTOQUERY_DELETE, 'message_id = ?');
+            $stmt_del_messages = $db->x->autoPrepare('{notification_messages}', null, MDB2_AUTOQUERY_DELETE, 'message_id = ?');
+
+            foreach($sql as $row) {
+                 $data = unserialize($row['message_data']);
+                 $result_rec = $stmt_rec->execute($row['message_id']);
+
+                 foreach($result_rec->getAll() as  $msg) {
+                       Notifications::add_to_list($emails, $jids, $msg, $data['notify_type']);                       
+                 }
+                if (Notifications::send_now(array($emails, $jids), ADDRESS_DONE, 0, $row)) {
+                    $stmt_del_rec->execute($row['message_id']);
+                    $stmt_del_messages->execute($row['message_id']);
+                }              
             }
-
-            if (Notifications::send_now(array($emails, $jids), ADDRESS_DONE, 0, $row)) {
-                $db->x->execParam('DELETE FROM {notification_recipients} WHERE message_id = ?', $row['message_id']);
-                $db->x->execParam('DELETE FROM {notification_messages} WHERE message_id = ?', $row['message_id']);
+            foreach(array('stmt_rec', 'stmt_del_rec', 'stmt_del_messages') as $stmt) {
+                $$stmt->free();
             }
         }
     }

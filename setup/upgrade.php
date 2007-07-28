@@ -125,7 +125,7 @@ function execute_upgrade_file($folder, $installed_version)
         
         $existing = $db->x->GetCol('SELECT pref_name FROM {prefs}');
         // Add what is missing
-        $stmt = $db->x-autoPrepare('{prefs}', array('pref_name', 'pref_value'));
+        $stmt = $db->x->autoPrepare('{prefs}', array('pref_name', 'pref_value'));
         foreach ($upgrade_info['fsprefs'] as $name => $value) {
             if (!in_array($name, $existing)) {
                 $stmt->execute(array($name, (($value === '') ? '0' : $value)));
