@@ -471,9 +471,13 @@ class Backend
         $res = false;
 
 		if (!isset($_FILES[$source]['error'])) {
-			return false;
-		}
+            return false;
+        }
 
+        $attachstmt = $db->x->autoPrepare('{attachments}', array('task_id', 'comment_id',
+                                                                 'file_name','file_type',
+                                                                 'file_size', 'orig_name',
+                                                                'added_by', 'date_added'));
         foreach ($_FILES[$source]['error'] as $key => $error) {
             if ($error != UPLOAD_ERR_OK) {
                 continue;
@@ -502,15 +506,14 @@ class Backend
              $_FILES[$source]['type'][$key] = $type;
             }// we can try even more, however, far too much code is needed.
 
-            $db->x->autoExecute('{attachments}', array('task_id' => $task_id, 'comment_id' => $comment_id,
-                                                    'file_name' => $fname, 'file_type' => $_FILES[$source]['type'][$key],
-                                                    'file_size'=> $_FILES[$source]['size'][$key], 'orig_name' => $_FILES[$source]['name'][$key],
-                                                    'added_by' => $user->id, 'date_added' => time()));
+            $attachstmt->execute(array($task_id, $comment_id, $fname, $_FILES[$source]['type'][$key],
+                                       $_FILES[$source]['size'][$key], $_FILES[$source]['name'][$key],
+                                       $user->id, time()));
             // Fetch the attachment id for the history log
             $aid = $db->lastInsertID();
             Flyspray::logEvent($task_id, 7, $aid, $_FILES[$source]['name'][$key]);
         }
-
+        $attachstmt->free();
         return $res;
     }
 
