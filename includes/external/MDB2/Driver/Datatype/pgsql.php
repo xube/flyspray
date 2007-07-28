@@ -42,7 +42,7 @@
 // | Author: Paul Cooper <pgc@ucecom.com>                                 |
 // +----------------------------------------------------------------------+
 //
-// $Id: pgsql.php,v 1.82 2007/03/04 23:40:51 quipo Exp $
+// $Id: pgsql.php,v 1.86 2007/07/18 21:02:10 nrf Exp $
 
 require_once 'MDB2/Driver/Datatype/Common.php';
 
@@ -395,9 +395,6 @@ class MDB2_Driver_Datatype_pgsql extends MDB2_Driver_Datatype_Common
     {
         $db_type = strtolower($field['type']);
         $length = $field['length'];
-        if ($length == '-1' && !empty($field['atttypmod'])) {
-            $length = $field['atttypmod'] - 4;
-        }
         $type = array();
         $unsigned = $fixed = null;
         switch ($db_type) {
@@ -468,6 +465,7 @@ class MDB2_Driver_Datatype_pgsql extends MDB2_Driver_Datatype_Common
             $length = null;
             break;
         case 'float':
+        case 'float8':
         case 'double':
         case 'real':
             $type[] = 'float';
@@ -476,6 +474,9 @@ class MDB2_Driver_Datatype_pgsql extends MDB2_Driver_Datatype_Common
         case 'money':
         case 'numeric':
             $type[] = 'decimal';
+            if (isset($field['scale'])) {
+                $length = $length.','.$field['scale'];
+            }
             break;
         case 'tinyblob':
         case 'mediumblob':

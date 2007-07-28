@@ -42,7 +42,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: mysqli.php,v 1.81 2007/03/04 22:50:16 quipo Exp $
+// $Id: mysqli.php,v 1.82 2007/06/12 21:59:37 quipo Exp $
 //
 
 require_once 'MDB2/Driver/Manager/Common.php';
@@ -107,6 +107,32 @@ class MDB2_Driver_Manager_mysqli extends MDB2_Driver_Manager_Common
             return $result;
         }
         return MDB2_OK;
+    }
+
+    // }}}
+    // {{{ _getAdvancedFKOptions()
+
+    /**
+     * Return the FOREIGN KEY query section dealing with non-standard options
+     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
+     *
+     * @param array $definition
+     * @return string
+     * @access protected
+     */
+    function _getAdvancedFKOptions($definition)
+    {
+        $query = '';
+        if (!empty($definition['match'])) {
+            $query .= ' MATCH '.$definition['match'];
+        }
+        if (!empty($definition['on_update'])) {
+            $query .= ' ON UPDATE '.$definition['on_update'];
+        }
+        if (!empty($definition['on_delete'])) {
+            $query .= ' ON DELETE '.$definition['on_delete'];
+        }
+        return $query;
     }
 
     // }}}
@@ -754,6 +780,8 @@ class MDB2_Driver_Manager_mysqli extends MDB2_Driver_Manager_Common
             $name = 'KEY';
         } elseif (!empty($definition['unique'])) {
             $type = 'UNIQUE';
+        } elseif (!empty($definition['foreign'])) {
+            $type = 'FOREIGN KEY';
         }
         if (empty($type)) {
             return $db->raiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
@@ -767,6 +795,15 @@ class MDB2_Driver_Manager_mysqli extends MDB2_Driver_Manager_Common
             $fields[] = $db->quoteIdentifier($field, true);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
+        if (!empty($definition['foreign'])) {
+            $query.= ' REFERENCES ' . $db->quoteIdentifier($definition['references']['table'], true);
+            $referenced_fields = array();
+            foreach (array_keys($definition['references']['fields']) as $field) {
+                $referenced_fields[] = $db->quoteIdentifier($field, true);
+            }
+            $query .= ' ('. implode(', ', $referenced_fields) . ')';
+            $query .= $this->_getAdvancedFKOptions($definition);
+        }
         return $db->exec($query);
     }
 

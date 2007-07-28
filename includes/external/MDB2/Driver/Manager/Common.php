@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------+
 // | PHP versions 4 and 5                                                 |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1998-2006 Manuel Lemos, Tomas V.V.Cox,                 |
+// | Copyright (c) 1998-2007 Manuel Lemos, Tomas V.V.Cox,                 |
 // | Stig. S. Bakken, Lukas Smith                                         |
 // | All rights reserved.                                                 |
 // +----------------------------------------------------------------------+
@@ -42,7 +42,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: Common.php,v 1.61 2007/03/12 14:44:23 quipo Exp $
+// $Id: Common.php,v 1.64 2007/07/01 20:21:46 quipo Exp $
 //
 
 /**
@@ -60,12 +60,28 @@
  */
 class MDB2_Driver_Manager_Common extends MDB2_Module_Common
 {
+    // {{{ splitTableSchema()
+
+    /**
+     * Split the "[owner|schema].table" notation into an array
+     * @access private
+     */
+    function splitTableSchema($table)
+    {
+        $ret = array();
+        if (strpos($table, '.') !== false) {
+            return explode('.', $table);
+        }
+        return array(null, $table);
+    }
+
+    // }}}
     // {{{ getFieldDeclarationList()
 
     /**
      * Get declaration of a number of field in bulk
      *
-     * @param string $fields  a multidimensional associative array.
+     * @param array $fields  a multidimensional associative array.
      *      The first dimension determines the field name, while the second
      *      dimension is keyed with the name of the properties
      *      of the field being declared as array indexes. Currently, the types
@@ -702,6 +718,22 @@ class MDB2_Driver_Manager_Common extends MDB2_Module_Common
     }
 
     // }}}
+    // {{{ _getAdvancedFKOptions()
+
+    /**
+     * Return the FOREIGN KEY query section dealing with non-standard options
+     * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
+     *
+     * @param array $definition
+     * @return string
+     * @access protected
+     */
+    function _getAdvancedFKOptions($definition)
+    {
+        return '';
+    }
+
+    // }}}
     // {{{ createConstraint()
 
     /**
@@ -739,12 +771,23 @@ class MDB2_Driver_Manager_Common extends MDB2_Module_Common
             $query.= ' PRIMARY KEY';
         } elseif (!empty($definition['unique'])) {
             $query.= ' UNIQUE';
+        } elseif (!empty($definition['foreign'])) {
+            $query.= ' FOREIGN KEY';
         }
         $fields = array();
         foreach (array_keys($definition['fields']) as $field) {
             $fields[] = $db->quoteIdentifier($field, true);
         }
         $query .= ' ('. implode(', ', $fields) . ')';
+        if (!empty($definition['foreign'])) {
+            $query.= ' REFERENCES ' . $db->quoteIdentifier($definition['references']['table'], true);
+            $referenced_fields = array();
+            foreach (array_keys($definition['references']['fields']) as $field) {
+                $referenced_fields[] = $db->quoteIdentifier($field, true);
+            }
+            $query .= ' ('. implode(', ', $referenced_fields) . ')';
+            $query .= $this->_getAdvancedFKOptions($definition);
+        }
         return $db->exec($query);
     }
 

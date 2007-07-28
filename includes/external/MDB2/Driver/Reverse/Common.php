@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------+
 // | PHP versions 4 and 5                                                 |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1998-2006 Manuel Lemos, Tomas V.V.Cox,                 |
+// | Copyright (c) 1998-2007 Manuel Lemos, Tomas V.V.Cox,                 |
 // | Stig. S. Bakken, Lukas Smith                                         |
 // | All rights reserved.                                                 |
 // +----------------------------------------------------------------------+
@@ -42,7 +42,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: Common.php,v 1.35 2007/02/25 11:14:34 quipo Exp $
+// $Id: Common.php,v 1.37 2007/06/12 22:18:26 quipo Exp $
 //
 
 /**
@@ -69,6 +69,21 @@ define('MDB2_TABLEINFO_FULL',       3);
  */
 class MDB2_Driver_Reverse_Common extends MDB2_Module_Common
 {
+    // {{{
+
+    /**
+     * Split the "[owner|schema].table" notation into an array
+     * @access private
+     */
+    function splitTableSchema($table)
+    {
+        $ret = array();
+        if (strpos($table, '.') !== false) {
+            return explode('.', $table);
+        }
+        return array(null, $table);
+    }
+
     // }}}
     // {{{ getTableFieldDefinition()
 
@@ -140,7 +155,10 @@ class MDB2_Driver_Reverse_Common extends MDB2_Module_Common
      *          The returned array has this structure:
      *          <pre>
      *          array (
-     *              [primary] => 1
+     *              [primary] => 0
+     *              [unique]  => 0
+     *              [foreign] => 1
+     *              [check]   => 0
      *              [fields] => array (
      *                  [field1name] => array() // one entry per each field covered
      *                  [field2name] => array() // by the index
@@ -148,6 +166,16 @@ class MDB2_Driver_Reverse_Common extends MDB2_Module_Common
      *                      [sorting] => ascending
      *                  )
      *              )
+     *              [references] => array(
+     *                  [table] => name
+     *                  [fields] => array(
+     *                      [field1name] => position //one entry per each referenced field
+     *                  )
+     *              [deferrable] => 0
+     *              [initially_deferred] => 0
+     *              [on_update] => CASCADE|RESTRICT|SET NULL|SET DEFAULT|NO ACTION
+     *              [on_delete] => CASCADE|RESTRICT|SET NULL|SET DEFAULT|NO ACTION
+     *              [match] => SIMPLE|PARTIAL|FULL
      *          );
      *          </pre>
      * @access public
