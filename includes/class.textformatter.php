@@ -64,7 +64,7 @@ class TextFormatter
         $classes = $this->classes;
 
         // [BC] no plugins = project default
-        if (!count($plugins) || !$plugins[0]) {
+        if (!count($plugins) || !$plugins[0] && isset($proj->prefs['syntax_plugins'])) {
             $plugins = explode(' ', $proj->prefs['syntax_plugins']);
         }
         // remove deselected syntax plugins
@@ -131,7 +131,7 @@ class TextFormatter
         $return .= '</textarea>';
 
         // does the user have any personal preference?
-        if (!count($plugins)) {
+        if (!count($plugins) && !$user->isAnon()) {
             $plugins = explode(' ', $user->infos['syntax_plugins']);
         }
         // [BC] if no plugins are set, we assume a project's default plugins

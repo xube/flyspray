@@ -1058,7 +1058,7 @@ class Flyspray
                 include_once 'class.commandexecution.php';
 
                 $file =& new CommandExecution();
-                $file->setCommand('file');
+                $file->setCmd('file');
                 $file->bi = $fname;
                 
                 $type = $file->getCmdResult();
