@@ -122,19 +122,25 @@ function execute_upgrade_file($folder, $installed_version)
 
     // global prefs update
     if (isset($upgrade_info['fsprefs'])) {
+        
         $existing = $db->x->GetCol('SELECT pref_name FROM {prefs}');
         // Add what is missing
+        $stmt = $db->x-autoPrepare('{prefs}', array('pref_name', 'pref_value'));
         foreach ($upgrade_info['fsprefs'] as $name => $value) {
             if (!in_array($name, $existing)) {
-                $db->x->execParam('INSERT INTO {prefs} (pref_name, pref_value) VALUES (?, ?)', array($name, ($value === '') ? '0' : $value ));
+                $stmt->execute(array($name, (($value === '') ? '0' : $value)));
             }
         }
+        $stmt->free();
+
         // Delete what is too much
+        $stmt = $db->prepare('DELETE FROM {prefs} WHERE pref_name = ?');
         foreach ($existing as $name) {
             if (!isset($upgrade_info['fsprefs'][$name])) {
-                $db->x->execParam('DELETE FROM {prefs} WHERE pref_name = ?', $name);
+                $stmt->execute($name);
             }
         }
+        $stmt->free();
     }
 
     // Now a mix of XML schema files and PHP upgrade scripts
