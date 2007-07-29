@@ -1007,6 +1007,7 @@ Regards,',
 'cannotedittaskglobally'  => 'A task cannot be moved to the global project. You shouldn\'t actually have gotten this opportunity.',
 'options'                 => 'Options',
 'selectuser'              => 'Select User',
+'usernotinglobalgroup'    => 'This user is not member of any global group although it is required. Please fix your database entries.',
 );
 
 ?>

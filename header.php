@@ -21,6 +21,7 @@ require 'class.project.php';
 require 'class.user.php';
 require 'class.tpl.php';
 require 'class.do.php';
+require_once 'authplugins/class.flysprayauth.php';
 
 $db = NewDatabase($conf['database']);
 $fs =& new Flyspray;
@@ -80,14 +81,20 @@ if (!in_array($do, $modes)) {
 }
 
 $proj->setCookie();
+$user = new User($uid = 0);
 
-/* permission stuff */
-if (Cookie::val('flyspray_userid') && Cookie::val('flyspray_passhash')) {
-    $user =& new User(Cookie::val('flyspray_userid'));
-    $user->check_account_ok();
-} else {
-    $user =& new User(0);
+// verify and initiate user
+$auth = new FlysprayAuth();
+
+if (Post::val('user_name') && Post::has('password')) {
+    $uid = $auth->checkLogin(Post::val('user_name'), Post::val('password'));
+    if (is_array($uid)) {
+        FlysprayDo::error($uid);
+    }
+} else if (Cookie::val('flyspray_userid') && $auth->checkCookie(Cookie::val('flyspray_userid'), Cookie::val('flyspray_passhash'))) {
+    $uid = Cookie::val('flyspray_userid');
 }
+$user =& new User($uid);
 
 // Load translations
 load_translations();

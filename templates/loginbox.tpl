@@ -1,8 +1,8 @@
 
-<form action="{$this->relativeUrl($baseurl)}index.php?do=authenticate" method="post">
+<form action="{$_SERVER['REQUEST_URI']}" method="post">
 <div>
   <label for="lbl_user_name">{L('username')}</label>
-  <input class="text" type="text" id="lbl_user_name" name="user_name" size="17" maxlength="30" />
+  <input class="text" type="text" id="lbl_user_name" name="user_name" size="17" maxlength="30" value="{Post::val('user_name')}"/>
 
   <label for="lbl_password">{L('password')}</label>
   <input class="password" type="password" id="lbl_password" name="password" size="17" maxlength="30" />

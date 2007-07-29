@@ -663,57 +663,6 @@ class Flyspray
     {
             return is_null($salt) ? md5($password) : hash_hmac('md5', $password, $salt);
     } // }}}
-    // {{{
-    /**
-     * Check if a user provided the right credentials
-     * @param string $username
-     * @param string $password
-     * @access public static
-     * @return integer user_id on success, 0 if account or user is disabled, -1 if password is wrong
-     * @version 1.0
-     */
-    function checkLogin($username, $password)
-    {
-        global $db;
-
-        $auth = $db->x->getRow('SELECT  uig.*, g.group_open, u.account_enabled, u.user_pass, u.password_salt,
-                                        lock_until, login_attempts
-                                FROM  {users_in_groups} uig
-                           LEFT JOIN  {groups} g ON uig.group_id = g.group_id
-                           LEFT JOIN  {users} u ON uig.user_id = u.user_id
-                               WHERE  u.user_name = ? AND g.project_id = ?
-                            ORDER BY  g.group_id ASC', null, array($username, 0));
-
-        if ($auth === null) {
-            return -2;
-        }
-
-        $salt = $auth['password_salt'] ? $auth['password_salt'] : null;
-        $pass_ok = ($auth['user_pass'] === Flyspray::cryptPassword($password, $salt));
-
-        // let's update the users password
-        if ($pass_ok && !$auth['password_salt']) {
-            $salt = md5(uniqid(mt_rand() , true));
-            $db->x->execParam('UPDATE {users} SET user_pass = ?, password_salt = ? WHERE user_id = ?',
-                         array(Flyspray::cryptPassword($password, $salt), $salt, $auth['user_id']));
-        }
-
-        if ($auth['lock_until'] > 0 && $auth['lock_until'] < time()) {
-            $db->x->execParam('UPDATE {users} SET lock_until = 0, account_enabled = 1, login_attempts = 0
-                                       WHERE user_id = ?', $auth['user_id']);
-            $auth['account_enabled'] = 1;
-            $_SESSION['was_locked'] = true;
-        }
-
-        // Compare the crypted password to the one in the database
-        if ($pass_ok && $auth['account_enabled'] == '1'
-            && $auth['group_open'] == '1')
-        {
-            return $auth['user_id'];
-        }
-
-        return ($auth['account_enabled'] && $auth['group_open']) ? 0 : -1;
-    } // }}}
     // Set cookie {{{
     /**
      * Sets a cookie, automatically setting the URL
