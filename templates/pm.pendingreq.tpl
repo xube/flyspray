@@ -20,11 +20,11 @@
         <td>
         <?php if ($req['request_type'] == 1) : ?>
         {L('closetask')} -
-        <a href="{CreateURL(array('details', 'task' . $req['task_id']))}">{$proj->prefs['project_prefix']}#{$req['task_id']} :
+        <a href="{$this->url(array('details', 'task' . $req['task_id']))}">{$proj->prefs['project_prefix']}#{$req['task_id']} :
           {$req['item_summary']}</a>
         <?php elseif ($req['request_type'] == 2) : ?>
         {L('reopentask')} -
-        <a href="{CreateURL(array('details', 'task' . $req['task_id']))}">{$proj->prefs['project_prefix']}#{$req['task_id']} :
+        <a href="{$this->url(array('details', 'task' . $req['task_id']))}">{$proj->prefs['project_prefix']}#{$req['task_id']} :
           {$req['item_summary']}</a>
         <?php endif; ?>
         </td>
@@ -33,13 +33,13 @@
         <td>{$req['reason_given']}</td>
         <td>
           <?php if ($req['request_type'] == 1) : ?>
-          <a class="button" href="{CreateUrl(array('details', 'task' . $req['task_id']), array('showclose' => 1))}#formclosetask">{L('accept')}</a>
+          <a class="button" href="{$this->url(array('details', 'task' . $req['task_id']), array('showclose' => 1))}#formclosetask">{L('accept')}</a>
           <?php elseif ($req['request_type'] == 2) : ?>
           <a class="button" href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=reopen&task_id={$req['task_id']}">{L('accept')}</a>
           <?php endif; ?>
           <a href="#" class="button" onclick="showhidestuff('denyform{$req['request_id']}');">{L('deny')}</a>
           <div id="denyform{$req['request_id']}" class="denyform">
-            <form action="{CreateUrl(array('pm', 'proj' . $proj->id, 'pendingreq'))}" method="post">
+            <form action="{$this->url(array('pm', 'proj' . $proj->id, 'pendingreq'))}" method="post">
               <div>
                 <input type="hidden" name="action" value="denypmreq" />
                 <input type="hidden" name="req_id" value="{$req['request_id']}" />

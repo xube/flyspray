@@ -1,7 +1,7 @@
 <fieldset class="box">
 <legend>{L('registernewuser')}</legend>
 
-<form action="{CreateUrl('register')}" method="post" id="registernewuser">
+<form action="{$this->url('register')}" method="post" id="registernewuser">
   <table class="box">
     <tr>
       <td><label for="username">{L('username')}</label></td>

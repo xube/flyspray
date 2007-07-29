@@ -1,5 +1,5 @@
                 <div>
-                   <img src="{$this->get_image('kuser-small')}" width="16" height="16" /> <a href="#" onclick="return userspopup('{CreateUrl('userselect')}', 'assigned_to')">
+                   <img src="{$this->get_image('kuser-small')}" width="16" height="16" alt="{L('selectuser')}" /> <a href="#" onclick="return userspopup('{$this->url('userselect')}', 'assigned_to')">
                    {L('select')}</a>
                    <br />
                    <textarea cols="10" rows="4" name="assigned_to" id="assigned_to"><?php
@@ -13,7 +13,7 @@
                    ?></textarea>
                    <script type="text/javascript">
                           var options = {
-                            script: "{$baseurl}javascript/callbacks/usersearch.php?",
+                            script: "{$this->relativeUrl($baseurl)}javascript/callbacks/usersearch.php?",
                             varname: "user",
                             delay:50,
                             timeout:5000,

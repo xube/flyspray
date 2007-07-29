@@ -1,6 +1,6 @@
     <?php $this->display('baseheader.tpl'); ?>
     <!-- Remove this to remove the logo -->
-    <h1 id="title"><a href="{$baseurl}">{$proj->prefs['project_title']}</a></h1>
+    <h1 id="title"><a href="{$this->relativeUrl($baseurl)}">{$proj->prefs['project_title']}</a></h1>
 
     <?php $this->display('links.tpl'); ?>
 
@@ -14,7 +14,7 @@
 
     <div id="content">
       <div id="showtask">
-        <form action="{$baseurl}index.php" method="get">
+        <form action="{$this->relativeUrl($baseurl)}index.php" method="get">
           <div>
             <button type="submit">{L('showtask')} #</button>
             <input id="taskid" name="show_task" class="text" type="text" size="10" accesskey="t" />

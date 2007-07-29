@@ -1,7 +1,7 @@
 <h3>{$proj->prefs['project_title']} :: {L('newtask')}</h3>
 
 <div id="taskdetails">
-    <form enctype="multipart/form-data" action="{CreateUrl(array('newtask', 'proj' . $proj->id))}" method="post">
+    <form enctype="multipart/form-data" action="{$this->url(array('newtask', 'proj' . $proj->id))}" method="post">
     <h2 class="task colorfield{Post::val('field' . $fs->prefs['color_field'])} summary" id="edit_summary">
       <label for="itemsummary">{L('summary')}</label>
       <input id="itemsummary" class="text task colorfield{Post::val('field' . $fs->prefs['color_field'])}" type="text" value="{Req::val('item_summary')}"

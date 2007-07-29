@@ -47,19 +47,19 @@ function adduser(username)
   <tr>
     <td>
       <?php foreach ($globalgroups as $group): ?>
-        <a href="{CreateUrl('userselect', array('group_id' => $group['group_id']))}">{$group['group_name']} ({$group['num_users']})</a><br />
+        <a href="{$this->url('userselect', array('group_id' => $group['group_id']))}">{$group['group_name']} ({$group['num_users']})</a><br />
       <?php endforeach;?>
     </td>
     <td>
       <?php foreach ($groups as $group): ?>
-        <a href="{CreateUrl('userselect', array('group_id' => $group['group_id']))}">{$group['group_name']} ({$group['num_users']})</a><br />
+        <a href="{$this->url('userselect', array('group_id' => $group['group_id']))}">{$group['group_name']} ({$group['num_users']})</a><br />
       <?php endforeach;?>
-      <br /><i><strong><a href="{CreateUrl('userselect', array('group_id' => -1))}">{L('defaultusers')}</a></i>
+      <br /><i><strong><a href="{$this->url('userselect', array('group_id' => -1))}">{L('defaultusers')}</a></i>
     </td>
   </tr>
 </table>
 
-<form method="post" action="{CreateUrl('userselect', array('group_id' => Get::val('group_id')))}">
+<form method="post" action="{$this->url('userselect', array('group_id' => Get::val('group_id')))}">
 <div class="box" style="margin:0 1em 0.5em 0;">
 <label>{L('username')} <input name="user_name" type="text" class="text" value="{Post::val('user_name')}" /></label>
 <label>{L('realname')} <input name="real_name" type="text" class="text" value="{Post::val('real_name')}" /></label>

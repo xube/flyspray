@@ -1,7 +1,7 @@
 <p>{L('listnote')}</p>
 <?php if (count($rows)): ?>
 <?php endif; ?>
-<form action="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
+<form action="{$this->url(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
   <table class="list" id="listTable">
    <thead>
      <tr>
@@ -73,7 +73,7 @@
   <?php endif; ?>
 </form>
 <hr />
-<form action="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
+<form action="{$this->url(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
   <table class="list">
     <tr>
       <td>

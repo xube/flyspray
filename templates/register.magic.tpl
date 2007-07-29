@@ -1,7 +1,7 @@
 <fieldset>
 <legend>{L('registernewuser')}</legend>
 
-<form action="{$baseurl}index.php" name="registernewuser" method="post" id="registernewuser">
+<form action="{$this->relativeUrl($baseurl)}index.php" name="registernewuser" method="post" id="registernewuser">
   <p>{L('entercode')}</p>
   <table class="box">
     <tr>

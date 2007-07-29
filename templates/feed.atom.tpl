@@ -4,7 +4,7 @@
   <subtitle type="text">
     {$feed_description}
   </subtitle>
-  <id>{$baseurl}</id>
+  <id>{$this->relativeUrl($baseurl)}</id>
   <?php if($feed_image): ?>
   <icon>{$feed_image}</icon>
   <?php endif; ?>
@@ -14,7 +14,7 @@
   <?php foreach ($task_details as $row): ?>
   <entry>
     <title>{$row['project_prefix']}#{$row['prefix_id']}: {$row['item_summary']}</title>
-    <link href="{CreateURL(array('details', 'task' . $row['task_id']))}" />
+    <link href="{$this->url(array('details', 'task' . $row['task_id']))}" />
     <updated>{date('Y-m-d\TH:i:s\Z',intval($row['last_edited_time']))}</updated>    
     <published>{date('Y-m-d\TH:i:s\Z',intval($row['date_opened']))}</published>
     <content type="xhtml" xml:lang="en" xml:base="http://diveintomark.org/">
@@ -23,7 +23,7 @@
       </div>
     </content>
     <author><name>{$row['real_name']}</name></author>
-    <id>{$baseurl}:{$row['task_id']}</id>
+    <id>{$this->relativeUrl($baseurl)}:{$row['task_id']}</id>
   </entry>
   <?php   endforeach; ?>
 </feed>

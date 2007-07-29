@@ -50,7 +50,7 @@ class Tpl
 
     function themeUrl()
     {
-        return $GLOBALS['baseurl'] . 'themes/'.$this->_theme;
+        return FSTpl::relativeUrl($GLOBALS['baseurl']) . 'themes/'.$this->_theme;
     }
 
     function compile(&$item)
@@ -152,10 +152,25 @@ class FSTpl extends Tpl
 
         foreach ($extensions as $ext) {
             if (is_file(BASEDIR . '/' . $link . $name . $ext)) {
-                return ($base) ? ($baseurl . $link . $name . $ext) : ($link . $name . $ext);
+                return ($base) ? (FSTpl::relativeUrl($baseurl) . $link . $name . $ext) : ($link . $name . $ext);
             }
         }
         return '';
+    }
+    
+    function relativeUrl($url)
+    {
+        $url = parse_url($url);
+        return $url['path'] . (isset($url['query']) ? '?' . $url['query'] : '') . (isset($url['fragment']) ? '#' . $url['fragment'] : '');
+    }
+    
+    /*
+     * Use a relative URL within templates
+     */
+    function url()
+    {
+        $args = func_get_args();
+        return FSTpl::relativeUrl(call_user_func_array('CreateUrl', $args));
     }
 
     function finish($tpl = '')
@@ -254,7 +269,7 @@ function tpl_tasklink($task, $text = null, $strict = false, $attrs = array(), $t
     $params = $_GET;
     unset($params['do'], $params['action'], $params['task_id'], $params['switch']);
 
-    $url = Filters::noXSS(CreateURL(array('details', 'task' . $task['task_id']), $params));
+    $url = Filters::noXSS(FSTpl::relativeUrl(CreateURL(array('details', 'task' . $task['task_id']), $params)));
     $title_text = Filters::noXSS($title_text);
     $link  = sprintf('<a href="%s" title="%s" %s>%s</a>',$url, $title_text, join_attrs($attrs), $text);
 
@@ -292,7 +307,7 @@ function tpl_userlink($uid)
     }
 
     if (isset($uname)) {
-        $args = array_map(array('Filters', 'noXSS'),array(CreateURL(array('user'), array('uid' => $uid)), $rname, $uname));
+        $args = array_map(array('Filters', 'noXSS'), array(FSTpl::relativeUrl(CreateURL(array('user'), array('uid' => $uid))), $rname, $uname));
         $cache[$uid] = vsprintf('<a href="%s">%s (%s)</a>', $args);
     } elseif (empty($cache[$uid])) {
         $cache[$uid] = (!is_numeric($uid)) ? eL('anonymous') : $uid;
@@ -716,7 +731,7 @@ function tpl_list_heading($colname, $coldisplay, $format = "<th%s>%s</th>")
 
     $new_order = array('order' => $colname, 'sort' => $sort1, 'order2' => $order2, 'sort2' => $sort2);
     $html = sprintf('<a title="%s" href="%s">%s</a>',
-            L('sortthiscolumn'), Filters::noXSS(CreateURL(array('index', 'proj' . $proj->id), array_merge($_GET, $new_order))), $html);
+            L('sortthiscolumn'), Filters::noXSS($page->url(array('index', 'proj' . $proj->id), array_merge($_GET, $new_order))), $html);
 
     return sprintf($format, $class, $html);
 }

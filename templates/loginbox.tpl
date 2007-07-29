@@ -1,5 +1,5 @@
 
-<form action="{$baseurl}index.php?do=authenticate" method="post">
+<form action="{$this->relativeUrl($baseurl)}index.php?do=authenticate" method="post">
 <div>
   <label for="lbl_user_name">{L('username')}</label>
   <input class="text" type="text" id="lbl_user_name" name="user_name" size="17" maxlength="30" />
@@ -17,13 +17,13 @@
 
   <span id="links">
     <?php if ($user->isAnon() && $fs->prefs['anon_reg']): ?>
-    <a id="registerlink" href="{CreateURL('register')}">{L('register')}</a>
+    <a id="registerlink" href="{$this->url('register')}">{L('register')}</a>
     <?php endif; ?>
     <?php if ($user->isAnon() && $fs->prefs['user_notify']): ?>
-    <a id="forgotlink" href="{CreateURL('lostpw')}">{L('lostpassword')}</a>
+    <a id="forgotlink" href="{$this->url('lostpw')}">{L('lostpassword')}</a>
     <?php elseif (isset($admin_emails)): ?>
     <a id="forgotlink" href="mailto:<?php foreach($admin_emails as $mail): ?>{str_replace('@', '#', reset($mail))},<?php endforeach;
-    ?>?subject={rawurlencode(L('lostpwforfs'))}&amp;body={rawurlencode(L('lostpwmsg1'))}{$baseurl}{rawurlencode(L('lostpwmsg2'))}<?php
+    ?>?subject={rawurlencode(L('lostpwforfs'))}&amp;body={rawurlencode(L('lostpwmsg1'))}{$this->relativeUrl($baseurl)}{rawurlencode(L('lostpwmsg2'))}<?php
              if(isset($_SESSION['failed_login'])):
              ?>{rawurlencode($_SESSION['failed_login'])}<?php
              else:

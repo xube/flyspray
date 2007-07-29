@@ -2,7 +2,7 @@
   <h3>{L('admintoolboxlong')} :: {L('createnewproject')}</h3>
   <fieldset class="box">
     <legend>{L('newproject')}</legend>
-    <form action="{CreateURL(array('admin', 'newproject'))}" method="post">
+    <form action="{$this->url(array('admin', 'newproject'))}" method="post">
       <div>
         <input type="hidden" name="action" value="newproject" />
         <input type="hidden" name="area" value="newproject" />

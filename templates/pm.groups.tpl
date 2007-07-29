@@ -2,7 +2,7 @@
   <h3>{L('pmtoolbox')} :: {L('usersandgroups')}</h3>
   <fieldset class="box">
     <legend>{L('usersandgroups')}</legend>
-    <form action="{CreateURL(array('pm', 'groups'))}" method="post">
+    <form action="{$this->url(array('pm', 'groups'))}" method="post">
     <p>{L('addormoveusers')} {!tpl_userselect('uid')}
        {L('to')} <select name="user_to_group">
           {!tpl_options(Flyspray::listGroups($proj->id))}
@@ -16,7 +16,7 @@
     </form>
 
     <p>
-      <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{CreateURL(array('pm', 'proj' . $proj->id, 'newgroup'))}">{L('newgroup')}</a>
+      <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{$this->url(array('pm', 'proj' . $proj->id, 'newgroup'))}">{L('newgroup')}</a>
     </p>
 
     <table class="userlist">
@@ -26,13 +26,13 @@
       </thead>
       <?php foreach ($groups as $group): ?>
       <tr>
-        <td><a href="{CreateUrl(array('pm', 'proj'. $proj->id, 'editgroup'), array('group_id' => $group['group_id']))}">{$group['group_name']}</a>
+        <td><a href="{$this->url(array('pm', 'proj'. $proj->id, 'editgroup'), array('group_id' => $group['group_id']))}">{$group['group_name']}</a>
         <?php if ($group['group_desc'] != ''): ?>
         <br />
         <small>{$group['group_desc']}</small>
         <?php endif; ?>
         </td>
-        <td><a href="{CreateURL(array('pm', 'proj' . $proj->id, 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
+        <td><a href="{$this->url(array('pm', 'proj' . $proj->id, 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
       </tr>
     <?php endforeach; ?>
     </table>

@@ -1,7 +1,7 @@
 <fieldset class="box">
 <legend>{L('registernewuser')}</legend>
 
-<form action="<?php if ($do == 'admin' || $do == 'pm'): ?>{CreateURL(array($do, 'proj' . $proj->id, 'newuser'))}<?php else: ?>{$_SERVER['SCRIPT_NAME']}<?php endif; ?>" method="post" id="registernewuser">
+<form action="<?php if ($do == 'admin' || $do == 'pm'): ?>{$this->url(array($do, 'proj' . $proj->id, 'newuser'))}<?php else: ?>{$_SERVER['SCRIPT_NAME']}<?php endif; ?>" method="post" id="registernewuser">
   <table class="box">
     <tr>
       <td>

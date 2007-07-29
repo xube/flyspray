@@ -1,6 +1,6 @@
 <fieldset class="box"><legend>{L('mynotifications')}</legend>
 
-<form action="{CreateUrl(array('myprofile', 'notifs'))}" method="post">
+<form action="{$this->url(array('myprofile', 'notifs'))}" method="post">
 <div>
   <label for="events_since">{L('showeventssince')}</label>
   <input type="text" class="text" name="events_since" value="{Post::val('events_since', '-1 week')}" />

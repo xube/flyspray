@@ -1,13 +1,13 @@
   <fieldset><legend>{L('userlist')}</legend>
 
   <p>
-    <img src="{$this->get_image('personal')}" alt="" class="middle" /> <a href="{CreateURL(array($do, 'proj' . $proj->id, 'newuser'))}">{L('newuser')}</a>
+    <img src="{$this->get_image('personal')}" alt="" class="middle" /> <a href="{$this->url(array($do, 'proj' . $proj->id, 'newuser'))}">{L('newuser')}</a>
   </p>
   <?php if ($user->perms('is_admin')): ?>
-  <form action="{CreateUrl(array($do, 'proj' . $proj->id, 'users'))}" method="post">
+  <form action="{$this->url(array($do, 'proj' . $proj->id, 'users'))}" method="post">
   <p>
     <img src="{$this->get_image('button_ok')}" alt="" class="middle" />
-    <a href="{CreateURL(array($do, 'proj' . $proj->id, 'newuser'))}">{L('activateuser')}</a>
+    <a href="{$this->url(array($do, 'proj' . $proj->id, 'newuser'))}">{L('activateuser')}</a>
     <input type="text" class="text" id="user_name" name="user_name" value="" />
     <label>
       {L('password')}
@@ -20,7 +20,7 @@
   <?php endif; ?>
 
   <div id="search">
-    <form action="{CreateUrl(array($do, 'users'))}" method="get">
+    <form action="{$this->url(array($do, 'users'))}" method="get">
     <table id="search-user-form">
       <tr>
         <td>
@@ -60,7 +60,7 @@
     </form>
   </div>
 
-  <form method="post" action="{CreateUrl(array($do, 'users'))}">
+  <form method="post" action="{$this->url(array($do, 'users'))}">
   <table id="full_user_list" class="userlist">
   <colgroup>
     <col width="15" />
@@ -98,7 +98,7 @@
   ?>
   <tr>
     <td class="ttcolumn">{!tpl_checkbox('users['.$usr['user_id'].']')}</td>
-    <td><a href="{CreateURL(array('admin', 'user'), array('user_id' => $usr['user_id']))}">{$usr['user_name']}</a></td>
+    <td><a href="{$this->url(array('admin', 'user'), array('user_id' => $usr['user_id']))}">{$usr['user_name']}</a></td>
     <td>{$usr['real_name']}</td>
     <td><a href="mailto:{$usr['email_address']}">{$usr['email_address']}</a></td>
     <td>{$usr['jabber_id']}</td>
@@ -114,12 +114,12 @@
         $group_project_id = $user_groups[$usr['user_id']]['project_id'][$key];
         if ($group_project_id == '0'): ?>
         {L('global')}:
-        <a href="{CreateUrl(array('admin', 'proj0', 'editgroup'), array('group_id' => $group))}">
+        <a href="{$this->url(array('admin', 'proj0', 'editgroup'), array('group_id' => $group))}">
           {$user_groups[$usr['user_id']]['group_name'][$key]}
         </a><br />
         <?php elseif (($title_key = Flyspray::array_find('project_id', $group_project_id, $fs->projects)) !== false): ?>
         {$fs->projects[$title_key]['project_title']}:
-        <a href="{CreateUrl(array($do, 'proj' . $group_project_id, 'editgroup'), array('group_id' => $group))}">
+        <a href="{$this->url(array($do, 'proj' . $group_project_id, 'editgroup'), array('group_id' => $group))}">
           {$user_groups[$usr['user_id']]['group_name'][$key]}
         </a><br />
         <?php endif; ?>

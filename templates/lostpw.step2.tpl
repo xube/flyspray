@@ -1,7 +1,7 @@
 <fieldset class="box">
 <legend>{L('changepass')}</legend>
 
-    <form action="{CreateUrl('lostpw')}" method="post">
+    <form action="{$this->url('lostpw')}" method="post">
     <p>{L('username')}: {$userinfo['user_name']}</p>
     <table>
       <tr>

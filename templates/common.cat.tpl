@@ -5,7 +5,7 @@
   $root = $categories[0];
   unset($categories[0]);
   ?>
-    <form action="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
+    <form action="{$this->url(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
       <table class="list" id="listTable">
          <thead>
          <tr>
@@ -77,7 +77,7 @@
     <hr />
 
     <!-- Form to add a new category to the list -->
-    <form action="{CreateURL(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
+    <form action="{$this->url(array($do, 'proj' . $proj->id, 'list'), array('list_id' => Req::val('list_id')))}" method="post">
       <table class="list">
         <tr>
           <td>

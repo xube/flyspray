@@ -2,7 +2,7 @@
   <?php foreach($comments as $comment): ?>
   <em>
     <a name="comment{$comment['comment_id']}" id="comment{$comment['comment_id']}"
-      href="{CreateURL(array('details', 'task' . $task['task_id']))}#comment{$comment['comment_id']}">
+      href="{$this->url(array('details', 'task' . $task['task_id']))}#comment{$comment['comment_id']}">
       <img src="{$this->get_image('comment')}"
         title="{L('commentlink')}" alt="" />
     </a>
@@ -45,7 +45,7 @@
 
   <?php if ($user->perms('add_comments') && (!$task['is_closed'] || $proj->prefs['comment_closed'])): ?>
   <fieldset><legend>{L('addcomment')}</legend>
-  <form enctype="multipart/form-data" action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post">
+  <form enctype="multipart/form-data" action="{$this->url(array('details', 'task' . $task['task_id']))}" method="post">
     <div>
       <input type="hidden" name="action" value="addcomment" />
       <input type="hidden" name="task_id" value="{$task['task_id']}" />

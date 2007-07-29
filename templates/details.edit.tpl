@@ -1,8 +1,8 @@
 <div id="taskdetails">
-  <form action="{CreateUrl(array('details', 'task' . $task['task_id']))}" id="taskeditform" enctype="multipart/form-data" method="post">
+  <form action="{$this->url(array('details', 'task' . $task['task_id']))}" id="taskeditform" enctype="multipart/form-data" method="post">
 	 <div>
 		<h2 class="summary task colorfield{Post::val('f' . $fs->prefs['color_field'], $task['field' . $fs->prefs['color_field']])}">
-		  <a href="{CreateUrl(array('details', 'task' . $task['task_id']))}">{$task['project_prefix']}#{$task['prefix_id']}</a> -
+		  <a href="{$this->url(array('details', 'task' . $task['task_id']))}">{$task['project_prefix']}#{$task['prefix_id']}</a> -
 		  <input class="text task colorfield{Post::val('f' . $fs->prefs['color_field'], $task['field' . $fs->prefs['color_field']])}" type="text"
 			name="item_summary" size="80" maxlength="100"
 			value="{Post::val('item_summary', $task['item_summary'])}" />
@@ -131,7 +131,7 @@
               </div>
           <?php endif; ?>
 		  <p class="buttons">
-              <button type="submit" accesskey="s" onclick="return checkok('{$baseurl}javascript/callbacks/checksave.php?time={time()}&amp;taskid={$task['task_id']}', '{#L('alreadyedited')}', 'taskeditform')">{L('savedetails')}</button>
+              <button type="submit" accesskey="s" onclick="return checkok('{$this->relativeUrl($baseurl)}javascript/callbacks/checksave.php?time={time()}&amp;taskid={$task['task_id']}', '{#L('alreadyedited')}', 'taskeditform')">{L('savedetails')}</button>
               <button type="reset">{L('reset')}</button>
           </p>
 		</div>

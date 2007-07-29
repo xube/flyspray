@@ -1,6 +1,6 @@
 <div id="taskdetails">
 <span id="navigation">
-  <a href="{CreateURL(array('details', 'task' . $task['task_id']))}">
+  <a href="{$this->url(array('details', 'task' . $task['task_id']))}">
     <small>{L('linktotask')}</small>
   </a> |
   <a href="#" onclick="return mailtask('{#L('mailtask')}', '{rawurlencode($task['item_summary'])}', '{rawurlencode($task['detailed_desc'])}');">
@@ -11,7 +11,7 @@
   <?php endif; ?>
   <?php if ($prev_id): ?> | <?php endif; ?>
   <?php $params = $_GET; unset($params['do'], $params['action'], $params['task_id'], $params['switch'], $params['project']); ?>
-  <a href="{CreateUrl(array('index', 'proj' . $proj->id), array('do' => 'index') + $params)}">{L('tasklist')}</a>
+  <a href="{$this->url(array('index', 'proj' . $proj->id), array('do' => 'index') + $params)}">{L('tasklist')}</a>
   <?php if ($next_id): ?> | <?php endif; ?>
   <?php if ($next_id): ?>
   {!tpl_tasklink($next_id, L('nexttask'), false, array('id'=>'next', 'accesskey' => 'n'))}
@@ -184,13 +184,13 @@
 		<br class="DoNotPrint" />
 
 		<?php if ( (count($deps) || count($blocks)) && (!Flyspray::function_disabled('shell_exec') || array_get($conf['general'], 'dot_public'))): ?>
-		<a class="DoNotPrint" href="{CreateURL(array('depends', 'task' . $task['task_id']))}">{L('depgraph')}</a>
+		<a class="DoNotPrint" href="{$this->url(array('depends', 'task' . $task['task_id']))}">{L('depgraph')}</a>
 		<br />
 		<br />
 		<?php endif; ?>
 
 		<?php if ($user->can_edit_task($task)): ?>
-		<form action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post">
+		<form action="{$this->url(array('details', 'task' . $task['task_id']))}" method="post">
 		  <div>
 			 <input type="hidden" name="action" value="newdep" />
 			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
@@ -237,7 +237,7 @@
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('reopenrequest')}</a>
 	 <div id="closeform" class="popup hide">
-		<form name="form3" action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post" id="formclosetask">
+		<form name="form3" action="{$this->url(array('details', 'task' . $task['task_id']))}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="requestreopen" />
 			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
@@ -252,10 +252,10 @@
 	 <?php else: ?>
 
 	 <?php if ($user->can_close_task($task) && !$d_open && !$task['close_after']): ?>
-	 <a href="{CreateUrl(array('details', 'task' . $task['task_id']), array('showclose' => !Get::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
+	 <a href="{$this->url(array('details', 'task' . $task['task_id']), array('showclose' => !Get::val('showclose')))}" id="closetask" class="button" accesskey="y" onclick="showhidestuff('closeform');return false;">
 		{L('closetask')}</a>
      <div id="closeform" class="<?php if (Req::val('action') != 'close' && !Get::val('showclose')): ?>hide <?php endif; ?>popup">
-		<form action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post" id="formclosetask">
+		<form action="{$this->url(array('details', 'task' . $task['task_id']))}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="close" />
 			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
@@ -280,7 +280,7 @@
 	 <a href="#close" id="reqclose" class="button" onclick="showhidestuff('closeform');">
 		{L('requestclose')}</a>
 	 <div id="closeform" class="popup hide">
-		<form name="form3" action="{CreateUrl(array('details', 'task' . $task['task_id']))}" method="post" id="formclosetask">
+		<form name="form3" action="{$this->url(array('details', 'task' . $task['task_id']))}" method="post" id="formclosetask">
 		  <div>
 			 <input type="hidden" name="action" value="requestclose" />
 			 <input type="hidden" name="task_id" value="{$task['task_id']}" />
@@ -292,7 +292,7 @@
 	 </div>
 	 <?php endif; ?>
      <?php if ($user->can_close_task($task) && $task['close_after']): ?>
-     <a href="{CreateUrl(array('details', 'task' . $task['task_id']), array('action' => 'stop_close'))}" class="button" accesskey="y">
+     <a href="{$this->url(array('details', 'task' . $task['task_id']), array('action' => 'stop_close'))}" class="button" accesskey="y">
 		{L('stopautoclose')} ({formatDate(max($lastcommentdate, $task['last_edited_time']) + $task['close_after'])})</a>
      <?php endif; ?>
 
@@ -309,7 +309,7 @@
 	 <?php endif; ?>
 
 	 <?php if ($user->can_edit_task($task) || $user->can_correct_task($task)): ?>
-	 <a id="edittask" class="button" href="{CreateURL(array('details', 'task' . $task['task_id']), array('edit' => 1))}">
+	 <a id="edittask" class="button" href="{$this->url(array('details', 'task' . $task['task_id']), array('edit' => 1))}">
 		{L('edittask')}</a>
 	 <?php endif; ?>
 

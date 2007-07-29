@@ -1006,6 +1006,7 @@ Regards,',
 'syntaxplugins'           => 'Syntax plugins',
 'cannotedittaskglobally'  => 'A task cannot be moved to the global project. You shouldn\'t actually have gotten this opportunity.',
 'options'                 => 'Options',
+'selectuser'              => 'Select User',
 );
 
 ?>

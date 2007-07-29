@@ -16,7 +16,7 @@
 <?php if (!($user->isAnon() && count($fs->projects) == 0)): ?>
 <div id="search">
   <map id="projectsearchform" name="projectsearchform">
-    <form action="{$baseurl}index.php" method="get">
+    <form action="{$this->relativeUrl($baseurl)}index.php" method="get">
       <div>
         <button id="searchthisproject" type="submit">{L('searchthisproject')}</button>
         <input class="text" id="searchtext" name="string" type="text" size="20"
@@ -31,7 +31,7 @@
         <?php endif; ?>
 
         <span id="searchstate" style="cursor:pointer">
-        <a onclick="toggleSearchBox('{$this->themeUrl()}');return false;" href="{CreateUrl(array('proj' . $proj->id), array_merge($_GET, array('toggleadvanced' => 1)))}"><span id="advancedsearchstate" class="showstate">
+        <a onclick="toggleSearchBox('{$this->themeUrl()}');return false;" href="{$this->url(array('proj' . $proj->id), array_merge($_GET, array('toggleadvanced' => 1)))}"><span id="advancedsearchstate" class="showstate">
         <img id="advancedsearchstateimg" src="<?php echo (Cookie::val('advancedsearch')) ? $this->get_image('edit_remove') : $this->get_image('edit_add'); ?>"
              alt="<?php echo (Cookie::val('advancedsearch')) ? '-' : '+'; ?>" width="16" height="16" />
         </span>{L('advanced')}</a>
@@ -158,7 +158,7 @@
 <?php endif; ?>
 
 <div id="tasklist">
-  <form action="{CreateURL(array('index', 'proj' . $proj->id))}" id="massops" method="post">
+  <form action="{$this->url(array('index', 'proj' . $proj->id))}" id="massops" method="post">
     <div>
       <table id="tasklist_table">
         <thead>
@@ -232,10 +232,10 @@
           </td>
           <td id="export">
             {L('export')}
-            <a href="{$baseurl}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export')))}">
+            <a href="{$this->relativeUrl($baseurl)}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export')))}">
               <img alt="" title="{L('csvexport')}" src="{$this->get_image('csvexport')}" width="16" height="16" /> {L('csv')}
             </a>
-            <a href="{$baseurl}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export', 'type' => 'iCal')))}">
+            <a href="{$this->relativeUrl($baseurl)}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export', 'type' => 'iCal')))}">
               <img alt="" title="{L('calendarexport')}" src="{$this->get_image('x-office-calendar')}" width="16" height="16" /> {L('iCal')}
             </a>
           </td>

@@ -1,6 +1,6 @@
 <fieldset>
 <legend>{L('massedit')}</legend>
-  <form action="{CreateUrl('edit', array('ids' => Get::val('ids')))}" method="post">
+  <form action="{$this->url('edit', array('ids' => Get::val('ids')))}" method="post">
     <input type="hidden" name="ids" value="{implode(' ', Get::val('ids', array()))}" />
     <input type="hidden" name="action" value="edit" />
     <p>{L('editnote')}</p>

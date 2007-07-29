@@ -1,7 +1,7 @@
 <div id="related" class="tab">
   <table width="100%"> <?php // table based layout, sorry. if anyone has the desire to face browser bugs, feel free to rewrite it with floats ?>
    <tr><td>
-    <form method="post" action="{CreateUrl(array('details', 'task' . $task['task_id']))}#related" >
+    <form method="post" action="{$this->url(array('details', 'task' . $task['task_id']))}#related" >
         <table id="tasks_related" class="userlist">
         <tr>
           <th>
@@ -43,13 +43,13 @@
   </table>
 
   <?php if ($user->can_edit_task($task) && !$task['is_closed']): ?>
-  <form action="{CreateUrl(array('details', 'task' . $task['task_id']))}#related" method="post" id="formaddrelatedtask">
+  <form action="{$this->url(array('details', 'task' . $task['task_id']))}#related" method="post" id="formaddrelatedtask">
     <div>
       <input type="hidden" name="action" value="add_related" />
       <input type="hidden" name="task_id" value="{$task['task_id']}" />
       <label>{L('addnewrelated')}
         <input name="related_task" id="related_task_input" type="text" class="text" size="10" maxlength="10" /></label>
-      <button type="submit" onclick="return checkok('{$baseurl}javascript/callbacks/checkrelated.php?related_task=' + $('related_task_input').value + '&amp;project={$proj->id}', '{#L('relatedproject')}', 'formaddrelatedtask')">{L('add')}</button>
+      <button type="submit" onclick="return checkok('{$this->relativeUrl($baseurl)}javascript/callbacks/checkrelated.php?related_task=' + $('related_task_input').value + '&amp;project={$proj->id}', '{#L('relatedproject')}', 'formaddrelatedtask')">{L('add')}</button>
     </div>
   </form>
   <?php endif; ?>

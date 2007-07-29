@@ -1,5 +1,5 @@
 <fieldset id="events"><legend>{L('eventlog')}</legend>
-  <form action="{$baseurl}index.php" method="get">
+  <form action="{$this->relativeUrl($baseurl)}index.php" method="get">
     <table id="event1">
       <tr>
         <td><label for="events[]">{L('events')}</label></td>
@@ -42,17 +42,17 @@
    <thead>
     <tr>
       <th>
-        <a href="{CreateURL('reports', array('sort' => (Get::val('order') == 'type' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'type') + $_GET)}">
+        <a href="{$this->url('reports', array('sort' => (Get::val('order') == 'type' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'type') + $_GET)}">
           {L('event')}
         </a>
       </th>
       <th>
-        <a href="{CreateURL('reports', array('sort' => (Get::val('order') == 'user' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'user') + $_GET)}">
+        <a href="{$this->url('reports', array('sort' => (Get::val('order') == 'user' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'user') + $_GET)}">
           {L('user')}
         </a>
       </th>
       <th>
-        <a href="{CreateURL('reports', array('sort' => (Get::val('order') == 'date' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'date') + $_GET)}">
+        <a href="{$this->url('reports', array('sort' => (Get::val('order') == 'date' && $sort == 'DESC') ? 'asc' : 'desc', 'order' => 'date') + $_GET)}">
           {L('eventdate')}
         </a>
       </th>

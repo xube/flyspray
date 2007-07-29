@@ -1,5 +1,5 @@
 <fieldset class="box"> <legend>{L('editgroup')}</legend>
-    <form action="{$baseurl}index.php" method="get">
+    <form action="{$this->relativeUrl($baseurl)}index.php" method="get">
         <div>
             <label for="selectgroup">{L('editgroup')}</label>
             <select name="group_id" id="selectgroup">{!tpl_options(Flyspray::ListGroups($proj->id), Req::num('group_id'))}</select>
@@ -9,7 +9,7 @@
         </div>
     </form>
     <hr />
-  <form action="{CreateURL(array($do, 'proj' . $proj->id, 'editgroup'), array('group_id' => Req::num('group_id')))}" method="post">
+  <form action="{$this->url(array($do, 'proj' . $proj->id, 'editgroup'), array('group_id' => Req::num('group_id')))}" method="post">
     <table class="box">
       <tr>
         <td>
@@ -74,9 +74,9 @@
 
   <h3>
     {L('quicklinks')}:
-    <a href="{CreateURL(array($do, 'proj' . $proj->id, 'users'), array('group_id[]' => $group['group_id']))}">{L('groupmembers')} ({$group['num_users']})</a>
+    <a href="{$this->url(array($do, 'proj' . $proj->id, 'users'), array('group_id[]' => $group['group_id']))}">{L('groupmembers')} ({$group['num_users']})</a>
     |
-    <a href="{CreateURL(array($do, 'newgroup'), $newparams)}">{L('createnewfromthis')}</a>
+    <a href="{$this->url(array($do, 'newgroup'), $newparams)}">{L('createnewfromthis')}</a>
   </h3>
 
 </fieldset>

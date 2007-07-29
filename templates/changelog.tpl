@@ -27,5 +27,5 @@
 <p><em>{L('nochangelog')}</em></p>
 </div>
 <?php else: ?>
-<p><a href="{CreateURL(array('changelog', 'proj' . $proj->id), array('txt' => 'true'))}"><img src="{$this->get_image('mime/text')}" alt="" /> {L('textversion')}</a></p>
+<p><a href="{$this->url(array('changelog', 'proj' . $proj->id), array('txt' => 'true'))}"><img src="{$this->get_image('mime/text')}" alt="" /> {L('textversion')}</a></p>
 <?php endif; ?>

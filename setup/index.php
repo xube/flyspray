@@ -16,7 +16,7 @@ if (is_readable ('../flyspray.conf.php') && count(parse_ini_file('../flyspray.co
    die('Flyspray already installed. Use the <a href="upgrade.php">upgrader</a> to upgrade your Flyspray, or delete flyspray.conf.php to run setup.
         You can *not* use the setup on an existing database.');
 }
-//die('No, 1.0 cannot be installed at this point. Install 0.9.9 and upgrade to 1.0 instead');
+die('No, 1.0 cannot be installed at this point. Install 0.9.9 and upgrade to 1.0 instead');
 $borked = str_replace('a', 'b', array( -1 => -1 ) );
 
 if (!isset($borked[-1])) {

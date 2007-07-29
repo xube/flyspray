@@ -2,7 +2,7 @@
   <h3>{L('admintoolboxlong')} :: {L('usersandgroups')}</h3>
   <fieldset class="box">
     <legend>{L('usersandgroups')}</legend>
-    <form action="{CreateUrl(array('admin', 'groups'))}" method="post">
+    <form action="{$this->url(array('admin', 'groups'))}" method="post">
     <p>{L('addormoveusers')} {!tpl_userselect('uid')}
        {L('to')} <select name="user_to_group">
           <?php foreach ($group_list as $project => $project_groups): ?>
@@ -19,7 +19,7 @@
     </form>
 
     <p>
-      <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{CreateURL(array('admin', 'newgroup'))}">{L('newgroup')}</a>
+      <img src="{$this->get_image('kuser')}" alt="" class="middle" /> <a href="{$this->url(array('admin', 'newgroup'))}">{L('newgroup')}</a>
     </p>
 
     <table class="userlist">
@@ -29,13 +29,13 @@
       </thead>
       <?php foreach ($groups as $group): ?>
       <tr>
-        <td><a href="{CreateUrl(array('admin', 'editgroup'), array('group_id' => $group['group_id']))}">{$group['group_name']}</a>
+        <td><a href="{$this->url(array('admin', 'editgroup'), array('group_id' => $group['group_id']))}">{$group['group_name']}</a>
         <?php if ($group['group_desc'] != ''): ?>
         <br />
         <small>{$group['group_desc']}</small>
         <?php endif; ?>
         </td>
-        <td><a href="{CreateURL(array('admin', 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
+        <td><a href="{$this->url(array('admin', 'users'), array('group_id[]' => $group['group_id']))}">{$group['num_users']} {L('users')}</a></td>
         <td class="imgcol" style="width:10em;">
           <?php if ($group['group_open']) : ?>
           <img src="{$this->get_image('button_ok')}" alt="{L('yes')}" />

@@ -3,7 +3,7 @@
 
     <p>{L('lostpwexplain')}</p>
 
-    <form action="{CreateUrl('lostpw')}" method="post">
+    <form action="{$this->url('lostpw')}" method="post">
         <p><b>{L('usernameoremail')}</b>
 
         <input type="hidden" name="action" value="sendmagic" />
