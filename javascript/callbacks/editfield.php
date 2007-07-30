@@ -33,7 +33,7 @@ if (!$user->can_edit_task($task)) {
 $task['num_assigned'] = count($task['assigned_to']);
 $task['assigned_to_name'] = reset($task['assigned_to_name']);
 $prev = Filters::noXSS(str_replace("'", "\'", tpl_draw_cell($task, $field, '<span class="%s %s">%s</span>')));
-$id = sprintf('id="%s" name="%s"', $field, $field);
+$id = sprintf('id="task%d_%s" name="task%d_%s"', $task['task_id'], $field, $task['task_id'], $field);
 
 switch ($field)
 {
@@ -62,6 +62,7 @@ switch ($field)
         }
         $field = 'assigned_to';
         $page = new FSTpl();
+        $page->assign('id', 'task' . $task['task_id'] . '_' . $field);
         $list = $db->x->getCol('SELECT u.user_name
                                   FROM {assigned} a, {users} u
                                  WHERE a.user_id = u.user_id AND task_id = ?
@@ -77,7 +78,7 @@ switch ($field)
         $field_id = substr($field, 5);
         $f = new Field($field_id);
         if ($f->id) {
-            echo $f->edit(!USE_DEFAULT, !LOCK_FIELD, $task, array(), array(), 'qe');
+            echo $f->edit(!USE_DEFAULT, !LOCK_FIELD, $task, array(), array(), 'task' . $task['task_id'] . '_qe');
             $field = 'qe' . $field;
         } else {
             header('HTTP/1.1 400 Bad Request');
@@ -89,5 +90,5 @@ switch ($field)
 $args = sprintf("%s, '%s'", $task['task_id'], $field);
 echo '<button type="button" onclick="savequickedit(' . $args . ');this.onclick=function(){}">'.eL('OK').'</button>
       <button type="button" onclick="this.parentNode.update(\''. $prev .'\')">X</button>';
-echo "<script type='text/javascript'>$('{$field}').focus();</script>";
+echo "<script type='text/javascript'>$('task{$task['task_id']}_{$field}').focus();</script>";
 ?>

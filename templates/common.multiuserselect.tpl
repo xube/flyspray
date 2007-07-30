@@ -2,7 +2,7 @@
                    <img src="{$this->get_image('kuser-small')}" width="16" height="16" alt="{L('selectuser')}" /> <a href="#" onclick="return userspopup('{$this->url('userselect')}', 'assigned_to')">
                    {L('select')}</a>
                    <br />
-                   <textarea cols="10" rows="4" name="assigned_to" id="assigned_to"><?php
+                   <textarea cols="10" rows="4" name="{(isset($id) ? $id : 'assigned_to')}" id="{(isset($id) ? $id : 'assigned_to')}"><?php
                    if (!Req::val('assigned_to')):
                    foreach ($userlist as $usr):
                    ?>{$usr}; <?php

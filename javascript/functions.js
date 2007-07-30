@@ -643,9 +643,9 @@ function savequickedit(task_id, field_name)
         realfield = field_name.substring(2);
     }
     new Ajax.Request($('baseurl').href + 'javascript/callbacks/savequickedit.php', {
-      parameters: {task_id: task_id, field: realfield, value: $(field_name).value},
+      parameters: {task_id: task_id, field: realfield, value: $('task' + task_id + '_' + field_name).value},
       onSuccess: function(t) {
-        src = $(field_name).parentNode;
+        src = $('task' + task_id + '_' + field_name).parentNode;
         while (src.nodeName != 'TD' && src.parentNode) {
           src = src.parentNode;
         }
