@@ -28,7 +28,7 @@ class FlysprayDoDepends extends FlysprayDo
         global $conf;
 
         if (Flyspray::function_disabled('shell_exec') && !array_get($conf['general'], 'dot_public')) {
-            return array(ERROR_INPUT, L('error24'), CreateUrl(array('details', 'task' . $id)));
+            return array(ERROR_INPUT, L('error24'), CreateUrl(array('details', 'task' . $this->task['task_id'])));
         }
         return array(NO_SUBMIT);
     }
@@ -118,7 +118,7 @@ class FlysprayDoDepends extends FlysprayDo
               WHERE  t1.project_id= ?
            ORDER BY  d.task_id, d.dep_task_id';
 
-        $edges = $db->x->getAll($sql, $proj->id);
+        $edges = $db->x->getAll($sql, null, $proj->id);
 
         $edge_list = array();
         $rvrs_list = array();
@@ -151,7 +151,7 @@ class FlysprayDoDepends extends FlysprayDo
         function ConnectsTo($id, $down, $up) {
             global $connected, $edge_list, $rvrs_list, $levelsdown, $levelsup;
             global $prunemode, $node_list;
-            if (!isset($connected[$id])) { $connected[$id]=1; }
+            if (!isset($connected[$id])) { die("füge ein";$connected[$id]=1; }
             if ($down > $levelsdown) { $levelsdown = $down; }
             if ($up   > $levelsup  ) { $levelsup   = $up  ; }
         #echo "$id ($down d, $up u) => $levelsdown d $levelsup u<br>\n";
@@ -181,7 +181,7 @@ class FlysprayDoDepends extends FlysprayDo
         ConnectsTo($id, 0, 0);
         $connected_nodes = array_keys($connected);
         sort($connected_nodes);
-
+        
         // Now lets get rid of the extra junk in our arrays.
         // In prunemode 0, we know we're only going to have to get rid of
         // whole lists, and not elements in the lists, because if they were
