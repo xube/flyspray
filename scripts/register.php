@@ -97,9 +97,9 @@ class FlysprayDoRegister extends FlysprayDo
 
         $taken = $db->x->getRow("SELECT user_id
                                    FROM {users}
-                                  WHERE jabber_id = ? AND ? != NULL
-                                        OR email_address = ? AND ? != NULL",
-                                   array($jabber_id, $jabber_id, $email, $email));
+                                  WHERE jabber_id = ? AND jabber_id != NULL
+                                        OR email_address = ? AND email_address != NULL",
+                                   null, array($jabber_id, $email));
         if ($taken) {
             return array(ERROR_RECOVER, L('emailtaken'));
         }
