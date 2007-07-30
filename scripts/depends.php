@@ -148,13 +148,11 @@ class FlysprayDoDepends extends FlysprayDo
         $connected  = array();
         $levelsdown = 0;
         $levelsup   = 0;
-        function ConnectsTo($id, $down, $up) {
-            global $connected, $edge_list, $rvrs_list, $levelsdown, $levelsup;
-            global $prunemode, $node_list;
-            if (!isset($connected[$id])) { die("füge ein";$connected[$id]=1; }
+        function ConnectsTo($id, $down, $up, &$connected, &$edge_list, &$rvrs_list, &$levelsdown, &$levelsup, &$prunemode, &$node_list) {
+            if (!isset($connected[$id])) { $connected[$id]=1; }
             if ($down > $levelsdown) { $levelsdown = $down; }
             if ($up   > $levelsup  ) { $levelsup   = $up  ; }
-        #echo "$id ($down d, $up u) => $levelsdown d $levelsup u<br>\n";
+            
             $selfclosed = $node_list[$id]['clsd'];
             if (isset($edge_list[$id])) {
                 foreach ($edge_list[$id] as $neighbor) {
@@ -162,7 +160,7 @@ class FlysprayDoDepends extends FlysprayDo
                     if (!isset($connected[$neighbor]) &&
                             !($prunemode==1 && $selfclosed && $neighborclosed) &&
                             !($prunemode==2 && $neighborclosed)) {
-                        ConnectsTo($neighbor, $down, $up+1);
+                        ConnectsTo($neighbor, $down, $up+1, $connected, $edge_list, $rvrs_list, $levelsdown, $levelsup, $prunemode, $node_list);
                     }
                 }
             }
@@ -172,13 +170,13 @@ class FlysprayDoDepends extends FlysprayDo
                     if (!isset($connected[$neighbor]) &&
                             !($prunemode==1 && $selfclosed && $neighborclosed) &&
                             !($prunemode==2 && $neighborclosed)) {
-                        ConnectsTo($neighbor, $down+1, $up);
+                        ConnectsTo($neighbor, $down+1, $up, $connected, $edge_list, $rvrs_list, $levelsdown, $levelsup, $prunemode, $node_list);
                     }
                 }
             }
         }
 
-        ConnectsTo($id, 0, 0);
+        ConnectsTo($id, 0, 0, $connected, $edge_list, $rvrs_list, $levelsdown, $levelsup, $prunemode, $node_list);
         $connected_nodes = array_keys($connected);
         sort($connected_nodes);
         
