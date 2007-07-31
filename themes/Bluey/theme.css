@@ -1013,6 +1013,7 @@ div.success {
 div#toolboxmenu {
 	position:relative;
 	float:left;
+	z-index:-1;
 	padding-top:15px;
 }
 

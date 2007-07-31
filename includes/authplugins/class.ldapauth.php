@@ -28,7 +28,7 @@ class LDAPAuth extends FlysprayAuth
         // Does user exist in LDAP server?
         $ldapconn = ldap_connect($fs->prefs['ldap_server']);
         if (!$ldapconn) {
-            return false;
+            return array(ERROR_RECOVER, L('ldapconerror'));
         }
         
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -68,6 +68,10 @@ class LDAPAuth extends FlysprayAuth
             @ldap_close($ldapconn);
             return Backend::create_user($username, $password, $username, '', '', 1, 0, $fs->prefs['anon_group']);
         }
+        return array(ERROR_RECOVER, L('ldaperror') . ':' . ldap_error());
+    }
+    
+    function checkCookie() {
         return false;
     }
 }

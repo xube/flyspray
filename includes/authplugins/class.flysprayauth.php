@@ -58,7 +58,9 @@ class FlysprayAuth
             // at this point, provide the possibility to ask for LDAP users etc.
             foreach ($this->authenticators as $auth) {
                 $user = $auth->checkLogin($username, $password);
-                if ($user) {
+                if (is_array($user))  {
+                    return $user; // some error message
+                } else if ($user) {
                     $user = $db->x->getRow('SELECT * FROM {users} WHERE user_id = ?', null, $user);
                     break;
                 }
@@ -147,7 +149,8 @@ class FlysprayAuth
     function checkCookie($userid, $passhash) {
         global $conf, $db;
         
-        $user = $db->x->getRow('SELECT u.*, g.group_open FROM {users} u
+        $user = $db->x->getRow('SELECT u.*, g.group_open
+                                  FROM {users} u
                              LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
                              LEFT JOIN {groups} g ON uig.group_id = g.group_id
                                  WHERE u.user_id = ? AND g.project_id = 0', null, $userid);
@@ -160,7 +163,7 @@ class FlysprayAuth
         {
             // try other authenticators, maybe use cookies from other software
             foreach ($this->authenticators as $auth) {
-                if ($auth->checkCookie($username, $password)) {
+                if ($auth->checkCookie($userid, $passhash)) {
                     return true;
                 }
             }
