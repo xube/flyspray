@@ -140,8 +140,8 @@
 
    <field>
     <name>list_id</name>
-    <type>text</type>
-    <length>20</length>
+    <type>integer</type>
+    <length>10</length>
     <notnull>true</notnull>
     <default></default>
    </field>
@@ -184,8 +184,8 @@
 
    <field>
     <name>list_type</name>
-    <type>text</type>
-    <length>20</length>
+    <type>integer</type>
+    <length>10</length>
     <notnull>true</notnull>
     <default></default>
    </field>

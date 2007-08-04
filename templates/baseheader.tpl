@@ -19,19 +19,20 @@
     <link rel="alternate" type="application/rss+xml" title="Flyspray Feed - {L('taskedited')}" href="{$this->relativeUrl($baseurl)}feed.php?feed_type=rss1&amp;project={$proj->id}" />
     <link title="{$proj->prefs['project_title']} - Flyspray" type="application/opensearchdescription+xml" rel="search" href="{$this->relativeUrl($baseurl)}index.php?opensearch=1&amp;project_id={$proj->id}" />
     <base href="{$this->relativeUrl($baseurl)}" id="baseurl" />
-    
+
     <style type="text/css">
     <?php
+    if ($fs->prefs['color_field']):
     $colors = array('#fff5dd' => '#ffe9b4', '#ecdbb7' => '#efca80', '#f5d5c6' => '#f7b390',
                     '#ffd5d1' => '#ffb2ac', '#f3a29b' => '#f3867e');
     end($colors);
     foreach ($proj->fields['field' . $fs->prefs['color_field']]->values as $key => $value):
     if (!$value['list_item_id']) continue; ?>
     .colorfield{$value['list_item_id']} { background-color:{key($colors)} !important; }
-    .colorfield{$value['list_item_id']}:hover { background-color:{current($colors)} !important; }    
-    <?php prev($colors); endforeach; ?>
-    </style>    
-     
+    .colorfield{$value['list_item_id']}:hover { background-color:{current($colors)} !important; }
+    <?php prev($colors); endforeach; endif; ?>
+    </style>
+
     <script type="text/javascript" src="{$this->relativeUrl($baseurl)}javascript/prototype/prototype.js"></script>
     <?php if ('index' == $do || 'details' == $do): ?>
         <script type="text/javascript" src="{$this->relativeUrl($baseurl)}javascript/{$do}.js"></script>

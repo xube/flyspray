@@ -47,6 +47,7 @@ class Project
             if (is_array($this->prefs)) {
                 $this->id    = (int) $this->prefs['project_id'];
                 $this->prefs['visible_columns'] = implode(' ', array_intersect(explode(' ', $this->prefs['visible_columns']), array_keys($this->columns)));
+                $this->prefs['theme_style'] = Filters::enum($this->prefs['theme_style'], Flyspray::listThemes());
                 return;
             }
         }
@@ -56,6 +57,7 @@ class Project
         $this->prefs['project_title'] = L('allprojects');
         $this->prefs['feed_description']  = L('feedforall');
         $this->prefs['theme_style']   = $fs->prefs['global_theme'];
+        $this->prefs['theme_style'] = Filters::enum($this->prefs['theme_style'], Flyspray::listThemes());
         $this->prefs['lang_code']   = $fs->prefs['lang_code'];
         $this->prefs['others_view'] = 1;
         $this->prefs['intro_message'] = '';

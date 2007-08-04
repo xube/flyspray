@@ -136,10 +136,10 @@ function GetColumnNames($table, $alt, $prefix)
     if (strcasecmp($conf['database']['dbtype'], 'pgsql') || !Filters::isAlnum($prefix)) {
         return $alt;
     }
+    $db->loadModule('Manager');
+    $col_names = $db->manager->listTableFields($table);
 
-    $col_names = $db->MetaColumnNames($table);
-
-    return implode(', ', array_map(create_function('$x', 'return "' . $prefix . '" . $x;'), $col_names));
+    return implode(', ', array_map(create_function('$x', 'return "' . $prefix . '.' . '" . $x;'), $col_names));
 }
 
 /**

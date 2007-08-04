@@ -1204,8 +1204,8 @@ class Backend
 
         $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'id'), array_keys($order_keys))];
         $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'project'), array_keys($order_keys))];
-        $order_column[0] = sprintf($order_column[0], Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc')));
-        $order_column[1] = sprintf($order_column[1], Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc')));
+        $order_column[0] = sprintf($order_column[0], Filters::enum(array_get($args, 'sort', 'DESC'), array('asc', 'DESC')));
+        $order_column[1] = sprintf($order_column[1], Filters::enum(array_get($args, 'sort2', 'DESC'), array('asc', 'DESC')));
 
         $sortorder  = sprintf('%s, %s, t.task_id ASC', $order_column[0], $order_column[1]);
 
@@ -1404,8 +1404,10 @@ class Backend
 
         // Get the column names of table tasks for the group by statement
         if (!strcasecmp($conf['database']['dbtype'], 'pgsql')) {
-             $groupby .= "p.project_title, lst.item_name, lt.item_name,{$order_column[0]},{$order_column[1]}, lr.item_name, ";
-             $groupby .= GetColumnNames('{tasks}', 't.task_id', 't');
+            $order_column[0] = substr($order_column[0], 0, -4);
+            $order_column[1] = substr($order_column[1], 0, -4);
+            $groupby .= "p.project_title, p.project_prefix, {$order_column[0]},{$order_column[1]}, lr.item_name, ";
+            $groupby .= GetColumnNames('{tasks}', 't.task_id', 't');
         } else {
             $groupby = 't.task_id';
         }
