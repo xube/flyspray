@@ -3,6 +3,7 @@
 /*
  * Base class for authentication and interface
  * for other auth plugins at the same time.
+ * All plugins MUST implement ALL methods (constructor usually empty).
  */
 class FlysprayAuth
 {

@@ -173,6 +173,8 @@ function execute_upgrade_file($folder, $installed_version)
             $db->setOption('idxname_format', '%s');
             $schema =& MDB2_Schema::factory($db);
             $schema->setOption('force_defaults', false);
+            // XXX: workaround for MDB2 bug
+            $db->inTransaction() && $db->commit();
             $previous_schema = $schema->getDefinitionFromDatabase();
             if (PEAR::isError($previous_schema)) {
                 return $previous_schema;
