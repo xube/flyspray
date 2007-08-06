@@ -296,7 +296,6 @@ class User
         // Set cookie expiry time to the past, thus removing them
         Flyspray::setcookie('flyspray_userid',   '', time()-60);
         Flyspray::setcookie('flyspray_passhash', '', time()-60);
-        Flyspray::setcookie('flyspray_project',  '', time()-60);
         if (Cookie::has(session_name())) {
             Flyspray::setcookie(session_name(), '', time()-60);
         }

@@ -39,7 +39,7 @@ define('CONFIG_PATH', Flyspray::get_config_path(BASEDIR . '/../'));
 $conf  = @parse_ini_file(CONFIG_PATH, true) or die('Cannot open config file at ' . CONFIG_PATH);
 
 $db = NewDatabase($conf['database']);
-
+$db->setOption('portability', MDB2_PORTABILITY_ALL ^ MDB2_PORTABILITY_FIX_CASE);
 // ---------------------------------------------------------------------
 // Application Web locations
 // ---------------------------------------------------------------------
