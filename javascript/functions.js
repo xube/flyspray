@@ -400,7 +400,7 @@ function showPreview(textfield, field) {
 
     var text = $(textfield).value;
     var url = $('baseurl').href + 'javascript/callbacks/getpreview.php';
-    var myAjax = new Ajax.Updater(field, url, {parameters: {'text':  text, 'plugins[]': $(textfield + '_syntax_plugins[]').getValue()}, method: 'post'});
+    var myAjax = new Ajax.Updater(field, url, {parameters: {'text':  text, 'plugins[]': ($(textfield + '_syntax_plugins[]') ? $(textfield + '_syntax_plugins[]').getValue() : null)}, method: 'post'});
 
     if (text == '') {
         hidestuff(field);

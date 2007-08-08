@@ -46,13 +46,13 @@
         <tr>
           <td><label for="intromesg">{L('intromessage')}</label></td>
           <td>
-            {!$this->text->textarea('intro_message', 8, 70, array('tabindex' => 8), Post::val('intro_message', $proj->prefs['intro_message']))}
+            {!$this->text->textarea('intro_message', 8, 70, null, Post::val('intro_message', $proj->prefs['intro_message']))}
           </td>
         </tr>
         <tr>
           <td><label for="default_task">{L('defaulttask')}</label></td>
           <td>
-            {!$this->text->textarea('default_task', 8, 70, array('tabindex' => 8), Post::val('default_task', $proj->prefs['default_task']))}
+            {!$this->text->textarea('default_task', 8, 70, null, Post::val('default_task', $proj->prefs['default_task']))}
           </td>
         </tr>
         <tr>
