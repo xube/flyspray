@@ -872,7 +872,7 @@ class Backend
         if ($user->isAnon() && $fs->prefs['use_recaptcha']) {
             include_once BASEDIR . '/includes/external/recaptchalib.php';
             $solution =& new reCAPTCHA_Solution();
-            $solution->privatekey = $fs->prefs['recaptcha_private_key'];
+            $solution->privatekey = $fs->prefs['recaptcha_priv_key'];
             $solution->challenge = Post::val('recaptcha_challenge_field');
             $solution->response = Post::val('recaptcha_response_field');
             $solution->remoteip = $_SERVER['REMOTE_ADDR'];
