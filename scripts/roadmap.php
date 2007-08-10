@@ -44,7 +44,7 @@ class FlysprayDoRoadmap extends FlysprayDo
             $all_tasks = $db->x->getAll('SELECT  percent_complete, is_closed, t.*
                                        FROM  {tasks} t
                                   LEFT JOIN  {field_values} fv ON (fv.task_id = t.task_id AND field_id = ?)
-                                      WHERE  field_value = ? AND project_id = ?',
+                                      WHERE  field_value = ? AND project_id = ?', null,
                                      array($proj->prefs['roadmap_field'], $row['version_id'], $proj->id));
             $all_tasks = array_filter($all_tasks, array($user, 'can_view_task'));
 

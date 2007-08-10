@@ -97,7 +97,7 @@
         </tr>
         <tr>
           <td><label for="recaptcha_priv_key">{L('recaptchaprivatekey')}</label></td>
-          <td><input id="recaptcha_priv_key" name="recaptcha_private_key" class="text" type="text" size="40" value="{$fs->prefs['recaptcha_private_key']}" /></td>
+          <td><input id="recaptcha_priv_key" name="recaptcha_priv_key" class="text" type="text" size="40" value="{$fs->prefs['recaptcha_private_key']}" /></td>
 		</tr>
           <td><label for="notify_registration">{L('notify_registration')}</label></td>
           <td>{!tpl_checkbox('notify_registration', $fs->prefs['notify_registration'], 'notify_registration')}</td>
