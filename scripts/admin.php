@@ -756,6 +756,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $params = array();
         $params[] = $position;
         $params = array_merge($params, array_map('Post_to0', $cols));
+        $params[] = 1;
         array_unshift($cols, 'list_position');
         array_push($cols, 'show_in_list');
 
