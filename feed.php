@@ -7,11 +7,7 @@ define('IN_FS', true);
 
 require dirname(__FILE__).'/header.php';
 
-$user =& new User;
-$auth = new FlysprayAuth();
-if (Cookie::val('flyspray_userid') && $auth->checkCookie(Cookie::val('flyspray_userid'), Cookie::val('flyspray_passhash'))) {
-    $user =& new User(Cookie::val('flyspray_userid'));
-} elseif (Get::val('user_id') && Get::val('auth')) {
+if (!$user->id && Get::val('user_id') && Get::val('auth')) {
     $user = new User(Get::val('user_id'));
     if (Get::val('auth') != md5($user->infos['user_pass'] . $user->infos['register_date'])) {
         $user =& new User;
@@ -36,11 +32,11 @@ switch (Get::val('topic')) {
                 $title   = 'Recently closed tasks';
     break;
 
-    case 'edit':$orderby = 'last_edited_time'; $closed = '';
+    case 'edit':$orderby = 'last_edited_time'; $closed = '1=1';
                 $title   = 'Recently edited tasks';
     break;
 
-    default:    $orderby = 'date_opened'; $closed = '';
+    default:    $orderby = 'date_opened'; $closed = '1=1';
                 $title   = 'Recently opened tasks';
     break;
 }
