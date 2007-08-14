@@ -20,7 +20,7 @@ $page =& new FSTpl();
 header ('Content-type: text/html; charset=utf-8');
 
 $max_items  = (Get::num('num', 10) == 10) ? 10 : 20;
-$sql_project = '';
+$sql_project = ' 1=1 ';
 if ($proj->id) {
     $sql_project = sprintf(' t.project_id = %d', $proj->id);
 }
@@ -28,7 +28,7 @@ if ($proj->id) {
 $feed_type  = Get::enum('feed_type', array('rss1', 'rss2', 'atom'), 'rss2');
 
 switch (Get::val('topic')) {
-    case 'clo': $orderby = 'date_closed'; $closed = 't.is_closed = 1 AND';
+    case 'clo': $orderby = 'date_closed'; $closed = 't.is_closed = 1';
                 $title   = 'Recently closed tasks';
     break;
 
@@ -48,7 +48,7 @@ $cachefile = sprintf('%s/%s', FS_CACHE_DIR, $filename);
 $db->setLimit($max_items);
 $sql = $db->query("SELECT  t.date_opened, t.date_closed, t.last_edited_time
                      FROM  {tasks}    t
-                    WHERE  $closed $sql_project
+                    WHERE  $closed AND $sql_project
                  ORDER BY  $orderby DESC");
 $most_recent = 0;
 while ($row = $sql->fetchRow()) {
@@ -83,7 +83,7 @@ $task_details = $db->x->getAll(
                            FROM  {tasks}    t
                      INNER JOIN  {users}    u ON t.opened_by = u.user_id
                      INNER JOIN  {projects} p ON t.project_id = p.project_id
-                          WHERE  $closed $sql_project
+                          WHERE  $closed AND $sql_project
                        ORDER BY  $orderby DESC");
 
 $task_details     = array_filter($task_details, array($user, 'can_view_task'));
