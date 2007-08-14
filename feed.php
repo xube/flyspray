@@ -7,16 +7,15 @@ define('IN_FS', true);
 
 require dirname(__FILE__).'/header.php';
 
-if (Cookie::has('flyspray_userid') && Cookie::has('flyspray_passhash')) {
-    $user = new User(Cookie::val('flyspray_userid'));
-    $user->check_account_ok();
+$user =& new User;
+$auth = new FlysprayAuth();
+if (Cookie::val('flyspray_userid') && $auth->checkCookie(Cookie::val('flyspray_userid'), Cookie::val('flyspray_passhash'))) {
+    $user =& new User(Cookie::val('flyspray_userid'));
 } elseif (Get::val('user_id') && Get::val('auth')) {
     $user = new User(Get::val('user_id'));
     if (Get::val('auth') != md5($user->infos['user_pass'] . $user->infos['register_date'])) {
         $user =& new User;
     }
-} else {
-    $user =& new User;
 }
 
 $page =& new FSTpl();
