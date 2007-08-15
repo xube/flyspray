@@ -26,7 +26,8 @@
           <a href="{$_SERVER['SCRIPT_NAME']}?do=index&amp;project={$project['project_id']}&amp;only_watched=1">{L('taskswatched')}</a> |
           <a href="{$_SERVER['SCRIPT_NAME']}?do=index&amp;project={$project['project_id']}&amp;opened={$user->id}">{L('tasksireported')}</a> |
         <?php endif; ?>
-        <a href="{$_SERVER['SCRIPT_NAME']}?do=index&amp;project={$project['project_id']}&amp;openedfrom=-1+week">{L('recentlyopened')}</a>
+        <a href="{$_SERVER['SCRIPT_NAME']}?do=index&amp;project={$project['project_id']}&amp;openedfrom=-1+week">{L('recentlyopened')}</a> |
+        <a href="{$_SERVER['SCRIPT_NAME']}?do=index&amp;project={$project['project_id']}&amp;closedfrom=-1+week">{L('recentlyclosed')}</a>
     </td>
   </tr>
   <tr>
