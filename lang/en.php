@@ -1011,6 +1011,7 @@ Regards,',
 'ldapconerror'            => 'Could not connect to LDAP server.',
 'ldaperror'               => 'An LDAP error occured',
 'recentlyclosed'          => 'Recently closed',
+'showasassignees'         => 'Show as assignees',
 );
 
 ?>

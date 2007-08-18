@@ -60,7 +60,7 @@ class Flyspray
     var $perms = array('manage_project', 'view_private', 'edit_private',
                        'view_tasks', 'open_new_tasks', 'modify_own_tasks',
                        'modify_all_tasks', 'view_history', 'close_own_tasks', 'close_other_tasks',
-                       'edit_assignments', 'add_to_assignees', 'assign_to_self', 'assign_others_to_self',
+                       'edit_assignments', 'add_to_assignees', 'assign_to_self', 'assign_others_to_self', 'show_as_assignees',
                        'view_comments', 'add_comments', 'edit_own_comments', 'edit_comments', 'delete_comments',
                        'create_attachments', 'delete_attachments', 'view_userlist', 'view_reports',
                        'add_votes', 'view_svn');
@@ -71,8 +71,8 @@ class Flyspray
      * @var array
      */
     var $permgroups = array( array(0, 2, 'specialperms'), array(3, 9, 'taskperms'),
-                             array(10, 13, 'assignmentperms'), array(14, 18, 'commentperms'),
-                             array(19, 20, 'attachmentperms'), array(21, 24, 'variousperms'));
+                             array(10, 14, 'assignmentperms'), array(15, 19, 'commentperms'),
+                             array(20, 21, 'attachmentperms'), array(22, 25, 'variousperms'));
 
     // Application-wide preferences {{{
     /**

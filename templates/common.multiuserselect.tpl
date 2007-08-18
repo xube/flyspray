@@ -14,7 +14,7 @@
                    ?></textarea>
                    <script type="text/javascript">
                           var options = {
-                            script: "{$this->relativeUrl($baseurl)}javascript/callbacks/usersearch.php?",
+                            script: "{$this->relativeUrl($baseurl)}javascript/callbacks/usersearch.php?onlyassignees=1&",
                             varname: "user",
                             delay:50,
                             timeout:5000,

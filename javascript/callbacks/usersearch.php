@@ -17,10 +17,18 @@ if (!$user->can_view_userlist()) {
 $searchterm = '%' . Get::val('user') . '%';
 
 // Get the list of users from the global groups above
+$join = $where = '';
+if (Get::val('onlyassignees')) {
+    $join = 'LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
+             LEFT JOIN {groups} g ON uig.group_id = g.group_id';
+    $where = 'g.show_as_assignees = 1 AND ';
+}
+
 $db->setLimit(300);
-$users = $db->x->getAll('SELECT u.user_id, u.real_name, u.user_name
+$users = $db->x->getAll("SELECT u.user_id, u.real_name, u.user_name
                            FROM {users} u
-                          WHERE u.user_name LIKE ? OR u.real_name LIKE ?', null,
+                          $join
+                          WHERE $where (u.user_name LIKE ? OR u.real_name LIKE ?)", null,
                          array($searchterm, $searchterm));
 
 header('Content-Type: text/xml');

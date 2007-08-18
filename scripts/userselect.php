@@ -30,11 +30,12 @@ class FlysprayDoUserSelect extends FlysprayDo
         $page->pushTpl('baseheader.tpl');
 
         $query = 'SELECT g.group_id, g.group_name, g.group_desc,
-                                    g.group_open, count(uig.user_id) AS num_users
-                               FROM {groups} g
-                          LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
-                              WHERE g.project_id = ?
-                           GROUP BY g.group_id';
+                         g.group_open, count(u.user_id) AS num_users
+                    FROM {groups} g
+               LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
+               LEFT JOIN {users} u ON (uig.user_id = u.user_id AND g.show_as_assignees = 1)
+                   WHERE g.project_id = ?
+                GROUP BY g.group_id';
 
         $page->assign('groups', $db->x->getAll($query, null, $proj->id));
 
@@ -60,9 +61,10 @@ class FlysprayDoUserSelect extends FlysprayDo
                 $order_column, Filters::enum(Get::val('sort', 'desc'), array('asc', 'desc')));
 
             $users = $db->x->getAll('SELECT u.user_id, user_name, real_name, email_address
-                                   FROM {users} u
-                              LEFT JOIN {users_in_groups} uig ON uig.user_id = u.user_id
-                                  WHERE uig.group_id = ? AND ( ' . $where . ' )' . $sortorder,
+                                       FROM {users} u
+                                  LEFT JOIN {users_in_groups} uig ON uig.user_id = u.user_id
+                                  LEFT JOIN {groups} g ON uig.group_id = g.group_id
+                                      WHERE uig.group_id = ? AND g.show_as_assignees = 1 AND ( ' . $where . ' )' . $sortorder,
                                   null, array_merge(array(Get::val('group_id')), $params));
 
             // Offset and limit
@@ -80,7 +82,7 @@ class FlysprayDoUserSelect extends FlysprayDo
                                        FROM {assigned} a
                                   LEFT JOIN {users} u ON a.user_id = u.user_id
                                   LEFT JOIN {tasks} t ON a.task_id = t.task_id
-                                   WHERE ( ' . $where . ' )' . '
+                                      WHERE ( ' . $where . ' )' . '
                                    GROUP BY a.user_id
                                    ORDER BY my_project DESC, a_count DESC', null, array_merge(array($proj->id), $params));
             $page->assign('users', $users);

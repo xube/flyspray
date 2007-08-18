@@ -966,6 +966,14 @@
    </field>
 
    <field>
+    <name>show_as_assignees</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>1</default>
+   </field>
+   
+   <field>
     <name>group_open</name>
     <type>integer</type>
     <length>4</length>
