@@ -29,16 +29,6 @@ if (isset($conf['general']['force_baseurl']) && $conf['general']['force_baseurl'
     $baseurl = rtrim(Flyspray::absoluteURI($webdir),'/\\') . '/' ;
 }
 
-if(isset($conf['general']['syntax_plugin']) && preg_match('/^[a-z0-9_]+$/iD', $conf['general']['syntax_plugin'])) {
-
-$path_to_plugin = sprintf('%s/plugins/%s/%s_constants.inc.php',
-                          BASEDIR, $conf['general']['syntax_plugin'], $conf['general']['syntax_plugin']);
-
-    if (is_readable($path_to_plugin)) {
-        include($path_to_plugin);
-    }
-}
-
 define('NOTIFY_TASK_OPENED',      1);
 define('NOTIFY_TASK_CHANGED',     2);
 define('NOTIFY_TASK_CLOSED',      3);
