@@ -106,13 +106,12 @@ function &NewDatabase($conf = array())
     define('DB_PREFIX', $dbprefix);
 
     $db->setFetchMode(MDB2_FETCHMODE_ASSOC);
-
-
+    
     $db->setOption('debug', true);
     $db->setOption('debug_handler', '_table_prefix');
     $db->setOption('quote_identifier', true);
     // upgrader can handle that on its own
-    if (!defined('IN_UPGRADER') && !defined('IN_SETUP')) {
+    if (!defined('IN_UPGRADER') && !defined('IN_SETUP') || defined('DEBUG_SQL')) {
         $db->setErrorHandling(PEAR_ERROR_CALLBACK, 'show_dberror');
     }
 
