@@ -1123,7 +1123,6 @@ class Backend
                                 CASE WHEN t.date_closed>t.date_opened THEN CASE WHEN t.date_closed > t.last_edited_time THEN t.date_closed ELSE t.last_edited_time END ELSE
                                     CASE WHEN t.date_opened > t.last_edited_time THEN t.date_opened ELSE t.last_edited_time END END END AS max_date, ';
             }
-            $groupby .= 'c.date_added, ';
         }
         if (array_get($args, 'opened') || in_array('openedby', $visible)) {
             $from   .= ' LEFT JOIN  {users} uo          ON t.opened_by = uo.user_id ';
