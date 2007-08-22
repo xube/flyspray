@@ -2109,6 +2109,7 @@
 
    <field>
     <name>related_type</name>
+    <was>is_duplicate</was>
     <type>integer</type>
     <length>4</length>
     <notnull>true</notnull>

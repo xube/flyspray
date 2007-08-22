@@ -2,12 +2,14 @@
 0="clean_db.php"
 1="upgrade_lists.xml"
 2="upgrade_fields.xml"
-3="upgrade_lists.php"
-4="upgrade_severity.php"
-5="prefix.xml"
-6="upgrade_prefix.php"
-8="flyspray-final.xml"
-9="add_data.php"
+3="redundant.xml"
+4="upgrade_redundant.php"
+5="upgrade_lists.php"
+6="upgrade_severity.php"
+7="prefix.xml"
+8="upgrade_prefix.php"
+9="flyspray-final.xml"
+10="add_data.php"
 
 [fsprefs]
 fs_ver="0.9.9" ; doesn't matter which version

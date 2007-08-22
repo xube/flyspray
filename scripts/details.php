@@ -187,12 +187,15 @@ class FlysprayDoDetails extends FlysprayDo
                                           AND task_id = ? AND old_value != '100'
                                  ORDER BY event_date DESC", null, $task['task_id']);
 
-        $db->x->execParam("UPDATE  {tasks}
+        $db->x->execParam('UPDATE  {tasks}
                        SET  resolution_reason = 0, closure_comment = NULL, date_closed = 0,
                             last_edited_time = ?, last_edited_by = ?, is_closed = 0, percent_complete = ?
-                     WHERE  task_id = ?",
+                     WHERE  task_id = ?',
                     array(time(), $user->id, $old_percent['old_value'], $task['task_id']));
-
+                    
+        // [RED] Update last changed date
+        $db->x->execParam('UPDATE {redundant} SET last_changed_time = ? WHERE task_id = ?', array(time(), $task['task_id']));
+        
         Flyspray::logEvent($task['task_id'], 3, $old_percent['old_value'], $old_percent['new_value'], 'percent_complete');
 
         Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_TASK_REOPENED);
@@ -364,7 +367,7 @@ class FlysprayDoDetails extends FlysprayDo
                             null, Get::val('comment_id'));
 
         // Check for files attached to this comment
-        $attachments = $db->x->getAll('SELECT  attachment_id
+        $attachments = $db->x->getAll('SELECT  *
                                          FROM  {attachments}
                                         WHERE  comment_id = ?',
                                           null, Req::val('comment_id'));
@@ -375,13 +378,16 @@ class FlysprayDoDetails extends FlysprayDo
 
         $num = $db->x->execParam('DELETE FROM {comments} WHERE comment_id = ? AND task_id = ?',
                                   array(Req::val('comment_id'), $task['task_id']));
+        // [RED] Update comment count
+        $comments = $db->x->GetOne('SELECT count(*) FROM {comments} WHERE task_id = ?', null, $task['task_id']);
+        $db->x->execParam('UPDATE {redundant} SET comment_count = ? WHERE task_id = ?', array($comments, $task['task_id']));
 
         if ($num) {
             Flyspray::logEvent($task['task_id'], 6, $comment['user_id'],
                                $comment['comment_text'], $comment['date_added']);
         }
 
-        $stmt = $db->prepare('DELETE from {attachments} WHERE attachment_id = ?', array('integer'), MDB2_PREPARE_MANIP);
+        $stmt = $db->prepare('DELETE FROM {attachments} WHERE attachment_id = ?', array('integer'), MDB2_PREPARE_MANIP);
         foreach ($attachments as $attachment) {
 
             if($stmt->execute($attachment['attachment_id'])) {
@@ -390,6 +396,11 @@ class FlysprayDoDetails extends FlysprayDo
             }
         }
         $stmt->free();
+        
+        // [RED] Update attachment count
+        $atts = $db->x->GetOne('SELECT count(*) FROM {attachments} WHERE task_id = ?', null, $task['task_id']);
+        $db->x->execParam('UPDATE {redundant} SET attachment_count = ? WHERE task_id = ?', array($atts, $task['task_id']));
+        
         return array(SUBMIT_OK, L('commentdeletedmsg'));
     }
 

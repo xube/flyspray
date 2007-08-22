@@ -680,6 +680,7 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('emailtaken'));
         }
 
+        $previous = $db->x->GetRow('SELECT real_name, user_name FROM {users} WHERE user_id = ?', null, Post::val('user_id'));
         $db->x->execParam('UPDATE  {users}
                          SET  real_name = ?, email_address = ?, notify_own = ?,
                               jabber_id = ?, notify_type = ?, show_contact = ?,
@@ -693,6 +694,9 @@ class FlysprayDoAdmin extends FlysprayDo
                     Post::val('defaultorder', 'asc'), Post::val('tasks_perpage'), Post::val('time_zone'),
                     implode(' ', Post::val('defaultsortcolumn')), implode(' ', Post::val('notify_blacklist', array())),
                     Post::val('lang_code', ''), implode(' ', (array)Post::val('syntax_plugins')), Post::val('user_id')));
+        if ($previous['real_name'] != Post::val('real_name')) {
+            Backend::UpdateRedudantUserData($previous['user_name']);
+        }
         if ($do == 'myprofile') {
             $user = new User($user->id);
         }

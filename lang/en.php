@@ -333,7 +333,7 @@ $language = array(
 'dueanyversion'           => 'Due In Any Version',
 'anyversion'              => 'Reported In Any Version',
 'dueversion'              => 'Due In Version',
-'lastedit'                => 'Last Edited',
+'lastedit'                => 'Last change',
 'os'                      => 'Operating System',
 'reportedin'              => 'Reported In',
 'taskrange'               => 'Showing tasks %d - %d of %d',
@@ -1012,6 +1012,7 @@ Regards,',
 'ldaperror'               => 'An LDAP error occured',
 'recentlyclosed'          => 'Recently closed',
 'showasassignees'         => 'Show as assignees',
+'changedby'               => 'Last changed by',
 );
 
 ?>

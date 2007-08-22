@@ -284,7 +284,10 @@ class Backend
 
         if ($user->can_vote($task) > 0) {
 
-            if($db->x->autoExecute('{votes}', array('user_id' => $user->id, 'task_id' => $task_id, 'date_time' => time()))) {
+            if ($db->x->autoExecute('{votes}', array('user_id' => $user->id, 'task_id' => $task_id, 'date_time' => time()))) {
+                // [RED] Update vote count
+                $votes = $db->x->GetOne('SELECT count(*) FROM {votes} WHERE task_id = ?', null, $task_id);
+                $db->x->execParam('UPDATE {redundant} SET vote_count = ? WHERE task_id = ?', array($votes, $task_id));
                 return true;
             }
         }
@@ -347,6 +350,14 @@ class Backend
                             'field_value' => array('value' => $field_value));
             $db->Replace('{field_values}', $fields);
         }
+        
+        // [RED] Update last changed date and user
+        $db->x->execParam('UPDATE {redundant} SET last_changed_time = ?,
+                                  last_changed_by_real_name = ?, last_changed_by_user_name = ?,
+                                  last_edited_by_real_name = ?, last_edited_by_user_name = ?
+                            WHERE task_id = ?',
+                            array($time, $user->infos['real_name'], $user->infos['user_name'],
+                                  $user->infos['real_name'], $user->infos['user_name'], $task['task_id']));
 
         // Prepare assignee list
         $assignees = explode(';', trim(array_get($args, 'assigned_to')));
@@ -405,7 +416,33 @@ class Backend
 
         return array(SUBMIT_OK, L('taskupdated'));
     }
-
+    
+    /**
+     * [RED] Takes care of updating a user's redundant data
+     * @param string $username user ID of the changed user
+     * @access public
+     * @version 1.0
+     */
+    function UpdateRedudantUserData($username)
+    {
+        global $db;
+        // Get the new user- and real-name
+        $userinfo = $db->x->getRow('SELECT user_name, real_name FROM {users} WHERE user_name = ?', null, $username);
+        // Possibly user is deleted
+        if ($userinfo == null) {
+            $userinfo['user_name'] = $userinfo['real_name'] = '';
+        }
+        $args = array($userinfo['real_name'], $username);
+        // Opened by
+        $db->x->execParam('UPDATE {redundant} SET opened_by_real_name = ? WHERE opened_by_user_name = ?', $args);
+        // Closed by
+        $db->x->execParam('UPDATE {redundant} SET closed_by_real_name = ? WHERE closed_by_user_name = ?', $args);
+        // Last edited by
+        $db->x->execParam('UPDATE {redundant} SET last_edited_by_real_name = ? WHERE last_edited_by_user_name = ?', $args);
+        // Last changed by
+        $db->x->execParam('UPDATE {redundant} SET last_changed_by_real_name = ? WHERE last_changed_by_user_name = ?', $args);
+    }
+    
     /**
      * Adds a comment to $task
      * @param array $task
@@ -437,7 +474,16 @@ class Backend
         $db->x->autoExecute('{comments}', array('task_id' => $task['task_id'], 'date_added'=> $time, 'last_edited_time'=> $time,
                                                 'user_id' => $user->id, 'comment_text' => $comment_text, 'syntax_plugins' => implode(' ', $syntax_plugins)));
         $cid = $db->lastInsertID();
-
+        
+        // [RED] Update comment count
+        $comments = $db->x->GetOne('SELECT count(*) FROM {comments} WHERE task_id = ?', null, $task['task_id']);
+        $db->x->execParam('UPDATE {redundant} SET comment_count = ? WHERE task_id = ?', array($comments, $task['task_id']));
+        // [RED] And update last changed date
+        $db->x->execParam('UPDATE {redundant} SET last_changed_time = ?,
+                                  last_changed_by_real_name = ?, last_changed_by_user_name = ?
+                            WHERE task_id = ?',
+                            array($time, $user->infos['real_name'], $user->infos['user_name'], $task['task_id']));
+        
         Flyspray::logEvent($task['task_id'], 4, $cid);
 
         if (Backend::upload_files($task['task_id'], $cid)) {
@@ -503,7 +549,7 @@ class Backend
                 $_FILES[$source]['type'][$key] = $conf['attachments'][$extension];
             //actually, try really hard to get the real filetype, not what the browser reports.
             } elseif($type = Flyspray::check_mime_type($path)) {
-             $_FILES[$source]['type'][$key] = $type;
+                $_FILES[$source]['type'][$key] = $type;
             }// we can try even more, however, far too much code is needed.
 
             $attachstmt->execute(array($task_id, $comment_id, $fname, $_FILES[$source]['type'][$key],
@@ -514,6 +560,11 @@ class Backend
             Flyspray::logEvent($task_id, 7, $aid, $_FILES[$source]['name'][$key]);
         }
         $attachstmt->free();
+        
+        // [RED] Update attachment count
+        $atts = $db->x->GetOne('SELECT count(*) FROM {attachments} WHERE task_id = ?', null, $task['task_id']);
+        $db->x->execParam('UPDATE {redundant} SET attachment_count = ? WHERE task_id = ?', array($atts, $task['task_id']));
+        
         return $res;
     }
 
@@ -546,6 +597,9 @@ class Backend
             $db->x->execParam('DELETE FROM {attachments} WHERE attachment_id = ?',
                                      $task['attachment_id']);
             @unlink(FS_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $task['file_name']);
+            // [RED] Update attachment count
+            $atts = $db->x->GetOne('SELECT count(*) FROM {attachments} WHERE task_id = ?', null, $task['task']);
+            $db->x->execParam('UPDATE {redundant} SET attachment_count = ? WHERE task_id = ?', array($atts, $task['task']));
             Flyspray::logEvent($task['task_id'], 8, $task['orig_name']);
         }
     }
@@ -715,7 +769,7 @@ class Backend
             return false;
         }
 
-        $user_data = serialize(Flyspray::getUserDetails($uid));
+        $user_data = Flyspray::getUserDetails($uid);
         $tables = array('users', 'users_in_groups', 'searches',
                         'notifications', 'assigned');
 
@@ -728,8 +782,9 @@ class Backend
         // for the unusual situuation that a user ID is re-used, make sure that the new user doesn't
         // get permissions for a task automatically
         $db->x->execParam('UPDATE {tasks} SET opened_by = 0 WHERE opened_by = ?', $uid);
+        Backend::UpdateRedudantUserData($user_data['user_name']);
 
-        Flyspray::logEvent(0, 31, $user_data);
+        Flyspray::logEvent(0, 31, serialize($user_data));
 
         return true;
     }
@@ -914,6 +969,10 @@ class Backend
 
         $db->x->autoExecute('{tasks}', array_combine($sql_cols, $sql_values));
         $task_id = $db->lastInsertID();
+        
+        // [RED] Add task to redundancy table (opened by, last_changed_time)
+        $db->execParam('INSERT INTO {redundant} (task_id, last_changed_time, opened_by_real_name, opened_by_user_name, last_changed_by_real_name, last_changed_by_user_name)
+                             VALUES (?, ?, ?, ?, ?, ?)', array($task_id, time(), $user->infos['real_name'], $user->infos['user_name'], $user->infos['real_name'], $user->infos['user_name']));
 
         // Per project task ID
         $prefix_id = $db->x->GetOne('SELECT MAX(prefix_id)+1 FROM {tasks} WHERE project_id = ?', null, $proj->id);
@@ -929,26 +988,26 @@ class Backend
         }
 
         if(isset($args['assigned_to'])) {
-        // Prepare assignee list
-        $assignees = explode(';', trim($args['assigned_to']));
-        $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
-        $assignees = array_filter($assignees, create_function('$x', 'return ($x > 0);'));
+            // Prepare assignee list
+            $assignees = explode(';', trim($args['assigned_to']));
+            $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
+            $assignees = array_filter($assignees, create_function('$x', 'return ($x > 0);'));
 
-        // Log the assignments and send notifications to the assignees
-        if (count($assignees)) {
-            // Convert assigned_to and store them in the 'assigned' table
-            foreach ($assignees as $val) {
-                $fields = array('user_id'=> array('value' => $val, 'key' => true),
-                                'task_id'=> array('value' => $task_id, 'key' => true));
-                $db->Replace('{assigned}', $fields);
+            // Log the assignments and send notifications to the assignees
+            if (count($assignees)) {
+                // Convert assigned_to and store them in the 'assigned' table
+                foreach ($assignees as $val) {
+                    $fields = array('user_id'=> array('value' => $val, 'key' => true),
+                                    'task_id'=> array('value' => $task_id, 'key' => true));
+                    $db->Replace('{assigned}', $fields);
+                }
+
+                Flyspray::logEvent($task_id, 14, implode(' ', $assignees));
+
+                // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
+                Notifications::send($assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, array('task_id' => $task_id));
             }
-
-            Flyspray::logEvent($task_id, 14, implode(' ', $assignees));
-
-            // Notify the new assignees what happened.  This obviously won't happen if the task is now assigned to no-one.
-            Notifications::send($assignees, ADDRESS_USER, NOTIFY_NEW_ASSIGNEE, array('task_id' => $task_id));
         }
-    }
 
         // Log that the task was opened
         Flyspray::logEvent($task_id, 1);
@@ -1054,6 +1113,15 @@ class Backend
         if ($mark100) {
             Flyspray::logEvent($task_id, 3, 100, $task['percent_complete'], 'percent_complete');
         }
+        
+        // [RED] Update last changed date
+        $db->x->execParam('UPDATE {redundant} SET last_changed_time = ?,
+                                  last_changed_by_real_name = ?, last_changed_by_user_name = ?,
+                                  closed_by_real_name = ?, closed_by_user_name = ?
+                            WHERE task_id = ?',
+                            array(time(), $user->infos['real_name'], $user->infos['user_name'],
+                                  $user->infos['real_name'], $user->infos['user_name'], $task_id));
+                                  
 
         Notifications::send($task_id, ADDRESS_TASK, NOTIFY_TASK_CLOSED);
         Flyspray::logEvent($task_id, 2, $reason, $comment);
@@ -1102,48 +1170,17 @@ class Backend
         $where  = $sql_params = array();
 
         $select = '';
-        $groupby = '';
+        $groupby = 't.task_id, ';
         $from   = '             {tasks}         t
                      LEFT JOIN  {projects}      p   ON t.project_id = p.project_id
-                     LEFT JOIN  {list_items} lr ON t.resolution_reason = lr.list_item_id ';
+                     LEFT JOIN  {list_items} lr ON t.resolution_reason = lr.list_item_id
+                     LEFT JOIN  {redundant} r ON t.task_id = r.task_id ';
         // Only join tables which are really necessary to speed up the db-query
-        if (in_array('votes', $visible)) {
-            $from   .= ' LEFT JOIN  {votes} vot         ON t.task_id = vot.task_id ';
-            $select .= ' COUNT(DISTINCT vot.vote_id)    AS num_votes, ';
-        }
-        $search_for_changes = in_array('lastedit', $visible) || array_get($args, 'changedto') || array_get($args, 'changedfrom');
-        if (array_get($args, 'search_in_comments') || in_array('comments', $visible) || $search_for_changes) {
-            $from   .= ' LEFT JOIN  {comments} c        ON t.task_id = c.task_id ';
-            $select .= ' COUNT(DISTINCT c.comment_id)   AS num_comments, ';
-            // in other words: max(max(c.date_added), t.date_closed, t.date_opened, t.last_edited_time)
-            if ($search_for_changes) {
-                $select .= ' CASE WHEN max(c.date_added)>t.date_closed THEN
-                                CASE WHEN max(c.date_added)>t.date_opened THEN CASE WHEN max(c.date_added) > t.last_edited_time THEN max(c.date_added) ELSE t.last_edited_time END ELSE
-                                    CASE WHEN t.date_opened > t.last_edited_time THEN t.date_opened ELSE t.last_edited_time END END ELSE
-                                CASE WHEN t.date_closed>t.date_opened THEN CASE WHEN t.date_closed > t.last_edited_time THEN t.date_closed ELSE t.last_edited_time END ELSE
-                                    CASE WHEN t.date_opened > t.last_edited_time THEN t.date_opened ELSE t.last_edited_time END END END AS max_date, ';
-            }
-        }
-        if (array_get($args, 'opened') || in_array('openedby', $visible)) {
-            $from   .= ' LEFT JOIN  {users} uo          ON t.opened_by = uo.user_id ';
-            $select .= ' uo.real_name                   AS opened_by_name, ';
-            $groupby .= 'uo.real_name, ';
-        }
-        if (array_get($args, 'closed')) {
-            $from   .= ' LEFT JOIN  {users} uc          ON t.closed_by = uc.user_id ';
-            $select .= ' uc.real_name                   AS closed_by_name, ';
-            $groupby .= 'uc.real_name, ';
-        }
-        if (in_array('attachments', $visible) || array_get($args, 'has_attachment')) {
-            $from   .= ' LEFT JOIN  {attachments} att   ON t.task_id = att.task_id ';
-            $select .= ' COUNT(DISTINCT att.attachment_id) AS num_attachments, ';
-        }
-
         $from   .= ' LEFT JOIN  {assigned} ass      ON t.task_id = ass.task_id ';
         $from   .= ' LEFT JOIN  {users} u           ON ass.user_id = u.user_id ';
         if (array_get($args, 'dev') || in_array('assignedto', $visible)) {
             $select .= ' MIN(u.real_name)               AS assigned_to_name, ';
-            $select .= ' COUNT(DISTINCT ass.user_id)    AS num_assigned, ';
+            $select .= ' COUNT(ass.user_id)    AS num_assigned, ';
         }
 
         if (array_get($args, 'only_primary')) {
@@ -1151,7 +1188,7 @@ class Backend
             $where[] = 'dep.depend_id IS null';
         }
         if (array_get($args, 'has_attachment')) {
-            $where[] = 'att.attachment_id IS NOT null';
+            $where[] = 'attachment_count > 0';
         }
 
         // sortable default fields
@@ -1161,13 +1198,15 @@ class Backend
                 'dateopened'   => 'date_opened %s',
                 'summary'      => 'item_summary %s',
                 'progress'     => 'percent_complete %s',
-                'lastedit'     => 'max_date %s',
-                'openedby'     => 'uo.real_name %s',
+                'lastedit'     => 'last_changed_time %s',
+                'openedby'     => 'r.opened_by_real_name %s',
+                'closedby'     => 'r.closed_by_real_name %s',
+                'changedby'    => 'r.last_changed_by_real_name %s',
                 'assignedto'   => 'u.real_name %s',
                 'dateclosed'   => 't.date_closed %s',
-                'votes'        => 'num_votes %s',
-                'attachments'  => 'num_attachments %s',
-                'comments'     => 'num_comments %s',
+                'votes'        => 'vote_count %s',
+                'attachments'  => 'attachment_count %s',
+                'comments'     => 'comment_count %s',
                 'state'        => 'closed_by %1$s, is_closed %1$s',
                 'projectlevelid' => 'prefix_id %s',
         );
@@ -1294,8 +1333,8 @@ class Backend
         /// process search-conditions {{{
         $submits = array('percent' => 'percent_complete',
                          'dev' => array('a.user_id', 'us.user_name'),
-                         'opened' => array('opened_by', 'uo.user_name'),
-                         'closed' => array('closed_by', 'uc.user_name'));
+                         'opened' => array('opened_by', 'r.opened_by_user_name'),
+                         'closed' => array('closed_by', 'r.closed_by_user_name'));
         // add custom user fields
 
         foreach ($submits as $key => $db_key) {
@@ -1338,7 +1377,7 @@ class Backend
         /// }}}
 
         $having = array();
-        $dates = array('due_date', 'changed' => 'max_date', 'opened' => 'date_opened', 'closed' => 'date_closed');
+        $dates = array('due_date', 'changed' => 'r.last_changed_time', 'opened' => 'date_opened', 'closed' => 'date_closed');
         foreach ($dates as $post => $db_key) {
             $var = ($post == 'changed') ? 'having' : 'where';
             if ($date = array_get($args, $post . 'from')) {
@@ -1355,6 +1394,7 @@ class Backend
             $where_temp = array();
 
             if (array_get($args, 'search_in_comments')) {
+                $from .= 'LEFT JOIN {comments} c  ON t.task_id = c.task_id ';
                 $comments .= 'OR c.comment_text LIKE ?';
             }
             if (array_get($args, 'search_in_details')) {
@@ -1414,7 +1454,7 @@ class Backend
         $having = (count($having)) ? 'HAVING '. join(' AND ', $having) : '';
 
         $tasks = $db->x->getAll("
-                          SELECT   t.*, $select
+                          SELECT   t.*, r.*, $select
                                    p.project_title, p.project_prefix,
                                    lr.item_name AS resolution_name
                           FROM     $from

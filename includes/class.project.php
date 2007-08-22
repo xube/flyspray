@@ -11,7 +11,7 @@ class Project
      * @access public
      * @var array
      */
-    var $columns = array('id', 'project', 'summary', 'dateopened', 'openedby',
+    var $columns = array('id', 'project', 'summary', 'dateopened', 'openedby', 'closedby', 'changedby',
                          'assignedto', 'lastedit', 'comments', 'attachments', 'progress',
                          'dateclosed', 'votes', 'state', 'projectlevelid');
 

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<database>
+
+ <name><variable>db_name</variable></name>
+ <create>true</create>
+ <overwrite>true</overwrite>
+
+ <table>
+
+  <name><variable>db_prefix</variable>redundant</name>
+
+  <declaration>
+
+   <field>
+    <name>redundant_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+    <autoincrement>1</autoincrement>
+   </field>
+
+   <field>
+    <name>task_id</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>false</notnull>
+   </field>
+
+   <field>
+    <name>opened_by_real_name</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>false</notnull>
+   </field>
+
+   <field>
+    <name>last_edited_by_real_name</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>false</notnull>
+   </field>
+   
+   <field>
+    <name>closed_by_real_name</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>false</notnull>
+   </field>
+   
+   <field>
+    <name>last_changed_by_real_name</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>false</notnull>
+   </field>
+
+   <field>
+    <name>last_changed_by_user_name</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>false</notnull>
+   </field>
+   
+  <field>
+    <name>opened_by_user_name</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>false</notnull>
+   </field>
+   
+   <field>
+    <name>closed_by_user_name</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>false</notnull>
+   </field>
+   
+  <field>
+    <name>last_edited_by_user_name</name>
+    <type>text</type>
+    <length>255</length>
+    <notnull>false</notnull>
+   </field>
+   
+   <field>
+    <name>last_changed_time</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>false</notnull>
+   </field>
+
+   <field>
+    <name>attachment_count</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+   
+   <field>
+    <name>comment_count</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+
+   <field>
+    <name>vote_count</name>
+    <type>integer</type>
+    <length>4</length>
+    <notnull>true</notnull>
+    <default>0</default>
+   </field>
+   
+   <index>
+    <name><variable>db_prefix</variable>redundant_pKey</name>
+    <primary>true</primary>
+    <field>
+     <name>redundant_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+   
+   <index>
+    <name>redundant_task_id</name>
+    <field>
+     <name>task_id</name>
+     <sorting>ascending</sorting>
+    </field>
+   </index>
+
+  </declaration>
+
+ </table>
+ 
+</database>
