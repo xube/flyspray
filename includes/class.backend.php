@@ -1242,8 +1242,8 @@ class Backend
 
         $order_column[0] = $order_keys[Filters::enum(array_get($args, 'order', 'id'), array_keys($order_keys))];
         $order_column[1] = $order_keys[Filters::enum(array_get($args, 'order2', 'project'), array_keys($order_keys))];
-        $order_column[0] = sprintf($order_column[0], Filters::enum(array_get($args, 'sort', 'DESC'), array('asc', 'DESC')));
-        $order_column[1] = sprintf($order_column[1], Filters::enum(array_get($args, 'sort2', 'DESC'), array('asc', 'DESC')));
+        $order_column[0] = sprintf($order_column[0], strtoupper(Filters::enum(array_get($args, 'sort', 'desc'), array('asc', 'desc'))));
+        $order_column[1] = sprintf($order_column[1], strtoupper(Filters::enum(array_get($args, 'sort2', 'desc'), array('asc', 'desc'))));
 
         $sortorder  = sprintf('%s, %s, t.task_id ASC', $order_column[0], $order_column[1]);
 
