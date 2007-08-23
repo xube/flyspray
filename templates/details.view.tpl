@@ -222,7 +222,7 @@
       {formatDate($task['date_closed'], true)}<br />
       <strong>{L('reasonforclosing')}</strong> &nbsp;{$task['resolution_name']}<br />
       <?php if ($task['closure_comment']): ?>
-      <strong>{L('closurecomment')}</strong> &nbsp;{!$this->text->render($task['closure_comment'], true)}
+      <strong>{L('closurecomment')}</strong> &nbsp;{!wordwrap($this->text->render($task['closure_comment'], true), 20, "\n", true)}
       <?php endif; ?>
   </div>
   <?php endif; ?>
