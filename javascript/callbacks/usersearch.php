@@ -21,7 +21,7 @@ $join = $where = '';
 if (Get::val('onlyassignees')) {
     $join = 'LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
              LEFT JOIN {groups} g ON uig.group_id = g.group_id';
-    $where = 'g.show_as_assignees = 1 AND ';
+    $where = '(g.show_as_assignees = 1 OR g.is_admin = 1) AND ';
 }
 
 $db->setLimit(300);
