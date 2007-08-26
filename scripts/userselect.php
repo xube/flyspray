@@ -28,12 +28,17 @@ class FlysprayDoUserSelect extends FlysprayDo
         $page->setTheme($proj->prefs['theme_style']);
         $page->assign('do', $do);
         $page->pushTpl('baseheader.tpl');
-
+        
+        $assignees = '';
+        if (Get::val('onlyassignees')) {
+            $assignees = 'AND (g.show_as_assignees = 1 OR g.is_admin = 1)';
+        }
+        
         $query = 'SELECT g.group_id, g.group_name, g.group_desc,
                          g.group_open, count(u.user_id) AS num_users
                     FROM {groups} g
                LEFT JOIN {users_in_groups} uig ON uig.group_id = g.group_id
-               LEFT JOIN {users} u ON (uig.user_id = u.user_id AND (g.show_as_assignees = 1 OR g.is_admin = 1))
+               LEFT JOIN {users} u ON (uig.user_id = u.user_id ' . $assignees . ')
                    WHERE g.project_id = ?
                 GROUP BY g.group_id';
 
@@ -64,7 +69,7 @@ class FlysprayDoUserSelect extends FlysprayDo
                                        FROM {users} u
                                   LEFT JOIN {users_in_groups} uig ON uig.user_id = u.user_id
                                   LEFT JOIN {groups} g ON uig.group_id = g.group_id
-                                      WHERE uig.group_id = ? AND (g.show_as_assignees = 1 OR g.is_admin = 1) AND ( ' . $where . ' )' . $sortorder,
+                                      WHERE uig.group_id = ? ' . $assignees . ' AND ( ' . $where . ' )' . $sortorder,
                                   null, array_merge(array(Get::val('group_id')), $params));
 
             // Offset and limit
