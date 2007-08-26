@@ -42,7 +42,7 @@
 // | Author: Christian Dickmann <dickmann@php.net>                        |
 // +----------------------------------------------------------------------+
 //
-// $Id: Parser.php,v 1.59 2007/07/23 23:28:24 ifeghali Exp $
+// $Id: Parser.php,v 1.64 2007/08/20 03:19:20 ifeghali Exp $
 //
 
 require_once 'XML/Parser.php';
@@ -58,7 +58,7 @@ require_once 'MDB2/Schema/Validate.php';
  */
 class MDB2_Schema_Parser extends XML_Parser
 {
-    var $database_definition = array('name' => '', 'create' => '', 'overwrite' => '', 'tables' => array(), 'sequences' => array());
+    var $database_definition = array();
     var $elements = array();
     var $element = '';
     var $count = 0;
@@ -72,6 +72,8 @@ class MDB2_Schema_Parser extends XML_Parser
     var $init_field = array();
     var $index = array();
     var $index_name = '';
+    var $constraint = array();
+    var $constraint_name = '';
     var $var_mode = false;
     var $variables = array();
     var $sequence = array();
@@ -153,7 +155,7 @@ class MDB2_Schema_Parser extends XML_Parser
         case 'database-table-initialization-insert-field-function':
         case 'database-table-initialization-insert-select-field-function':
         case 'database-table-initialization-update-field-function':
-            $this->init_function = array();
+            $this->init_function = array('name' => '');
             break;
         case 'database-table-initialization-insert-field-expression':
         case 'database-table-initialization-insert-select-field-expression':
@@ -180,7 +182,7 @@ class MDB2_Schema_Parser extends XML_Parser
         case 'database-table-initialization-update-field-expression-function':
         case 'database-table-initialization-update-where-expression-function':
         case 'database-table-initialization-delete-where-expression-function':
-            $this->init_function = array();
+            $this->init_function = array('name' => '');
             break;
 
         /* One level simulation of function-expression recursion */
@@ -194,28 +196,102 @@ class MDB2_Schema_Parser extends XML_Parser
             break;
 
         /* Definition */
+        case 'database':
+            $this->database_definition = array(
+                'name' => '',
+                'create' => '',
+                'overwrite' => '',
+                'description' => '',
+                'comments' => '',
+                'tables' => array(),
+                'sequences' => array()
+            );
+            break;
         case 'database-table':
             $this->table_name = '';
-            $this->table = array('fields' => array(), 'indexes' => array());
+            $this->table = array(
+                'was' => '',
+                'description' => '',
+                'comments' => '',
+                'fields' => array(),
+                'indexes' => array(),
+                'constraints' => array(),
+                'initialization' => array()
+            );
             break;
         case 'database-table-declaration-field':
+        case 'database-table-declaration-foreign-field':
+        case 'database-table-declaration-foreign-references-field':
             $this->field_name = '';
             $this->field = array();
+            break;
+        case 'database-table-declaration-index-field':
+            $this->field_name = '';
+            $this->field = array('sorting' => '');
+            break;
+        /* force field attributes to be initialized when the tag is empty in the XML */
+        case 'database-table-declaration-field-was':
+            $this->field['was'] = '';
+            break;
+        case 'database-table-declaration-field-type':
+            $this->field['type'] = '';
+            break;
+        case 'database-table-declaration-field-fixed':
+            $this->field['fixed'] = '';
             break;
         case 'database-table-declaration-field-default':
             $this->field['default'] = '';
             break;
+        case 'database-table-declaration-field-notnull':
+            $this->field['notnull'] = '';
+            break;
+        case 'database-table-declaration-field-autoincrement':
+            $this->field['autoincrement'] = '';
+            break;
+        case 'database-table-declaration-field-unsigned':
+            $this->field['unsigned'] = '';
+            break;
+        case 'database-table-declaration-field-length':
+            $this->field['length'] = '';
+            break;
+        case 'database-table-declaration-field-description':
+            $this->field['description'] = '';
+            break;
+        case 'database-table-declaration-field-comments':
+            $this->field['comments'] = '';
+            break;
         case 'database-table-declaration-index':
             $this->index_name = '';
-            $this->index = array('fields' => array());
+            $this->index = array(
+                'was' => '',
+                'unique' =>'',
+                'primary' => '',
+                'fields' => array()
+            );
+            break;
+        case 'database-table-declaration-foreign':
+            $this->constraint_name = '';
+            $this->constraint = array(
+                'was' => '',
+                'match' => '',
+                'ondelete' => '',
+                'onupdate' => '',
+                'deferrable' => '',
+                'initiallydeferred' => '',
+                'foreign' => true,
+                'fields' => array(),
+                'references' => array('table' => '', 'fields' => array())
+            );
             break;
         case 'database-sequence':
             $this->sequence_name = '';
-            $this->sequence = array();
-            break;
-        case 'database-table-declaration-index-field':
-            $this->field_name = '';
-            $this->field = array();
+            $this->sequence = array(
+                'was' => '',
+                'start' => '',
+                'description' => '',
+                'comments' => '',
+                'on' => array('table' => '', 'field' => '')
+            );
             break;
         }
     }
@@ -333,6 +409,32 @@ class MDB2_Schema_Parser extends XML_Parser
             }
             break;
 
+        /* Foreign Key declaration */
+        case 'database-table-declaration-foreign':
+            $result = $this->val->validateConstraint($this->table['constraints'], $this->constraint, $this->constraint_name);
+            if (PEAR::isError($result)) {
+                $this->raiseError($result->getUserinfo(), 0, $xp, $result->getCode());
+            } else {
+                $this->table['constraints'][$this->constraint_name] = $this->constraint;
+            }
+            break;
+        case 'database-table-declaration-foreign-field':
+            $result = $this->val->validateConstraintField($this->constraint['fields'], $this->field_name);
+            if (PEAR::isError($result)) {
+                $this->raiseError($result->getUserinfo(), 0, $xp, $result->getCode());
+            } else {
+                $this->constraint['fields'][$this->field_name] = '';
+            }
+            break;
+        case 'database-table-declaration-foreign-references-field':
+            $result = $this->val->validateConstraintReferencedField($this->constraint['references']['fields'], $this->field_name);
+            if (PEAR::isError($result)) {
+                $this->raiseError($result->getUserinfo(), 0, $xp, $result->getCode());
+            } else {
+                $this->constraint['references']['fields'][$this->field_name] = '';
+            }
+            break;
+
         /* Sequence declaration */
         case 'database-sequence':
             $result = $this->val->validateSequence($this->database_definition['sequences'], $this->sequence, $this->sequence_name);
@@ -406,17 +508,17 @@ class MDB2_Schema_Parser extends XML_Parser
         case 'database-table-initialization-insert-field-name':
         case 'database-table-initialization-insert-select-field-name':
         case 'database-table-initialization-update-field-name':
-            $this->init_field['name'] .= $data;
+            $this->init_field['name'].= $data;
             break;
         case 'database-table-initialization-insert-field-value':
         case 'database-table-initialization-insert-select-field-value':
         case 'database-table-initialization-update-field-value':
-            $this->init_field['group']['data'] .= $data;
+            $this->init_field['group']['data'].= $data;
             break;
         case 'database-table-initialization-insert-field-function-name':
         case 'database-table-initialization-insert-select-field-function-name':
         case 'database-table-initialization-update-field-function-name':
-            $this->init_function['name'] .= $data;
+            $this->init_function['name'].= $data;
             break;
         case 'database-table-initialization-insert-field-function-value':
         case 'database-table-initialization-insert-select-field-function-value':
@@ -478,7 +580,7 @@ class MDB2_Schema_Parser extends XML_Parser
         case 'database-table-initialization-update-field-expression-function-name':
         case 'database-table-initialization-update-where-expression-function-name':
         case 'database-table-initialization-delete-where-expression-function-name':
-            $this->init_function['name'] .= $data;
+            $this->init_function['name'].= $data;
             break;
         case 'database-table-initialization-insert-field-expression-function-value':
         case 'database-table-initialization-insert-select-field-expression-function-value':
@@ -516,149 +618,90 @@ class MDB2_Schema_Parser extends XML_Parser
 
         /* Database */
         case 'database-name':
-            if (isset($this->database_definition['name'])) {
-                $this->database_definition['name'].= $data;
-            } else {
-                $this->database_definition['name'] = $data;
-            }
+            $this->database_definition['name'].= $data;
             break;
         case 'database-create':
-            if (isset($this->database_definition['create'])) {
-                $this->database_definition['create'].= $data;
-            } else {
-                $this->database_definition['create'] = $data;
-            }
+            $this->database_definition['create'].= $data;
             break;
         case 'database-overwrite':
-            if (isset($this->database_definition['overwrite'])) {
-                $this->database_definition['overwrite'].= $data;
-            } else {
-                $this->database_definition['overwrite'] = $data;
-            }
+            $this->database_definition['overwrite'].= $data;
             break;
+        case 'database-description':
+            $this->database_definition['description'].= $data;
+            break;
+        case 'database-comments':
+            $this->database_definition['comments'].= $data;
+            break;
+
+        /* Table declaration */
         case 'database-table-name':
-            if (isset($this->table_name)) {
-                $this->table_name.= $data;
-            } else {
-                $this->table_name = $data;
-            }
+            $this->table_name.= $data;
             break;
         case 'database-table-was':
-            if (isset($this->table['was'])) {
-                $this->table['was'].= $data;
-            } else {
-                $this->table['was'] = $data;
-            }
+            $this->table['was'].= $data;
+            break;
+        case 'database-table-description':
+            $this->table['description'].= $data;
+            break;
+        case 'database-table-comments':
+            $this->table['comments'].= $data;
             break;
 
         /* Field declaration */
         case 'database-table-declaration-field-name':
-            if (isset($this->field_name)) {
-                $this->field_name.= $data;
-            } else {
-                $this->field_name = $data;
-            }
-            break;
-        case 'database-table-declaration-field-type':
-            if (isset($this->field['type'])) {
-                $this->field['type'].= $data;
-            } else {
-                $this->field['type'] = $data;
-            }
+            $this->field_name.= $data;
             break;
         case 'database-table-declaration-field-was':
-            if (isset($this->field['was'])) {
-                $this->field['was'].= $data;
-            } else {
-                $this->field['was'] = $data;
-            }
+            $this->field['was'].= $data;
             break;
-        case 'database-table-declaration-field-notnull':
-            if (isset($this->field['notnull'])) {
-                $this->field['notnull'].= $data;
-            } else {
-                $this->field['notnull'] = $data;
-            }
+        case 'database-table-declaration-field-type':
+            $this->field['type'].= $data;
             break;
         case 'database-table-declaration-field-fixed':
-            if (isset($this->field['fixed'])) {
-                $this->field['fixed'].= $data;
-            } else {
-                $this->field['fixed'] = $data;
-            }
-            break;
-        case 'database-table-declaration-field-unsigned':
-            if (isset($this->field['unsigned'])) {
-                $this->field['unsigned'].= $data;
-            } else {
-                $this->field['unsigned'] = $data;
-            }
-            break;
-        case 'database-table-declaration-field-autoincrement':
-            if (isset($this->field['autoincrement'])) {
-                $this->field['autoincrement'].= $data;
-            } else {
-                $this->field['autoincrement'] = $data;
-            }
+            $this->field['fixed'].= $data;
             break;
         case 'database-table-declaration-field-default':
-            if (isset($this->field['default'])) {
-                $this->field['default'].= $data;
-            } else {
-                $this->field['default'] = $data;
-            }
+            $this->field['default'].= $data;
+            break;
+        case 'database-table-declaration-field-notnull':
+            $this->field['notnull'].= $data;
+            break;
+        case 'database-table-declaration-field-autoincrement':
+            $this->field['autoincrement'].= $data;
+            break;
+        case 'database-table-declaration-field-unsigned':
+            $this->field['unsigned'].= $data;
             break;
         case 'database-table-declaration-field-length':
-            if (isset($this->field['length'])) {
-                $this->field['length'].= $data;
-            } else {
-                $this->field['length'] = $data;
-            }
+            $this->field['length'].= $data;
+            break;
+        case 'database-table-declaration-field-description':
+            $this->field['description'].= $data;
+            break;
+        case 'database-table-declaration-field-comments':
+            $this->field['comments'].= $data;
             break;
 
         /* Index declaration */
         case 'database-table-declaration-index-name':
-            if (isset($this->index_name)) {
-                $this->index_name.= $data;
-            } else {
-                $this->index_name = $data;
-            }
-            break;
-        case 'database-table-declaration-index-primary':
-            if (isset($this->index['primary'])) {
-                $this->index['primary'].= $data;
-            } else {
-                $this->index['primary'] = $data;
-            }
-            break;
-        case 'database-table-declaration-index-unique':
-            if (isset($this->index['unique'])) {
-                $this->index['unique'].= $data;
-            } else {
-                $this->index['unique'] = $data;
-            }
+            $this->index_name.= $data;
             break;
         case 'database-table-declaration-index-was':
-            if (isset($this->index['was'])) {
-                $this->index['was'].= $data;
-            } else {
-                $this->index['was'] = $data;
-            }
+            $this->index['was'].= $data;
+            break;
+        case 'database-table-declaration-index-unique':
+            $this->index['unique'].= $data;
+            break;
+        case 'database-table-declaration-index-primary':
+            $this->index['primary'].= $data;
             break;
         case 'database-table-declaration-index-field-name':
-            if (isset($this->field_name)) {
-                $this->field_name.= $data;
-            } else {
-                $this->field_name = $data;
-            }
+            $this->field_name.= $data;
             break;
         case 'database-table-declaration-index-field-sorting':
-            if (isset($this->field['sorting'])) {
-                $this->field['sorting'].= $data;
-            } else {
-                $this->field['sorting'] = $data;
-            }
+            $this->field['sorting'].= $data;
             break;
+        /* todo: check the following attribute as it is not documented anywhere */
         /* Add by Leoncx */
         case 'database-table-declaration-index-field-length':
             if (isset($this->field['length'])) {
@@ -668,41 +711,59 @@ class MDB2_Schema_Parser extends XML_Parser
             }
             break;
 
+        /* Foreign Key declaration */
+        case 'database-table-declaration-foreign-name':
+            $this->constraint_name.= $data;
+            break;
+        case 'database-table-declaration-foreign-was':
+            $this->constraint['was'].= $data;
+            break;
+        case 'database-table-declaration-foreign-match':
+            $this->constraint['match'].= $data;
+            break;
+        case 'database-table-declaration-foreign-ondelete':
+            $this->constraint['ondelete'].= $data;
+            break;
+        case 'database-table-declaration-foreign-onupdate':
+            $this->constraint['onupdate'].= $data;
+            break;
+        case 'database-table-declaration-foreign-deferrable':
+            $this->constraint['deferrable'].= $data;
+            break;
+        case 'database-table-declaration-foreign-initiallydeferred':
+            $this->constraint['initiallydeferred'].= $data;
+            break;
+        case 'database-table-declaration-foreign-field':
+            $this->field_name.= $data;
+            break;
+        case 'database-table-declaration-foreign-references-table':
+            $this->constraint['references']['table'].= $data;
+            break;
+        case 'database-table-declaration-foreign-references-field':
+            $this->field_name.= $data;
+            break;
+
         /* Sequence declaration */
         case 'database-sequence-name':
-            if (isset($this->sequence_name)) {
-                $this->sequence_name.= $data;
-            } else {
-                $this->sequence_name = $data;
-            }
+            $this->sequence_name.= $data;
             break;
         case 'database-sequence-was':
-            if (isset($this->sequence['was'])) {
-                $this->sequence['was'].= $data;
-            } else {
-                $this->sequence['was'] = $data;
-            }
+            $this->sequence['was'].= $data;
             break;
         case 'database-sequence-start':
-            if (isset($this->sequence['start'])) {
-                $this->sequence['start'].= $data;
-            } else {
-                $this->sequence['start'] = $data;
-            }
+            $this->sequence['start'].= $data;
+            break;
+        case 'database-sequence-description':
+            $this->sequence['description'].= $data;
+            break;
+        case 'database-sequence-comments':
+            $this->sequence['comments'].= $data;
             break;
         case 'database-sequence-on-table':
-            if (isset($this->sequence['on']['table'])) {
-                $this->sequence['on']['table'].= $data;
-            } else {
-                $this->sequence['on']['table'] = $data;
-            }
+            $this->sequence['on']['table'].= $data;
             break;
         case 'database-sequence-on-field':
-            if (isset($this->sequence['on']['field'])) {
-                $this->sequence['on']['field'].= $data;
-            } else {
-                $this->sequence['on']['field'] = $data;
-            }
+            $this->sequence['on']['field'].= $data;
             break;
         }
     }

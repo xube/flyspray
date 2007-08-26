@@ -42,7 +42,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: Writer.php,v 1.34 2007/03/22 22:07:53 ifeghali Exp $
+// $Id: Writer.php,v 1.37 2007/08/19 05:03:43 ifeghali Exp $
 //
 
 /**
@@ -286,7 +286,7 @@ class MDB2_Schema_Writer
                             if (empty($field['type'])) {
                                 return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE, null, null,
                                     'it was not specified the type of the field "'.
-                                    $field_name.'" of the table "'.$table_name);
+                                    $field_name.'" of the table "'.$table_name.'"');
                             }
                             if (!empty($this->valid_types) && !array_key_exists($field['type'], $this->valid_types)) {
                                 return $this->raiseError(MDB2_SCHEMA_ERROR_UNSUPPORTED, null, null,
@@ -294,17 +294,6 @@ class MDB2_Schema_Writer
                             }
                             $buffer.= "$eol   <field>$eol    <name>$field_name</name>$eol    <type>";
                             $buffer.= $field['type']."</type>$eol";
-                            if (!empty($field['unsigned'])) {
-                                $buffer.= "    <unsigned>".$this->_dumpBoolean($field['unsigned'])."</unsigned>$eol";
-                            }
-                            if (!empty($field['length'])) {
-                                $buffer.= '    <length>'.$field['length']."</length>$eol";
-                            }
-                            if (!empty($field['notnull'])) {
-                                $buffer.= "    <notnull>".$this->_dumpBoolean($field['notnull'])."</notnull>$eol";
-                            } else {
-                                $buffer.= "    <notnull>false</notnull>$eol";
-                            }
                             if (!empty($field['fixed']) && $field['type'] === 'text') {
                                 $buffer.= "    <fixed>".$this->_dumpBoolean($field['fixed'])."</fixed>$eol";
                             }
@@ -313,8 +302,19 @@ class MDB2_Schema_Writer
                             ) {
                                 $buffer.= '    <default>'.$this->_escapeSpecialChars($field['default'])."</default>$eol";
                             }
+                            if (!empty($field['notnull'])) {
+                                $buffer.= "    <notnull>".$this->_dumpBoolean($field['notnull'])."</notnull>$eol";
+                            } else {
+                                $buffer.= "    <notnull>false</notnull>$eol";
+                            }
                             if (!empty($field['autoincrement'])) {
                                 $buffer.= "    <autoincrement>" . $field['autoincrement'] ."</autoincrement>$eol";
+                            }
+                            if (!empty($field['unsigned'])) {
+                                $buffer.= "    <unsigned>".$this->_dumpBoolean($field['unsigned'])."</unsigned>$eol";
+                            }
+                            if (!empty($field['length'])) {
+                                $buffer.= '    <length>'.$field['length']."</length>$eol";
                             }
                             $buffer.= "   </field>$eol";
                         }
@@ -344,6 +344,48 @@ class MDB2_Schema_Writer
                             $buffer.= "   </index>$eol";
                         }
                     }
+
+                    if (!empty($table['constraints']) && is_array($table['constraints'])) {
+                        foreach ($table['constraints'] as $constraint_name => $constraint) {
+                            $buffer.= "$eol   <foreign>$eol    <name>$constraint_name</name>$eol";
+                            if (empty($constraint['fields']) || !is_array($constraint['fields'])) {
+                                return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE, null, null,
+                                    'it was not specified a field for the foreign key "'.
+                                    $constraint_name.'" of the table "'.$table_name.'"');
+                            }
+                            if (!is_array($constraint['references']) || empty($constraint['references']['table'])) {
+                                return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE, null, null,
+                                    'it was not specified the referenced table of the foreign key "'.
+                                    $constraint_name.'" of the table "'.$table_name.'"');
+                            }
+                            if (!empty($constraint['match'])) {
+                                $buffer.= "    <match>".$constraint['match']."</match>$eol";
+                            }
+                            if (!empty($constraint['ondelete'])) {
+                                $buffer.= "    <ondelete>".$constraint['ondelete']."</ondelete>$eol";
+                            }
+                            if (!empty($constraint['onupdate'])) {
+                                $buffer.= "    <onupdate>".$constraint['onupdate']."</onupdate>$eol";
+                            }
+                            if (!empty($constraint['deferrable'])) {
+                                $buffer.= "    <deferrable>".$constraint['deferrable']."</deferrable>$eol";
+                            }
+                            if (!empty($constraint['initiallydeferred'])) {
+                                $buffer.= "    <initiallydeferred>".$constraint['initiallydeferred']."</initiallydeferred>$eol";
+                            }
+                            foreach ($constraint['fields'] as $field_name => $field) {
+                                $buffer.= "    <field>$field_name</field>$eol";
+                            }
+                            $buffer.= "    <references>$eol     <table>".$constraint['references']['table']."</table>$eol";
+                            foreach ($constraint['references']['fields'] as $field_name => $field) {
+                                $buffer.= "     <field>$field_name</field>$eol";
+                            }
+                            $buffer.= "    </references>$eol";
+
+                            $buffer.= "   </foreign>$eol";
+                        }
+                    }
+
                     $buffer.= "$eol  </declaration>$eol";
                 }
 

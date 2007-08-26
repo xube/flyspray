@@ -43,7 +43,7 @@
 // | Author: Igor Feghali <ifeghali@php.net>                              |
 // +----------------------------------------------------------------------+
 //
-// $Id: Validate.php,v 1.33 2007/07/23 23:04:48 ifeghali Exp $
+// $Id: Validate.php,v 1.37 2007/08/20 03:19:20 ifeghali Exp $
 //
 
 /**
@@ -254,7 +254,7 @@ class MDB2_Schema_Validate
                 }
             }
         }
-        return true;
+        return MDB2_OK;
     }
 
     // }}}
@@ -387,7 +387,7 @@ class MDB2_Schema_Validate
                     'all autoincrement fields must be defined default "0"');
             }
         }
-        return true;
+        return MDB2_OK;
     }
 
     // }}}
@@ -426,10 +426,16 @@ class MDB2_Schema_Validate
                 'field "primary" has to be a boolean value');
         }
 
+        /* Have we got fields? */
+        if (empty($index['fields']) || !is_array($index['fields'])) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'indexes need one or more fields');
+        }
+
         if (empty($index['was'])) {
             $index['was'] = $index_name;
         }
-        return true;
+        return MDB2_OK;
     }
 
     // }}}
@@ -465,7 +471,113 @@ class MDB2_Schema_Validate
             return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
                 'sorting type unknown');
         }
-        return true;
+        return MDB2_OK;
+    }
+
+    // }}}
+    // {{{ validateConstraint()
+
+    /**
+     * Checks whether a parsed foreign key is valid. Modify its definition when
+     * necessary.
+     *
+     * @param array  multi dimensional array that contains the
+     *                constraints of current table.
+     * @param array  multi dimensional array that contains the
+     *                structure of the parsed foreign key.
+     * @param string  name of the parsed foreign key
+     *
+     * @return bool|error object
+     *
+     * @access public
+     */
+    function validateConstraint($table_constraints, &$constraint, $constraint_name)
+    {
+        if (!$constraint_name) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'a foreign key has to have a name');
+        }
+        if (is_array($table_constraints) && isset($table_constraints[$constraint_name])) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'foreign key "'.$constraint_name.'" already exists');
+        }
+
+        /* Have we got fields? */
+        if (empty($constraint['fields']) || !is_array($constraint['fields'])) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'foreign key "'.$constraint_name.'" need one or more fields');
+        }
+
+        /* Have we got referenced fields? */
+        if (empty($constraint['references']) || !is_array($constraint['references'])) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'foreign key "'.$constraint_name.'" need to reference one or more fields');
+        }
+
+        /* Have we got referenced table? */
+        if (empty($constraint['references']['table'])) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'foreign key "'.$constraint_name.'" need to reference a table');
+        }
+
+        if (empty($constraint['was'])) {
+            $constraint['was'] = $constraint_name;
+        }
+        return MDB2_OK;
+    }
+
+    // }}}
+    // {{{ validateConstraintField()
+
+    /**
+     * Checks whether a foreign-field is valid.
+     *
+     * @param array  multi dimensional array that contains the
+     *                fields of current foreign key.
+     * @param string  name of the parsed foreign-field
+     *
+     * @return bool|error object
+     *
+     * @access public
+     */
+    function validateConstraintField($constraint_fields, $field_name)
+    {
+        if (!$field_name) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'empty value for foreign-field');
+        }
+        if (is_array($constraint_fields) && isset($constraint_fields[$field_name])) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'foreign field "'.$field_name.'" already exists');
+        }
+        return MDB2_OK;
+    }
+
+    // }}}
+    // {{{ validateConstraintReferencedField()
+
+    /**
+     * Checks whether a foreign-referenced field is valid.
+     *
+     * @param array  multi dimensional array that contains the
+     *                fields of current foreign key.
+     * @param string  name of the parsed foreign-field
+     *
+     * @return bool|error object
+     *
+     * @access public
+     */
+    function validateConstraintReferencedField($referenced_fields, $field_name)
+    {
+        if (!$field_name) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'empty value for referenced foreign-field');
+        }
+        if (is_array($referenced_fields) && isset($referenced_fields[$field_name])) {
+            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                'foreign field "'.$field_name.'" already referenced');
+        }
+        return MDB2_OK;
     }
 
     // }}}
@@ -517,7 +629,7 @@ class MDB2_Schema_Validate
             return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
                 'sequence "'.$sequence_name.'" on a table was not properly defined');
         }
-        return true;
+        return MDB2_OK;
     }
 
     // }}}
@@ -572,6 +684,70 @@ class MDB2_Schema_Validate
 
         /*
          * This have to be done here otherwise we can't guarantee that all
+         * tables were already defined in the moment we are parsing constraints
+         */
+        if (isset($database['tables'])) {
+            foreach ($database['tables'] as $table_name => $table) {
+                if (!empty($table['constraints'])) {
+                    foreach ($table['constraints'] as $constraint_name => $constraint) {
+                        $referenced_table_name = $constraint['references']['table'];
+
+                        if (!isset($database['tables'][$referenced_table_name])) {
+                            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                                'referenced table "'.$referenced_table_name.'" of foreign key "'.$constraint_name.'" of table "'.$table_name.'" does not exist');
+                        }
+
+                        if (empty($constraint['references']['fields'])) {
+                            $referenced_table = $database['tables'][$referenced_table_name];
+                            $primary = false;
+
+                            if (!empty($referenced_table['indexes'])) {
+                                foreach ($referenced_table['indexes'] as $index_name => $index) {
+                                    if (array_key_exists('primary', $index)
+                                        && $index['primary']
+                                    ) {
+                                        $primary = array();
+                                        foreach ($index['fields'] as $field_name => $field) {
+                                            $primary[$field_name] = '';
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (!$primary) {
+                                foreach ($referenced_table['fields'] as $field_name => $field) {
+                                    if (array_key_exists('autoincrement', $field)
+                                        && $field['autoincrement']
+                                    ) {
+                                        $primary = array( $field_name => '' );
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (!$primary) {
+                                return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                                    'referenced table "'.$referenced_table_name.'" has no primary key and no referenced field was specified for foreign key "'.$constraint_name.'" of table "'.$table_name.'"');
+                            }
+
+                            $constraint['references']['fields'] = $primary;
+                        }
+
+                        /* the same number of referencing and referenced fields ? */
+                        if (count($constraint['fields']) != count($constraint['references']['fields'])) {
+                            return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
+                                'The number of fields in the referenced key must match those of the foreign key "'.$constraint_name.'"');
+                        }
+
+                        $database['tables'][$table_name]['constraints'][$constraint_name]['references']['fields'] = $constraint['references']['fields'];
+                    }
+                }
+            }
+        }
+
+        /*
+         * This have to be done here otherwise we can't guarantee that all
          * tables were already defined in the moment we are parsing sequences
          */
         if (isset($database['sequences'])) {
@@ -584,7 +760,7 @@ class MDB2_Schema_Validate
                 }
             }
         }
-        return true;
+        return MDB2_OK;
     }
 
     // }}}
@@ -632,7 +808,7 @@ class MDB2_Schema_Validate
             return $this->raiseError(MDB2_SCHEMA_ERROR_VALIDATE,
                 'value of "'.$field['name'].'" is incorrect: '.$result->getUserinfo());
         }
-        return true;
+        return MDB2_OK;
     }
 
     // }}}
@@ -719,7 +895,7 @@ class MDB2_Schema_Validate
             //$field_value = (double)$field_value;
             break;
         }
-        return true;
+        return MDB2_OK;
     }
 }
 

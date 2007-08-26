@@ -651,7 +651,7 @@ class FlysprayDoAdmin extends FlysprayDo
                 $oldpass = $db->x->getRow('SELECT user_pass, password_salt FROM {users} WHERE user_id = ?', null, Post::val('user_id'));
                 $oldsalt = $oldpass['password_salt'] ? $oldpass['password_salt'] : null;
 
-                if (Flyspray::cryptPassword(Post::val('oldpass'), $oldsalt) != $oldpass['user_pass']) {
+                if (Flyspray::cryptPassword(Post::val('oldpass'), $oldsalt) !== $oldpass['user_pass']) {
                     return array(ERROR_RECOVER, L('oldpasswrong'));
                 }
             }

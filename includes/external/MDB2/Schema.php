@@ -42,7 +42,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: Schema.php,v 1.113 2007/07/23 23:04:48 ifeghali Exp $
+// $Id: Schema.php,v 1.116 2007/08/20 03:15:41 ifeghali Exp $
 //
 
 require_once 'MDB2.php';
@@ -419,6 +419,8 @@ class MDB2_Schema extends PEAR
             'name' => $database,
             'create' => true,
             'overwrite' => false,
+            'description' => '',
+            'comments' => '',
             'tables' => array(),
             'sequences' => array(),
         );
@@ -434,7 +436,16 @@ class MDB2_Schema extends PEAR
                 return $fields;
             }
 
-            $database_definition['tables'][$table_name] = array('fields' => array());
+            $database_definition['tables'][$table_name] = array(
+                'was' => '',
+                'description' => '',
+                'comments' => '',
+                'fields' => array(),
+                'indexes' => array(),
+                'constraints' => array(),
+                'initialization' => array()
+            );
+
             $table_definition =& $database_definition['tables'][$table_name];
             foreach ($fields as $field_name) {
                 $definition = $this->db->reverse->getTableFieldDefinition($table_name, $field_name);
@@ -461,20 +472,21 @@ class MDB2_Schema extends PEAR
 
                 /**
                  * The first parameter is used to verify if there are duplicated
-                 * fields which we can guarantee that won't happen at this point
+                 * fields which we can guarantee that won't happen when reverse engineering
                  */
                 $result = $val->validateField(array(), $table_definition['fields'][$field_name], $field_name);
                 if (PEAR::isError($result)) {
                     return $result;
                 }
             }
-            $index_definitions = array();
+
+            $keys = array();
             $indexes = $this->db->manager->listTableIndexes($table_name);
             if (PEAR::isError($indexes)) {
                 return $indexes;
             }
 
-            if (is_array($indexes) && empty($table_definition['indexes'])) {
+            if (is_array($indexes)) {
                 foreach ($indexes as $index_name) {
                     $this->db->expectError(MDB2_ERROR_NOT_FOUND);
                     $definition = $this->db->reverse->getTableIndexDefinition($table_name, $index_name);
@@ -486,16 +498,7 @@ class MDB2_Schema extends PEAR
                         return $definition;
                     }
 
-                    /**
-                     * The first parameter is used to verify if there are duplicated
-                     * indexes which we can guarantee that won't happen at this point
-                     */
-                    $result = $val->validateIndex(array(), $definition, $index_name);
-                    if (PEAR::isError($result)) {
-                        return $result;
-                    }
-
-                    $index_definitions[$index_name] = $definition;
+                    $keys[$index_name] = $definition;
                 }
             }
 
@@ -504,10 +507,10 @@ class MDB2_Schema extends PEAR
                 return $constraints;
             }
 
-            if (is_array($constraints) && empty($table_definition['indexes'])) {
-                foreach ($constraints as $index_name) {
+            if (is_array($constraints)) {
+                foreach ($constraints as $constraint_name) {
                     $this->db->expectError(MDB2_ERROR_NOT_FOUND);
-                    $definition = $this->db->reverse->getTableConstraintDefinition($table_name, $index_name);
+                    $definition = $this->db->reverse->getTableConstraintDefinition($table_name, $constraint_name);
                     $this->db->popExpect();
                     if (PEAR::isError($definition)) {
                         if (PEAR::isError($definition, MDB2_ERROR_NOT_FOUND)) {
@@ -516,25 +519,80 @@ class MDB2_Schema extends PEAR
                         return $definition;
                     }
 
+                    $keys[$constraint_name] = $definition;
+                }
+            }
+
+            foreach ($keys as $key_name => $definition) {
+                if (array_key_exists('foreign', $definition)
+                    && $definition['foreign']
+                ) {
                     /**
                      * The first parameter is used to verify if there are duplicated
-                     * indexes which we can guarantee that won't happen at this point
+                     * foreign keys which we can guarantee that won't happen when reverse engineering
                      */
-                    $result = $val->validateIndex(array(), $definition, $index_name);
+                    $result = $val->validateConstraint(array(), $definition, $key_name);
                     if (PEAR::isError($result)) {
                         return $result;
                     }
 
-                    $index_definitions[$index_name] = $definition;
+                    foreach ($definition['fields'] as $field_name => $field) {
+                        /**
+                         * The first parameter is used to verify if there are duplicated
+                         * referencing fields which we can guarantee that won't happen when reverse engineering
+                         */
+                        $result = $val->validateConstraintField(array(), $field_name);
+                        if (PEAR::isError($result)) {
+                            return $result;
+                        }
+
+                        $definition['fields'][$field_name] = '';
+                    }
+
+                    foreach ($definition['references']['fields'] as $field_name => $field) {
+                        /**
+                         * The first parameter is used to verify if there are duplicated
+                         * referenced fields which we can guarantee that won't happen when reverse engineering
+                         */
+                        $result = $val->validateConstraintReferencedField(array(), $field_name);
+                        if (PEAR::isError($result)) {
+                            return $result;
+                        }
+
+                        $definition['references']['fields'][$field_name] = '';
+                    }
+
+                    $table_definition['constraints'][$key_name] = $definition;
+                } else {
+                    /**
+                     * The first parameter is used to verify if there are duplicated
+                     * indices which we can guarantee that won't happen when reverse engineering
+                     */
+                    $result = $val->validateIndex(array(), $definition, $key_name);
+                    if (PEAR::isError($result)) {
+                        return $result;
+                    }
+
+                    foreach ($definition['fields'] as $field_name => $field) {
+                        /**
+                         * The first parameter is used to verify if there are duplicated
+                         * index fields which we can guarantee that won't happen when reverse engineering
+                         */
+                        $result = $val->validateIndexField(array(), $field, $field_name);
+                        if (PEAR::isError($result)) {
+                            return $result;
+                        }
+
+                        $definition['fields'][$field_name] = $field;
+                    }
+
+                    $table_definition['indexes'][$key_name] = $definition;
                 }
-            }
-            if (!empty($index_definitions)) {
-                $table_definition['indexes'] = $index_definitions;
             }
 
             /**
              * The first parameter is used to verify if there are duplicated
-             * tables which we can guarantee that won't happen at this point
+             * tables which we can guarantee that won't happen when reverse engineering
              */
             $result = $val->validateTable(array(), $table_definition, $table_name);
             if (PEAR::isError($result)) {
@@ -572,7 +630,7 @@ class MDB2_Schema extends PEAR
 
                 /**
                  * The first parameter is used to verify if there are duplicated
-                 * sequences which we can guarantee that won't happen at this point
+                 * sequences which we can guarantee that won't happen when reverse engineering
                  */
                 $result = $val->validateSequence(array(), $definition, $sequence_name);
                 if (PEAR::isError($result)) {
@@ -683,6 +741,61 @@ class MDB2_Schema extends PEAR
     }
 
     // }}}
+    // {{{ createTableConstraints()
+
+    /**
+     * A method to create foreign keys for an existing table
+     *
+     * @param string  Name of the table
+     * @param array   An array of foreign keys to be created
+     * @param boolean If the foreign key should be overwritten if it already exists
+     * @return mixed  MDB2_Error if there is an error creating a foreign key, MDB2_OK otherwise
+     * @access public
+     */
+    function createTableConstraints($table_name, $constraints, $overwrite = false)
+    {
+        if (!$this->db->supports('indexes')) {
+            $this->db->debug('Indexes are not supported', __FUNCTION__);
+            return MDB2_OK;
+        }
+
+        $errorcodes = array(MDB2_ERROR_UNSUPPORTED, MDB2_ERROR_NOT_CAPABLE);
+        foreach ($constraints as $constraint_name => $constraint) {
+
+            // Does the foreign key already exist, and if so, should it be overwritten?
+            $create_constraint = true;
+            $this->db->expectError($errorcodes);
+            $current_constraints = $this->db->manager->listTableConstraints($table_name);
+            $this->db->popExpect();
+            if (PEAR::isError($current_constraints)) {
+                if (!MDB2::isError($current_constraints, $errorcodes)) {
+                    return $current_constraints;
+                }
+            } elseif (is_array($current_constraints) && in_array($constraint_name, $current_constraints)) {
+                if (!$overwrite) {
+                    $this->db->debug('Foreign key already exists: '.$constraint_name, __FUNCTION__);
+                    $create_constraint = false;
+                } else {
+                    $this->db->debug('Preparing to overwrite foreign key: '.$constraint_name, __FUNCTION__);
+                    $result = $this->db->manager->dropConstraint($table_name, $constraint_name);
+                    if (PEAR::isError($result)) {
+                        return $result;
+                    }
+                }
+            }
+
+            // Should the foreign key be created?
+            if ($create_constraint) {
+                $result = $this->db->manager->createConstraint($table_name, $constraint_name, $constraint);
+                if (PEAR::isError($result)) {
+                    return $result;
+                }
+            }
+        }
+        return MDB2_OK;
+    }
+
+    // }}}
     // {{{ createTable()
 
     /**
@@ -737,6 +850,13 @@ class MDB2_Schema extends PEAR
 
         if (!empty($table['indexes']) && is_array($table['indexes'])) {
             $result = $this->createTableIndexes($table_name, $table['indexes'], $overwrite);
+            if (PEAR::isError($result)) {
+                return $result;
+            }
+        }
+
+        if (!empty($table['constraints']) && is_array($table['constraints'])) {
+            $result = $this->createTableConstraints($table_name, $table['constraints'], $overwrite);
             if (PEAR::isError($result)) {
                 return $result;
             }
@@ -1103,10 +1223,12 @@ class MDB2_Schema extends PEAR
      * use to be aware of eventual configuration requirements.
      *
      * @param array multi dimensional array that contains the current definition
+     * @param array  an array of options to be passed to the database specific driver
+     *               version of MDB2_Driver_Manager_Common::createTable().
      * @return bool|MDB2_Error MDB2_OK or error object
      * @access public
      */
-    function createDatabase($database_definition)
+    function createDatabase($database_definition, $options = array())
     {
         if (!isset($database_definition['name']) || !$database_definition['name']) {
             return $this->raiseError(MDB2_SCHEMA_ERROR_INVALID, null, null,
@@ -1171,7 +1293,7 @@ class MDB2_Schema extends PEAR
             && is_array($database_definition['tables'])
         ) {
             foreach ($database_definition['tables'] as $table_name => $table) {
-                $result = $this->createTable($table_name, $table, $overwrite);
+                $result = $this->createTable($table_name, $table, $overwrite, $options);
                 if (PEAR::isError($result)) {
                     break;
                 }

@@ -202,22 +202,27 @@ class Backend
                               FROM {tasks}
                              WHERE task_id IN ('. implode(',', array_map('intval', $tasks)) .')');
 
+        $del_assignees = $db->x->autoPrepare('{assigned}', null, MDB2_AUTOQUERY_DELETE, $where = 'task_id = ?');
+
+        $insert_assigned = $db->x->autoPrepare('{assigned}', array('task_id', 'user_id'));
+
         while ($row = $sql->FetchRow()) {
             if (!$user->can_take_ownership($row)) {
                 continue;
             }
 
-            $num = $db->x->execParam('DELETE FROM {assigned}
-                              WHERE task_id = ?',
-                            $row['task_id']);
+            $num = $del_assignees->execute($row['task_id']);
 
-            $db->x->autoExecute('{assigned}', array('task_id'=> $row['task_id'], 'user_id'=>$user->id));
+            $insert_assigned->execute(array($row['task_id'], $user->id));
 
             if ($num) {
                 Flyspray::logEvent($row['task_id'], 19, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
                 Notifications::send($row['task_id'], ADDRESS_TASK, NOTIFY_OWNERSHIP);
             }
         }
+
+        $del_assignees->free();
+        $insert_assigned->free();
     }
 
     /**
@@ -471,8 +476,15 @@ class Backend
             $syntax_plugins = explode(' ', $proj->prefs['syntax_plugins']);
         }
 
-        $db->x->autoExecute('{comments}', array('task_id' => $task['task_id'], 'date_added'=> $time, 'last_edited_time'=> $time,
-                                                'user_id' => $user->id, 'comment_text' => $comment_text, 'syntax_plugins' => implode(' ', $syntax_plugins)));
+        $db->x->autoExecute('{comments}', array('task_id' => $task['task_id'], 
+                                                'date_added'=> $time, 
+                                                'last_edited_time'=> $time,
+                                                'user_id' => $user->id, 
+                                                'comment_text' => $comment_text, 
+                                                'syntax_plugins' => implode(' ', $syntax_plugins)
+                                                )
+                            );
+
         $cid = $db->lastInsertID();
         
         // [RED] Update comment count
@@ -1014,10 +1026,10 @@ class Backend
 
         // find category owners
         $owners = array();
-        foreach ($proj->fields as $field) {
-            if ($field->prefs['list_type'] != LIST_CATEGORY) {
-                continue;
-            }
+            foreach ($proj->fields as $field) {
+                if ($field->prefs['list_type'] != LIST_CATEGORY) {
+                    continue;
+                }
 
             $cat = $db->x->getRow('SELECT  *
                                  FROM  {list_category}
@@ -1033,14 +1045,14 @@ class Backend
                                     WHERE  lft < ? AND rgt > ? AND list_id  = ?
                                  ORDER BY  lft DESC', null,
                                    array($cat['lft'], $cat['rgt'], $cat['list_id']));
-                foreach ($sql as $row) {
+                    foreach ($sql as $row) {
                     // If there's a parent category owner, send to them
-                    if ($row['category_owner']) {
-                        $owners[] = $row['category_owner'];
-                        break;
+                        if ($row['category_owner']) {
+                            $owners[] = $row['category_owner'];
+                            break;
+                        }
                     }
                 }
-            }
         }
         // last try...
         if (!count($owners) && $proj->prefs['default_cat_owner']) {
@@ -1100,7 +1112,7 @@ class Backend
             return false;
         }
 
-        $db->x->autoExecute('{tasks}',array('date_closed'=> time(),
+        $db->x->autoExecute('{tasks}', array('date_closed'=> time(),
                                            'closed_by'=> $user->id,
                                            'closure_comment'=> $comment,
                                            'is_closed'=> 1,
@@ -1127,7 +1139,8 @@ class Backend
         Flyspray::logEvent($task_id, 2, $reason, $comment);
 
         // If there's an admin request related to this, close it
-        $db->x->autoExecute('{admin_requests}', array('resolved_by'=> $user->id, 'time_resolved'=> time()),
+        $db->x->autoExecute('{admin_requests}', array('resolved_by'=> $user->id, 
+                                                      'time_resolved'=> time()),
                             MDB2_AUTOQUERY_UPDATE, sprintf('task_id = %d AND request_type = 1', $task_id));
 
         // duplicate
@@ -1165,7 +1178,7 @@ class Backend
     function get_task_list(&$args, $visible, $offset = 0, $perpage = null)
     {
         global $proj, $db, $user, $conf, $fs;
-        /* build SQL statement {{{ */
+        /* build SQL statement {{{ */ 
         // Original SQL courtesy of Lance Conry http://www.rhinosw.com/
         $where  = $sql_params = array();
 
