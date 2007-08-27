@@ -1012,6 +1012,12 @@ Regards,',
 'recentlyclosed'          => 'Recently closed',
 'showasassignees'         => 'Show as assignees',
 'changedby'               => 'Last changed by',
+'moveallof'               => 'Move all items of',
+'movelistto'              => 'to',
+'merge'                   => 'Merge',
+'listsarethesame'         => 'The two lists you chose are equal and cannot be merged.',
+'listtypesnotequal'       => 'The selected lists are not of the same type.',
+'listsmerged'             => 'The lists have been merged successfully.',
 );
 
 ?>

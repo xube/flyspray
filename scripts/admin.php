@@ -31,8 +31,8 @@ class FlysprayDoAdmin extends FlysprayDo
     }
 
     /**
-     * area_editgroup 
-     * 
+     * area_editgroup
+     *
      * @access public
      * @return void
      */
@@ -56,8 +56,8 @@ class FlysprayDoAdmin extends FlysprayDo
     }
 
     /**
-     * area_newuser 
-     * 
+     * area_newuser
+     *
      * @access public
      * @return void
      */
@@ -68,8 +68,8 @@ class FlysprayDoAdmin extends FlysprayDo
     }
 
     /**
-     * area_user 
-     * 
+     * area_user
+     *
      * @access public
      * @return void
      */
@@ -89,8 +89,8 @@ class FlysprayDoAdmin extends FlysprayDo
     }
 
     /**
-     * area_groups 
-     * 
+     * area_groups
+     *
      * @access public
      * @return void
      */
@@ -109,8 +109,8 @@ class FlysprayDoAdmin extends FlysprayDo
     }
 
     /**
-     * area_users 
-     * 
+     * area_users
+     *
      * @access public
      * @return void
      */
@@ -182,8 +182,8 @@ class FlysprayDoAdmin extends FlysprayDo
     }
 
     /**
-     * area_fields 
-     * 
+     * area_fields
+     *
      * @access public
      * @return void
      */
@@ -196,14 +196,16 @@ class FlysprayDoAdmin extends FlysprayDo
     }
 
     /**
-     * area_lists 
-     * 
+     * area_lists
+     *
      * @access public
      * @return void
      */
     function area_lists()
     {
     	global $db, $proj, $page;
+        // Get $lists
+        FlysprayDoAdmin::area_prefs();
 
         $lists = $db->x->getAll('SELECT l.*, count(f.field_id) AS in_use
                                FROM {lists} l
@@ -215,8 +217,8 @@ class FlysprayDoAdmin extends FlysprayDo
     }
 
     /**
-     * area_list 
-     * 
+     * area_list
+     *
      * @access public
      * @return void
      */
@@ -257,6 +259,32 @@ class FlysprayDoAdmin extends FlysprayDo
         return array(SUBMIT_OK, L('optionssaved'));
     }
 
+    function action_merge_lists()
+    {
+        global $fs, $db, $proj, $user;
+
+        $list_delete = Post::num('list_delete');
+        $list_target = Post::num('list_target');
+        if (!$list_delete || !$list_target || $list_target == $list_delete) {
+            return array(ERROR_RECOVER, L('listsarethesame'));
+        }
+
+        // Check that lists are of the same type
+        $lt1 = $db->x->getOne('SELECT list_type FROM {lists} WHERE list_id = ?', null, $list_delete);
+        $lt2 = $db->x->getOne('SELECT list_type FROM {lists} WHERE list_id = ?', null, $list_target);
+
+        if ($lt1 != $lt2) {
+            return array(ERROR_RECOVER, L('listtypesnotequal'));
+        }
+
+        // Now "rename" list items and delete old list
+        $db->x->execParam('UPDATE {list_items} SET list_id = ? WHERE list_id = ?', array($list_target, $list_delete));
+        $db->x->execParam('UPDATE {list_category} SET list_id = ? WHERE list_id = ?', array($list_target, $list_delete));
+        $db->x->execParam('DELETE FROM {lists} WHERE list_id = ?', $list_delete);
+
+        return array(SUBMIT_OK, L('listsmerged'));
+    }
+
     function action_activate_user()
     {
     	global $fs, $db, $proj, $user;
@@ -286,9 +314,9 @@ class FlysprayDoAdmin extends FlysprayDo
             return array(ERROR_RECOVER, L('fieldsmissing'));
         }
 
-        $db->x->autoExecute('{fields}', array('field_name'=> Post::val('field_name'), 
-                                              'field_type'=> Post::num('field_type'), 
-                                              'list_id'=> Post::num('list_id'), 
+        $db->x->autoExecute('{fields}', array('field_name'=> Post::val('field_name'),
+                                              'field_type'=> Post::num('field_type'),
+                                              'list_id'=> Post::num('list_id'),
                                               'project_id'=> $proj->id));
 
         $proj = new Project($proj->id);
@@ -340,15 +368,15 @@ class FlysprayDoAdmin extends FlysprayDo
     {
     	global $fs, $db, $proj, $user;
 
-        $db->x->autoExecute('{lists}', array('list_name'=> Post::val('list_name'), 
-                                             'list_type'=> Post::num('list_type'), 
+        $db->x->autoExecute('{lists}', array('list_name'=> Post::val('list_name'),
+                                             'list_type'=> Post::num('list_type'),
                                              'project_id'=> $proj->id));
 
         if (Post::num('list_type') == LIST_CATEGORY) {
             $list_id = $db->x->GetOne('SELECT list_id FROM {lists} WHERE project_id = ? ORDER BY list_id DESC', null, $proj->id);
-            $db->x->autoExecute('{list_category}', array('list_id'=> $list_id, 
-                                                         'lft'=> 1, 
-                                                         'rgt'=> 2, 
+            $db->x->autoExecute('{list_category}', array('list_id'=> $list_id,
+                                                         'lft'=> 1,
+                                                         'rgt'=> 2,
                                                          'category_name'=>'root'));
         }
         return array(SUBMIT_OK, L('listadded'));
@@ -438,11 +466,11 @@ class FlysprayDoAdmin extends FlysprayDo
                      WHERE lft >= ? AND project_id = ?',
                      array($right, $proj->id));
 
-        $db->x->autoExecute('{list_category}', array('list_id'=> Post::val('list_id'), 
-                                                   'category_name'=> Post::val('list_name'), 
+        $db->x->autoExecute('{list_category}', array('list_id'=> Post::val('list_id'),
+                                                   'category_name'=> Post::val('list_name'),
                                                    'show_in_list'=> 1,
                                                    'category_owner'=> (Post::val('category_owner', 0) == '' ? '0' : Flyspray::username_to_id(Post::val('category_owner', 0))),
-                                                   'lft'=> $right, 
+                                                   'lft'=> $right,
                                                    'rgt'=>($right+1)));
 
         return array(SUBMIT_OK, L('listitemadded'));
@@ -588,7 +616,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $viscols =    $fs->prefs['visible_columns']
                     ? $fs->prefs['visible_columns']
                     : 'id summary progress';
-        
+
         $prjinfo = array('project_title'=> Post::val('project_title'),
                          'theme_style' => Post::val('theme_style'),
                          'intro_message'=> Post::val( 'intro_message'),
