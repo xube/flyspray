@@ -99,7 +99,6 @@ $translation = array(
 'showinlineimages'        => 'Angehängte Bilder als Vorschau direkt anzeigen',
 'dateformat'              => 'Datumsformat',
 'dateformat_extended'     => 'Erweitertes Datumsformat',
-'cache_feeds'             => 'Cache für Newsfeeds aktivieren',
 'no_cache'                => 'Ohne Cache',
 'cache_disk'              => 'Cache als Datei',
 'cache_db'                => 'Cache in Datenbank',

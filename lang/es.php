@@ -100,7 +100,6 @@ $translation = array(
 'showinlineimages'        => 'Mostrar las imagenes adjuntas',
 'dateformat'              => 'Formato de la fecha',
 'dateformat_extended'     => 'Formato detallado de la fecha',
-'cache_feeds'             => 'Caché para RSS',
 'no_cache'                => 'Sin caché',
 'cache_disk'              => 'Caché en disco',
 'cache_db'                => 'Caché en la BD',

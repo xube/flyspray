@@ -55,25 +55,17 @@ while ($row = $sql->fetchRow()) {
     $most_recent = max($most_recent, $row['date_opened'], $row['date_closed'], $row['last_edited_time']);
 }
 
-if ($fs->prefs['cache_feeds']) {
-    if ($fs->prefs['cache_feeds'] == '1') {
-        if (!is_link($cachefile) && is_file($cachefile) && $most_recent <= filemtime($cachefile)) {
-            readfile($cachefile);
-            exit;
-        }
-    }
-    else {
-        $content = $db->x->GetOne("SELECT  content
-                                     FROM  {cache} t
-                                    WHERE  type = ? AND topic = ? $sql_project
-                                           AND max_items = ?  AND last_updated >= ?", null,
-                                   array($feed_type, $orderby . $user->id, $max_items, $most_recent));
-        if ($content) {
-            echo $content;
-            exit;
-        }
-    }
+
+$content = $db->x->GetOne("SELECT  content
+                             FROM  {cache} t
+                            WHERE  type = ? AND topic = ? AND $sql_project
+                                   AND max_items = ?  AND last_updated >= ?", null,
+                           array($feed_type, $orderby . $user->id, $max_items, $most_recent));
+if ($content) {
+    echo $content;
+    exit;
 }
+
 
 /* build a new feed if cache didn't work */
 $db->setLimit($max_items);
@@ -99,27 +91,14 @@ $page->uses('most_recent', 'feed_description', 'feed_image', 'task_details');
 $content = $page->fetch('feed.'.$feed_type.'.tpl');
 
 // cache feed
-if ($fs->prefs['cache_feeds'])
-{
-    if ($fs->prefs['cache_feeds'] == '1') {
-            file_put_contents($cachefile, $content, LOCK_EX);
-    }
-    else {
-       /**
-        * " Try to update a record, and if the record is not found,
-        *   an insert statement is generated and executed "
-        */
+$fields = array('content'=> array('value' => $content),
+                'type'=> array('value' => $feed_type, 'key' => true),
+                'topic'=> array('value' => $orderby . $user->id, 'key' => true),
+                'project_id'=> array('value' => $proj->id, 'key' => true),
+                'max_items'=> array('value' => $max_items, 'key' => true),
+                'last_updated'=> array('value' => time()));
 
-        $fields = array('content'=> array('value' => $content),
-                        'type'=> array('value' => $feed_type, 'key' => true),
-                        'topic'=> array('value' => $orderby . $user->id, 'key' => true),
-                        'project_id'=> array('value' => $proj->id, 'key' => true),
-                        'max_items'=> array('value' => $max_items, 'key' => true),
-                        'last_updated'=> array('value' => time()));
-
-        $db->Replace('{cache}', $fields);
-    }
-}
+$db->Replace('{cache}', $fields);
 
 header('Content-Type: application/xml; charset=utf-8');
 echo $content;

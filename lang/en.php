@@ -88,7 +88,6 @@ $language = array(
 'notsubcategory'          => 'None (top-level category)',
 'dateformat'              => 'Date format',
 'dateformat_extended'     => 'Detailed date format',
-'cache_feeds'             => 'Cache feeds',
 'no_cache'                => 'No caching',
 'cache_disk'              => 'Cache on disk',
 'cache_db'                => 'Cache in DB',

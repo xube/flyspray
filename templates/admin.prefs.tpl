@@ -46,14 +46,6 @@
           </td>
         </tr>
         <tr>
-          <td><label for="cache_feeds">{L('cache_feeds')}</label></td>
-          <td>
-            <select id="cache_feeds" name="cache_feeds">
-            {!tpl_options(array('0' => L('no_cache'), '1' => L('cache_disk'), '2' => L('cache_db')), $fs->prefs['cache_feeds'])}
-            </select>
-          </td>
-        </tr>
-        <tr>
           <td><label for="anon_userlist">{L('allowanonuserlist')}</label></td>
           <td>{!tpl_checkbox('anon_userlist', $fs->prefs['anon_userlist'], 'anon_userlist')}</td>
         </tr>
