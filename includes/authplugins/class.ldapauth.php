@@ -68,7 +68,7 @@ class LDAPAuth extends FlysprayAuth
             @ldap_close($ldapconn);
             return Backend::create_user($username, $password, $username, '', '', 1, 0, $fs->prefs['anon_group']);
         }
-        return array(ERROR_RECOVER, L('ldaperror') . ':' . ldap_error());
+        return array(ERROR_RECOVER, L('ldaperror') . ':' . ldap_error($ldapconn));
     }
     
     function checkCookie() {
