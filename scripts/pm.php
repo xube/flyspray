@@ -139,8 +139,8 @@ class FlysprayDoPm extends FlysprayDoAdmin
 	function _onsubmit()
 	{
         global $fs, $db, $proj, $user;
-
-        list($type, $msg, $url) = $this->handle('action', Post::val('action'));
+        $action = Post::val('action');
+        list($type, $msg, $url) = $this->handle('action', $action);
         if ($type != NO_SUBMIT) {
         	$proj = new Project($proj->id);
         }

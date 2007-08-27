@@ -831,8 +831,8 @@ class FlysprayDoAdmin extends FlysprayDo
 
         $proj = new Project(0);
         $proj->setCookie();
-
-        list($type, $msg, $url) = $this->handle('action', Post::val('action'));
+        $action = Post::val('action');
+        list($type, $msg, $url) = $this->handle('action', $action);
         if ($type != NO_SUBMIT) {
         	$fs = new Flyspray;
         	$user->get_perms();

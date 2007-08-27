@@ -45,8 +45,8 @@ class FlysprayDoNewtask extends FlysprayDo
     function _onsubmit()
     {
         global $page, $db;
-
-        return $this->handle('action', Post::val('action'));
+        $area = Post::val('action');
+        return $this->handle('action', $area);
     }
 
     function show()

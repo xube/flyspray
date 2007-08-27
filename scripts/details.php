@@ -535,8 +535,9 @@ class FlysprayDoDetails extends FlysprayDo
     }
 
 	function _onsubmit()
-	{
-        list($type, $msg, $url) = $this->handle('action', Req::val('action'), $this->task);
+    {
+        $action = Req::val('action');
+        list($type, $msg, $url) = $this->handle('action', $action, $this->task);
         if ($type != NO_SUBMIT) {
             $this->task = Flyspray::GetTaskDetails(Req::num('task_id'));
         }

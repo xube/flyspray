@@ -99,8 +99,9 @@ class FlysprayDoIndex extends FlysprayDo
 	}
 
 	function _onsubmit()
-	{
-        return $this->handle('action', $area = Post::val('action'));
+    {
+        $area = Post::val('action');
+        return $this->handle('action', $area);
 	}
 
 	function is_accessible()

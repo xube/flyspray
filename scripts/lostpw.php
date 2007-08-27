@@ -104,7 +104,8 @@ class FlysprayDoLostpw extends FlysprayDo
      */
     function _onsubmit()
     {
-        return $this->handle('action', Post::val('action'));
+        $action = Post::val('action'); 
+        return $this->handle('action', $action);
     }
 
     /**

@@ -165,7 +165,8 @@ class FlysprayDoRegister extends FlysprayDo
 
     function _onsubmit()
     {
-        return $this->handle('action', Req::val('action'));
+        $area = Req::val('action');
+        return $this->handle('action', $area);
     }
 
     function show()
