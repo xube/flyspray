@@ -11,13 +11,21 @@
     <p>{L('moveallof')}
 
         <select name="list_delete">
-          {!tpl_options($lists, Req::num('list_delete'))}
+          <?php foreach ($mergelists as $project => $plists): ?>
+          <optgroup label="{$project}">
+            {!tpl_options($plists)}
+          </optgroup>
+          <?php endforeach; ?>
         </select>
 
         {L('movelistto')}
 
         <select name="list_target">
-          {!tpl_options($lists, Req::num('list_target'))}
+          <?php foreach ($mergelists as $project => $plists): ?>
+          <optgroup label="{$project}">
+            {!tpl_options($plists)}
+          </optgroup>
+          <?php endforeach; ?>
         </select>
 
         <button type="submit">{L('merge')}</button>

@@ -204,8 +204,17 @@ class FlysprayDoAdmin extends FlysprayDo
     function area_lists()
     {
     	global $db, $proj, $page;
-        // Get $lists
-        FlysprayDoAdmin::area_prefs();
+        // Get lists, grouped by project title
+        $lists = $db->x->getAll('SELECT list_id, list_name, project_title, l.project_id
+                                   FROM {lists} l
+                              LEFT JOIN {projects} p ON l.project_id = p.project_id
+                               ORDER BY l.project_id');
+        $mergelists = array();
+        foreach ($lists as $list) {
+            $list['project_title'] = ($list['project_id'] ? $list['project_title'] : L('allprojects'));
+            $mergelists[$list['project_title']][] = $list;
+        }
+        $page->assign('mergelists', $mergelists);
 
         $lists = $db->x->getAll('SELECT l.*, count(f.field_id) AS in_use
                                FROM {lists} l
