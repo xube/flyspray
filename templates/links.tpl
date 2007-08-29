@@ -97,13 +97,11 @@
       </li>
     <?php endif; ?>
 
-    <?php if ($proj->id): ?>
-    <?php if ($proj->prefs['roadmap_field']): ?>
+    <?php if ($proj->id && $proj->prefs['roadmap_field']): ?>
     <li>
     <a id="roadmaplink"
         href="{$this->url(array('roadmap', 'proj' . $proj->id))}">{L('roadmap')}</a>
     </li>
-    <?php endif; ?>
     <li>
     <a id="changeloglink"
         href="{$this->url(array('changelog', 'proj' . $proj->id))}">{L('changelog')}</a>

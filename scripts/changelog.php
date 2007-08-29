@@ -30,7 +30,10 @@ class FlysprayDoChangelog extends FlysprayDo
         // Get milestones
         $list_id = $db->x->GetOne('SELECT list_id FROM {fields} WHERE field_id = ?',
                                    null, $proj->prefs['roadmap_field']);
-
+        if (!$list_id) {
+            trigger_error('Roadmap / changelog has not been configured in the project management area.', E_USER_ERROR);
+        }
+        
         $milestones = $db->x->getAll('SELECT list_item_id AS version_id, item_name AS version_name
                                     FROM {list_items} li
                                    WHERE list_id = ? AND (version_tense = 1 OR version_tense = 2) AND show_in_list = 1

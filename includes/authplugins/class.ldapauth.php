@@ -26,24 +26,29 @@ class LDAPAuth extends FlysprayAuth
         }
 
         // Does user exist in LDAP server?
+      
         $ldapconn = ldap_connect($fs->prefs['ldap_server']);
         if (!$ldapconn) {
             return array(ERROR_RECOVER, L('ldapconerror'));
         }
-        
+           
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-
+	
         // we have multiple methods here, every LDAP user seems to have his own
         // favourite-this-is-the-only-way method ...
         if ($fs->prefs['ldap_bind_method'] == 'anonymous') {
 
-            $ldapsearch = @ldap_search($ldapconn, $fs->prefs['ldap_basedn'], "{$fs->prefs['ldap_userkey']}={$username}");
-            $ldapentries = @ldap_get_entries($ldapconn, $ldapsearch);
+            $ldapsearch = ldap_search($ldapconn, $fs->prefs['ldap_basedn'], "{$fs->prefs['ldap_userkey']}={$username}");
+            $ldapentries = ldap_get_entries($ldapconn, $ldapsearch);
 
-            foreach ((array) $ldapentries as $ldapentry) {
-                $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $password);
-                if ($ldapbind) {
-                    break;
+            if ($ldapentries > 0) {
+            // fixed bug because anonymous auth always suceeds
+            // if $ldapentry['uid'][0] is null then $ldapbind = true
+                foreach ($ldapentries as $ldapentry) {
+                    $ldapbind = ldap_bind($ldapconn, $ldapentry['uid'][0], $password);
+                    if ($ldapbind) {
+                        break;
+                    }
                 }
             }
         } elseif ($fs->prefs['ldap_bind_method'] == 'bind_dn') {
@@ -52,10 +57,12 @@ class LDAPAuth extends FlysprayAuth
             $ldapsearch = @ldap_search($ldapconn, $fs->prefs['ldap_basedn'], "{$fs->prefs['ldap_userkey']}={$username}");
             $ldapentries = @ldap_get_entries($ldapconn, $ldapsearch);
 
-            foreach ((array) $ldapentries as $ldapentry) {
-                $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $password);
-                if ($ldapbind) {
-                    break;
+            if ($ldapentries > 0) {
+                foreach ($ldapentries as $ldapentry) {
+                    $ldapbind = @ldap_bind($ldapconn, $ldapentry['uid'][0], $password);
+                    if ($ldapbind) {
+                        break;
+                    }
                 }
             }
         } elseif ($fs->prefs['ldap_bind_method'] == 'direct') {
