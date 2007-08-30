@@ -65,7 +65,7 @@ class Backend
                                   array($row['task_id'], $user_id));
 
             if (!$notif) {
-                $db->x->autoExecute('{notifications}', array('task_id'=> $row['task_id'], 'user_id'=> $user_id));
+                $notif = $db->x->autoExecute('{notifications}', array('task_id'=> $row['task_id'], 'user_id'=> $user_id));
                 Flyspray::logEvent($row['task_id'], 9, $user_id);
             }
         }
