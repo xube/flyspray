@@ -258,10 +258,10 @@ class Backend
             }
 
             $fields = array('user_id'=> array('value' => $user->id, 'key' => true),
-                            'task_id'=> array('value' => $row['task_id']), 'key' => true);
-            $db->Replace('{assigned}', $fields);
+                            'task_id'=> array('value' => $row['task_id'], 'key' => true) );
+            $r = $db->Replace('{assigned}', $fields);
 
-            if ($db->Affected_Rows()) {
+            if ($r > 0) {
                 Flyspray::logEvent($row['task_id'], 29, $user->id, implode(' ', Flyspray::GetAssignees($row['task_id'])));
                 Notifications::send($row['task_id'], ADDRESS_TASK, NOTIFY_ADDED_ASSIGNEES);
             }
