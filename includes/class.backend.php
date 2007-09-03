@@ -287,6 +287,10 @@ class Backend
 
         $task = Flyspray::GetTaskDetails($task_id);
 
+        if (!$task) {
+            return false;
+        }
+        
         if ($user->can_vote($task) > 0) {
 
             if ($db->x->autoExecute('{votes}', array('user_id' => $user->id, 'task_id' => $task_id, 'date_time' => time()))) {
