@@ -2035,7 +2035,7 @@
     <name>jabber_id</name>
     <type>text</type>
     <length>100</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
 
    </field>
 
