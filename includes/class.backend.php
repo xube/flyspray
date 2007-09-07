@@ -833,9 +833,7 @@ class Backend
                 $sql_params = array($pid);
             }
 
-            if (!$db->x->execParam($base_sql . ' WHERE project_id = ?', $sql_params)) {
-                return false;
-            }
+            $db->x->execParam($base_sql . ' WHERE project_id = ?', $sql_params);
         }
 
         // groups are only deleted, not moved (it is likely
