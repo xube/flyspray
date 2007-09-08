@@ -662,8 +662,8 @@ class FlysprayDoDetails extends FlysprayDo
 
             // Comments + cache
             $comments = $db->x->getAll('  SELECT c.*, ca.content FROM {comments} c
-                                LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = ? AND c.last_edited_time <= ca.last_updated)
-                                    WHERE task_id = ?
+                                LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = ?)
+                                    WHERE task_id = ? AND c.last_edited_time <= ca.last_updated
                                  ORDER BY date_added ASC',
                                    null, array('comm', $this->task['task_id']));
 
