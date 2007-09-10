@@ -105,7 +105,7 @@ class FlysprayDo
             list($errno, $errstr, $url) = array_pad($errno, 3, '');
         } else {
             // ignore E_STRICT and @
-            if ($errno > E_ALL || !ini_get('error_reporting')) {
+            if (($errno > E_ALL || !ini_get('error_reporting')) && (isset($errstr) && strpos($errstr, 'by reference') === false)) {
                 return;
             }
             $errno = ERROR_INTERNAL;

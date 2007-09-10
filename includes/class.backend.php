@@ -985,8 +985,12 @@ class Backend
         $task_id = $db->lastInsertID();
         
         // [RED] Add task to redundancy table (opened by, last_changed_time)
-        $db->execParam('INSERT INTO {redundant} (task_id, last_changed_time, opened_by_real_name, opened_by_user_name, last_changed_by_real_name, last_changed_by_user_name)
-                             VALUES (?, ?, ?, ?, ?, ?)', array($task_id, time(), $user->infos['real_name'], $user->infos['user_name'], $user->infos['real_name'], $user->infos['user_name']));
+        $db->x->autoExecute('{redundant}', array('task_id'=> $task_id,
+                                                 'last_changed_time' => time(),
+                                                 'opened_by_real_name' => $user->infos['real_name'],
+                                                 'opened_by_user_name' => $user->infos['user_name'],
+                                                 'last_changed_by_real_name' => $user->infos['real_name'],
+                                                 'last_changed_by_user_name' => $user->infos['user_name']));
 
         // Per project task ID
         $prefix_id = $db->x->GetOne('SELECT MAX(prefix_id)+1 FROM {tasks} WHERE project_id = ?', null, $proj->id);
