@@ -135,7 +135,7 @@ class User
                     }
 
                     $this->perms[$proj_id][$key] = max($this->perms[0]['is_admin'], @$this->perms[$proj_id][$key], $this->perms[0][$key]);
-                    if ($proj_id) {
+                    if ($proj_id && $key != 'is_admin') {
                         $this->perms[$proj_id][$key] = max($this->perms[$proj_id]['manage_project'], $this->perms[$proj_id][$key]);
                     }
                 }
