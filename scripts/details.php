@@ -259,6 +259,7 @@ class FlysprayDoDetails extends FlysprayDo
         $db->x->execParam("UPDATE  {comments}
                          SET  comment_text = ?, last_edited_time = ?, syntax_plugins = ?
                        WHERE  comment_id = ? AND task_id = ? $where", $params);
+       $db->x->execParam("DELETE FROM {cache} WHERE  topic = ? AND type = ?", array(Post::val('comment_id'), 'comm'));
 
         Flyspray::logEvent($task['task_id'], 5, Post::val('comment_text'),
                            Post::val('previous_text'), Post::val('comment_id'));
@@ -663,7 +664,7 @@ class FlysprayDoDetails extends FlysprayDo
             // Comments + cache
             $comments = $db->x->getAll('  SELECT c.*, ca.content FROM {comments} c
                                 LEFT JOIN {cache} ca ON (c.comment_id = ca.topic AND ca.type = ?)
-                                    WHERE task_id = ? AND (c.last_edited_time <= ca.last_updated || ca.id IS NULL)
+                                    WHERE task_id = ?
                                  ORDER BY date_added ASC',
                                    null, array('comm', $this->task['task_id']));
 
