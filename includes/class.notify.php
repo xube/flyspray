@@ -265,7 +265,7 @@ class Notifications
                 $fs->prefs['jabber_port'] = 5222;
             }
 
-            include  'class.jabber2.php';
+            require_once  'class.jabber2.php';
 
             $jabber =& new Jabber($fs->prefs['jabber_username'],
                                  $fs->prefs['jabber_password'],
