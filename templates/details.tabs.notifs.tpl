@@ -9,14 +9,14 @@
 
   <?php if ($user->perms('manage_project')): ?>
   <form action="{$this->url(array('details', 'task' . $task['task_id']))}#notify" method="post">
-    <p>
+    <div>
         <label class="default" for="notif_user_id">{L('addusertolist')}</label>
         {!tpl_userselect('user_id', Req::val('user_id'), 'notif_user_id')}
 
       <button type="submit">{L('add')}</button>
       <input type="hidden" name="ids" value="{Req::num('ids', $task['task_id'])}" />
       <input type="hidden" name="action" value="add_notification" />
-    </p>
+    </div><br />
   </form>
   <?php endif; ?>
 </div>
