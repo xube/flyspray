@@ -18,7 +18,7 @@
     <link rel="alternate" type="application/rss+xml" title="Flyspray Feed - {L('taskclosed')}" href="{$this->relativeUrl($baseurl)}feed.php?feed_type=rss1&amp;project={$proj->id}" />
     <link rel="alternate" type="application/rss+xml" title="Flyspray Feed - {L('taskedited')}" href="{$this->relativeUrl($baseurl)}feed.php?feed_type=rss1&amp;project={$proj->id}" />
     <link title="{$proj->prefs['project_title']} - Flyspray" type="application/opensearchdescription+xml" rel="search" href="{$this->relativeUrl($baseurl)}index.php?opensearch=1&amp;project_id={$proj->id}" />
-    <base href="{$this->relativeUrl($baseurl)}" id="baseurl" />
+    <link rel="start" href="{$this->relativeUrl($baseurl)}" id="baseurl" />
 
     <style type="text/css">
     <?php
