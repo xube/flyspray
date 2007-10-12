@@ -49,7 +49,12 @@ class Jabber
         list($username, $server) = explode('@', $login);
 
         // Decide whether or not to use encryption
-        if ($security == SECURITY_SSL && !Jabber::can_use_ssl() || $security == SECURITY_TLS && !Jabber::can_use_tls()) {
+        if ($security == SECURITY_SSL && !Jabber::can_use_ssl()) {
+            $this->log('Warning: SSL encryption is not supported (openssl required). Falling back to no encryption.');
+            $security = SECURITY_NONE;
+        }
+        if ($security == SECURITY_TLS && !Jabber::can_use_tls()) {
+            $this->log('Warning: TLS encryption is not supported (openssl and stream_socket_enable_crypto() required). Falling back to no encryption.');
             $security = SECURITY_NONE;
         }
 
