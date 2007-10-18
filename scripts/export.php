@@ -89,16 +89,19 @@ function tpl_csv_cell($task, $colname) {
             'project'    => 'project_title',
             'summary'    => 'item_summary',
             'dateopened' => 'date_opened',
-            'openedby'   => 'opened_by_name',
+            'openedby'   => 'opened_by_real_name',
+            'closedby'   => 'closed_by_real_name',
+            'changedby'   => 'last_changed_by_real_name',
             'assignedto' => 'assigned_to_name',
-            'lastedit'   => 'max_date',
-            'comments'   => 'num_comments',
-            'votes'      => 'num_votes',
-            'attachments'=> 'num_attachments',
+            'lastedit'   => 'last_changed_time',
+            'comments'   => 'comment_count',
+            'votes'      => 'vote_count',
+            'attachments'=> 'attachment_count',
             'dateclosed' => 'date_closed',
             'projectlevelid' => 'prefix_id',
             'progress'   => '',
-    );
+            'state'      => '',
+        );
 
     switch ($colname) {
         case 'id':

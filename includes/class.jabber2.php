@@ -391,9 +391,10 @@ class Jabber
                     $response = array('username' => $this->user,
                                       'response' => $this->encrypt_password(array_merge($decoded, array('nc' => '00000001'))),
                                       'charset'  => 'utf-8',
-                                      'nc'       => '00000001');
+                                      'nc'       => '00000001',
+                                      'qop'      => 'auth'); // the only option we support anyway
 
-                    foreach (array('nonce', 'qop', 'digest-uri', 'realm', 'cnonce') as $key) {
+                    foreach (array('nonce', 'digest-uri', 'realm', 'cnonce') as $key) {
                         if (isset($decoded[$key])) {
                             $response[$key] = $decoded[$key];
                         }
