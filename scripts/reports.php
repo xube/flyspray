@@ -41,7 +41,7 @@ class FlysprayDoReports extends FlysprayDo
                         7 => L('attachmentadded'),
                         8 => L('attachmentdeleted'),
                         11 => L('relatedadded'),
-                        11 => L('relateddeleted'),
+                        12 => L('relateddeleted'),
                         9 => L('notificationadded'),
                         10 => L('notificationdeleted'),
                         17 => L('reminderadded'),
