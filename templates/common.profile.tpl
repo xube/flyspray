@@ -69,13 +69,7 @@
         <td><label for="time_zone">{L('timezone')}</label></td>
         <td>
           <select id="time_zone" name="time_zone">
-            <?php
-              $times = array();
-              for ($i = -12; $i <= 13; $i++) {
-                $times[$i] = L('GMT') . (($i == 0) ? ' ' : (($i > 0) ? '+' . $i : $i));
-              }
-            ?>
-            {!tpl_options($times, Post::val('time_zone', $theuser->infos['time_zone']))}
+            {!tpl_options(tpl_TimeZones(), Post::val('time_zone', $theuser->infos['time_zone']))}
           </select>
         </td>
       </tr>

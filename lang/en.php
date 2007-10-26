@@ -1018,6 +1018,7 @@ Regards,',
 'listsarethesame'         => 'The two lists you chose are equal and cannot be merged.',
 'listtypesnotequal'       => 'The selected lists are not of the same type.',
 'listsmerged'             => 'The lists have been merged successfully.',
+'UTC'                     => 'UTC',
 );
 
 ?>

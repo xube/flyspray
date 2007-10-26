@@ -541,11 +541,11 @@ function formatDate($timestamp, $extended = false, $default = '')
 
     $dateformat = '';
     $format_id  = $extended ? 'dateformat_extended' : 'dateformat';
-    $st = date('Z')/3600; // server GMT timezone
+    $st = date('Z'); // server timezone offset
 
     if (!$user->isAnon()) {
         $dateformat = $user->infos[$format_id];
-        $timestamp += ($user->infos['time_zone'] - $st) * 60 * 60;
+        $timestamp += ($user->infos['time_zone'] - $st);
         $st = $user->infos['time_zone'];
     }
 
@@ -556,8 +556,10 @@ function formatDate($timestamp, $extended = false, $default = '')
     if (!$dateformat) {
         $dateformat = $extended ? '%A, %d %B %Y, %H:%M %GMT' : '%Y-%m-%d';
     }
-
-    $zone = L('GMT') . (($st == 0) ? ' ' : (($st > 0) ? '+' . $st : $st));
+    
+    $h = floor($st / 3600);
+    $m = str_pad(round(($st - $h * 3600) / 60, 0), 2, 0);
+    $zone = L('UTC') . (($st == 0) ? ' ' : (($st > 0) ? '+' . $h.':'.$m : $h.':'.$m));
     $dateformat = str_replace('%GMT', $zone, $dateformat);
     // it's returned utf-8 encoded by the system
     return strftime(Filters::noXSS($dateformat), (int) $timestamp);
@@ -749,6 +751,29 @@ function tpl_query_from_array($vars) {
     }
     return substr($append, 0, -1);
 }
+
+function tpl_TimeZones()
+{
+    $times = array();
+    for ($i = -12; $i <= 14; $i++) {
+        $times[$i * 3600] = L('UTC') . (($i == 0) ? ' ' : (($i > 0) ? '+' . $i : $i));
+    }
+    // Specials
+    // Half hours
+    foreach(array(-9, -4, -3, 3, 4, 5, 6, 9, 10, 11) as $hour) {
+        $times[$hour * 3600 + (($hour < 0) ? -30 : 30)] = L('UTC') . (($hour >= 0) ? '+' : '') . $hour . ':30';
+    }
+    // UTC+5:45
+    $times[5 * 3600 + 45] = L('UTC') . '+5:45';
+    // UTC+8:45
+    $times[8 * 3600 + 45] = L('UTC') . '+8:45';
+        // UTC+8:45
+    $times[12 * 3600 + 45] = L('UTC') . '+12:45';
+    
+    ksort($times);
+    return $times;
+}
+
 // }}}
 // }}}
 ?>

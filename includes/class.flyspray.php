@@ -1030,10 +1030,10 @@ class Flyspray
         $time = strtotime($time);
 
         if (!$user->isAnon()) {
-            $st = date('Z')/3600; // server GMT timezone
-            // Example: User is GMT+3, Server GMT-2.
+            $st = date('Z'); // server timezone offset
+            // Example: User is UTC+3, Server UTC-2.
             // User enters 7:00. For the server it must be converted to 2:00 (done below)
-            $time += ($st - $user->infos['time_zone']) * 60 * 60;
+            $time += ($st - $user->infos['time_zone']);
             // later it adds 5 hours to 2:00 for the user when the date is displayed.
         }
         //strtotime()  may return false, making this method to return bool instead of int.

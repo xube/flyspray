@@ -415,7 +415,7 @@ function checkname(value) {
 
 function updateTimezone(current) {
     myDate = new Date();
-    timezone = -myDate.getTimezoneOffset()/60;
+    timezone = -myDate.getTimezoneOffset()*60;
     if (current != timezone) {
         new Ajax.Request('javascript/callbacks/updatetimezone.php?timezone='+timezone);
     }
