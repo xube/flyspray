@@ -1019,6 +1019,8 @@ Regards,',
 'listtypesnotequal'       => 'The selected lists are not of the same type.',
 'listsmerged'             => 'The lists have been merged successfully.',
 'UTC'                     => 'UTC',
+'ldaprealnamekey'         => 'LDAP real name key',
+'ldapemailkey'            => 'LDAP email key',
 );
 
 ?>

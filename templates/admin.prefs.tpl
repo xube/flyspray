@@ -117,6 +117,14 @@
           <td><input id="ldap_server" name="ldap_server" class="text" type="text" size="40" value="{$fs->prefs['ldap_server']}" /></td>
         </tr>
         <tr>
+          <td><label for="ldap_realnamekey">{L('ldaprealnamekey')}</label></td>
+          <td><input id="ldap_realnamekey" name="ldap_realnamekey" class="text" type="text" size="40" value="{$fs->prefs['ldap_realnamekey']}" /></td>
+        </tr>
+        <tr>
+          <td><label for="ldap_emailkey">{L('ldapemailkey')}</label></td>
+          <td><input id="ldap_emailkey" name="ldap_emailkey" class="text" type="text" size="40" value="{$fs->prefs['ldap_emailkey']}" /></td>
+        </tr>
+        <tr>
           <td><label for="ldap_userkey">{L('ldapuserkey')}</label></td>
           <td><input id="ldap_userkey" name="ldap_userkey" class="text" type="text" size="40" value="{$fs->prefs['ldap_userkey']}" /></td>
         </tr>
