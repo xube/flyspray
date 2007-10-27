@@ -429,38 +429,6 @@ class Setup extends Flyspray
       $this->OutputPage($templates);
    }
 
-   function DisplayLicense()
-   {
-      $templates =
-      array(
-            'license_body' => array(
-                        'path' => TEMPLATE_FOLDER,
-                        'template' => 'license.tpl',
-                        'vars' => array(
-                                    'product_name' => $this->mProductName,
-                                    'message' => $this->GetPageMessage(),
-                                 ),
-                     ),
-
-            'structure' =>  array(
-                           'path' => TEMPLATE_FOLDER,
-                           'template' => 'structure.tpl',
-                           'vars' => array(
-                                       'title' => 'Licence Agreement for',
-                                       'headers' => '',
-                                       'index' => APPLICATION_SETUP_INDEX,
-                                       'version' => $this->version,
-                                       ),
-                           'block' => array('body' => 'license_body')
-                           )
-         );
-
-      // Output the final template.
-      $this->OutputPage($templates);
-   }
-
-
-
    function GetAdminInput($field, $value, $label)
    {
          $input_field	= "
@@ -657,28 +625,8 @@ class Setup extends Flyspray
 
       switch($action)
       {
-         case 'licence':
-            $this->DisplayLicense();
-         break;
-
          case 'database':
-            // Prepare the required data
-            $required_data =
-            array(
-                  'agreecheck' => array(
-                                 'Licence Agreement', 'string', true
-                                 )
-               );
-
-            if ($this->CheckPostedData($required_data, $message = 'Accept Licence'))
-            {
-               $this->DisplayDatabaseSetup();
-            }
-            else
-            {
-               $_POST['action'] = 'licence';
-               $this->DisplayLicense();
-            }
+            $this->DisplayDatabaseSetup();
          break;
 
          case 'administration':

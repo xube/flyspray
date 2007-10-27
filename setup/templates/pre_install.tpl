@@ -107,7 +107,7 @@
 			<h2>Proceed to Licence Agreement:</h2>
 			<div class="installBlock">
 				<form class="formBlock farRight" action="index.php" method="post" name="adminForm" style="display:inline;">
-				<input type="hidden" name="action" value="licence" />
+				<input type="hidden" name="action" value="database" />
 				<input name="next" type="submit" class="button" value="Next >>" {tpl_disableif(!$status)} />
 				</form>
 				<?php if (!$status) { ?>
