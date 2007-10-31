@@ -44,7 +44,7 @@ function load_translations()
     }
 
     $lang = $proj->prefs['lang_code'];
-    if (!$proj->prefs['override_user_lang'] && $user->infos['lang_code']) {
+    if (!$proj->prefs['override_user_lang'] && isset($user->infos['lang_code']) && $user->infos['lang_code']) {
         $lang = $user->infos['lang_code'];
     }
     $translation = BASEDIR . "/lang/{$lang}.php";
