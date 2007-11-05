@@ -1414,10 +1414,10 @@ class Backend
 
             if (array_get($args, 'search_in_comments')) {
                 $from .= 'LEFT JOIN {comments} c  ON t.task_id = c.task_id ';
-                $comments .= 'OR c.comment_text LIKE ?';
+                $comments .= ' OR c.comment_text LIKE ? ';
             }
             if (array_get($args, 'search_in_details')) {
-                $comments .= 'OR t.detailed_desc LIKE ?';
+                $comments .= 'OR t.detailed_desc LIKE ? ';
             }
 
             foreach ($words as $word) {
