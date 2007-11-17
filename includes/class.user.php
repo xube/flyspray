@@ -6,7 +6,7 @@ class User
     var $perms = array();
     var $infos = array();
     var $searches = array();
-    var $search_keys = array('string', 'sev', 'dev', 'order', 'sort', 'percent', 'changedfrom', 'closedfrom',
+    var $search_keys = array('project', 'string', 'sev', 'dev', 'percent', 'changedfrom', 'closedfrom', 'search_in_details',
                              'opened', 'closed', 'search_in_comments', 'search_for_all', 'only_primary', 'only_watched', 'closedto',
                              'changedto', 'duedatefrom', 'duedateto', 'openedfrom', 'openedto', 'has_attachment');
 
@@ -57,7 +57,12 @@ class User
         if ($do == 'index') {
             $arr = array();
             foreach ($this->search_keys as $key) {
-                $arr[$key] = Get::val($key);
+                $arr[$key] = Get::val($key, ($key == 'status') ? 'open' : null);
+             }
+            foreach (array('order', 'sort', 'order2', 'sort2') as $key) {
+                if (Get::val($key)) {
+                    $arr[$key] = Get::val($key);
+                }
             }
             foreach ($proj->fields as $field) {
                 $arr['field' . $field->id] = Get::val('field' . $field->id);
