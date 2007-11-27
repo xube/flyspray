@@ -64,7 +64,7 @@ class TextFormatter
         $classes = $this->classes;
 
         // [BC] no plugins = project default
-        if (!count($plugins) || !$plugins[0] && isset($proj->prefs['syntax_plugins'])) {
+        if ((!count($plugins) || !$plugins[0]) && isset($proj->prefs['syntax_plugins'])) {
             $plugins = explode(' ', $proj->prefs['syntax_plugins']);
         }
         // remove deselected syntax plugins
