@@ -1108,6 +1108,19 @@ class Flyspray
 
         return '';
     }
+    
+    function GetColorCssClass($task, $alternative = null)
+    {
+        $field = 'field' . $this->prefs['color_field'];
+        if (!isset($task[$field])) {
+            if (is_array($alternative) && isset($alternative[$field])) {
+                $task = $alternative;
+            } else {
+                return '';
+            }
+        }
+        return 'colorfield' . $task[$field];
+    }
 
 }
 ?>

@@ -19,7 +19,7 @@
   <span class="hide" id="task_id" title="{$task['task_id']}"></span>
 </span>
 
-  <h2 class="summary task colorfield{$task['field' . $fs->prefs['color_field']]}">
+  <h2 class="summary task {$fs->GetColorCssClass($task)}">
 	 {$task['project_prefix']}#{$task['prefix_id']} - {$task['item_summary']}
   </h2>
 

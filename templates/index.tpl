@@ -184,7 +184,7 @@
         </thead>
         <tbody>
         <?php foreach ($tasks as $task):?>
-        <tr id="task{!$task['task_id']}" class="task colorfield{$task['field' . $fs->prefs['color_field']]}">
+        <tr id="task{!$task['task_id']}" class="task {$fs->GetColorCssClass($task)}">
           <td class="caret plus" onclick="toggleExpand('{$task['task_id']}', this);">
           </td>
           <?php if (!$user->isAnon()): ?>

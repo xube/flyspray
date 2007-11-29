@@ -32,14 +32,6 @@ class Project
             }
             $this->fields['field' . $field['field_id']] = $f;
         }
-        
-        // Check the color field
-        if (!isset($this->fields['field' . $fs->prefs['color_field']])) {
-            // if not assigned, choose any field
-            $firstField = reset($this->fields);
-            $fs->prefs['color_field'] = $firstField->id;
-            $db->x->execParam('UPDATE {prefs} SET pref_value = ? WHERE pref_name = ?', array($firstField->id, 'color_field'));
-        }
 
         $this->columns = array_combine($this->columns, array_map('L', $this->columns));
         foreach ($this->fields as $field) {

@@ -25,7 +25,7 @@
 <dl class="roadmap">
     <?php foreach($milestone['open_tasks'] as $task):
           if(!$user->can_view_task($task)) continue; ?>
-      <dt class="task colorfield{$task['field' . $fs->prefs['color_field']]}">
+      <dt class="task {$fs->GetColorCssClass($task)}">
         {!tpl_tasklink($task['task_id'])}
         <small class="DoNotPrint">
           <a id="expand{$task['task_id']}" href="javascript:showstuff('dd{$task['task_id']}');hidestuff('expand{$task['task_id']}');showstuff('hide{$task['task_id']}', 'inline')">{L('expand')}</a>

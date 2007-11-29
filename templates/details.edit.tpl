@@ -1,9 +1,9 @@
 <div id="taskdetails">
   <form action="{$this->url(array('details', 'task' . $task['task_id']))}" id="taskeditform" enctype="multipart/form-data" method="post">
 	 <div>
-		<h2 class="summary task colorfield{Post::val('f' . $fs->prefs['color_field'], $task['field' . $fs->prefs['color_field']])}">
+		<h2 class="summary task {$fs->GetColorCssClass($_POST, $task)}">
 		  <a href="{$this->url(array('details', 'task' . $task['task_id']))}">{$task['project_prefix']}#{$task['prefix_id']}</a> -
-		  <input class="text task colorfield{Post::val('f' . $fs->prefs['color_field'], $task['field' . $fs->prefs['color_field']])}" type="text"
+		  <input class="text task {$fs->GetColorCssClass($_POST, $task)}" type="text"
 			name="item_summary" size="80" maxlength="100"
 			value="{Post::val('item_summary', $task['item_summary'])}" />
 		</h2>
