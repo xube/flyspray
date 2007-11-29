@@ -26,7 +26,7 @@
         <?php if (!$user->isAnon()): ?>
         <span class="save_search"><label for="save_search" id="lblsaveas">{L('saveas')}</label>
         <input class="text" type="text" value="{Get::val('search_name')}" id="save_search" name="search_name" size="15" />
-        &nbsp;<button onclick="savesearch('{$_SERVER['QUERY_STRING']}', '{L('saving')}')" type="button">{L('OK')}</button>
+        &nbsp;<button onclick="savesearch('{!Filters::escapeqs($_SERVER['QUERY_STRING'])}', '{L('saving')}')" type="button">{L('OK')}</button>
         </span>
         <?php endif; ?>
 
@@ -232,10 +232,10 @@
           </td>
           <td id="export">
             {L('export')}
-            <a href="{$this->relativeUrl($baseurl)}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export')))}">
+            <a href="{$this->relativeUrl($baseurl)}?{http_build_query(array_merge($_GET, array('do' => 'export')))}">
               <img alt="" title="{L('csvexport')}" src="{$this->get_image('csvexport')}" width="16" height="16" /> {L('csv')}
             </a>
-            <a href="{$this->relativeUrl($baseurl)}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export', 'type' => 'iCal')))}">
+            <a href="{$this->relativeUrl($baseurl)}?{http_build_query(array_merge($_GET, array('do' => 'export', 'type' => 'iCal')))}">
               <img alt="" title="{L('calendarexport')}" src="{$this->get_image('x-office-calendar')}" width="16" height="16" /> {L('iCal')}
             </a>
           </td>

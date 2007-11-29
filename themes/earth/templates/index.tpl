@@ -84,7 +84,7 @@
 			<button type="submit">{L('takeaction')}</button>
 		  </td>
 		  <td id="export">
-			<a href="{$baseurl}?{tpl_query_from_array(array_merge($_GET, array('do' => 'export')))}">
+			<a href="{$baseurl}?{http_build_query(array_merge($_GET, array('do' => 'export')))}">
 			  <img alt="{L('csvexport')}" title="{L('csvexport')}" src="{$this->get_image('csvexport')}" width="16" height="16" /> {L('csvexport')}
 			</a>
 		  </td>

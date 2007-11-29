@@ -652,7 +652,12 @@ function CreateURL($type, $args = array())
         }
     }
 
-    return (count($args) ? $return . (($conf['general']['address_rewriting']) ? '?' : 'index.php?') . tpl_query_from_array($args) : $return);
+    $query_string = http_build_query($args);
+    $separator = ini_get('arg_separator.output');
+    if (strlen($separator) != 0) {
+        $query_string = str_replace($separator, '&', $query_string);
+    }
+    return (count($args) ? $return . (($conf['general']['address_rewriting']) ? '?' : 'index.php?') . $query_string : $return);
 } // }}}
 // Page numbering {{{
 // Thanks to Nathan Fritz for this.  http://www.netflint.net/
@@ -736,20 +741,6 @@ function tpl_list_heading($colname, $coldisplay, $format = "<th%s>%s</th>")
             L('sortthiscolumn'), Filters::noXSS($page->url(array('index', 'proj' . $proj->id), array_merge($_GET, $new_order))), $html);
 
     return sprintf($format, $class, $html);
-}
-
-function tpl_query_from_array($vars) {
-    $append = '';
-    foreach ($vars as $key => $value) {
-        if (is_array($value)) {
-            foreach ($value as $valuei) {
-                $append .= rawurlencode($key) . '[]=' . rawurlencode($valuei) . '&';
-            }
-        } else {
-            $append .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
-        }
-    }
-    return substr($append, 0, -1);
 }
 
 function tpl_TimeZones()
