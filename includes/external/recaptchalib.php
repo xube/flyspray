@@ -17,7 +17,7 @@
  * this is only needed when running PHP4
  */
 
-require dirname(__FILE__) . '/compat/http_build_query.php';
+//require dirname(__FILE__) . '/compat/http_build_query.php';
 
 /* reCAPTCHA Protocol: Servers */
 defined('RECAPTCHA_API_SERVER')        || define('RECAPTCHA_API_SERVER', 'http://api.recaptcha.net');
