@@ -231,27 +231,17 @@ if (!function_exists('hash_hmac')) {
     }
 }
 
-// use require() as there is no possibilty to get this included more than "once"
-require 'array_combine.php';
-require 'file_put_contents.php';
-require 'array_intersect_key.php';
-require 'htmlspecialchars_decode.php';
-
 // for reasons outside flsypray, the PHP core may throw Exceptions in PHP5
 // for a good example see this article
 // http://ilia.ws/archives/107-Another-unserialize-abuse.html
 
-if(PHP_VERSION >= 5) {
-
 function flyspray_exception_handler($exception) {
-
     die("Completely unexpected exception: " .
         htmlspecialchars($exception->getMessage(),ENT_QUOTES, 'utf-8')  . "<br/>" .
       "This should <strong> never </strong> happend, please inform Flyspray Developers");
 
 }
-    set_exception_handler('flyspray_exception_handler');
-}
+set_exception_handler('flyspray_exception_handler');
 
 
 ?>
