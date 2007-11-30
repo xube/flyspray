@@ -274,7 +274,7 @@ class FlysprayDoDepends extends FlysprayDo
 
         } else {
 
-            $dot = escapeshellcmd($path_to_dot);
+            $dot = $path_to_dot; // assuming safe value from flyspray.conf.php
             $tfn = escapeshellarg($tname);
             shell_exec(sprintf('%s -T %s -o %s %s', $dot, escapeshellarg($fmt), escapeshellarg($absfilename), $tfn));
             $data['map'] = shell_exec(sprintf('%s -T cmapx %s', $dot, $tfn));
