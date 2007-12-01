@@ -133,6 +133,9 @@
 		  <p class="buttons">
               <button type="submit" accesskey="s" onclick="return checkok('{$this->relativeUrl($baseurl)}javascript/callbacks/checksave.php?time={time()}&amp;taskid={$task['task_id']}', '{#L('alreadyedited')}', 'taskeditform')">{L('savedetails')}</button>
               <button type="reset">{L('reset')}</button>
+                <?php if (!$watched): ?>
+                {!tpl_checkbox('notifyme', Post::val('notifyme', (Post::val('action') == 'details.update')), 'notifyme')}&nbsp;<label class="left inline" for="notifyme">{L('notifyme')}</label>
+                <?php endif; ?>
           </p>
 		</div>
 

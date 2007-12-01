@@ -114,6 +114,11 @@ class FlysprayDoDetails extends FlysprayDo
 
     function action_edit_task($task)
     {
+        global $user;
+        if (Post::val('notifyme') == '1') {
+            // If the user wanted to watch this task for changes
+            Backend::add_notification($user->id, $task['task_id']);
+        }
         return Backend::edit_task($task, $_POST);
     }
 
@@ -555,6 +560,10 @@ class FlysprayDoDetails extends FlysprayDo
         $page->assign('task', $this->task);
 
         $page->setTitle($this->task['project_prefix'] . '#' . $this->task['prefix_id'] . ': ' . $this->task['item_summary']);
+        $watching     =  $db->x->GetOne('SELECT  COUNT(*)
+                                FROM  {notifications}
+                               WHERE  task_id = ?  AND user_id = ?', null,
+                              array($this->task['task_id'], $user->id));
 
         if ((Get::val('edit') || (Post::has('item_summary') && !isset($_SESSION['SUCCESS']))) && ($user->can_edit_task($this->task) || $user->can_correct_task($this->task))) {
             $list = $db->x->getCol('SELECT u.user_name
@@ -563,6 +572,7 @@ class FlysprayDoDetails extends FlysprayDo
                                   ORDER BY u.user_name DESC',
                                     null, $this->task['task_id']);
 
+            $page->assign('watched', $watching);
             $page->assign('userlist', $list);
             $page->pushTpl('details.edit.tpl');
         }

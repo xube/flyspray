@@ -5,7 +5,6 @@
        <th>{L('name')}</th>
        <th>{L('type')}</th>
        <th>{L('list')}</th>
-       <th>{L('versiontense')}</th>
        <th>{L('defaultvalue')}</th>
        <th title="{L('forcedefaulttip')}">{L('forcedefault')}</th>
        <th>{L('required')}</th>
@@ -32,15 +31,13 @@
         <select name="list_id[{$field->id}]">
           {!tpl_options($lists, $field->prefs['list_id'], false, null, null, 'project_id')}
         </select>
-        <?php endif; ?>
-      </td>
-      <td>
         <?php if ($field->prefs['list_type'] == LIST_VERSION): ?>
-        <select name="version_tense[{$field->id}]">
+        <br />&#8627;<select name="version_tense[{$field->id}]" style="width:8em;">
           {!tpl_options(array(0 => L('any'), 1 => L('past'), 4 => L('pastpresent'),
                               2 => L('present'), 5 => L('presentfuture'), 3 => L('future'), 6 => L('futurepast')),
                               $field->prefs['version_tense'])}
         </select>
+        <?php endif; ?>
         <?php endif; ?>
       </td>
       <td>
