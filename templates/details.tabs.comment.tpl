@@ -20,7 +20,7 @@
     <?php if ($user->perms('delete_comments')): ?>
     &mdash;
     <a href="{$_SERVER['SCRIPT_NAME']}?do=details&amp;action=deletecomment&amp;task_id={$task['task_id']}&amp;comment_id={$comment['comment_id']}"
-      onclick="return confirm('{L('confirmdeletecomment')}');">
+      onclick="return confirm('{#L('confirmdeletecomment')}');">
       {L('delete')}</a>
     <?php endif ?>
   </span>

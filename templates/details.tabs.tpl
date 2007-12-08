@@ -22,7 +22,7 @@
 
   <?php if ($user->perms('view_history')): ?>
   <li id="historytab">
-    <a id="historytaba" onmousedown="getHistory('{$task['task_id']}', '{$this->relativeUrl($baseurl)}', 'history', '{Get::num('details')}');"
+    <a id="historytaba" onmousedown="getHistory('{$task['task_id']}', '{#$this->relativeUrl($baseurl)}', 'history', '{Get::num('details')}');"
        href="{$this->url(array('details', 'task' . $task['task_id']))}#history">{L('history')}</a>
   </li>
   <?php endif; ?>

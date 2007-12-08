@@ -14,7 +14,7 @@
   <td><a href="{$this->url(array('myprofile', 'notes'), array('note_id' => $note['note_id']))}">View</a>
       <a href="{$this->url(array('myprofile', 'notes'), array('note_id' => $note['note_id'], 'edit' => 1))}">Edit</a>
       <a href="{$this->url(array('myprofile', 'notes'), array('note_id' => $note['note_id'], 'action' => 'deletenote'))}"
-         onclick="return confirm('{L('confirmdeletenote')}');">{L('delete')}</a></td>
+         onclick="return confirm('{#L('confirmdeletenote')}');">{L('delete')}</a></td>
 </tr>
 <?php endforeach; ?>
 </table>

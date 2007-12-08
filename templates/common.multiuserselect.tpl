@@ -1,6 +1,6 @@
                 <div>
                    <img src="{$this->get_image('kuser-small')}" width="16" height="16" alt="{L('selectuser')}" />
-                   <a href="#" onclick="return userspopup('{$this->url('userselect', array('onlyassignees' => 1))}', '{(isset($id) ? $id : 'assigned_to')}')">
+                   <a href="#" onclick="return userspopup('{#$this->url('userselect', array('onlyassignees' => 1))}', '{(isset($id) ? $id : 'assigned_to')}')">
                    {L('select')}</a>
                    <br />
                    <textarea cols="10" rows="4" name="{(isset($id) ? $id : 'assigned_to')}" id="{(isset($id) ? $id : 'assigned_to')}"><?php

@@ -80,7 +80,7 @@ function adduser(username)
     $count += 1;
     ?>
     <tr>
-      <td><a href="javascript:adduser('{$usr['user_name']}')">{$usr['user_name']}</a></td>
+      <td><a href="javascript:adduser('{#$usr['user_name']}')">{$usr['user_name']}</a></td>
       <td>{$usr['real_name']}</td>
       <td><a href="mailto:{$usr['email_address']}">{$usr['email_address']}</a></td>
     </tr>
