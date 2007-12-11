@@ -90,7 +90,7 @@ class FlysprayAuth
             $_SESSION['was_locked'] = true;
         }
         // may not login
-        if ($user['group_id'] != 1 /* admin */ && (!$user['account_enabled'] || !$group['group_open'])) {
+        if ($group['group_id'] != 1 /* admin */ && (!$user['account_enabled'] || !$group['group_open'])) {
             return array(ERROR_INPUT, L('error23'));
         }
         
