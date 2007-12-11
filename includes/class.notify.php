@@ -372,7 +372,7 @@ class Notifications
                  $data = unserialize($row['message_data']);
                  $result_rec = $stmt_rec->execute($row['message_id']);
 
-                 foreach($result_rec->getAll() as  $msg) {
+                 foreach($result_rec->fetchAll() as  $msg) {
                        Notifications::add_to_list($emails, $jids, $msg, $data['notify_type']);                       
                  }
                 if (Notifications::send_now(array($emails, $jids), ADDRESS_DONE, 0, $row)) {
