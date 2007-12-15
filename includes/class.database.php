@@ -84,6 +84,7 @@ function &NewDatabase($conf = array())
             .'Check your settings in flyspray.conf.php');
     }
 
+    $dbpass = rawurlencode($dbpass);
     if ($dbtype == 'sqlite') {
         $dsn = "$dbtype:///$dbname?mode=0666";
     } else {
