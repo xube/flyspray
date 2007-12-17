@@ -777,7 +777,7 @@
     <name>group_desc</name>
     <type>text</type>
     <length>150</length>
-    <notnull>true</notnull>
+    <notnull>false</notnull>
 
    </field>
 
