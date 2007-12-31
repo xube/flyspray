@@ -72,7 +72,11 @@ class SVNHooksConfig {
 	 *
 	 */
 	private function __construct() {
-		$os_idx = stripos($_ENV['OS'], 'win') !== false ? 'w' : 'u';
+        if (isset($_ENV['OS'])) {
+            $os_idx = stripos($_ENV['OS'], 'win') !== false ? 'w' : 'u';
+        } else {
+            $os_idx = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? 'w' : 'u'; 
+        }
 		foreach ($this->masks as $cmd => $os_masks) {
 			if (isset($os_masks[$os_idx])) $this->$cmd = sprintf($os_masks[$os_idx], $this->$cmd);
 		}
