@@ -459,7 +459,7 @@ class Backend
      * @param integer $time for synchronisation with other functions
      * @param array array of used syntax plugins
      * @access public
-     * @return bool
+     * @return int
      * @version 1.0
      */
     function add_comment($task, $comment_text, $time = null, $syntax_plugins = array())
@@ -467,11 +467,15 @@ class Backend
         global $db, $user, $proj;
 
         if (!($user->perms('add_comments', $task['project_id']) && (!$task['is_closed'] || $user->perms('comment_closed', $task['project_id'])))) {
-            return false;
+            return 0;
         }
 
         if (!is_string($comment_text) || !strlen($comment_text)) {
-            return false;
+            return 0;
+        }
+        
+        if ($proj->id != Post::val('project_id', $task['project_id'])) {
+            if (!($proj = new Project(Post::val('project_id', $task['project_id'])))) return 0;
         }
 
         $time =  !is_numeric($time) ? time() : $time ;
@@ -508,7 +512,7 @@ class Backend
             Notifications::send($task['task_id'], ADDRESS_TASK, NOTIFY_COMMENT_ADDED, array('cid' => $cid));
         }
 
-        return true;
+        return $cid;
     }
 
     /**
