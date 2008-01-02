@@ -67,6 +67,13 @@ class FlysprayDoRoadmap extends FlysprayDo
                                   LEFT JOIN {field_values} fs ON (fs.task_id = t.task_id AND fs.field_id = ?)
                                       WHERE f.field_value = ? AND f.field_id = ? AND t.project_id = ? AND is_closed = 0', null,
                                      array('rota', $fs->prefs['color_field'], $row['version_id'], $proj->prefs['roadmap_field'], $proj->id));
+                                     
+                $count = count($tasks);
+                for ($i = 0; $i < $count; $i++) {
+                    if (!$user->can_view_task($tasks[$i])) {
+                        unset($tasks[$i]);
+                    }
+                }
 
                 $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks, 'percent_complete' => $percent_complete,
                                 'all_tasks' => $all_tasks, 'name' => $row['version_name']);
