@@ -35,7 +35,6 @@ if (Get::val('getfile')) {
         echo 'File does not exist.';
         exit();
     }
-    output_reset_rewrite_vars();
 
     header('Pragma: public');
     header("Content-type: {$task['file_type']}");
