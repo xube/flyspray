@@ -110,7 +110,7 @@ if ($sql && !$sql->FetchRow()) {
 		}
 
 		$db->x->execParam('INSERT INTO {fields} (field_name, field_type, list_id, project_id) VALUES(?,?,?,?)',
-			   array($name, ($field == 'due_date' ? 2 : 1), ($field == 'task_priority' ? $pri_id : $list_id), $my_project_id['project_id']));
+			   array($name, ($field == 'due_date' ? 2 : 1), ($field == 'task_priority' ? $pri_id : $list_id), ($field == 'due_date' ? 0 : $my_project_id['project_id'])));
 		$field_id = $db->x->getRow("SELECT field_id FROM {fields} WHERE project_id=? AND field_name = ? ORDER BY field_id DESC", null, array($my_project_id['project_id'], $name));
 
 		$db->x->execParam('UPDATE {history} SET field_changed = ? WHERE field_changed = ? AND event_type = 3', array($field_id['field_id'], $field));
