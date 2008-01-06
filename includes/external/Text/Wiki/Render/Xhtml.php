@@ -92,8 +92,8 @@ class Text_Wiki_Render_Xhtml extends Text_Wiki_Render {
 			// Jan at Horde.  (http://pear.php.net/bugs/bug.php?id=4474)
 			$text = @htmlspecialchars(
 				$text,
-				$quotes,
-				$charset
+				$quotes /*,
+				$charset*/
 			);
 
 			// re-convert the delimiter
