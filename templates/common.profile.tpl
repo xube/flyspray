@@ -26,10 +26,7 @@
         <td>
           <?php if ($fs->prefs['user_notify'] == '1'): ?>
           <select id="notifytype" name="notify_type">
-            {!tpl_options(array(L('none'),
-                                L('email'),
-                                L('jabber'),
-                                L('both')),
+            {!tpl_options($fs->GetNotificationOptions(),
                                 Post::val('notify_type', $theuser->infos['notify_type']))}
           </select>
           <?php else: ?>
