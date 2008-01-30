@@ -72,7 +72,7 @@ class FlysprayDoLostpw extends FlysprayDo
 
         // Check that the username exists
         if (strpos(Post::val('user_name'), '@') === false) {
-            $user = Flyspray::getUserDetails(Flyspray::username_to_id(Post::val('user_name')));
+            $user = Flyspray::getUserDetails(Flyspray::UserNameToId(Post::val('user_name')));
         } else {
             $user_id = $db->x->GetOne('SELECT user_id FROM {users} WHERE email_address = ?', null, Post::val('user_name'));
             $user = Flyspray::getUserDetails($user_id);

@@ -150,13 +150,13 @@ class FlysprayAuth
     function checkCookie($userid, $passhash) {
         global $conf, $db;
         
-        $user = $db->x->getRow('SELECT u.*, g.group_open
+        $user = $db->x->getRow('SELECT u.*, g.group_open, g.is_admin
                                   FROM {users} u
                              LEFT JOIN {users_in_groups} uig ON u.user_id = uig.user_id
                              LEFT JOIN {groups} g ON uig.group_id = g.group_id
                                  WHERE u.user_id = ? AND g.project_id = 0', null, $userid);
         // sort out most bad cases
-        if (!$user || !$user['account_enabled'] || !$user['group_open']) {
+        if (!$user || (!$user['is_admin'] && (!$user['account_enabled'] || !$user['group_open']))) {
             return false;
         }
         

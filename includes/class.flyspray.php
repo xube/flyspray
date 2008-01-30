@@ -888,45 +888,49 @@ class Flyspray
     }
 
     /**
+     * Returns the user ID if valid, 0 otherwise
+     * @param int $id
+     * @access public static
+     * @return integer 0 if the user does not exist
+     * @version 1.0
+     */
+    function ValidUserId($id)
+    {
+        global $db;
+
+        $val = $db->x->GetOne('SELECT user_id FROM {users} WHERE user_id = ?', null, $id);
+
+        return intval($val);
+    }
+
+    /**
+     * Tries to determine a user ID from a user name. If the
+     * user name does not exist, it assumes an user ID as input.     
+     * @param mixed $user (string or int)
+     * @access public static
+     * @return integer 0 if the user does not exist
+     * @version 1.0
+     */
+    function UserNameOrId($user)
+    {
+        $val = Flyspray::UserNameToId($user);
+        return ($val) ? $val : Flyspray::ValidUserId($user);
+    }
+    
+    /**
      * Returns the ID of a user with $name
      * @param string $name
      * @access public static
      * @return integer 0 if the user does not exist
      * @version 1.0
      */
-    function username_to_id($name)
+    function UserNameToId($name)
     {
         global $db;
-        $name = trim($name);
-        if (!$name) {
-            return 0;
-        }
-        $uid = $db->x->GetOne('SELECT user_id FROM {users} WHERE ' .
-                           (is_numeric($name) ? 'user_id' : 'user_name') . ' = ?',
-                            null, $name);
 
-        return intval($uid);
-    }
+        $val = $db->x->GetOne('SELECT user_id FROM {users} WHERE user_name = ?', null, $name);
 
-    /**
-     * Returns the user name with $id
-     * @param mixed $id string/integer can also get a user name, then checks for existence
-     * @access public static
-     * @return string '' if the user does not exist
-     * @version 1.0
-     */
-    function username_from_id($id)
-    {
-        global $db;
-        $id = trim($id);
-        if (!$id) {
-            return '';
-        }
-        $name = $db->x->GetOne('SELECT user_name FROM {users} WHERE ' .
-                           (is_numeric($id) ? 'user_id' : 'user_name') . ' = ?',
-                            null, $id);
-
-        return ($name) ? $name : '';
+        return intval($val);
     }
 
     /**

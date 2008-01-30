@@ -183,7 +183,8 @@ class Field
                 break;
 
             case FIELD_USER:
-                $value = Flyspray::username_to_id($input);
+                // try to determine a valid user ID if necessary
+                $value = Flyspray::UserNameOrId($input);
                 break;
         }
 

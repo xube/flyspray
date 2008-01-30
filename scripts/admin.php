@@ -77,7 +77,7 @@ class FlysprayDoAdmin extends FlysprayDo
     {
     	global $db, $page;
 
-        $id = Flyspray::username_to_id(Req::val('user_id'));
+        $id = Flyspray::ValidUserId(Req::val('user_id'));
 
         $theuser = new User($id);
         if ($theuser->isAnon()) {
@@ -478,7 +478,7 @@ class FlysprayDoAdmin extends FlysprayDo
         $db->x->autoExecute('{list_category}', array('list_id'=> Post::val('list_id'),
                                                    'category_name'=> Post::val('list_name'),
                                                    'show_in_list'=> 1,
-                                                   'category_owner'=> (Post::val('category_owner', 0) == '' ? '0' : Flyspray::username_to_id(Post::val('category_owner', 0))),
+                                                   'category_owner'=> (Post::val('category_owner', 0) == '' ? '0' : Flyspray::UserNameToId(Post::val('category_owner', 0))),
                                                    'lft'=> $right,
                                                    'rgt'=>($right+1)));
 
@@ -509,7 +509,7 @@ class FlysprayDoAdmin extends FlysprayDo
                                       show_in_list = ?, category_owner = ?,
                                       lft = ?, rgt = ?
                                WHERE  category_id = ? AND project_id = ?',
-                          array($listname[$i], intval($listshow[$i]), Flyspray::username_to_id(Post::val('category_owner' . $i)), $listlft[$i], $listrgt[$i], $listid[$i], $proj->id));
+                          array($listname[$i], intval($listshow[$i]), Flyspray::UserNameToId(Post::val('category_owner' . $i)), $listlft[$i], $listrgt[$i], $listid[$i], $proj->id));
                 // Correct visibility for sub categories
                 if ($listshow[$i] == 0) {
                     foreach ($listname as $key => $value) {
@@ -817,7 +817,9 @@ class FlysprayDoAdmin extends FlysprayDo
         $cols = array('group_name', 'group_desc', 'group_open');
 
         // Add a user to a group
-        Backend::add_user_to_group(Post::val('uid'), Post::val('group_id'), $proj->id);
+        $users = explode(',', $users);
+        $users = array_map(array('Flyspray', 'UserNameOrId'), $users);
+        Backend::add_user_to_group($users, Post::val('group_id'), $proj->id);
 
         if (Post::val('delete_group') && Post::val('group_id') != '1') {
             $db->x->execParam('DELETE FROM {groups} WHERE group_id = ?', Post::val('group_id'));

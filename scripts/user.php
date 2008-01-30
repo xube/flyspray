@@ -19,7 +19,7 @@ class FlysprayDoUser extends FlysprayDo
 
     function is_accessible()
     {
-        $id = Flyspray::username_to_id(Get::val('id', Get::val('uid')));
+        $id = Flyspray::ValidUserId(Get::val('id', Get::val('uid')));
         $this->user = new User($id);
         return !$this->user->isAnon();
     }

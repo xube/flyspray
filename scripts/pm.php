@@ -109,7 +109,7 @@ class FlysprayDoPm extends FlysprayDoAdmin
         $cols[] = 'last_updated';
         $args[] = time();
         $cols[] = 'default_cat_owner';
-        $args[] =  Flyspray::username_to_id(Post::val('default_cat_owner'));
+        $args[] =  Flyspray::UserNameToId(Post::val('default_cat_owner'));
 
         $db->x->autoExecute('{projects}', array_combine($cols, $args), MDB2_AUTOQUERY_UPDATE, sprintf('project_id = %d', $proj->id));
                         

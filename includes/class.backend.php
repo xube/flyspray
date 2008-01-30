@@ -36,7 +36,7 @@ class Backend
 
         settype($tasks, 'array');
 
-        $user_id = Flyspray::username_to_id($user_id);
+        $user_id = Flyspray::ValidUserId($user_id);
 
         if (!$user_id || !count($tasks)) {
             return false;
@@ -121,7 +121,7 @@ class Backend
 
     /**
      * Adds one or more users to a group (few permission checks)
-     * @param string $users komma sperated list of users (preferably IDs)
+     * @param string $users komma sperated list of user IDs
      * @param integer $group_id of new group
      * @access public
      * @return integer 0:failure 1:added 2:removed from project -1:perms error
@@ -135,7 +135,7 @@ class Backend
         $return = 9;
 
         foreach ($users as $uid) {
-            $uid = Flyspray::username_to_id($uid);
+            $uid = Flyspray::ValidUserId($uid);
 
             if (!$uid) {
                 $return = min($return, 0);
@@ -370,7 +370,7 @@ class Backend
 
         // Prepare assignee list
         $assignees = explode(';', trim(array_get($args, 'assigned_to')));
-        $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
+        $assignees = array_map(array('Flyspray', 'UserNameToId'), $assignees);
         $assignees = array_filter($assignees, create_function('$x', 'return ($x > 0);'));
 
         // Update the list of users assigned this task, if changed
@@ -696,7 +696,7 @@ class Backend
         $db->x->autoExecute('{users}', $userdata);
 
         // Get this user's id for the record
-        $uid = Flyspray::username_to_id($user_name);
+        $uid = Flyspray::UserNameToId($user_name);
 
         // Now, create a new record in the users_in_groups table
         $db->x->autoExecute('{users_in_groups}', array('user_id'=> $uid, 'group_id'=> $group_in));
@@ -883,7 +883,7 @@ class Backend
             // Get all users assigned to a task
             $user_id = Flyspray::GetAssignees($task_id);
         } else {
-            $user_id = array(Flyspray::username_to_id($user_id));
+            $user_id = array(Flyspray::ValidUserId($user_id));
             if (!reset($user_id)) {
                 return false;
             }
@@ -1012,7 +1012,7 @@ class Backend
         if(isset($args['assigned_to'])) {
             // Prepare assignee list
             $assignees = explode(';', trim($args['assigned_to']));
-            $assignees = array_map(array('Flyspray', 'username_to_id'), $assignees);
+            $assignees = array_map(array('Flyspray', 'UserNameToId'), $assignees);
             $assignees = array_filter($assignees, create_function('$x', 'return ($x > 0);'));
 
             // Log the assignments and send notifications to the assignees
@@ -1317,7 +1317,12 @@ class Backend
                 $sql_params[] = $field->id;
                 $custom_fields_joined[] = $field->id;
                 $where[] = "({$ref}.field_value LIKE ?)";
-                $sql_params[] = ($field->prefs['field_type'] == FIELD_USER) ? Flyspray::username_to_id($val) : $val;
+                
+                // try to determine a valid user ID if necessary
+                if ($field->prefs['field_type'] == FIELD_USER) {
+                    $val = Flyspray::UserNameOrId($val);
+                }
+                $sql_params[] = $val;
             }
         }
         // now join custom fields used in columns
