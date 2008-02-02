@@ -1,98 +1,77 @@
 <?php
-// This script authenticates the user, and sets up a session.
-include('../header.php');
-$flyspray_prefs = $fs->GetGlobalPrefs();
 
-$lang = $flyspray_prefs['lang_code'];
-require("../lang/$lang/authenticate.php");
+  /********************************************************\
+  | User authentication (no output)                        |
+  | ~~~~~~~~~~~~~~~~~~~                                    |
+  \********************************************************/
 
-// If logout was requested, log the user out.
-if ($_GET['action'] == "logout") {
-  session_start();
-  session_destroy();
-  setcookie('flyspray_userid', '', time()-60, '/');
-  setcookie('flyspray_passhash', '', time()-60, '/');
+if (!defined('IN_FS')) {
+    die('Do not access this file directly.');
+}
 
-  $message = $authenticate_text['youareloggedout'];
+if (Req::val('logout')) {
+    $user->logout();
+    Flyspray::Redirect($baseurl);
+}
 
-// Otherwise, they requested login.  See if they provided the correct credentials...
-} elseif ($_POST['username'] AND $_POST['password']) {
-  $username = $_POST['username'];
-  $password = $_POST['password'];
-  // Get the user's account details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_users WHERE user_name = '$username'");
-  $auth_details = $fs->dbFetchArray($result);
-  // Get the user's group details
-  $result = $fs->dbQuery("SELECT * FROM flyspray_groups WHERE group_id = '{$auth_details['group_in']}'");
-  $group_details = $fs->dbFetchArray($result);
+if (Req::val('user_name') != '' && Req::val('password') != '') {
+    // Otherwise, they requested login.  See if they provided the correct credentials...
+    $username = Backend::clean_username(Req::val('user_name'));
+    $password = Req::val('password');
 
-  // Encrypt the password, and compare it to the one in the database
-  if (crypt("$password", "4t6dcHiefIkeYcn48B") == $auth_details['user_pass']
-    && $auth_details['account_enabled'] == "1"
-    && $group_details['group_open'] == '1')
-  {
-    $message = $authenticate_text['loginsuccessful'];
+    // Run the username and password through the login checker
+    if (($user_id = Flyspray::checkLogin($username, $password)) < 1) {
+        $_SESSION['failed_login'] = Req::val('user_name');
+        if($user_id === -2) {
+            Flyspray::show_error(L('usernotexist'));
+        }elseif ($user_id === -1) {
+            Flyspray::show_error(23);
+        } else  /* $user_id == 0 */ {
+            // just some extra check here so that never ever an account can get locked when it's already disabled
+            // ... that would make it easy to get enabled
+            $db->Query('UPDATE {users} SET login_attempts = login_attempts+1 WHERE account_enabled = 1 AND user_name = ?',
+                        array($username));
+            // Lock account if failed too often for a limited amount of time
+            $db->Query('UPDATE {users} SET lock_until = ?, account_enabled = 0 WHERE login_attempts > ? AND user_name = ?',
+                         array(time() + 60 * $fs->prefs['lock_for'], LOGIN_ATTEMPTS, $username));
 
-    // Generate an extra hash of the already hashed password... for added security
-    //$pass_double_hash = crypt("{$auth_details['user_pass']}", "4t6dcHiefIkeYcn48B");
+            if ($db->AffectedRows()) {
+                Flyspray::show_error(sprintf(L('error71'), $fs->prefs['lock_for']));
+                Flyspray::Redirect($baseurl);
+            } else {
+                Flyspray::show_error(7);
+            }
+        }
+    } else {
+        // Determine if the user should be remembered on this machine
+        if (Req::has('remember_login')) {
+            $cookie_time = time() + (60 * 60 * 24 * 30); // Set cookies for 30 days
+        } else {
+            $cookie_time = 0; // Set cookies to expire when session ends (browser closes)
+        }
 
-    //session_start();
-    //$_SESSION['userid'] = $auth_details['user_id'];
-    //$_SESSION['username'] = $auth_details['user_name'];
+        $user = new User($user_id);
 
-    setcookie('flyspray_userid', $auth_details['user_id'], time()+60*60*24*30, "/");
-    setcookie('flyspray_passhash', crypt("{$auth_details['user_pass']}", "4t6dcHiefIkeYcn48B"), time()+60*60*24*30, "/");
+        // Set a couple of cookies
+        $passweirded = md5($user->infos['user_pass'] . $conf['general']['cookiesalt']);
+        Flyspray::setcookie('flyspray_userid', $user->id, $cookie_time);
+        Flyspray::setcookie('flyspray_passhash', $passweirded, $cookie_time);
+        // If the user had previously requested a password change, remove the magic url
+        $remove_magic = $db->Query("UPDATE {users} SET magic_url = '' WHERE user_id = ?",
+                                    array($user->id));
+        // Save for displaying
+        if ($user->infos['login_attempts'] > 0) {
+            $_SESSION['login_attempts'] = $user->infos['login_attempts'];
+        }
+        $db->Query('UPDATE {users} SET login_attempts = 0 WHERE user_id = ?', array($user->id));
 
-  } else {
-    $message = $authenticate_text['loginfailed'];
-  };
+        $_SESSION['SUCCESS'] = L('loginsuccessful');
+    }
+}
+else {
+    // If the user didn't provide both a username and a password, show this error:
+    Flyspray::show_error(8);
+}
 
-} else {
-  // If the user didn't provide both a username and a password, show this error:
-  $message = "{$authenticate_text['loginfailed']}<br>{$authenticate_text['userandpass']}";
-};
-header('Content-type: text/html; charset=utf-8');
-
-
+Flyspray::Redirect(Req::val('return_to'));
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-  <head>
-    <link href="../themes/<?php echo $flyspray_prefs['theme_style'];?>/theme.css" rel="stylesheet" type="text/css" />
-    <?php if ($_POST['task']) { ?>
-      <META HTTP-EQUIV="refresh" CONTENT="2; URL=../?do=details&id=<?php echo $_POST['task'];?>">
-    <?php } else { ?>
-      <META HTTP-EQUIV="refresh" CONTENT="2; URL=../">
-    <?php };?>
-    <title>Are we logged in yet?</title>
-  </head>
-  <body>
-    <!-- Center the background canvas on the page -->
-    <div align="center">
-      <br>
-      <!-- Message box -->
-      <table class="admin" style="position: absolute; left: 40%; top:50%;">
-        <tr>
-          <td align="center" class="admintext">
-          <?php echo "$message";?>
-          <br>
-          <?php if ($_POST['task']) {
-            echo $authenticate_text['waitwhiletransfer'];
-            ?>
-            <br><br>
-            <a href="../?do=details&id=<?php echo $_POST['task'];?>"><?php echo $authenticate_text['clicknowait'];?></a>
-          <?php } else {
-            echo $authenticate_text['waitwhiletransfer'];
-            ?>
-            <br><br>
-            <a href="../"><?php echo $authenticate_text['clicknowait'];?></a>
-          <?php };?>
-          </td>
-        </tr>
-      </table>
-      <br>
-
-    <!-- End of the table that everything else goes into -->
-    </div>
-  </body>
-</html>
