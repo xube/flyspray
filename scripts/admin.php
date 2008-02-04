@@ -716,6 +716,10 @@ class FlysprayDoAdmin extends FlysprayDo
         if ($taken) {
             return array(ERROR_RECOVER, L('emailtaken'));
         }
+        
+        if (Post::val('old_jabber_id') != Post::val('jabber_id')) {
+            Notifications::JabberRequestAuth(Post::val('jabber_id'));
+        }
 
         $previous = $db->x->GetRow('SELECT real_name, user_name FROM {users} WHERE user_id = ?', null, Post::val('user_id'));
         $db->x->execParam('UPDATE  {users}

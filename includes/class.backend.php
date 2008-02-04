@@ -761,6 +761,10 @@ class Backend
 
         $db->x->executeMultiple($stmt, $params);
         $stmt->free();
+        
+        if ($jabber_id) {
+            Notifications::JabberRequestAuth($jabber_id);
+        }
 
         // Send a user his details (his username might be altered, password auto-generated)
         if ($fs->prefs['notify_registration']) {

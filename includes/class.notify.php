@@ -60,6 +60,34 @@ class NotificationsThread extends Swift_Events_Listener {
 class Notifications
 {
     /**
+     * Requests authorisation, so that our jabber account is allowed to send messages to the users.
+     * @param string $email
+     * @access public static
+     * @return bool
+     */
+    function JabberRequestAuth($email)
+    {
+        global $fs;
+
+        include_once BASEDIR . '/includes/class.jabber2.php';
+
+        if (empty($fs->prefs['jabber_server'])
+            || empty($fs->prefs['jabber_port'])
+            || empty($fs->prefs['jabber_username'])
+            || empty($fs->prefs['jabber_password'])) {
+            return false;
+        }
+        
+        $JABBER = new Jabber($fs->prefs['jabber_username'] . '@' . $fs->prefs['jabber_server'],
+                   $fs->prefs['jabber_password'],
+                   $fs->prefs['jabber_ssl'],
+                   $fs->prefs['jabber_port']);
+        $JABBER->login();
+        $JABBER->send("<presence to='" . Jabber::jspecialchars($email) . "' type='subscribe'/>");
+        $JABBER->disconnect();
+    }
+    
+    /**
      * Just decides whether or not to send in background
      * @param mixed $to string or array...the type of address (email, task ID, user ID) is specified below
      * @param integer $to_type type of $to address
