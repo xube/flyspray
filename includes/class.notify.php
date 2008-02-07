@@ -285,7 +285,7 @@ class Notifications
             $jids = array_unique($jids);
             if (!$fs->prefs['jabber_username'] ||
                 !$fs->prefs['jabber_password']) {
-                return false;
+                return $result;
             }
 
             // nothing that can't be guessed correctly ^^

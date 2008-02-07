@@ -122,22 +122,7 @@ do {
         }
     }
 
-    ############ Task four: Parse incoming messages ############
-    $jabber = new Jabber($fs->prefs['jabber_username'],
-                         $fs->prefs['jabber_password'],
-                         $fs->prefs['jabber_ssl'],
-                         $fs->prefs['jabber_port'],
-                         $fs->prefs['jabber_server']);
-    $jabber->login();
-    foreach ($jabber->get_messages() as $message) {
-        $message['from'] = substr($message['from'], 0, strpos($message['from'], '/'));
-        $commands = new TextCommands($message['body'], $message['from'], NOTIFY_JABBER);
-        if ($commands->msg) {
-            $jabber->send_message($message['from'], $commands->msg, L('flysprayresponse'));
-        }
-    }
-
-    ############ Task five: Close tasks ############
+    ############ Task four: Close tasks ############
     $tasks = $db->query('SELECT t.*, c.date_added, max(c.date_added) FROM {tasks} t
                         LEFT JOIN {comments} c ON t.task_id = c.task_id
                             WHERE is_closed = 0 AND close_after > 0
