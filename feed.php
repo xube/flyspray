@@ -29,14 +29,17 @@ $feed_type  = Get::enum('feed_type', array('rss1', 'rss2', 'atom'), 'rss2');
 
 switch (Get::val('topic')) {
     case 'clo': $orderby = 'date_closed'; $closed = 't.is_closed = 1';
+                $topic = 1;
                 $title   = 'Recently closed tasks';
     break;
 
     case 'edit':$orderby = 'last_edited_time'; $closed = '1=1';
+                $topic = 2;
                 $title   = 'Recently edited tasks';
     break;
 
     default:    $orderby = 'date_opened'; $closed = '1=1';
+                $topic = 3;
                 $title   = 'Recently opened tasks';
     break;
 }
@@ -60,7 +63,7 @@ $content = $db->x->GetOne("SELECT  content
                              FROM  {cache} t
                             WHERE  type = ? AND topic = ? AND $sql_project
                                    AND max_items = ?  AND last_updated >= ?", null,
-                           array($feed_type, $orderby . $user->id, $max_items, $most_recent));
+                           array($feed_type, $topic . $user->id, $max_items, $most_recent));
 if ($content) {
     echo $content;
     exit;
@@ -93,7 +96,7 @@ $content = $page->fetch('feed.'.$feed_type.'.tpl');
 // cache feed
 $fields = array('content'=> array('value' => $content),
                 'type'=> array('value' => $feed_type, 'key' => true),
-                'topic'=> array('value' => $orderby . $user->id, 'key' => true),
+                'topic'=> array('value' => $topic . $user->id, 'key' => true),
                 'project_id'=> array('value' => $proj->id, 'key' => true),
                 'max_items'=> array('value' => $max_items, 'key' => true),
                 'last_updated'=> array('value' => time()));

@@ -324,8 +324,8 @@
 
    <field>
     <name>topic</name>
-    <type>text</type>
-    <length>30</length>
+    <type>integer</type>
+    <length>11</length>
     <notnull>true</notnull>
 
    </field>
