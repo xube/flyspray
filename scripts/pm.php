@@ -78,12 +78,16 @@ class FlysprayDoPm extends FlysprayDoAdmin
         }
 
         $cols = array( 'project_title', 'theme_style', 'lang_code', 'default_task', 'default_entry',
-                'intro_message', 'others_view', 'anon_open', 'send_digest', 'anon_view_tasks', 'anon_group',
-                'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply', 'roadmap_field',
-                'feed_description', 'feed_img_url', 'comment_closed', 'auto_assign', 'override_user_lang',
-                'svn_user', 'svn_url', 'svn_password', 'mail_headers');
+                'intro_message', 'notify_email', 'notify_jabber', 'notify_subject', 'notify_reply',
+                'feed_description', 'feed_img_url', 'svn_user', 'svn_url', 'svn_password', 'mail_headers');
         $args = array_map('Post_to0', $cols);
-
+        
+        foreach (array('others_view', 'anon_open', 'send_digest', 'anon_view_tasks', 'anon_group',
+                       'comment_closed', 'auto_assign', 'roadmap_field', 'override_user_lang') as $name) {
+            $cols[] = $name;
+            $args[] = Post::num($name);
+        }
+        
         foreach (array('notify_types', 'changelog_reso', 'syntax_plugins') as $name) {
             $cols[] = $name;
             $args[] = implode(' ', (array) Post::val($name));

@@ -75,8 +75,10 @@ function event_description($history) {
                 case 'project_id':
                     $old_value = $history[$field . '1'];
                     $new_value = $history[$field . '2'];
-                case 'item_summary': // fall through
+                case 'item_summary':
                     $field = eL($translate[$field]);
+                    $old_value = Filters::noXSS($old_value);
+                    $new_value = Filters::noXSS($new_value);
                     break;
                 case 'percent_complete':
                     $field = eL('percentcomplete');

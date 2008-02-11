@@ -475,7 +475,7 @@ class FlysprayDoAdmin extends FlysprayDo
                      WHERE lft >= ? AND project_id = ?',
                      array($right, $proj->id));
 
-        $db->x->autoExecute('{list_category}', array('list_id'=> Post::val('list_id'),
+        $db->x->autoExecute('{list_category}', array('list_id'=> Post::num('list_id'),
                                                    'category_name'=> Post::val('list_name'),
                                                    'show_in_list'=> 1,
                                                    'category_owner'=> (Post::val('category_owner', 0) == '' ? '0' : Flyspray::UserNameToId(Post::val('category_owner', 0))),
@@ -509,7 +509,7 @@ class FlysprayDoAdmin extends FlysprayDo
                                       show_in_list = ?, category_owner = ?,
                                       lft = ?, rgt = ?
                                WHERE  category_id = ? AND project_id = ?',
-                          array($listname[$i], intval($listshow[$i]), Flyspray::UserNameToId(Post::val('category_owner' . $i)), $listlft[$i], $listrgt[$i], $listid[$i], $proj->id));
+                          array($listname[$i], intval($listshow[$i]), Flyspray::UserNameToId(Post::val('category_owner' . $i)), intval($listlft[$i]), intval($listrgt[$i]), intval($listid[$i]), $proj->id));
                 // Correct visibility for sub categories
                 if ($listshow[$i] == 0) {
                     foreach ($listname as $key => $value) {
@@ -629,8 +629,8 @@ class FlysprayDoAdmin extends FlysprayDo
         $prjinfo = array('project_title'=> Post::val('project_title'),
                          'theme_style' => Post::val('theme_style'),
                          'intro_message'=> Post::val( 'intro_message'),
-                         'others_view'=> Post::val('others_view', 0),
-                         'anon_open'=> Post::val('anon_open', 0),
+                         'others_view'=> Post::num('others_view', 0),
+                         'anon_open'=> Post::num('anon_open', 0),
                          'visible_columns'=> $viscols,
                          'lang_code'=> Post::val('lang_code', 'en'),
                      );
@@ -729,12 +729,12 @@ class FlysprayDoAdmin extends FlysprayDo
                               tasks_perpage = ?, time_zone = ?, defaultsortcolumn = ?,
                               notify_blacklist = ?, lang_code = ?, syntax_plugins = ?
                        WHERE  user_id = ?',
-                array(Post::val('real_name'), Post::val('email_address'), Post::val('notify_own', 0),
+                array(Post::val('real_name'), Post::val('email_address'), Post::num('notify_own', 0),
                     Post::val('jabber_id', 0), Post::num('notify_type'), Post::num('show_contact'),
                     Post::val('dateformat', 0), Post::val('dateformat_extended', 0),
-                    Post::val('defaultorder', 'asc'), Post::val('tasks_perpage'), Post::val('time_zone'),
+                    Post::val('defaultorder', 'asc'), Post::num('tasks_perpage'), Post::num('time_zone'),
                     implode(' ', Post::val('defaultsortcolumn')), implode(' ', Post::val('notify_blacklist', array())),
-                    Post::val('lang_code', ''), implode(' ', (array)Post::val('syntax_plugins')), Post::val('user_id')));
+                    Post::val('lang_code', ''), implode(' ', (array)Post::val('syntax_plugins')), Post::num('user_id')));
         if ($previous['real_name'] != Post::val('real_name')) {
             Backend::UpdateRedudantUserData($previous['user_name']);
         }
