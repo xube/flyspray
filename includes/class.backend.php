@@ -1012,7 +1012,9 @@ class Backend
             }
             $stmt->free();
         }
-
+        
+        $assignees = array();
+        
         if(isset($args['assigned_to'])) {
             // Prepare assignee list
             $assignees = explode(';', trim($args['assigned_to']));

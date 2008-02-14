@@ -1021,6 +1021,7 @@ Regards,',
 'UTC'                     => 'UTC',
 'ldaprealnamekey'         => 'LDAP real name key',
 'ldapemailkey'            => 'LDAP email key',
+'nouserselected'          => 'No user selected.',
 );
 
 ?>
