@@ -829,9 +829,27 @@ class Backend
             return false;
         }
 
-        $tables = array('lists', 'admin_requests',
+        // Delete all project's tasks related information
+        if (!$move_to) {
+            $taskIds = $db->x->getCol('SELECT task_id FROM {tasks} WHERE project_id = ?', null, $pid);
+            $tables = array('admin_requests', 'assigned', 'attachments', 'comments', 'dependencies', 'related',
+                            'field_values', 'history', 'notification_threads', 'notifications', 'redundant', 'reminders', 'votes'); 
+            foreach ($tables as $table) {
+                if ($table == 'related') {
+                    $stmt = $db->prepare('DELETE FROM {' . $table . '} WHERE this_task = ? OR related_task = ? ', array('integer', 'integer'), MDB2_PREPARE_MANIP);
+                } else {   
+                    $stmt = $db->prepare('DELETE FROM {' . $table . '} WHERE task_id = ?', array('integer'), MDB2_PREPARE_MANIP);
+                }
+                foreach ($taskIds as $id) {
+                    $stmt->execute( ($table == 'related') ? array($id, $id) : $id);
+                }
+                $stmt->free();
+            }
+        }
+        
+        $tables = array('lists', 'admin_requests', 'fields',
                         'cache', 'projects', 'tasks');
-
+        
         foreach ($tables as $table) {
             if ($move_to && $table !== 'projects') {
                 $base_sql = 'UPDATE {' . $table . '} SET project_id = ?';
