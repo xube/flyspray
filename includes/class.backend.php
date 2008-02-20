@@ -120,8 +120,30 @@ class Backend
     }
 
     /**
+     * Transforms a komma-separated list of user names to an user ID array
+     * @param string $list komma separated list of of user names
+     * @access public
+     * @return array user IDs
+     * @version 1.0
+     */
+    function UserIdsFromUserNameList($list)
+    {
+        $users = preg_split('/[\s,;]+/', $list, -1, PREG_SPLIT_NO_EMPTY);
+        $result = array();
+        
+        foreach ($users as $user) {
+            $id = Flyspray::UserNameToId($user);
+            if ($id) {
+                $result[] = $id;
+            }
+        }
+        
+        return $result;
+    }
+
+    /**
      * Adds one or more users to a group (few permission checks)
-     * @param string $users komma sperated list of user IDs
+     * @param array $users list of user IDs
      * @param integer $group_id of new group
      * @access public
      * @return integer 0:failure 1:added 2:removed from project -1:perms error
@@ -131,7 +153,6 @@ class Backend
     {
         global $db, $user;
 
-        $users = preg_split('/[\s,;]+/', $users, -1, PREG_SPLIT_NO_EMPTY);
         $return = 9;
 
         foreach ($users as $uid) {

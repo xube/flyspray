@@ -763,14 +763,17 @@ class FlysprayDoAdmin extends FlysprayDo
         }
 
         $users = Post::val('uid', Post::val('users'));
-        if (is_array($users)) {
-            $users = implode(',', array_keys($users));
-        }
         
-        if (!is_array($users) || count($users) == 0 || !$users[0]) {
+        if (is_array($users)) {
+            $users = array_keys($users);
+        } else if (is_string($users)) {
+            $users = Backend::UserIdsFromUserNameList($users);
+        }
+
+        if (!is_array($users) || count($users) == 0) {
             return array(ERROR_RECOVER, L('nouserselected'));
         }
-            
+        
         $result = Backend::add_user_to_group($users, Post::num('user_to_group'), $proj->id);
 
         switch ($result) {
@@ -825,8 +828,8 @@ class FlysprayDoAdmin extends FlysprayDo
         $cols = array('group_name', 'group_desc');
 
         // Add a user to a group
-        $users = explode(',', Get::val('uid'));
-        if (count($users) && $users[0]) {
+        $users = Backend::UserIdsFromUserNameList(Post::val('uid'));
+        if (count($users)) {
             $users = array_map(array('Flyspray', 'UserNameOrId'), $users);
             Backend::add_user_to_group($users, Post::val('group_id'), $proj->id);
         }
