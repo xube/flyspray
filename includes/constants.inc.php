@@ -21,6 +21,9 @@ if (isset($conf['general']['force_baseurl']) && $conf['general']['force_baseurl'
 } else {
     if (!isset($webdir)) {
         $webdir = dirname($_SERVER['SCRIPT_NAME']);
+        if (!$webdir) {
+            $webdir = dirname(htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'utf-8'));
+        }
         if (substr($webdir, -9) == 'index.php') {
             $webdir = dirname($webdir);
         }
