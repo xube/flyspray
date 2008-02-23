@@ -39,7 +39,12 @@ class FlysprayDo
 	function menu_position() {
 		return array(MENU_GLOBAL, 1, 'Name');
 	}
-
+    
+    function AreaExists($type, $area)
+    {
+        return method_exists($this, $type . '_' . $area);
+    }
+    
 	/*
 	 * This function calls the right method for each $area/$type
 	 *
@@ -63,10 +68,11 @@ class FlysprayDo
     	// usually everything or nothing here...
     	$db->beginTransaction();
 
-        if (method_exists($this, $type . '_' . $area)) {
+        if ($this->AreaExists($type, $area)) {
             $return = call_user_func(array(get_class($this), $type . '_' . $area), $param);
         } else if ($type == 'area') {
             $return = call_user_func(array(get_class($this), $type . '_' . $this->default_handler), $param);
+            $area = $this->default_handler;
         }
 
         $db->commit();

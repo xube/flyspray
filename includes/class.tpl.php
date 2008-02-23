@@ -69,6 +69,11 @@ class Tpl
     {
         $this->_tpls[] = $_tpl;
     }
+    
+    function exists($page)
+    {
+        return is_readable(BASEDIR . '/themes/' . $this->_theme.'/templates/'.$page) || is_readable(BASEDIR . '/templates/'.$page);
+    }
 
     function display($_tpl, $_arg0 = null, $_arg1 = null)
     {
