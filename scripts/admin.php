@@ -30,6 +30,8 @@ class FlysprayDoAdmin extends FlysprayDo
         $page->assign('lists', $prefs);
     }
 
+    function area_newgroup() {}
+    
     /**
      * area_editgroup
      *

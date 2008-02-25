@@ -131,7 +131,7 @@ class FlysprayDoPm extends FlysprayDoAdmin
     function AreaExists($type, $area)
     {
         global $page;
-        return method_exists($this, $type . '_' . $area) && $page->exists('pm.'.$area.'.tpl');
+        return method_exists($this, $type . '_' . $area) && ($page->exists('pm.'.$area.'.tpl') || $type == 'action');
     }
     
 	function show($area = null)
