@@ -137,6 +137,7 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
             'projectlevelid' => 'prefix_id',
             'progress'   => '',
             'state'      => '',
+            'private'    => 'mark_private',
         );
 
     //must be an array , must contain elements and be alphanumeric (permitted  "_")
@@ -185,7 +186,11 @@ function tpl_draw_cell($task, $colname, $format = "<td class='%s %s'>%s</td>") {
                 $value = L('open');
             }
             break;
-
+            
+        case 'private':
+            $value = $task[$indexes[$colname]] ? L('yes') : L('no');
+            break;
+            
         default:
             if (isset($indexes[$colname])) {
                 $value = $task[$indexes[$colname]];

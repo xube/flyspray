@@ -13,7 +13,7 @@ class Project
      */
     var $columns = array('id', 'project', 'summary', 'dateopened', 'openedby', 'closedby', 'changedby',
                          'assignedto', 'lastedit', 'comments', 'attachments', 'progress',
-                         'dateclosed', 'votes', 'state', 'projectlevelid');
+                         'dateclosed', 'votes', 'state', 'projectlevelid', 'private');
 
     function Project($id)
     {

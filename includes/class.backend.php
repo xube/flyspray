@@ -1277,6 +1277,7 @@ class Backend
                 'comments'     => 'comment_count %s',
                 'state'        => 'closed_by %1$s, is_closed %1$s',
                 'projectlevelid' => 'prefix_id %s',
+                'private'      => 'mark_private %s',
         );
         // custom sortable fields
         foreach ($proj->fields as $field) {
