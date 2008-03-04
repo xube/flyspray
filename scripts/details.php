@@ -98,10 +98,10 @@ class FlysprayDoDetails extends FlysprayDo
                                      WHERE  depend_id = ?',
                                     null, Get::val('depend_id'));
 
-        $db->x->execParam('DELETE FROM {dependencies} WHERE depend_id = ? AND task_id = ?',
-                           array(Get::val('depend_id'), $task['task_id']));
+        $num = $db->x->execParam('DELETE FROM {dependencies} WHERE depend_id = ? AND task_id = ?',
+                                 array(Get::val('depend_id'), $task['task_id']));
 
-        if ($db->Affected_Rows()) {
+        if ($num) {
             Notifications::send($dep_info['task_id'], ADDRESS_TASK, NOTIFY_DEP_REMOVED, array('dep_task' => $dep_info['dep_task_id']));
             Notifications::send($dep_info['dep_task_id'], ADDRESS_TASK, NOTIFY_REV_DEP_REMOVED, array('dep_task' => $dep_info['task_id']));
 
