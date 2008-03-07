@@ -899,7 +899,10 @@ class Setup extends Flyspray
       $folders = array_reverse($folders); // start with highest version
       $sql_file	= APPLICATION_PATH . '/setup/upgrade/' . basename(reset($folders)) . '/flyspray-install.xml';
 
-       // Check if the install/upgrade file exists
+      $upgradeInfo = APPLICATION_PATH . '/setup/upgrade/' . reset($folders) . '/upgrade.info';
+      $upgradeInfo = parse_ini_file($upgradeInfo, true);
+      
+      // Check if the install/upgrade file exists
       if (!is_readable($sql_file)) {
           $_SESSION['page_message'][] = "SQL file required for importing structure and data is missing ($sql_file).";
           return false;
@@ -921,6 +924,30 @@ class Setup extends Flyspray
       $this->mXmlSchema =& MDB2_Schema::factory($this->mDbConnection);
       $def = $this->mXmlSchema->parseDatabaseDefinitionFile($sql_file, array('db_prefix' => $db_prefix, 'db_name' => $data['db_name']));
       $op = $this->mXmlSchema->createDatabase($def);
+      
+      // global prefs update
+    if (isset($upgradeInfo['fsprefs'])) {
+        
+        $existing = $this->mDbConnection->x->GetCol("SELECT pref_name FROM {$db_prefix}prefs");
+        // Add what is missing
+        $stmt = $this->mDbConnection->x->autoPrepare("{$db_prefix}prefs", array('pref_name', 'pref_value'));
+        foreach ($upgradeInfo['fsprefs'] as $name => $value) {
+            if (!in_array($name, $existing)) {
+                $stmt->execute(array($name, (($value === '') ? '0' : $value)));
+            }
+        }
+        $stmt->free();
+
+        // Delete what is too much
+        $stmt = $this->mDbConnection->prepare("DELETE FROM {$db_prefix}prefs WHERE pref_name = ?");
+        foreach ($existing as $name) {
+            if (!isset($upgradeInfo['fsprefs'][$name])) {
+                $stmt->execute($name);
+            }
+        }
+        $stmt->free();
+    }
+      
       $this->mDbConnection->x->execParam("UPDATE {$db_prefix}prefs SET pref_value = ? WHERE pref_name = 'fs_ver'", $this->version);
       
       if (PEAR::isError($op))
