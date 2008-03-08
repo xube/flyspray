@@ -101,7 +101,9 @@ class FlysprayDoApi extends FlysprayDo {
 	private function perform_command(FlySprayCommand &$ncmd, array &$out) {
 		static $backend;
 		if (is_null($backend)) $backend = new Backend();
-
+    //zorn - translate local id to global id
+    if($ncmd->action != 'active_user')
+      $ncmd->id = Flyspray::GetTaskId($ncmd->id);
 		try {
 			$result = $this->process_command($ncmd, $backend);
 			if (is_null($result)) $result = sprintf('[%s] %s', $ncmd->id, $ncmd->action);
@@ -131,7 +133,7 @@ class FlysprayDoApi extends FlysprayDo {
 
 		$out->action = $action;
 		$out->id = Req::val('id');
-
+    
 		switch ($out->action) {
 			case 'close_task':
 				$out->ids['comment'] = Req::val('comment', '');

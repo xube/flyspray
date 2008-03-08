@@ -78,7 +78,7 @@ class Notifications
             return false;
         }
         
-        $JABBER = new Jabber($fs->prefs['jabber_username'] . '@' . $fs->prefs['jabber_server'],
+        $JABBER = new Jabber($fs->prefs['jabber_username'],
                    $fs->prefs['jabber_password'],
                    $fs->prefs['jabber_ssl'],
                    $fs->prefs['jabber_port']);

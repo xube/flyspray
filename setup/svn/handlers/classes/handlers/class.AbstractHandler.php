@@ -11,6 +11,12 @@ abstract class AbstractHandler {
 	 */
 	protected $repos;
 	/**
+   * Hook repository name (without path)
+   * 
+   * @var string       
+   */
+	protected $reposName;
+	/**
 	 * Hook repository revision
 	 *
 	 * @var int
@@ -53,6 +59,14 @@ abstract class AbstractHandler {
 	 */
 	public function __construct($repos = "", $rev = 0, $user = "") {
 		$this->repos = $repos;
+		if($repos)
+		{
+      $parts = explode('/',$repos);
+      if(!count($parts))
+        $parts = explode('\\',$repos);
+      
+      $this->reposName = $parts[count($parts)-1];
+    }
 		$this->rev = $rev;
 		$this->user = $user;
 

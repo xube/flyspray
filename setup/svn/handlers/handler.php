@@ -32,7 +32,8 @@ $handler = SVNHooksHandlerFactory::get_handler($argv);
 dbg::get_instance()->write('handler: ' . var_export($handler, true));
 
 if (!is_null($handler)) {
-	if ($handler->prepare()) $handler->send();
+	if ($handler->prepare()) 
+    $handler->send();
 }
 
 ?>

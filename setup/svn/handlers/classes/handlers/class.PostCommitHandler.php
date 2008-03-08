@@ -36,7 +36,7 @@ class PostCommitHandler extends AbstractHandler {
 		$this->commands[] = new CommandActiveUser($this->revision_wrapper->author);
 		if (!$this->parse_comment_into_commands()) return false;
 
-		return true;
+		return (count($this->commands) > 1);
 	}
 
 	/**
@@ -48,7 +48,8 @@ class PostCommitHandler extends AbstractHandler {
 		// command format:
 		// [id1[, id2, id3]] command:arguments
 		foreach ($this->revision_wrapper->comment_arr as $string) {
-			if (preg_match_all("#^\[((\\d+\, )*(\\d+){1})](.*)#", $string, $matches)) {
+			if (preg_match_all("#^\[((\\d+\, ?)*(\\d+){1})](.*)#", $string, $matches)) 
+      {
 				preg_match_all("#\\d+#", $matches[1][0], $matches_ids);
 				$ids = $matches_ids[0];
 				$command = trim($matches[4][0]);
@@ -57,24 +58,41 @@ class PostCommitHandler extends AbstractHandler {
 					$arg = trim($cmd_args[2]);
 					$field = trim($cmd_args[1]);
 						
-					switch ($field) {
-						// close:comment text
-						case "close": $this->command_close($ids, $arg); break;
-						// progress:percent
-						case "progress": $this->command_progress($ids, $arg); break;
-						// comment:comment text
-						case "comment": $this->command_comment($ids, $arg); break;
-						// status:new status (testing, assigned etc.)
-						case "status": $this->command_custom_edit($ids, $field, $arg); break;
-						// assign:new assignees
-						case "assign": $this->command_assign($ids, $arg); break;
-					}
+          $this->create_command($ids,$arg,$field);
 				}
 			}
+			elseif(preg_match_all("/^#(\\w+#\\d+)(.*)/", $string, $matches))
+			{
+        $ids = array($matches[1][0]);
+        $command = trim($matches[2][0]);
+
+        if (preg_match("#(\\w+):(.*)#i", $command, $cmd_args)) {
+					$arg = trim($cmd_args[2]);
+					$field = trim($cmd_args[1]);
+						
+          $this->create_command($ids,$arg,$field);
+				}
+      }
 		}
 
 		return true;
 	}
+	
+	private function create_command($ids, $arg, $field)
+	{
+  	switch ($field) {
+    	// close:comment text
+    	case "close": $this->command_close($ids, $arg); break;
+    	// progress:percent
+    	case "progress": $this->command_progress($ids, $arg); break;
+    	// comment:comment text
+    	case "comment": $this->command_comment($ids, $arg); break;
+    	// status:new status (testing, assigned etc.)
+    	case "status": $this->command_custom_edit($ids, $field, $arg); break;
+    	// assign:new assignees
+    	case "assign": $this->command_assign($ids, $arg); break;
+    }
+  }
 
 	/**
 	 * Prepares "close task" commands
@@ -83,8 +101,12 @@ class PostCommitHandler extends AbstractHandler {
 	 * @param string $close_comment
 	 */
 	private function command_close(array $tasks_ids, $close_comment) {
-		foreach ($tasks_ids as $id) {
-			$this->commands[] = new CommandCloseTask($id, $close_comment);
+		foreach ($tasks_ids as $id) 
+    {
+      if($this->reposName && $this->rev)
+        $this->commands[] = new CommandCloseTask($id, '[fixed in '.$this->reposName.' rev'.$this->rev.'] '.$close_comment);
+      else
+        $this->commands[] = new CommandCloseTask($id, $close_comment);
 		}
 	}
 
