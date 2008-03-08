@@ -47,8 +47,8 @@ class FlysprayDoApi extends FlysprayDo {
 	public function show() {
 		if (!class_exists('FlySprayCommand')) {
 			$base = dirname(__FILE__);
-			require_once($base . '/../includes/class.FlySprayCommand.php');
-			require_once($base . '/../includes/class.FlySprayResponse.php');
+			require_once($base . '/../includes/class.FlysprayCommand.php');
+			require_once($base . '/../includes/class.FlysprayResponse.php');
 		}
 
 		$out = array();

@@ -29,10 +29,10 @@ class FlysprayDoRegister extends FlysprayDo
         if (strlen(Post::val('user_pass')) < MIN_PW_LENGTH) {
             return array(ERROR_RECOVER, L('passwordtoosmall'));
         }
-
+        //die(Post::val('magic_url'));
         // Check that the user entered the right confirmation code
         $reg_details = $db->x->getRow('SELECT * FROM {registrations} WHERE magic_url = ?',
-                                        array(Post::val('magic_url')));
+                                        null,array(Post::val('magic_url')));
 
         if (!$reg_details) {
             return array(ERROR_RECOVER, L('confirmwrong'));
@@ -179,7 +179,7 @@ class FlysprayDoRegister extends FlysprayDo
             $page->pushTpl('register.ok.tpl');
         } else if ($user->can_register()) {
             // 32 is the length of the magic_url
-            if (Req::has('magic_url') && strlen(Req::val('magic_url')) == 32) {
+            if (Req::has('magic_url')) {
                 // If the user came here from their notification link
                 $sql = $db->x->GetOne('SELECT reg_id FROM {registrations} WHERE magic_url = ?',
                                     null, Req::val('magic_url'));
@@ -189,12 +189,15 @@ class FlysprayDoRegister extends FlysprayDo
                 }
 
                 $page->pushTpl('register.magic.tpl');
+                
             } else {
+            
                 $page->pushTpl('register.no-magic.tpl');
             }
         } else {
             $page->pushTpl('common.newuser.tpl');
         }
+        
     }
 }
 

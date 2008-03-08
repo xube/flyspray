@@ -2,7 +2,26 @@
 require_once('classes/class.FSConfig.php');
 require_once('classes/class.SVNHooksConfig.php');
 require_once('classes/flyspray/class.FlySprayCommand.php');
-include_directory(SVNHooksConfig::get_instance()->root_dir . '/classes', true);
+require_once('classes/class.SVNRevisionWrapper.php');
+require_once('classes/class.dbg.php');
+require_once('classes/class.SVNHooksHandlerFactory.php');
+
+require_once('classes/handlers/class.AbstractHandler.php');
+require_once('classes/handlers/class.PostCommitHandler.php');
+
+require_once('classes/flyspray/class.CommandAddVote.php');
+require_once('classes/flyspray/class.CommandAddUserToGroup.php');
+require_once('classes/flyspray/class.CommandCloseTask.php');
+require_once('classes/flyspray/class.CommandEditTask.php');
+require_once('classes/flyspray/class.CommandAssignToMe.php');
+require_once('classes/flyspray/class.FlySprayResponse.php');
+require_once('classes/flyspray/class.CommandActiveUser.php');
+require_once('classes/flyspray/class.CommandAddComment.php');
+require_once('classes/flyspray/class.CommandAddToAssignees.php');
+require_once('classes/flyspray/class.CommandAddNotification.php');
+require_once('classes/flyspray/class.CommandRemoveNotification.php');
+
+
 
 if (!isset($argv)) $argv = array();
 
@@ -16,24 +35,4 @@ if (!is_null($handler)) {
 	if ($handler->prepare()) $handler->send();
 }
 
-/**
- * Includes all files in $path
- *
- * @param string $path path to include folder
- * @param bool $include_nested include nested folders files
- */
-function include_directory($path, $include_nested = false) {
-	$exclude_dirs = array(".", "..", ".svn");
-	if ($path[strlen($path) - 1] != '\\' && $path[strlen($path) - 1] != '/') $path .= '/';
-	if (($h = opendir($path)) === false) {
-		trigger_error("Error including directory: $path", E_USER_ERROR);
-		return;
-	}
-	while ($file = readdir($h)) {
-		$include_path = $path . $file;
-		if (is_dir($include_path) && $include_nested && !in_array($file, $exclude_dirs)) include_directory($include_path, $include_nested);
-		if (is_file($include_path)) require_once($include_path);
-	}
-	closedir($h);
-}
 ?>
