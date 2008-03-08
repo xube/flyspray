@@ -99,9 +99,10 @@ class FlysprayDoMyprofile extends FlysprayDo
 
     function action_deletenote()
     {
+    
         global $db, $user;
         $num = $db->x->execParam('DELETE FROM {notes} WHERE note_id = ? AND user_id = ?',
-                                 array(Get::val('note_id'), $user->id));
+                                 array(Req::val('note_id'), $user->id));
 
         if ($num) {
             return array(SUBMIT_OK, L('notedeleted'));
@@ -151,7 +152,7 @@ class FlysprayDoMyprofile extends FlysprayDo
 
         $proj =& new Project(0);
 
-        return $this->handle('action', Post::val('action'));
+        return $this->handle('action', Req::val('action'));
 	}
 
 	function is_accessible()

@@ -28,7 +28,6 @@ ignore_user_abort(true);
 set_time_limit(0);
 
 include_once BASEDIR . '/includes/class.notify.php';
-include_once BASEDIR . '/includes/class.textcommands.php';
 
 do {
     //we touch the file on every single iteration to avoid
