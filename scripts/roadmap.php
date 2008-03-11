@@ -30,13 +30,16 @@ class FlysprayDoRoadmap extends FlysprayDo
         // Get milestones
         $list_id = $db->x->GetOne('SELECT list_id FROM {fields} WHERE field_id = ?',
                                 null, $proj->prefs['roadmap_field']);
-
-        $milestones = $db->x->getAll('SELECT list_item_id AS version_id, item_name AS version_name
-                                    FROM {list_items} li
-                                   WHERE list_id = ? AND version_tense = 3
-                                ORDER BY list_position ASC',
-                                  null, $list_id);
-
+        
+        $milestones = array();
+        if ($list_id) {
+            $milestones = $db->x->getAll('SELECT list_item_id AS version_id, item_name AS version_name
+                                            FROM {list_items} li
+                                           WHERE list_id = ? AND version_tense = 3
+                                        ORDER BY list_position ASC',
+                                         null, $list_id);
+        }
+        
         $data = array();
 
         foreach ($milestones as $row) {
