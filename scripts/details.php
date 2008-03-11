@@ -345,7 +345,12 @@ class FlysprayDoDetails extends FlysprayDo
 
     function action_add_notification()
     {
-        if (!Backend::add_notification(Flyspray::UserNameToId(Req::val('user_id')), Req::val('ids'))) {
+        if (Req::val('user_id')) {
+            $userId = Req::val('user_id');
+        } else {
+            $userId = Flyspray::UserNameToId(Req::val('user_name'));
+        }
+        if (!Backend::add_notification($userId, Req::val('ids'))) {
             return array(ERROR_RECOVER, L('couldnotaddusernotif'));
         }
 
