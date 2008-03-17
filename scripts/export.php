@@ -98,6 +98,7 @@ function tpl_csv_cell($task, $colname) {
             'votes'      => 'vote_count',
             'attachments'=> 'attachment_count',
             'dateclosed' => 'date_closed',
+            'private'    => 'mark_private',
             'projectlevelid' => 'prefix_id',
             'progress'   => '',
             'state'      => '',
