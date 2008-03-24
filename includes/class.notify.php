@@ -198,13 +198,19 @@ class Notifications
                 $pool =& new Swift_Connection_Multi();
             // first choose method
             if ($fs->prefs['smtp_server']) {
+                $split = explode(':', $fs->prefs['smtp_server']);
+                $port = null;
+                if (count($split) == 2) {
+                    $fs->prefs['smtp_server'] = $split[0];
+                    $port = $split[1];
+                }
                 // connection... SSL, TLS or none
                 if ($fs->prefs['email_ssl']) {
-                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_SSL);
+                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], ($port ? $port : SWIFT_SMTP_PORT_SECURE), SWIFT_SMTP_ENC_SSL);
                 } else if ($fs->prefs['email_tls']) {
-                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], SWIFT_SMTP_PORT_SECURE, SWIFT_SMTP_ENC_TLS);
+                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], ($port ? $port : SWIFT_SMTP_PORT_SECURE), SWIFT_SMTP_ENC_TLS);
                 } else {
-                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server']);
+                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], $port);
                 }
                 if ($fs->prefs['smtp_user']) {
                     $smtp->setUsername($fs->prefs['smtp_user']);
