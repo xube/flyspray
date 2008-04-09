@@ -77,10 +77,10 @@ class FlysprayDoRoadmap extends FlysprayDo
                         unset($tasks[$i]);
                     }
                 }
-
-                $data[] = array('id' => $row['version_id'], 'open_tasks' => $tasks, 'percent_complete' => $percent_complete,
-                                'all_tasks' => $all_tasks, 'name' => $row['version_name']);
             }
+            
+            $data[] = array('id' => $row['version_id'], 'open_tasks' => (isset($tasks) ? $tasks : array()), 'percent_complete' => $percent_complete,
+                                'all_tasks' => ($all_tasks ? $all_tasks : array()), 'name' => $row['version_name']);
         }
 
         if (Get::val('txt')) {
