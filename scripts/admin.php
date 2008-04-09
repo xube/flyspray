@@ -237,6 +237,11 @@ class FlysprayDoAdmin extends FlysprayDo
     {
     	global $fs, $db, $proj, $user, $page;
 
+        if (!Req::val('list_id')) {
+            FlysprayDo::error(array(ERROR_INPUT));
+            return;
+        }
+        
         $row = $db->x->getRow('SELECT list_type, list_name FROM {lists} WHERE list_id = ?',
                                       null, Req::val('list_id'));
 
