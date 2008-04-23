@@ -81,6 +81,7 @@ class FlysprayDoRoadmap extends FlysprayDo
             
             $data[] = array('id' => $row['version_id'], 'open_tasks' => (isset($tasks) ? $tasks : array()), 'percent_complete' => $percent_complete,
                                 'all_tasks' => ($all_tasks ? $all_tasks : array()), 'name' => $row['version_name']);
+            unset($tasks);
         }
 
         if (Get::val('txt')) {
