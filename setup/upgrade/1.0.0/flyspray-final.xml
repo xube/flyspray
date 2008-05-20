@@ -1241,7 +1241,7 @@
    <field>
     <name>item_name</name>
     <type>text</type>
-    <length>40</length>
+    <length>60</length>
     <notnull>true</notnull>
 
    </field>

@@ -82,7 +82,20 @@ class SVNInfo {
 	function _startRequest() {
         // Init connection
         $urlinfo = parse_url($this->_reposURL);
-        $fp = fsockopen($urlinfo['host'], 80, $errorno, $errorstr, 10);
+        $host = $urlinfo['host'];
+        $port = 0;
+        if (!empty($urlinfo['port']))
+        	$port = $urlinfo['port'];
+        $schema = $urlinfo['scheme'];
+        if ($schema == 'https' && empty($port))
+        	$port = 443;
+        else if (empty($port))
+        	$port = 80;
+        
+        if ($schema == 'https')
+        	$host = "ssl://".$host;
+        
+        $fp = fsockopen($host, $port, $errorno, $errorstr, 10);
 
         if (!$fp) {
             return '';
@@ -103,7 +116,11 @@ class SVNInfo {
             $request[] = sprintf('Authorization: Basic %s', base64_encode($this->_reposUsername . ':' . $this->_reposPassword));
         }
 
-        fwrite($fp, implode("\r\n", $request) . "\r\n\r\n" . $this->_RequestData);
+        $succ = fwrite($fp, implode("\r\n", $request) . "\r\n\r\n" . $this->_RequestData);
+        
+        if (!$succ) {
+        	return '';
+		}
 
         // Read response
         $response = '';
@@ -163,11 +180,17 @@ class SVNInfo {
   		// Combine the Data to one single Array
   		$nrentries = count($versionNames);
   		for ($i = 0; $i < $nrentries; $i++) {
+  			$creatorName = "";
+  			if (!empty($creatorNames[$i]))
+  				$creatorName = $creatorNames[$i];
+  			$comment = "";
+  			if (!empty($comments[$i]))
+  				$comment = $comments[$i];
   			$logentries[] = array(
   			'version-name' 			=> $versionNames[$i],
-  			'creator-displayname' 	=> $creatorNames[$i],
+  			'creator-displayname' 	=> $creatorName,
   			'date' 					=> $dates[$i],
-  			'comment' 				=> $comments[$i]
+  			'comment' 				=> $comment
   			);
   		}
 
