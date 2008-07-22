@@ -928,7 +928,7 @@ class Flyspray
     {
         global $db;
 
-        $val = $db->x->GetOne('SELECT user_id FROM {users} WHERE user_name = ?', null, $name);
+        $val = $db->x->GetOne('SELECT user_id FROM {users} WHERE user_name = ?', null, trim($name));
 
         return intval($val);
     }
