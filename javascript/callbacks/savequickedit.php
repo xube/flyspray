@@ -32,13 +32,13 @@ switch (Post::val('field')) {
         $args['percent_complete'] = Post::num('value');
         break;
     
-    case 'assignedto':
+    case 'assigned_to':
         $args['assigned_to'] = Post::val('value');
         break;
         
     default:
         // now all the custom fields
-        $field = new Field(substr(5, Post::val('field')));
+        $field = new Field(substr(Post::val('field'),5));
         if ($field->id) {
             $args[Post::val('field')] = Post::val('value');
         }
