@@ -290,7 +290,7 @@ class FlysprayDoDepends extends FlysprayDo
         // we have to find out the image size if it is SVG
         if ($fmt == 'svg') {
             if (!$remote) {
-                $data = file_get_contents(BASEDIR . '/' . $file_name);
+                $data = file_get_contents(BASEDIR . '/' . $file_name . '.' . $fmt);
             }
             preg_match('/<svg width="([0-9.]+)([a-zA-Z]+)" height="([0-9.]+)([a-zA-Z]+)"/', $data, $matches);
             $page->assign('width',  round($matches[1] * (($matches[2] == 'pt') ? 1.4 : (($matches[2] == 'in') ? 1.33 * 72.27 : 1)), 0));
