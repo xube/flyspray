@@ -406,6 +406,7 @@ class Flyspray
         if ($assignees = Flyspray::GetAssignees($task_id, true)) {
             $task['assigned_to'] = $assignees[0];
             $task['assigned_to_name'] = $assignees[1];
+            $task['assigned_to_uname'] = $assignees[2];
         }
 
         $cache[$task_id . (string) $prefix] = $task;
@@ -832,20 +833,21 @@ class Flyspray
      * @return array
      * @version 1.0
      */
-    function GetAssignees($task_id, $name = false)
+    function GetAssignees($task_id, $names = false)
     {
         global $db;
 
-        $sql = $db->x->getAll('SELECT u.real_name, u.user_id
+        $sql = $db->x->getAll('SELECT u.real_name, u.user_id, u.user_name
                              FROM {users} u, {assigned} a
                             WHERE task_id = ? AND u.user_id = a.user_id',
                               null, $task_id);
 
         $assignees = array();
         foreach ($sql as $row) {
-            if ($name) {
+            if ($names) {
                 $assignees[0][] = $row['user_id'];
                 $assignees[1][] = $row['real_name'];
+                $assignees[2][] = $row['user_name'];
             } else {
                 $assignees[] = $row['user_id'];
             }

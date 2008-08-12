@@ -16,7 +16,7 @@ if (!$user->can_edit_task($task)) {
 // Import previous values
 $args = $task;
 if (is_array($args['assigned_to'])) {
-    $args['assigned_to'] = implode(';', $task['assigned_to']);
+    $args['assigned_to'] = implode(';', $task['assigned_to_uname']);
 }
 
 switch (Post::val('field')) {

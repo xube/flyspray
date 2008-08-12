@@ -31,7 +31,7 @@ class FlysprayDoEdit extends FlysprayDo
                 }
 
                 if (is_array($args['assigned_to'])) {
-                    $args['assigned_to'] = implode(';', $task['assigned_to']);
+                    $args['assigned_to'] = implode(';', $task['assigned_to_uname']);
                 }
 
                 Backend::edit_task($task, $args);
