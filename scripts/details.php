@@ -572,14 +572,8 @@ class FlysprayDoDetails extends FlysprayDo
                               array($this->task['task_id'], $user->id));
 
         if ((Get::val('edit') || (Post::has('item_summary') && !isset($_SESSION['SUCCESS']))) && ($user->can_edit_task($this->task) || $user->can_correct_task($this->task))) {
-            $list = $db->x->getCol('SELECT u.user_name
-                                      FROM {assigned} a, {users} u
-                                     WHERE a.user_id = u.user_id AND task_id = ?
-                                  ORDER BY u.user_name DESC',
-                                    null, $this->task['task_id']);
-
             $page->assign('watched', $watching);
-            $page->assign('userlist', $list);
+            $page->assign('userlist', $this->task['assigned_to_uname']);
             $page->pushTpl('details.edit.tpl');
         }
         else {

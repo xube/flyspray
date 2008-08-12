@@ -18,8 +18,8 @@ $args = $task;
 if (is_array($args['assigned_to'])) {
     $args['assigned_to'] = implode(';', $task['assigned_to_uname']);
 }
-
-switch (Post::val('field')) {
+$fieldname =Post::val('field');
+switch ($fieldname) {
     case 'summary':
         $args['item_summary'] = Post::val('value');
         break;
@@ -34,13 +34,14 @@ switch (Post::val('field')) {
     
     case 'assigned_to':
         $args['assigned_to'] = Post::val('value');
+	$fieldname = 'assignedto';
         break;
         
     default:
         // now all the custom fields
-        $field = new Field(substr(Post::val('field'),5));
+        $field = new Field(substr($fieldname,5));
         if ($field->id) {
-            $args[Post::val('field')] = Post::val('value');
+            $args[$fieldname] = Post::val('value');
         }
 }
 
@@ -51,5 +52,5 @@ Backend::edit_task($task, $args);
 $task = Flyspray::GetTaskDetails(Post::val('task_id'));
 $task['num_assigned'] = count($task['assigned_to']);
 $task['assigned_to_name'] = reset($task['assigned_to_name']);
-echo tpl_draw_cell($task, Post::val('field'), '<span class="%s %s">%s</span>');
+echo tpl_draw_cell($task, $fieldname, '<span class="%s %s">%s</span>');
 ?>
