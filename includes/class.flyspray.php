@@ -402,7 +402,7 @@ class Flyspray
             $task['field' . $row['field_id'] . '_name'] = ($row['user_name'] ? $row['user_name'] : ($row['item_name'] ? $row['item_name'] : $row['category_name']));
         }
 
-        $task['assigned_to'] = $task['assigned_to_name'] = array();
+        $task['assigned_to'] = $task['assigned_to_name'] =  $task['assigned_to_uname'] = array();
         if ($assignees = Flyspray::GetAssignees($task_id, true)) {
             $task['assigned_to'] = $assignees[0];
             $task['assigned_to_name'] = $assignees[1];
