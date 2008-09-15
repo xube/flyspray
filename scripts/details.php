@@ -261,13 +261,17 @@ class FlysprayDoDetails extends FlysprayDo
             array_push($params, $user->id);
         }
 
+        $previoustext = $db->x->getOne('SELECT c.comment_text
+                             FROM  {comments} c
+                            WHERE  comment_id = ? AND task_id = ?', null,
+                            array(Post::val('comment_id'), $task['task_id']));
         $db->x->execParam("UPDATE  {comments}
                          SET  comment_text = ?, last_edited_time = ?, syntax_plugins = ?
                        WHERE  comment_id = ? AND task_id = ? $where", $params);
        $db->x->execParam("DELETE FROM {cache} WHERE  topic = ? AND type = ?", array(Post::val('comment_id'), 'comm'));
 
         Flyspray::logEvent($task['task_id'], 5, Post::val('comment_text'),
-                           Post::val('previous_text'), Post::val('comment_id'));
+                           $previoustext, Post::val('comment_id'));
 
         Backend::upload_files($task['task_id'], Post::val('comment_id'));
         Backend::delete_files(Post::val('delete_att'));
