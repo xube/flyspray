@@ -41,7 +41,7 @@ class FlysprayDoLostpw extends FlysprayDo
      */
     function action_chpass()
     {
-        global $db;
+        global $db, $baseurl;
 
         // Check that the user submitted both the fields, and they are the same
         if (!Post::val('pass1') || strlen(trim(Post::val('magic_url'))) !== 32) {
