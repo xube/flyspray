@@ -87,7 +87,7 @@ class FlysprayDoUserSelect extends FlysprayDo
                                        FROM {assigned} a
                                   LEFT JOIN {users} u ON a.user_id = u.user_id
                                   LEFT JOIN {tasks} t ON a.task_id = t.task_id
-                                      WHERE ( ' . $where . ' )' . '
+                                      WHERE ( ' . $where . ' )' . ' AND u.account_enabled = 1
                                    GROUP BY a.user_id
                                    ORDER BY my_project DESC, a_count DESC', null, array_merge(array($proj->id), $params));
             $page->assign('users', $users);
