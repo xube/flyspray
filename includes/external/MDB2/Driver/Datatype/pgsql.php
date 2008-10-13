@@ -42,7 +42,7 @@
 // | Author: Paul Cooper <pgc@ucecom.com>                                 |
 // +----------------------------------------------------------------------+
 //
-// $Id: pgsql.php,v 1.86 2007/07/18 21:02:10 nrf Exp $
+// $Id: pgsql.php,v 1.91 2008/03/09 12:28:08 quipo Exp $
 
 require_once 'MDB2/Driver/Datatype/Common.php';
 
@@ -217,8 +217,6 @@ class MDB2_Driver_Datatype_pgsql extends MDB2_Driver_Datatype_Common
                 $field['default'] = empty($field['notnull']) ? null : 0;
             }
             $default = ' DEFAULT '.$this->quote($field['default'], 'integer');
-        } elseif (empty($field['notnull'])) {
-            $default = ' DEFAULT NULL';
         }
 
         $notnull = empty($field['notnull']) ? '' : ' NOT NULL';
@@ -308,11 +306,6 @@ class MDB2_Driver_Datatype_pgsql extends MDB2_Driver_Datatype_Common
 
     /**
      * build a pattern matching string
-     *
-     * EXPERIMENTAL
-     *
-     * WARNING: this function is experimental and may change signature at
-     * any time until labelled as non-experimental
      *
      * @access public
      *
@@ -446,6 +439,7 @@ class MDB2_Driver_Datatype_pgsql extends MDB2_Driver_Datatype_Common
                 }
             } elseif (strstr($db_type, 'text')) {
                 $type[] = 'clob';
+                $type = array_reverse($type);
             }
             if ($fixed !== false) {
                 $fixed = true;
@@ -457,6 +451,7 @@ class MDB2_Driver_Datatype_pgsql extends MDB2_Driver_Datatype_Common
             break;
         case 'datetime':
         case 'timestamp':
+        case 'timestamptz':
             $type[] = 'timestamp';
             $length = null;
             break;
@@ -465,6 +460,7 @@ class MDB2_Driver_Datatype_pgsql extends MDB2_Driver_Datatype_Common
             $length = null;
             break;
         case 'float':
+        case 'float4':
         case 'float8':
         case 'double':
         case 'real':

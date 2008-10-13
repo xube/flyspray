@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------+
 // | PHP versions 4 and 5                                                 |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1998-2007 Manuel Lemos, Tomas V.V.Cox,                 |
+// | Copyright (c) 1998-2008 Manuel Lemos, Tomas V.V.Cox,                 |
 // | Stig. S. Bakken, Lukas Smith                                         |
 // | All rights reserved.                                                 |
 // +----------------------------------------------------------------------+
@@ -43,7 +43,7 @@
 // |          Lorenzo Alberton <l.alberton@quipo.it>                      |
 // +----------------------------------------------------------------------+
 //
-// $Id: pgsql.php,v 1.65 2007/08/03 20:56:16 quipo Exp $
+// $Id: pgsql.php,v 1.70 2008/03/13 20:38:09 quipo Exp $
 
 require_once 'MDB2/Driver/Reverse/Common.php';
 
@@ -133,7 +133,7 @@ class MDB2_Driver_Reverse_pgsql extends MDB2_Driver_Reverse_Common
 
         $column = array_change_key_case($column, CASE_LOWER);
         $mapped_datatype = $db->datatype->mapNativeDatatype($column);
-        if (PEAR::IsError($mapped_datatype)) {
+        if (PEAR::isError($mapped_datatype)) {
             return $mapped_datatype;
         }
         list($types, $length, $unsigned, $fixed) = $mapped_datatype;
@@ -270,8 +270,8 @@ class MDB2_Driver_Reverse_pgsql extends MDB2_Driver_Reverse_Common
                          CASE WHEN c.contype = 'p' THEN 1 ELSE 0 END AS \"primary\",
                          CASE WHEN c.contype = 'u' THEN 1 ELSE 0 END AS \"unique\",
                          CASE WHEN c.condeferrable = 'f' THEN 0 ELSE 1 END AS deferrable,
-                         CASE WHEN c.condeferred = 'f' THEN 0 ELSE 1 END AS initially_deferred,
-                         array_to_string(c.conkey, ' ') AS constraint_key,
+                         CASE WHEN c.condeferred = 'f' THEN 0 ELSE 1 END AS initiallydeferred,
+                         --array_to_string(c.conkey, ' ') AS constraint_key,
                          t.relname AS table_name,
                          t2.relname AS references_table,
                          CASE confupdtype
@@ -280,20 +280,20 @@ class MDB2_Driver_Reverse_pgsql extends MDB2_Driver_Reverse_Common
                            WHEN 'c' THEN 'CASCADE'
                            WHEN 'n' THEN 'SET NULL'
                            WHEN 'd' THEN 'SET DEFAULT'
-                         END AS on_update,
+                         END AS onupdate,
                          CASE confdeltype
                            WHEN 'a' THEN 'NO ACTION'
                            WHEN 'r' THEN 'RESTRICT'
                            WHEN 'c' THEN 'CASCADE'
                            WHEN 'n' THEN 'SET NULL'
                            WHEN 'd' THEN 'SET DEFAULT'
-                         END AS on_delete,
+                         END AS ondelete,
                          CASE confmatchtype
                            WHEN 'u' THEN 'UNSPECIFIED'
                            WHEN 'f' THEN 'FULL'
                            WHEN 'p' THEN 'PARTIAL'
                          END AS match,
-                         array_to_string(c.confkey, ' ') AS fk_constraint_key,
+                         --array_to_string(c.confkey, ' ') AS fk_constraint_key,
                          consrc
                     FROM pg_constraint c
                LEFT JOIN pg_class t  ON c.conrelid  = t.oid
@@ -304,7 +304,8 @@ class MDB2_Driver_Reverse_pgsql extends MDB2_Driver_Reverse_Common
         $row = $db->queryRow(sprintf($query, $db->quote($constraint_name_mdb2, 'text')), null, MDB2_FETCHMODE_ASSOC);
         if (PEAR::isError($row) || empty($row)) {
             // fallback to the given $index_name, without transformation
-            $row = $db->queryRow(sprintf($query, $db->quote($constraint_name, 'text')), null, MDB2_FETCHMODE_ASSOC);
+            $constraint_name_mdb2 = $constraint_name;
+            $row = $db->queryRow(sprintf($query, $db->quote($constraint_name_mdb2, 'text')), null, MDB2_FETCHMODE_ASSOC);
         }
         if (PEAR::isError($row)) {
             return $row;
@@ -317,9 +318,6 @@ class MDB2_Driver_Reverse_pgsql extends MDB2_Driver_Reverse_Common
 
         $row = array_change_key_case($row, CASE_LOWER);
 
-        $db->loadModule('Manager', null, true);
-        $columns = $db->manager->listTableFields($table_name);
-
         $definition = array(
             'primary' => (boolean)$row['primary'],
             'unique'  => (boolean)$row['unique'],
@@ -327,31 +325,50 @@ class MDB2_Driver_Reverse_pgsql extends MDB2_Driver_Reverse_Common
             'check'   => (boolean)$row['check'],
             'fields'  => array(),
             'references' => array(
-                'table' => $row['references_table'],
+                'table'  => $row['references_table'],
                 'fields' => array(),
             ),
-            'deferrable'    => (boolean)$row['deferrable'],
-            'initially_deferred' => (boolean)$row['initially_deferred'],
-            'on_update'     => $row['on_update'],
-            'on_delete'     => $row['on_delete'],
-            'match'         => $row['match'],
+            'deferrable' => (boolean)$row['deferrable'],
+            'initiallydeferred' => (boolean)$row['initiallydeferred'],
+            'onupdate' => $row['onupdate'],
+            'ondelete' => $row['ondelete'],
+            'match'    => $row['match'],
         );
 
-        $index_column_numbers = explode(' ', $row['constraint_key']);
+        $query = 'SELECT a.attname
+                    FROM pg_constraint c
+               LEFT JOIN pg_class t  ON c.conrelid  = t.oid
+               LEFT JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = ANY(c.conkey)
+                   WHERE c.conname = %s
+                     AND t.relname = ' . $db->quote($table, 'text');
+        $constraint_name_mdb2 = $db->getIndexName($constraint_name);
+        $fields = $db->queryCol(sprintf($query, $db->quote($constraint_name_mdb2, 'text')), null);
+        if (PEAR::isError($fields)) {
+            return $fields;
+        }
         $colpos = 1;
-        foreach ($index_column_numbers as $number) {
-            $definition['fields'][$columns[($number - 1)]] = array(
+        foreach ($fields as $field) {
+            $definition['fields'][$field] = array(
                 'position' => $colpos++,
                 'sorting' => 'ascending',
             );
         }
         
         if ($definition['foreign']) {
-            $columns = $db->manager->listTableFields($definition['references']['table']);
-            $column_numbers = explode(' ', $row['fk_constraint_key']);
+            $query = 'SELECT a.attname
+                        FROM pg_constraint c
+                   LEFT JOIN pg_class t  ON c.confrelid  = t.oid
+                   LEFT JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = ANY(c.confkey)
+                       WHERE c.conname = %s
+                         AND t.relname = ' . $db->quote($definition['references']['table'], 'text');
+            $constraint_name_mdb2 = $db->getIndexName($constraint_name);
+            $foreign_fields = $db->queryCol(sprintf($query, $db->quote($constraint_name_mdb2, 'text')), null);
+            if (PEAR::isError($foreign_fields)) {
+                return $foreign_fields;
+            }
             $colpos = 1;
-            foreach ($column_numbers as $number) {
-                $definition['references']['fields'][$columns[($number - 1)]] = array(
+            foreach ($foreign_fields as $foreign_field) {
+                $definition['references']['fields'][$foreign_field] = array(
                     'position' => $colpos++,
                 );
             }
@@ -407,7 +424,10 @@ class MDB2_Driver_Reverse_pgsql extends MDB2_Driver_Reverse_Common
                             WHEN 24 THEN 'UPDATE, DELETE'
                             WHEN 12 THEN 'INSERT, DELETE'
                          END AS trigger_event,
-                         trg.tgenabled AS trigger_enabled,
+                         CASE trg.tgenabled
+                            WHEN 'O' THEN 't'
+                            ELSE trg.tgenabled
+                         END AS trigger_enabled,
                          obj_description(trg.oid, 'pg_trigger') AS trigger_comment
                     FROM pg_trigger trg,
                          pg_class tbl,

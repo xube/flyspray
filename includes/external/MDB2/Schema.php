@@ -2,12 +2,12 @@
 // +----------------------------------------------------------------------+
 // | PHP versions 4 and 5                                                 |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1998-2006 Manuel Lemos, Tomas V.V.Cox,                 |
-// | Stig. S. Bakken, Lukas Smith                                         |
+// | Copyright (c) 1998-2008 Manuel Lemos, Tomas V.V.Cox,                 |
+// | Stig. S. Bakken, Lukas Smith, Igor Feghali                           |
 // | All rights reserved.                                                 |
 // +----------------------------------------------------------------------+
-// | MDB2 is a merge of PEAR DB and Metabases that provides a unified DB  |
-// | API as well as database abstraction for PHP applications.            |
+// | MDB2_Schema enables users to maintain RDBMS independant schema files |
+// | in XML that can be used to manipulate both data and database schemas |
 // | This LICENSE is in the BSD license style.                            |
 // |                                                                      |
 // | Redistribution and use in source and binary forms, with or without   |
@@ -22,9 +22,9 @@
 // | documentation and/or other materials provided with the distribution. |
 // |                                                                      |
 // | Neither the name of Manuel Lemos, Tomas V.V.Cox, Stig. S. Bakken,    |
-// | Lukas Smith nor the names of his contributors may be used to endorse |
-// | or promote products derived from this software without specific prior|
-// | written permission.                                                  |
+// | Lukas Smith, Igor Feghali nor the names of his contributors may be   |
+// | used to endorse or promote products derived from this software       |
+// | without specific prior written permission.                           |
 // |                                                                      |
 // | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS  |
 // | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT    |
@@ -40,9 +40,10 @@
 // | POSSIBILITY OF SUCH DAMAGE.                                          |
 // +----------------------------------------------------------------------+
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
+// | Author: Igor Feghali <ifeghali@php.net>                              |
 // +----------------------------------------------------------------------+
 //
-// $Id: Schema.php,v 1.116 2007/08/20 03:15:41 ifeghali Exp $
+// $Id: Schema.php,v 1.121 2008/02/06 23:13:51 ifeghali Exp $
 //
 
 require_once 'MDB2.php';
@@ -419,6 +420,7 @@ class MDB2_Schema extends PEAR
             'name' => $database,
             'create' => true,
             'overwrite' => false,
+            'charset' => '',
             'description' => '',
             'comments' => '',
             'tables' => array(),
@@ -691,13 +693,14 @@ class MDB2_Schema extends PEAR
                 } else {
                     $this->db->debug('Preparing to overwrite index: '.$index_name, __FUNCTION__);
 
+                    $this->db->expectError(MDB2_ERROR_NOT_FOUND);
                     if (!empty($index['primary']) || !empty($index['unique'])) {
                         $result = $this->db->manager->dropConstraint($table_name, $index_name);
                     } else {
                         $result = $this->db->manager->dropIndex($table_name, $index_name);
                     }
-
-                    if (PEAR::isError($result)) {
+                    $this->db->popExpect();
+                    if (PEAR::isError($result) && !MDB2::isError($result, MDB2_ERROR_NOT_FOUND)) {
                         return $result;
                     }
                 }
@@ -887,6 +890,7 @@ class MDB2_Schema extends PEAR
         $table_name = $this->db->quoteIdentifier($table_name, true);
 
         $result = MDB2_OK;
+        $support_transactions = $this->db->supports('transactions');
 
         foreach ($table['initialization'] as $instruction) {
             $query = '';
@@ -928,9 +932,17 @@ class MDB2_Schema extends PEAR
                 break;
             }
             if ($query) {
+                if ($support_transactions && PEAR::isError($res = $this->db->beginNestedTransaction())) {
+                    return $res;
+                }
+
                 $result = $this->db->exec($query);
                 if (PEAR::isError($result)) {
                     return $result;
+                }
+
+                if ($support_transactions && PEAR::isError($res = $this->db->completeNestedTransaction())) {
+                    return $res;
                 }
             }
         }
@@ -1097,7 +1109,8 @@ class MDB2_Schema extends PEAR
         $fields = array();
         if (!empty($instruction['field']) && is_array($instruction['field'])) {
             foreach ($instruction['field'] as $field) {
-                $fields[$field['name']] = $this->getExpression($field['group'], $fields_definition);
+                $field_name = $this->db->quoteIdentifier($field['name'], true);
+                $fields[$field_name] = $this->getExpression($field['group'], $fields_definition);
             }
         }
         return $fields;
@@ -1236,52 +1249,57 @@ class MDB2_Schema extends PEAR
         }
         $create = (isset($database_definition['create']) && $database_definition['create']);
         $overwrite = (isset($database_definition['overwrite']) && $database_definition['overwrite']);
+
+        /**
+         *
+         * We need to clean up database name before any query to prevent
+         * database driver from using a inexistent database
+         *
+         */
+        $previous_database_name = $this->db->setDatabase('');
+
+        // Lower / Upper case the db name if the portability deems so.
+        if ($this->db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
+            $func = $this->db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper';
+            $db_name = $func($database_definition['name']);
+        }
+
         if ($create) {
-            $errorcodes = array(MDB2_ERROR_UNSUPPORTED, MDB2_ERROR_NOT_CAPABLE);
-            $this->db->expectError($errorcodes);
-
-            /**
-             *
-             * We need to clean up database name before any query to prevent
-             * database driver from using a inexistent database
-             *
-             */
-            $this->db->setDatabase("");
-            $databases = $this->db->manager->listDatabases();
-
-            // Lower / Upper case the db name if the portability deems so.
-            if ($this->db->options['portability'] & MDB2_PORTABILITY_FIX_CASE) {
-                $func = $this->db->options['field_case'] == CASE_LOWER ? 'strtolower' : 'strtoupper';
-                $db_name = $func($database_definition['name']);
+            if ($overwrite) {
+                $this->db->expectError(MDB2_ERROR_CANNOT_DROP);
+                $result = $this->db->manager->dropDatabase($database_definition['name']);
+                $this->db->popExpect();
+                if (PEAR::isError($result) && !MDB2::isError($result, MDB2_ERROR_CANNOT_DROP)) {
+                    return $result;
+                }
+                $this->db->debug('Overwritting database: '.$database_definition['name'], __FUNCTION__);
             }
 
+            $errorcodes = array(MDB2_ERROR_UNSUPPORTED, MDB2_ERROR_UNSUPPORTED);
+            $this->db->expectError($errorcodes);
+            $dbOptions = array();
+            if (isset($database_definition['charset'])) {
+                $dbOptions['charset'] = $database_definition['charset'];
+            }
+            $result = $this->db->manager->createDatabase($database_definition['name'], $dbOptions);
             $this->db->popExpect();
-            if (PEAR::isError($databases)) {
-                if (!MDB2::isError($databases, $errorcodes)) {
-                    return $databases;
-                }
-            } elseif (is_array($databases) && isset($db_name) && in_array($db_name, $databases)) {
-                if (!$overwrite) {
+            if (PEAR::isError($result) && !MDB2::isError($result, MDB2_ERROR_UNSUPPORTED)) {
+                if (MDB2::isError($result, MDB2_ERROR_ALREADY_EXISTS)) {
                     $this->db->debug('Database already exists: ' . $database_definition['name'], __FUNCTION__);
+                    if (!empty($dbOptions)) {
+                        $result = $this->db->manager->alterDatabase($database_definition['name'], $dbOptions);
+                        if (PEAR::isError($result)) {
+                            return $result;
+                        }
+                    }
                     $create = false;
                 } else {
-                    $result = $this->db->manager->dropDatabase($database_definition['name']);
-                    if (PEAR::isError($result)) {
-                        return $result;
-                    }
-                    $this->db->debug('Overwritting database: '.$database_definition['name'], __FUNCTION__);
-                }
-            }
-            if ($create) {
-                $this->db->expectError(MDB2_ERROR_ALREADY_EXISTS);
-                $result = $this->db->manager->createDatabase($database_definition['name']);
-                $this->db->popExpect();
-                if (PEAR::isError($result) && !MDB2::isError($result, MDB2_ERROR_ALREADY_EXISTS)) {
                     return $result;
                 }
             }
         }
-        $previous_database_name = $this->db->setDatabase($database_definition['name']);
+
+        $this->db->setDatabase($database_definition['name']);
         if (($support_transactions = $this->db->supports('transactions'))
             && PEAR::isError($result = $this->db->beginNestedTransaction())
         ) {
@@ -1332,9 +1350,11 @@ class MDB2_Schema extends PEAR
         if (PEAR::isError($result) && $create
             && PEAR::isError($result2 = $this->db->manager->dropDatabase($database_definition['name']))
         ) {
-            return $this->raiseError(MDB2_SCHEMA_ERROR, null, null,
-                'Could not drop the created database after unsuccessful creation attempt ('.
-                $result2->getMessage().' ('.$result2->getUserinfo().'))');
+            if (!MDB2::isError($result2, MDB2_ERROR_UNSUPPORTED)) {
+                return $this->raiseError(MDB2_SCHEMA_ERROR, null, null,
+                       'Could not drop the created database after unsuccessful creation attempt ('.
+                       $result2->getMessage().' ('.$result2->getUserinfo().'))');
+            }
         }
 
         return $result;
@@ -1818,12 +1838,14 @@ class MDB2_Schema extends PEAR
 
         if (!empty($changes['remove']) && is_array($changes['remove'])) {
             foreach ($changes['remove'] as $index_name => $index) {
+                $this->db->expectError(MDB2_ERROR_NOT_FOUND);
                 if (!empty($index['primary']) || !empty($index['unique'])) {
                     $result = $this->db->manager->dropConstraint($table_name, $index_name, !empty($index['primary']));
                 } else {
                     $result = $this->db->manager->dropIndex($table_name, $index_name);
                 }
-                if (PEAR::isError($result)) {
+                $this->db->popExpect();
+                if (PEAR::isError($result) && !MDB2::isError($result, MDB2_ERROR_NOT_FOUND)) {
                     return $result;
                 }
                 $alterations++;
@@ -1832,14 +1854,18 @@ class MDB2_Schema extends PEAR
         if (!empty($changes['change']) && is_array($changes['change'])) {
             foreach ($changes['change'] as $index_name => $index) {
                 if (!empty($index['primary']) || !empty($index['unique'])) {
+                    $this->db->expectError(MDB2_ERROR_NOT_FOUND);
                     $result = $this->db->manager->dropConstraint($table_name, $index_name, !empty($index['primary']));
-                    if (PEAR::isError($result)) {
+                    $this->db->popExpect();
+                    if (PEAR::isError($result) && !MDB2::isError($result, MDB2_ERROR_NOT_FOUND)) {
                         return $result;
                     }
                     $result = $this->db->manager->createConstraint($table_name, $index_name, $index);
                 } else {
+                    $this->db->expectError(MDB2_ERROR_NOT_FOUND);
                     $result = $this->db->manager->dropIndex($table_name, $index_name);
-                    if (PEAR::isError($result)) {
+                    $this->db->popExpect();
+                    if (PEAR::isError($result) && !MDB2::isError($result, MDB2_ERROR_NOT_FOUND)) {
                         return $result;
                     }
                     $result = $this->db->manager->createIndex($table_name, $index_name, $index);
@@ -2435,21 +2461,6 @@ class MDB2_Schema extends PEAR
         }
 
         if ($previous_definition) {
-            $errorcodes = array(MDB2_ERROR_UNSUPPORTED, MDB2_ERROR_NOT_CAPABLE);
-            $this->db->expectError($errorcodes);
-            $databases = $this->db->manager->listDatabases();
-            $this->db->popExpect();
-            if (PEAR::isError($databases)) {
-                if (!MDB2::isError($databases, $errorcodes)) {
-                    return $databases;
-                }
-            } elseif (!is_array($databases) ||
-                !in_array($current_definition['name'], $databases)
-            ) {
-                return $this->raiseError(MDB2_SCHEMA_ERROR, null, null,
-                    'database to update does not exist: '.$current_definition['name']);
-            }
-
             $changes = $this->compareDefinitions($current_definition, $previous_definition);
             if (PEAR::isError($changes)) {
                 return $changes;

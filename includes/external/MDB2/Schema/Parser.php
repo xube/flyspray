@@ -2,12 +2,12 @@
 // +----------------------------------------------------------------------+
 // | PHP versions 4 and 5                                                 |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1998-2006 Manuel Lemos, Tomas V.V.Cox,                 |
-// | Stig. S. Bakken, Lukas Smith                                         |
+// | Copyright (c) 1998-2008 Manuel Lemos, Tomas V.V.Cox,                 |
+// | Stig. S. Bakken, Lukas Smith, Igor Feghali                           |
 // | All rights reserved.                                                 |
 // +----------------------------------------------------------------------+
-// | MDB2 is a merge of PEAR DB and Metabases that provides a unified DB  |
-// | API as well as database abstraction for PHP applications.            |
+// | MDB2_Schema enables users to maintain RDBMS independant schema files |
+// | in XML that can be used to manipulate both data and database schemas |
 // | This LICENSE is in the BSD license style.                            |
 // |                                                                      |
 // | Redistribution and use in source and binary forms, with or without   |
@@ -22,9 +22,9 @@
 // | documentation and/or other materials provided with the distribution. |
 // |                                                                      |
 // | Neither the name of Manuel Lemos, Tomas V.V.Cox, Stig. S. Bakken,    |
-// | Lukas Smith nor the names of his contributors may be used to endorse |
-// | or promote products derived from this software without specific prior|
-// | written permission.                                                  |
+// | Lukas Smith, Igor Feghali nor the names of his contributors may be   |
+// | used to endorse or promote products derived from this software       |
+// | without specific prior written permission.                           |
 // |                                                                      |
 // | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS  |
 // | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT    |
@@ -40,9 +40,10 @@
 // | POSSIBILITY OF SUCH DAMAGE.                                          |
 // +----------------------------------------------------------------------+
 // | Author: Christian Dickmann <dickmann@php.net>                        |
+// | Author: Igor Feghali <ifeghali@php.net>                              |
 // +----------------------------------------------------------------------+
 //
-// $Id: Parser.php,v 1.64 2007/08/20 03:19:20 ifeghali Exp $
+// $Id: Parser.php,v 1.67 2008/02/06 23:13:51 ifeghali Exp $
 //
 
 require_once 'XML/Parser.php';
@@ -201,6 +202,7 @@ class MDB2_Schema_Parser extends XML_Parser
                 'name' => '',
                 'create' => '',
                 'overwrite' => '',
+                'charset' => '',
                 'description' => '',
                 'comments' => '',
                 'tables' => array(),
@@ -227,7 +229,7 @@ class MDB2_Schema_Parser extends XML_Parser
             break;
         case 'database-table-declaration-index-field':
             $this->field_name = '';
-            $this->field = array('sorting' => '');
+            $this->field = array('sorting' => '', 'length' => '');
             break;
         /* force field attributes to be initialized when the tag is empty in the XML */
         case 'database-table-declaration-field-was':
@@ -626,6 +628,9 @@ class MDB2_Schema_Parser extends XML_Parser
         case 'database-overwrite':
             $this->database_definition['overwrite'].= $data;
             break;
+        case 'database-charset':
+            $this->database_definition['charset'].= $data;
+            break;
         case 'database-description':
             $this->database_definition['description'].= $data;
             break;
@@ -701,14 +706,9 @@ class MDB2_Schema_Parser extends XML_Parser
         case 'database-table-declaration-index-field-sorting':
             $this->field['sorting'].= $data;
             break;
-        /* todo: check the following attribute as it is not documented anywhere */
         /* Add by Leoncx */
         case 'database-table-declaration-index-field-length':
-            if (isset($this->field['length'])) {
-                $this->field['length'].= $data;
-            } else {
-                $this->field['length'] = $data;
-            }
+            $this->field['length'].= $data;
             break;
 
         /* Foreign Key declaration */

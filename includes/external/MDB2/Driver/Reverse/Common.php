@@ -42,7 +42,7 @@
 // | Author: Lukas Smith <smith@pooteeweet.org>                           |
 // +----------------------------------------------------------------------+
 //
-// $Id: Common.php,v 1.37 2007/06/12 22:18:26 quipo Exp $
+// $Id: Common.php,v 1.42 2008/01/12 12:50:58 quipo Exp $
 //
 
 /**
@@ -63,13 +63,16 @@ define('MDB2_TABLEINFO_FULL',       3);
 /**
  * Base class for the schema reverse engineering module that is extended by each MDB2 driver
  *
+ * To load this module in the MDB2 object:
+ * $mdb->loadModule('Reverse');
+ *
  * @package MDB2
  * @category Database
  * @author  Lukas Smith <smith@pooteeweet.org>
  */
 class MDB2_Driver_Reverse_Common extends MDB2_Module_Common
 {
-    // {{{
+    // {{{ splitTableSchema()
 
     /**
      * Split the "[owner|schema].table" notation into an array
@@ -163,18 +166,22 @@ class MDB2_Driver_Reverse_Common extends MDB2_Module_Common
      *                  [field1name] => array() // one entry per each field covered
      *                  [field2name] => array() // by the index
      *                  [field3name] => array(
-     *                      [sorting] => ascending
+     *                      [sorting]  => ascending
+     *                      [position] => 3
      *                  )
      *              )
      *              [references] => array(
      *                  [table] => name
      *                  [fields] => array(
-     *                      [field1name] => position //one entry per each referenced field
+     *                      [field1name] => array(  //one entry per each referenced field
+     *                           [position] => 1
+     *                      )
      *                  )
+     *              )
      *              [deferrable] => 0
-     *              [initially_deferred] => 0
-     *              [on_update] => CASCADE|RESTRICT|SET NULL|SET DEFAULT|NO ACTION
-     *              [on_delete] => CASCADE|RESTRICT|SET NULL|SET DEFAULT|NO ACTION
+     *              [initiallydeferred] => 0
+     *              [onupdate] => CASCADE|RESTRICT|SET NULL|SET DEFAULT|NO ACTION
+     *              [ondelete] => CASCADE|RESTRICT|SET NULL|SET DEFAULT|NO ACTION
      *              [match] => SIMPLE|PARTIAL|FULL
      *          );
      *          </pre>
@@ -458,6 +465,8 @@ class MDB2_Driver_Reverse_Common extends MDB2_Module_Common
                 }
             }
         }
+
+        $res = array();
 
         if ($mode) {
             $res['num_fields'] = count($fields);

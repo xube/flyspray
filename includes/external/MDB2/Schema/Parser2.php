@@ -2,12 +2,12 @@
 // +----------------------------------------------------------------------+
 // | PHP versions 4 and 5                                                 |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1998-2006 Manuel Lemos, Tomas V.V.Cox,                 |
-// | Stig. S. Bakken, Lukas Smith                                         |
+// | Copyright (c) 1998-2008 Manuel Lemos, Tomas V.V.Cox,                 |
+// | Stig. S. Bakken, Lukas Smith, Igor Feghali                           |
 // | All rights reserved.                                                 |
 // +----------------------------------------------------------------------+
-// | MDB2 is a merge of PEAR DB and Metabases that provides a unified DB  |
-// | API as well as database abstraction for PHP applications.            |
+// | MDB2_Schema enables users to maintain RDBMS independant schema files |
+// | in XML that can be used to manipulate both data and database schemas |
 // | This LICENSE is in the BSD license style.                            |
 // |                                                                      |
 // | Redistribution and use in source and binary forms, with or without   |
@@ -22,9 +22,9 @@
 // | documentation and/or other materials provided with the distribution. |
 // |                                                                      |
 // | Neither the name of Manuel Lemos, Tomas V.V.Cox, Stig. S. Bakken,    |
-// | Lukas Smith nor the names of his contributors may be used to endorse |
-// | or promote products derived from this software without specific prior|
-// | written permission.                                                  |
+// | Lukas Smith, Igor Feghali nor the names of his contributors may be   |
+// | used to endorse or promote products derived from this software       |
+// | without specific prior written permission.                           |
 // |                                                                      |
 // | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS  |
 // | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT    |
@@ -42,7 +42,7 @@
 // | Author: Igor Feghali <ifeghali@php.net>                              |
 // +----------------------------------------------------------------------+
 //
-// $Id: Parser2.php,v 1.8 2007/08/20 05:26:19 ifeghali Exp $
+// $Id: Parser2.php,v 1.11 2008/02/06 23:13:51 ifeghali Exp $
 //
 
 require_once 'XML/Unserializer.php';
@@ -131,6 +131,7 @@ class MDB2_Schema_Parser2 extends XML_Unserializer
             'name' => '',
             'create' => '',
             'overwrite' => '',
+            'charset' => '',
             'description' => '',
             'comments' => '',
             'tables' => array(),
@@ -145,6 +146,9 @@ class MDB2_Schema_Parser2 extends XML_Unserializer
         }
         if (!empty($database['overwrite'])) {
             $this->database_definition['overwrite'] = $database['overwrite'];
+        }
+        if (!empty($database['charset'])) {
+            $this->database_definition['charset'] = $database['charset'];
         }
         if (!empty($database['description'])) {
             $this->database_definition['description'] = $database['description'];
@@ -328,11 +332,15 @@ class MDB2_Schema_Parser2 extends XML_Unserializer
                     $this->field_name = '';
                 }
                 $this->field = array(
-                    'sorting' => ''
+                    'sorting' => '',
+                    'length' => ''
                 );
 
                 if (!empty($field['sorting'])) {
                     $this->field['sorting'] = $field['sorting'];
+                }
+                if (!empty($field['length'])) {
+                    $this->field['length'] = $field['length'];
                 }
 
                 $result = $this->val->validateIndexField($this->index['fields'], $this->field, $this->field_name);
