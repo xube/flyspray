@@ -121,7 +121,7 @@ class FlysprayDoMyprofile extends FlysprayDo
         $num = $db->x->autoExecute('{notes}', array('message_subject'=> Post::val('message_subject'),
                                                     'message_body'=> Post::val('message_body'),
                                                     'last_updated'=> time(),
-                                                    'syntax_plugins' => implode(' ', Post::val('message_body_syntax_plugins'))),
+                                                    'syntax_plugins' => implode(' ', (array)Post::val('message_body_syntax_plugins'))),
                                    MDB2_AUTOQUERY_UPDATE, sprintf('note_id = %d AND user_id = %d', Post::num('note_id'), $user->id));
 
         if ($num) {
