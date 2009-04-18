@@ -119,7 +119,7 @@
         </a><br />
         <?php elseif (($title_key = Flyspray::array_find('project_id', $group_project_id, $fs->projects)) !== false): ?>
         {$fs->projects[$title_key]['project_title']}:
-        <a href="{$this->url(array($do, 'proj' . $group_project_id, 'editgroup'), array('group_id' => $group))}">
+        <a href="{$this->url(array('pm', 'proj' . $group_project_id, 'editgroup'), array('group_id' => $group))}">
           {$user_groups[$usr['user_id']]['group_name'][$key]}
         </a><br />
         <?php endif; ?>
