@@ -1325,8 +1325,8 @@ class Backend
                     continue;
                 }
 
-                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = ? ";
-                $sql_params[] = $field->id;
+                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = {$field->id} ";
+
                 $custom_fields_joined[] = $field->id;
 
                 if ($date = array_get($args, $field->id . 'from')) {
@@ -1342,8 +1342,8 @@ class Backend
                     continue;
                 }
 
-                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = ? ";
-                $sql_params[] = $field->id;
+                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = {$field->id} ";
+
                 $custom_fields_joined[] = $field->id;
                 $fwhere = array();
 
@@ -1359,8 +1359,8 @@ class Backend
                     continue;
                 }
 
-                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = ? ";
-                $sql_params[] = $field->id;
+                $from   .= " LEFT JOIN {field_values} {$ref} ON t.task_id = {$ref}.task_id AND {$ref}.field_id = {$field->id} ";
+
                 $custom_fields_joined[] = $field->id;
                 $where[] = "({$ref}.field_value LIKE ?)";
                 
@@ -1371,6 +1371,7 @@ class Backend
                 $sql_params[] = $val;
             }
         }
+
         // now join custom fields used in columns
         foreach ($proj->columns as $col => $name) {
             if (preg_match('/^field(\d+)$/', $col, $match) && (in_array($col, $visible) || $match[1] == $fs->prefs['color_field'])) {
