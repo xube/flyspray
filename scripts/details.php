@@ -471,7 +471,7 @@ class FlysprayDoDetails extends FlysprayDo
     {
         global $user, $db, $fs, $proj;
 
-        if (!$user->perms('manage_project')) {
+        if (!$user->can_change_private($task)) {
             return array(ERROR_PERMS);
         }
 
@@ -488,7 +488,7 @@ class FlysprayDoDetails extends FlysprayDo
     {
         global $user, $db, $fs, $proj;
 
-        if (!$user->perms('manage_project')) {
+        if (!$user->can_change_private($task)) {
             return array(ERROR_PERMS);
         }
 
