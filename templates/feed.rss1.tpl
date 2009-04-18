@@ -22,7 +22,7 @@
   <?php foreach($task_details as $row): ?>
   <item rdf:about="{$this->url(array('details', 'task' . $row['task_id']))}">
     <title>{$row['project_prefix']}#{$row['prefix_id']}: {$row['item_summary']}</title>
-    <link>{$this->url(array('details', 'task' . $row['task_id']))}</link>
+    <link>{Flyspray::absoluteURI($this->url(array('details', 'task' . $row['task_id'])))}</link>
     <dc:date>{date('Y-m-d\TH:i:s\Z',intval($row['last_edited_time']))}</dc:date>
     <dc:creator>{$row['real_name']}</dc:creator>
     <description>{strip_tags($this->text->render($row['detailed_desc']))}</description>

@@ -18,7 +18,7 @@
       <author>{$row['real_name']}</author>
       <pubDate>{date('r',intval($row['date_opened']))}</pubDate>
       <description><![CDATA[{!str_replace(chr(13), "<br />", Filters::noXSS(strip_tags($row['detailed_desc'])))}]]></description>
-      <link>{$this->url(array('details', 'task' . $row['task_id']))}</link>
+      <link>{Flyspray::absoluteURI($this->url(array('details', 'task' . $row['task_id'])))}</link>
       <guid>{$this->url(array('details', 'task' . $row['task_id']))}</guid>
     </item>
     <?php endforeach; ?>
