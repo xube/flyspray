@@ -104,7 +104,7 @@
 			</div>
 			<div class="clr"></div>
 
-			<h2>Proceed to Licence Agreement:</h2>
+			<h2>Proceed to Database Setup:</h2>
 			<div class="installBlock">
 				<form class="formBlock farRight" action="index.php" method="post" name="adminForm" style="display:inline;">
 				<input type="hidden" name="action" value="database" />
@@ -118,7 +118,7 @@
 				</p>
 				<?php }else { ?>
 				<p>
-				All configurations seems to be in place. You may proceed to the Licence Agreement page.
+				All configurations seems to be in place. You may proceed to the Database Setup page.
 				</p>
 				<?php } ?>
 			</div>
