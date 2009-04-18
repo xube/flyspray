@@ -73,7 +73,7 @@
 
       <button tabindex="9" type="submit">{L('addcomment')}</button>
       <?php if (!$watched): ?>
-      {!tpl_checkbox('notifyme', Post::val('notifyme', (Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
+      {!tpl_checkbox('notifyme', Post::val('notifyme', !(Post::val('action') == 'details.addcomment')), 'notifyme')} <label class="left" for="notifyme">{L('notifyme')}</label>
       <?php endif; ?>
     </div>
   </form>
