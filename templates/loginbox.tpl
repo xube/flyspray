@@ -22,8 +22,7 @@
     <?php if ($user->isAnon() && $fs->prefs['user_notify']): ?>
     <a id="forgotlink" href="{$this->url('lostpw')}">{L('lostpassword')}</a>
     <?php elseif (isset($admin_emails)): ?>
-    <a id="forgotlink" href="mailto:<?php foreach($admin_emails as $mail): ?>{str_replace('@', '#', $mail)},<?php endforeach;
-    ?>?subject={rawurlencode(L('lostpwforfs'))}&amp;body={rawurlencode(L('lostpwmsg1'))}{$this->relativeUrl($baseurl)}{rawurlencode(L('lostpwmsg2'))}<?php
+    <a id="forgotlink" href="mailto:{implode(',', $admin_emails)}?subject={rawurlencode(L('lostpwforfs'))}&amp;body={rawurlencode(L('lostpwmsg1'))}{$this->relativeUrl($baseurl)}{rawurlencode(L('lostpwmsg2'))}<?php
              if(isset($_SESSION['failed_login'])):
              ?>{rawurlencode($_SESSION['failed_login'])}<?php
              else:
