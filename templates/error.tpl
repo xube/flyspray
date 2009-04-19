@@ -11,7 +11,7 @@
   <?php endif; ?>
   </p>
 
-  <?php if (isset($file)): ?>
+  <?php if (isset($file) && $line): ?>
   <p>{L('location')}: {$line}@{$file}</p>
   <?php endif; ?>
   <?php if ($message): ?>

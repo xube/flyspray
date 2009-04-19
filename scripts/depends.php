@@ -200,6 +200,11 @@ class FlysprayDoDepends extends FlysprayDo
 
         $use_public = Flyspray::function_disabled('shell_exec') || !$path_to_dot;
 
+        if ($use_public && !array_get($conf['general'], 'dot_public')) 
+        {
+            FlysprayDo::error(ERROR_INTERNAL, 'Invalid configuration: shell_exec() disabled and no public DOT server specified.');
+        }
+        
         // Now we've got everything we need... let's draw the pretty pictures
 
         //Open the graph, and print global options
@@ -274,9 +279,8 @@ class FlysprayDoDepends extends FlysprayDo
 
         } else {
 
-            $dot = $path_to_dot; // assuming safe value from flyspray.conf.php
             $tfn = escapeshellarg($tname);
-            shell_exec(sprintf('%s -T %s -o %s %s', $dot, escapeshellarg($fmt), escapeshellarg($absfilename), $tfn));
+            shell_exec(sprintf('%s -T %s -o %s %s', $path_to_dot, escapeshellarg($fmt), escapeshellarg($absfilename), $tfn));
             $data['map'] = shell_exec(sprintf('%s -T cmapx %s', $dot, $tfn));
             $page->assign('remote', $remote = false);
             $page->assign('map',    $data['map']);
