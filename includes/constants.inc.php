@@ -98,6 +98,8 @@ define('MIN_PW_LENGTH', 5);
 define('LOGIN_ATTEMPTS', 5);
 define('FS_CACHE_DIR', Flyspray::get_tmp_dir() . DIRECTORY_SEPARATOR . md5($_SERVER['SERVER_NAME']  . BASEDIR));
 
+define('FLYSPRAY_WEBDOT', 'http://webdot.flyspray.org/');
+
 is_dir(FS_CACHE_DIR) || mkdir(FS_CACHE_DIR, 0700);
 
 // local installation constants, this file must not exist in the svn repository.
