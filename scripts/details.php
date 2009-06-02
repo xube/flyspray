@@ -196,7 +196,7 @@ class FlysprayDoDetails extends FlysprayDo
                        SET  resolution_reason = 0, closure_comment = NULL, date_closed = 0,
                             last_edited_time = ?, last_edited_by = ?, is_closed = 0, percent_complete = ?
                      WHERE  task_id = ?',
-                    array(time(), $user->id, $old_percent['old_value'], $task['task_id']));
+                    array(time(), $user->id, intval($old_percent['old_value']), $task['task_id']));
                     
         // [RED] Update last changed date
         $db->x->execParam('UPDATE {redundant} SET last_changed_time = ? WHERE task_id = ?', array(time(), $task['task_id']));
