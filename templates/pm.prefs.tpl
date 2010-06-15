@@ -56,12 +56,6 @@
           </td>
         </tr>
         <tr>
-          <td><label>{!tpl_checkbox('delete_project', null)} {L('deleteproject')}</label></td>
-          <td>
-              <select name="move_to">{!tpl_options(array_merge(array(0 => L('none')), Flyspray::listProjects()), null, false, null, (string) $proj->id)}</select>
-          </td>
-        </tr>
-        <tr>
           <td><label for="othersview">{L('othersview')}</label></td>
           <td>{!tpl_checkbox('others_view', Post::val('others_view', $proj->prefs['others_view']), 'othersview')}</td>
         </tr>
@@ -104,6 +98,37 @@
               <option value="0">{L('none')}</option>
               {!tpl_options(Flyspray::listGroups($proj->id), Post::val('anon_group', $proj->prefs['anon_group']))}
             </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+              <script type="text/javascript">
+              // <!--
+                function confirm_move_to(sel) {
+                    var project_name = sel.options[sel.selectedIndex].text;
+                    if (confirm("{L('deleteproject')} "+project_name+"?")) {
+                        var chbox = sel.form.delete_project;
+                        chbox.checked = true;
+                        sel.form.submit();
+                    } else {
+                        sel.selectedIndex = 0;
+                    }
+                }
+                function confirm_delete(chbox) {
+                    var sel = chbox.form.move_to;
+                    var project_name = sel.options[sel.selectedIndex].text;
+                    if (confirm("{L('deleteproject')} "+project_name+"?")) {
+                        chbox.form.submit();
+                    } else {
+                        chbox.checked = false;
+                    }
+                }
+              // -->
+              </script>
+              <label>{!tpl_checkbox('delete_project', null, null, 1, array('onclick' => 'confirm_delete(this)'))} {L('deleteproject')}</label>
+          </td>
+          <td>
+              <select name="move_to" onchange="confirm_move_to(this)">{!tpl_options(array_merge(array(0 => L('none')), Flyspray::listProjects()), null, false, null, (string) $proj->id)}</select>
           </td>
         </tr>
       </table>
