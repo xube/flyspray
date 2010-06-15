@@ -10,11 +10,11 @@ require dirname(__FILE__).'/header.php';
 if (!$user->id && Get::val('user_id') && Get::val('auth')) {
     $user = new User(Get::val('user_id'));
     if (Get::val('auth') != md5($user->infos['user_pass'] . $user->infos['register_date'])) {
-        $user =& new User;
+        $user = new User;
     }
 }
 
-$page =& new FSTpl();
+$page = new FSTpl();
 
 // Set up the basic XML head
 header ('Content-type: text/html; charset=utf-8');

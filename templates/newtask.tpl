@@ -73,7 +73,7 @@
 
     <?php
         if($fs->prefs['use_recaptcha']) {
-            $captcha =& new reCAPTCHA_Challenge();
+            $captcha = new reCAPTCHA_Challenge();
             $captcha->publickey = $fs->prefs['recaptcha_public_key'];
 			$captcha->use_ssl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
             echo $captcha->getChallenge();
@@ -84,15 +84,15 @@
         <input type="hidden" name="action" value="newtask" />
         <input type="hidden" name="project_id" value="{$proj->id}" />
         <button accesskey="s" type="submit">{L('addthistask')}</button>
-        <div>
-          <?php if (!$user->isAnon()): ?>
-          <input type="checkbox" id="notifyme" name="notifyme"
-          value="1" checked="checked" />&nbsp;<label class="inline left" for="notifyme">{L('notifyme')}</label><br />
-          {!tpl_checkbox('more_tasks', Req::val('more_tasks', 0), 'more_tasks')}<label class="inline left" for="more_tasks">
-          {L('addmoretasks')}</label>
-          <?php endif; ?>
-        </div>
     </p>
+    <?php if (!$user->isAnon()): ?>
+    <div>
+      <input type="checkbox" id="notifyme" name="notifyme"
+      value="1" checked="checked" />&nbsp;<label class="inline left" for="notifyme">{L('notifyme')}</label><br />
+      {!tpl_checkbox('more_tasks', Req::val('more_tasks', 0), 'more_tasks')}<label class="inline left" for="more_tasks">
+      {L('addmoretasks')}</label>
+    </div>
+    <?php endif; ?>
     </div>
 
     </td></tr></table>

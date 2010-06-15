@@ -46,11 +46,13 @@
   <tr>
     <th><strong>{L('mostwanted')}</strong></th>
     <td>
+        <?php if (count($most_wanted[$project['project_id']])): ?>
         <ul>
             <?php foreach($most_wanted[$project['project_id']] as $task): ?>
             <li>{!tpl_tasklink($task['task_id'])}, {$task['num_votes']} {L('vote(s)')}</li>
             <?php endforeach; ?>
         </ul>
+        <?php endif; ?>
     </td>
   </tr>
   <?php endif; ?>

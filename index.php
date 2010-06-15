@@ -74,7 +74,7 @@ if (version_compare(phpversion(), '5.0.0', '>=')) {
     set_error_handler(array('FlysprayDo', 'error'));
 }
 
-$page =& new FSTpl();
+$page = new FSTpl();
 
 if (Get::val('opensearch')) {
     $page->finish('opensearch.tpl');
@@ -128,7 +128,7 @@ if (Flyspray::requestDuplicated()) {
  */
 
 $class = 'FlysprayDo' . $do;
-$mode =& new $class;
+$mode = new $class;
 $mode->show(Req::val('area'));
 
 if (isset($_SESSION)) {

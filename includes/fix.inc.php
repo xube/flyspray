@@ -230,7 +230,7 @@ if (!function_exists('hash_hmac')) {
 
         include_once 'HMAC.php';
 
-        $hashobj =& new Crypt_HMAC($key, $algo);
+        $hashobj = new Crypt_HMAC($key, $algo);
 
         return $raw_output ? pack('H*', $hashobj->hash($data)) : $hashobj->hash($data);
     }

@@ -58,53 +58,53 @@ class WikiSyntax extends SyntaxPlugin
 
 		return '<div class="hide preview" id="%id_preview"></div><div>
         <a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'**\', \'**\', \'%id\'); return false;">
-		  		<img src="'.$baseurl.'includes/syntaxplugins/img/format-text-bold.png" align="bottom" alt="Bold" title="Bold" border="0" /></a>
+		  		<img src="'.$baseurl.'includes/syntaxplugins/img/format-text-bold.png" style="vertical-align:bottom;border:none" alt="Bold" title="Bold" /></a>
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'//\', \'//\', \'%id\'); return false;">
-				<img src="'.$baseurl.'includes/syntaxplugins/img/format-text-italic.png" align="bottom" alt="Italicized" title="Italicized" border="0" /></a>
+				<img src="'.$baseurl.'includes/syntaxplugins/img/format-text-italic.png" style="vertical-align:bottom;border:none" alt="Italicized" title="Italicized" /></a>
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'__\', \'__\', \'%id\'); return false;">
-			<img src="'.$baseurl.'includes/syntaxplugins/img/format-text-underline.png" align="bottom" alt="Underline" title="Underline" border="0" /></a>
+			<img src="'.$baseurl.'includes/syntaxplugins/img/format-text-underline.png" style="vertical-align:bottom;border:none" alt="Underline" title="Underline" /></a>
 
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'&lt;del&gt;\', \'&lt;/del&gt;\', \'%id\'); return false;">
-			<img src="'.$baseurl.'includes/syntaxplugins/img/format-text-strikethrough.png" align="bottom" alt="Strikethrough" title="Strikethrough" border="0" /></a>
+			<img src="'.$baseurl.'includes/syntaxplugins/img/format-text-strikethrough.png" style="vertical-align:bottom;border:none" alt="Strikethrough" title="Strikethrough" /></a>
 
-			<img src="'.$baseurl.'includes/syntaxplugins/img/divider.gif" align="bottom" alt="|" style="margin: 0 3px 0 3px;" />
+			<img src="'.$baseurl.'includes/syntaxplugins/img/divider.gif" alt="|" style="vertical-align:bottom;border:none;margin: 0 3px 0 3px;" />
 
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'======\', \'======\', \'%id\'); return false;">
-			<img title="Level 1 Headline" src="'.$baseurl.'includes/syntaxplugins/img/h1.gif" align="bottom" width="23" height="22" alt="Heading1" border="0" /></a>
+			<img title="Level 1 Headline" src="'.$baseurl.'includes/syntaxplugins/img/h1.gif" style="vertical-align:bottom;border:none" width="23" height="22" alt="Heading1" /></a>
 
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'=====\', \'=====\', \'%id\'); return false;">
-			<img title="Level 2 Headline" src="'.$baseurl.'includes/syntaxplugins/img/h2.gif" align="bottom" width="23" height="22" alt="Heading2" border="0" /></a>
+			<img title="Level 2 Headline" src="'.$baseurl.'includes/syntaxplugins/img/h2.gif" style="vertical-align:bottom;border:none" width="23" height="22" alt="Heading2" /></a>
 
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'====\', \'====\', \'%id\'); return false;">
-			<img title="Level 3 Headline" src="'.$baseurl.'includes/syntaxplugins/img/h3.gif" align="bottom" width="23" height="22" alt="Heading3" border="0" /></a>
+			<img title="Level 3 Headline" src="'.$baseurl.'includes/syntaxplugins/img/h3.gif" style="vertical-align:bottom;border:none" width="23" height="22" alt="Heading3" /></a>
 
 			<img title="Divider" src="'.$baseurl.'includes/syntaxplugins/img/divider.gif" alt="|" style="margin: 0 3px 0 3px;" />
 
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'&#123;&#123;http://\', \'&#125;&#125;\', \'%id\'); return false;">
-				<img src="'.$baseurl.'includes/syntaxplugins/img/image-x-generic.png" align="bottom" alt="Insert Image" title="Insert Image" border="0" /></a>
+				<img src="'.$baseurl.'includes/syntaxplugins/img/image-x-generic.png" style="vertical-align:bottom;border:none" alt="Insert Image" title="Insert Image" /></a>
 
 			<a tabindex="-1" href="javascript:void(0);" onclick="replaceText(\'\n  * \', \'%id\'); return false;">
-				<img src="'.$baseurl.'includes/syntaxplugins/img/ul.gif" align="bottom" width="23" height="22" alt="Insert List" title="Insert List" border="0" /></a>
+				<img src="'.$baseurl.'includes/syntaxplugins/img/ul.gif" style="vertical-align:bottom;border:none" width="23" height="22" alt="Insert List" title="Insert List" /></a>
 			<a tabindex="-1" href="javascript:void(0);" onclick="replaceText(\'\n  - \', \'%id\'); return false;">
-				<img src="'.$baseurl.'includes/syntaxplugins/img/ol.gif" align="bottom" width="23" height="22" alt="Insert List" title="Insert List" border="0" /></a>
+				<img src="'.$baseurl.'includes/syntaxplugins/img/ol.gif" style="vertical-align:bottom;border:none" width="23" height="22" alt="Insert List" title="Insert List" /></a>
 			<a tabindex="-1" href="javascript:void(0);" onclick="replaceText(\'----\', \'%id\'); return false;">
-				<img src="'.$baseurl.'includes/syntaxplugins/img/hr.gif" align="bottom" width="23" height="22" alt="Horizontal Rule" title="Horizontal Rule" border="0" /></a>
+				<img src="'.$baseurl.'includes/syntaxplugins/img/hr.gif" style="vertical-align:bottom;border:none" width="23" height="22" alt="Horizontal Rule" title="Horizontal Rule" /></a>
 
 			<img src="'.$baseurl.'includes/syntaxplugins/img/divider.gif" alt="|" style="margin: 0 3px 0 3px;" />
 
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'[[http://example.com|External Link\', \']]\', \'%id\'); return false;">
-				<img src="'.$baseurl.'includes/syntaxplugins/img/text-html.png" align="bottom" alt="Insert Hyperlink" title="Insert Hyperlink" border="0" /></a>
+				<img src="'.$baseurl.'includes/syntaxplugins/img/text-html.png" style="vertical-align:bottom;border:none" alt="Insert Hyperlink" title="Insert Hyperlink" /></a>
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'[[\', \']]\', \'%id\'); return false;">
-				<img src="'.$baseurl.'includes/syntaxplugins/img/email.png" align="bottom" alt="Insert Email" title="Insert Email" border="0" /></a>
+				<img src="'.$baseurl.'includes/syntaxplugins/img/email.png" style="vertical-align:bottom;border:none" alt="Insert Email" title="Insert Email" /></a>
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'[[ftp://\', \']]\', \'%id\'); return false;">
-				<img src="'.$baseurl.'includes/syntaxplugins/img/network.png" align="bottom" alt="Insert FTP Link" title="Insert FTP Link" border="0" /></a>
+				<img src="'.$baseurl.'includes/syntaxplugins/img/network.png" style="vertical-align:bottom;border:none" alt="Insert FTP Link" title="Insert FTP Link" /></a>
 
 			<img src="'.$baseurl.'includes/syntaxplugins/img/divider.gif" alt="|" style="margin: 0 3px 0 3px;" />
 
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'<code>\', \'</code>\', \'%id\'); return false;">
-			<img src="'.$baseurl.'includes/syntaxplugins/img/source.png" align="bottom" alt="Insert Code" title="Insert Code" border="0" /></a>
+			<img src="'.$baseurl.'includes/syntaxplugins/img/source.png" style="vertical-align:bottom;border:none" alt="Insert Code" title="Insert Code" /></a>
 			<a tabindex="-1" href="javascript:void(0);" onclick="surroundText(\'<code php>\', \'</code>\', \'%id\'); return false;">
-			<img src="'.$baseurl.'includes/syntaxplugins/img/source_php.png" align="bottom" alt="Insert Code" title="Insert PHP Code" border="0" /></a>
+			<img src="'.$baseurl.'includes/syntaxplugins/img/source_php.png" style="vertical-align:bottom;border:none" alt="Insert Code" title="Insert PHP Code" /></a>
             <a tabindex="-1" href="http://wiki.splitbrain.org/wiki:syntax">'. eL('syntax') .'</a>
 		';
 	}

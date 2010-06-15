@@ -44,7 +44,7 @@
           <td>{!tpl_checkbox('override_user_lang', Post::val('override_user_lang', $proj->prefs['override_user_lang']), 'override_user_lang')}</td>
         </tr>
         <tr>
-          <td><label for="intromesg">{L('intromessage')}</label></td>
+          <td><label for="intro_message">{L('intromessage')}</label></td>
           <td>
             {!$this->text->textarea('intro_message', 8, 70, null, Post::val('intro_message', $proj->prefs['intro_message']))}
           </td>
@@ -78,7 +78,7 @@
         <tr>
           <td><label for="roadmap_field">{L('roadmapfield')}</label></td>
           <td>
-            <select name="roadmap_field">
+            <select name="roadmap_field" id="roadmap_field">
             {!tpl_options($roadmap_options, Post::val('roadmap_field', $proj->prefs['roadmap_field']))}
             </select>
           </td>
@@ -86,7 +86,7 @@
         <tr>
           <td><label for="changelog_reso">{L('changelogreso')}</label></td>
           <td>
-            <select name="changelog_reso[]" multiple="multiple" size="4">
+            <select name="changelog_reso[]" id="changelog_reso" multiple="multiple" size="4">
             {!tpl_options($proj->get_list(array('list_id' => $fs->prefs['resolution_list'])), explode(' ', $proj->prefs['changelog_reso']), false)}
             </select>
           </td>
@@ -232,7 +232,7 @@
         <tr>
           <td><label for="mail_headers">{L('mailheaders')}</label></td>
           <td>
-            <textarea rows="5" name="mail_headers" cols="10">{Post::val('mail_headers', $proj->prefs['mail_headers'])}</textarea>
+            <textarea rows="5" name="mail_headers" id="mail_headers" cols="10">{Post::val('mail_headers', $proj->prefs['mail_headers'])}</textarea>
           </td>
         </tr>
       </table>

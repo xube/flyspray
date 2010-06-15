@@ -102,7 +102,7 @@ class Notifications
     {
         global $fs;
 
-        $proj =& new Project(0);
+        $proj = new Project(0);
         $data['project'] = $proj;
         $data['notify_type'] = $type;
 
@@ -197,7 +197,7 @@ class Notifications
             Swift_ClassLoader::load('Swift_Connection_Multi');
             Swift_ClassLoader::load('Swift_Connection_SMTP');
 
-                $pool =& new Swift_Connection_Multi();
+                $pool = new Swift_Connection_Multi();
             // first choose method
             if ($fs->prefs['smtp_server']) {
                 $split = explode(':', $fs->prefs['smtp_server']);
@@ -208,11 +208,11 @@ class Notifications
                 }
                 // connection... SSL, TLS or none
                 if ($fs->prefs['email_ssl']) {
-                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], ($port ? $port : SWIFT_SMTP_PORT_SECURE), SWIFT_SMTP_ENC_SSL);
+                    $smtp = new Swift_Connection_SMTP($fs->prefs['smtp_server'], ($port ? $port : SWIFT_SMTP_PORT_SECURE), SWIFT_SMTP_ENC_SSL);
                 } else if ($fs->prefs['email_tls']) {
-                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], ($port ? $port : SWIFT_SMTP_PORT_SECURE), SWIFT_SMTP_ENC_TLS);
+                    $smtp = new Swift_Connection_SMTP($fs->prefs['smtp_server'], ($port ? $port : SWIFT_SMTP_PORT_SECURE), SWIFT_SMTP_ENC_TLS);
                 } else {
-                    $smtp =& new Swift_Connection_SMTP($fs->prefs['smtp_server'], $port);
+                    $smtp = new Swift_Connection_SMTP($fs->prefs['smtp_server'], $port);
                 }
                 if ($fs->prefs['smtp_user']) {
                     $smtp->setUsername($fs->prefs['smtp_user']);
@@ -229,7 +229,7 @@ class Notifications
                 $pool->addConnection(new Swift_Connection_NativeMail());
             }
 
-            $swift =& new Swift($pool);
+            $swift = new Swift($pool);
 
             if (isset($data['task_id'])) {
                 $swift->attachPlugin(new NotificationsThread($data['task_id'], $emails, $db), 'MessageThread');
@@ -238,11 +238,11 @@ class Notifications
             if (defined('FS_MAIL_DEBUG')) {
                 $swift->log->enable();
                  Swift_ClassLoader::load('Swift_Plugin_VerboseSending');
-                $view =& new Swift_Plugin_VerboseSending_DefaultView();
+                $view = new Swift_Plugin_VerboseSending_DefaultView();
                 $swift->attachPlugin(new Swift_Plugin_VerboseSending($view), "verbose");
             }
 
-            $message =& new Swift_Message($subject, $body);
+            $message = new Swift_Message($subject, $body);
             // check for reply-to
             if (isset($data['project']) && $data['project']->prefs['notify_reply']) {
                 $message->setReplyTo($data['project']->prefs['notify_reply']);
@@ -267,7 +267,7 @@ class Notifications
                 }
             }
 
-            $recipients =& new Swift_RecipientList();
+            $recipients = new Swift_RecipientList();
             $recipients->addTo($emails);
 
             // && $result purpose: if this has been set to false before, it should never become true again
@@ -303,7 +303,7 @@ class Notifications
 
             require_once  'class.jabber2.php';
 
-            $jabber =& new Jabber($fs->prefs['jabber_username'],
+            $jabber = new Jabber($fs->prefs['jabber_username'],
                                  $fs->prefs['jabber_password'],
                                  $fs->prefs['jabber_security'],
                                  $fs->prefs['jabber_port'],
@@ -348,7 +348,7 @@ class Notifications
             $data['task'] = Flyspray::getTaskDetails($data['task_id']);
             // we have project specific options
             $pid = $db->x->GetOne('SELECT project_id FROM {tasks} WHERE task_id = ?', null, $data['task_id']);
-            $data['project'] =& new Project($pid);
+            $data['project'] = new Project($pid);
         }
 
         list($data['subject'], $data['body']) = Notifications::generate_message($type, $data);

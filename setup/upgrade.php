@@ -43,14 +43,14 @@ $db->setOption('portability', MDB2_PORTABILITY_ALL ^ MDB2_PORTABILITY_FIX_CASE);
 // ---------------------------------------------------------------------
 // Application Web locations
 // ---------------------------------------------------------------------
-$fs =& new Flyspray();
+$fs = new Flyspray();
 
 define('APPLICATION_SETUP_INDEX', Flyspray::absoluteURI());
 define('UPGRADE_VERSION', Flyspray::base_version($fs->version));
 // Get installed version
 $installed_version = $db->x->GetOne('SELECT pref_value FROM {prefs} WHERE pref_name = ?', null, 'fs_ver');
 
-$page =& new Tpl;
+$page = new Tpl;
 $page->assign('title', 'Upgrade ');
 $page->assign('short_version', UPGRADE_VERSION);
 

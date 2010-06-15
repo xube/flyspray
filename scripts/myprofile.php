@@ -150,7 +150,7 @@ class FlysprayDoMyprofile extends FlysprayDo
 	{
         global $fs, $db, $proj, $user;
 
-        $proj =& new Project(0);
+        $proj = new Project(0);
 
         return $this->handle('action', Req::val('action'));
 	}

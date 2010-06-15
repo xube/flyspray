@@ -24,7 +24,7 @@
     <table id="search-user-form">
       <tr>
         <td>
-          <label class="notable" for="user_name">{L('username')}</label><input type="text" class="text" id="user_name" name="user_name" value="{Get::val('user_name')}" />
+          <label class="notable" for="search_user_name">{L('username')}</label><input type="text" class="text" id="search_user_name" name="user_name" value="{Get::val('user_name')}" />
         </td>
         <td>
           <label class="notable" for="real_name">{L('realname')}</label><input type="text" class="text" id="real_name" name="real_name" value="{Get::val('real_name')}" />
@@ -55,8 +55,10 @@
       </tr>
     </table>
 
-    <input type="hidden" name="do" value="{$do}" />
-    <input type="hidden" name="area" value="users" />
+    <div>
+      <input type="hidden" name="do" value="{$do}" />
+      <input type="hidden" name="area" value="users" />
+    </div>
     </form>
   </div>
 

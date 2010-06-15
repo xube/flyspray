@@ -38,7 +38,7 @@
   </table>
 	<?php 
 		if($fs->prefs['use_recaptcha']) {
-			$captcha =& new reCAPTCHA_Challenge();
+			$captcha = new reCAPTCHA_Challenge();
 			$captcha->publickey = $fs->prefs['recaptcha_public_key'];
 			$captcha->use_ssl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
 	 		echo $captcha->getChallenge();

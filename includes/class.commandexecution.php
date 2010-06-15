@@ -5,7 +5,7 @@
  * Executing external commands is a risky business, this class
  * provides a safe yet easy to use interface to command Execution.
  * 
- *  $foo =& new CommandExecution();
+ *  $foo = new CommandExecution();
  *  $foo->setCmd('ls');
  *  $foo->lha = dirname( __FILE__);
  *   var_dump($foo->getCmdForExec( ));

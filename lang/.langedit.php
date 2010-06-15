@@ -120,9 +120,9 @@ chdir("../lang");
 $lang = @$_GET['lang'];
 $fail = '';
 if(!$lang || !Filters::isAlnum($lang))
-  $fail .= "Language code not supplied correctly<br>\n";
+  $fail .= "Language code not supplied correctly<br/>\n";
 if(!file_exists('en.php'))
-  $fail .= "The english language file <code>en.php</code> is missing. Make sure this script is run from the same directory as the language files <code>.../flyspray/lang/</code><br>\n";
+  $fail .= "The english language file <code>en.php</code> is missing. Make sure this script is run from the same directory as the language files <code>.../flyspray/lang/</code><br/>\n";
 if($fail)
   die($fail."<b>Usage:</b> <a href='.langedit.php?lang='>.langedit.php?lang=&lt;lang code&gt;</a> where &lt;lang code&gt; should be replaced by your languge, e.g. <b>de</b> for German.");
 
@@ -217,9 +217,9 @@ echo "</td><td>\n";
 echo "<input type=\"submit\" name=\"submit\" value=\"Save changes\" title=\"Saves changes to a work file\"> \n";
 // Confirmation button
 echo "<input type=\"submit\" name=\"confirm\" id=\"id_confirm\" value=\"Confirm all changes\"".(!$working_copy? " disabled": "")." title=\"Confirm all changes and replace the original language file\"> \n";
-echo "<br>\n";
+echo "<br/>\n";
 if($working_copy)
-  echo "Your changes are stored in <code>.$lang.php.work</code> until you press 'Confirm all changes'<br>";
+  echo "Your changes are stored in <code>.$lang.php.work</code> until you press 'Confirm all changes'<br/>";
 // Search
 echo "<input type=\"text\" name=\"search_for\" value=\"$search\"><input type=\"submit\" name=\"search\" value=\"Search\">\n";
 // List empty
@@ -273,7 +273,7 @@ foreach ($language as $key => $val)
   $i++;
 }
 echo "</table><hr>\n";
-echo "<table width=\"100%\"><tr><td>The language files are UTF-8 encoded, avoid manual editing if You are not sure that your editor supports UTF-8<br>";
+echo "<table width=\"100%\"><tr><td>The language files are UTF-8 encoded, avoid manual editing if You are not sure that your editor supports UTF-8<br/>";
 echo "Syntax for <b>\\</b> are <b>\\\\</b> and for line feed type <b>\\n</b> in single line edit fields</td>\n";
 echo "<td style=\"text-align: right;\"><i>langedit by <a href=\"mailto:larserik@softpoint.nu\">larserik@softpoint.nu</a></i></td></tr></table>";
 

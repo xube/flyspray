@@ -24,7 +24,7 @@ require 'class.do.php';
 require_once 'authplugins/class.flysprayauth.php';
 
 $db = NewDatabase($conf['database']);
-$fs =& new Flyspray;
+$fs = new Flyspray;
 
 // If version number of database and files do not match, run upgrader
 if (Flyspray::base_version($fs->version) != Flyspray::base_version($fs->prefs['fs_ver'])) {
@@ -74,7 +74,7 @@ if (!isset($project_id)) {
     $project_id = Req::val('project', Req::val('project_id', $project_id));
 }
 
-$proj =& new Project($project_id);
+$proj = new Project($project_id);
 // reset do for default project level entry page
 if (!in_array($do, $modes)) {
     $do = ($do) ? Req::enum('do', $modes, $proj->prefs['default_entry']) : $proj->prefs['default_entry'];
@@ -94,7 +94,7 @@ if (Post::val('user_name') && Post::has('password')) {
 } else if (Cookie::val('flyspray_userid') && $auth->checkCookie(Cookie::val('flyspray_userid'), Cookie::val('flyspray_passhash'))) {
     $uid = Cookie::val('flyspray_userid');
 }
-$user =& new User($uid);
+$user = new User($uid);
 
 // Load translations
 load_translations();

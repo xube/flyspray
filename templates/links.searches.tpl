@@ -1,4 +1,5 @@
     <strong id="nosearches" <?php if(count($user->searches)): ?>class="hide"<?php endif; ?>>{L('nosearches')}</strong>
+    <?php if (count($user->searches)): ?>
     <table id="mysearchestable">
     <?php foreach ($user->searches as $search): ?>
     <tr id="rs{$search['id']}" <?php if($search == end($user->searches)): ?>class="last"<?php endif; ?>>
@@ -10,3 +11,4 @@
     </tr>
     <?php endforeach; ?>
     </table>
+    <?php endif ; ?>

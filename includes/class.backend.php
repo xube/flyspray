@@ -987,7 +987,7 @@ class Backend
 
         if ($user->isAnon() && $fs->prefs['use_recaptcha']) {
             include_once BASEDIR . '/includes/external/recaptchalib.php';
-            $solution =& new reCAPTCHA_Solution();
+            $solution = new reCAPTCHA_Solution();
             $solution->privatekey = $fs->prefs['recaptcha_priv_key'];
             $solution->challenge = Post::val('recaptcha_challenge_field');
             $solution->response = Post::val('recaptcha_response_field');
@@ -1321,7 +1321,7 @@ class Backend
         foreach ($proj->fields as $field) {
             $ref = 'field' . $field->id;
             if ($field->prefs['field_type'] == FIELD_DATE) {
-                if (!array_get($args, $field->id . 'from') && !array_get($args, $field->id . 'to')) {
+                if (!array_get($args, 'field' . $field->id . 'from') && !array_get($args, 'field' . $field->id . 'to')) {
                     continue;
                 }
 
@@ -1329,11 +1329,11 @@ class Backend
 
                 $custom_fields_joined[] = $field->id;
 
-                if ($date = array_get($args, $field->id . 'from')) {
+                if ($date = array_get($args, 'field' . $field->id . 'from')) {
                     $where[]      = "({$ref}.field_value >= ?)";
                     $sql_params[] = Flyspray::strtotime($date);
                 }
-                if ($date = array_get($args, $field->id . 'to')) {
+                if ($date = array_get($args, 'field' . $field->id . 'to')) {
                     $where[]      = "({$ref}.field_value <= ? AND {$ref}.field_value > 0)";
                     $sql_params[] = Flyspray::strtotime($date);
                 }

@@ -102,7 +102,7 @@ class FlysprayDo
     {
         global $db, $proj, $fs;
         
-        $page =& new FSTpl;
+        $page = new FSTpl;
         $page->pushTpl('header.tpl');
         $page->assign('do', 'index');
         $page->setTheme( isset($proj) ? $proj->prefs['theme_style'] : $fs->prefs['global_theme']);

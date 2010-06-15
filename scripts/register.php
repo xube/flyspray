@@ -106,7 +106,7 @@ class FlysprayDoRegister extends FlysprayDo
 
         if($fs->prefs['use_recaptcha']) {
 
-            $solution =& new reCAPTCHA_Solution();
+            $solution = new reCAPTCHA_Solution();
             $solution->privatekey = $fs->prefs['recaptcha_priv_key'];
             $solution->challenge = Post::val('recaptcha_challenge_field');
             $solution->response = Post::val('recaptcha_response_field');

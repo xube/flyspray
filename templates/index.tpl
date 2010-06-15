@@ -128,8 +128,8 @@
         <?php foreach ($proj->fields as $field): ?>
         <?php if ($field->prefs['field_type'] != FIELD_DATE) continue; ?>
         <div class="dateselect">
-          {!tpl_datepicker($field->id . 'from', $field->prefs['field_name'] . ' ' . L('from'))}
-          {!tpl_datepicker($field->id . 'to', L('to'))}
+          {!tpl_datepicker('field' . $field->id . 'from', $field->prefs['field_name'] . ' ' . L('from'))}
+          {!tpl_datepicker('field' . $field->id . 'to', L('to'))}
         </div>
         <?php endforeach; ?>
 
@@ -160,6 +160,7 @@
 <div id="tasklist">
   <form action="{$this->url(array('index', 'proj' . $proj->id))}" id="massops" method="post">
     <div>
+      <?php if (count($tasks)): ?>
       <table id="tasklist_table">
         <thead>
           <tr>
@@ -203,6 +204,7 @@
         <?php endforeach; ?>
         </tbody>
       </table>
+      <?php endif; ?>
       <table id="pagenumbers">
         <tr>
           <?php if ($total): ?>

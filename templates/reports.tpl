@@ -2,9 +2,9 @@
   <form action="{$this->relativeUrl($baseurl)}index.php" method="get">
     <table id="event1">
       <tr>
-        <td><label for="events[]">{L('events')}</label></td>
+        <td><label for="events_select">{L('events')}</label></td>
         <td>
-            <select name="events[]" multiple="multiple" id="events[]" size="{count($events)+count($user_events)+2}">
+            <select name="events[]" multiple="multiple" id="events_select" size="{count($events)+count($user_events)+2}">
             <optgroup label="{L('Tasks')}">
             {!tpl_options($events, Get::val('events'))}
             </optgroup>
@@ -31,9 +31,11 @@
       </tr>
     </table>
     
-    <input type="hidden" name="project" value="{$proj->id}" />
-    <input type="hidden" name="do" value="reports" />
-    <button type="submit" name="submit">{L('show')}</button>
+    <div>
+      <input type="hidden" name="project" value="{$proj->id}" />
+      <input type="hidden" name="do" value="reports" />
+      <button type="submit" name="submit">{L('show')}</button>
+    </div>
   </form>
   
   <?php if ($histories): ?>

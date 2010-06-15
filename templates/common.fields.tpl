@@ -54,7 +54,6 @@
       </td>
     </tr>
     <?php endforeach; ?>
-    </tbody>
     <?php if (count($proj->fields)): ?>
     <tr>
       <td colspan="5"></td>
@@ -65,6 +64,7 @@
       </td>
     </tr>
     <?php endif; ?>
+    </tbody>
   </table>
 </form>
 <hr />
