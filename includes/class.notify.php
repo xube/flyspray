@@ -7,7 +7,7 @@
 
 require 'Swift.php';
 
-class NotificationsThread extends Swift_Events_Listener {
+class NotificationsThread implements Swift_Events_Listener {
 
     var $task_id = 0;
     var $thread_info = array();
@@ -77,6 +77,8 @@ class Notifications
             || empty($fs->prefs['jabber_password'])) {
             return false;
         }
+        
+        if (!isset($fs->prefs['jabber_ssl'])) $fs->prefs['jabber_ssl'] = true;
         
         $JABBER = new Jabber($fs->prefs['jabber_username'],
                    $fs->prefs['jabber_password'],

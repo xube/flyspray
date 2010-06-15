@@ -28,7 +28,7 @@
     end($colors);
     if (isset($proj->fields['field' . $fs->prefs['color_field']])):
         foreach ($proj->fields['field' . $fs->prefs['color_field']]->values as $key => $value):
-        if (!$value['list_item_id']) continue; ?>
+        if (!isset($value['list_item_id']) || !$value['list_item_id']) continue; ?>
         .colorfield{$value['list_item_id']} { background-color:{key($colors)} !important; }
         .colorfield{$value['list_item_id']}:hover { background-color:{current($colors)} !important; }
     <?php prev($colors); 
