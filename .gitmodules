@@ -1,3 +1,6 @@
 [submodule "includes/external/twig"]
 	path = includes/external/twig
 	url = git://github.com/fabpot/Twig.git
+[submodule "includes/external/swift-mailer"]
+	path = includes/external/swift-mailer
+	url = git://github.com/swiftmailer/swiftmailer.git
